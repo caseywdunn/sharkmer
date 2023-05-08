@@ -1,0 +1,45 @@
+{
+	// Use IntelliSense to learn about possible attributes.
+	// Hover to view descriptions of existing attributes.
+	// For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug executable 'sharkmer'",
+			"cargo": {
+				"args": [
+					"build",
+					"--bin=sharkmer",
+					"--package=sharkmer"
+				],
+				"filter": {
+					"name": "sharkmer",
+					"kind": "bin"
+				}
+			},
+			"args": ["-k", "21", "-n", "10", "--histo-max", "10000", "-o", "Thermus-thermophilus", "data/SRR5324768_pass_1.fastq"],
+			"cwd": "${workspaceFolder}"
+		},
+		{
+			"type": "lldb",
+			"request": "launch",
+			"name": "Debug unit tests in executable 'sharkmer'",
+			"cargo": {
+				"args": [
+					"test",
+					"--no-run",
+					"--bin=sharkmer",
+					"--package=sharkmer"
+				],
+				"filter": {
+					"name": "sharkmer",
+					"kind": "bin"
+				}
+			},
+			"args": [],
+			"cwd": "${workspaceFolder}"
+		}
+	]
+}
