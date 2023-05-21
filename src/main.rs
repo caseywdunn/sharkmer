@@ -5,6 +5,28 @@ use std::path::Path;
 use std::collections::HashMap;
 use rand::prelude::SliceRandom;
 
+fn xtest_ints_to_kmers() {
+	let ints = vec![0b01101100, 0b00111001, 0b10100110];
+	// original	                // reverse complement
+	// 0b01101100_00111001_10   0b01_10010011_11000110  >
+	// 0b101100_00111001_1010   0b0101_10010011_110001  >
+	// 0b1100_00111001_101001   0b100101_10010011_1100  >
+	// 0b00_00111001_10100110   0b01100101_10010011_11  <
+	//
+	let expected = vec![0b01_10010011_11000110, 0b0101_10010011_110001, 0b100101_10010011_1100, 0b00_00111001_10100110];
+	let actual = ints_to_kmers(ints, 9);
+	assert_eq!(actual, expected);
+}
+
+fn revcomp_kmer(kmer: u64, k: u8) -> u64 {
+    let mut revcomp = 0;
+    for i in 0..k {
+        let base = (kmer >> (2 * i)) & 3;
+        revcomp = (revcomp << 2) | (3 - base);
+    }
+    revcomp
+}
+
 // For new, just return everything before an N. But in the future may return
 // a vector of integer encoded sequences that were separated by N.
 fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
@@ -88,6 +110,7 @@ struct Args {
     input: Vec<String>,
 }
 fn main() {
+    xtest_ints_to_kmers();
     // Ingest command line arguments
     let args = Args::parse();
 
