@@ -1,13 +1,13 @@
 use clap::Parser;
-use std::path::Path;
 use std::io::BufRead;
+use std::path::Path;
 
 // For new, just return everything before an N. But in the future may return
 // a vector of integer encoded sequences that were separated by N.
-fn seq_to_ints(seq:&String) -> Vec<Vec<u8>> {
+fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
     let mut ints: Vec<u8> = Vec::new();
     let mut frame: u8 = 0;
-    for (i,c) in seq.chars().enumerate() {
+    for (i, c) in seq.chars().enumerate() {
         let base = match c {
             'A' => 0,
             'C' => 1,
@@ -16,17 +16,16 @@ fn seq_to_ints(seq:&String) -> Vec<Vec<u8>> {
             'N' => 4,
             _ => 5,
         };
-        if base > 3{
+        if base > 3 {
             break;
         }
         frame = (frame << 2) | base;
-        if (i % 4 == 0) & (i>0) {
+        if (i % 4 == 0) & (i > 0) {
             ints.push(frame);
         }
     }
     vec![ints]
 }
-
 
 /// Count k-mers in a set of fastq.gz files, with an option to assess cumulative subsets
 #[derive(Parser, Debug)]
@@ -81,7 +80,6 @@ fn main() {
     assert!(args.histo_max > 0, "histo_max must be greater than 0");
     assert!(args.n > 0, "n must be greater than 0");
 
-    
     // Ingest the fastq files
     let mut reads: Vec<Vec<u8>> = Vec::new();
     let mut n_reads_read = 0;
@@ -101,7 +99,6 @@ fn main() {
                 let ints = seq_to_ints(&line);
                 reads.extend(ints);
                 n_reads_read += 1;
-                
             }
             if args.max_reads > 0 && n_reads_read >= args.max_reads as usize {
                 break 'processing_files;
@@ -116,11 +113,11 @@ fn main() {
     println!("Read {} bases", n_bases_read);
     println!("Ingested {} subreads", reads.len());
     println!("Ingested {} bases", n_bases_ingested);
-    println!("Yield {}",  (n_bases_ingested as f64)/(n_bases_read as f64));
-
-
+    println!(
+        "Yield {}",
+        (n_bases_ingested as f64) / (n_bases_read as f64)
+    );
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -130,5 +127,4 @@ mod tests {
     fn test_tests() {
         assert_eq!(2 + 2, 4);
     }
-
 }
