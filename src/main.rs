@@ -1,21 +1,26 @@
 use clap::Parser;
+use rand::prelude::SliceRandom;
+use std::collections::HashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
-use std::collections::HashMap;
-use rand::prelude::SliceRandom;
 
 fn xtest_ints_to_kmers() {
-	let ints = vec![0b01101100, 0b00111001, 0b10100110];
-	// original	                // reverse complement
-	// 0b01101100_00111001_10   0b01_10010011_11000110  >
-	// 0b101100_00111001_1010   0b0101_10010011_110001  >
-	// 0b1100_00111001_101001   0b100101_10010011_1100  >
-	// 0b00_00111001_10100110   0b01100101_10010011_11  <
-	//
-	let expected = vec![0b01_10010011_11000110, 0b0101_10010011_110001, 0b100101_10010011_1100, 0b00_00111001_10100110];
-	let actual = ints_to_kmers(ints, 9);
-	assert_eq!(actual, expected);
+    let ints = vec![0b01101100, 0b00111001, 0b10100110];
+    // original	                // reverse complement
+    // 0b01101100_00111001_10   0b01_10010011_11000110  >
+    // 0b101100_00111001_1010   0b0101_10010011_110001  >
+    // 0b1100_00111001_101001   0b100101_10010011_1100  >
+    // 0b00_00111001_10100110   0b01100101_10010011_11  <
+    //
+    let expected = vec![
+        0b01_10010011_11000110,
+        0b0101_10010011_110001,
+        0b100101_10010011_1100,
+        0b00_00111001_10100110,
+    ];
+    let actual = ints_to_kmers(ints, 9);
+    assert_eq!(actual, expected);
 }
 
 fn revcomp_kmer(kmer: u64, k: u8) -> u64 {
@@ -45,14 +50,14 @@ fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
             break;
         }
         frame = (frame << 2) | base;
-        if ((i+1) % 4 == 0) & (i > 0) {
+        if ((i + 1) % 4 == 0) & (i > 0) {
             ints.push(frame);
         }
     }
     vec![ints]
 }
 
-fn ints_to_kmers(ints: Vec<u8>, k:u8) -> Vec<u64> {
+fn ints_to_kmers(ints: Vec<u8>, k: u8) -> Vec<u64> {
     let mut kmers: Vec<u64> = Vec::new();
     let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
     let mut revframe: u64 = 0; // read the bits for complement into the least significant end of this integer
@@ -65,7 +70,7 @@ fn ints_to_kmers(ints: Vec<u8>, k:u8) -> Vec<u64> {
         for j in 0..4 {
             let base = ((int >> (j * 2)) & 3) as u64;
             frame = (frame << 2) | base;
-            revframe = (revframe >> 2) | ((3 - base) << 2 * (k - 1));
+            revframe = (revframe >> 2) | ((3 - base) << (2 * (k - 1)));
             n_valid += 1;
             if n_valid >= k {
                 let forward = frame & mask;
@@ -200,7 +205,6 @@ fn main() {
     for (i, count) in histo.iter().enumerate() {
         writeln!(file, "{}\t{}", i, count).unwrap();
     }
-
 }
 
 #[cfg(test)]
