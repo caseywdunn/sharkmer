@@ -16,3 +16,17 @@ fn test_seq_to_ints() {
 	let actual = seq_to_ints(seq);
 	assert_eq!(actual, expected);
 }
+
+#[test]
+fn test_ints_to_kmers() {
+	let ints = vec![0b01101100, 0b00111001, 0b10100110];
+	// original	                // reverse complement
+	// 0b01101100_00111001_10   0b01_10010011_11000110  >
+	// 0b101100_00111001_1010   0b0101_10010011_110001  >
+	// 0b1100_00111001_101001   0b100101_10010011_1100  >
+	// 0b00_00111001_10100110   0b01100101_10010011_11  <
+	//
+	let expected = vec![0b01_10010011_11000110, 0b0101_10010011_110001, 0b100101_10010011_1100, 0b00_00111001_10100110];
+	let actual = ints_to_kmers(ints, 9);
+	assert_eq!(actual, expected);
+}
