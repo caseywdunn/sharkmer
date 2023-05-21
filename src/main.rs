@@ -12,10 +12,10 @@ fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
     let mut frame: u8 = 0;
     for (i, c) in seq.chars().enumerate() {
         let base = match c {
-            'A' => 0,
-            'C' => 1,
-            'G' => 2,
-            'T' => 3,
+            'A' => 0, // 00
+            'C' => 1, // 01
+            'G' => 2, // 10
+            'T' => 3, // 11
             'N' => 4,
             _ => 5,
         };
@@ -23,7 +23,7 @@ fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
             break;
         }
         frame = (frame << 2) | base;
-        if (i % 4 == 0) & (i > 0) {
+        if ((i+1) % 4 == 0) & (i > 0) {
             ints.push(frame);
         }
     }
