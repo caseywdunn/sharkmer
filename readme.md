@@ -4,7 +4,9 @@ A kmer analysis tool written in rust
 
 ## Development
 
-After cloning the repo, gunzip the `data` in the data dir.
+After cloning the repo, gunzip the `data` in the data dir:
+
+    gunzip -c SRR5324768_pass_1.fastq.gz > SRR5324768_pass_1.fastq
 
 Some common tasks in development:
 
