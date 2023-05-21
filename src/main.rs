@@ -35,6 +35,7 @@ fn ints_to_kmers(ints: Vec<u8>, k:u8) -> Vec<u64> {
     let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
     let mut revframe: u64 = 0; // read the bits for complement into the least significant end of this integer
     let mut n_valid = 0; // number of valid bases in the frame
+    let mask: u64 = (1 << (2 * k)) - 1;
 
     // Iterate over the bases
     for (i, &int) in ints.iter().enumerate() {
@@ -45,10 +46,12 @@ fn ints_to_kmers(ints: Vec<u8>, k:u8) -> Vec<u64> {
             revframe = (revframe >> 2) | ((3 - base) << 2 * (k - 1));
             n_valid += 1;
             if n_valid >= k {
-                if frame < revframe {
-                    kmers.push(frame);
+                let forward = frame & mask;
+                let reverse = revframe & mask;
+                if forward < reverse {
+                    kmers.push(forward);
                 } else {
-                    kmers.push(revframe);
+                    kmers.push(reverse);
                 }
             }
         }
@@ -178,11 +181,4 @@ fn main() {
 }
 
 #[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_tests() {
-        assert_eq!(2 + 2, 4);
-    }
-}
+mod test;
