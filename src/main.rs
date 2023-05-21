@@ -1,6 +1,8 @@
 use clap::Parser;
 use std::io::BufRead;
+use std::io::Write;
 use std::path::Path;
+use std::collections::HashMap;
 
 // For new, just return everything before an N. But in the future may return
 // a vector of integer encoded sequences that were separated by N.
@@ -25,6 +27,32 @@ fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
         }
     }
     vec![ints]
+}
+
+fn ints_to_kmers(ints: Vec<u8>, k:u8) -> Vec<u64> {
+    let mut kmers: Vec<u64> = Vec::new();
+    let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
+    let mut revframe: u64 = 0; // read the bits for complement into the least significant end of this integer
+    let mut n_valid = 0; // number of valid bases in the frame
+
+    // Iterate over the bases
+    for (i, &int) in ints.iter().enumerate() {
+        // Iterate over the bases in the integer
+        for j in 0..4 {
+            let base = ((int >> (j * 2)) & 3) as u64;
+            frame = (frame << 2) | base;
+            revframe = (revframe >> 2) | ((3 - base) << 2 * (k - 1));
+            n_valid += 1;
+            if n_valid >= k {
+                if frame < revframe {
+                    kmers.push(frame);
+                } else {
+                    kmers.push(revframe);
+                }
+            }
+        }
+    }
+    kmers
 }
 
 /// Count k-mers in a set of fastq.gz files, with an option to assess cumulative subsets
@@ -117,6 +145,31 @@ fn main() {
         "Yield {}",
         (n_bases_ingested as f64) / (n_bases_read as f64)
     );
+
+    // Create the hash table
+    let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
+    for read in reads {
+        let kmers = ints_to_kmers(read, args.k as u8);
+        for kmer in kmers {
+            let count = kmer_counts.entry(kmer).or_insert(0);
+            *count += 1;
+        }
+    }
+
+    // Create the histogram
+    let mut histo: Vec<u64> = vec![0; args.histo_max as usize];
+    for (_, count) in kmer_counts.iter() {
+        if *count < args.histo_max {
+            histo[*count as usize] += 1;
+        }
+    }
+
+    // Write the histogram to a file
+    let mut file = std::fs::File::create(format!("{}.histo", args.output)).unwrap();
+    for (i, count) in histo.iter().enumerate() {
+        writeln!(file, "{}\t{}", i, count).unwrap();
+    }
+
 }
 
 #[cfg(test)]
