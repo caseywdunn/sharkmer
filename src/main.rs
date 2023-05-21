@@ -3,6 +3,7 @@ use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
 use std::collections::HashMap;
+use rand::prelude::SliceRandom;
 
 // For new, just return everything before an N. But in the future may return
 // a vector of integer encoded sequences that were separated by N.
@@ -145,6 +146,10 @@ fn main() {
         "Yield {}",
         (n_bases_ingested as f64) / (n_bases_read as f64)
     );
+
+    // Randomize the order of the reads in place
+    let mut rng = rand::thread_rng();
+    reads.shuffle(&mut rng);
 
     // Create the hash table
     let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
