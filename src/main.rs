@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
+use polars::prelude::*;
 
 
 // For new, just return everything before an N. But in the future may return
@@ -195,19 +196,28 @@ fn main() {
     }
     println!(" done");
 
-    // Create the histogram
-    let mut histo: Vec<u64> = vec![0; args.histo_max as usize];
-    for (_, count) in kmer_counts.iter() {
-        if *count < args.histo_max {
-            histo[*count as usize] += 1;
-        }
-    }
+    // Create the histograms
+    print!("Creating histograms...");
+    let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
 
-    // Write the histogram to a file
-    let mut file = std::fs::File::create(format!("{}.histo", args.output)).unwrap();
-    for (i, count) in histo.iter().enumerate() {
-        writeln!(file, "{}\t{}", i, count).unwrap();
+    // Create a polars dataframe with max_reads+2 rows and n columns, int32 type and fill it with zeros
+    let mut df = DataFrame::new_no_checks(Vec::new());
+
+    // Iterate over the chunks
+    for chunk_kmer_count in chunk_kmer_counts {
+        // Add the counts from chunk_kmer_count to the corresponding entries of kmer_counts, creating new entries as needed
+        for kmer in chunk_kmer_count {
+            let count = kmer_counts.entry(kmer).or_insert(0);
+            *count += chunk_kmer_count[kmer];
+        }
+
+        
     }
+    println!(" done");
+
+    // Write the histograms to file
+    print!("Writing histograms to file...");
+    println!(" done");
 }
 
 #[cfg(test)]
