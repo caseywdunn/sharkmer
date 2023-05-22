@@ -120,6 +120,7 @@ fn main() {
     assert!(args.n > 0, "n must be greater than 0");
 
     // Ingest the fastq files
+    print!("Ingested reads...");
     let mut reads: Vec<Vec<u8>> = Vec::new();
     let mut n_reads_read = 0;
     let mut n_bases_read = 0;
@@ -145,6 +146,7 @@ fn main() {
         }
     }
 
+    println!(" done");
     let n_bases_ingested = reads.iter().map(|x| x.len()).sum::<usize>() * 4;
 
     // Print some stats
@@ -158,18 +160,40 @@ fn main() {
     );
 
     // Randomize the order of the reads in place
+    print!("Randomizing read order...");
     let mut rng = rand::thread_rng();
     reads.shuffle(&mut rng);
+    println!(" done");
 
-    // Create the hash table
-    let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
-    for read in reads {
-        let kmers = ints_to_kmers(read, args.k as u8);
-        for kmer in kmers {
-            let count = kmer_counts.entry(kmer).or_insert(0);
-            *count += 1;
-        }
+    // Create a hash table for each of n chunks of reads
+    if reads.len() < args.n {
+        // Throw an error
+        panic!("Number of reads is less than number of chunks");
     }
+    let mut chunk_size = reads.len() / args.n;
+
+    // Create a vector of hash tables
+    let mut chunk_kmer_counts: Vec<HashMap<u64, u64>> = Vec::new();
+    for _ in 0..args.n {
+        chunk_kmer_counts.push(HashMap::new());
+    }
+
+    print!("Hashing each chunk of reads...");
+    // Iterate over the chunks
+    for (i, chunk) in reads.chunks(chunk_size).enumerate() {
+        println!("Processing chunk {}", i);
+        // Create a hash table for this chunk
+        let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
+        for read in chunk {
+            let kmers = ints_to_kmers(read.to_vec(), args.k as u8);
+            for kmer in kmers {
+                let count = kmer_counts.entry(kmer).or_insert(0);
+                *count += 1;
+            }
+        }
+        chunk_kmer_counts[i] = kmer_counts;
+    }
+    println!(" done");
 
     // Create the histogram
     let mut histo: Vec<u64> = vec![0; args.histo_max as usize];
