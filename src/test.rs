@@ -1,5 +1,14 @@
 use super::*;
 
+fn revcomp_kmer(kmer: u64, k: u8) -> u64 {
+    let mut revcomp = 0;
+    for i in 0..k {
+        let base = (kmer >> (2 * i)) & 3;
+        revcomp = (revcomp << 2) | (3 - base);
+    }
+    revcomp
+}
+
 #[test]
 fn test_tests() {
     assert_eq!(2 + 2, 4);
