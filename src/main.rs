@@ -1,11 +1,10 @@
 use clap::Parser;
 use rand::prelude::SliceRandom;
+use rayon::prelude::*;
 use std::collections::HashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
-use rayon::prelude::*;
-
 
 // For new, just return everything before an N. But in the future may return
 // a vector of integer encoded sequences that were separated by N.
@@ -40,7 +39,7 @@ fn ints_to_kmers(ints: Vec<u8>, k: u8) -> Vec<u64> {
     let mask: u64 = (1 << (2 * k)) - 1;
 
     // Iterate over the bases
-    for (i, &int) in ints.iter().enumerate() {
+    for (_i, &int) in ints.iter().enumerate() {
         // Iterate over the bases in the integer
         for j in 0..4 {
             // Get the base from the left side of the integer,
@@ -79,7 +78,6 @@ fn count_histogram(kmer_counts: &HashMap<u64, u64>, histo_max: u64) -> Vec<u64> 
     }
     histo
 }
-
 
 /// Count k-mers in a set of fastq.gz files, with an option to assess cumulative subsets
 #[derive(Parser, Debug)]
@@ -185,34 +183,30 @@ fn main() {
         // Throw an error
         panic!("Number of reads is less than number of chunks");
     }
-    let mut chunk_size = reads.len() / args.n;
+    let chunk_size = reads.len() / args.n;
 
-    // Create a vector of hash tables
-    // let mut chunk_kmer_counts: Vec<HashMap<u64, u64>> = Vec::new();
-    //for _ in 0..args.n {
-    //   chunk_kmer_counts.push(HashMap::new());
-    //}
-
-    println!("Hashing each chunk of reads...");
+    print!("Hashing each chunk of reads...");
     // Iterate over the chunks
-    let n: usize = args.n ;
-    let indexes: Vec<usize> = (0..n).collect();
-    let mut chunk_kmer_counts: Vec<HashMap<u64, u64>> = (0..n).into_par_iter().map(|i| {
-        // println!("Processing chunk {}", i);
-        let start = i * chunk_size;
-        let end = (i + 1) * chunk_size;
-        // Create a hash table for this chunk
-        let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
-        for read in reads[start..end].iter() {
-            let kmers = ints_to_kmers(read.to_vec(), args.k as u8);
-            for kmer in kmers {
-                let count = kmer_counts.entry(kmer).or_insert(0);
-                *count += 1;
+    let n: usize = args.n;
+    let chunk_kmer_counts: Vec<HashMap<u64, u64>> = (0..n)
+        .into_par_iter()
+        .map(|i| {
+            // println!("Processing chunk {}", i);
+            let start = i * chunk_size;
+            let end = (i + 1) * chunk_size;
+            // Create a hash table for this chunk
+            let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
+            for read in reads[start..end].iter() {
+                let kmers = ints_to_kmers(read.to_vec(), args.k as u8);
+                for kmer in kmers {
+                    let count = kmer_counts.entry(kmer).or_insert(0);
+                    *count += 1;
+                }
             }
-        }
-        kmer_counts
-    }).collect();
-    println!("done hashing.");
+            kmer_counts
+        })
+        .collect();
+    println!(" done");
 
     // Create the histograms
     print!("Creating histograms...");
@@ -239,7 +233,6 @@ fn main() {
         // Append the histogram to the dataframe
         //let mut histo_series = Series::new("", histo);
         //histo_df.with_column(histo_series).unwrap();
-
     }
     println!(" done");
 
