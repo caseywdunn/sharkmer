@@ -4,7 +4,6 @@ use std::collections::HashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
-use polars::prelude::*;
 
 
 // For new, just return everything before an N. But in the future may return
@@ -193,13 +192,15 @@ fn main() {
         chunk_kmer_counts.push(HashMap::new());
     }
 
-    print!("Hashing each chunk of reads...");
+    println!("Hashing each chunk of reads...");
     // Iterate over the chunks
-    for (i, chunk) in reads.chunks(chunk_size).enumerate() {
+    for i in 0..args.n {
         println!("Processing chunk {}", i);
+        let start = i * chunk_size;
+        let end = (i + 1) * chunk_size;
         // Create a hash table for this chunk
         let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
-        for read in chunk {
+        for read in reads[start..end].iter() {
             let kmers = ints_to_kmers(read.to_vec(), args.k as u8);
             for kmer in kmers {
                 let count = kmer_counts.entry(kmer).or_insert(0);
@@ -208,14 +209,16 @@ fn main() {
         }
         chunk_kmer_counts[i] = kmer_counts;
     }
-    println!(" done");
+    println!("done hashing.");
 
     // Create the histograms
     print!("Creating histograms...");
     let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
 
     // Create a polars dataframe with max_reads+2 rows and n columns, int32 type and fill it with zeros
-    let mut histo_df = DataFrame::new(Vec::new(u64)).unwrap();
+    //let mut histo_df = DataFrame::new(Vec::new(u64)).unwrap();
+
+    let mut histos: Vec<Vec<u64>> = Vec::with_capacity(args.n);
 
     // Iterate over the chunks
     for chunk_kmer_count in chunk_kmer_counts {
@@ -228,9 +231,11 @@ fn main() {
         // Create a histogram of counts
         let histo = count_histogram(&kmer_counts, args.histo_max);
 
+        histos.push(histo.clone());
+
         // Append the histogram to the dataframe
-        let mut histo_series = Series::new("", histo);
-        histo_df.with_column(histo_series).unwrap();
+        //let mut histo_series = Series::new("", histo);
+        //histo_df.with_column(histo_series).unwrap();
 
     }
     println!(" done");
@@ -240,10 +245,6 @@ fn main() {
     print!("Writing histograms to file...");
     let mut file = std::fs::File::create(format!("{}.histo", out_name)).unwrap();
 
-    CsvWriter::new(&file)
-        .has_header(false)
-        .with_delimiter(b'\t')
-        .finish(&mut histo_df);
 
     println!(" done");
 }
