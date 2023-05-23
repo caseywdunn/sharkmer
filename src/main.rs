@@ -194,7 +194,9 @@ fn main() {
 
     println!("Hashing each chunk of reads...");
     // Iterate over the chunks
-    for i in 0..args.n {
+    let n: usize = args.n ;
+    let indexes: Vec<usize> = (0..n).collect();
+    for i in indexes.iter() {
         println!("Processing chunk {}", i);
         let start = i * chunk_size;
         let end = (i + 1) * chunk_size;
@@ -207,7 +209,7 @@ fn main() {
                 *count += 1;
             }
         }
-        chunk_kmer_counts[i] = kmer_counts;
+        chunk_kmer_counts[*i] = kmer_counts;
     }
     println!("done hashing.");
 
