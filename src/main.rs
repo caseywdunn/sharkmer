@@ -2,9 +2,12 @@ use clap::Parser;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
+use bloom::{ASMS,BloomFilter};
+
 
 // For new, just return everything before an N. But in the future may return
 // a vector of integer encoded sequences that were separated by N.
@@ -177,6 +180,32 @@ fn main() {
     let mut rng = rand::thread_rng();
     reads.shuffle(&mut rng);
     println!(" done");
+
+    // Find kmers that occur multiple times with bloom filter
+    print!("Identifying kmers that occur more than once...");
+    let mut bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
+    let mut multi_kmers = HashSet::<u64>::new();
+    let mut n_kmers: u64 = 0;
+    let mut n_multi_kmers: u64 = 0;
+
+    for read in reads.iter() {
+        let kmers = ints_to_kmers(read.to_vec(), args.k as u8);
+        for kmer in kmers {
+            n_kmers += 1;
+            if bloom.contains(&kmer) {
+                multi_kmers.insert(kmer);
+                n_multi_kmers += 1;
+            } else {
+                bloom.insert(&kmer);
+            }
+        }
+    }
+    println!(" done");
+    println!("number of kmers processed: {}", n_kmers);
+    println!("number of multi kmers: {}", n_multi_kmers);
+    println!("number of once-off kmers: {}", n_kmers - n_multi_kmers);
+    println!("number of unique multi kmers: {}", multi_kmers.len());
+
 
     // Create a hash table for each of n chunks of reads
     if reads.len() < args.n {
