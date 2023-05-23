@@ -244,7 +244,14 @@ fn main() {
     // Skip the first row, which is the count of 0. Do not include a header
     print!("Writing histograms to file...");
     let mut file = std::fs::File::create(format!("{}.histo", out_name)).unwrap();
-
+    for i in 1..args.histo_max as usize + 2 {
+        let mut line = format!("{}", i);
+        for histo in histos.iter() {
+            line = format!("{}\t{}", line, histo[i]);
+        }
+        line = format!("{}\n", line);
+        file.write_all(line.as_bytes()).unwrap();
+    }
 
     println!(" done");
 }
