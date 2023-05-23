@@ -67,6 +67,20 @@ fn ints_to_kmers(ints: Vec<u8>, k: u8) -> Vec<u64> {
     kmers
 }
 
+fn count_histogram(kmer_counts: &HashMap<u64, u64>, histo_max: u64) -> Vec<u64> {
+    // Create a histogram of counts
+    let mut histo: Vec<u64> = vec![0; histo_max as usize + 2]; // +2 to allow for 0 and for >histo_max
+    for count in kmer_counts.values() {
+        if *count <= histo_max {
+            histo[*count as usize] += 1;
+        } else {
+            histo[histo_max as usize + 1] += 1;
+        }
+    }
+    histo
+}
+
+
 /// Count k-mers in a set of fastq.gz files, with an option to assess cumulative subsets
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -201,22 +215,52 @@ fn main() {
     let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
 
     // Create a polars dataframe with max_reads+2 rows and n columns, int32 type and fill it with zeros
-    let mut df = DataFrame::new_no_checks(Vec::new());
+    let mut histo_df = DataFrame::new(Vec::new()).unwrap();
 
     // Iterate over the chunks
     for chunk_kmer_count in chunk_kmer_counts {
         // Add the counts from chunk_kmer_count to the corresponding entries of kmer_counts, creating new entries as needed
-        for kmer in chunk_kmer_count {
+        for (kmer, kmer_count) in chunk_kmer_count {
             let count = kmer_counts.entry(kmer).or_insert(0);
-            *count += chunk_kmer_count[kmer];
+            *count += kmer_count;
         }
 
-        
+        // Create a histogram of counts
+        let histo = count_histogram(&kmer_counts, args.histo_max);
+
+        // Append the histogram to the dataframe
+        let mut histo_series = Series::new("", histo);
+        histo_df.with_column(histo_series).unwrap();
+
     }
     println!(" done");
 
-    // Write the histograms to file
+    // Write the histograms to a tab delimited file, with the first column being the count
+    // Skip the first row, which is the count of 0. Do not include a header
     print!("Writing histograms to file...");
+    let mut file = std::fs::File::create(format!("{}.histo", out_name)).unwrap();
+
+    // Write the header
+    let mut header = String::new();
+    for i in 0..args.n {
+        header.push_str(&format!("chunk_{}\t", i));
+    }
+    header.push_str("total\n");
+    file.write_all(header.as_bytes()).unwrap();
+
+    // Write the data
+    let mut buffer = String::new();
+    for row in 1..args.histo_max + 2 {
+        buffer.push_str(&format!("{}\t", row));
+        for col in 0..args.n {
+            buffer.push_str(&format!("{}\t", histo_df.column(col).unwrap().get(row)));
+        }
+        buffer.push_str(&format!("{}\n", histo_df.column(args.n).unwrap().get(row)));
+    }
+    file.write_all(buffer.as_bytes()).unwrap();
+
+
+
     println!(" done");
 }
 
