@@ -215,7 +215,7 @@ fn main() {
     let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
 
     // Create a polars dataframe with max_reads+2 rows and n columns, int32 type and fill it with zeros
-    let mut histo_df = DataFrame::new(Vec::new()).unwrap();
+    let mut histo_df = DataFrame::new(Vec::new(u64)).unwrap();
 
     // Iterate over the chunks
     for chunk_kmer_count in chunk_kmer_counts {
@@ -243,7 +243,7 @@ fn main() {
     CsvWriter::new(&file)
         .has_header(false)
         .with_delimiter(b'\t')
-        .finish(histo_df);
+        .finish(&mut histo_df);
 
     println!(" done");
 }
