@@ -4,6 +4,7 @@ use std::collections::HashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
+use rayon::prelude::*;
 
 
 // For new, just return everything before an N. But in the future may return
@@ -187,17 +188,17 @@ fn main() {
     let mut chunk_size = reads.len() / args.n;
 
     // Create a vector of hash tables
-    let mut chunk_kmer_counts: Vec<HashMap<u64, u64>> = Vec::new();
-    for _ in 0..args.n {
-        chunk_kmer_counts.push(HashMap::new());
-    }
+    // let mut chunk_kmer_counts: Vec<HashMap<u64, u64>> = Vec::new();
+    //for _ in 0..args.n {
+    //   chunk_kmer_counts.push(HashMap::new());
+    //}
 
     println!("Hashing each chunk of reads...");
     // Iterate over the chunks
     let n: usize = args.n ;
     let indexes: Vec<usize> = (0..n).collect();
-    for i in indexes.iter() {
-        println!("Processing chunk {}", i);
+    let mut chunk_kmer_counts: Vec<HashMap<u64, u64>> = (0..n).into_par_iter().map(|i| {
+        // println!("Processing chunk {}", i);
         let start = i * chunk_size;
         let end = (i + 1) * chunk_size;
         // Create a hash table for this chunk
@@ -209,8 +210,8 @@ fn main() {
                 *count += 1;
             }
         }
-        chunk_kmer_counts[*i] = kmer_counts;
-    }
+        kmer_counts
+    }).collect();
     println!("done hashing.");
 
     // Create the histograms
