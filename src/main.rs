@@ -240,26 +240,10 @@ fn main() {
     print!("Writing histograms to file...");
     let mut file = std::fs::File::create(format!("{}.histo", out_name)).unwrap();
 
-    // Write the header
-    let mut header = String::new();
-    for i in 0..args.n {
-        header.push_str(&format!("chunk_{}\t", i));
-    }
-    header.push_str("total\n");
-    file.write_all(header.as_bytes()).unwrap();
-
-    // Write the data
-    let mut buffer = String::new();
-    for row in 1..args.histo_max + 2 {
-        buffer.push_str(&format!("{}\t", row));
-        for col in 0..args.n {
-            buffer.push_str(&format!("{}\t", histo_df.column(col).unwrap().get(row)));
-        }
-        buffer.push_str(&format!("{}\n", histo_df.column(args.n).unwrap().get(row)));
-    }
-    file.write_all(buffer.as_bytes()).unwrap();
-
-
+    CsvWriter::new(&file)
+        .has_header(false)
+        .with_delimiter(b'\t')
+        .finish(histo_df);
 
     println!(" done");
 }
