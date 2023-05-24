@@ -294,6 +294,20 @@ fn main() {
         file.write_all(line.as_bytes()).unwrap();
     }
 
+    // Write the final histogram to a file, ready for GenomeScope2 etc...
+    std::io::stdout().flush().unwrap();
+    let mut file = std::fs::File::create(format!("{}.final.histo", out_name)).unwrap();
+    for i in 1..args.histo_max as usize + 2 {
+        let mut line = format!("{}", i);
+
+        line = format!("{}\t{}", line, histos[histos.len()-1][i]);
+
+        line = format!("{}\n", line);
+        file.write_all(line.as_bytes()).unwrap();
+    }
+
+
+
     println!(" done");
 }
 
