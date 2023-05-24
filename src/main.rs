@@ -8,6 +8,12 @@ use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
 
+// Create a structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
+struct kmer_summary {
+     kmer_counts: HashMap<u64, u64>,
+     n_singletons: u64,
+}
+
 // For new, just return everything before an N. But in the future may return
 // a vector of integer encoded sequences that were separated by N.
 fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
@@ -213,7 +219,7 @@ fn main() {
     print!("Hashing each chunk of reads...");
     // Iterate over the chunks
     let n: usize = args.n;
-    let chunk_kmer_counts: Vec<HashMap<u64, u64>> = (0..n)
+    let chunk_kmer_counts: Vec<kmer_summary> = (0..n)
         .into_par_iter()
         .map(|i| {
             let start = i * chunk_size;
@@ -231,7 +237,11 @@ fn main() {
                     }
                 }
             }
-            kmer_counts
+
+            kmer_summary {
+                kmer_counts: kmer_counts,
+                n_singletons: singles,
+            }
         })
         .collect();
     println!(" done");
@@ -244,12 +254,15 @@ fn main() {
 
     // Iterate over the chunks
     for chunk_kmer_count in chunk_kmer_counts {
-        for (kmer, kmer_count) in chunk_kmer_count {
+        for (kmer, kmer_count) in chunk_kmer_count.kmer_counts {
             let count = kmer_counts.entry(kmer).or_insert(0);
             *count += kmer_count;
         }
 
-        let histo = count_histogram(&kmer_counts, args.histo_max);
+        let mut histo = count_histogram(&kmer_counts, args.histo_max);
+
+        // Add the number of singletons to the histogram at index 1
+        histo[1] += chunk_kmer_count.n_singletons;
 
         histos.push(histo.clone());
 
