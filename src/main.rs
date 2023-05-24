@@ -1,3 +1,4 @@
+use bloom::{BloomFilter, ASMS};
 use clap::Parser;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
@@ -6,8 +7,6 @@ use std::collections::HashSet;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
-use bloom::{ASMS,BloomFilter};
-
 
 // For new, just return everything before an N. But in the future may return
 // a vector of integer encoded sequences that were separated by N.
@@ -183,8 +182,8 @@ fn main() {
 
     // Find kmers that occur multiple times with bloom filter
     print!("Identifying kmers that occur more than once...");
-    let mut bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
-    let mut multi_kmers = HashSet::<u64>::new();
+    let mut pre_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
+    let mut multi_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
     let mut n_kmers: u64 = 0;
     let mut n_multi_kmers: u64 = 0;
 
@@ -192,11 +191,11 @@ fn main() {
         let kmers = ints_to_kmers(read.to_vec(), args.k as u8);
         for kmer in kmers {
             n_kmers += 1;
-            if bloom.contains(&kmer) {
-                multi_kmers.insert(kmer);
+            if pre_bloom.contains(&kmer) {
+                multi_bloom.insert(&kmer);
                 n_multi_kmers += 1;
             } else {
-                bloom.insert(&kmer);
+                pre_bloom.insert(&kmer);
             }
         }
     }
@@ -204,12 +203,9 @@ fn main() {
     println!("number of kmers processed: {}", n_kmers);
     println!("number of multi kmers: {}", n_multi_kmers);
     println!("number of once-off kmers: {}", n_kmers - n_multi_kmers);
-    println!("number of unique multi kmers: {}", multi_kmers.len());
-
 
     // Create a hash table for each of n chunks of reads
     if reads.len() < args.n {
-        // Throw an error
         panic!("Number of reads is less than number of chunks");
     }
     let chunk_size = reads.len() / args.n;
@@ -220,16 +216,19 @@ fn main() {
     let chunk_kmer_counts: Vec<HashMap<u64, u64>> = (0..n)
         .into_par_iter()
         .map(|i| {
-            // println!("Processing chunk {}", i);
             let start = i * chunk_size;
             let end = (i + 1) * chunk_size;
-            // Create a hash table for this chunk
             let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
+            let mut singles: u64 = 0;
             for read in reads[start..end].iter() {
                 let kmers = ints_to_kmers(read.to_vec(), args.k as u8);
                 for kmer in kmers {
-                    let count = kmer_counts.entry(kmer).or_insert(0);
-                    *count += 1;
+                    if multi_bloom.contains(&kmer) {
+                        let count = kmer_counts.entry(kmer).or_insert(0);
+                        *count += 1;
+                    } else {
+                        singles += 1;
+                    }
                 }
             }
             kmer_counts
@@ -241,27 +240,19 @@ fn main() {
     print!("Creating histograms...");
     let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
 
-    // Create a polars dataframe with max_reads+2 rows and n columns, int32 type and fill it with zeros
-    //let mut histo_df = DataFrame::new(Vec::new(u64)).unwrap();
-
     let mut histos: Vec<Vec<u64>> = Vec::with_capacity(args.n);
 
     // Iterate over the chunks
     for chunk_kmer_count in chunk_kmer_counts {
-        // Add the counts from chunk_kmer_count to the corresponding entries of kmer_counts, creating new entries as needed
         for (kmer, kmer_count) in chunk_kmer_count {
             let count = kmer_counts.entry(kmer).or_insert(0);
             *count += kmer_count;
         }
 
-        // Create a histogram of counts
         let histo = count_histogram(&kmer_counts, args.histo_max);
 
         histos.push(histo.clone());
 
-        // Append the histogram to the dataframe
-        //let mut histo_series = Series::new("", histo);
-        //histo_df.with_column(histo_series).unwrap();
     }
     println!(" done");
 
