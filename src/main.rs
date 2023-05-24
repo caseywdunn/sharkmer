@@ -3,15 +3,14 @@ use clap::Parser;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
 use std::collections::HashMap;
-use std::collections::HashSet;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
 
 // Create a structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
 struct kmer_summary {
-     kmer_counts: HashMap<u64, u64>,
-     n_singletons: u64,
+    kmer_counts: HashMap<u64, u64>,
+    n_singletons: u64,
 }
 
 // For new, just return everything before an N. But in the future may return
@@ -142,6 +141,7 @@ fn main() {
 
     // Ingest the fastq files
     print!("Ingested reads...");
+    std::io::stdout().flush().unwrap();
     let mut reads: Vec<Vec<u8>> = Vec::new();
     let mut n_reads_read = 0;
     let mut n_bases_read = 0;
@@ -171,29 +171,40 @@ fn main() {
     let n_bases_ingested = reads.iter().map(|x| x.len()).sum::<usize>() * 4;
 
     // Print some stats
-    println!("Read {} reads", n_reads_read);
-    println!("Read {} bases", n_bases_read);
-    println!("Ingested {} subreads", reads.len());
-    println!("Ingested {} bases", n_bases_ingested);
+    println!("  Read {} reads", n_reads_read);
+    println!("  Read {} bases", n_bases_read);
+    println!("  Ingested {} subreads", reads.len());
+    println!("  Ingested {} bases", n_bases_ingested);
     println!(
-        "Yield {}",
+        "  Yield {}",
         (n_bases_ingested as f64) / (n_bases_read as f64)
     );
 
     // Randomize the order of the reads in place
     print!("Randomizing read order...");
+    std::io::stdout().flush().unwrap();
     let mut rng = rand::thread_rng();
     reads.shuffle(&mut rng);
     println!(" done");
 
     // Find kmers that occur multiple times with bloom filter
-    print!("Identifying kmers that occur more than once...");
+    println!("Identifying kmers that occur more than once...");
     let mut pre_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
     let mut multi_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
     let mut n_kmers: u64 = 0;
     let mut n_multi_kmers: u64 = 0;
 
+    // Print a progress bar, 2% per character
+    println!("--------------------------------------------------- 100%");
+    let reads_per_2_percent = (reads.len() / 50) as u64;
+    let mut n_reads: u64 = 0;
+
     for read in reads.iter() {
+        if n_reads % reads_per_2_percent == 0 {
+            print!(".");
+            std::io::stdout().flush().unwrap();
+        }
+        n_reads += 1;
         let kmers = ints_to_kmers(read.to_vec(), args.k as u8);
         for kmer in kmers {
             n_kmers += 1;
@@ -206,9 +217,9 @@ fn main() {
         }
     }
     println!(" done");
-    println!("number of kmers processed: {}", n_kmers);
-    println!("number of multi kmers: {}", n_multi_kmers);
-    println!("number of once-off kmers: {}", n_kmers - n_multi_kmers);
+    println!("  Number of kmers processed: {}", n_kmers);
+    println!("  Number of multi kmers: {}", n_multi_kmers);
+    println!("  Number of once-off kmers: {}", n_kmers - n_multi_kmers);
 
     // Create a hash table for each of n chunks of reads
     if reads.len() < args.n {
@@ -217,6 +228,7 @@ fn main() {
     let chunk_size = reads.len() / args.n;
 
     print!("Hashing each chunk of reads...");
+    std::io::stdout().flush().unwrap();
     // Iterate over the chunks
     let n: usize = args.n;
     let chunk_kmer_counts: Vec<kmer_summary> = (0..n)
@@ -248,6 +260,7 @@ fn main() {
 
     // Create the histograms
     print!("Creating histograms...");
+    std::io::stdout().flush().unwrap();
     let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
 
     let mut histos: Vec<Vec<u64>> = Vec::with_capacity(args.n);
@@ -265,13 +278,13 @@ fn main() {
         histo[1] += chunk_kmer_count.n_singletons;
 
         histos.push(histo.clone());
-
     }
     println!(" done");
 
     // Write the histograms to a tab delimited file, with the first column being the count
     // Skip the first row, which is the count of 0. Do not include a header
     print!("Writing histograms to file...");
+    std::io::stdout().flush().unwrap();
     let mut file = std::fs::File::create(format!("{}.histo", out_name)).unwrap();
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
