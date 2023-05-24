@@ -197,14 +197,13 @@ fn main() {
     // Print a progress bar, 2% per character
     println!("--------------------------------------------------- 100%");
     let reads_per_2_percent = (reads.len() / 50) as u64;
-    //let mut n_reads: u64 = 0;
 
     for (n_reads, read) in (0_u64..).zip(reads.iter()) {
         if n_reads % reads_per_2_percent == 0 {
             print!(".");
             std::io::stdout().flush().unwrap();
         }
-        //n_reads += 1;
+
         let kmers = ints_to_kmers(read.to_vec(), args.k as u8);
         for kmer in kmers {
             n_kmers += 1;
