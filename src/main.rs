@@ -8,7 +8,7 @@ use std::io::Write;
 use std::path::Path;
 
 // Create a structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
-struct kmer_summary {
+struct KmerSummary {
     kmer_counts: HashMap<u64, u64>,
     n_singletons: u64,
 }
@@ -197,14 +197,14 @@ fn main() {
     // Print a progress bar, 2% per character
     println!("--------------------------------------------------- 100%");
     let reads_per_2_percent = (reads.len() / 50) as u64;
-    let mut n_reads: u64 = 0;
+    //let mut n_reads: u64 = 0;
 
-    for read in reads.iter() {
+    for (n_reads, read) in (0_u64..).zip(reads.iter()) {
         if n_reads % reads_per_2_percent == 0 {
             print!(".");
             std::io::stdout().flush().unwrap();
         }
-        n_reads += 1;
+        //n_reads += 1;
         let kmers = ints_to_kmers(read.to_vec(), args.k as u8);
         for kmer in kmers {
             n_kmers += 1;
@@ -231,7 +231,7 @@ fn main() {
     std::io::stdout().flush().unwrap();
     // Iterate over the chunks
     let n: usize = args.n;
-    let chunk_kmer_counts: Vec<kmer_summary> = (0..n)
+    let chunk_kmer_counts: Vec<KmerSummary> = (0..n)
         .into_par_iter()
         .map(|i| {
             let start = i * chunk_size;
@@ -250,8 +250,8 @@ fn main() {
                 }
             }
 
-            kmer_summary {
-                kmer_counts: kmer_counts,
+            KmerSummary {
+                kmer_counts,
                 n_singletons: singles,
             }
         })

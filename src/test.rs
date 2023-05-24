@@ -28,21 +28,21 @@ fn test_seq_to_ints() {
 
 #[test]
 fn test_revcomp_kmer() {
-    let kmer = 0b00_100110;
+    let kmer = 0b0010_0110;
     let actual = revcomp_kmer(kmer, 3);
 
     // Check that the reverse complement of the reverse complement is the original
     assert_eq!(kmer, revcomp_kmer(actual, 3));
 
     // Check against hard coded expected value
-    let expected = 0b00_011001;
+    let expected = 0b0001_1001;
     assert_eq!(actual, expected);
 
-    let kmer = 0b01101100_00111001_10100110;
+    let kmer = 0b0110_1100_0011_1001_1010_0110;
     let actual = revcomp_kmer(kmer, 12);
     assert_eq!(kmer, revcomp_kmer(actual, 12));
 
-    let expected = 0b01100101_10010011_11000110;
+    let expected = 0b0110_0101_1001_0011_1100_0110;
 
     assert_eq!(actual, expected);
 }
@@ -57,10 +57,10 @@ fn test_ints_to_kmers() {
     // 0b00_00111001_10100110   0b01100101_10010011_11  <
     //
     let expected = vec![
-        0b01_10010011_11000110,
-        0b0101_10010011_110001,
-        0b100101_10010011_1100,
-        0b00_00111001_10100110,
+        0b01_1001_0011_1100_0110,
+        0b01_0110_0100_1111_0001,
+        0b10_0101_1001_0011_1100,
+        0b00_0011_1001_1010_0110,
     ];
     let actual = ints_to_kmers(ints, 9);
     assert_eq!(actual, expected);
