@@ -14,7 +14,7 @@ df = df.iloc[:100]
 
 fig, ax = plt.subplots()
 
-x = df['x']
+x = df[0]
 lines = []
 for column in df.columns[1:]:
     line, = ax.plot(x, df[column])
@@ -35,6 +35,6 @@ ani = animation.FuncAnimation(fig, animate, np.arange(1, 200), init_func=init,
                               interval=25, blit=True)
 
 # Save the animation
-# ani.save('animation.mp4', writer='ffmpeg')
-ani.save('animation.gif', writer='imagemagick')
+ani.save('animation.mp4', writer='ffmpeg')
+# ani.save('animation.gif', writer='imagemagick')
 # plt.show()
