@@ -27,6 +27,18 @@ fn test_seq_to_ints() {
 }
 
 #[test]
+fn test_seq_to_ints_N() {
+    // 'A' => 0, // 00
+    // 'C' => 1, // 01
+    // 'G' => 2, // 10
+    // 'T' => 3, // 11
+    let seq = "CGTANATGCGGCGA";
+    let expected = vec![vec![0b01101100], vec![0b00111001, 0b10100110]];
+    let actual = seq_to_ints(seq);
+    assert_eq!(actual, expected);
+}
+
+#[test]
 fn test_revcomp_kmer() {
     let kmer = 0b0010_0110;
     let actual = revcomp_kmer(kmer, 3);

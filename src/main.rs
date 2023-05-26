@@ -3,10 +3,10 @@ use clap::Parser;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
 //use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
-use rustc_hash::FxHashMap;
 
 // Create a structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
 struct KmerSummary {
@@ -14,29 +14,43 @@ struct KmerSummary {
     n_singletons: u64,
 }
 
-// For new, just return everything before an N. But in the future may return
-// a vector of integer encoded sequences that were separated by N.
+// Convert read to integer encoded subreads, split on N in original sequence
 fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
+    let mut result: Vec<Vec<u8>> = Vec::new();
     let mut ints: Vec<u8> = Vec::with_capacity(seq.len() / 4);
     let mut frame: u8 = 0;
-    for (i, c) in seq.chars().enumerate() {
+    let mut position: usize = 0; // position in the sequence. not including Ns
+    for c in seq.chars() {
         let base = match c {
             'A' => 0, // 00
             'C' => 1, // 01
             'G' => 2, // 10
             'T' => 3, // 11
-            'N' => 4,
+            'N' => {
+                if !ints.is_empty() {
+                    result.push(ints);
+                    ints = Vec::with_capacity(seq.len() / 4);
+                    frame = 0; // Reset frame before starting a new subread
+                }
+                continue;
+            }
             _ => 5,
         };
         if base > 3 {
             break;
         }
         frame = (frame << 2) | base;
-        if ((i + 1) % 4 == 0) & (i > 0) {
+        if ((position + 1) % 4 == 0) & (position > 0) {
             ints.push(frame);
+            frame = 0; // Reset frame after pushing to the vector
         }
+        position += 1;
     }
-    vec![ints]
+    if !ints.is_empty() || result.is_empty() {
+        // Don't miss the last part
+        result.push(ints);
+    }
+    result
 }
 
 fn ints_to_kmers(ints: &Vec<u8>, k: u8) -> Vec<u64> {
@@ -190,8 +204,6 @@ fn main() {
     reads.shuffle(&mut rng);
     println!(" done");
 
-    
-
     // Find kmers that occur multiple times with bloom filter
     let start = std::time::Instant::now();
     println!("Identifying kmers that occur more than once...");
@@ -312,13 +324,11 @@ fn main() {
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
 
-        line = format!("{}\t{}", line, histos[histos.len()-1][i]);
+        line = format!("{}\t{}", line, histos[histos.len() - 1][i]);
 
         line = format!("{}\n", line);
         file.write_all(line.as_bytes()).unwrap();
     }
-
-
 
     println!(" done");
 }
