@@ -25,7 +25,6 @@ df = df.iloc[:100]
 # Get the counts, then remove the column
 x = df.iloc[:,0]
 x = np.array(x)
-print(x)
 df = df.drop(df.columns[0], axis=1)
 
 # Calculate the limits of the plot based on the characteristics of the peak, if there is one
@@ -58,7 +57,16 @@ def animate(i):
     # convert to numpy array
     y = np.array(y)
 
-    print(y)
+    peaks, _ = scipy.signal.find_peaks(y, height=0)
+    if len(peaks) > 0:
+        # Draw a vertical line at the peak
+        tallest_peak_index = peaks[0]
+        x_peak = x[tallest_peak_index]
+        # Draw a vertical line at the peak
+        ax.axvline(x=x_peak, color='r', linestyle='--')
+
+
+
     line.set_ydata(y)  # update the data
     return line,
 
