@@ -36,6 +36,8 @@ A few notes:
 
 ## Installation
 
+### Rust components
+
 Download and install [Rust and Cargo](https://www.rust-lang.org/tools/install).
 
 Then, in this repo build the binary:
@@ -43,6 +45,13 @@ Then, in this repo build the binary:
     cargo build --release
 
 The executable is then at `target/release/sharkmer`. Move it somewhere into your path.
+
+### Python components
+
+You can create a conda environment with all needed phthon components as follows:
+
+    conda create -n sharkmer -c conda-forge scipy numpy pandas matplotlib ffmpeg
+    conda activate sharkmer
 
 ## Usage
 
@@ -63,6 +72,17 @@ The incremental histogram files in this case would be:
 
 Then to explore the results:
     python sharkmer_viewer.py Agalma-elegans.histo
+
+
+### Reading compressed data
+
+`sharkmer` does not read compressed data directly, but it can read uncompressed data from `stdin`.
+So, for example, you could `gunzip` files and pipe them to `sharkmer`:
+
+    gunzip -c agalma_*.fastq.gz | sharkmer -k 21 -n 10 --histo-max 10000 -o Agalma-elegans
+
+Decompressing files takes quite a bit of compute. Handling decompression outside of `sharkmer` allows you to 
+use whichever approach you prefer on your system, for example parallel tools such as `pigz`. 
 
 ## Development
 
