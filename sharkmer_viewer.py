@@ -41,7 +41,7 @@ peaks, _ = scipy.signal.find_peaks(y, height=0)
 if len(peaks) > 0:
     tallest_peak_index = peaks[0]
     tallest_peak = y[tallest_peak_index]
-    x_limit = x[tallest_peak_index] * 2
+    x_limit = x[tallest_peak_index] * 3
     y_limit = tallest_peak * 1.3
 
 # Create the plot

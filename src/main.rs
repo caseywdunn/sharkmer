@@ -2,7 +2,6 @@ use bloom::{BloomFilter, ASMS};
 use clap::Parser;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
-//use std::collections::HashMap;
 use rustc_hash::FxHashMap;
 use std::io::BufRead;
 use std::io::Write;
@@ -130,8 +129,8 @@ struct Args {
     output: String,
 
     /// Input files, fastq
-    #[arg(required = true)]
-    input: Vec<String>,
+    #[arg()]
+    input: Option<Vec<String>>,
 }
 fn main() {
     // Ingest command line arguments
@@ -160,9 +159,9 @@ fn main() {
 
     // Set the number of threads for Rayon to use
     rayon::ThreadPoolBuilder::new()
-    .num_threads(args.threads)
-    .build_global()
-    .unwrap();
+        .num_threads(args.threads)
+        .build_global()
+        .unwrap();
 
     // Ingest the fastq files
     let start = std::time::Instant::now();
@@ -171,24 +170,55 @@ fn main() {
     let mut reads: Vec<Vec<u8>> = Vec::new();
     let mut n_reads_read = 0;
     let mut n_bases_read = 0;
-    'processing_files: for file_name in args.input {
-        let mut line_n = 0;
-        // Open the file for buffered reading
-        let file = std::fs::File::open(file_name).unwrap();
-        let reader = std::io::BufReader::new(file);
-        // Iterate over the lines of the file
-        for line in reader.lines() {
-            line_n += 1;
-            if line_n % 4 == 2 {
-                // This is a sequence line
-                let line = line.unwrap();
-                n_bases_read += line.len();
-                let ints = seq_to_ints(&line);
-                reads.extend(ints);
-                n_reads_read += 1;
+
+    match &args.input {
+        Some(input_files) => {
+            // read from one or more files
+            'processing_files: for file_name in input_files.iter() {
+                let mut line_n = 0;
+                // Open the file for buffered reading
+                let file_path = Path::new(&file_name);
+                let file = std::fs::File::open(file_path).unwrap();
+                let reader = std::io::BufReader::new(file);
+                // Iterate over the lines of the file
+                for line in reader.lines() {
+                    line_n += 1;
+                    if line_n % 4 == 2 {
+                        // This is a sequence line
+                        let line = line.unwrap();
+                        n_bases_read += line.len();
+                        let ints = seq_to_ints(&line);
+                        reads.extend(ints);
+                        n_reads_read += 1;
+                    }
+                    if args.max_reads > 0 && n_reads_read >= args.max_reads as usize {
+                        break 'processing_files;
+                    }
+                }
             }
-            if args.max_reads > 0 && n_reads_read >= args.max_reads as usize {
-                break 'processing_files;
+        }
+        None => {
+            // read from stdin
+            let stdin = std::io::stdin();
+            // Lock stdin for exclusive access
+            let handle = stdin.lock();
+
+            let mut line_n = 0;
+
+            // Create a buffer for reading lines
+            for line in handle.lines() {
+                line_n += 1;
+                if line_n % 4 == 2 {
+                    // This is a sequence line
+                    let line = line.unwrap();
+                    n_bases_read += line.len();
+                    let ints = seq_to_ints(&line);
+                    reads.extend(ints);
+                    n_reads_read += 1;
+                }
+                if args.max_reads > 0 && n_reads_read >= args.max_reads as usize {
+                    break;
+                }
             }
         }
     }
