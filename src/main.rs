@@ -17,7 +17,7 @@ struct KmerSummary {
 // For new, just return everything before an N. But in the future may return
 // a vector of integer encoded sequences that were separated by N.
 fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
-    let mut ints: Vec<u8> = Vec::new();
+    let mut ints: Vec<u8> = Vec::with_capacity(seq.len() / 4);
     let mut frame: u8 = 0;
     for (i, c) in seq.chars().enumerate() {
         let base = match c {
@@ -40,7 +40,7 @@ fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
 }
 
 fn ints_to_kmers(ints: Vec<u8>, k: u8) -> Vec<u64> {
-    let mut kmers: Vec<u64> = Vec::new();
+    let mut kmers: Vec<u64> = Vec::with_capacity((ints.len() * 4 / k as usize) + 1);
     let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
     let mut revframe: u64 = 0; // read the bits for complement into the least significant end of this integer
     let mut n_valid = 0; // number of valid bases in the frame
