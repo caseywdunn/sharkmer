@@ -2,14 +2,15 @@ use bloom::{BloomFilter, ASMS};
 use clap::Parser;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
-use std::collections::HashMap;
+//use std::collections::HashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
+use rustc_hash::FxHashMap;
 
 // Create a structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
 struct KmerSummary {
-    kmer_counts: HashMap<u64, u64>,
+    kmer_counts: FxHashMap<u64, u64>,
     n_singletons: u64,
 }
 
@@ -73,7 +74,7 @@ fn ints_to_kmers(ints: Vec<u8>, k: u8) -> Vec<u64> {
     kmers
 }
 
-fn count_histogram(kmer_counts: &HashMap<u64, u64>, histo_max: u64) -> Vec<u64> {
+fn count_histogram(kmer_counts: &FxHashMap<u64, u64>, histo_max: u64) -> Vec<u64> {
     // Create a histogram of counts
     let mut histo: Vec<u64> = vec![0; histo_max as usize + 2]; // +2 to allow for 0 and for >histo_max
     for count in kmer_counts.values() {
@@ -140,6 +141,7 @@ fn main() {
     assert!(args.n > 0, "n must be greater than 0");
 
     // Ingest the fastq files
+    let start = std::time::Instant::now();
     print!("Ingested reads...");
     std::io::stdout().flush().unwrap();
     let mut reads: Vec<Vec<u8>> = Vec::new();
@@ -179,6 +181,7 @@ fn main() {
         "  Yield {}",
         (n_bases_ingested as f64) / (n_bases_read as f64)
     );
+    println!("  Time to ingest reads: {:?}", start.elapsed());
 
     // Randomize the order of the reads in place
     print!("Randomizing read order...");
@@ -187,7 +190,10 @@ fn main() {
     reads.shuffle(&mut rng);
     println!(" done");
 
+    
+
     // Find kmers that occur multiple times with bloom filter
+    let start = std::time::Instant::now();
     println!("Identifying kmers that occur more than once...");
     let mut pre_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
     let mut multi_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
@@ -220,12 +226,17 @@ fn main() {
     println!("  Number of multi kmers: {}", n_multi_kmers);
     println!("  Number of once-off kmers: {}", n_kmers - n_multi_kmers);
 
+    // Print the time taken to construct the bloom filter
+    let duration = start.elapsed();
+    println!("  Time to construct bloom filter: {:?}", duration);
+
     // Create a hash table for each of n chunks of reads
     if reads.len() < args.n {
         panic!("Number of reads is less than number of chunks");
     }
     let chunk_size = reads.len() / args.n;
 
+    let start = std::time::Instant::now();
     print!("Hashing each chunk of reads...");
     std::io::stdout().flush().unwrap();
     // Iterate over the chunks
@@ -235,7 +246,7 @@ fn main() {
         .map(|i| {
             let start = i * chunk_size;
             let end = (i + 1) * chunk_size;
-            let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
+            let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
             let mut singles: u64 = 0;
             for read in reads[start..end].iter() {
                 let kmers = ints_to_kmers(read.to_vec(), args.k as u8);
@@ -255,12 +266,13 @@ fn main() {
             }
         })
         .collect();
-    println!(" done");
+    println!(" done, time: {:?}", start.elapsed());
 
     // Create the histograms
     print!("Creating histograms...");
+    let start = std::time::Instant::now();
     std::io::stdout().flush().unwrap();
-    let mut kmer_counts: HashMap<u64, u64> = HashMap::new();
+    let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
 
     let mut histos: Vec<Vec<u64>> = Vec::with_capacity(args.n);
 
@@ -278,7 +290,7 @@ fn main() {
 
         histos.push(histo.clone());
     }
-    println!(" done");
+    println!(" done, time: {:?}", start.elapsed());
 
     // Write the histograms to a tab delimited file, with the first column being the count
     // Skip the first row, which is the count of 0. Do not include a header

@@ -10,4 +10,5 @@ clap = { version = "*", features = ["derive"]}
 rand = { version = "*"}
 rayon = { version = "*"}
 bloom = { version = "*"}
+rustc-hash = { version = "*"}
 
