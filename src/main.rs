@@ -128,7 +128,9 @@ struct Args {
     #[arg(short, long, default_value_t = String::from("sample") )]
     output: String,
 
-    /// Input files, fastq
+    /// Input files, fastq. If no files are specified, data will be read
+    /// from stdin. This can be used to uncompress a gz file and send them
+    /// to sharkmer.
     #[arg()]
     input: Option<Vec<String>>,
 }
