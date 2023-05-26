@@ -39,7 +39,7 @@ fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
     vec![ints]
 }
 
-fn ints_to_kmers(ints: Vec<u8>, k: u8) -> Vec<u64> {
+fn ints_to_kmers(ints: &Vec<u8>, k: u8) -> Vec<u64> {
     let mut kmers: Vec<u64> = Vec::with_capacity((ints.len() * 4 / k as usize) + 1);
     let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
     let mut revframe: u64 = 0; // read the bits for complement into the least significant end of this integer
@@ -210,7 +210,7 @@ fn main() {
             std::io::stdout().flush().unwrap();
         }
 
-        let kmers = ints_to_kmers(read.to_vec(), args.k as u8);
+        let kmers = ints_to_kmers(read, args.k as u8);
         for kmer in kmers {
             n_kmers += 1;
             if pre_bloom.contains(&kmer) {
@@ -249,7 +249,7 @@ fn main() {
             let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
             let mut singles: u64 = 0;
             for read in reads[start..end].iter() {
-                let kmers = ints_to_kmers(read.to_vec(), args.k as u8);
+                let kmers = ints_to_kmers(read, args.k as u8);
                 for kmer in kmers {
                     if multi_bloom.contains(&kmer) {
                         let count = kmer_counts.entry(kmer).or_insert(0);

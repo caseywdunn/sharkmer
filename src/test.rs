@@ -62,6 +62,6 @@ fn test_ints_to_kmers() {
         0b10_0101_1001_0011_1100,
         0b00_0011_1001_1010_0110,
     ];
-    let actual = ints_to_kmers(ints, 9);
+    let actual = ints_to_kmers(&ints, 9);
     assert_eq!(actual, expected);
 }
