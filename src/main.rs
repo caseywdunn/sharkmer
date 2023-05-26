@@ -121,6 +121,10 @@ struct Args {
     #[arg(short, long, default_value_t = 0)]
     max_reads: u64,
 
+    /// Number of threads for Rayon to use
+    #[arg(short = 't', long, default_value_t = 1)]
+    threads: usize,
+
     /// Directory and filename prefix for analysis output, for example out_dir/Nanomia-bijuga
     #[arg(short, long, default_value_t = String::from("sample") )]
     output: String,
@@ -153,6 +157,12 @@ fn main() {
     assert!(args.k % 2 == 1, "k must be odd");
     assert!(args.histo_max > 0, "histo_max must be greater than 0");
     assert!(args.n > 0, "n must be greater than 0");
+
+    // Set the number of threads for Rayon to use
+    rayon::ThreadPoolBuilder::new()
+    .num_threads(args.threads)
+    .build_global()
+    .unwrap();
 
     // Ingest the fastq files
     let start = std::time::Instant::now();
@@ -197,13 +207,6 @@ fn main() {
     );
     println!("  Time to ingest reads: {:?}", start.elapsed());
 
-    // Randomize the order of the reads in place
-    print!("Randomizing read order...");
-    std::io::stdout().flush().unwrap();
-    let mut rng = rand::thread_rng();
-    reads.shuffle(&mut rng);
-    println!(" done");
-
     // Find kmers that occur multiple times with bloom filter
     let start = std::time::Instant::now();
     println!("Identifying kmers that occur more than once...");
@@ -241,6 +244,13 @@ fn main() {
     // Print the time taken to construct the bloom filter
     let duration = start.elapsed();
     println!("  Time to construct bloom filter: {:?}", duration);
+
+    // Randomize the order of the reads in place
+    print!("Randomizing read order...");
+    std::io::stdout().flush().unwrap();
+    let mut rng = rand::thread_rng();
+    reads.shuffle(&mut rng);
+    println!(" done");
 
     // Create a hash table for each of n chunks of reads
     if reads.len() < args.n {
