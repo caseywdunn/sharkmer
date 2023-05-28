@@ -244,37 +244,38 @@ fn main() {
     println!("  Time to ingest reads: {:?}", start.elapsed());
 
     // Preallcoate the bloom filter
-    let mut pre_bloom = BloomFilter::with_rate(0.01, 8);
-    let mut multi_bloom = BloomFilter::with_rate(0.01, 8);
+    let mut multi_bloom: Option<BloomFilter> = None;
 
     if !args.disable_bloom {
         // Find kmers that occur multiple times with bloom filter
         let start = std::time::Instant::now();
         println!("Building bloom filter to identify kmers that occur more than once...");
         // Resize the bloom filter
-        pre_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
-        multi_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
+        
+        multi_bloom = Some(BloomFilter::with_rate(0.01, 4_294_967_295));
         let mut n_kmers: u64 = 0;
         let mut n_multi_kmers: u64 = 0;
+        if let Some(multi_bloom_ref) = multi_bloom.as_mut(){
+            let mut pre_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
+            // Print a progress bar, 2% per character
+            println!("--------------------------------------------------- 100%");
+            let reads_per_2_percent = (reads.len() / 50) as u64;
 
-        // Print a progress bar, 2% per character
-        println!("--------------------------------------------------- 100%");
-        let reads_per_2_percent = (reads.len() / 50) as u64;
+            for (n_reads, read) in (0_u64..).zip(reads.iter()) {
+                if n_reads % reads_per_2_percent == 0 {
+                    print!("#");
+                    std::io::stdout().flush().unwrap();
+                }
 
-        for (n_reads, read) in (0_u64..).zip(reads.iter()) {
-            if n_reads % reads_per_2_percent == 0 {
-                print!("#");
-                std::io::stdout().flush().unwrap();
-            }
-
-            let kmers = ints_to_kmers(read, args.k as u8);
-            for kmer in kmers {
-                n_kmers += 1;
-                if pre_bloom.contains(&kmer) {
-                    multi_bloom.insert(&kmer);
-                    n_multi_kmers += 1;
-                } else {
-                    pre_bloom.insert(&kmer);
+                let kmers = ints_to_kmers(read, args.k as u8);
+                for kmer in kmers {
+                    n_kmers += 1;
+                    if pre_bloom.contains(&kmer) {
+                        multi_bloom_ref.insert(&kmer);
+                        n_multi_kmers += 1;
+                    } else {
+                        pre_bloom.insert(&kmer);
+                    }
                 }
             }
         }
@@ -328,7 +329,7 @@ fn main() {
                 for read in reads[start..end].iter() {
                     let kmers = ints_to_kmers(read, args.k as u8);
                     for kmer in kmers {
-                        if multi_bloom.contains(&kmer) {
+                        if multi_bloom.as_ref().unwrap().contains(&kmer) {
                             let count = kmer_counts.entry(kmer).or_insert(0);
                             *count += 1;
                         } else {
