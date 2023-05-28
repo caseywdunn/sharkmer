@@ -27,7 +27,7 @@ fn test_seq_to_ints() {
 }
 
 #[test]
-fn test_seq_to_ints_N() {
+fn test_seq_to_ints_n() {
     // 'A' => 0, // 00
     // 'C' => 1, // 01
     // 'G' => 2, // 10

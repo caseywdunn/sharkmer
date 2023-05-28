@@ -120,9 +120,13 @@ struct Args {
     #[arg(short, long, default_value_t = 0)]
     max_reads: u64,
 
-    /// Number of threads for Rayon to use
+    /// Number of threads to use
     #[arg(short = 't', long, default_value_t = 1)]
     threads: usize,
+
+    /// Disable bloom filter, which runs faster but uses more memory
+    #[arg(short, long, default_value_t = false)]
+    disable_bloom: bool,
 
     /// Directory and filename prefix for analysis output, for example out_dir/Nanomia-bijuga
     #[arg(short, long, default_value_t = String::from("sample") )]
@@ -239,43 +243,52 @@ fn main() {
     );
     println!("  Time to ingest reads: {:?}", start.elapsed());
 
-    // Find kmers that occur multiple times with bloom filter
-    let start = std::time::Instant::now();
-    println!("Identifying kmers that occur more than once...");
-    let mut pre_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
-    let mut multi_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
-    let mut n_kmers: u64 = 0;
-    let mut n_multi_kmers: u64 = 0;
+    // Preallcoate the bloom filter
+    let mut pre_bloom = BloomFilter::with_rate(0.01, 8);
+    let mut multi_bloom = BloomFilter::with_rate(0.01, 8);
 
-    // Print a progress bar, 2% per character
-    println!("--------------------------------------------------- 100%");
-    let reads_per_2_percent = (reads.len() / 50) as u64;
+    if !args.disable_bloom {
+        // Find kmers that occur multiple times with bloom filter
+        let start = std::time::Instant::now();
+        println!("Building bloom filter to identify kmers that occur more than once...");
+        // Resize the bloom filter
+        pre_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
+        multi_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
+        let mut n_kmers: u64 = 0;
+        let mut n_multi_kmers: u64 = 0;
 
-    for (n_reads, read) in (0_u64..).zip(reads.iter()) {
-        if n_reads % reads_per_2_percent == 0 {
-            print!(".");
-            std::io::stdout().flush().unwrap();
-        }
+        // Print a progress bar, 2% per character
+        println!("--------------------------------------------------- 100%");
+        let reads_per_2_percent = (reads.len() / 50) as u64;
 
-        let kmers = ints_to_kmers(read, args.k as u8);
-        for kmer in kmers {
-            n_kmers += 1;
-            if pre_bloom.contains(&kmer) {
-                multi_bloom.insert(&kmer);
-                n_multi_kmers += 1;
-            } else {
-                pre_bloom.insert(&kmer);
+        for (n_reads, read) in (0_u64..).zip(reads.iter()) {
+            if n_reads % reads_per_2_percent == 0 {
+                print!("#");
+                std::io::stdout().flush().unwrap();
+            }
+
+            let kmers = ints_to_kmers(read, args.k as u8);
+            for kmer in kmers {
+                n_kmers += 1;
+                if pre_bloom.contains(&kmer) {
+                    multi_bloom.insert(&kmer);
+                    n_multi_kmers += 1;
+                } else {
+                    pre_bloom.insert(&kmer);
+                }
             }
         }
-    }
-    println!(" done");
-    println!("  Number of kmers processed: {}", n_kmers);
-    println!("  Number of multi kmers: {}", n_multi_kmers);
-    println!("  Number of once-off kmers: {}", n_kmers - n_multi_kmers);
+        println!(" done");
+        println!("  Number of kmers processed: {}", n_kmers);
+        println!("  Number of multi kmers: {}", n_multi_kmers);
+        println!("  Number of once-off kmers: {}", n_kmers - n_multi_kmers);
 
-    // Print the time taken to construct the bloom filter
-    let duration = start.elapsed();
-    println!("  Time to construct bloom filter: {:?}", duration);
+        // Print the time taken to construct the bloom filter
+        let duration = start.elapsed();
+        println!("  Time to construct bloom filter: {:?}", duration);
+    } else {
+        println!("Skipping bloom filter");
+    }
 
     // Randomize the order of the reads in place
     print!("Randomizing read order...");
@@ -302,14 +315,25 @@ fn main() {
             let end = (i + 1) * chunk_size;
             let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
             let mut singles: u64 = 0;
-            for read in reads[start..end].iter() {
-                let kmers = ints_to_kmers(read, args.k as u8);
-                for kmer in kmers {
-                    if multi_bloom.contains(&kmer) {
+
+            if args.disable_bloom {
+                for read in reads[start..end].iter() {
+                    let kmers = ints_to_kmers(read, args.k as u8);
+                    for kmer in kmers {
                         let count = kmer_counts.entry(kmer).or_insert(0);
                         *count += 1;
-                    } else {
-                        singles += 1;
+                    }
+                }
+            } else {
+                for read in reads[start..end].iter() {
+                    let kmers = ints_to_kmers(read, args.k as u8);
+                    for kmer in kmers {
+                        if multi_bloom.contains(&kmer) {
+                            let count = kmer_counts.entry(kmer).or_insert(0);
+                            *count += 1;
+                        } else {
+                            singles += 1;
+                        }
                     }
                 }
             }
@@ -361,17 +385,37 @@ fn main() {
     }
 
     // Write the final histogram to a file, ready for GenomeScope2 etc...
+    print!("Writing final histogram to file...");
+    let mut n_kmers: u64 = 0;
+    let mut n_singleton_kmers: u64 = histos[histos.len() - 1][1];
     std::io::stdout().flush().unwrap();
     let mut file = std::fs::File::create(format!("{}.final.histo", out_name)).unwrap();
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
 
         line = format!("{}\t{}", line, histos[histos.len() - 1][i]);
+        n_kmers += histos[histos.len() - 1][i];
 
         line = format!("{}\n", line);
         file.write_all(line.as_bytes()).unwrap();
     }
 
+    println!(" done");
+
+    print!("Writing stats to file...");
+    std::io::stdout().flush().unwrap();
+    let mut file_stats = std::fs::File::create(format!("{}.stats", out_name)).unwrap();
+    let mut line = format!("arguments\t{:?}\n", args);
+    line = format!("{}kmer_length\t{}\n", line, args.k);
+    line = format!("{}n_reads_read\t{}\n", line, n_reads_read);
+    line = format!("{}n_bases_read\t{}\n", line, n_bases_read);
+    line = format!("{}n_subreads_ingested\t{}\n", line, reads.len());
+    line = format!("{}n_bases_ingested\t{}\n", line, n_bases_ingested);
+    line = format!("{}n_kmers\t{}\n", line, n_kmers);
+    line = format!("{}n_multi_kmers\t{}\n", line, n_kmers - n_singleton_kmers);
+    line = format!("{}n_singleton_kmers\t{}\n", line, n_singleton_kmers);
+
+    file_stats.write_all(line.as_bytes()).unwrap();
     println!(" done");
 }
 

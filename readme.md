@@ -74,6 +74,10 @@ Then to explore the results:
     python sharkmer_viewer.py Agalma-elegans.histo
 
 
+The final histogram on all the data is also written to its own file, and you can view that with, for example, [GenomeScope2](https://github.com/tbenavi1/genomescope2.0):
+
+    genomescope2 -i Agalma-elegans.final.histo -o Agalma-elegans -k 21
+
 ### Reading compressed data
 
 `sharkmer` does not read compressed data directly, but it can read uncompressed data from `stdin`.
