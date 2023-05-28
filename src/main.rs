@@ -387,7 +387,7 @@ fn main() {
     // Write the final histogram to a file, ready for GenomeScope2 etc...
     print!("Writing final histogram to file...");
     let mut n_kmers: u64 = 0;
-    let mut n_singleton_kmers: u64 = histos[histos.len() - 1][1];
+    let n_singleton_kmers: u64 = histos[histos.len() - 1][1];
     std::io::stdout().flush().unwrap();
     let mut file = std::fs::File::create(format!("{}.final.histo", out_name)).unwrap();
     for i in 1..args.histo_max as usize + 2 {
