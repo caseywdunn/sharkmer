@@ -18,7 +18,7 @@ Here is an overview of how `sharkmer` works:
    and speed at the cost of discarding a small fraction of bases (about 1.3% for 150bp reads). The discarded
    bases are at the ends of reads, which tend to be lower quality anyway.
 2. The order of the subreads is shuffled.
-2. A bloom filter containing all kmers that occur more than once is 
+2. A bloom filter containing all kmers that occur more than once is optionally
    constructed.
 3. The subreads are broken into `n` chunks of subreads. Within each chunk, kmers in the bloom filter 
    (ie, kmers that were observed more than once) are counted in a hashmap. This excludes singleton reads,
@@ -48,10 +48,12 @@ The executable is then at `target/release/sharkmer`. Move it somewhere into your
 
 ### Python components
 
-You can create a conda environment with all needed phthon components as follows:
+You can create a conda environment with all needed python components as follows:
 
-    conda create -n sharkmer -c conda-forge scipy numpy pandas matplotlib ffmpeg
-    conda activate sharkmer
+    conda create -n shark -c conda-forge python==3.11 ffmpeg
+    conda activate shark
+    cd sharkmer_viewer/
+    pip install .
 
 ## Usage
 
@@ -71,7 +73,7 @@ The incremental histogram files in this case would be:
 
 
 Then to explore the results:
-    python sharkmer_viewer.py Agalma-elegans.histo
+    sharkmer_viewer Agalma-elegans.histo
 
 
 The final histogram on all the data is also written to its own file, and you can view that with, for example, [GenomeScope2](https://github.com/tbenavi1/genomescope2.0):
