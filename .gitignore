@@ -1,1 +1,4 @@
 .DS_Store
+*.histo
+*.mp4
+*.stats

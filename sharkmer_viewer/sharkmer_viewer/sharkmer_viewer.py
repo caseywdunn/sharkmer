@@ -9,19 +9,7 @@ import numpy as np
 import pandas as pd
 import scipy
 
-def main():
-
-    # https://docs.python.org/3/howto/argparse.html
-    parser = argparse.ArgumentParser(description="view sharkmer results")
-    parser.add_argument(
-        "input",
-        help="input file, histogram from sharkmer",
-    )
-
-    args = parser.parse_args()
-
-    in_file_name = args.input
-
+def create_report(in_file_name):
     df = pd.read_csv(in_file_name, sep="\t", header=None)
 
     # Truncate the data
@@ -80,6 +68,24 @@ def main():
 
     # Save the animation
     ani.save(in_file_name + ".mp4", writer="ffmpeg")
+
+    return 0
+
+
+def main():
+
+    # https://docs.python.org/3/howto/argparse.html
+    parser = argparse.ArgumentParser(description="view sharkmer results")
+    parser.add_argument(
+        "input",
+        help="input file, histogram from sharkmer",
+    )
+
+    args = parser.parse_args()
+
+    in_file_name = args.input
+
+    create_report(in_file_name)
 
 
 if __name__ == "__main__":
