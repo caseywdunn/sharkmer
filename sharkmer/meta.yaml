@@ -1,0 +1,20 @@
+package:
+  name: sharkmer
+  version: 0.1.0
+
+source:
+  path: .
+
+build:
+  script: build.sh
+
+requirements:
+  build:
+    - rust
+  host:
+    - rust
+
+test:
+  commands:
+    - sharkmer --help
+    - cargo test
