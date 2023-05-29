@@ -172,7 +172,7 @@ fn main() {
 
     // Ingest the fastq files
     let start = std::time::Instant::now();
-    print!("Ingested reads...");
+    print!("Ingesting reads...");
     std::io::stdout().flush().unwrap();
     let mut reads: Vec<Vec<u8>> = Vec::new();
     let mut n_reads_read = 0;
