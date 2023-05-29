@@ -1,12 +1,9 @@
 package:
-  name: sharkmer
+  name: sharkmer_rust
   version: 0.1.0
 
 source:
   path: .
-
-build:
-  script: build.sh
 
 requirements:
   build:
@@ -15,6 +12,9 @@ requirements:
     - rust
 
 test:
+  source_files:
+    - Cargo.toml
+    - src/**/*.rs  # or whichever files are needed to run the tests
   commands:
     - sharkmer --help
     - cargo test
