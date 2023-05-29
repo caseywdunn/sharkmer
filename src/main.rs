@@ -2,14 +2,14 @@ use bloom::{BloomFilter, ASMS};
 use clap::Parser;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
-use rustc_hash::FxHashMap;
+use dashmap::DashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
 
 // Create a structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
 struct KmerSummary {
-    kmer_counts: FxHashMap<u64, u64>,
+    kmer_counts: DashMap<u64, u64>,
     n_singletons: u64,
 }
 
@@ -87,12 +87,13 @@ fn ints_to_kmers(ints: &Vec<u8>, k: u8) -> Vec<u64> {
     kmers
 }
 
-fn count_histogram(kmer_counts: &FxHashMap<u64, u64>, histo_max: u64) -> Vec<u64> {
+fn count_histogram(kmer_counts: &DashMap<u64, u64>, histo_max: u64) -> Vec<u64> {
     // Create a histogram of counts
     let mut histo: Vec<u64> = vec![0; histo_max as usize + 2]; // +2 to allow for 0 and for >histo_max
-    for count in kmer_counts.values() {
-        if *count <= histo_max {
-            histo[*count as usize] += 1;
+    for entry in kmer_counts.iter() {
+        let count = *entry.value();
+        if count <= histo_max {
+            histo[count as usize] += 1;
         } else {
             histo[histo_max as usize + 1] += 1;
         }
@@ -314,15 +315,14 @@ fn main() {
         .map(|i| {
             let start = i * chunk_size;
             let end = (i + 1) * chunk_size;
-            let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
+            let kmer_counts: DashMap<u64, u64> = DashMap::new();
             let mut singles: u64 = 0;
 
             if args.disable_bloom {
                 for read in reads[start..end].iter() {
                     let kmers = ints_to_kmers(read, args.k as u8);
                     for kmer in kmers {
-                        let count = kmer_counts.entry(kmer).or_insert(0);
-                        *count += 1;
+                        kmer_counts.entry(kmer).and_modify(|count| *count += 1).or_insert(1);
                     }
                 }
             } else {
@@ -330,8 +330,7 @@ fn main() {
                     let kmers = ints_to_kmers(read, args.k as u8);
                     for kmer in kmers {
                         if multi_bloom.as_ref().unwrap().contains(&kmer) {
-                            let count = kmer_counts.entry(kmer).or_insert(0);
-                            *count += 1;
+                            kmer_counts.entry(kmer).and_modify(|count| *count += 1).or_insert(1);
                         } else {
                             singles += 1;
                         }
@@ -351,15 +350,14 @@ fn main() {
     print!("Creating histograms...");
     let start = std::time::Instant::now();
     std::io::stdout().flush().unwrap();
-    let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
+    let kmer_counts: DashMap<u64, u64> = DashMap::new();
 
     let mut histos: Vec<Vec<u64>> = Vec::with_capacity(args.n);
 
     // Iterate over the chunks
     for chunk_kmer_count in chunk_kmer_counts {
-        for (kmer, kmer_count) in chunk_kmer_count.kmer_counts {
-            let count = kmer_counts.entry(kmer).or_insert(0);
-            *count += kmer_count;
+        for entry in  chunk_kmer_count.kmer_counts.iter() {
+            kmer_counts.entry(*entry.key()).and_modify(|count| *count += *entry.value()).or_insert(*entry.value());
         }
 
         let mut histo = count_histogram(&kmer_counts, args.histo_max);
