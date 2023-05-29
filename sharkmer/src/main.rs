@@ -113,7 +113,7 @@ struct Args {
     histo_max: u64,
 
     /// Number of chunks to divide the data into
-    #[arg(short, default_value_t = 10)]
+    #[arg(short, default_value_t = 100)]
     n: usize,
 
     /// Maximum number of reads to process
