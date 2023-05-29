@@ -6,9 +6,9 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-clap = { version = "*", features = ["derive"]}
-rand = { version = "*"}
-rayon = { version = "*"}
-bloom = { version = "*"}
-rustc-hash = { version = "*"}
+clap = { version = "4.2.7", features = ["derive"]}
+rand = { version = "0.8.5"}
+rayon = { version = "1.7.0"}
+bloom = { version = "0.3.2"}
+rustc-hash = { version = "1.1.0"}
 

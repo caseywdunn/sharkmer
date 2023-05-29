@@ -124,9 +124,9 @@ struct Args {
     #[arg(short = 't', long, default_value_t = 1)]
     threads: usize,
 
-    /// Disable bloom filter, which runs faster but uses more memory
+    /// Enable bloom filter, which will use less memory but run slower
     #[arg(short, long, default_value_t = false)]
-    disable_bloom: bool,
+    bloom: bool,
 
     /// Directory and filename prefix for analysis output, for example out_dir/Nanomia-bijuga
     #[arg(short, long, default_value_t = String::from("sample") )]
@@ -139,6 +139,8 @@ struct Args {
     input: Option<Vec<String>>,
 }
 fn main() {
+    let start_run = std::time::Instant::now();
+
     // Ingest command line arguments
     let args = Args::parse();
 
@@ -171,7 +173,7 @@ fn main() {
 
     // Ingest the fastq files
     let start = std::time::Instant::now();
-    print!("Ingested reads...");
+    print!("Ingesting reads...");
     std::io::stdout().flush().unwrap();
     let mut reads: Vec<Vec<u8>> = Vec::new();
     let mut n_reads_read = 0;
@@ -246,16 +248,16 @@ fn main() {
     // Preallcoate the bloom filter
     let mut multi_bloom: Option<BloomFilter> = None;
 
-    if !args.disable_bloom {
+    if args.bloom {
         // Find kmers that occur multiple times with bloom filter
         let start = std::time::Instant::now();
         println!("Building bloom filter to identify kmers that occur more than once...");
         // Resize the bloom filter
-        
+
         multi_bloom = Some(BloomFilter::with_rate(0.01, 4_294_967_295));
         let mut n_kmers: u64 = 0;
         let mut n_multi_kmers: u64 = 0;
-        if let Some(multi_bloom_ref) = multi_bloom.as_mut(){
+        if let Some(multi_bloom_ref) = multi_bloom.as_mut() {
             let mut pre_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
             // Print a progress bar, 2% per character
             println!("--------------------------------------------------- 100%");
@@ -309,27 +311,22 @@ fn main() {
     std::io::stdout().flush().unwrap();
     // Iterate over the chunks
     let n: usize = args.n;
-    let chunk_kmer_counts: Vec<KmerSummary> = (0..n)
-        .into_par_iter()
-        .map(|i| {
-            let start = i * chunk_size;
-            let end = (i + 1) * chunk_size;
-            let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
-            let mut singles: u64 = 0;
 
-            if args.disable_bloom {
+    let chunk_kmer_counts: Vec<KmerSummary>;
+    if let Some(multi_bloom_ref) = multi_bloom.as_ref() {
+        // Use bloom filter
+        chunk_kmer_counts = (0..n)
+            .into_par_iter()
+            .map(|i| {
+                let start = i * chunk_size;
+                let end = (i + 1) * chunk_size;
+                let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
+                let mut singles: u64 = 0;
+
                 for read in reads[start..end].iter() {
                     let kmers = ints_to_kmers(read, args.k as u8);
                     for kmer in kmers {
-                        let count = kmer_counts.entry(kmer).or_insert(0);
-                        *count += 1;
-                    }
-                }
-            } else {
-                for read in reads[start..end].iter() {
-                    let kmers = ints_to_kmers(read, args.k as u8);
-                    for kmer in kmers {
-                        if multi_bloom.as_ref().unwrap().contains(&kmer) {
+                        if multi_bloom_ref.contains(&kmer) {
                             let count = kmer_counts.entry(kmer).or_insert(0);
                             *count += 1;
                         } else {
@@ -337,14 +334,38 @@ fn main() {
                         }
                     }
                 }
-            }
 
-            KmerSummary {
-                kmer_counts,
-                n_singletons: singles,
-            }
-        })
-        .collect();
+                KmerSummary {
+                    kmer_counts,
+                    n_singletons: singles,
+                }
+            })
+            .collect();
+    } else {
+        // Don't use bloom filter
+        chunk_kmer_counts = (0..n)
+            .into_par_iter()
+            .map(|i| {
+                let start = i * chunk_size;
+                let end = (i + 1) * chunk_size;
+                let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
+
+                for read in reads[start..end].iter() {
+                    let kmers = ints_to_kmers(read, args.k as u8);
+                    for kmer in kmers {
+                        let count = kmer_counts.entry(kmer).or_insert(0);
+                        *count += 1;
+                    }
+                }
+
+                KmerSummary {
+                    kmer_counts,
+                    n_singletons: 0,
+                }
+            })
+            .collect();
+    }
+
     println!(" done, time: {:?}", start.elapsed());
 
     // Create the histograms
@@ -385,6 +406,8 @@ fn main() {
         file.write_all(line.as_bytes()).unwrap();
     }
 
+    println!(" done");
+
     // Write the final histogram to a file, ready for GenomeScope2 etc...
     print!("Writing final histogram to file...");
     let mut n_kmers: u64 = 0;
@@ -418,6 +441,8 @@ fn main() {
 
     file_stats.write_all(line.as_bytes()).unwrap();
     println!(" done");
+
+    println!("Total run time: {:?}", start_run.elapsed());
 }
 
 #[cfg(test)]
