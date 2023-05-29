@@ -405,6 +405,8 @@ fn main() {
         file.write_all(line.as_bytes()).unwrap();
     }
 
+    println!(" done");
+
     // Write the final histogram to a file, ready for GenomeScope2 etc...
     print!("Writing final histogram to file...");
     let mut n_kmers: u64 = 0;
