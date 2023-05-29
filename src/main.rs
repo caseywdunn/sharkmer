@@ -356,8 +356,30 @@ fn main() {
 
     // Iterate over the chunks
     for chunk_kmer_count in chunk_kmer_counts {
-        for entry in  chunk_kmer_count.kmer_counts.iter() {
-            kmer_counts.entry(*entry.key()).and_modify(|count| *count += *entry.value()).or_insert(*entry.value());
+    
+        let keys: Vec<u64> = chunk_kmer_count.kmer_counts.iter().map(|x| *x.key()).collect();
+
+        (0..args.threads).into_par_iter().for_each(|i| {
+            let start = i * keys.len() / args.threads;
+            let end = (i + 1) * keys.len() / args.threads;
+            for kmer in keys[start..end].iter() {
+                if let Some(temp_ref) = chunk_kmer_count.kmer_counts.get(&kmer) {
+                    let value = *temp_ref;
+                    kmer_counts.entry(*kmer).and_modify(|count| *count += value).or_insert(value);
+                } else {
+                    panic!("Key not found");
+                }
+            }
+        });
+
+        // Take care of any remaining keys
+        for kmer in keys[(args.threads * (keys.len() / args.threads))..].iter() {
+            if let Some(temp_ref) = chunk_kmer_count.kmer_counts.get(&kmer) {
+                let value = *temp_ref;
+                kmer_counts.entry(*kmer).and_modify(|count| *count += value).or_insert(value);
+            } else {
+                panic!("Key not found");
+            }
         }
 
         let mut histo = count_histogram(&kmer_counts, args.histo_max);
