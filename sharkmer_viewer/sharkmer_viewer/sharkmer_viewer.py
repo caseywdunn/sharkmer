@@ -49,6 +49,14 @@ def get_limits(df):
     
     return x_limit, y_limit
 
+def get_tallest_peaks(y):
+    # Get a vector of the peaks in descending order of height
+    peaks, _ = scipy.signal.find_peaks(y, height=0)
+    # Sort the peaks by height
+    peaks = sorted(peaks, key=lambda x: y[x], reverse=True)
+    return peaks
+
+
 def create_report(in_file_name):
     df = pd.read_csv(in_file_name, sep="\t", header=None)
 
@@ -73,10 +81,9 @@ def create_report(in_file_name):
 
     def animate(i):
         y = df.iloc[:, i]
-        # convert to numpy array
         y = np.array(y)
 
-        peaks, _ = scipy.signal.find_peaks(y, height=0)
+        peaks = get_tallest_peaks(y)
         if len(peaks) > 0:
             # Draw a vertical line at the peak
             tallest_peak_index = peaks[0]
@@ -98,7 +105,6 @@ def create_report(in_file_name):
 
 
 def main():
-
     # https://docs.python.org/3/howto/argparse.html
     parser = argparse.ArgumentParser(description="view sharkmer results")
     parser.add_argument(
