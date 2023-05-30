@@ -8,6 +8,7 @@ import matplotlib.animation as animation
 import numpy as np
 import pandas as pd
 import scipy
+import plotly.graph_objects as go
 
 def get_limits(df):
     # Calculate the limits of the plot based on the characteristics of the peak, if there is one
@@ -63,43 +64,34 @@ def create_report(in_file_name):
     # Truncate the data
     df = df.iloc[:100]
 
-    # Based generally on https://matplotlib.org/stable/gallery/animation/simple_anim.html
     # Get the counts, then remove the column
     x = df.iloc[:, 0]
     x = np.array(x)
     df = df.drop(df.columns[0], axis=1)
 
     # Create the plot
-    fig, ax = plt.subplots()
-
-    # Set the x and y limits
-    x_limit, y_limit = get_limits(df)
-    ax.set_xlim(0, x_limit)
-    ax.set_ylim(0, y_limit)
-
-    (line,) = ax.plot(x, pd.Series([0] * len(x)))
-
-    def animate(i):
-        y = df.iloc[:, i]
-        y = np.array(y)
-
-        peaks = get_tallest_peaks(y)
-        if len(peaks) > 0:
-            # Draw a vertical line at the peak
-            tallest_peak_index = peaks[0]
-            x_peak = x[tallest_peak_index]
-            # Draw a vertical line at the peak
-            ax.axvline(x=x_peak, color="r", linestyle="--")
-
-        line.set_ydata(y)  # update the data
-        return (line,)
-
-    ani = animation.FuncAnimation(
-        fig, animate, frames=len(df.columns), interval=25, blit=True
+    fig = go.Figure(
+        data=[go.Scatter(x=x, y=[0]*len(x), mode='lines')],
+        layout=go.Layout(
+            xaxis=dict(range=[0, get_limits(df)[0]], autorange=False),
+            yaxis=dict(range=[0, get_limits(df)[1]], autorange=False),
+            updatemenus=[dict(type="buttons",
+                              buttons=[dict(label="Play",
+                                            method="animate",
+                                            args=[None, {"frame": {"duration": 200, "redraw": True}, 
+                                                         "fromcurrent": True, 
+                                                         "transition": {"duration": 200, "easing": "cubic-in-out"}}])])]),
+        frames=[go.Frame(
+            data=[go.Scatter(
+                x=x,
+                y=df.iloc[:, i],
+                mode='lines',
+                marker=dict(color="red", size=10))])
+            for i in range(len(df.columns))]
     )
 
-    # Save the animation
-    ani.save(in_file_name + ".mp4", writer="ffmpeg")
+    fig.show()
+    fig.write_html(in_file_name + ".html")
 
     return 0
 
