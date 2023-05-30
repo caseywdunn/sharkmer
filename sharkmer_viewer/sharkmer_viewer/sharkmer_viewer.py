@@ -29,13 +29,36 @@ def create_report(in_file_name):
     x_limit = 100
     y_limit = 50
 
-    peaks, _ = scipy.signal.find_peaks(y, height=0)
+    y_max = None
+    # Loop through the columns of the dataframe and find the tallest peak, use its height to scale y
+    for i in range(len(df.columns)):
+        y = df.iloc[:, i]
+        y = np.array(y)
+
+        # Find the peaks
+        # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.find_peaks.html
+        peaks, properties = scipy.signal.find_peaks(y, height=0, distance=2)
+
+        for peak in peaks:
+            # Ignore peaks that are too far to the left
+            if peak > 5:
+                if y_max is None:
+                    y_max = y[peak]
+                elif y[peak] > y_max:
+                    y_max = y[peak]
+
+    if y_max is not None:
+        y_limit = y_max * 1.2
+
+    # Find the x coordinate of the peak furthest to the right in the last column, use it to scale x
+    y = df.iloc[:, -1]
+    y = np.array(y)
+
+    peaks, properties = scipy.signal.find_peaks(y, height=0, distance=2)
 
     if len(peaks) > 0:
-        tallest_peak_index = peaks[0]
-        tallest_peak = y[tallest_peak_index]
-        x_limit = x[tallest_peak_index] * 3
-        y_limit = tallest_peak * 1.3
+        max_peak_index = max(peaks)
+        x_limit = x[max_peak_index] * 3
 
     # Create the plot
     fig, ax = plt.subplots()
