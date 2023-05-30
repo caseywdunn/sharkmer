@@ -78,7 +78,16 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     x = np.array(x)
     df_histo = df_histo.drop(df_histo.columns[0], axis=1)
 
+    # Create a vector with the cumulative bases read for each sample
+    n_samples = len(df_histo.columns)
+    n_bases_read = int(stats_dict["n_bases_read"])
+    n_bases_per_sample = n_bases_read // n_samples
+    cumulative_bases_read = np.arange(n_bases_per_sample, n_bases_read + 1, n_bases_per_sample)
+    cumulative_coverage = cumulative_bases_read / 1000000 / genome_size
+
+
     # Create the plot
+    duration = 100
     fig = go.Figure(
         data=[go.Scatter(x=x, y=[0]*len(x), mode='lines')],
         layout=go.Layout(
@@ -87,9 +96,10 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
             updatemenus=[dict(type="buttons",
                               buttons=[dict(label="Play",
                                             method="animate",
-                                            args=[None, {"frame": {"duration": 200, "redraw": True}, 
+                                            args=[None, {"frame": {"duration": duration, "redraw": True}, 
                                                          "fromcurrent": True, 
-                                                         "transition": {"duration": 200, "easing": "cubic-in-out"}}])])]),
+                                                         "transition": {"duration": duration, "easing": "cubic-in-out"}}])])],
+            annotations=[dict(x=1, y=1, xref='paper', yref='paper', text=run_name, showarrow=False, font=dict(size=20))]),
         frames=[go.Frame(
             data=[go.Scatter(
                 x=x,
@@ -141,7 +151,7 @@ def main():
 
     args = parser.parse_args()
 
-    in_histo_name = args.input
+    in_histo_name = args.histogram
     run_name = args.name
     in_stats_name = args.stats
     genome_size = args.genome_size

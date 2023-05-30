@@ -10,7 +10,13 @@
 			"request": "launch",
 			"program": "${file}",
 			"console": "integratedTerminal",
-			"args": ["tests/data/Cordagalma.histo"],
+			"args": [
+				"--histogram", "tests/data/Cordagalma.histo",
+				"--stats", "tests/data/Cordagalma.stats",
+				"--output", "tests/data/Cordagalma",
+				"--name", "Cordagalma ordinatum CWD6",
+				"--genome-size", "700",
+			],
 			"justMyCode": true
 		}
 	]
