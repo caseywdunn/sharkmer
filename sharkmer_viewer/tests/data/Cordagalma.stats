@@ -1,0 +1,9 @@
+arguments	Args { k: 21, histo_max: 10000, n: 100, max_reads: 0, threads: 32, disable_bloom: true, output: "Cordagalma", input: Some(["/vast/palmer/scratch/dunn/cwd7/20230526_sharkmer/CWD6_184_009_S115_L004_R1_001.fastq", "/vast/palmer/scratch/dunn/cwd7/20230526_sharkmer/CWD6_184_009_S115_L004_R2_001.fastq", "/vast/palmer/scratch/dunn/cwd7/20230526_sharkmer/CWD6_184_009_S5_L001_R1_001.fastq", "/vast/palmer/scratch/dunn/cwd7/20230526_sharkmer/CWD6_184_009_S5_L001_R2_001.fastq"]) }
+kmer_length	21
+n_reads_read	302623138
+n_bases_read	45696093838
+n_subreads_ingested	302833859
+n_bases_ingested	44787990132
+n_kmers	2657932240
+n_multi_kmers	958864390
+n_singleton_kmers	1699067850
