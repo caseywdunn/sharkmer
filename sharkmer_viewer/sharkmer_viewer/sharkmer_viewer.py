@@ -10,10 +10,10 @@ import pandas as pd
 import scipy
 import plotly.graph_objects as go
 
-def get_limits(df):
+def get_limits(df_histo):
     # Calculate the limits of the plot based on the characteristics of the peak, if there is one
     # Get the last column of the dataframe as a numpy array
-    y = df.iloc[:, -1]
+    y = df_histo.iloc[:, -1]
     y = np.array(y)
 
     x_limit = 100
@@ -21,8 +21,8 @@ def get_limits(df):
 
     y_max = None
     # Loop through the columns of the dataframe and find the tallest peak, use its height to scale y
-    for i in range(len(df.columns)):
-        y = df.iloc[:, i]
+    for i in range(len(df_histo.columns)):
+        y = df_histo.iloc[:, i]
         y = np.array(y)
 
         # Find the peaks
@@ -41,7 +41,7 @@ def get_limits(df):
                     x_of_tallest_peak = peak
         
         # If last column
-        if i == len(df.columns) - 1:
+        if i == len(df_histo.columns) - 1:
             if x_of_tallest_peak is not None:
                 x_limit = x_of_tallest_peak * 3
 
@@ -58,23 +58,32 @@ def get_tallest_peaks(y):
     return peaks
 
 
-def create_report(in_file_name):
-    df = pd.read_csv(in_file_name, sep="\t", header=None)
+def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size):
+    df_histo = pd.read_csv(in_histo_name, sep="\t", header=None)
+    # df_stats = pd.read_csv(in_stats_name, sep="\t", header=None)
+    # read the tab delimeted stats file and load into a dictionary, where the first column is the key
+    # and the second column is the value
+    stats_dict = {}
+    with open(in_stats_name, "r") as f:
+        for line in f:
+            line = line.strip()
+            line = line.split("\t")
+            stats_dict[line[0]] = line[1]
 
     # Truncate the data
-    df = df.iloc[:100]
+    df_histo = df_histo.iloc[:100]
 
     # Get the counts, then remove the column
-    x = df.iloc[:, 0]
+    x = df_histo.iloc[:, 0]
     x = np.array(x)
-    df = df.drop(df.columns[0], axis=1)
+    df_histo = df_histo.drop(df_histo.columns[0], axis=1)
 
     # Create the plot
     fig = go.Figure(
         data=[go.Scatter(x=x, y=[0]*len(x), mode='lines')],
         layout=go.Layout(
-            xaxis=dict(range=[0, get_limits(df)[0]], autorange=False),
-            yaxis=dict(range=[0, get_limits(df)[1]], autorange=False),
+            xaxis=dict(range=[0, get_limits(df_histo)[0]], autorange=False),
+            yaxis=dict(range=[0, get_limits(df_histo)[1]], autorange=False),
             updatemenus=[dict(type="buttons",
                               buttons=[dict(label="Play",
                                             method="animate",
@@ -84,14 +93,14 @@ def create_report(in_file_name):
         frames=[go.Frame(
             data=[go.Scatter(
                 x=x,
-                y=df.iloc[:, i],
+                y=df_histo.iloc[:, i],
                 mode='lines',
                 marker=dict(color="red", size=10))])
-            for i in range(len(df.columns))]
+            for i in range(len(df_histo.columns))]
     )
 
     fig.show()
-    fig.write_html(in_file_name + ".html")
+    fig.write_html(out_name + ".html")
 
     return 0
 
@@ -100,15 +109,50 @@ def main():
     # https://docs.python.org/3/howto/argparse.html
     parser = argparse.ArgumentParser(description="view sharkmer results")
     parser.add_argument(
-        "input",
-        help="input file, histogram from sharkmer",
+        "-d", "--histogram",
+        help="input histogram distribution file from sharkmer",
+        required=True
     )
+
+    parser.add_argument(
+        "-s", "--stats",
+        help="input stats file from sharkmer",
+        required=True
+    )
+
+    parser.add_argument(
+        "-n", "--name",
+        help="output file, optional",
+        default=""  # Default value if no output file is specified
+    )
+
+    parser.add_argument(
+        "-o", "--output",
+        help="output base name, optional",
+        default=""  # Default value if no output file is specified
+    )
+
+    parser.add_argument(
+        "-g", "--genome-size",
+        help="haploid genome size in megabases, optional",
+        type=float,
+        default=None  # Default value if no output file is specified
+    )  
 
     args = parser.parse_args()
 
-    in_file_name = args.input
+    in_histo_name = args.input
+    run_name = args.name
+    in_stats_name = args.stats
+    genome_size = args.genome_size
 
-    create_report(in_file_name)
+    # If no output file is specified, use the histo name without .histo at the end
+    out_name = args.output
+    if out_name == "":
+        out_name = in_histo_name.replace(".histo", "")
+
+
+    create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
 
 
 if __name__ == "__main__":
