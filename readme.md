@@ -80,6 +80,16 @@ The final histogram on all the data is also written to its own file, and you can
 
     genomescope2 -i Agalma-elegans.final.histo -o Agalma-elegans -k 21
 
+The included `genomemovie.sh` script will generate a movie of the incremental GenomeScope2 histograms. For example, to create a movie of the `Cordagalma` test dataset in this repo:
+
+    # Create a conda environment with genomescope2 and ffmpeg, genomescop2 is 
+    # currently incompatible with some componetns of the shark container from above
+    conda create -n sharkmovie -c conda-forge -c bioconda genomescope2 ffmpeg
+
+    # To make the movie
+    conda activate sharkmovie
+    bash genomemovie.sh sharkmer_viewer/tests/data/Cordagalma.histo Cordagalma.output
+
 ### Reading compressed data
 
 `sharkmer` does not read compressed data directly, but it can read uncompressed data from `stdin`.
