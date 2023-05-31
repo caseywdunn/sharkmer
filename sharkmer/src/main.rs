@@ -152,8 +152,14 @@ fn main() {
     // Parse the output path and create directories if necessary
     let path = Path::new(&args.output);
     let out_name = path.file_name().unwrap().to_str().unwrap(); // This is the prefix of the output files
-    let directory = path.parent().unwrap().to_str().unwrap();
-    let _ = std::fs::create_dir_all(directory);
+    let parent = path.parent().unwrap();
+    let parent_directory = parent.to_str().unwrap();
+    let mut directory = String::from(parent_directory);
+    if directory != "" {
+        directory = format!("{}/", directory);
+        let _ = std::fs::create_dir_all(Path::new(directory.as_str()));
+    }
+    
 
     // Check that the arguments are valid
     assert!(
@@ -396,7 +402,7 @@ fn main() {
     // Skip the first row, which is the count of 0. Do not include a header
     print!("Writing histograms to file...");
     std::io::stdout().flush().unwrap();
-    let mut file = std::fs::File::create(format!("{}.histo", out_name)).unwrap();
+    let mut file = std::fs::File::create(format!("{}{}.histo", directory, out_name)).unwrap();
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
         for histo in histos.iter() {
@@ -413,7 +419,7 @@ fn main() {
     let mut n_kmers: u64 = 0;
     let n_singleton_kmers: u64 = histos[histos.len() - 1][1];
     std::io::stdout().flush().unwrap();
-    let mut file = std::fs::File::create(format!("{}.final.histo", out_name)).unwrap();
+    let mut file = std::fs::File::create(format!("{}{}.final.histo", directory, out_name)).unwrap();
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
 
@@ -428,7 +434,7 @@ fn main() {
 
     print!("Writing stats to file...");
     std::io::stdout().flush().unwrap();
-    let mut file_stats = std::fs::File::create(format!("{}.stats", out_name)).unwrap();
+    let mut file_stats = std::fs::File::create(format!("{}{}.stats", directory, out_name)).unwrap();
     let mut line = format!("arguments\t{:?}\n", args);
     line = format!("{}kmer_length\t{}\n", line, args.k);
     line = format!("{}n_reads_read\t{}\n", line, n_reads_read);
