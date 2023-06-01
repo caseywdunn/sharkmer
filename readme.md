@@ -50,7 +50,7 @@ The executable is then at `target/release/sharkmer`. Move it somewhere into your
 
 You can create a conda environment with all needed python components as follows:
 
-    conda create -n shark -c conda-forge python==3.11 ffmpeg
+    conda create -n shark -c conda-forge -c bioconda python==3.10 ffmpeg genomescope2
     conda activate shark
     cd sharkmer_viewer/
     pip install .
@@ -82,12 +82,7 @@ The final histogram on all the data is also written to its own file, and you can
 
 The included `genomemovie.sh` script will generate a movie of the incremental GenomeScope2 histograms. For example, to create a movie of the `Cordagalma` test dataset in this repo:
 
-    # Create a conda environment with genomescope2 and ffmpeg, genomescop2 is 
-    # currently incompatible with some componetns of the shark container from above
-    conda create -n sharkmovie -c conda-forge -c bioconda genomescope2 ffmpeg
-
-    # To make the movie
-    conda activate sharkmovie
+    conda activate shark
     bash genomemovie.sh sharkmer_viewer/tests/data/Cordagalma.histo Cordagalma.output
 
 ### Reading compressed data

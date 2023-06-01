@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# if there are zero arguments or more than two arguments, print usage and exit
-if [ $# -eq 0 ] || [ $# -gt 2 ]; then
-    echo "Usage: genomovie.sh <input_file> [output_dir]"
+# if there are less than one or more than three arguments, print usage and exit
+if [ $# -lt 1 ] || [ $# -gt 3 ]; then
+    echo "Usage: genomovie.sh <input_file> [output_dir] [thread_count]"
     exit 1
 fi
 
@@ -20,6 +20,13 @@ if [ -n "$2" ]; then
 else
     output_dir=$(basename "$input_file" | sed 's/\.[^.]*$//')
     output_dir="$output_dir.output"
+fi
+
+# If there is a third argument, use it as the thread count
+if [ -n "$3" ]; then
+    thread_count="$3"
+else
+    thread_count=1
 fi
 
 mkdir -p $output_dir
@@ -40,11 +47,26 @@ do
     run_name=$(basename "$histo_file" | sed 's/\.[^.]*$//')
 
     # Run genomescope on the sample histo file
-    genomescope2 -i "$histo_file" -o "$output_dir" -k 21 -n "$run_name"
-    
+    genomescope2 -i "$histo_file" -o "$output_dir" -k 21 -n "$run_name" &
+
+    # if we have reached the maximum number of threads, wait for some processes to finish before starting new ones
+    if (( $(jobs -p | wc -l) >= thread_count )); then
+      wait -n
+    fi
 done
 
-# Create an animation using ffmpeg from the linear_plot.png files
-movie_file = $(basename "$input_file" | sed 's/\.[^.]*$//')
-movie_file = "$movie_file.mp4"
-ffmpeg -framerate 20 -i "$output_dir"/sample_%04d_linear_plot.png -c:v libx264 -r 30 -pix_fmt yuv420p "$movie_file"
+# Wait for all background processes to finish before moving on to the next command
+wait
+
+# Make some movies
+movie_base=$(basename "$input_file" | sed 's/\.[^.]*$//')
+
+ffmpeg -framerate 20 -i \
+  "$output_dir"/sample_%04d_linear_plot.png \
+  -c:v libx264 -r 30 -pix_fmt yuv420p \
+  "${movie_base}_linear_plot.mp4"
+
+ffmpeg -framerate 20 -i \
+  "$output_dir"/sample_%04d_log_plot.png \
+  -c:v libx264 -r 30 -pix_fmt yuv420p \
+  "${movie_base}_log_plot.mp4"
