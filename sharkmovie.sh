@@ -62,11 +62,11 @@ wait
 movie_base=$(basename "$input_file" | sed 's/\.[^.]*$//')
 
 ffmpeg -framerate 20 -i \
-  "$output_dir"/sample_%04d_linear_plot.png \
+  "$output_dir/sample_%04d_linear_plot.png" \
   -c:v libx264 -r 30 -pix_fmt yuv420p \
-  "${movie_base}_linear_plot.mp4"
+  "$output_dir/${movie_base}_linear_plot.mp4"
 
 ffmpeg -framerate 20 -i \
-  "$output_dir"/sample_%04d_log_plot.png \
+  "$output_dir/sample_%04d_log_plot.png" \
   -c:v libx264 -r 30 -pix_fmt yuv420p \
-  "${movie_base}_log_plot.mp4"
+  "$output_dir/${movie_base}_log_plot.mp4"
