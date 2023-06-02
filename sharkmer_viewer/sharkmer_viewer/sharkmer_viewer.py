@@ -102,26 +102,25 @@ def reindex(df):
     return df
 
 
-
 def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size):
+    # Read in the histogram data
     df_histo = pd.read_csv(in_histo_name, sep="\t", header=None)
-    # df_stats = pd.read_csv(in_stats_name, sep="\t", header=None)
-    # read the tab delimeted stats file and load into a dictionary, where the first column is the key
-    # and the second column is the value
+
+    # Get the counts, then remove the column
+    x = df_histo.iloc[:, 0]
+    x = np.array(x)
+    df_histo = df_histo.drop(df_histo.columns[0], axis=1)
+
+    # Truncate the data
+    df_histo = df_histo.iloc[:100]
+
+    # Parse the stats file from sharkmer
     stats_dict = {}
     with open(in_stats_name, "r") as f:
         for line in f:
             line = line.strip()
             line = line.split("\t")
             stats_dict[line[0]] = line[1]
-
-    # Truncate the data
-    df_histo = df_histo.iloc[:100]
-
-    # Get the counts, then remove the column
-    x = df_histo.iloc[:, 0]
-    x = np.array(x)
-    df_histo = df_histo.drop(df_histo.columns[0], axis=1)
 
     # Create a vector with the cumulative bases read for each sample
     n_samples = len(df_histo.columns)
@@ -248,11 +247,18 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     # If there are two peaks, calculate the genome size with the manual method
     # https://bioinformatics.uconn.edu/genome-size-estimation-tutorial/
     if n_peaks == 2:
-        df_estimates = pd.DataFrame(columns=["sample", "cumulative_bases_read", "first_valley", "heterozygous_peak", "homozygous_peak", "genome_size_heterozygous", "genome_size_homozygous"])
+        df_estimates = pd.DataFrame(columns=[
+            "sample", 
+            "cumulative_bases_read", 
+            "first_valley", 
+            "heterozygous_peak", 
+            "homozygous_peak", 
+            "genome_size_heterozygous", 
+            "genome_size_homozygous"])
 
         # Populate df_estimates with sample, cumulative_bases_read, and NaN for the rest
         for i in range(len(df_histo.columns)):
-            df_new_row = pd.DataFrame({"sample": [i], "cumulative_bases_read": [cumulative_bases_read[i]], "first_valley": [np.nan], "heterozygous_peak": [np.nan], "homozygous_peak": [np.nan]})
+            df_new_row = pd.DataFrame({"sample": [i+1], "cumulative_bases_read": [cumulative_bases_read[i]], "first_valley": [np.nan], "heterozygous_peak": [np.nan], "homozygous_peak": [np.nan]})
             df_estimates = pd.concat([df_estimates, df_new_row], ignore_index=True)
         
         # Populate df_estimates['first_valley'] with the valleys with index 0
@@ -291,26 +297,48 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
                 integral += histo[i] * (i+1)
             return integral
 
-        # Calculate the genome size
-        # Loop over the samples
+        # Calculate the genome sizes
         for i in range(len(df_histo.columns)):
-            # If first_valley, heterozygous_peak, and homozygous_peak are not NaN,
-            # calculate the genome size
-            if not np.isnan(df_estimates.iloc[i, 2]) and not np.isnan(df_estimates.iloc[i, 3]) and not np.isnan(df_estimates.iloc[i, 4]):
+
+            if not np.isnan(df_estimates["first_valley"][i]):
                 histo = df_histo.iloc[:, i]
-                # Calculate the number of kmers to left of first_valley
-                # number of rows in df_histo
                 n_kmers_all = integrate_histo_kmers(df_histo, i, len(df_histo))
                 n_kmers_error = integrate_histo_kmers(df_histo, i, int(df_estimates['first_valley'][i]))
                 n_kmers = n_kmers_all - n_kmers_error
-                heterozygous_peak = df_estimates['heterozygous_peak'][i]
-                homozygous_peak = df_estimates['homozygous_peak'][i]
-                df_estimates["genome_size_heterozygous"][i] = n_kmers / 2 / heterozygous_peak
-                df_estimates["genome_size_homozygous"][i] = n_kmers / homozygous_peak
+
+                if not np.isnan(df_estimates["heterozygous_peak"][i]):
+                    heterozygous_peak = df_estimates['heterozygous_peak'][i]
+                    df_estimates["genome_size_heterozygous"][i] = n_kmers / 2 / heterozygous_peak
+
+                if not np.isnan(df_estimates.iloc[i, 4]):
+                    homozygous_peak = df_estimates['homozygous_peak'][i]
+                    df_estimates["genome_size_homozygous"][i] = n_kmers / homozygous_peak
 
     # print all lines of the dataframe
     with pd.option_context('display.max_rows', None, 'display.max_columns', None):
         print(df_estimates)
+    
+    # Plot the heterozygous and homozygous genome size estimates for each sample
+    fig_genome_size = go.Figure()
+    fig_genome_size.add_trace(go.Scatter(
+        x=df_estimates['sample'],
+        y=df_estimates['genome_size_heterozygous']/1e6,
+        mode='lines',
+        name='heterozygous genome size estimate'
+    ))
+    fig_genome_size.add_trace(go.Scatter(
+        x=df_estimates['sample'],
+        y=df_estimates['genome_size_homozygous']/1e6,
+        mode='lines',
+        name='homozygous genome size estimate'
+    ))
+    fig_genome_size.update_layout(
+        xaxis_title="Sample",
+        yaxis_title="Genome size (Mb)",
+        title=run_name
+    )
+    fig_genome_size.show()
+    fig_genome_size.write_html(out_name + "_genome_size.html")
 
     return 0
 
