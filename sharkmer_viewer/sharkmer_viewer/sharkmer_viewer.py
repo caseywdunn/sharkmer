@@ -12,6 +12,8 @@ import plotly.graph_objects as go
 from sklearn.cluster import SpectralClustering
 from sklearn.preprocessing import StandardScaler
 
+peak_threshold = 1000
+
 def get_limits(df_histo):
     # Calculate the limits of the plot based on the characteristics of the peak, if there is one
     # Get the last column of the dataframe as a numpy array
@@ -29,7 +31,7 @@ def get_limits(df_histo):
 
         # Find the peaks
         # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.find_peaks.html
-        peaks, properties = scipy.signal.find_peaks(y, height=0, distance=2, threshold=10)
+        peaks, properties = scipy.signal.find_peaks(y, height=0, distance=2, threshold=peak_threshold )
 
         x_of_tallest_peak = None
         for peak in peaks:
@@ -54,7 +56,7 @@ def get_limits(df_histo):
 
 def get_tallest_peaks(y):
     # Get a vector of the peaks in descending order of height
-    peaks, _ = scipy.signal.find_peaks(y, height=0)
+    peaks, _ = scipy.signal.find_peaks(y, height=0, threshold=peak_threshold)
     # Sort the peaks by height
     peaks = sorted(peaks, key=lambda x: y[x], reverse=True)
     return peaks
@@ -87,12 +89,25 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     cumulative_bases_read = np.arange(n_bases_per_sample, n_bases_read + 1, n_bases_per_sample)
     cumulative_coverage = cumulative_bases_read / 1000000 / genome_size
 
+    # Get the number of peaks in the final column
+    y = df_histo.iloc[:, -1]
+    y = np.array(y)
+    peaks = get_tallest_peaks(y)
+    n_peaks = len(peaks)
+
+    if n_peaks == 0:
+        print("No peaks found")
+        return 0
+    elif n_peaks > 2:
+        print("More than two peaks found, for now we only support diploid genomes")
+        return 0
+
     # Create a new data frame of peaks. 
     df_peaks = pd.DataFrame(columns=["sample", "coverage", "frequency"])
     for i in range(len(df_histo.columns)):
         y = df_histo.iloc[:, i]
         y = np.array(y)
-        peaks, _ = scipy.signal.find_peaks(y, height=0)
+        peaks, _ = scipy.signal.find_peaks(y, height=0, threshold=peak_threshold)
         for peak in peaks:
             df_new_row = pd.DataFrame({"sample": [i], "coverage": [peak], "frequency": [y[peak]]})
             df_peaks = pd.concat([df_peaks, df_new_row], ignore_index=True)
@@ -101,13 +116,9 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.SpectralClustering.html
     scaler = StandardScaler()
     df_peaks_scaled = scaler.fit_transform(df_peaks[['coverage', 'frequency']])
-    clustering = SpectralClustering(n_clusters=2, assign_labels="discretize", random_state=0).fit(df_peaks_scaled)
+    clustering = SpectralClustering(n_clusters=n_peaks, assign_labels="discretize", random_state=0).fit(df_peaks_scaled)
     df_peaks['peak'] = clustering.labels_
 
-
-
-
-    
     # Plot the peaks, where the x axis is the peak index the y axis is the peak height, and the color is the peak identity
     # https://plotly.com/python/line-and-scatter/
     fig = go.Figure()
