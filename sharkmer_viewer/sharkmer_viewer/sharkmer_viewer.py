@@ -31,7 +31,7 @@ def get_limits(df_histo):
 
         # Find the peaks
         # https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.find_peaks.html
-        peaks, properties = scipy.signal.find_peaks(y, height=0, distance=2, threshold=peak_threshold )
+        peaks, properties = scipy.signal.find_peaks(y, distance=2, threshold=peak_threshold )
 
         x_of_tallest_peak = None
         for peak in peaks:
@@ -56,7 +56,7 @@ def get_limits(df_histo):
 
 def get_tallest_peaks(y):
     # Get a vector of the peaks in descending order of height
-    peaks, _ = scipy.signal.find_peaks(y, height=0, threshold=peak_threshold)
+    peaks, _ = scipy.signal.find_peaks(y, threshold=peak_threshold)
     # Sort the peaks by height
     peaks = sorted(peaks, key=lambda x: y[x], reverse=True)
     return peaks
@@ -90,12 +90,13 @@ def reindex(df):
         df['index'] = df['raw_index']
         return df
     
-    # Get the raw_indices in the last sample with all raw_indices
+    # Create a new index numbering scheme, where the index is the order of the coverage in the last sample
     df_sub = df[df['sample'] == last_sample_with_all_indexes]
+    df_sub = df_sub.sort_values(by=['coverage'])
+    df_sub['index'] = np.arange(len(df_sub))
 
-    # Create a new index column, where the index is the order of the coverage of the raw_index
-
-
+    # update the index column in the original dataframe with the new index
+    df = df.merge(df_sub[['coverage', 'index']], how='left', on='coverage')
 
     return df
 
@@ -145,7 +146,7 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     for i in range(len(df_histo.columns)):
         y = df_histo.iloc[:, i]
         y = np.array(y)
-        peaks, _ = scipy.signal.find_peaks(y, height=0, threshold=peak_threshold)
+        peaks, _ = scipy.signal.find_peaks(y, threshold=peak_threshold)
         for peak in peaks:
             df_new_row = pd.DataFrame({"sample": [i], "coverage": [peak], "frequency": [y[peak]]})
             df_peaks = pd.concat([df_peaks, df_new_row], ignore_index=True)
@@ -165,7 +166,7 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     for i in range(len(df_histo.columns)):
         y = df_histo.iloc[:, i]
         y = np.array(y)
-        valleys, _ = scipy.signal.find_peaks(-y, height=0, threshold=peak_threshold)
+        valleys, _ = scipy.signal.find_peaks(-y, threshold=peak_threshold)
         for valley in valleys:
             df_new_row = pd.DataFrame({"sample": [i], "coverage": [valley], "frequency": [y[valley]]})
             df_valleys = pd.concat([df_valleys, df_new_row], ignore_index=True)
@@ -175,7 +176,7 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     scaler = StandardScaler()
     df_valleys_scaled = scaler.fit_transform(df_valleys[['coverage', 'frequency']])
     clustering = SpectralClustering(n_clusters=n_peaks, assign_labels="discretize", random_state=0).fit(df_valleys_scaled)
-    df_valleys['feature'] = "minimum"
+    df_valleys['feature'] = "valley"
     df_valleys['raw_index'] = clustering.labels_
 
     df_valleys = reindex(df_valleys)
@@ -184,29 +185,45 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     df_features = pd.concat([df_peaks, df_valleys], ignore_index=True)
     df_features['name'] = df_features['feature'] + "_" + df_features['index'].astype(str)
 
+    # Add a column with feature_symbols based on feature column for the plot, where peaks are triangles and valleys are circles
+    df_features['feature_symbol'] = df_features['feature']
+    df_features.loc[df_features['feature'] == 'peak', 'feature_symbol'] = 'triangle-up'
+    df_features.loc[df_features['feature'] == 'valley', 'feature_symbol'] = 'circle'
 
-
-    # Plot the peaks, where the x axis is the peak index the y axis is the peak height, and the color is the peak identity
+    # Plot the features, where the x axis is the coverage, the y axis is the frequency, the shape is the feature
     # https://plotly.com/python/line-and-scatter/
+    unique_names = df_features['name'].unique()
+
     fig = go.Figure()
-    for i in range(len(df_features.columns)):
-        df_peaks_sub = df_peaks[df_features['index'] == i]
-        fig.add_trace(go.Scatter(x=df_peaks_sub['coverage'], y=df_peaks_sub['frequency'], mode='markers', name="Peak " + str(i)))
-    
+    for name in unique_names:
+        df_sub = df_features[df_features['name'] == name]
+        fig.add_trace(go.Scatter(
+            x=df_sub['coverage'], 
+            y=df_sub['frequency'],
+            mode='markers', 
+            marker_symbol=df_sub['feature_symbol'], 
+            name=name,
+            text=df_sub['sample'],  # this line adds the sample information
+            hovertemplate = 'Coverage: %{x}<br>Frequency: %{y}<br>Sample: %{text}'  # customize hover text
+
+        ))
+
     fig.update_layout(
-        title="Peaks",
+        xaxis=dict(range=[0, get_limits(df_histo)[0]], autorange=False),
+        yaxis=dict(range=[0, get_limits(df_histo)[1]], autorange=False),
+        title="Features",
         xaxis_title="Coverage",
         yaxis_title="Frequency",
+        legend_title="Feature",
         font=dict(
             family="Courier New, monospace",
             size=18,
-            color="#7f7f7f"
+            color="RebeccaPurple"
         )
     )
 
     fig.show()
-    fig.write_html(out_name + "_peaks.html")
-
+    fig.write_html(out_name + "_features.html")
 
     # Create the plot
     duration = 100
