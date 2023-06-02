@@ -190,66 +190,60 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     df_features.loc[df_features['feature'] == 'peak', 'feature_symbol'] = 'triangle-up'
     df_features.loc[df_features['feature'] == 'valley', 'feature_symbol'] = 'circle'
 
-    # Plot the features, where the x axis is the coverage, the y axis is the frequency, the shape is the feature
+    # Plot the features and lines
     # https://plotly.com/python/line-and-scatter/
+    duration = 50 # milliseconds
     unique_names = df_features['name'].unique()
 
-    fig = go.Figure()
+    # First plot is created with the scatter points
+    fig1 = go.Figure()
+
     for name in unique_names:
         df_sub = df_features[df_features['name'] == name]
-        fig.add_trace(go.Scatter(
+        fig1.add_trace(go.Scatter(
             x=df_sub['coverage'], 
             y=df_sub['frequency'],
             mode='markers', 
             marker_symbol=df_sub['feature_symbol'], 
             name=name,
-            text=df_sub['sample'],  # this line adds the sample information
-            hovertemplate = 'Coverage: %{x}<br>Frequency: %{y}<br>Sample: %{text}'  # customize hover text
-
+            text=df_sub['sample'],  
+            hovertemplate = 'Coverage: %{x}<br>Frequency: %{y}<br>Sample: %{text}'  
         ))
 
-    fig.update_layout(
-        xaxis=dict(range=[0, get_limits(df_histo)[0]], autorange=False),
-        yaxis=dict(range=[0, get_limits(df_histo)[1]], autorange=False),
-        title="Features",
-        xaxis_title="Coverage",
-        yaxis_title="Frequency",
-        legend_title="Feature",
-        font=dict(
-            family="Courier New, monospace",
-            size=18,
-            color="RebeccaPurple"
-        )
-    )
-
-    fig.show()
-    fig.write_html(out_name + "_features.html")
-
-    # Create the plot
-    duration = 100
-    fig = go.Figure(
+    # Second plot is created with line traces
+    histo_color = 'rgba(86, 180, 233, 0.5)'
+    fig2 = go.Figure(
         data=[go.Scatter(x=x, y=[0]*len(x), mode='lines')],
         layout=go.Layout(
             xaxis=dict(range=[0, get_limits(df_histo)[0]], autorange=False),
             yaxis=dict(range=[0, get_limits(df_histo)[1]], autorange=False),
             updatemenus=[dict(type="buttons",
-                              buttons=[dict(label="Play",
+                            buttons=[dict(label="Play",
                                             method="animate",
                                             args=[None, {"frame": {"duration": duration, "redraw": True}, 
-                                                         "fromcurrent": True, 
-                                                         "transition": {"duration": duration, "easing": "cubic-in-out"}}])])],
+                                                        "fromcurrent": True, 
+                                                        "transition": {"duration": duration, "easing": "cubic-in-out"}}])])],
             annotations=[dict(x=1, y=1, xref='paper', yref='paper', text=run_name, showarrow=False, font=dict(size=20))]),
         frames=[go.Frame(
             data=[go.Scatter(
                 x=x,
                 y=df_histo.iloc[:, i],
                 mode='lines',
-                marker=dict(color="red", size=10))])
+                fill='tozeroy',
+                fillcolor=histo_color,
+                marker=dict(color=histo_color, size=10))])
             for i in range(len(df_histo.columns))]
     )
 
-    fig.show()
-    fig.write_html(out_name + ".html")
+    # Adding traces from fig1 to fig2
+    for trace in fig1['data']:
+        fig2.add_trace(trace)
+
+    # Now fig2 contains both the line traces and scatter points
+    fig2.show()
+    fig2.write_html(out_name + ".html")
+
+
 
     return 0
 
