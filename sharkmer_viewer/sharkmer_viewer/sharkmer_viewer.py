@@ -254,7 +254,7 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
             df_new_row = pd.DataFrame({"sample": [i], "cumulative_bases_read": [cumulative_bases_read[i]], "first_valley": [np.nan], "heterozygous_peak": [np.nan], "homozygous_peak": [np.nan], "genome_size": [np.nan]})
             df_estimates = pd.concat([df_estimates, df_new_row], ignore_index=True)
         
-        # Populate df_estimates with the first valley
+        # Populate df_estimates['first_valley'] with the valleys with index 0
         for i in range(len(df_histo.columns)):
             df_sub = df_features[
                 (df_features['sample'] == i) & 
@@ -263,7 +263,27 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
             for sample, coverage in zip(df_sub['sample'], df_sub['coverage']):
                 df_estimates.loc[df_estimates['sample'] == sample, 'first_valley'] = coverage
 
+        # Populate df_estimates['heterozygous_peak'] with the peaks with index 0
+        for i in range(len(df_histo.columns)):
+            df_sub = df_features[
+                (df_features['sample'] == i) & 
+                (df_features['feature'] == 'peak') & 
+                (df_features['index'] == 0)]
+            for sample, coverage in zip(df_sub['sample'], df_sub['coverage']):
+                df_estimates.loc[df_estimates['sample'] == sample, 'heterozygous_peak'] = coverage
+
+        # Populate df_estimates['homozygous_peak'] with the peaks with index 1
+        for i in range(len(df_histo.columns)):
+            df_sub = df_features[
+                (df_features['sample'] == i) & 
+                (df_features['feature'] == 'peak') & 
+                (df_features['index'] == 1)]
+            for sample, coverage in zip(df_sub['sample'], df_sub['coverage']):
+                df_estimates.loc[df_estimates['sample'] == sample, 'homozygous_peak'] = coverage
+
         print(df_estimates)
+
+        
 
 
 
