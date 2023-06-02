@@ -9,6 +9,8 @@ import numpy as np
 import pandas as pd
 import scipy
 import plotly.graph_objects as go
+from sklearn.cluster import SpectralClustering
+from sklearn.preprocessing import StandardScaler
 
 def get_limits(df_histo):
     # Calculate the limits of the plot based on the characteristics of the peak, if there is one
@@ -85,31 +87,38 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     cumulative_bases_read = np.arange(n_bases_per_sample, n_bases_read + 1, n_bases_per_sample)
     cumulative_coverage = cumulative_bases_read / 1000000 / genome_size
 
-    # Create a new data frame of peaks. The columns are:
-    # 1. The sample number (ie the column in df_histo)
-    # 2. The peak index
-    # 3. The peak height
-
-    df_peaks = pd.DataFrame(columns=["sample", "peak_index", "peak_height"])
+    # Create a new data frame of peaks. 
+    df_peaks = pd.DataFrame(columns=["sample", "coverage", "frequency"])
     for i in range(len(df_histo.columns)):
         y = df_histo.iloc[:, i]
         y = np.array(y)
         peaks, _ = scipy.signal.find_peaks(y, height=0)
         for peak in peaks:
-            df_new_row = pd.DataFrame({"sample": [i], "peak_index": [peak], "peak_height": [y[peak]]})
+            df_new_row = pd.DataFrame({"sample": [i], "coverage": [peak], "frequency": [y[peak]]})
             df_peaks = pd.concat([df_peaks, df_new_row], ignore_index=True)
+
+    # Use spectral clustering on peak_index and peak_height to cluster the peaks
+    # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.SpectralClustering.html
+    scaler = StandardScaler()
+    df_peaks_scaled = scaler.fit_transform(df_peaks[['coverage', 'frequency']])
+    clustering = SpectralClustering(n_clusters=2, assign_labels="discretize", random_state=0).fit(df_peaks_scaled)
+    df_peaks['peak'] = clustering.labels_
+
+
+
+
     
-    # Plot the peaks, where the x axis is the peak index the y axis is the peak height, and the color is the sample
+    # Plot the peaks, where the x axis is the peak index the y axis is the peak height, and the color is the peak identity
     # https://plotly.com/python/line-and-scatter/
     fig = go.Figure()
-    for i in range(len(df_histo.columns)):
-        df_peaks_sample = df_peaks[df_peaks["sample"] == i]
-        fig.add_trace(go.Scatter(x=df_peaks_sample["peak_index"], y=df_peaks_sample["peak_height"], mode='markers', name="sample " + str(i)))
-
+    for i in range(len(df_peaks.columns)):
+        df_peaks_sub = df_peaks[df_peaks['peak'] == i]
+        fig.add_trace(go.Scatter(x=df_peaks_sub['coverage'], y=df_peaks_sub['frequency'], mode='markers', name="Peak " + str(i)))
+    
     fig.update_layout(
         title="Peaks",
-        xaxis_title="Peak index",
-        yaxis_title="Peak height",
+        xaxis_title="Coverage",
+        yaxis_title="Frequency",
         font=dict(
             family="Courier New, monospace",
             size=18,
