@@ -85,6 +85,41 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     cumulative_bases_read = np.arange(n_bases_per_sample, n_bases_read + 1, n_bases_per_sample)
     cumulative_coverage = cumulative_bases_read / 1000000 / genome_size
 
+    # Create a new data frame of peaks. The columns are:
+    # 1. The sample number (ie the column in df_histo)
+    # 2. The peak index
+    # 3. The peak height
+
+    df_peaks = pd.DataFrame(columns=["sample", "peak_index", "peak_height"])
+    for i in range(len(df_histo.columns)):
+        y = df_histo.iloc[:, i]
+        y = np.array(y)
+        peaks, _ = scipy.signal.find_peaks(y, height=0)
+        for peak in peaks:
+            df_new_row = pd.DataFrame({"sample": [i], "peak_index": [peak], "peak_height": [y[peak]]})
+            df_peaks = pd.concat([df_peaks, df_new_row], ignore_index=True)
+    
+    # Plot the peaks, where the x axis is the peak index the y axis is the peak height, and the color is the sample
+    # https://plotly.com/python/line-and-scatter/
+    fig = go.Figure()
+    for i in range(len(df_histo.columns)):
+        df_peaks_sample = df_peaks[df_peaks["sample"] == i]
+        fig.add_trace(go.Scatter(x=df_peaks_sample["peak_index"], y=df_peaks_sample["peak_height"], mode='markers', name="sample " + str(i)))
+
+    fig.update_layout(
+        title="Peaks",
+        xaxis_title="Peak index",
+        yaxis_title="Peak height",
+        font=dict(
+            family="Courier New, monospace",
+            size=18,
+            color="#7f7f7f"
+        )
+    )
+
+    fig.show()
+    fig.write_html(out_name + "_peaks.html")
+
 
     # Create the plot
     duration = 100
