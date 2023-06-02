@@ -69,7 +69,7 @@ def reindex(df):
     all_raw_indexes = df['raw_index'].unique()
 
     if len(all_raw_indexes) < 2:
-        df['index'] = df['raw_index']
+        df['index'] = df['raw_index'].astype(int)
         return df
 
     all_samples = df['sample'].unique()
@@ -78,7 +78,7 @@ def reindex(df):
     last_sample_with_all_indexes = None
     for sample in all_samples:
         df_sub = df[df['sample'] == sample]
-        raw_indexes = df_sub['feature'].unique()
+        raw_indexes = df_sub['raw_index'].unique()
         if len(raw_indexes) == len(all_raw_indexes):
             if last_sample_with_all_indexes is None:
                 last_sample_with_all_indexes = sample
@@ -87,7 +87,7 @@ def reindex(df):
     
     if last_sample_with_all_indexes is None:
         # Can't order the features because there is no sample with all features
-        df['index'] = df['raw_index']
+        df['index'] = df['raw_index'].astype(int)
         return df
     
     # Create a new index numbering scheme, where the index is the order of the coverage in the last sample
@@ -96,9 +96,11 @@ def reindex(df):
     df_sub['index'] = np.arange(len(df_sub))
 
     # update the index column in the original dataframe with the new index
-    df = df.merge(df_sub[['coverage', 'index']], how='left', on='coverage')
+    df = df.merge(df_sub[['raw_index', 'index']], how='left', on='raw_index')
+    df['index'] = df['index'].astype(int)
 
     return df
+
 
 
 def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size):
