@@ -215,8 +215,8 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     fig2 = go.Figure(
         data=[go.Scatter(x=x, y=[0]*len(x), mode='lines')],
         layout=go.Layout(
-            xaxis=dict(range=[0, get_limits(df_histo)[0]], autorange=False),
-            yaxis=dict(range=[0, get_limits(df_histo)[1]], autorange=False),
+            xaxis=dict(range=[0, get_limits(df_histo)[0]], autorange=False, title='Coverage'),
+            yaxis=dict(range=[0, get_limits(df_histo)[1]], autorange=False, title='Frequency'),
             updatemenus=[dict(type="buttons",
                             buttons=[dict(label="Play",
                                             method="animate",
