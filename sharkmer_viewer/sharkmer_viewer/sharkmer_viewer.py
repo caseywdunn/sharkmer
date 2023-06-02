@@ -198,11 +198,11 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     unique_names = df_features['name'].unique()
 
     # First plot is created with the scatter points
-    fig1 = go.Figure()
+    fig_features = go.Figure()
 
     for name in unique_names:
         df_sub = df_features[df_features['name'] == name]
-        fig1.add_trace(go.Scatter(
+        fig_features.add_trace(go.Scatter(
             x=df_sub['coverage'], 
             y=df_sub['frequency'],
             mode='markers', 
@@ -214,7 +214,7 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
 
     # Second plot is created with line traces
     histo_color = 'rgba(86, 180, 233, 0.5)'
-    fig2 = go.Figure(
+    fig_histo = go.Figure(
         data=[go.Scatter(x=x, y=[0]*len(x), mode='lines')],
         layout=go.Layout(
             xaxis=dict(range=[0, get_limits(df_histo)[0]], autorange=False, title='Coverage'),
@@ -237,13 +237,13 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
             for i in range(len(df_histo.columns))]
     )
 
-    # Adding traces from fig1 to fig2
-    for trace in fig1['data']:
-        fig2.add_trace(trace)
+    # Adding traces from fig_features to fig_histo
+    for trace in fig_features['data']:
+        fig_histo.add_trace(trace)
 
-    # Now fig2 contains both the line traces and scatter points
-    fig2.show()
-    fig2.write_html(out_name + ".html")
+    # Now fig_histo contains both the line traces and scatter points
+    fig_histo.show()
+    fig_histo.write_html(out_name + ".html")
 
 
 
