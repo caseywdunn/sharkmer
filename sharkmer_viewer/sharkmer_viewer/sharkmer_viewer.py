@@ -61,6 +61,44 @@ def get_tallest_peaks(y):
     peaks = sorted(peaks, key=lambda x: y[x], reverse=True)
     return peaks
 
+def reindex(df):
+    # Create a new column that is the index of the feature, where the index is the order of the feature
+    # in the last sample where both features are present
+
+    # Get the last sample with all feature indexes
+    all_raw_indexes = df['raw_index'].unique()
+
+    if len(all_raw_indexes) < 2:
+        df['index'] = df['raw_index']
+        return df
+
+    all_samples = df['sample'].unique()
+
+    # Get the last sample with all raw_indexes
+    last_sample_with_all_indexes = None
+    for sample in all_samples:
+        df_sub = df[df['sample'] == sample]
+        raw_indexes = df_sub['feature'].unique()
+        if len(raw_indexes) == len(all_raw_indexes):
+            if last_sample_with_all_indexes is None:
+                last_sample_with_all_indexes = sample
+            elif sample > last_sample_with_all_indexes:
+                last_sample_with_all_indexes = sample
+    
+    if last_sample_with_all_indexes is None:
+        # Can't order the features because there is no sample with all features
+        df['index'] = df['raw_index']
+        return df
+    
+    # Get the raw_indices in the last sample with all raw_indices
+    df_sub = df[df['sample'] == last_sample_with_all_indexes]
+
+    # Create a new index column, where the index is the order of the coverage of the raw_index
+
+
+
+    return df
+
 
 def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size):
     df_histo = pd.read_csv(in_histo_name, sep="\t", header=None)
@@ -117,13 +155,42 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     scaler = StandardScaler()
     df_peaks_scaled = scaler.fit_transform(df_peaks[['coverage', 'frequency']])
     clustering = SpectralClustering(n_clusters=n_peaks, assign_labels="discretize", random_state=0).fit(df_peaks_scaled)
-    df_peaks['peak'] = clustering.labels_
+    df_peaks['feature'] = "peak"
+    df_peaks['raw_index'] = clustering.labels_
+
+    df_peaks = reindex(df_peaks)
+
+    # Create a new data frame of valleys.
+    df_valleys = pd.DataFrame(columns=["sample", "coverage", "frequency"])
+    for i in range(len(df_histo.columns)):
+        y = df_histo.iloc[:, i]
+        y = np.array(y)
+        valleys, _ = scipy.signal.find_peaks(-y, height=0, threshold=peak_threshold)
+        for valley in valleys:
+            df_new_row = pd.DataFrame({"sample": [i], "coverage": [valley], "frequency": [y[valley]]})
+            df_valleys = pd.concat([df_valleys, df_new_row], ignore_index=True)
+    
+    # Use spectral clustering on valley_index and valley_height to cluster the valleys
+    # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.SpectralClustering.html
+    scaler = StandardScaler()
+    df_valleys_scaled = scaler.fit_transform(df_valleys[['coverage', 'frequency']])
+    clustering = SpectralClustering(n_clusters=n_peaks, assign_labels="discretize", random_state=0).fit(df_valleys_scaled)
+    df_valleys['feature'] = "minimum"
+    df_valleys['raw_index'] = clustering.labels_
+
+    df_valleys = reindex(df_valleys)
+
+    # Combine the peaks and valleys into a single dataframe
+    df_features = pd.concat([df_peaks, df_valleys], ignore_index=True)
+    df_features['name'] = df_features['feature'] + "_" + df_features['index'].astype(str)
+
+
 
     # Plot the peaks, where the x axis is the peak index the y axis is the peak height, and the color is the peak identity
     # https://plotly.com/python/line-and-scatter/
     fig = go.Figure()
-    for i in range(len(df_peaks.columns)):
-        df_peaks_sub = df_peaks[df_peaks['peak'] == i]
+    for i in range(len(df_features.columns)):
+        df_peaks_sub = df_peaks[df_features['index'] == i]
         fig.add_trace(go.Scatter(x=df_peaks_sub['coverage'], y=df_peaks_sub['frequency'], mode='markers', name="Peak " + str(i)))
     
     fig.update_layout(
