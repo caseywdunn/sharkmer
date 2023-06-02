@@ -1,0 +1,9 @@
+arguments	Args { k: 21, histo_max: 10000, n: 100, max_reads: 0, threads: 16, bloom: false, output: "output/Nanomia_bijuga_Atlantic_k21.sharkmer", input: Some(["data/Nanomia_bijuga_Atlantic_reads_downloaded/reads.fastq"]) }
+kmer_length	21
+n_reads_read	536870912
+n_bases_read	81067507712
+n_subreads_ingested	537756517
+n_bases_ingested	79456009640
+n_kmers	3090957626
+n_multi_kmers	1084115425
+n_singleton_kmers	2006842201
