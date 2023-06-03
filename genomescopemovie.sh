@@ -1,32 +1,35 @@
 #!/bin/bash
 
-# if there are less than one or more than three arguments, print usage and exit
-if [ $# -lt 1 ] || [ $# -gt 3 ]; then
-    echo "Usage: genomovie.sh <input_file> [output_dir] [thread_count]"
-    exit 1
-fi
+# Parse the arguments
+# -i is the input file
+# -t is the number of threads to use, default is 1
+# -o is the output directory, default is the input filename without the extension
+# -k is the kmer size, default is 21
+# -h prints the usage
 
-input_file="$1"  # Input filename as an argument
+# Parse arguments and print usage if invalid
+while getopts ":i:t:o:k:h" opt; do
+  case $opt in
+    i) histo_file="$OPTARG"
+    ;;
+    t) thread_count="$OPTARG"
+    ;;
+    o) output_dir="$OPTARG"
+    ;;
+    k) kmer_size="$OPTARG"
+    ;;
+    h) echo "Usage: genomescopemovie.sh -i input_file [-t thread_count] [-o output_dir] [-k kmer_size]"
+       exit 0
+    ;;
+    \?) echo "Invalid option -$OPTARG" >&2
+    ;;
+  esac
+done
 
 # Check if the input file exists
-if [ ! -f "$input_file" ]; then
+if [ ! -f "$histo_file" ]; then
     echo "Input file does not exist"
     exit 1
-fi
-
-# If there is a second argument, use it as the output directory
-if [ -n "$2" ]; then
-    output_dir="$2"
-else
-    output_dir=$(basename "$input_file" | sed 's/\.[^.]*$//')
-    output_dir="$output_dir.output"
-fi
-
-# If there is a third argument, use it as the thread count
-if [ -n "$3" ]; then
-    thread_count="$3"
-else
-    thread_count=1
 fi
 
 mkdir -p $output_dir
@@ -46,13 +49,21 @@ do
     # Get run_name from the input filename by removing the extension
     run_name=$(basename "$histo_file" | sed 's/\.[^.]*$//')
 
-    # Run genomescope on the sample histo file
-    genomescope2 -i "$histo_file" -o "$output_dir" -k 21 -n "$run_name" &
+    # If bash version is 4.0 or higher, use the built-in wait -n command, else just run genomescope2
+    # This is to avoid the "wait -n" command not found error on older versions of bash, such as that on Mac OS
+    if (( BASH_VERSINFO[0] >= 4 )); then
+        # Run genomescope on the sample histo file
+        genomescope2 -i "$histo_file" -o "$output_dir" -k $kmer_size -n "$run_name" &
 
-    # if we have reached the maximum number of threads, wait for some processes to finish before starting new ones
-    if (( $(jobs -p | wc -l) >= thread_count )); then
-      wait -n
+        # if we have reached the maximum number of threads, wait for some processes to finish before starting new ones
+        if (( $(jobs -p | wc -l) >= thread_count )); then
+        wait -n
+        fi
+    else
+        # Run genomescope on the sample histo file
+        genomescope2 -i "$histo_file" -o "$output_dir" -k $kmer_size -n "$run_name"
     fi
+
 done
 
 # Wait for all background processes to finish before moving on to the next command
