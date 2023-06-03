@@ -83,7 +83,7 @@ The final histogram on all the data is also written to its own file, and you can
 The included `genomemovie.sh` script will generate a movie of the incremental GenomeScope2 histograms. For example, to create a movie of the `Cordagalma` test dataset in this repo:
 
     conda activate shark
-    bash genomemovie.sh sharkmer_viewer/tests/data/Cordagalma.histo Cordagalma.output
+    bash genomescopemovie.sh sharkmer_viewer/tests/data/Cordagalma.histo Cordagalma.output
 
 ### Reading compressed data
 
