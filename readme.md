@@ -1,4 +1,4 @@
-# sharkmer - An incremental kmer counter
+# sharkmer - an incremental kmer counter
 
 `sharkmer` is a kmer counter designed from the ground up for rarefaction analyses. It counts kmers
 on subsets of the data, and then builds incremental histograms from these counts. This allows you
