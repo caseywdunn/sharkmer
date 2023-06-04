@@ -127,7 +127,7 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     n_bases_read = int(stats_dict["n_bases_read"])
     n_bases_per_sample = n_bases_read // n_samples
     cumulative_bases_read = np.arange(n_bases_per_sample, n_bases_read + 1, n_bases_per_sample)
-    cumulative_coverage = cumulative_bases_read / 1000000 / genome_size
+    # cumulative_coverage = cumulative_bases_read / 1000000 / genome_size
 
     # Get the number of peaks in the final column
     y = df_histo.iloc[:, -1]
