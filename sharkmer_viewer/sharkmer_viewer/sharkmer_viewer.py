@@ -360,13 +360,13 @@ def main():
 
     parser.add_argument(
         "-n", "--name",
-        help="output file, optional",
+        help="run name used in output files, optional",
         default=""  # Default value if no output file is specified
     )
 
     parser.add_argument(
         "-o", "--output",
-        help="output base name, optional",
+        help="output file base name, optional",
         default=""  # Default value if no output file is specified
     )
 
