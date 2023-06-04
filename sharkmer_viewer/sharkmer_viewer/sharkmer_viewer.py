@@ -318,27 +318,27 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
         with pd.option_context('display.max_rows', None, 'display.max_columns', None):
             print(df_estimates)
     
-    # Plot the heterozygous and homozygous genome size estimates for each sample
-    fig_genome_size = go.Figure()
-    fig_genome_size.add_trace(go.Scatter(
-        x=df_estimates['sample'],
-        y=df_estimates['genome_size_heterozygous']/1e6,
-        mode='lines',
-        name='heterozygous genome size estimate'
-    ))
-    fig_genome_size.add_trace(go.Scatter(
-        x=df_estimates['sample'],
-        y=df_estimates['genome_size_homozygous']/1e6,
-        mode='lines',
-        name='homozygous genome size estimate'
-    ))
-    fig_genome_size.update_layout(
-        xaxis_title="Sample",
-        yaxis_title="Genome size (Mb)",
-        title=run_name
-    )
-    fig_genome_size.show()
-    fig_genome_size.write_html(out_name + "_genome_size.html")
+        # Plot the heterozygous and homozygous genome size estimates for each sample
+        fig_genome_size = go.Figure()
+        fig_genome_size.add_trace(go.Scatter(
+            x=df_estimates['sample'],
+            y=df_estimates['genome_size_heterozygous']/1e6,
+            mode='lines',
+            name='heterozygous genome size estimate'
+        ))
+        fig_genome_size.add_trace(go.Scatter(
+            x=df_estimates['sample'],
+            y=df_estimates['genome_size_homozygous']/1e6,
+            mode='lines',
+            name='homozygous genome size estimate'
+        ))
+        fig_genome_size.update_layout(
+            xaxis_title="Sample",
+            yaxis_title="Genome size (Mb)",
+            title=run_name
+        )
+        fig_genome_size.show()
+        fig_genome_size.write_html(out_name + "_genome_size.html")
 
     return 0
 
