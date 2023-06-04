@@ -103,6 +103,8 @@ def reindex(df):
 
 
 def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size):
+    duration = 50 # milliseconds
+    
     # Read in the histogram data
     df_histo = pd.read_csv(in_histo_name, sep="\t", header=None)
 
@@ -135,81 +137,75 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     peaks = get_tallest_peaks(y)
     n_peaks = len(peaks)
 
-    if n_peaks == 0:
-        print("No peaks found")
-        return 0
-    elif n_peaks > 2:
-        print("More than two peaks found, for now we only support diploid genomes")
-        return 0
+    if n_peaks > 0:
+        # Create a new data frame of peaks. 
+        df_peaks = pd.DataFrame(columns=["sample", "coverage", "frequency"])
+        for i in range(len(df_histo.columns)):
+            y = df_histo.iloc[:, i]
+            y = np.array(y)
+            peaks, _ = scipy.signal.find_peaks(y, threshold=peak_threshold)
+            for peak in peaks:
+                df_new_row = pd.DataFrame({"sample": [i], "coverage": [peak], "frequency": [y[peak]]})
+                df_peaks = pd.concat([df_peaks, df_new_row], ignore_index=True)
 
-    # Create a new data frame of peaks. 
-    df_peaks = pd.DataFrame(columns=["sample", "coverage", "frequency"])
-    for i in range(len(df_histo.columns)):
-        y = df_histo.iloc[:, i]
-        y = np.array(y)
-        peaks, _ = scipy.signal.find_peaks(y, threshold=peak_threshold)
-        for peak in peaks:
-            df_new_row = pd.DataFrame({"sample": [i], "coverage": [peak], "frequency": [y[peak]]})
-            df_peaks = pd.concat([df_peaks, df_new_row], ignore_index=True)
+        # Use spectral clustering on peak_index and peak_height to cluster the peaks
+        # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.SpectralClustering.html
+        scaler = StandardScaler()
+        df_peaks_scaled = scaler.fit_transform(df_peaks[['coverage', 'frequency']])
+        clustering = SpectralClustering(n_clusters=n_peaks, assign_labels="discretize", random_state=0).fit(df_peaks_scaled)
+        df_peaks['feature'] = "peak"
+        df_peaks['raw_index'] = clustering.labels_
 
-    # Use spectral clustering on peak_index and peak_height to cluster the peaks
-    # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.SpectralClustering.html
-    scaler = StandardScaler()
-    df_peaks_scaled = scaler.fit_transform(df_peaks[['coverage', 'frequency']])
-    clustering = SpectralClustering(n_clusters=n_peaks, assign_labels="discretize", random_state=0).fit(df_peaks_scaled)
-    df_peaks['feature'] = "peak"
-    df_peaks['raw_index'] = clustering.labels_
+        df_peaks = reindex(df_peaks)
 
-    df_peaks = reindex(df_peaks)
+        # Create a new data frame of valleys.
+        df_valleys = pd.DataFrame(columns=["sample", "coverage", "frequency"])
+        for i in range(len(df_histo.columns)):
+            y = df_histo.iloc[:, i]
+            y = np.array(y)
+            valleys, _ = scipy.signal.find_peaks(-y, threshold=peak_threshold)
+            for valley in valleys:
+                df_new_row = pd.DataFrame({"sample": [i], "coverage": [valley], "frequency": [y[valley]]})
+                df_valleys = pd.concat([df_valleys, df_new_row], ignore_index=True)
+        
+        # Use spectral clustering on valley_index and valley_height to cluster the valleys
+        # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.SpectralClustering.html
+        scaler = StandardScaler()
+        df_valleys_scaled = scaler.fit_transform(df_valleys[['coverage', 'frequency']])
+        clustering = SpectralClustering(n_clusters=n_peaks, assign_labels="discretize", random_state=0).fit(df_valleys_scaled)
+        df_valleys['feature'] = "valley"
+        df_valleys['raw_index'] = clustering.labels_
 
-    # Create a new data frame of valleys.
-    df_valleys = pd.DataFrame(columns=["sample", "coverage", "frequency"])
-    for i in range(len(df_histo.columns)):
-        y = df_histo.iloc[:, i]
-        y = np.array(y)
-        valleys, _ = scipy.signal.find_peaks(-y, threshold=peak_threshold)
-        for valley in valleys:
-            df_new_row = pd.DataFrame({"sample": [i], "coverage": [valley], "frequency": [y[valley]]})
-            df_valleys = pd.concat([df_valleys, df_new_row], ignore_index=True)
-    
-    # Use spectral clustering on valley_index and valley_height to cluster the valleys
-    # https://scikit-learn.org/stable/modules/generated/sklearn.cluster.SpectralClustering.html
-    scaler = StandardScaler()
-    df_valleys_scaled = scaler.fit_transform(df_valleys[['coverage', 'frequency']])
-    clustering = SpectralClustering(n_clusters=n_peaks, assign_labels="discretize", random_state=0).fit(df_valleys_scaled)
-    df_valleys['feature'] = "valley"
-    df_valleys['raw_index'] = clustering.labels_
+        df_valleys = reindex(df_valleys)
 
-    df_valleys = reindex(df_valleys)
+        # Combine the peaks and valleys into a single dataframe
+        df_features = pd.concat([df_peaks, df_valleys], ignore_index=True)
+        df_features['name'] = df_features['feature'] + "_" + df_features['index'].astype(str)
 
-    # Combine the peaks and valleys into a single dataframe
-    df_features = pd.concat([df_peaks, df_valleys], ignore_index=True)
-    df_features['name'] = df_features['feature'] + "_" + df_features['index'].astype(str)
+        # Add a column with feature_symbols based on feature column for the plot, where peaks are triangles and valleys are circles
+        df_features['feature_symbol'] = df_features['feature']
+        df_features.loc[df_features['feature'] == 'peak', 'feature_symbol'] = 'triangle-up'
+        df_features.loc[df_features['feature'] == 'valley', 'feature_symbol'] = 'circle'
 
-    # Add a column with feature_symbols based on feature column for the plot, where peaks are triangles and valleys are circles
-    df_features['feature_symbol'] = df_features['feature']
-    df_features.loc[df_features['feature'] == 'peak', 'feature_symbol'] = 'triangle-up'
-    df_features.loc[df_features['feature'] == 'valley', 'feature_symbol'] = 'circle'
+        # Plot the features and lines
+        # https://plotly.com/python/line-and-scatter/
+        
+        unique_names = df_features['name'].unique()
 
-    # Plot the features and lines
-    # https://plotly.com/python/line-and-scatter/
-    duration = 50 # milliseconds
-    unique_names = df_features['name'].unique()
+        # First plot is created with the scatter points
+        fig_features = go.Figure()
 
-    # First plot is created with the scatter points
-    fig_features = go.Figure()
-
-    for name in unique_names:
-        df_sub = df_features[df_features['name'] == name]
-        fig_features.add_trace(go.Scatter(
-            x=df_sub['coverage'], 
-            y=df_sub['frequency'],
-            mode='markers', 
-            marker_symbol=df_sub['feature_symbol'], 
-            name=name,
-            text=df_sub['sample'],  
-            hovertemplate = 'Coverage: %{x}<br>Frequency: %{y}<br>Sample: %{text}'  
-        ))
+        for name in unique_names:
+            df_sub = df_features[df_features['name'] == name]
+            fig_features.add_trace(go.Scatter(
+                x=df_sub['coverage'], 
+                y=df_sub['frequency'],
+                mode='markers', 
+                marker_symbol=df_sub['feature_symbol'], 
+                name=name,
+                text=df_sub['sample'],  
+                hovertemplate = 'Coverage: %{x}<br>Frequency: %{y}<br>Sample: %{text}'  
+            ))
 
     # Second plot is created with line traces
     histo_color = 'rgba(86, 180, 233, 0.5)'
@@ -236,13 +232,21 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
             for i in range(len(df_histo.columns))]
     )
 
-    # Adding traces from fig_features to fig_histo
-    for trace in fig_features['data']:
-        fig_histo.add_trace(trace)
+    if n_peaks > 0:
+        # Adding traces from fig_features to fig_histo
+        for trace in fig_features['data']:
+            fig_histo.add_trace(trace)
 
     # Now fig_histo contains both the line traces and scatter points
     fig_histo.show()
     fig_histo.write_html(out_name + ".html")
+
+    if n_peaks == 0:
+        print("No peaks found")
+        return 0
+    elif n_peaks > 2:
+        print("More than two peaks found, for now we only support diploid genomes")
+        return 0
 
     # If there are two peaks, calculate the genome size with the manual method
     # https://bioinformatics.uconn.edu/genome-size-estimation-tutorial/
