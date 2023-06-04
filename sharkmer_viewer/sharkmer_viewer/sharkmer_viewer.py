@@ -314,9 +314,9 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
                     homozygous_peak = df_estimates['homozygous_peak'][i]
                     df_estimates["genome_size_homozygous"][i] = n_kmers / homozygous_peak
 
-    # print all lines of the dataframe
-    with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-        print(df_estimates)
+        # print all lines of the dataframe
+        with pd.option_context('display.max_rows', None, 'display.max_columns', None):
+            print(df_estimates)
     
     # Plot the heterozygous and homozygous genome size estimates for each sample
     fig_genome_size = go.Figure()
