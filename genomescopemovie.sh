@@ -72,10 +72,13 @@ done
 # Wait for all background processes to finish before moving on to the next command
 wait
 
+# Output base
+movie_base=$(basename "$input_file" | sed 's/\.[^.]*$//')
+
 # Summarize results in tsv
 
 # Name of the output file
-tsv_out="$output_dir/${run_name}_genomescope_stats.tsv"
+tsv_out="${moviebase}_genomescope_stats.tsv"
 
 # Create the output file and write the header to it
 echo -e "Index\tFilename\tHomozygous (aa) min\tHomozygous (aa) max\tHeterozygous (ab) min\tHeterozygous (ab) max\tGenome Haploid Length min\tGenome Haploid Length max\tGenome Repeat Length min\tGenome Repeat Length max\tGenome Unique Length min\tGenome Unique Length max\tModel Fit min\tModel Fit max\tRead Error Rate min\tRead Error Rate max" > $tsv_out
@@ -110,7 +113,6 @@ done
 sed -i 's/%//g; s/,//g' $tsv_out
 
 # Make some movies
-movie_base=$(basename "$input_file" | sed 's/\.[^.]*$//')
 
 ffmpeg -framerate 20 -i \
   "$output_dir/sample_%04d_linear_plot.png" \
