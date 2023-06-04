@@ -72,6 +72,43 @@ done
 # Wait for all background processes to finish before moving on to the next command
 wait
 
+# Summarize results in tsv
+
+# Name of the output file
+tsv_out="$output_dir/${run_name}_genomescope_stats.tsv"
+
+# Create the output file and write the header to it
+echo -e "Index\tFilename\tHomozygous (aa) min\tHomozygous (aa) max\tHeterozygous (ab) min\tHeterozygous (ab) max\tGenome Haploid Length min\tGenome Haploid Length max\tGenome Repeat Length min\tGenome Repeat Length max\tGenome Unique Length min\tGenome Unique Length max\tModel Fit min\tModel Fit max\tRead Error Rate min\tRead Error Rate max" > $tsv_out
+
+# Go over all .txt files
+for file_path in $output_dir/sample_*summary.txt
+do
+
+  echo "File path: $file_path"
+
+  # Extract filename from full file path
+  file=$(basename $file_path)
+
+  # Extract the index from the filename
+  index=${file/sample_/}
+  index=${index/_summary.txt/}
+  echo $index
+
+  # Extract the values from the table using awk and write them to the output file
+  awk -v filename="$file" -v idx="$index" '
+  BEGIN{OFS="\t"}
+  /Homozygous \(aa\)/{aamin=$3; aamax=$4}
+  /Heterozygous \(ab\)/{bmin=$3; bmax=$4}
+  /Genome Haploid Length/{hmin=$4; hmax=$6}
+  /Genome Repeat Length/{rmin=$4; rmax=$6}
+  /Genome Unique Length/{umin=$4; umax=$6}
+  /Model Fit/{fmin=$3; fmax=$4}
+  /Read Error Rate/{emin=$4; emax=$5}
+  END{print idx, filename, aamin, aamax, bmin, bmax, hmin, hmax, rmin, rmax, umin, umax, fmin, fmax, emin, emax}' $file_path >> $tsv_out
+done
+
+sed -i 's/%//g; s/,//g' $tsv_out
+
 # Make some movies
 movie_base=$(basename "$input_file" | sed 's/\.[^.]*$//')
 
