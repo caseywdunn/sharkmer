@@ -113,3 +113,11 @@ Some common tasks in development:
 ### Test data
 
 This repository includes a test [dataset from Thermus thermophilus](https://trace.ncbi.nlm.nih.gov/Traces/?view=run_browser&acc=SRR5324768&display=metadata) to develop against.
+
+
+### Docker
+
+Example:
+    cd docker
+    docker build -t shark .
+    docker run -itv /myhome/repos/sharkmer:/sharkmer shark /bin/bash

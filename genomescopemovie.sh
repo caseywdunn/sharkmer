@@ -10,7 +10,7 @@
 # Parse arguments and print usage if invalid
 while getopts ":i:t:o:k:h" opt; do
   case $opt in
-    i) histo_file="$OPTARG"
+    i) input_file="$OPTARG"
     ;;
     t) thread_count="$OPTARG"
     ;;
@@ -27,7 +27,7 @@ while getopts ":i:t:o:k:h" opt; do
 done
 
 # Check if the input file exists
-if [ ! -f "$histo_file" ]; then
+if [ ! -f "$input_file" ]; then
     echo "Input file does not exist"
     exit 1
 fi
@@ -37,6 +37,8 @@ mkdir -p $output_dir
 # Get the number of columns in the input file
 num_columns=$(awk -F'\t' '{print NF}' "$input_file" | head -n1)
 num_y_values=$((num_columns - 1))
+
+echo "Number of y values: $num_y_values"
 
 # Loop through each y value and create the sample_i.histo files
 for ((i = 1; i <= num_y_values; i++))
@@ -61,6 +63,7 @@ do
         fi
     else
         # Run genomescope on the sample histo file
+        echo "genomescope2 -i $histo_file -o $output_dir -k $kmer_size -n $run_name"
         genomescope2 -i "$histo_file" -o "$output_dir" -k $kmer_size -n "$run_name"
     fi
 
