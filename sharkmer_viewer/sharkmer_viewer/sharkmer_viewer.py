@@ -206,13 +206,18 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
                 text=df_sub['sample'],  
                 hovertemplate = 'Coverage: %{x}<br>Frequency: %{y}<br>Sample: %{text}'  
             ))
+        
+        fig_features.update_layout(
+            xaxis=dict(range=[1, get_limits(df_histo)[0]], autorange=False, title='Coverage'),
+            yaxis=dict(range=[0, get_limits(df_histo)[1]], autorange=False, title='Frequency'),
+        )
 
     # Second plot is created with line traces
     histo_color = 'rgba(86, 180, 233, 0.5)'
     fig_histo = go.Figure(
         data=[go.Scatter(x=x, y=[0]*len(x), mode='lines')],
         layout=go.Layout(
-            xaxis=dict(range=[0, get_limits(df_histo)[0]], autorange=False, title='Coverage'),
+            xaxis=dict(range=[1, get_limits(df_histo)[0]], autorange=False, title='Coverage'),
             yaxis=dict(range=[0, get_limits(df_histo)[1]], autorange=False, title='Frequency'),
             updatemenus=[dict(type="buttons",
                             buttons=[dict(label="Play",
