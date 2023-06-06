@@ -280,7 +280,7 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     ])
 
     for i in range(len(df_histo.columns)):
-        df_sub = df_features[df_features['index'] == i]
+        df_sub = df_features[(df_features['sample'] == i) & (df_features['coverage'] < 100) ]
         if len(df_sub) > 0:
             # Count the peaks and valleys
             n_peaks_sample = (df_sub['feature'] == 'peak').sum()
