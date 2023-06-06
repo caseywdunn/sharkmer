@@ -252,7 +252,6 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
             fig_histo.add_trace(trace)
 
     # Now fig_histo contains both the line traces and scatter points
-    fig_histo.show()
     fig_histo.write_html(out_name + ".html")
 
     if n_peaks == 0:
@@ -345,7 +344,6 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
         yaxis_title="Genome size (Mb)",
         title=run_name
     )
-    fig_genome_size.show()
     fig_genome_size.write_html(out_name + "_genome_size.html")
 
     return 0
