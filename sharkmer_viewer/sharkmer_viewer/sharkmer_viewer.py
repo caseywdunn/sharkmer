@@ -258,7 +258,7 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     if n_peaks == 0:
         print("No peaks found.")
         return 0
-    print(f"Found {n_peaks} peaks.")
+    print(f"Number of peaks found: {n_peaks}")
     if n_peaks > 0:
         print("We will assume that the first peak is the heterozygous peak.")
     if n_peaks > 1:
@@ -273,7 +273,6 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     # https://bioinformatics.uconn.edu/genome-size-estimation-tutorial/
     df_estimates = pd.DataFrame(columns=[
         "sample", 
-        "cumulative_bases_read", 
         "first_valley", 
         "peak_type",
         "peak_coverage",
@@ -284,12 +283,12 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
         df_sub = df_features[df_features['index'] == i]
         if len(df_sub) > 0:
             # Count the peaks and valleys
-            n_peaks = (df_sub['feature'] == 'peak').sum()
-            n_valleys = (df_sub['feature'] == 'valley').sum()
+            n_peaks_sample = (df_sub['feature'] == 'peak').sum()
+            n_valleys_sample = (df_sub['feature'] == 'valley').sum()
             
             # Assert that there are the same number of peaks and valleys
             # and print a warning if not
-            if n_peaks != n_valleys:
+            if n_peaks_sample != n_valleys_sample:
                 print(f"Warning: number of peaks and valleys not equal in sample {i}")
                 continue
 
@@ -299,7 +298,7 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
             n_kmers_error = integrate_histo_kmers(df_histo, i, first_valley)
             n_kmers = n_kmers_all - n_kmers_error
 
-            for j in range(min(2, n_peaks)):
+            for j in range(min(2, n_peaks_sample)):
                 peak_coverage = df_sub[df_sub['feature'] == 'peak']['coverage'].values[j]
                 genome_size = n_kmers / peak_coverage
                 peak_type = "homozygous"
@@ -309,9 +308,8 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
 
                 # Add the estimates to the dataframe
 
-                df_single_row = pd.DataFrame([{
+                df_new_row = pd.DataFrame([{
                     "sample": i,
-                    "cumulative_bases_read": cumulative_bases_read,
                     "first_valley": first_valley,
                     "peak_type": peak_type,
                     "peak_coverage": peak_coverage,
