@@ -114,12 +114,12 @@ sed -i 's/%//g; s/,//g' $tsv_out
 
 # Make some movies
 
-ffmpeg -framerate 20 -i \
+ffmpeg -framerate 20 -y -i \
   "$output_dir/sample_%04d_linear_plot.png" \
   -c:v libx264 -r 30 -pix_fmt yuv420p \
   "$output_dir/${movie_base}_linear_plot.mp4"
 
-ffmpeg -framerate 20 -i \
+ffmpeg -framerate 20 -y -i \
   "$output_dir/sample_%04d_log_plot.png" \
   -c:v libx264 -r 30 -pix_fmt yuv420p \
   "$output_dir/${movie_base}_log_plot.mp4"
