@@ -1,4 +1,3 @@
-use bloom::{BloomFilter, ASMS};
 use clap::Parser;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
@@ -15,7 +14,7 @@ mod kmer;
 struct Args {
     /// k-mer length
     #[arg(short, default_value_t = 21)]
-    k: u32,
+    k: usize,
 
     /// Maximum value for histogram
     #[arg(long, default_value_t = 10000)]
@@ -32,10 +31,6 @@ struct Args {
     /// Number of threads to use
     #[arg(short = 't', long, default_value_t = 1)]
     threads: usize,
-
-    /// Enable bloom filter, which will use less memory but run slower
-    #[arg(short, long, default_value_t = false)]
-    bloom: bool,
 
     /// Directory and filename prefix for analysis output, for example out_dir/Nanomia-bijuga
     #[arg(short, long, default_value_t = String::from("sample") )]
@@ -68,15 +63,16 @@ fn main() {
         directory = format!("{}/", directory);
         let _ = std::fs::create_dir_all(Path::new(directory.as_str()));
     }
-    
 
+    let k = args.k;
+    
     // Check that the arguments are valid
     assert!(
-        args.k < 32,
+        k < 32,
         "k must be less than 32 due to use of 64 bit integers to encode kmers"
     );
-    assert!(args.k > 0, "k must be greater than 0");
-    assert!(args.k % 2 == 1, "k must be odd");
+    assert!(k > 0, "k must be greater than 0");
+    assert!(k % 2 == 1, "k must be odd");
     assert!(args.histo_max > 0, "histo_max must be greater than 0");
     assert!(args.n > 0, "n must be greater than 0");
 
@@ -160,54 +156,6 @@ fn main() {
     );
     println!("  Time to ingest reads: {:?}", start.elapsed());
 
-    // Preallcoate the bloom filter
-    let mut multi_bloom: Option<BloomFilter> = None;
-
-    if args.bloom {
-        // Find kmers that occur multiple times with bloom filter
-        let start = std::time::Instant::now();
-        println!("Building bloom filter to identify kmers that occur more than once...");
-        // Resize the bloom filter
-
-        multi_bloom = Some(BloomFilter::with_rate(0.01, 4_294_967_295));
-        let mut n_kmers: u64 = 0;
-        let mut n_multi_kmers: u64 = 0;
-        if let Some(multi_bloom_ref) = multi_bloom.as_mut() {
-            let mut pre_bloom = BloomFilter::with_rate(0.01, 4_294_967_295);
-            // Print a progress bar, 2% per character
-            println!("--------------------------------------------------- 100%");
-            let reads_per_2_percent = (reads.len() / 50) as u64;
-
-            for (n_reads, read) in (0_u64..).zip(reads.iter()) {
-                if n_reads % reads_per_2_percent == 0 {
-                    print!("#");
-                    std::io::stdout().flush().unwrap();
-                }
-
-                let kmers = kmer::ints_to_kmers(read, args.k as u8);
-                for kmer in kmers {
-                    n_kmers += 1;
-                    if pre_bloom.contains(&kmer) {
-                        multi_bloom_ref.insert(&kmer);
-                        n_multi_kmers += 1;
-                    } else {
-                        pre_bloom.insert(&kmer);
-                    }
-                }
-            }
-        }
-        println!(" done");
-        println!("  Number of kmers processed: {}", n_kmers);
-        println!("  Number of multi kmers: {}", n_multi_kmers);
-        println!("  Number of once-off kmers: {}", n_kmers - n_multi_kmers);
-
-        // Print the time taken to construct the bloom filter
-        let duration = start.elapsed();
-        println!("  Time to construct bloom filter: {:?}", duration);
-    } else {
-        println!("Skipping bloom filter");
-    }
-
     // Randomize the order of the reads in place
     print!("Randomizing read order...");
     std::io::stdout().flush().unwrap();
@@ -228,58 +176,29 @@ fn main() {
     let n: usize = args.n;
 
     let chunk_kmer_counts: Vec<kmer::KmerSummary>;
-    if let Some(multi_bloom_ref) = multi_bloom.as_ref() {
-        // Use bloom filter
-        chunk_kmer_counts = (0..n)
-            .into_par_iter()
-            .map(|i| {
-                let start = i * chunk_size;
-                let end = (i + 1) * chunk_size;
-                let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
-                let mut singles: u64 = 0;
 
-                for read in reads[start..end].iter() {
-                    let kmers = kmer::ints_to_kmers(read, args.k as u8);
-                    for kmer in kmers {
-                        if multi_bloom_ref.contains(&kmer) {
-                            let count = kmer_counts.entry(kmer).or_insert(0);
-                            *count += 1;
-                        } else {
-                            singles += 1;
-                        }
-                    }
-                }
+    chunk_kmer_counts = (0..n)
+        .into_par_iter()
+        .map(|i| {
+            let start = i * chunk_size;
+            let end = (i + 1) * chunk_size;
+            let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
 
-                kmer::KmerSummary {
-                    kmer_counts,
-                    n_singletons: singles,
+            for read in reads[start..end].iter() {
+                let kmers = kmer::ints_to_kmers(read, &k);
+                for kmer in kmers {
+                    let count = kmer_counts.entry(kmer).or_insert(0);
+                    *count += 1;
                 }
-            })
-            .collect();
-    } else {
-        // Don't use bloom filter
-        chunk_kmer_counts = (0..n)
-            .into_par_iter()
-            .map(|i| {
-                let start = i * chunk_size;
-                let end = (i + 1) * chunk_size;
-                let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
+            }
 
-                for read in reads[start..end].iter() {
-                    let kmers = kmer::ints_to_kmers(read, args.k as u8);
-                    for kmer in kmers {
-                        let count = kmer_counts.entry(kmer).or_insert(0);
-                        *count += 1;
-                    }
-                }
+            kmer::KmerSummary {
+                kmer_counts,
+                n_singletons: 0,
+            }
+        })
+        .collect();
 
-                kmer::KmerSummary {
-                    kmer_counts,
-                    n_singletons: 0,
-                }
-            })
-            .collect();
-    }
 
     println!(" done, time: {:?}", start.elapsed());
 
@@ -298,7 +217,7 @@ fn main() {
             *count += kmer_count;
         }
 
-        let mut histo = kmer::count_histogram(&kmer_counts, args.histo_max);
+        let mut histo = kmer::count_histogram(&kmer_counts, &args.histo_max);
 
         // Add the number of singletons to the histogram at index 1
         histo[1] += chunk_kmer_count.n_singletons;

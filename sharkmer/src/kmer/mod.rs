@@ -1,3 +1,7 @@
+//! This module provides kmer functions.
+//!
+
+
 use rustc_hash::FxHashMap;
 
 // Create a structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
@@ -6,17 +10,77 @@ pub struct KmerSummary {
     pub n_singletons: u64,
 }
 
-// Get the kmer that is a reverse complement of a specified kmer
-pub fn revcomp_kmer(kmer: u64, k: u8) -> u64 {
+/// Returns the reverse complement of a specified kmer.
+///
+/// The function computes the reverse complement of a kmer represented as a 64-bit unsigned integer.
+/// Each base in the kmer is encoded using 2 bits, with the following scheme:
+/// 
+/// * `00` represents `A`
+/// * `01` represents `C`
+/// * `10` represents `G`
+/// * `11` represents `T`
+/// 
+/// # Arguments
+///
+/// * `kmer` - A reference to the 64-bit unsigned integer representation of the kmer.
+/// * `k` - A reference to the length of the kmer (i.e., the number of bases).
+///
+/// # Returns
+///
+/// A 64-bit unsigned integer representing the reverse complement of the given kmer.
+///
+/// # Example
+///
+/// ```rust
+/// let kmer: u64 = /* some kmer encoding */;
+/// let k: usize = /* kmer length */;
+/// let reverse_complement = revcomp_kmer(&kmer, &k);
+/// ```
+pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
     let mut revcomp = 0;
-    for i in 0..k {
+    for i in 0..*k {
         let base = (kmer >> (2 * i)) & 3;
         revcomp = (revcomp << 2) | (3 - base);
     }
     revcomp
 }
 
-// Convert read to integer encoded subreads, split on N in original sequence
+/// Converts a DNA sequence into a vector of integer representations.
+///
+/// This function encodes a DNA sequence into a series of 8-bit integers,
+/// where each integer represents 4 consecutive bases from the sequence.
+/// The encoding uses a 2-bit representation for each base:
+///
+/// * `A` -> `00`
+/// * `C` -> `01`
+/// * `G` -> `10`
+/// * `T` -> `11`
+///
+/// Any sequence containing the base `N` is split into multiple sub-sequences at that point,
+/// and each sub-sequence is encoded separately. The result is a vector of vectors,
+/// with each inner vector holding the integer representation of a sub-sequence.
+///
+/// # Arguments
+///
+/// * `seq` - A reference to the DNA sequence string to be encoded.
+///
+/// # Returns
+///
+/// A vector of 8-bit integer vectors, where each inner vector represents an encoded
+/// DNA sub-sequence. Sub-sequences are separated by any occurrence of the base `N`.
+///
+/// # Panics
+///
+/// The function will exit prematurely if it encounters a base other than `A`, `C`, `G`, `T`, or `N`.
+///
+/// # Example
+///
+/// ```rust
+/// let sequence = "ACGTNAGCT";
+/// let encoded = seq_to_ints(&sequence);
+/// // Here, encoded would be a vector containing two inner vectors.
+/// // The first inner vector would represent "ACGT" and the second would represent "AGCT".
+/// ```
 pub fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
     let mut result: Vec<Vec<u8>> = Vec::new();
     let mut ints: Vec<u8> = Vec::with_capacity(seq.len() / 4);
@@ -55,8 +119,38 @@ pub fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
     result
 }
 
-pub fn ints_to_kmers(ints: &Vec<u8>, k: u8) -> Vec<u64> {
-    let mut kmers: Vec<u64> = Vec::with_capacity((ints.len() * 4 / k as usize) + 1);
+/// Converts a vector of 8-bit integers into a vector of canonical kmers.
+///
+/// Given a sequence that's been encoded as a series of 8-bit integers (where each integer 
+/// represents 4 bases), this function extracts canonical kmers from it. A canonical kmer 
+/// is the lexicographically smaller of a kmer and its reverse complement.
+///
+/// The encoding uses a 2-bit representation for each base:
+///
+/// * `A` -> `00`
+/// * `C` -> `01`
+/// * `G` -> `10`
+/// * `T` -> `11`
+///
+/// # Arguments
+///
+/// * `ints` - A reference to the vector of 8-bit integers which encode a DNA sequence.
+/// * `k` - A reference to the length of the desired kmers (i.e., the number of bases in each kmer).
+///
+/// # Returns
+///
+/// A vector of 64-bit integers, where each integer represents a canonical kmer extracted 
+/// from the encoded sequence.
+///
+/// # Example
+///
+/// ```rust
+/// let encoded_sequence: Vec<u8> = /* some encoded sequence */;
+/// let kmer_length: usize = /* desired kmer length */;
+/// let canonical_kmers = ints_to_kmers(&encoded_sequence, &kmer_length);
+/// ```
+pub fn ints_to_kmers(ints: &Vec<u8>, k: &usize) -> Vec<u64> {
+    let mut kmers: Vec<u64> = Vec::with_capacity((ints.len() * 4 / k ) + 1);
     let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
     let mut revframe: u64 = 0; // read the bits for complement into the least significant end of this integer
     let mut n_valid = 0; // number of valid bases in the frame
@@ -73,7 +167,7 @@ pub fn ints_to_kmers(ints: &Vec<u8>, k: u8) -> Vec<u64> {
             frame = (frame << 2) | base;
             revframe = (revframe >> 2) | ((3 - base) << (2 * (k - 1)));
             n_valid += 1;
-            if n_valid >= k {
+            if n_valid >= *k {
                 let forward = frame & mask;
                 let reverse = revframe & mask;
 
@@ -90,14 +184,49 @@ pub fn ints_to_kmers(ints: &Vec<u8>, k: u8) -> Vec<u64> {
     kmers
 }
 
-pub fn count_histogram(kmer_counts: &FxHashMap<u64, u64>, histo_max: u64) -> Vec<u64> {
+/// Generates a histogram from kmer counts.
+///
+/// This function produces a histogram where the indices represent the counts of a kmer,
+/// and the values at those indices represent the number of kmers with that count. 
+/// If a kmer's count exceeds the specified `histo_max`, it gets placed in the final bucket.
+///
+/// # Arguments
+///
+/// * `kmer_counts` - A reference to a `FxHashMap` where keys are kmers (as 64-bit integers)
+///   and values are the corresponding counts of each kmer.
+/// * `histo_max` - A reference to the maximum count to be considered for individual bins 
+///   in the histogram. Kmer counts exceeding this value will be lumped into a single 
+///   overflow bin.
+///
+/// # Returns
+///
+/// A vector representing the histogram. The value at index `i` represents the number of 
+/// kmers that appeared `i` times. The last value in the vector represents the number of 
+/// kmers with counts greater than `histo_max`.
+///
+/// # Example
+///
+/// ```rust
+/// use rustc_hash::FxHashMap;
+///
+/// let mut kmer_counts = FxHashMap::default();
+/// kmer_counts.insert(12345, 3);
+/// kmer_counts.insert(67890, 5);
+/// // ... populate more kmers and counts ...
+///
+/// let histo_max = 10;
+/// let histogram = count_histogram(&kmer_counts, &histo_max);
+/// // histogram will have 12 entries: one for each count from 0 to 10, 
+/// // plus an additional one for counts greater than 10.
+/// ```
+pub fn count_histogram(kmer_counts: &FxHashMap<u64, u64>, histo_max: &u64) -> Vec<u64> {
     // Create a histogram of counts
-    let mut histo: Vec<u64> = vec![0; histo_max as usize + 2]; // +2 to allow for 0 and for >histo_max
+    let mut histo: Vec<u64> = vec![0; *histo_max as usize + 2]; // +2 to allow for 0 and for >histo_max
     for count in kmer_counts.values() {
-        if *count <= histo_max {
+        if *count <= *histo_max {
             histo[*count as usize] += 1;
         } else {
-            histo[histo_max as usize + 1] += 1;
+            histo[*histo_max as usize + 1] += 1;
         }
     }
     histo
@@ -139,18 +268,18 @@ mod tests {
 	#[test]
 	fn test_revcomp_kmer() {
 		let kmer = 0b0010_0110;
-		let actual = revcomp_kmer(kmer, 3);
+		let actual = revcomp_kmer(&kmer, &3usize);
 
 		// Check that the reverse complement of the reverse complement is the original
-		assert_eq!(kmer, revcomp_kmer(actual, 3));
+		assert_eq!(kmer, revcomp_kmer(&actual, &3usize));
 
 		// Check against hard coded expected value
 		let expected = 0b0001_1001;
 		assert_eq!(actual, expected);
 
 		let kmer = 0b0110_1100_0011_1001_1010_0110;
-		let actual = revcomp_kmer(kmer, 12);
-		assert_eq!(kmer, revcomp_kmer(actual, 12));
+		let actual = revcomp_kmer(&kmer, &12usize);
+		assert_eq!(kmer, revcomp_kmer(&actual, &12usize));
 
 		let expected = 0b0110_0101_1001_0011_1100_0110;
 
@@ -172,7 +301,7 @@ mod tests {
 			0b10_0101_1001_0011_1100,
 			0b00_0011_1001_1010_0110,
 		];
-		let actual = ints_to_kmers(&ints, 9);
+		let actual = ints_to_kmers(&ints, &9usize);
 		assert_eq!(actual, expected);
 	}
 
