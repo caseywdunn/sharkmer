@@ -6,99 +6,8 @@ use rustc_hash::FxHashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
+mod kmer;
 
-// Create a structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
-struct KmerSummary {
-    kmer_counts: FxHashMap<u64, u64>,
-    n_singletons: u64,
-}
-
-// Convert read to integer encoded subreads, split on N in original sequence
-fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
-    let mut result: Vec<Vec<u8>> = Vec::new();
-    let mut ints: Vec<u8> = Vec::with_capacity(seq.len() / 4);
-    let mut frame: u8 = 0;
-    let mut position: usize = 0; // position in the sequence. not including Ns
-    for c in seq.chars() {
-        let base = match c {
-            'A' => 0, // 00
-            'C' => 1, // 01
-            'G' => 2, // 10
-            'T' => 3, // 11
-            'N' => {
-                if !ints.is_empty() {
-                    result.push(ints);
-                    ints = Vec::with_capacity(seq.len() / 4);
-                    frame = 0; // Reset frame before starting a new subread
-                }
-                continue;
-            }
-            _ => 5,
-        };
-        if base > 3 {
-            break;
-        }
-        frame = (frame << 2) | base;
-        if ((position + 1) % 4 == 0) & (position > 0) {
-            ints.push(frame);
-            frame = 0; // Reset frame after pushing to the vector
-        }
-        position += 1;
-    }
-    if !ints.is_empty() || result.is_empty() {
-        // Don't miss the last part
-        result.push(ints);
-    }
-    result
-}
-
-fn ints_to_kmers(ints: &Vec<u8>, k: u8) -> Vec<u64> {
-    let mut kmers: Vec<u64> = Vec::with_capacity((ints.len() * 4 / k as usize) + 1);
-    let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
-    let mut revframe: u64 = 0; // read the bits for complement into the least significant end of this integer
-    let mut n_valid = 0; // number of valid bases in the frame
-    let mask: u64 = (1 << (2 * k)) - 1;
-
-    // Iterate over the bases
-    for (_i, &int) in ints.iter().enumerate() {
-        // Iterate over the bases in the integer
-        for j in 0..4 {
-            // Get the base from the left side of the integer,
-            // move it to the least two significant bits and mask it
-            let base = ((int >> ((3 - j) * 2)) & 3) as u64;
-
-            frame = (frame << 2) | base;
-            revframe = (revframe >> 2) | ((3 - base) << (2 * (k - 1)));
-            n_valid += 1;
-            if n_valid >= k {
-                let forward = frame & mask;
-                let reverse = revframe & mask;
-
-                // assert_eq!(forward, revcomp_kmer(reverse, k));
-
-                if forward < reverse {
-                    kmers.push(forward);
-                } else {
-                    kmers.push(reverse);
-                }
-            }
-        }
-    }
-    kmers
-}
-
-fn count_histogram(kmer_counts: &FxHashMap<u64, u64>, histo_max: u64) -> Vec<u64> {
-    // Create a histogram of counts
-    let mut histo: Vec<u64> = vec![0; histo_max as usize + 2]; // +2 to allow for 0 and for >histo_max
-    for count in kmer_counts.values() {
-        if *count <= histo_max {
-            histo[*count as usize] += 1;
-        } else {
-            histo[histo_max as usize + 1] += 1;
-        }
-    }
-    histo
-}
 
 /// Count k-mers in a set of fastq.gz files, with an option to assess cumulative subsets
 #[derive(Parser, Debug)]
@@ -201,7 +110,7 @@ fn main() {
                         // This is a sequence line
                         let line = line.unwrap();
                         n_bases_read += line.len();
-                        let ints = seq_to_ints(&line);
+                        let ints = kmer::seq_to_ints(&line);
                         reads.extend(ints);
                         n_reads_read += 1;
                     }
@@ -226,7 +135,7 @@ fn main() {
                     // This is a sequence line
                     let line = line.unwrap();
                     n_bases_read += line.len();
-                    let ints = seq_to_ints(&line);
+                    let ints = kmer::seq_to_ints(&line);
                     reads.extend(ints);
                     n_reads_read += 1;
                 }
@@ -275,7 +184,7 @@ fn main() {
                     std::io::stdout().flush().unwrap();
                 }
 
-                let kmers = ints_to_kmers(read, args.k as u8);
+                let kmers = kmer::ints_to_kmers(read, args.k as u8);
                 for kmer in kmers {
                     n_kmers += 1;
                     if pre_bloom.contains(&kmer) {
@@ -318,7 +227,7 @@ fn main() {
     // Iterate over the chunks
     let n: usize = args.n;
 
-    let chunk_kmer_counts: Vec<KmerSummary>;
+    let chunk_kmer_counts: Vec<kmer::KmerSummary>;
     if let Some(multi_bloom_ref) = multi_bloom.as_ref() {
         // Use bloom filter
         chunk_kmer_counts = (0..n)
@@ -330,7 +239,7 @@ fn main() {
                 let mut singles: u64 = 0;
 
                 for read in reads[start..end].iter() {
-                    let kmers = ints_to_kmers(read, args.k as u8);
+                    let kmers = kmer::ints_to_kmers(read, args.k as u8);
                     for kmer in kmers {
                         if multi_bloom_ref.contains(&kmer) {
                             let count = kmer_counts.entry(kmer).or_insert(0);
@@ -341,7 +250,7 @@ fn main() {
                     }
                 }
 
-                KmerSummary {
+                kmer::KmerSummary {
                     kmer_counts,
                     n_singletons: singles,
                 }
@@ -357,14 +266,14 @@ fn main() {
                 let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
 
                 for read in reads[start..end].iter() {
-                    let kmers = ints_to_kmers(read, args.k as u8);
+                    let kmers = kmer::ints_to_kmers(read, args.k as u8);
                     for kmer in kmers {
                         let count = kmer_counts.entry(kmer).or_insert(0);
                         *count += 1;
                     }
                 }
 
-                KmerSummary {
+                kmer::KmerSummary {
                     kmer_counts,
                     n_singletons: 0,
                 }
@@ -389,7 +298,7 @@ fn main() {
             *count += kmer_count;
         }
 
-        let mut histo = count_histogram(&kmer_counts, args.histo_max);
+        let mut histo = kmer::count_histogram(&kmer_counts, args.histo_max);
 
         // Add the number of singletons to the histogram at index 1
         histo[1] += chunk_kmer_count.n_singletons;
