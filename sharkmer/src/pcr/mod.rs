@@ -258,11 +258,12 @@ fn get_dbedge(kmer: &u64, kmer_counts: &FxHashMap<u64, u64>, k: &usize) -> DBEdg
     }
 }
 
-fn do_pcr(kmer_counts: &FxHashMap<u64, u64>, k: &usize, max_length: &usize, forward_seq: &String, reverse_seq: &String, ) -> Vec<bio::io::fasta::Record> {
+pub fn do_pcr(kmer_counts: &FxHashMap<u64, u64>, k: &usize, max_length: &usize, forward_seq: &str, reverse_seq: &str, ) -> Vec<bio::io::fasta::Record> {
 
     // Preprocess the primers
-    let mut forward = forward_seq.clone();
-    let mut reverse = reverse_seq.clone();
+    let mut forward = forward_seq.to_string();
+    let mut reverse = reverse_seq.to_string();
+
     // Check if either is longer than k, if so retain only the last k nucleotides
     if forward.len() > *k {
         forward = forward[forward.len() - *k..].to_string();

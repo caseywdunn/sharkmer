@@ -43,6 +43,18 @@ struct Args {
     /// to sharkmer.
     #[arg()]
     input: Option<Vec<String>>,
+
+    /// Optional primer pairs for in silico PCR (sPCR). The format is:
+    /// --pcr "forward_reverse_max-length[_optional-name]"
+    /// More than one primer pair can be specified, for example:
+    /// --pcr "forward1_reverse1_1000_name1" --pcr "forward2_reverse2_2000_name2"
+    #[arg(short = 'p', long)]
+    pcr: Vec<String>,
+
+    /// Minimum coverage for kmer to be included in sPCR
+    #[arg(short, long, default_value_t = 3)]
+    coverage: u64,
+
 }
 fn main() {
     let start_run = std::time::Instant::now();
@@ -277,6 +289,60 @@ fn main() {
 
     file_stats.write_all(line.as_bytes()).unwrap();
     println!(" done");
+
+    if args.pcr.len() > 0{
+        println!("Running in silico PCR...");
+
+        // Remove kmer_counts entries with less than coverage
+        print!("Removing kmers with coverage less than {}...", args.coverage);
+        std::io::stdout().flush().unwrap();
+        let mut kmer_counts_filtered: FxHashMap<u64, u64> = FxHashMap::default();
+        let mut count_filtered_total: u64 = 0;
+        let mut count_raw_total: u64 = 0;
+        
+        for (&kmer, &count) in &kmer_counts {
+            if count >= args.coverage {
+                kmer_counts_filtered.insert(kmer, count);
+                count_filtered_total += count;
+            }
+            count_raw_total += count;
+        }
+
+        println!("The total kmer count went from {} to {}", count_raw_total, count_filtered_total);
+        println!("The number of unique kmers went from {} to {}", kmer_counts.len(), kmer_counts_filtered.len() );
+
+        for pcr_string in args.pcr{
+            println!("Processing PCR string: {}", pcr_string);
+            // split the string on underscores
+            let pcr_strings: Vec<&str> = pcr_string.split("_").collect();
+            let forward = pcr_strings[0];
+            let reverse = pcr_strings[1];
+            let max_length_string = pcr_strings[2];
+            let mut max_length: usize = 0;
+            match max_length_string.parse::<usize>() {
+                Ok(val) => {
+                    max_length = val;
+                    // use max_length here
+                },
+                Err(e) => {
+                    eprintln!("Failed to parse the maximum primer length: {}", e);
+                    // handle the error, maybe exit or provide a default value
+                }
+            }
+
+            let fasta = pcr::do_pcr(&kmer_counts_filtered, &(args.k as usize), &max_length, forward, reverse);
+            println!("There are {} subassemblies", fasta.len());
+            if fasta.len() > 0 {
+                let fasta_path = format!("{}{}_{}.fasta", directory, out_name, pcr_string);
+                let mut fasta_writer = fasta::Writer::new(std::fs::File::create(fasta_path).unwrap());
+                for record in fasta {
+                    fasta_writer.write_record(&record).unwrap();
+                }
+            } 
+        }
+
+        println!("Done running in silico PCR");
+    }
 
     println!("Total run time: {:?}", start_run.elapsed());
 }
