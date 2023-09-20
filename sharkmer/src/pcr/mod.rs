@@ -1,5 +1,12 @@
 use crate::kmer::*;
-
+use bio::io::fasta;
+use std::io::Write;
+use rustc_hash::FxHashMap;
+use std::collections::HashSet;
+use petgraph::Graph;
+use petgraph::Direction;
+use petgraph::graph::NodeIndex;
+use petgraph::algo::all_simple_paths;
 
 // Create a structure to hold a kmer representing an oligo up to 32 nucleotides long in the 
 // length*2 least significant bits
@@ -318,7 +325,7 @@ fn do_pcr(kmer_counts: &FxHashMap<u64, u64>, k: &usize, max_length: &usize, forw
 
     println!("  There are {} forward matches", forward_matches.len());
     for f in &forward_matches{
-        println!("  {}", kmer_to_seq(f, k))
+        println!("  {}", crate::kmer::kmer_to_seq(f, k))
     }
 
     let start = std::time::Instant::now();
@@ -330,7 +337,7 @@ fn do_pcr(kmer_counts: &FxHashMap<u64, u64>, k: &usize, max_length: &usize, forw
 
     println!("  There are {} reverse matches", reverse_matches.len());
     for f in &reverse_matches{
-        println!("  {}", kmer_to_seq(f, k))
+        println!("  {}", crate::kmer::kmer_to_seq(f, k))
     }
 
     // If the forward_matches or the reverse_matches are empty, exit
@@ -436,7 +443,7 @@ fn do_pcr(kmer_counts: &FxHashMap<u64, u64>, k: &usize, max_length: &usize, forw
     // Print the information for each node
     for node in graph.node_indices() {
         println!("Node {}:", node.index());
-        println!("  sub_kmer: {}", kmer_to_seq(&graph[node].sub_kmer, &(*k-1)));
+        println!("  sub_kmer: {}", crate::kmer::kmer_to_seq(&graph[node].sub_kmer, &(*k-1)));
         println!("  is_start: {}", graph[node].is_start);
         println!("  is_end: {}", graph[node].is_end);
         println!("  is_terminal: {}", graph[node].is_terminal);
@@ -478,7 +485,7 @@ fn do_pcr(kmer_counts: &FxHashMap<u64, u64>, k: &usize, max_length: &usize, forw
                 let sub_kmer = graph[node].sub_kmer;
 
                 if verbosity > 1 {
-                    println!("Extending node {}, which has sub_kmer {}", node.index(), kmer_to_seq(&sub_kmer, &(*k-1)));
+                    println!("Extending node {}, which has sub_kmer {}", node.index(), crate::kmer::kmer_to_seq(&sub_kmer, &(*k-1)));
                 }
                 
                 // Get the kmers that could extend the node
@@ -535,7 +542,7 @@ fn do_pcr(kmer_counts: &FxHashMap<u64, u64>, k: &usize, max_length: &usize, forw
                         graph.add_edge(node, new_node, edge);
 
                         if verbosity > 1 {
-                            println!("Added node {} with sub_kmer {}", new_node.index(), kmer_to_seq(&suffix, &(*k-1)));
+                            println!("Added node {} with sub_kmer {}", new_node.index(), crate::kmer::kmer_to_seq(&suffix, &(*k-1)));
                         }
 
                         // Check if the new node is max_length-k+1 from a start node
@@ -586,7 +593,7 @@ fn do_pcr(kmer_counts: &FxHashMap<u64, u64>, k: &usize, max_length: &usize, forw
         // The first time through the loop add the whole sequence, after that just add the last base
         for node in path.iter() {
             let node_data = graph.node_weight(*node).unwrap();
-            let subread = kmer_to_seq(&node_data.sub_kmer, &(*k-1));
+            let subread = crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(*k-1));
             if sequence.is_empty() {
                 sequence = subread;
             } else {
@@ -682,17 +689,6 @@ mod tests {
 		let oligo = string_to_oligo("GCGA");
 		assert_eq!(oligo.kmer, 0b1001_1000);
 		assert_eq!(oligo.length, 4);
-	}
-
-	#[test]
-	fn test_kmer_to_seq(){
-		let kmer = 0b1001_1000;
-		let seq = kmer_to_seq(&kmer, &4usize);
-		assert_eq!(seq, "GCGA");
-
-		let kmer = 0b1001_1000_1001_1000;
-		let seq = kmer_to_seq(&kmer, &8usize);
-		assert_eq!(seq, "GCGAGCGA");
 	}
 
 }

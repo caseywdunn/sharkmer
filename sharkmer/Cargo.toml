@@ -9,6 +9,7 @@ edition = "2021"
 clap = { version = "4.2.7", features = ["derive"]}
 rand = { version = "0.8.5"}
 rayon = { version = "1.7.0"}
-bloom = { version = "0.3.2"}
 rustc-hash = { version = "1.1.0"}
+petgraph = { version = "0.6.4"}
+bio = { version = "1.4.0"}
 

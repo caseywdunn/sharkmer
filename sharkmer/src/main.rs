@@ -7,6 +7,7 @@ use std::io::Write;
 use std::path::Path;
 mod kmer;
 mod pcr;
+use bio::io::fasta;
 
 
 /// Count k-mers in a set of fastq.gz files, with an option to assess cumulative subsets

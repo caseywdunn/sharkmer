@@ -232,6 +232,22 @@ pub fn count_histogram(kmer_counts: &FxHashMap<u64, u64>, histo_max: &u64) -> Ve
     histo
 }
 
+pub fn kmer_to_seq(kmer: &u64, k: &usize) -> String {
+    let mut seq = String::new();
+    for i in 0..*k {
+        let base = (kmer >> (2 * (k - i - 1))) & 3;
+        let base = match base {
+            0 => 'A',
+            1 => 'C',
+            2 => 'G',
+            3 => 'T',
+            _ => panic!("Invalid base"),
+        };
+        seq.push(base);
+    }
+    seq
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -303,6 +319,17 @@ mod tests {
 		];
 		let actual = ints_to_kmers(&ints, &9usize);
 		assert_eq!(actual, expected);
+	}
+
+    #[test]
+	fn test_kmer_to_seq(){
+		let kmer = 0b1001_1000;
+		let seq = kmer_to_seq(&kmer, &4usize);
+		assert_eq!(seq, "GCGA");
+
+		let kmer = 0b1001_1000_1001_1000;
+		let seq = crate::kmer::kmer_to_seq(&kmer, &8usize);
+		assert_eq!(seq, "GCGAGCGA");
 	}
 
 }
