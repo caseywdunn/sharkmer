@@ -330,7 +330,15 @@ fn main() {
                 }
             }
 
-            let fasta = pcr::do_pcr(&kmer_counts_filtered, &(args.k as usize), &max_length, forward, reverse);
+            let fasta = 
+                pcr::do_pcr(
+                    &kmer_counts_filtered, 
+                    &(args.k as usize), 
+                    &max_length, 
+                    forward,
+                    reverse,
+                    &pcr_string
+                    );
             println!("There are {} subassemblies", fasta.len());
             if fasta.len() > 0 {
                 let fasta_path = format!("{}{}_{}.fasta", directory, out_name, pcr_string);

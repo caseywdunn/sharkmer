@@ -258,7 +258,14 @@ fn get_dbedge(kmer: &u64, kmer_counts: &FxHashMap<u64, u64>, k: &usize) -> DBEdg
     }
 }
 
-pub fn do_pcr(kmer_counts: &FxHashMap<u64, u64>, k: &usize, max_length: &usize, forward_seq: &str, reverse_seq: &str, ) -> Vec<bio::io::fasta::Record> {
+pub fn do_pcr(
+    kmer_counts: &FxHashMap<u64, u64>, 
+    k: &usize, 
+    max_length: &usize, 
+    forward_seq: &str, 
+    reverse_seq: &str, 
+    run_name: &str,
+) -> Vec<bio::io::fasta::Record> {
 
     // Preprocess the primers
     let mut forward = forward_seq.to_string();
@@ -589,6 +596,7 @@ pub fn do_pcr(kmer_counts: &FxHashMap<u64, u64>, k: &usize, max_length: &usize, 
 
     let mut records = Vec::new();
     // For each path, get the sequence of the path
+    let mut i = 0;
     for path in all_paths {
         let mut sequence = String::new();
         // The first time through the loop add the whole sequence, after that just add the last base
@@ -602,8 +610,10 @@ pub fn do_pcr(kmer_counts: &FxHashMap<u64, u64>, k: &usize, max_length: &usize, 
             }
         }
         println!("{}", sequence);
-        let record = bio::io::fasta::Record::with_attrs("assembly", None, &(sequence.as_bytes()));
+        let id = format!("{} product {} length {}", run_name, i, sequence.len());
+        let record = bio::io::fasta::Record::with_attrs(&id, None, &(sequence.as_bytes()));
         records.push(record);
+        i += 1;
     }
 
     println!("done.  Time to traverse graph: {:?}", start.elapsed());
