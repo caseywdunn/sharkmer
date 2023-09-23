@@ -337,7 +337,8 @@ pub fn do_pcr(
 
     println!("  There are {} forward matches", forward_matches.len());
     for f in &forward_matches{
-        println!("  {}", crate::kmer::kmer_to_seq(f, k))
+        let count = crate::kmer::get_kmer_count(kmer_counts, f, k);
+        println!("  {}, count {}", crate::kmer::kmer_to_seq(f, k), count);
     }
 
     let start = std::time::Instant::now();
@@ -349,7 +350,8 @@ pub fn do_pcr(
 
     println!("  There are {} reverse matches", reverse_matches.len());
     for f in &reverse_matches{
-        println!("  {}", crate::kmer::kmer_to_seq(f, k))
+        let count = crate::kmer::get_kmer_count(kmer_counts, f, k);
+        println!("  {}, count {}", crate::kmer::kmer_to_seq(f, k), count);
     }
 
     // If the forward_matches or the reverse_matches are empty, exit

@@ -248,6 +248,17 @@ pub fn kmer_to_seq(kmer: &u64, k: &usize) -> String {
     seq
 }
 
+// Returns the count of a specified kmer, or 0 if the kmer is not present.
+// Uses canonical kmer
+pub fn get_kmer_count(kmer_counts: &FxHashMap<u64, u64>, kmer: &u64, k: &usize) -> u64 {
+    let revcomp = revcomp_kmer(kmer, k);
+    let canonical = if *kmer < revcomp { *kmer } else { revcomp };
+    match kmer_counts.get(&canonical) {
+        Some(count) => *count,
+        None => 0,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
