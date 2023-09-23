@@ -55,6 +55,10 @@ struct Args {
     #[arg(short, long, default_value_t = 3)]
     coverage: u64,
 
+    /// Verbosity
+    #[arg(long, default_value_t = 0)]
+    verbosity: usize,
+
 }
 fn main() {
     let start_run = std::time::Instant::now();
@@ -337,7 +341,8 @@ fn main() {
                     &max_length, 
                     forward,
                     reverse,
-                    &pcr_string
+                    &pcr_string,
+                    args.verbosity,
                     );
             println!("There are {} subassemblies", fasta.len());
             if fasta.len() > 0 {

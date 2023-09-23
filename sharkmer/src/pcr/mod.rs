@@ -265,7 +265,11 @@ pub fn do_pcr(
     forward_seq: &str, 
     reverse_seq: &str, 
     run_name: &str,
+    verbosity: usize,
 ) -> Vec<bio::io::fasta::Record> {
+
+    // Create a vector to hold the records
+    let mut records: Vec<fasta::Record> = Vec::new();
 
     // Preprocess the primers
     let mut forward = forward_seq.to_string();
@@ -349,13 +353,9 @@ pub fn do_pcr(
     }
 
     // If the forward_matches or the reverse_matches are empty, exit
-    if forward_matches.is_empty() {
-        println!("A binding site for the forward primer was not found. Exiting.");
-        std::process::exit(0);
-    }
-    if reverse_matches.is_empty() {
-        println!("A binding site for the reverse primer was not found. Exiting.");
-        std::process::exit(0);
+    if forward_matches.is_empty() | reverse_matches.is_empty() {
+        println!("Binding sites were not found for both primers. Not searching for products.");
+        return records;
     }
 
     println!("Creating graph, seeding with nodes that contain primer matches...");
@@ -480,20 +480,17 @@ pub fn do_pcr(
     // - The prefix of the kmer of the node is the sub_kmer of the parent node in the graph
     // - The suffix of the kmer of the node is the sub_kmer of the new node in the graph
     // - If a node with the sub_kmer already exists, add a new edge to the existing node
-    let verbosity = 5;
+    
     while n_unvisited_nodes_in_graph(&graph) > 0 {
         // Iterate over the nodes
-        if verbosity > 0 {
-            println!("There are {} unvisited nodes in the graph", n_unvisited_nodes_in_graph(&graph));
-            println!("There are {} non-terminal nodes in the graph", n_nonterminal_nodes_in_graph(&graph));
-        }
         for node in graph.node_indices() {
             if !(graph[node].visited) {
                 // Get the suffix of the kmer of the node
                 let sub_kmer = graph[node].sub_kmer;
 
                 if verbosity > 1 {
-                    println!("Extending node {}, which has sub_kmer {}", node.index(), crate::kmer::kmer_to_seq(&sub_kmer, &(*k-1)));
+                    print!("  {} sub_kmer being extended for node {}. ", crate::kmer::kmer_to_seq(&sub_kmer, &(*k-1)), node.index());
+                    std::io::stdout().flush().unwrap();
                 }
                 
                 // Get the kmers that could extend the node
@@ -508,13 +505,15 @@ pub fn do_pcr(
                 candidate_kmers.retain(|kmer| kmers.contains(kmer));
 
                 if verbosity > 1 {
-                    println!("There are {} candidate kmers", candidate_kmers.len());
+                    print!("There are {} candidate kmers for extension. ", candidate_kmers.len());
+                    std::io::stdout().flush().unwrap();
                 }
 
                 // If there are no candidate kmers, the node is terminal
                 if candidate_kmers.is_empty() {
                     if verbosity > 1 {
-                        println!("Marking node as terminal.");
+                        print!("Marking node as terminal because there are no candidates for extension. ");
+                        std::io::stdout().flush().unwrap();
                     }
                     graph[node].is_terminal = true;
                     graph[node].visited = true;
@@ -524,6 +523,17 @@ pub fn do_pcr(
                 // Add new nodes if needed, and new edges
                 for kmer in candidate_kmers.iter() {
                     let suffix = kmer & suffix_mask;
+
+                    // Check if the node extends by itself and mark it as terminal if it does
+                    if suffix == sub_kmer {
+                        graph[node].is_terminal = true;
+                        graph[node].visited = true;
+                        if verbosity > 1 {
+                            print!("Node {} extends itself. Marking as terminal. ", node.index());
+                            std::io::stdout().flush().unwrap();
+                        }
+                        break;
+                    }
 
                     // If the node with sub_kmer == suffix already exists, add an edge to the existing node
                     // Otherwise, create a new node with sub_kmer == suffix, and add an edge to the new node
@@ -550,7 +560,8 @@ pub fn do_pcr(
                         graph.add_edge(node, new_node, edge);
 
                         if verbosity > 1 {
-                            println!("Added node {} with sub_kmer {}", new_node.index(), crate::kmer::kmer_to_seq(&suffix, &(*k-1)));
+                            print!("Added sub_kmer {} for new node {}. ", crate::kmer::kmer_to_seq(&suffix, &(*k-1)), new_node.index());
+                            std::io::stdout().flush().unwrap();
                         }
 
                         // Check if the new node is max_length-k+1 from a start node
@@ -559,13 +570,19 @@ pub fn do_pcr(
                         if path_length >= *max_length - (*k) + 1 {
                             graph[new_node].is_terminal = true;
                             if verbosity > 1 {
-                                println!("Marking node {} as terminal", new_node.index());
+                                print!("Marking new node {} as terminal because it exceeds max_length from start. ", new_node.index());
+                                std::io::stdout().flush().unwrap();
                             }
                         }
                         
                     }
                 }
                 graph[node].visited = true;
+
+                if verbosity > 1 {
+                    println!("There are now {} unvisited and {} non-terminal nodes in the graph. ", n_unvisited_nodes_in_graph(&graph), n_nonterminal_nodes_in_graph(&graph));
+                    std::io::stdout().flush().unwrap();
+                }
 
                 
             }
@@ -594,7 +611,6 @@ pub fn do_pcr(
         }
     }
 
-    let mut records = Vec::new();
     // For each path, get the sequence of the path
     let mut i = 0;
     for path in all_paths {
@@ -611,7 +627,7 @@ pub fn do_pcr(
         }
         println!("{}", sequence);
         let id = format!("{} product {} length {}", run_name, i, sequence.len());
-        let record = bio::io::fasta::Record::with_attrs(&id, None, &(sequence.as_bytes()));
+        let record = fasta::Record::with_attrs(&id, None, &(sequence.as_bytes()));
         records.push(record);
         i += 1;
     }
