@@ -271,10 +271,11 @@ pub fn do_pcr(
     forward_seq: &str, 
     reverse_seq: &str, 
     run_name: &str,
+    coverage: &u64,
     verbosity: usize,
 ) -> Vec<bio::io::fasta::Record> {
 
-    // Create a vector to hold the records
+    // Create a vector to hold the fasta records
     let mut records: Vec<fasta::Record> = Vec::new();
 
     // Preprocess the primers
@@ -321,7 +322,7 @@ pub fn do_pcr(
     }
     
 
-    // Create a hash set of the keys of kmer_counts_filtered
+    // Create a hash set of the keys of kmer_counts
     print!("Creating hash set of kmers for assembly...");
     std::io::stdout().flush().unwrap();
     let mut kmers: std::collections::HashSet<u64> = kmer_counts.keys().copied().collect();
@@ -341,9 +342,13 @@ pub fn do_pcr(
 
     println!(" done, time: {:?}", start.elapsed());
 
+    let mut max_forward_count: u64 = 0;
     println!("  There are {} forward matches", forward_matches.len());
     for f in &forward_matches{
         let count = crate::kmer::get_kmer_count(kmer_counts, f, k);
+        if count > max_forward_count {
+            max_forward_count = count;
+        }
         println!("  {}, count {}", crate::kmer::kmer_to_seq(f, k), count);
     }
 
@@ -354,9 +359,13 @@ pub fn do_pcr(
 
     println!(" done, time: {:?}", start.elapsed());
 
+    let mut max_reverse_count: u64 = 0;
     println!("  There are {} reverse matches", reverse_matches.len());
     for f in &reverse_matches{
         let count = crate::kmer::get_kmer_count(kmer_counts, f, k);
+        if count > max_reverse_count {
+            max_reverse_count = count;
+        }
         println!("  {}, count {}", crate::kmer::kmer_to_seq(f, k), count);
     }
 
@@ -366,8 +375,34 @@ pub fn do_pcr(
         return records;
     }
 
-    println!("Creating graph, seeding with nodes that contain primer matches...");
+    // If the count of kmers containing primers is significantly higher than min_count, apply a higher min coverage
+    let mut min_count = max_reverse_count;
+    if max_forward_count < max_reverse_count {
+        min_count = max_forward_count;
+    }
+
+    let coverage_multiplier = 5;
+    let new_coverage = min_count / coverage_multiplier;
+    if min_count > coverage_multiplier * coverage {
+        println!("The count of kmers containing primers have high coverage {} relative to the coverage threshold of {}.  Increasing min coverage to {}.", min_count, coverage, new_coverage);
+
+        // Create a hash set of the keys of kmer_counts
+        println!("  Updating hash set of kmers to include only those that exceed updated coverage threshold.");
+        // Remove all members of kmers
+        kmers.clear();
+        
+        // Add each kmer and its reverse complement to kmers if the kmer count is >= new_coverage
+        for kmer in kmer_counts.keys() {
+            if kmer_counts[kmer] >= new_coverage {
+                kmers.insert(*kmer);
+                kmers.insert(revcomp_kmer(kmer, k));
+            }
+        }
+    }
+
+
     // Construct the graph
+    println!("Creating graph, seeding with nodes that contain primer matches...");
     let mut graph: Graph<DBNode, DBEdge> = Graph::new();
 
     // Create a suffix mask with 1 in the (2 * (k - 1)) least significant bits
@@ -456,13 +491,15 @@ pub fn do_pcr(
     println!("There are {} start nodes", n_start_nodes);
     println!("There are {} end nodes", n_end_nodes);
 
-    // Print the information for each node
-    for node in graph.node_indices() {
-        println!("Node {}:", node.index());
-        println!("  sub_kmer: {}", crate::kmer::kmer_to_seq(&graph[node].sub_kmer, &(*k-1)));
-        println!("  is_start: {}", graph[node].is_start);
-        println!("  is_end: {}", graph[node].is_end);
-        println!("  is_terminal: {}", graph[node].is_terminal);
+    if verbosity > 1 {
+        // Print the information for each node
+        for node in graph.node_indices() {
+            println!("Node {}:", node.index());
+            println!("  sub_kmer: {}", crate::kmer::kmer_to_seq(&graph[node].sub_kmer, &(*k-1)));
+            println!("  is_start: {}", graph[node].is_start);
+            println!("  is_end: {}", graph[node].is_end);
+            println!("  is_terminal: {}", graph[node].is_terminal);
+        }
     }
 
     let start = std::time::Instant::now();
@@ -575,7 +612,6 @@ pub fn do_pcr(
 
                         // Check if the new node is max_length-k+1 from a start node
                         // If so, mark the new node as terminal
-                        println!("Getting path length...");
                         let path_length = get_path_length(&graph, new_node);
 
                         // If the path length is None, the node is part of a cycle and is marked terminal.
@@ -589,9 +625,11 @@ pub fn do_pcr(
                         } else {
                             let path_length = path_length.unwrap();
 
-                            print!("Path length is {}. ", path_length);
-                            std::io::stdout().flush().unwrap();
-                            
+                            if verbosity > 1 {
+                                print!("Path length is {}. ", path_length);
+                                std::io::stdout().flush().unwrap();
+                            }
+
                             if path_length >= *max_length - (*k) + 1 {
                                 graph[new_node].is_terminal = true;
                                 if verbosity > 1 {

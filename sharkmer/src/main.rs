@@ -342,6 +342,7 @@ fn main() {
                     forward,
                     reverse,
                     &pcr_string,
+                    &args.coverage,
                     args.verbosity,
                     );
             println!("There are {} subassemblies", fasta.len());
