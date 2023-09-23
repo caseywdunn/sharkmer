@@ -1,6 +1,5 @@
 use crate::kmer::*;
 use bio::io::fasta;
-use petgraph::visit;
 use std::io::Write;
 use rustc_hash::FxHashMap;
 use std::collections::HashSet;

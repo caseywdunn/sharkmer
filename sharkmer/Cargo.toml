@@ -1,7 +1,12 @@
 [package]
 name = "sharkmer"
 version = "0.1.0"
+authors = ["Casey Dunn <casey.dunn@yale.edu>"]
+description = "A collection of kmer counting and analysis tools."
 edition = "2021"
+
+[repository]
+url = "https://github.com/caseywdunn/sharkmer"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

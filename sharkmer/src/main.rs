@@ -10,7 +10,7 @@ mod pcr;
 use bio::io::fasta;
 
 
-/// Count k-mers in a set of fastq.gz files, with an option to assess cumulative subsets
+/// A collection of kmer counting and analysis tools
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
 struct Args {
