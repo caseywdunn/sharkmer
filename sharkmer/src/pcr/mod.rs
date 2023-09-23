@@ -1,5 +1,6 @@
 use crate::kmer::*;
 use bio::io::fasta;
+use petgraph::visit;
 use std::io::Write;
 use rustc_hash::FxHashMap;
 use std::collections::HashSet;
@@ -219,11 +220,23 @@ fn n_unvisited_nodes_in_graph(graph: &Graph<DBNode, DBEdge>) -> usize {
     n
 }
 
-fn get_path_length(graph: &Graph<DBNode, DBEdge>, new_node: NodeIndex ) -> usize {
+fn get_path_length(graph: &Graph<DBNode, DBEdge>, new_node: NodeIndex ) -> Option<usize> {
     // Get the length of the path from the start node to the new node
     let mut path_length = 0;
     let mut current_node = new_node;
+
+    // Create an empty set to contain the visited nodes
+    let mut visited_nodes: HashSet<NodeIndex> = HashSet::new();
+
     loop {
+
+        // If the current node has already been visited, break
+        if visited_nodes.contains(&current_node) {
+            return None;
+        }
+
+        // Add the current node to the visited nodes
+        visited_nodes.insert(current_node);
 
         //current_node = NodeIndex::new(current_node_index).unwrap();
         let current_node_data = graph.node_weight(current_node).unwrap();
@@ -240,21 +253,14 @@ fn get_path_length(graph: &Graph<DBNode, DBEdge>, new_node: NodeIndex ) -> usize
             panic!("No path to the start node from the given node.");
         }
     }
-    path_length
+    Some(path_length)
 }
 
 fn get_dbedge(kmer: &u64, kmer_counts: &FxHashMap<u64, u64>, k: &usize) -> DBEdge {
     
-    let mut canonical_kmer = *kmer;
-
-    let reverse_kmer = revcomp_kmer(kmer, k);
-    if reverse_kmer < canonical_kmer {
-        canonical_kmer = reverse_kmer;
-    }
-    
     DBEdge{
         kmer: *kmer,
-        count: *kmer_counts.get(&canonical_kmer).unwrap(),
+        count: crate::kmer::get_kmer_count(kmer_counts, &kmer, k),
     }
 }
 
@@ -559,21 +565,39 @@ pub fn do_pcr(
                             visited: false,
                         });
                         let edge = get_dbedge(kmer, &kmer_counts, k);
+                        let edge_count = edge.count;
                         graph.add_edge(node, new_node, edge);
 
                         if verbosity > 1 {
-                            print!("Added sub_kmer {} for new node {}. ", crate::kmer::kmer_to_seq(&suffix, &(*k-1)), new_node.index());
+                            print!("Added sub_kmer {} for new node {} with edge kmer count {}. ", crate::kmer::kmer_to_seq(&suffix, &(*k-1)), new_node.index(), edge_count);
                             std::io::stdout().flush().unwrap();
                         }
 
                         // Check if the new node is max_length-k+1 from a start node
                         // If so, mark the new node as terminal
+                        println!("Getting path length...");
                         let path_length = get_path_length(&graph, new_node);
-                        if path_length >= *max_length - (*k) + 1 {
+
+                        // If the path length is None, the node is part of a cycle and is marked terminal.
+                        // If the path length is Some, is marked terminal if the path length is >= max_length-k+1
+                        if path_length.is_none() {
                             graph[new_node].is_terminal = true;
                             if verbosity > 1 {
-                                print!("Marking new node {} as terminal because it exceeds max_length from start. ", new_node.index());
+                                print!("Marking new node {} as terminal because it is part of a cycle. ", new_node.index());
                                 std::io::stdout().flush().unwrap();
+                            }
+                        } else {
+                            let path_length = path_length.unwrap();
+
+                            print!("Path length is {}. ", path_length);
+                            std::io::stdout().flush().unwrap();
+                            
+                            if path_length >= *max_length - (*k) + 1 {
+                                graph[new_node].is_terminal = true;
+                                if verbosity > 1 {
+                                    print!("Marking new node {} as terminal because it exceeds max_length from start. ", new_node.index());
+                                    std::io::stdout().flush().unwrap();
+                                }
                             }
                         }
                         
