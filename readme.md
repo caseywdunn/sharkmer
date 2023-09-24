@@ -77,6 +77,24 @@ After cloning the repo, gunzip the `data` in the data dir:
     cd sharkmer/data/ # Note that this is the sharkmer folder within the sharkmer repository
     gunzip -c SRR5324768_pass_1.fastq.gz > SRR5324768_pass_1.fastq
 
+### **Cordagalma ordinatum**
+
+To get a sense of the tool it is best to grab larger datasetsets. The examples below will use a dataset from the siphonophore **Cordagalma ordinatum**. This dataset is available from the NCBI SRA as [SRR23143278](https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR23143278), and is from the manuscript:
+
+> Ahuja, N., Cao, X., Schultz, D. T., Picciani, N., Lord, A., Shao, S., Burdick, D. R., Haddock, S. H. D., Li, Y., & Dunn, C. W. (2023). Giants among Cnidaria: large nuclear genomes and rearranged mitochondrial genomes in siphonophores. bioRxiv. https://doi.org/10.1101/2023.05.12.540511
+
+To retrieve these data, first download and install the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit). Details on downloading data are provided in the examples below.
+
+
+
+Then run:
+
+    fastq-dump SRR23143278
+
+If you want just a million reads to try out sPCR, then you can get them without first downloading the whole dataset:
+
+    fastq-dump -X 1000000 SRR23143278
+
 ## Usage
 
 To get full usage information, run
@@ -84,29 +102,35 @@ To get full usage information, run
     sharkmer --help
 ### Incremental kmer counting
 
+Incremental kmer counting for genome size estimation takes a lot of data (about 50x coverage of the genome), and a large amount of RAM. So this example isn't practical on most laptops, given their disk and RAM limitations, and will require a workstation or cluster.
+
+First download the data as follows (this is the full dataset, so it will be quite large):
+
+    fastq-dump SRR23143278
+
 An example analysis would look like this:
 
-    sharkmer -k 21 -n 10 --histo-max 10000 -o Agalma-elegans agalma_1_R1.fastq agalma_1_R2.fastq agalma_2_R1.fastq agalma_2_R2.fastq
+    sharkmer -k 21 -n 10 --histo-max 10000 -o Cordagalma-ordinatum SRR23143278.fastq
 
 The incremental histogram files in this case would be:
 
-    Agalma-elegans.histo # All the incremental histograms, each in their own column. Suitable for analysis with `sharkmer_viewer.py`.
+    Cordagalma-ordinatum.histo # All the incremental histograms, each in their own column. Suitable for analysis with `sharkmer_viewer.py`.
 
-    Agalma-elegans_final.histo # Just the final histogram with all data. Suitable for analysis with genomescope and other tools.
+    Cordagalma-ordinatum.final.histo # Just the final histogram with all data. Suitable for analysis with genomescope and other tools.
 
 
 Then to explore the results:
-    sharkmer_viewer Agalma-elegans.histo
+    sharkmer_viewer Cordagalma-ordinatum.histo
 
 
 The final histogram on all the data is also written to its own file, and you can view that with, for example, [GenomeScope2](https://github.com/tbenavi1/genomescope2.0):
 
-    genomescope2 -i Agalma-elegans.final.histo -o Agalma-elegans -k 21
+    genomescope2 -i Cordagalma-ordinatum.final.histo -o Cordagalma-ordinatum -k 21
 
-The included `genomemovie.sh` script will generate a movie of the incremental GenomeScope2 histograms. For example, to create a movie of the `Cordagalma` test dataset in this repo:
+The included `genomemovie.sh` script will generate a movie of the incremental GenomeScope2 histograms. For example, to create a movie of the `Cordagalma` test dataset:
 
     conda activate shark
-    bash genomescopemovie.sh sharkmer_viewer/tests/data/Cordagalma.histo Cordagalma.output
+    bash genomescopemovie.sh Cordagalma-ordinatum.histo Cordagalma-ordinatum.output
 
 ### **in silico** PCR (sPCR)
 
@@ -124,30 +148,39 @@ sPCR is useful when you want specific genes from skimming datasets you have coll
 
 #### **in silico** PCR example
 
-To get a sample dataset, download and install the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit). Then run:
+sPCR of nuclear ribosomal RNA genes (eg animal 16s, 18s) and mitochondrial genes does not take much coverage, given the relatively high copy number of these genes in skimming data. For Illumina raw reads, 0.25x coverage of the genomes is sufficient. The **Cordagalma ordinatum** is 700Mb, so 1 million 150bp reads, a total of 150Mb of data, is sufficient.
 
-    fastq-dump --count 1000 SRR11715272
+Download one million reads of the **Cordagalma ordinatum** dataset:
 
+    fastq-dump -X 1000000 SRR23143278
 
+Then run sPCR on the downloaded reads by specifying primer pairs with the `--pcr` argument:
 
+    sharkmer \
+      -k 31 -n 100 -t 4 -o Cordagalma_CWD6 --coverage 3 \
+      --pcr "GACTGTTTACCAAAAACATA_AATTCAACATCGAGG_1000_16s" \
+      --pcr "TCATAAAGATATTGG_ATGCCCGAAAAACCA_2000_co1" \
+      --pcr "AACCTGGTTGATCCTGCCAGT_TGATCCTTCTGCAGGTTCACCTAC_2500_18s" \
+      --pcr "CCYYAGTAACGGCGAGT_SWACAGATGGTAGCTTCG_4000_28s"  \
+      SRR23143278.fastq
 
+The `--pcr` argument passes a string with the format `forward_reverse_max-length_name`.
 
+This analysis will generate one fasta file for each primer pair. These fasta files are named with the argument passed to `--pcr`. If no product was found, the fasta file is not present. The fasta file can contain more than one sequence.
 
 ### Reading compressed data
 
 `sharkmer` does not read compressed data directly, but it can read uncompressed data from `stdin`.
 So, for example, you could `gunzip` files and pipe them to `sharkmer`:
 
-    gunzip -c agalma_*.fastq.gz | sharkmer -k 21 -n 10 --histo-max 10000 -o Agalma-elegans
+    zcat agalma_*.fastq.gz | sharkmer -k 21 -n 10 --histo-max 10000 -o Agalma-elegans
 
 Decompressing files takes quite a bit of compute. Handling decompression outside of `sharkmer` allows you to 
 use whichever approach you prefer on your system, for example parallel tools such as `pigz`. 
 
 ## Development
 
-After cloning the repo, gunzip the `data` in the data dir:
-
-    gunzip -c SRR5324768_pass_1.fastq.gz > SRR5324768_pass_1.fastq
+### Rust 
 
 Some common tasks in development:
 
