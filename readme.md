@@ -85,16 +85,6 @@ To get a sense of the tool it is best to grab larger datasetsets. The examples b
 
 To retrieve these data, first download and install the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit). Details on downloading data are provided in the examples below.
 
-
-
-Then run:
-
-    fastq-dump SRR23143278
-
-If you want just a million reads to try out sPCR, then you can get them without first downloading the whole dataset:
-
-    fastq-dump -X 1000000 SRR23143278
-
 ## Usage
 
 To get full usage information, run
@@ -180,7 +170,7 @@ use whichever approach you prefer on your system, for example parallel tools suc
 
 ## Development
 
-### Rust 
+### Rust
 
 Some common tasks in development:
 
