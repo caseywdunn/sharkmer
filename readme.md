@@ -6,6 +6,7 @@ Functionalities of sharkmer include:
 - in silico PCR. This allows you to supply primer pairs and a fastq file, and get a fasta file of the amplicons that would be produced by PCR. This is useful for assembling and isolating particular genes from raw genome skimming data.  
 
 There are two components to sharkmer:
+
 - The `sharkmer` executable, written in rust, that inputs reads, counts kmers, and outputs histograms.
 - The optional `sharkmer_viewer.py` python script for viewing and analyzing histograms
 
@@ -15,8 +16,8 @@ to see how the results change as data are added. This builds more insight from t
 helps with practical questions such as figuring out how much coverage you need to get good 
 genome size estimates in your organism and deciding whether to collect more data.
 
-
 Here is an overview of how kmer counting works in `sharkmer`:
+
 1. fastq data are ingested one read at a time and recoded as 8 bit integers, with 2 bits per base. Reads 
    are broken into subreads at any instances of `N`, since 2 bit encoding only covers the 4 unambiguous 
    bases and kmers can't span them anyway. This encoding can only store bases in multiples of 4, so the 
@@ -33,14 +34,15 @@ Here is an overview of how kmer counting works in `sharkmer`:
 4. The hashmaps for the `n` chunks are summed one by one, and a histogram is generated after each chunk of 
    counts is added in. This produces `n` histograms, each summarizing more reads than the last.
 
-
 A few notes:
+
 - The read data must be uncompressed before analysis. No `.fastq.gz` files, just `.fastq`.
 - All the read data are stored in RAM in a compressed integer format. This is a tradeoff that improves speed at the cost of requiring more memory. Every 4 gigabases of sequence reads will need about 1 GB of RAM to store. This means that a 2 gigabase genome with 60x coverage (120 gigabases of reads) will need 30GB of RAM just to store the reads. Additional memory is needed for the hashmaps. For some analyses, such as **in silico PCR**, you can use a small subset of reads and easily run analyses on a laptop.
 
 ## Installation
 
 This repository includes sharkmer, which is written in rust, and some helper programs written in python. The python components are only needed for some followup analyses.
+
 ### Rust components
 
 #### From source
@@ -63,8 +65,6 @@ You can create a conda environment with all needed python components as follows:
     conda activate shark
     cd sharkmer_viewer/
     pip install .
-
-
 
 ## Test data
 
@@ -100,6 +100,7 @@ If you want just a million reads to try out sPCR, then you can get them without 
 To get full usage information, run
 
     sharkmer --help
+
 ### Incremental kmer counting
 
 Incremental kmer counting for genome size estimation takes a lot of data (about 50x coverage of the genome), and a large amount of RAM. So this example isn't practical on most laptops, given their disk and RAM limitations, and will require a workstation or cluster.
@@ -118,10 +119,9 @@ The incremental histogram files in this case would be:
 
     Cordagalma-ordinatum.final.histo # Just the final histogram with all data. Suitable for analysis with genomescope and other tools.
 
-
 Then to explore the results:
-    sharkmer_viewer Cordagalma-ordinatum.histo
 
+    sharkmer_viewer Cordagalma-ordinatum.histo
 
 The final histogram on all the data is also written to its own file, and you can view that with, for example, [GenomeScope2](https://github.com/tbenavi1/genomescope2.0):
 
@@ -190,7 +190,6 @@ Some common tasks in development:
     cargo fmt
     cargo build # Debug
     cargo build --release
-
 
 ### Docker
 
