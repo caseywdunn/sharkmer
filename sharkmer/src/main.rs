@@ -265,7 +265,7 @@ fn main() {
                     _ => panic!("Unexpected value type for 'trim'"),
                 };
 
-                let mut delta_int_as_float;
+                let delta_int_as_float;
                 let delta = match pcr_parameters.get("delta") {
                     Some(ParameterValue::Float(f)) => f,
                     Some(ParameterValue::Int(i)) => {

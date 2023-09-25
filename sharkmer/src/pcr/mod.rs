@@ -31,7 +31,7 @@ struct DBNode {
 }
 
 struct DBEdge {
-    kmer: u64,  // kmer that contains overlap between sub_kmers
+    _kmer: u64,  // kmer that contains overlap between sub_kmers
     count: u64, // Number of times this kmer was observed
 }
 
@@ -293,7 +293,7 @@ fn get_path_length(graph: &Graph<DBNode, DBEdge>, new_node: NodeIndex) -> Option
 
 fn get_dbedge(kmer: &u64, kmer_counts: &FxHashMap<u64, u64>, k: &usize) -> DBEdge {
     DBEdge {
-        kmer: *kmer,
+        _kmer: *kmer,
         count: crate::kmer::get_kmer_count(kmer_counts, &kmer, k),
     }
 }
