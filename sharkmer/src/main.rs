@@ -48,7 +48,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<HashMap<String, ParameterVal
     let mut parameters: HashMap<String, ParameterValue> = HashMap::new();
 
     // Split the string on underscores
-    let split: Vec<&str> = pcr_string.split("_").collect();
+    let split: Vec<&str> = pcr_string.split('_').collect();
 
     // Check that there are 4 elements
     if split.len() < 4 {
@@ -102,7 +102,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<HashMap<String, ParameterVal
 
     // Loop over additional parameters, which are of the form key=value and are separated by underscores
     for i in 4..split.len() {
-        let key_value: Vec<&str> = split[i].split("=").collect();
+        let key_value: Vec<&str> = split[i].split('=').collect();
         if key_value.len() != 2 {
             return Err(format!("Invalid parameter: {}", split[i]));
         }
@@ -206,7 +206,7 @@ fn main() {
     let parent = path.parent().unwrap();
     let parent_directory = parent.to_str().unwrap();
     let mut directory = String::from(parent_directory);
-    if directory != "" {
+    if !directory.is_empty() {
         directory = format!("{}/", directory);
         let _ = std::fs::create_dir_all(Path::new(directory.as_str()));
     }
@@ -261,7 +261,7 @@ fn main() {
 
                 let trim = match pcr_parameters.get("trim") {
                     Some(ParameterValue::Int(i)) => i,
-                    None => &(30 as u32), // Default value
+                    None => &30_u32, // Default value
                     _ => panic!("Unexpected value type for 'trim'"),
                 };
 
@@ -272,7 +272,7 @@ fn main() {
                         delta_int_as_float = *i as f64;
                         &delta_int_as_float
                     }
-                    None => &(5.0 as f64), // Default value
+                    None => &5.0_f64, // Default value
                     _ => panic!("Unexpected value type for 'delta'"),
                 };
 
@@ -395,9 +395,9 @@ fn main() {
     // Iterate over the chunks
     let n: usize = args.n;
 
-    let chunk_kmer_counts: Vec<kmer::KmerSummary>;
+    
 
-    chunk_kmer_counts = (0..n)
+    let chunk_kmer_counts: Vec<kmer::KmerSummary> = (0..n)
         .into_par_iter()
         .map(|i| {
             let start = i * chunk_size;
@@ -495,7 +495,7 @@ fn main() {
     file_stats.write_all(line.as_bytes()).unwrap();
     println!(" done");
 
-    if args.pcr.len() > 0 {
+    if !args.pcr.is_empty() {
         println!("Running in silico PCR...");
 
         // Remove kmer_counts entries with less than coverage
@@ -529,7 +529,7 @@ fn main() {
         for pcr_string in args.pcr {
             println!("Processing PCR string: {}", pcr_string);
             // split the string on underscores
-            let pcr_strings: Vec<&str> = pcr_string.split("_").collect();
+            let pcr_strings: Vec<&str> = pcr_string.split('_').collect();
             let forward = pcr_strings[0];
             let reverse = pcr_strings[1];
             let max_length_string = pcr_strings[2];
@@ -547,17 +547,17 @@ fn main() {
 
             let fasta = pcr::do_pcr(
                 &kmer_counts_filtered,
-                &(args.k as usize),
+                &{ args.k },
                 &max_length,
                 forward,
                 reverse,
                 &pcr_string,
                 &args.coverage,
-                &(3 as usize),
+                &3_usize,
                 args.verbosity,
             );
             println!("There are {} subassemblies", fasta.len());
-            if fasta.len() > 0 {
+            if !fasta.is_empty() {
                 let fasta_path = format!("{}{}_{}.fasta", directory, out_name, pcr_string);
                 let mut fasta_writer =
                     fasta::Writer::new(std::fs::File::create(fasta_path).unwrap());

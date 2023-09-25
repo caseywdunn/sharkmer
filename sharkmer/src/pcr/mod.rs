@@ -108,7 +108,7 @@ fn permute_sequences(sequences: Vec<String>, mismatches: &usize) -> Vec<String> 
 
         for i in 1..=*mismatches {
             for positions in combinations(seq.len(), i) {
-                generate_permutations(&seq, &positions, &mut unique_sequences);
+                generate_permutations(seq, &positions, &mut unique_sequences);
             }
         }
     }
@@ -133,12 +133,12 @@ fn combinations(n: usize, k: usize) -> Vec<Vec<usize>> {
 
     without_last
         .into_iter()
-        .chain(with_last.into_iter())
+        .chain(with_last)
         .collect()
 }
 
 fn generate_permutations(
-    seq: &String,
+    seq: &str,
     positions: &Vec<usize>,
     unique_sequences: &mut HashSet<String>,
 ) {
@@ -294,7 +294,7 @@ fn get_path_length(graph: &Graph<DBNode, DBEdge>, new_node: NodeIndex) -> Option
 fn get_dbedge(kmer: &u64, kmer_counts: &FxHashMap<u64, u64>, k: &usize) -> DBEdge {
     DBEdge {
         _kmer: *kmer,
-        count: crate::kmer::get_kmer_count(kmer_counts, &kmer, k),
+        count: crate::kmer::get_kmer_count(kmer_counts, kmer, k),
     }
 }
 
@@ -638,7 +638,7 @@ pub fn do_pcr(
                     let mut node_exists = false;
                     for existing_node in graph.node_indices() {
                         if graph[existing_node].sub_kmer == suffix {
-                            let edge = get_dbedge(kmer, &kmer_counts, k);
+                            let edge = get_dbedge(kmer, kmer_counts, k);
                             graph.add_edge(node, existing_node, edge);
                             node_exists = true;
                             break;
@@ -653,7 +653,7 @@ pub fn do_pcr(
                             is_terminal: false,
                             visited: false,
                         });
-                        let edge = get_dbedge(kmer, &kmer_counts, k);
+                        let edge = get_dbedge(kmer, kmer_counts, k);
                         let edge_count = edge.count;
                         graph.add_edge(node, new_node, edge);
 
@@ -687,7 +687,7 @@ pub fn do_pcr(
                                 std::io::stdout().flush().unwrap();
                             }
 
-                            if path_length >= *max_length - (*k) + 1 {
+                            if path_length > *max_length - (*k) {
                                 graph[new_node].is_terminal = true;
                                 if verbosity > 1 {
                                     print!("Marking new node {} as terminal because it exceeds max_length from start. ", new_node.index());
@@ -734,8 +734,7 @@ pub fn do_pcr(
     }
 
     // For each path, get the sequence of the path
-    let mut i = 0;
-    for path in all_paths {
+    for (i, path) in all_paths.into_iter().enumerate() {
         let mut sequence = String::new();
         // The first time through the loop add the whole sequence, after that just add the last base
         for node in path.iter() {
@@ -749,9 +748,8 @@ pub fn do_pcr(
         }
         println!("{}", sequence);
         let id = format!("{} product {} length {}", run_name, i, sequence.len());
-        let record = fasta::Record::with_attrs(&id, None, &(sequence.as_bytes()));
+        let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
         records.push(record);
-        i += 1;
     }
 
     println!("done.  Time to traverse graph: {:?}", start.elapsed());
@@ -820,7 +818,7 @@ mod tests {
             "GG".to_string(),
             "TG".to_string(),
         ];
-        let mut result1 = permute_sequences(seq1, &(1 as usize));
+        let mut result1 = permute_sequences(seq1, &1_usize);
         result1.sort();
         println!("Permutations: {}", result1.join(", "));
         expected1.sort();
