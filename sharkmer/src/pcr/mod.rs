@@ -100,32 +100,51 @@ fn resolve_primer(primer: String) -> Vec<String> {
 }
 
 
-fn permute_sequences(sequences: Vec<String>) -> Vec<String> {
+fn permute_sequences(sequences: Vec<String>, mismatches: &usize) -> Vec<String> {
     let mut unique_sequences = HashSet::new();
 
-    for seq in sequences {
+    for seq in &sequences {
         unique_sequences.insert(seq.clone()); // Add original sequence
 
-        // Do not permute the last nucleotide
-        let last_index = seq.len() - 1;
-
-        for (idx, nuc) in seq.chars().enumerate() {
-            // Skip permutation for the last nucleotide
-            if idx == last_index {
-                continue;
-            }
-
-            for &replacement in ["A", "T", "C", "G"].iter() {
-                if replacement != nuc.to_string() { // ensure we aren't replacing with the same nucleotide
-                    let mut new_seq: Vec<char> = seq.chars().collect();
-                    new_seq[idx] = replacement.chars().next().unwrap();
-                    unique_sequences.insert(new_seq.into_iter().collect());
-                }
+        for i in 1..=*mismatches {
+            for positions in combinations(seq.len(), i) {
+                generate_permutations(&seq, &positions, &mut unique_sequences);
             }
         }
     }
 
     unique_sequences.into_iter().collect()
+}
+
+fn combinations(n: usize, k: usize) -> Vec<Vec<usize>> {
+    if k == 0 {
+        return vec![Vec::new()];
+    }
+
+    if n == k {
+        return vec![(0..k).collect()];
+    }
+
+    let without_last = combinations(n - 1, k);
+    let mut with_last = combinations(n - 1, k - 1);
+    for item in &mut with_last {
+        item.push(n - 1);
+    }
+
+    without_last.into_iter().chain(with_last.into_iter()).collect()
+}
+
+fn generate_permutations(seq: &String, positions: &Vec<usize>, unique_sequences: &mut HashSet<String>) {
+    let nucleotides = ["A", "T", "C", "G"];
+    for pos in positions {
+        for &replacement in nucleotides.iter() {
+            if replacement != seq.chars().nth(*pos).unwrap().to_string() {
+                let mut new_seq: Vec<char> = seq.chars().collect();
+                new_seq[*pos] = replacement.chars().next().unwrap();
+                unique_sequences.insert(new_seq.into_iter().collect());
+            }
+        }
+    }
 }
 
 
@@ -271,6 +290,7 @@ pub fn do_pcr(
     reverse_seq: &str, 
     run_name: &str,
     coverage: &u64,
+    mismatches: &usize,
     verbosity: usize,
 ) -> Vec<bio::io::fasta::Record> {
 
@@ -297,8 +317,8 @@ pub fn do_pcr(
     let mut reverse_variants = resolve_primer(reverse);
 
     // Get all possible variants of the primers
-    forward_variants = permute_sequences(forward_variants);
-    reverse_variants = permute_sequences(reverse_variants);
+    forward_variants = permute_sequences(forward_variants, mismatches);
+    reverse_variants = permute_sequences(reverse_variants, mismatches);
 
     // Replace the reverse variants with their reverse complements
     let mut reverse_variants_revcomp = Vec::new();
@@ -756,17 +776,17 @@ mod tests {
 
 	#[test]
 	fn test_permute_sequences(){
-		let seq1 = vec!["CGA".to_string()];
+		let seq1 = vec!["CG".to_string()];
 		let mut expected1 = vec![
-			"CAA".to_string(),
-			"CCA".to_string(),
-			"CGA".to_string(),
-			"CTA".to_string(),
-			"AGA".to_string(),
-			"GGA".to_string(),
-			"TGA".to_string(),
+			"CA".to_string(),
+			"CC".to_string(),
+			"CG".to_string(),
+			"CT".to_string(),
+			"AG".to_string(),
+			"GG".to_string(),
+			"TG".to_string(),
 		];
-		let mut result1 = permute_sequences(seq1);
+		let mut result1 = permute_sequences(seq1, &(1 as usize));
 		result1.sort();
 		println!("Permutations: {}", result1.join(", "));
 		expected1.sort();

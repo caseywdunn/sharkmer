@@ -2,13 +2,115 @@ use clap::Parser;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
 use rustc_hash::FxHashMap;
+use std::collections::HashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
+use bio::io::fasta;
+use polars::prelude::*;
+
 mod kmer;
 mod pcr;
-use bio::io::fasta;
 
+pub enum ParameterValue {
+    Int(u32),
+    Str(String),
+    Float(f64),
+}
+
+fn is_valid_nucleotide(c: char) -> bool {
+    match c {
+        'A' => true,
+        'C' => true,
+        'G' => true,
+        'T' => true,
+        'R' => true, // A or G
+        'Y' => true, // C or T
+        'S' => true, // C or G
+        'W' => true, // A or T
+        'K' => true, // G or T
+        'M' => true, // A or C
+        'B' => true, // C or G or T
+        'D' => true, // A or G or T
+        'H' => true, // A or C or T
+        'V' => true, // A or C or G
+        'N' => true, // A or C or G or T
+        _ => false,
+    }
+}
+
+// Parse pcr string of format forward_reverse_max-length_name
+// Make sure forward and reverse are uppercase
+// Verify that forward and reverse contain only valid nucleotides (including degenerate nucleotides)
+// Make sure max-length is an integer
+// Return a Result of tuple of (forward, reverse, max-length, name), or an error if the string is not valid
+pub fn parse_pcr_string(pcr_string: &str) -> Result<HashMap<String, ParameterValue>, String> {
+    
+    let mut parameters: HashMap<String, ParameterValue> = HashMap::new();
+    
+    // Split the string on underscores
+    let split: Vec<&str> = pcr_string.split("_").collect();
+
+    // Check that there are 4 elements
+    if split.len() < 4 {
+        return Err(format!("Invalid pcr string, there are less than 4 elements separated by underscores: {}", pcr_string));
+    }
+
+    let forward = split[0].to_uppercase();
+    let reverse = split[1].to_uppercase();
+
+    // Check that the forward and reverse primers contain only valid nucleotides
+    for c in forward.chars() {
+        if !is_valid_nucleotide(c) {
+            return Err(format!("Invalid nucleotide {} in forward primer {}", c, split[0]));
+        }
+    }
+    for c in reverse.chars() {
+        if !is_valid_nucleotide(c) {
+            return Err(format!("Invalid nucleotide {} in reverse primer {}", c, split[1]));
+        }
+    }
+
+    // Check that the max-length is an integer
+    let max_length: u32 = match split[2].parse() {
+        Ok(n) => n,
+        Err(_) => return Err(format!("Invalid max-length: {}", split[2])),
+    };
+
+    // Insert the required forward, reverse, max-length, and name parameters
+    parameters.insert("forward".to_string(), ParameterValue::Str(forward.to_string()));
+    parameters.insert("reverse".to_string(), ParameterValue::Str(reverse.to_string()));
+    parameters.insert("max-length".to_string(), ParameterValue::Int(max_length));
+    parameters.insert("name".to_string(), ParameterValue::Str(split[3].to_string()));
+
+    // Loop over additional parameters, which are of the form key=value and are separated by underscores
+    for i in 4..split.len() {
+        let key_value: Vec<&str> = split[i].split("=").collect();
+        if key_value.len() != 2 {
+            return Err(format!("Invalid parameter: {}", split[i]));
+        }
+
+        let key = key_value[0].to_string();
+        let value = key_value[1].to_string();
+
+        // Check if the value is an integer
+        if let Ok(n) = value.parse::<u32>() {
+            parameters.insert(key, ParameterValue::Int(n));
+            continue;
+        }
+
+        // Check if the value is a float
+        if let Ok(n) = value.parse::<f64>() {
+            parameters.insert(key, ParameterValue::Float(n));
+            continue;
+        }
+
+        // Otherwise, insert the value as a string
+        parameters.insert(key, ParameterValue::Str(value));
+    }
+
+    Ok(parameters)
+}
 
 /// A collection of kmer counting and analysis tools
 #[derive(Parser, Debug)]
@@ -45,7 +147,18 @@ struct Args {
     input: Option<Vec<String>>,
 
     /// Optional primer pairs for in silico PCR (sPCR). The format is:
-    /// --pcr "forward_reverse_max-length[_optional-name]"
+    /// --pcr "forward_reverse_max-length_name"
+    /// Where:
+    ///   forward is the forward primer sequence in 5' to 3' orientation
+    ///   reverse is the reverse primer sequence in 5' to 3' orientation 
+    ///     along the opposite strand as the forward primer, so that the
+    ///     primers are in the same orientation that you would use in an 
+    ///     actual in vitro PCR reaction.
+    ///   max-length is the maximum length of the PCR product, including 
+    ///     the primers.
+    ///   name is a unique name for the primer pair or amplified gene 
+    ///     region. This will be used to specify amplified regions in 
+    ///     the output fasta file.
     /// More than one primer pair can be specified, for example:
     /// --pcr "forward1_reverse1_1000_name1" --pcr "forward2_reverse2_2000_name2"
     #[arg(short = 'p', long)]
@@ -93,6 +206,77 @@ fn main() {
     assert!(k % 2 == 1, "k must be odd");
     assert!(args.histo_max > 0, "histo_max must be greater than 0");
     assert!(args.n > 0, "n must be greater than 0");
+
+    // Create an empty data frame for pcr runs
+    let mut pcr_df = DataFrame::new(vec![
+        Series::new("forward", Vec::<String>::new()),
+        Series::new("reverse", Vec::<String>::new()),
+        Series::new("max-length", Vec::<u32>::new()),
+        Series::new("name", Vec::<String>::new()),
+        Series::new("trim", Vec::<u32>::new()),
+        Series::new("delta", Vec::<f64>::new()),
+    ]).unwrap();
+
+    // Loop over the pcr strings, check that they are valid, and add each as a row to pcr_df
+    for pcr_string in args.pcr.iter() {
+        let parsed_pcr = parse_pcr_string(pcr_string);
+        match parsed_pcr {
+            Ok(pcr_parameters) => {
+                let forward = match &pcr_parameters["forward"] {
+                    ParameterValue::Str(s) => s.clone(),
+                    _ => panic!("Unexpected value for 'forward'"),
+                };
+    
+                let reverse = match &pcr_parameters["reverse"] {
+                    ParameterValue::Str(s) => s.clone(),
+                    _ => panic!("Unexpected value for 'reverse'"),
+                };
+    
+                let max_length = match &pcr_parameters["max-length"] {
+                    ParameterValue::Int(i) => i,
+                    _ => panic!("Unexpected value for 'max-length'"),
+                };
+
+                let name = match &pcr_parameters["name"] {
+                    ParameterValue::Str(s) => s.clone(),
+                    _ => panic!("Unexpected value for 'reverse'"),
+                };
+    
+                let trim = match pcr_parameters.get("trim") {
+                    Some(ParameterValue::Int(i)) => i,
+                    None => &(30 as u32), // Default value
+                    _ => panic!("Unexpected value type for 'trim'"),
+                };
+    
+                let mut delta_int_as_float;
+                let delta = match pcr_parameters.get("delta") {
+                    Some(ParameterValue::Float(f)) => f,
+                    Some(ParameterValue::Int(i)) => {
+                        delta_int_as_float = *i as f64;
+                        &delta_int_as_float
+                    }
+                    None => &(5.0 as f64), // Default value
+                    _ => panic!("Unexpected value type for 'delta'"),
+                };
+    
+                let new_row = DataFrame::new(vec![
+                    Series::new("forward", vec![forward]),
+                    Series::new("reverse", vec![reverse]),
+                    Series::new("max-length", vec![*max_length]),
+                    Series::new("name", vec![name]), // Assuming name is always a string
+                    Series::new("trim", vec![*trim]),
+                    Series::new("delta", vec![*delta])
+                ]).unwrap();
+    
+                // Continue with variable names. Using 'pcr_df' as per the context you provided.
+                pcr_df = pcr_df.vstack(&new_row).unwrap();
+            }
+            Err(e) => {
+                eprintln!("Error parsing PCR string: {}", e);
+                std::process::exit(1);
+            }
+        }
+    }
 
     // Set the number of threads for Rayon to use
     rayon::ThreadPoolBuilder::new()
@@ -343,6 +527,7 @@ fn main() {
                     reverse,
                     &pcr_string,
                     &args.coverage,
+                    &(3 as usize),
                     args.verbosity,
                     );
             println!("There are {} subassemblies", fasta.len());
