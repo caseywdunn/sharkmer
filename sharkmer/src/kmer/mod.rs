@@ -1,7 +1,6 @@
 //! This module provides kmer functions.
 //!
 
-
 use rustc_hash::FxHashMap;
 
 // Create a structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
@@ -14,12 +13,12 @@ pub struct KmerSummary {
 ///
 /// The function computes the reverse complement of a kmer represented as a 64-bit unsigned integer.
 /// Each base in the kmer is encoded using 2 bits, with the following scheme:
-/// 
+///
 /// * `00` represents `A`
 /// * `01` represents `C`
 /// * `10` represents `G`
 /// * `11` represents `T`
-/// 
+///
 /// # Arguments
 ///
 /// * `kmer` - A reference to the 64-bit unsigned integer representation of the kmer.
@@ -121,8 +120,8 @@ pub fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
 
 /// Converts a vector of 8-bit integers into a vector of canonical kmers.
 ///
-/// Given a sequence that's been encoded as a series of 8-bit integers (where each integer 
-/// represents 4 bases), this function extracts canonical kmers from it. A canonical kmer 
+/// Given a sequence that's been encoded as a series of 8-bit integers (where each integer
+/// represents 4 bases), this function extracts canonical kmers from it. A canonical kmer
 /// is the lexicographically smaller of a kmer and its reverse complement.
 ///
 /// The encoding uses a 2-bit representation for each base:
@@ -139,7 +138,7 @@ pub fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
 ///
 /// # Returns
 ///
-/// A vector of 64-bit integers, where each integer represents a canonical kmer extracted 
+/// A vector of 64-bit integers, where each integer represents a canonical kmer extracted
 /// from the encoded sequence.
 ///
 /// # Example
@@ -150,7 +149,7 @@ pub fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
 /// let canonical_kmers = ints_to_kmers(&encoded_sequence, &kmer_length);
 /// ```
 pub fn ints_to_kmers(ints: &Vec<u8>, k: &usize) -> Vec<u64> {
-    let mut kmers: Vec<u64> = Vec::with_capacity((ints.len() * 4 / k ) + 1);
+    let mut kmers: Vec<u64> = Vec::with_capacity((ints.len() * 4 / k) + 1);
     let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
     let mut revframe: u64 = 0; // read the bits for complement into the least significant end of this integer
     let mut n_valid = 0; // number of valid bases in the frame
@@ -187,21 +186,21 @@ pub fn ints_to_kmers(ints: &Vec<u8>, k: &usize) -> Vec<u64> {
 /// Generates a histogram from kmer counts.
 ///
 /// This function produces a histogram where the indices represent the counts of a kmer,
-/// and the values at those indices represent the number of kmers with that count. 
+/// and the values at those indices represent the number of kmers with that count.
 /// If a kmer's count exceeds the specified `histo_max`, it gets placed in the final bucket.
 ///
 /// # Arguments
 ///
 /// * `kmer_counts` - A reference to a `FxHashMap` where keys are kmers (as 64-bit integers)
 ///   and values are the corresponding counts of each kmer.
-/// * `histo_max` - A reference to the maximum count to be considered for individual bins 
-///   in the histogram. Kmer counts exceeding this value will be lumped into a single 
+/// * `histo_max` - A reference to the maximum count to be considered for individual bins
+///   in the histogram. Kmer counts exceeding this value will be lumped into a single
 ///   overflow bin.
 ///
 /// # Returns
 ///
-/// A vector representing the histogram. The value at index `i` represents the number of 
-/// kmers that appeared `i` times. The last value in the vector represents the number of 
+/// A vector representing the histogram. The value at index `i` represents the number of
+/// kmers that appeared `i` times. The last value in the vector represents the number of
 /// kmers with counts greater than `histo_max`.
 ///
 /// # Example
@@ -216,7 +215,7 @@ pub fn ints_to_kmers(ints: &Vec<u8>, k: &usize) -> Vec<u64> {
 ///
 /// let histo_max = 10;
 /// let histogram = count_histogram(&kmer_counts, &histo_max);
-/// // histogram will have 12 entries: one for each count from 0 to 10, 
+/// // histogram will have 12 entries: one for each count from 0 to 10,
 /// // plus an additional one for counts greater than 10.
 /// ```
 pub fn count_histogram(kmer_counts: &FxHashMap<u64, u64>, histo_max: &u64) -> Vec<u64> {
@@ -262,85 +261,84 @@ pub fn get_kmer_count(kmer_counts: &FxHashMap<u64, u64>, kmer: &u64, k: &usize) 
 #[cfg(test)]
 mod tests {
     use super::*;
-	
-	#[test]
-	fn test_tests() {
-		assert_eq!(2 + 2, 4);
-	}
 
     #[test]
-	fn test_seq_to_ints() {
-		// 'A' => 0, // 00
-		// 'C' => 1, // 01
-		// 'G' => 2, // 10
-		// 'T' => 3, // 11
-		let seq = "CGTAATGCGGCGA";
-		let expected = vec![vec![0b01101100, 0b00111001, 0b10100110]];
-		let actual = seq_to_ints(seq);
-		assert_eq!(actual, expected);
-	}
-
-	#[test]
-	fn test_seq_to_ints_n() {
-		// 'A' => 0, // 00
-		// 'C' => 1, // 01
-		// 'G' => 2, // 10
-		// 'T' => 3, // 11
-		let seq = "CGTANATGCGGCGA";
-		let expected = vec![vec![0b01101100], vec![0b00111001, 0b10100110]];
-		let actual = seq_to_ints(seq);
-		assert_eq!(actual, expected);
-	}
-
-	#[test]
-	fn test_revcomp_kmer() {
-		let kmer = 0b0010_0110;
-		let actual = revcomp_kmer(&kmer, &3usize);
-
-		// Check that the reverse complement of the reverse complement is the original
-		assert_eq!(kmer, revcomp_kmer(&actual, &3usize));
-
-		// Check against hard coded expected value
-		let expected = 0b0001_1001;
-		assert_eq!(actual, expected);
-
-		let kmer = 0b0110_1100_0011_1001_1010_0110;
-		let actual = revcomp_kmer(&kmer, &12usize);
-		assert_eq!(kmer, revcomp_kmer(&actual, &12usize));
-
-		let expected = 0b0110_0101_1001_0011_1100_0110;
-
-		assert_eq!(actual, expected);
-	}
-
-	#[test]
-	fn test_ints_to_kmers() {
-		let ints = vec![0b01101100, 0b00111001, 0b10100110];
-		// original	                // reverse complement
-		// 0b01101100_00111001_10   0b01_10010011_11000110  >
-		// 0b101100_00111001_1010   0b0101_10010011_110001  >
-		// 0b1100_00111001_101001   0b100101_10010011_1100  >
-		// 0b00_00111001_10100110   0b01100101_10010011_11  <
-		//
-		let expected = vec![
-			0b01_1001_0011_1100_0110,
-			0b01_0110_0100_1111_0001,
-			0b10_0101_1001_0011_1100,
-			0b00_0011_1001_1010_0110,
-		];
-		let actual = ints_to_kmers(&ints, &9usize);
-		assert_eq!(actual, expected);
-	}
+    fn test_tests() {
+        assert_eq!(2 + 2, 4);
+    }
 
     #[test]
-	fn test_kmer_to_seq(){
-		let kmer = 0b1001_1000;
-		let seq = kmer_to_seq(&kmer, &4usize);
-		assert_eq!(seq, "GCGA");
+    fn test_seq_to_ints() {
+        // 'A' => 0, // 00
+        // 'C' => 1, // 01
+        // 'G' => 2, // 10
+        // 'T' => 3, // 11
+        let seq = "CGTAATGCGGCGA";
+        let expected = vec![vec![0b01101100, 0b00111001, 0b10100110]];
+        let actual = seq_to_ints(seq);
+        assert_eq!(actual, expected);
+    }
 
-		let kmer = 0b1001_1000_1001_1000;
-		let seq = crate::kmer::kmer_to_seq(&kmer, &8usize);
-		assert_eq!(seq, "GCGAGCGA");
-	}
+    #[test]
+    fn test_seq_to_ints_n() {
+        // 'A' => 0, // 00
+        // 'C' => 1, // 01
+        // 'G' => 2, // 10
+        // 'T' => 3, // 11
+        let seq = "CGTANATGCGGCGA";
+        let expected = vec![vec![0b01101100], vec![0b00111001, 0b10100110]];
+        let actual = seq_to_ints(seq);
+        assert_eq!(actual, expected);
+    }
 
+    #[test]
+    fn test_revcomp_kmer() {
+        let kmer = 0b0010_0110;
+        let actual = revcomp_kmer(&kmer, &3usize);
+
+        // Check that the reverse complement of the reverse complement is the original
+        assert_eq!(kmer, revcomp_kmer(&actual, &3usize));
+
+        // Check against hard coded expected value
+        let expected = 0b0001_1001;
+        assert_eq!(actual, expected);
+
+        let kmer = 0b0110_1100_0011_1001_1010_0110;
+        let actual = revcomp_kmer(&kmer, &12usize);
+        assert_eq!(kmer, revcomp_kmer(&actual, &12usize));
+
+        let expected = 0b0110_0101_1001_0011_1100_0110;
+
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn test_ints_to_kmers() {
+        let ints = vec![0b01101100, 0b00111001, 0b10100110];
+        // original	                // reverse complement
+        // 0b01101100_00111001_10   0b01_10010011_11000110  >
+        // 0b101100_00111001_1010   0b0101_10010011_110001  >
+        // 0b1100_00111001_101001   0b100101_10010011_1100  >
+        // 0b00_00111001_10100110   0b01100101_10010011_11  <
+        //
+        let expected = vec![
+            0b01_1001_0011_1100_0110,
+            0b01_0110_0100_1111_0001,
+            0b10_0101_1001_0011_1100,
+            0b00_0011_1001_1010_0110,
+        ];
+        let actual = ints_to_kmers(&ints, &9usize);
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn test_kmer_to_seq() {
+        let kmer = 0b1001_1000;
+        let seq = kmer_to_seq(&kmer, &4usize);
+        assert_eq!(seq, "GCGA");
+
+        let kmer = 0b1001_1000_1001_1000;
+        let seq = crate::kmer::kmer_to_seq(&kmer, &8usize);
+        assert_eq!(seq, "GCGAGCGA");
+    }
 }

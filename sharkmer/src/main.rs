@@ -1,4 +1,6 @@
+use bio::io::fasta;
 use clap::Parser;
+use polars::prelude::*;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
 use rustc_hash::FxHashMap;
@@ -6,8 +8,6 @@ use std::collections::HashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
-use bio::io::fasta;
-use polars::prelude::*;
 
 mod kmer;
 mod pcr;
@@ -45,15 +45,17 @@ fn is_valid_nucleotide(c: char) -> bool {
 // Make sure max-length is an integer
 // Return a Result of tuple of (forward, reverse, max-length, name), or an error if the string is not valid
 pub fn parse_pcr_string(pcr_string: &str) -> Result<HashMap<String, ParameterValue>, String> {
-    
     let mut parameters: HashMap<String, ParameterValue> = HashMap::new();
-    
+
     // Split the string on underscores
     let split: Vec<&str> = pcr_string.split("_").collect();
 
     // Check that there are 4 elements
     if split.len() < 4 {
-        return Err(format!("Invalid pcr string, there are less than 4 elements separated by underscores: {}", pcr_string));
+        return Err(format!(
+            "Invalid pcr string, there are less than 4 elements separated by underscores: {}",
+            pcr_string
+        ));
     }
 
     let forward = split[0].to_uppercase();
@@ -62,12 +64,18 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<HashMap<String, ParameterVal
     // Check that the forward and reverse primers contain only valid nucleotides
     for c in forward.chars() {
         if !is_valid_nucleotide(c) {
-            return Err(format!("Invalid nucleotide {} in forward primer {}", c, split[0]));
+            return Err(format!(
+                "Invalid nucleotide {} in forward primer {}",
+                c, split[0]
+            ));
         }
     }
     for c in reverse.chars() {
         if !is_valid_nucleotide(c) {
-            return Err(format!("Invalid nucleotide {} in reverse primer {}", c, split[1]));
+            return Err(format!(
+                "Invalid nucleotide {} in reverse primer {}",
+                c, split[1]
+            ));
         }
     }
 
@@ -78,10 +86,19 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<HashMap<String, ParameterVal
     };
 
     // Insert the required forward, reverse, max-length, and name parameters
-    parameters.insert("forward".to_string(), ParameterValue::Str(forward.to_string()));
-    parameters.insert("reverse".to_string(), ParameterValue::Str(reverse.to_string()));
+    parameters.insert(
+        "forward".to_string(),
+        ParameterValue::Str(forward.to_string()),
+    );
+    parameters.insert(
+        "reverse".to_string(),
+        ParameterValue::Str(reverse.to_string()),
+    );
     parameters.insert("max-length".to_string(), ParameterValue::Int(max_length));
-    parameters.insert("name".to_string(), ParameterValue::Str(split[3].to_string()));
+    parameters.insert(
+        "name".to_string(),
+        ParameterValue::Str(split[3].to_string()),
+    );
 
     // Loop over additional parameters, which are of the form key=value and are separated by underscores
     for i in 4..split.len() {
@@ -150,14 +167,14 @@ struct Args {
     /// --pcr "forward_reverse_max-length_name"
     /// Where:
     ///   forward is the forward primer sequence in 5' to 3' orientation
-    ///   reverse is the reverse primer sequence in 5' to 3' orientation 
+    ///   reverse is the reverse primer sequence in 5' to 3' orientation
     ///     along the opposite strand as the forward primer, so that the
-    ///     primers are in the same orientation that you would use in an 
+    ///     primers are in the same orientation that you would use in an
     ///     actual in vitro PCR reaction.
-    ///   max-length is the maximum length of the PCR product, including 
+    ///   max-length is the maximum length of the PCR product, including
     ///     the primers.
-    ///   name is a unique name for the primer pair or amplified gene 
-    ///     region. This will be used to specify amplified regions in 
+    ///   name is a unique name for the primer pair or amplified gene
+    ///     region. This will be used to specify amplified regions in
     ///     the output fasta file.
     /// More than one primer pair can be specified, for example:
     /// --pcr "forward1_reverse1_1000_name1" --pcr "forward2_reverse2_2000_name2"
@@ -171,7 +188,6 @@ struct Args {
     /// Verbosity
     #[arg(long, default_value_t = 0)]
     verbosity: usize,
-
 }
 fn main() {
     let start_run = std::time::Instant::now();
@@ -196,7 +212,7 @@ fn main() {
     }
 
     let k = args.k;
-    
+
     // Check that the arguments are valid
     assert!(
         k < 32,
@@ -215,7 +231,8 @@ fn main() {
         Series::new("name", Vec::<String>::new()),
         Series::new("trim", Vec::<u32>::new()),
         Series::new("delta", Vec::<f64>::new()),
-    ]).unwrap();
+    ])
+    .unwrap();
 
     // Loop over the pcr strings, check that they are valid, and add each as a row to pcr_df
     for pcr_string in args.pcr.iter() {
@@ -226,12 +243,12 @@ fn main() {
                     ParameterValue::Str(s) => s.clone(),
                     _ => panic!("Unexpected value for 'forward'"),
                 };
-    
+
                 let reverse = match &pcr_parameters["reverse"] {
                     ParameterValue::Str(s) => s.clone(),
                     _ => panic!("Unexpected value for 'reverse'"),
                 };
-    
+
                 let max_length = match &pcr_parameters["max-length"] {
                     ParameterValue::Int(i) => i,
                     _ => panic!("Unexpected value for 'max-length'"),
@@ -241,13 +258,13 @@ fn main() {
                     ParameterValue::Str(s) => s.clone(),
                     _ => panic!("Unexpected value for 'reverse'"),
                 };
-    
+
                 let trim = match pcr_parameters.get("trim") {
                     Some(ParameterValue::Int(i)) => i,
                     None => &(30 as u32), // Default value
                     _ => panic!("Unexpected value type for 'trim'"),
                 };
-    
+
                 let mut delta_int_as_float;
                 let delta = match pcr_parameters.get("delta") {
                     Some(ParameterValue::Float(f)) => f,
@@ -258,16 +275,17 @@ fn main() {
                     None => &(5.0 as f64), // Default value
                     _ => panic!("Unexpected value type for 'delta'"),
                 };
-    
+
                 let new_row = DataFrame::new(vec![
                     Series::new("forward", vec![forward]),
                     Series::new("reverse", vec![reverse]),
                     Series::new("max-length", vec![*max_length]),
                     Series::new("name", vec![name]), // Assuming name is always a string
                     Series::new("trim", vec![*trim]),
-                    Series::new("delta", vec![*delta])
-                ]).unwrap();
-    
+                    Series::new("delta", vec![*delta]),
+                ])
+                .unwrap();
+
                 // Continue with variable names. Using 'pcr_df' as per the context you provided.
                 pcr_df = pcr_df.vstack(&new_row).unwrap();
             }
@@ -401,7 +419,6 @@ fn main() {
         })
         .collect();
 
-
     println!(" done, time: {:?}", start.elapsed());
 
     // Create the histograms
@@ -478,16 +495,19 @@ fn main() {
     file_stats.write_all(line.as_bytes()).unwrap();
     println!(" done");
 
-    if args.pcr.len() > 0{
+    if args.pcr.len() > 0 {
         println!("Running in silico PCR...");
 
         // Remove kmer_counts entries with less than coverage
-        print!("Removing kmers with coverage less than {}...", args.coverage);
+        print!(
+            "Removing kmers with coverage less than {}...",
+            args.coverage
+        );
         std::io::stdout().flush().unwrap();
         let mut kmer_counts_filtered: FxHashMap<u64, u64> = FxHashMap::default();
         let mut count_filtered_total: u64 = 0;
         let mut count_raw_total: u64 = 0;
-        
+
         for (&kmer, &count) in &kmer_counts {
             if count >= args.coverage {
                 kmer_counts_filtered.insert(kmer, count);
@@ -496,10 +516,17 @@ fn main() {
             count_raw_total += count;
         }
 
-        println!("The total kmer count went from {} to {}", count_raw_total, count_filtered_total);
-        println!("The number of unique kmers went from {} to {}", kmer_counts.len(), kmer_counts_filtered.len() );
+        println!(
+            "The total kmer count went from {} to {}",
+            count_raw_total, count_filtered_total
+        );
+        println!(
+            "The number of unique kmers went from {} to {}",
+            kmer_counts.len(),
+            kmer_counts_filtered.len()
+        );
 
-        for pcr_string in args.pcr{
+        for pcr_string in args.pcr {
             println!("Processing PCR string: {}", pcr_string);
             // split the string on underscores
             let pcr_strings: Vec<&str> = pcr_string.split("_").collect();
@@ -511,33 +538,33 @@ fn main() {
                 Ok(val) => {
                     max_length = val;
                     // use max_length here
-                },
+                }
                 Err(e) => {
                     eprintln!("Failed to parse the maximum primer length: {}", e);
                     // handle the error, maybe exit or provide a default value
                 }
             }
 
-            let fasta = 
-                pcr::do_pcr(
-                    &kmer_counts_filtered, 
-                    &(args.k as usize), 
-                    &max_length, 
-                    forward,
-                    reverse,
-                    &pcr_string,
-                    &args.coverage,
-                    &(3 as usize),
-                    args.verbosity,
-                    );
+            let fasta = pcr::do_pcr(
+                &kmer_counts_filtered,
+                &(args.k as usize),
+                &max_length,
+                forward,
+                reverse,
+                &pcr_string,
+                &args.coverage,
+                &(3 as usize),
+                args.verbosity,
+            );
             println!("There are {} subassemblies", fasta.len());
             if fasta.len() > 0 {
                 let fasta_path = format!("{}{}_{}.fasta", directory, out_name, pcr_string);
-                let mut fasta_writer = fasta::Writer::new(std::fs::File::create(fasta_path).unwrap());
+                let mut fasta_writer =
+                    fasta::Writer::new(std::fs::File::create(fasta_path).unwrap());
                 for record in fasta {
                     fasta_writer.write_record(&record).unwrap();
                 }
-            } 
+            }
         }
 
         println!("Done running in silico PCR");

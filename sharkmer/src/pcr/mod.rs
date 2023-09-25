@@ -1,14 +1,14 @@
 use crate::kmer::*;
 use bio::io::fasta;
-use std::io::Write;
+use petgraph::algo::all_simple_paths;
+use petgraph::graph::NodeIndex;
+use petgraph::Direction;
+use petgraph::Graph;
 use rustc_hash::FxHashMap;
 use std::collections::HashSet;
-use petgraph::Graph;
-use petgraph::Direction;
-use petgraph::graph::NodeIndex;
-use petgraph::algo::all_simple_paths;
+use std::io::Write;
 
-// Create a structure to hold a kmer representing an oligo up to 32 nucleotides long in the 
+// Create a structure to hold a kmer representing an oligo up to 32 nucleotides long in the
 // length*2 least significant bits
 struct Oligo {
     length: usize,
@@ -21,23 +21,22 @@ enum PrimerDirection {
     Reverse,
 }
 
-
 // De Bruijn graph node
 struct DBNode {
-    sub_kmer: u64, // k-1 mer that contains overlap between kmers
-    is_start: bool,  // Contains the forward primer
-    is_end: bool,  // Contains the reverse complement of the reverse primer
+    sub_kmer: u64,     // k-1 mer that contains overlap between kmers
+    is_start: bool,    // Contains the forward primer
+    is_end: bool,      // Contains the reverse complement of the reverse primer
     is_terminal: bool, // Is a terminal node
-    visited: bool, // Has been visited during graph traversal
+    visited: bool,     // Has been visited during graph traversal
 }
 
 struct DBEdge {
-    kmer: u64, // kmer that contains overlap between sub_kmers
+    kmer: u64,  // kmer that contains overlap between sub_kmers
     count: u64, // Number of times this kmer was observed
 }
 
 // Given an oligo as a String, return a Oligo struct representing it
-fn string_to_oligo (seq: &str) -> Oligo {
+fn string_to_oligo(seq: &str) -> Oligo {
     let mut kmer: u64 = 0;
     let mut length: usize = 0;
     for c in seq.chars() {
@@ -52,14 +51,11 @@ fn string_to_oligo (seq: &str) -> Oligo {
         kmer = (kmer << 2) | base as u64;
         length += 1;
     }
-    Oligo {
-        length,
-        kmer,
-    }
+    Oligo { length, kmer }
 }
 
-// Given a primer that may include ambiguous nucleotides, return a vector 
-// of sequences that include all possible resolutions of the ambiguity. If 
+// Given a primer that may include ambiguous nucleotides, return a vector
+// of sequences that include all possible resolutions of the ambiguity. If
 // there are no ambiguous nucleotides, the vector contains only the original
 // sequence.
 fn resolve_primer(primer: String) -> Vec<String> {
@@ -80,7 +76,12 @@ fn resolve_primer(primer: String) -> Vec<String> {
             'D' => vec!["A".to_string(), "G".to_string(), "T".to_string()],
             'H' => vec!["A".to_string(), "C".to_string(), "T".to_string()],
             'V' => vec!["A".to_string(), "C".to_string(), "G".to_string()],
-            'N' => vec!["A".to_string(), "C".to_string(), "G".to_string(), "T".to_string()],
+            'N' => vec![
+                "A".to_string(),
+                "C".to_string(),
+                "G".to_string(),
+                "T".to_string(),
+            ],
             // Return the same nucleotide if it's not ambiguous
             _ => vec![nuc.to_string()],
         };
@@ -98,7 +99,6 @@ fn resolve_primer(primer: String) -> Vec<String> {
 
     sequences
 }
-
 
 fn permute_sequences(sequences: Vec<String>, mismatches: &usize) -> Vec<String> {
     let mut unique_sequences = HashSet::new();
@@ -131,10 +131,17 @@ fn combinations(n: usize, k: usize) -> Vec<Vec<usize>> {
         item.push(n - 1);
     }
 
-    without_last.into_iter().chain(with_last.into_iter()).collect()
+    without_last
+        .into_iter()
+        .chain(with_last.into_iter())
+        .collect()
 }
 
-fn generate_permutations(seq: &String, positions: &Vec<usize>, unique_sequences: &mut HashSet<String>) {
+fn generate_permutations(
+    seq: &String,
+    positions: &Vec<usize>,
+    unique_sequences: &mut HashSet<String>,
+) {
     let nucleotides = ["A", "T", "C", "G"];
     for pos in positions {
         for &replacement in nucleotides.iter() {
@@ -147,30 +154,36 @@ fn generate_permutations(seq: &String, positions: &Vec<usize>, unique_sequences:
     }
 }
 
-
 fn reverse_complement(seq: &str) -> String {
-    seq.chars().rev().map(|c| match c {
-        'A' => 'T',
-        'T' => 'A',
-        'G' => 'C',
-        'C' => 'G',
-        'Y' => 'R', // C or T
-        'R' => 'Y', // A or G
-        'S' => 'S', // C or G
-        'W' => 'W', // A or T
-        'K' => 'M', // G or T
-        'M' => 'K', // A or C
-        'B' => 'V', // C or G or T
-        'V' => 'B', // A or C or G
-        'D' => 'H', // A or G or T
-        'H' => 'D', // A or C or T
-        'N' => 'N', // A or C or G or T
-        _ => panic!("Invalid nucleotide: {}", c),
-    }).collect()
+    seq.chars()
+        .rev()
+        .map(|c| match c {
+            'A' => 'T',
+            'T' => 'A',
+            'G' => 'C',
+            'C' => 'G',
+            'Y' => 'R', // C or T
+            'R' => 'Y', // A or G
+            'S' => 'S', // C or G
+            'W' => 'W', // A or T
+            'K' => 'M', // G or T
+            'M' => 'K', // A or C
+            'B' => 'V', // C or G or T
+            'V' => 'B', // A or C or G
+            'D' => 'H', // A or G or T
+            'H' => 'D', // A or C or T
+            'N' => 'N', // A or C or G or T
+            _ => panic!("Invalid nucleotide: {}", c),
+        })
+        .collect()
 }
 
-
-fn find_oligos_in_kmers (oligos: &[Oligo], kmers: &HashSet<u64>, k: &usize, dir: PrimerDirection) -> HashSet<u64>{
+fn find_oligos_in_kmers(
+    oligos: &[Oligo],
+    kmers: &HashSet<u64>,
+    k: &usize,
+    dir: PrimerDirection,
+) -> HashSet<u64> {
     // Find the kmers that contain the oligos.
     // If direction is forward, match the oligo at the start of the kmer.
     // If direction is reverse, match the oligo at the end of the kmer.
@@ -182,13 +195,16 @@ fn find_oligos_in_kmers (oligos: &[Oligo], kmers: &HashSet<u64>, k: &usize, dir:
     let oligo_set: HashSet<u64> = match dir {
         PrimerDirection::Forward => {
             // Rotate the oligo kmers to the start of the kmer
-            oligos.iter().map(|oligo| oligo.kmer << (2*(*k-oligo_length))).collect()
-        },
+            oligos
+                .iter()
+                .map(|oligo| oligo.kmer << (2 * (*k - oligo_length)))
+                .collect()
+        }
         PrimerDirection::Reverse => {
             // Just add the oligo kmers
             oligos.iter().map(|oligo| oligo.kmer).collect()
-        },
-    };    
+        }
+    };
 
     // Create mask for kmers so they can be compared to the oligo subsequence
     // If dir is forward, mask is set to 1 starting at the first position of the kmer for 2*oligo_length
@@ -200,12 +216,12 @@ fn find_oligos_in_kmers (oligos: &[Oligo], kmers: &HashSet<u64>, k: &usize, dir:
                 mask = (mask << 1) | 1;
             }
             mask <<= 2 * *k - 2 * oligo_length;
-        },
+        }
         PrimerDirection::Reverse => {
             for _i in 0..(2 * oligo_length) {
                 mask = (mask << 1) | 1;
             }
-        },
+        }
     }
 
     // Create a mutable copy of kmers
@@ -216,7 +232,6 @@ fn find_oligos_in_kmers (oligos: &[Oligo], kmers: &HashSet<u64>, k: &usize, dir:
 
     kmers_match
 }
-
 
 fn n_nonterminal_nodes_in_graph(graph: &Graph<DBNode, DBEdge>) -> usize {
     let mut n_nonterminal_nodes = 0;
@@ -238,7 +253,7 @@ fn n_unvisited_nodes_in_graph(graph: &Graph<DBNode, DBEdge>) -> usize {
     n
 }
 
-fn get_path_length(graph: &Graph<DBNode, DBEdge>, new_node: NodeIndex ) -> Option<usize> {
+fn get_path_length(graph: &Graph<DBNode, DBEdge>, new_node: NodeIndex) -> Option<usize> {
     // Get the length of the path from the start node to the new node
     let mut path_length = 0;
     let mut current_node = new_node;
@@ -247,7 +262,6 @@ fn get_path_length(graph: &Graph<DBNode, DBEdge>, new_node: NodeIndex ) -> Optio
     let mut visited_nodes: HashSet<NodeIndex> = HashSet::new();
 
     loop {
-
         // If the current node has already been visited, break
         if visited_nodes.contains(&current_node) {
             return None;
@@ -263,7 +277,10 @@ fn get_path_length(graph: &Graph<DBNode, DBEdge>, new_node: NodeIndex ) -> Optio
         }
 
         path_length += 1;
-        if let Some(next_node) = graph.neighbors_directed(current_node, Direction::Incoming).next() {
+        if let Some(next_node) = graph
+            .neighbors_directed(current_node, Direction::Incoming)
+            .next()
+        {
             current_node = next_node;
         } else {
             // Handle the case where there's no valid path to the start node from the given node
@@ -275,25 +292,23 @@ fn get_path_length(graph: &Graph<DBNode, DBEdge>, new_node: NodeIndex ) -> Optio
 }
 
 fn get_dbedge(kmer: &u64, kmer_counts: &FxHashMap<u64, u64>, k: &usize) -> DBEdge {
-    
-    DBEdge{
+    DBEdge {
         kmer: *kmer,
         count: crate::kmer::get_kmer_count(kmer_counts, &kmer, k),
     }
 }
 
 pub fn do_pcr(
-    kmer_counts: &FxHashMap<u64, u64>, 
-    k: &usize, 
-    max_length: &usize, 
-    forward_seq: &str, 
-    reverse_seq: &str, 
+    kmer_counts: &FxHashMap<u64, u64>,
+    k: &usize,
+    max_length: &usize,
+    forward_seq: &str,
+    reverse_seq: &str,
     run_name: &str,
     coverage: &u64,
     mismatches: &usize,
     verbosity: usize,
 ) -> Vec<bio::io::fasta::Record> {
-
     // Create a vector to hold the fasta records
     let mut records: Vec<fasta::Record> = Vec::new();
 
@@ -327,8 +342,14 @@ pub fn do_pcr(
     }
     reverse_variants = reverse_variants_revcomp;
 
-    println!("There are {} variants of the forward primer", forward_variants.len());
-    println!("There are {} variants of the reverse primer", reverse_variants.len());
+    println!(
+        "There are {} variants of the forward primer",
+        forward_variants.len()
+    );
+    println!(
+        "There are {} variants of the reverse primer",
+        reverse_variants.len()
+    );
 
     // Get the Oligos from the primer variants
     let mut forward_oligos: Vec<Oligo> = Vec::new();
@@ -339,13 +360,12 @@ pub fn do_pcr(
     for variant in reverse_variants.iter() {
         reverse_oligos.push(string_to_oligo(variant));
     }
-    
 
     // Create a hash set of the keys of kmer_counts
     print!("Creating hash set of kmers for assembly...");
     std::io::stdout().flush().unwrap();
     let mut kmers: std::collections::HashSet<u64> = kmer_counts.keys().copied().collect();
-    
+
     // Add the reverse complement of each key to the hash set with revcomp_kmer()
     for kmer in kmer_counts.keys() {
         kmers.insert(revcomp_kmer(kmer, k));
@@ -357,13 +377,14 @@ pub fn do_pcr(
     let start = std::time::Instant::now();
     print!("Finding kmers that contain the forward primer...");
     std::io::stdout().flush().unwrap();
-    let forward_matches = find_oligos_in_kmers (&forward_oligos, &kmers, k, PrimerDirection::Forward);
+    let forward_matches =
+        find_oligos_in_kmers(&forward_oligos, &kmers, k, PrimerDirection::Forward);
 
     println!(" done, time: {:?}", start.elapsed());
 
     let mut max_forward_count: u64 = 0;
     println!("  There are {} forward matches", forward_matches.len());
-    for f in &forward_matches{
+    for f in &forward_matches {
         let count = crate::kmer::get_kmer_count(kmer_counts, f, k);
         if count > max_forward_count {
             max_forward_count = count;
@@ -374,13 +395,14 @@ pub fn do_pcr(
     let start = std::time::Instant::now();
     print!("Finding kmers that contain the reverse primer...");
     std::io::stdout().flush().unwrap();
-    let reverse_matches = find_oligos_in_kmers (&reverse_oligos, &kmers, k, PrimerDirection::Reverse);
+    let reverse_matches =
+        find_oligos_in_kmers(&reverse_oligos, &kmers, k, PrimerDirection::Reverse);
 
     println!(" done, time: {:?}", start.elapsed());
 
     let mut max_reverse_count: u64 = 0;
     println!("  There are {} reverse matches", reverse_matches.len());
-    for f in &reverse_matches{
+    for f in &reverse_matches {
         let count = crate::kmer::get_kmer_count(kmer_counts, f, k);
         if count > max_reverse_count {
             max_reverse_count = count;
@@ -409,7 +431,7 @@ pub fn do_pcr(
         println!("  Updating hash set of kmers to include only those that exceed updated coverage threshold.");
         // Remove all members of kmers
         kmers.clear();
-        
+
         // Add each kmer and its reverse complement to kmers if the kmer count is >= new_coverage
         for kmer in kmer_counts.keys() {
             if kmer_counts[kmer] >= new_coverage {
@@ -418,7 +440,6 @@ pub fn do_pcr(
             }
         }
     }
-
 
     // Construct the graph
     println!("Creating graph, seeding with nodes that contain primer matches...");
@@ -455,7 +476,7 @@ pub fn do_pcr(
             start_nodes.push(new_node);
         }
     }
-    
+
     // Add the reverse matches to the graph
     let mut end_nodes: Vec<NodeIndex> = Vec::new();
     for &kmer in &reverse_matches {
@@ -486,13 +507,14 @@ pub fn do_pcr(
         }
     }
 
-    
-
     // Loop over the nodes and see if any of the nodes are start and end nodes
     // If so, print a warning
     for node in graph.node_indices() {
         if graph[node].is_start && graph[node].is_end {
-            println!("Warning: node {} is both a start and end node", node.index());
+            println!(
+                "Warning: node {} is both a start and end node",
+                node.index()
+            );
         }
     }
 
@@ -514,7 +536,10 @@ pub fn do_pcr(
         // Print the information for each node
         for node in graph.node_indices() {
             println!("Node {}:", node.index());
-            println!("  sub_kmer: {}", crate::kmer::kmer_to_seq(&graph[node].sub_kmer, &(*k-1)));
+            println!(
+                "  sub_kmer: {}",
+                crate::kmer::kmer_to_seq(&graph[node].sub_kmer, &(*k - 1))
+            );
             println!("  is_start: {}", graph[node].is_start);
             println!("  is_end: {}", graph[node].is_end);
             println!("  is_terminal: {}", graph[node].is_terminal);
@@ -523,9 +548,7 @@ pub fn do_pcr(
 
     let start = std::time::Instant::now();
     println!("Extending the assembly graph...");
-    
-    
-    
+
     // Extend graph by adding edges and new nodes to non-terminal nodes.
     // Terminal nodes have any of the following properties:
     // - is_end = true
@@ -539,12 +562,12 @@ pub fn do_pcr(
     // - Get the suffix of each kmer that extends the node
     // - If a node with sub_kmer == suffix already exists, add an edge to the existing node
     // - Otherwise, create a new node with sub_kmer == suffix, and add an edge to the new node
-    
+
     // where:
     // - The prefix of the kmer of the node is the sub_kmer of the parent node in the graph
     // - The suffix of the kmer of the node is the sub_kmer of the new node in the graph
     // - If a node with the sub_kmer already exists, add a new edge to the existing node
-    
+
     while n_unvisited_nodes_in_graph(&graph) > 0 {
         // Iterate over the nodes
         for node in graph.node_indices() {
@@ -553,10 +576,14 @@ pub fn do_pcr(
                 let sub_kmer = graph[node].sub_kmer;
 
                 if verbosity > 1 {
-                    print!("  {} sub_kmer being extended for node {}. ", crate::kmer::kmer_to_seq(&sub_kmer, &(*k-1)), node.index());
+                    print!(
+                        "  {} sub_kmer being extended for node {}. ",
+                        crate::kmer::kmer_to_seq(&sub_kmer, &(*k - 1)),
+                        node.index()
+                    );
                     std::io::stdout().flush().unwrap();
                 }
-                
+
                 // Get the kmers that could extend the node
                 let mut candidate_kmers: HashSet<u64> = HashSet::new();
 
@@ -569,7 +596,10 @@ pub fn do_pcr(
                 candidate_kmers.retain(|kmer| kmers.contains(kmer));
 
                 if verbosity > 1 {
-                    print!("There are {} candidate kmers for extension. ", candidate_kmers.len());
+                    print!(
+                        "There are {} candidate kmers for extension. ",
+                        candidate_kmers.len()
+                    );
                     std::io::stdout().flush().unwrap();
                 }
 
@@ -593,7 +623,10 @@ pub fn do_pcr(
                         graph[node].is_terminal = true;
                         graph[node].visited = true;
                         if verbosity > 1 {
-                            print!("Node {} extends itself. Marking as terminal. ", node.index());
+                            print!(
+                                "Node {} extends itself. Marking as terminal. ",
+                                node.index()
+                            );
                             std::io::stdout().flush().unwrap();
                         }
                         break;
@@ -625,7 +658,12 @@ pub fn do_pcr(
                         graph.add_edge(node, new_node, edge);
 
                         if verbosity > 1 {
-                            print!("Added sub_kmer {} for new node {} with edge kmer count {}. ", crate::kmer::kmer_to_seq(&suffix, &(*k-1)), new_node.index(), edge_count);
+                            print!(
+                                "Added sub_kmer {} for new node {} with edge kmer count {}. ",
+                                crate::kmer::kmer_to_seq(&suffix, &(*k - 1)),
+                                new_node.index(),
+                                edge_count
+                            );
                             std::io::stdout().flush().unwrap();
                         }
 
@@ -657,17 +695,18 @@ pub fn do_pcr(
                                 }
                             }
                         }
-                        
                     }
                 }
                 graph[node].visited = true;
 
                 if verbosity > 1 {
-                    println!("There are now {} unvisited and {} non-terminal nodes in the graph. ", n_unvisited_nodes_in_graph(&graph), n_nonterminal_nodes_in_graph(&graph));
+                    println!(
+                        "There are now {} unvisited and {} non-terminal nodes in the graph. ",
+                        n_unvisited_nodes_in_graph(&graph),
+                        n_nonterminal_nodes_in_graph(&graph)
+                    );
                     std::io::stdout().flush().unwrap();
                 }
-
-                
             }
         }
     }
@@ -689,7 +728,7 @@ pub fn do_pcr(
                 1,
                 Some(*max_length - (*k) + 1),
             );
-            
+
             all_paths.extend(paths_for_this_pair);
         }
     }
@@ -701,11 +740,11 @@ pub fn do_pcr(
         // The first time through the loop add the whole sequence, after that just add the last base
         for node in path.iter() {
             let node_data = graph.node_weight(*node).unwrap();
-            let subread = crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(*k-1));
+            let subread = crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(*k - 1));
             if sequence.is_empty() {
                 sequence = subread;
             } else {
-                sequence = format!("{}{}", sequence, subread.chars().last().unwrap(), );
+                sequence = format!("{}{}", sequence, subread.chars().last().unwrap(),);
             }
         }
         println!("{}", sequence);
@@ -724,81 +763,74 @@ pub fn do_pcr(
 mod tests {
     use super::*;
 
-	#[test]
-	fn test_resolve_primers() {
-		// Check with no ambiguous nucleotides
-		let seq1 = "CGTAATGCGGCGA".to_string();
-		let mut expected1 = vec![seq1.clone()];
-		let mut result1 = resolve_primer(seq1);
-		result1.sort();
-		expected1.sort();
-		assert_eq!(result1, expected1);
+    #[test]
+    fn test_resolve_primers() {
+        // Check with no ambiguous nucleotides
+        let seq1 = "CGTAATGCGGCGA".to_string();
+        let mut expected1 = vec![seq1.clone()];
+        let mut result1 = resolve_primer(seq1);
+        result1.sort();
+        expected1.sort();
+        assert_eq!(result1, expected1);
 
-		// Check with one ambiguous nucleotide
-		let seq2 = "CGTAATGCGGCGN".to_string();
-		let mut expected2 = vec![
-			"CGTAATGCGGCGA".to_string(),
-			"CGTAATGCGGCGC".to_string(),
-			"CGTAATGCGGCGG".to_string(),
-			"CGTAATGCGGCGT".to_string(),
-		];
-		let mut result2 = resolve_primer(seq2);
-		result2.sort();
-		expected2.sort();
-		assert_eq!(result2, expected2);
+        // Check with one ambiguous nucleotide
+        let seq2 = "CGTAATGCGGCGN".to_string();
+        let mut expected2 = vec![
+            "CGTAATGCGGCGA".to_string(),
+            "CGTAATGCGGCGC".to_string(),
+            "CGTAATGCGGCGG".to_string(),
+            "CGTAATGCGGCGT".to_string(),
+        ];
+        let mut result2 = resolve_primer(seq2);
+        result2.sort();
+        expected2.sort();
+        assert_eq!(result2, expected2);
 
-		// Check with one ambiguous nucleotide
-		let seq3 = "CGTAATRCGGCGA".to_string();
-		let mut expected3 = vec![
-			"CGTAATACGGCGA".to_string(),
-			"CGTAATGCGGCGA".to_string(),
-		];
-		let mut result3 = resolve_primer(seq3);
-		result3.sort();
-		expected3.sort();
-		assert_eq!(result3, expected3);
+        // Check with one ambiguous nucleotide
+        let seq3 = "CGTAATRCGGCGA".to_string();
+        let mut expected3 = vec!["CGTAATACGGCGA".to_string(), "CGTAATGCGGCGA".to_string()];
+        let mut result3 = resolve_primer(seq3);
+        result3.sort();
+        expected3.sort();
+        assert_eq!(result3, expected3);
 
-		// Check with two ambiguous nucleotides
-		let seq4 = "CGTAATRCGGCGY".to_string();
-		let mut expected4 = vec![
-			"CGTAATACGGCGC".to_string(),
-			"CGTAATGCGGCGC".to_string(),
-			"CGTAATACGGCGT".to_string(),
-			"CGTAATGCGGCGT".to_string(),
-		];
-		let mut result4 = resolve_primer(seq4);
-		result4.sort();
-		expected4.sort();
-		assert_eq!(result4, expected4);
+        // Check with two ambiguous nucleotides
+        let seq4 = "CGTAATRCGGCGY".to_string();
+        let mut expected4 = vec![
+            "CGTAATACGGCGC".to_string(),
+            "CGTAATGCGGCGC".to_string(),
+            "CGTAATACGGCGT".to_string(),
+            "CGTAATGCGGCGT".to_string(),
+        ];
+        let mut result4 = resolve_primer(seq4);
+        result4.sort();
+        expected4.sort();
+        assert_eq!(result4, expected4);
+    }
 
+    #[test]
+    fn test_permute_sequences() {
+        let seq1 = vec!["CG".to_string()];
+        let mut expected1 = vec![
+            "CA".to_string(),
+            "CC".to_string(),
+            "CG".to_string(),
+            "CT".to_string(),
+            "AG".to_string(),
+            "GG".to_string(),
+            "TG".to_string(),
+        ];
+        let mut result1 = permute_sequences(seq1, &(1 as usize));
+        result1.sort();
+        println!("Permutations: {}", result1.join(", "));
+        expected1.sort();
+        assert_eq!(result1, expected1);
+    }
 
-	}
-
-	#[test]
-	fn test_permute_sequences(){
-		let seq1 = vec!["CG".to_string()];
-		let mut expected1 = vec![
-			"CA".to_string(),
-			"CC".to_string(),
-			"CG".to_string(),
-			"CT".to_string(),
-			"AG".to_string(),
-			"GG".to_string(),
-			"TG".to_string(),
-		];
-		let mut result1 = permute_sequences(seq1, &(1 as usize));
-		result1.sort();
-		println!("Permutations: {}", result1.join(", "));
-		expected1.sort();
-		assert_eq!(result1, expected1);
-
-	}
-
-	#[test]
-	fn test_string_to_oligo(){
-		let oligo = string_to_oligo("GCGA");
-		assert_eq!(oligo.kmer, 0b1001_1000);
-		assert_eq!(oligo.length, 4);
-	}
-
+    #[test]
+    fn test_string_to_oligo() {
+        let oligo = string_to_oligo("GCGA");
+        assert_eq!(oligo.kmer, 0b1001_1000);
+        assert_eq!(oligo.length, 4);
+    }
 }
