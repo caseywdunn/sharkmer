@@ -760,9 +760,51 @@ pub fn do_pcr(
     records
 }
 
+
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // These functions are used in the tests
+    fn factorial(n: usize) -> usize {
+        let mut result = 1;
+        for i in 2..=n {
+            result *= i;
+        }
+        result
+    }
+
+    fn n_combinations(n:usize, r:usize) -> usize{
+        // Given a sequence of length n and r sites that can be permuted,
+        // there are (n! / (r!(n-r)!)) combinations of r sites in the sequence.
+        factorial(n) / (factorial(r) * factorial(n-r))
+    }
+
+    fn expected_permutations(n:usize, r:usize) -> usize{
+        // Given a sequence of length n and r sites that can be permuted,
+        // there are (n! / (r!(n-r)!)) combinations of r sites in the sequence and
+        // 4^r permutations of the r sites. 
+        // So there are (n! / (r!(n-r)!)) * 4^r permutations.
+        // But r of those permutations will be the original sequence, and we only want it
+        // counted once, so subtract r-1 from the total.
+
+        n_combinations(n, r) * (4_usize.pow(r as u32) - (r-1))
+    }
+
+    #[test]
+    fn test_factorial() {
+        assert_eq!(factorial(1), 1);
+        assert_eq!(factorial(2), 2);
+        assert_eq!(factorial(3), 6);
+        assert_eq!(factorial(8), 40320);
+    }
+
+    #[test]
+    fn test_n_combinations() {
+        assert_eq!(n_combinations(3, 2), 3);
+        assert_eq!(n_combinations(5, 5), 1);
+    }
 
     #[test]
     fn test_resolve_primers() {
@@ -807,32 +849,6 @@ mod tests {
         result4.sort();
         expected4.sort();
         assert_eq!(result4, expected4);
-    }
-
-
-    fn factorial(n: usize) -> usize {
-        let mut result = 1;
-        for i in 2..=n {
-            result *= i;
-        }
-        result
-    }
-
-    fn n_combinations(n:usize, r:usize) -> usize{
-        // Given a sequence of length n and r sites that can be permuted,
-        // there are (n! / (r!(n-r)!)) combinations of r sites in the sequence.
-        factorial(n) / (factorial(r) * factorial(n-r))
-    }
-
-    fn expected_permutations(n:usize, r:usize) -> usize{
-        // Given a sequence of length n and r sites that can be permuted,
-        // there are (n! / (r!(n-r)!)) combinations of r sites in the sequence and
-        // 4^r permutations of the r sites. 
-        // So there are (n! / (r!(n-r)!)) * 4^r permutations.
-        // But r of those permutations will be the original sequence, and we only want it
-        // counted once, so subtract r-1 from the total.
-
-        n_combinations(n, r) * (4_usize.pow(r as u32) - (r-1))
     }
 
     #[test]
