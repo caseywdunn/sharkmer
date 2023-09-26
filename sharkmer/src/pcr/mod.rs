@@ -100,13 +100,16 @@ fn resolve_primer(primer: String) -> Vec<String> {
     sequences
 }
 
-fn permute_sequences(sequences: Vec<String>, mismatches: &usize) -> Vec<String> {
+/// Given a vector of sequences, return a vector of all sequences that differ 
+/// from each original sequence at up to r positions. Includes the original
+/// sequences.
+fn permute_sequences(sequences: Vec<String>, r: &usize) -> Vec<String> {
     let mut unique_sequences = HashSet::new();
 
     for seq in &sequences {
         unique_sequences.insert(seq.clone()); // Add original sequence
 
-        for i in 1..=*mismatches {
+        for i in 1..=*r {
             for positions in combinations(seq.len(), i) {
                 generate_permutations(seq, &positions, &mut unique_sequences);
             }
@@ -116,17 +119,17 @@ fn permute_sequences(sequences: Vec<String>, mismatches: &usize) -> Vec<String> 
     unique_sequences.into_iter().collect()
 }
 
-fn combinations(n: usize, k: usize) -> Vec<Vec<usize>> {
-    if k == 0 {
+fn combinations(n: usize, r: usize) -> Vec<Vec<usize>> {
+    if r == 0 {
         return vec![Vec::new()];
     }
 
-    if n == k {
-        return vec![(0..k).collect()];
+    if n == r {
+        return vec![(0..r).collect()];
     }
 
-    let without_last = combinations(n - 1, k);
-    let mut with_last = combinations(n - 1, k - 1);
+    let without_last = combinations(n - 1, r);
+    let mut with_last = combinations(n - 1, r - 1);
     for item in &mut with_last {
         item.push(n - 1);
     }
@@ -806,8 +809,36 @@ mod tests {
         assert_eq!(result4, expected4);
     }
 
+
+    fn factorial(n: usize) -> usize {
+        let mut result = 1;
+        for i in 2..=n {
+            result *= i;
+        }
+        result
+    }
+
+    fn n_combinations(n:usize, r:usize) -> usize{
+        // Given a sequence of length n and r sites that can be permuted,
+        // there are (n! / (r!(n-r)!)) combinations of r sites in the sequence.
+        factorial(n) / (factorial(r) * factorial(n-r))
+    }
+
+    fn expected_permutations(n:usize, r:usize) -> usize{
+        // Given a sequence of length n and r sites that can be permuted,
+        // there are (n! / (r!(n-r)!)) combinations of r sites in the sequence and
+        // 4^r permutations of the r sites. 
+        // So there are (n! / (r!(n-r)!)) * 4^r permutations.
+        // But r of those permutations will be the original sequence, and we only want it
+        // counted once, so subtract r-1 from the total.
+
+        n_combinations(n, r) * (4_usize.pow(r as u32) - (r-1))
+    }
+
     #[test]
     fn test_permute_sequences() {
+
+        // Check specific permutations for a tiny example
         let seq1 = vec!["CG".to_string()];
         let mut expected1 = vec![
             "CA".to_string(),
@@ -823,6 +854,15 @@ mod tests {
         println!("Permutations: {}", result1.join(", "));
         expected1.sort();
         assert_eq!(result1, expected1);
+
+        // Check number of permutations for a larger example
+        let r:usize = 2;
+        let seq2 = vec!["CGTAGCTA".to_string()];
+        let n = seq2[0].len();
+        let result2 = permute_sequences(seq2, &r);
+        assert_eq!(result2.len(), expected_permutations(n, r));
+
+
     }
 
     #[test]
