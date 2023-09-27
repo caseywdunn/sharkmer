@@ -786,10 +786,9 @@ mod tests {
         // there are (n! / (r!(n-r)!)) combinations of r sites in the sequence and
         // 4^r permutations of the r sites. 
         // So there are (n! / (r!(n-r)!)) * 4^r permutations.
-        // But r of those permutations will be the original sequence, and we only want it
-        // counted once, so subtract r-1 from the total.
+        // But r of those permutations will be the original sequence.
 
-        n_combinations(n, r) * (4_usize.pow(r as u32) - (r-1))
+        n_combinations(n, r) * (4_usize.pow(r as u32))
     }
 
     #[test]
@@ -804,6 +803,26 @@ mod tests {
     fn test_n_combinations() {
         assert_eq!(n_combinations(3, 2), 3);
         assert_eq!(n_combinations(5, 5), 1);
+    }
+
+    #[test]
+    fn test_combinations() {
+        // Make sure there are the correct numbers of combinations
+        assert_eq!(combinations(3, 2).len(), n_combinations(3, 2));
+        assert_eq!(combinations(8, 5).len(), n_combinations(8, 5));
+
+        // Make sure the first combination has r elements
+        assert_eq!(combinations(8, 5)[0].len(), 5);
+
+        // Make sure that the combinations are unique
+        let combos = combinations(8, 5);
+        let combos_set:HashSet<Vec<usize>> = HashSet::from_iter(combos.clone());
+        assert_eq!(combos.len(), combos_set.len());
+    }
+
+    #[test]
+    fn test_expected_permutations () {
+        assert_eq!(expected_permutations(2, 1), 7);
     }
 
     #[test]
