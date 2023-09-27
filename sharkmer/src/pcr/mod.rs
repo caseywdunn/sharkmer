@@ -107,12 +107,8 @@ fn permute_sequences(sequences: Vec<String>, r: &usize) -> Vec<String> {
     let mut unique_sequences = HashSet::new();
 
     for seq in &sequences {
-        unique_sequences.insert(seq.clone()); // Add original sequence
-
-        for i in 1..=*r {
-            for positions in combinations(seq.len(), i) {
-                generate_recursive_permutations(seq, &positions, 0, &mut unique_sequences);
-            }
+        for positions in combinations(seq.len(), *r) {
+            generate_recursive_permutations(seq, &positions, 0, &mut unique_sequences);
         }
     }
 
@@ -903,6 +899,55 @@ mod tests {
         let n = seq2[0].len();
         let result2 = permute_sequences(seq2, &r);
         assert_eq!(result2.len(), expected_permutations(n, r));
+
+        // check n=3 r=2
+        let seq3 = vec!["CGT".to_string()];
+        let mut expected3 = vec![
+            "AAT".to_string(),
+            "ATT".to_string(),
+            "ACT".to_string(),
+            "TAT".to_string(),
+            "TTT".to_string(),
+            "TCT".to_string(),
+            "GAT".to_string(),
+            "GTT".to_string(),
+            "GCT".to_string(),
+            "AGA".to_string(),
+            "AGC".to_string(),
+            "AGG".to_string(),
+            "TGA".to_string(),
+            "TGC".to_string(),
+            "TGG".to_string(),
+            "GGA".to_string(),
+            "GGC".to_string(),
+            "GGG".to_string(),
+            "CAA".to_string(),
+            "CAC".to_string(),
+            "CAG".to_string(),
+            "CTA".to_string(),
+            "CTC".to_string(),
+            "CTG".to_string(),
+            "CCA".to_string(),
+            "CCC".to_string(),
+            "CCG".to_string()];
+        
+        // Construct all the permutations procedurally
+        // check n=3 r=2 for CGT
+        let seq3 = vec!["CGT".to_string()];
+        let r:usize = 2;
+        let n:usize = 3;
+        // First, use nested loops to get all the combinations of the 4 bases
+        let bases = vec!['A', 'C', 'G', 'T'];
+        let mut results_3: HashSet<String> = HashSet::new();
+        for i in 0..4 {
+            for j in 0..4 {
+                results_3.insert(format!("C{}{}", bases[i], bases[j]));
+                results_3.insert(format!("{}G{}", bases[i], bases[j]));
+                results_3.insert(format!("{}{}T", bases[i], bases[j]));
+            }
+        }
+
+
 
 
     }
