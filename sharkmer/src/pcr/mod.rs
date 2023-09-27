@@ -786,9 +786,11 @@ mod tests {
         // there are (n! / (r!(n-r)!)) combinations of r sites in the sequence and
         // 4^r permutations of the r sites. 
         // So there are (n! / (r!(n-r)!)) * 4^r permutations.
-        // But r of those permutations will be the original sequence.
+        // The original sequence is included in each combination, but we only 
+        // want to include it once. Se we subtract the number of combinations
+        // and add 1.
 
-        n_combinations(n, r) * (4_usize.pow(r as u32))
+        n_combinations(n, r) * 4_usize.pow(r as u32) - n_combinations(n, r) + 1
     }
 
     #[test]
