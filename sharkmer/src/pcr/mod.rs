@@ -111,7 +111,7 @@ fn permute_sequences(sequences: Vec<String>, r: &usize) -> Vec<String> {
 
         for i in 1..=*r {
             for positions in combinations(seq.len(), i) {
-                generate_permutations(seq, &positions, &mut unique_sequences);
+                generate_recursive_permutations(seq, &positions, 0, &mut unique_sequences);
             }
         }
     }
@@ -140,20 +140,25 @@ fn combinations(n: usize, r: usize) -> Vec<Vec<usize>> {
         .collect()
 }
 
-fn generate_permutations(
+
+fn generate_recursive_permutations(
     seq: &str,
     positions: &Vec<usize>,
+    current: usize,
     unique_sequences: &mut HashSet<String>,
 ) {
     let nucleotides = ["A", "T", "C", "G"];
-    for pos in positions {
-        for &replacement in nucleotides.iter() {
-            if replacement != seq.chars().nth(*pos).unwrap().to_string() {
-                let mut new_seq: Vec<char> = seq.chars().collect();
-                new_seq[*pos] = replacement.chars().next().unwrap();
-                unique_sequences.insert(new_seq.into_iter().collect());
-            }
-        }
+    
+    if current == positions.len() {
+        unique_sequences.insert(seq.to_string());
+        return;
+    }
+    
+    let pos = positions[current];
+    for &nucleotide in nucleotides.iter() {
+        let mut new_seq = seq.chars().collect::<Vec<_>>();
+        new_seq[pos] = nucleotide.chars().next().unwrap();
+        generate_recursive_permutations(&new_seq.iter().collect::<String>(), positions, current + 1, unique_sequences);
     }
 }
 
