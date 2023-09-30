@@ -875,6 +875,14 @@ mod tests {
 
         let mut result4 = resolve_primer(seq4);
         assert_eq!(result4, expected4);
+
+        // Check when the first nucleotide is ambiguous
+        let seq5 = "RCGTAATCGGCGA".to_string();
+        let mut expected5:HashSet<String> = HashSet::new();
+        expected5.insert("ACGTAATCGGCGA".to_string());
+        expected5.insert("GCGTAATCGGCGA".to_string());
+        let result5 = resolve_primer(seq5);
+        assert_eq!(result5, expected5);
     }
 
     #[test]
