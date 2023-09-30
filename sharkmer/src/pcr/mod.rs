@@ -54,13 +54,14 @@ fn string_to_oligo(seq: &str) -> Oligo {
     Oligo { length, kmer }
 }
 
-// Given a primer that may include ambiguous nucleotides, return a vector
+// Given a primer that may include ambiguous nucleotides, return a set
 // of sequences that include all possible resolutions of the ambiguity. If
-// there are no ambiguous nucleotides, the vector contains only the original
+// there are no ambiguous nucleotides, the set contains only the original
 // sequence.
-fn resolve_primer(primer: String) -> Vec<String> {
-    // Initial set of sequences to be expanded
-    let mut sequences: Vec<String> = vec![primer.clone()];
+fn resolve_primer(primer: String) -> HashSet<String> {
+    // Add the original sequence to the set
+    let mut sequences: HashSet<String> = HashSet::new();
+    let mut changed = false;
 
     // For each nucleotide in the primer
     for (idx, nuc) in primer.chars().enumerate() {
@@ -86,6 +87,10 @@ fn resolve_primer(primer: String) -> Vec<String> {
             _ => vec![nuc.to_string()],
         };
 
+        if possible_nucs.len() > 1 {
+            changed = true;
+        }
+
         let mut new_sequences = Vec::new();
         for seq in &sequences {
             for possible_nuc in &possible_nucs {
@@ -94,16 +99,21 @@ fn resolve_primer(primer: String) -> Vec<String> {
                 new_sequences.push(new_seq.into_iter().collect());
             }
         }
-        sequences = new_sequences;
+        // Add new sequences to sequences
+        sequences.extend(new_sequences);
+    }
+
+    if !changed {
+        sequences.insert(primer);
     }
 
     sequences
 }
 
-/// Given a vector of sequences, return a vector of all sequences that differ 
+/// Given a set of sequences, return a set of all sequences that differ 
 /// from each original sequence at up to r positions. Includes the original
 /// sequences.
-fn permute_sequences(sequences: Vec<String>, r: &usize) -> Vec<String> {
+fn permute_sequences(sequences: HashSet<String>, r: &usize) -> HashSet<String> {
     let mut unique_sequences = HashSet::new();
 
     for seq in &sequences {
@@ -112,7 +122,7 @@ fn permute_sequences(sequences: Vec<String>, r: &usize) -> Vec<String> {
         }
     }
 
-    unique_sequences.into_iter().collect()
+    unique_sequences
 }
 
 fn combinations(n: usize, r: usize) -> Vec<Vec<usize>> {
@@ -340,9 +350,9 @@ pub fn do_pcr(
     reverse_variants = permute_sequences(reverse_variants, mismatches);
 
     // Replace the reverse variants with their reverse complements
-    let mut reverse_variants_revcomp = Vec::new();
+    let mut reverse_variants_revcomp = HashSet::new();
     for variant in reverse_variants.iter() {
-        reverse_variants_revcomp.push(reverse_complement(variant));
+        reverse_variants_revcomp.insert(reverse_complement(variant));
     }
     reverse_variants = reverse_variants_revcomp;
 
@@ -832,44 +842,39 @@ mod tests {
     fn test_resolve_primers() {
         // Check with no ambiguous nucleotides
         let seq1 = "CGTAATGCGGCGA".to_string();
-        let mut expected1 = vec![seq1.clone()];
-        let mut result1 = resolve_primer(seq1);
-        result1.sort();
-        expected1.sort();
+        let mut expected1:HashSet<String> = HashSet::new();
+        expected1.insert(seq1.clone());
+        let result1 = resolve_primer(seq1);
         assert_eq!(result1, expected1);
 
         // Check with one ambiguous nucleotide
         let seq2 = "CGTAATGCGGCGN".to_string();
-        let mut expected2 = vec![
-            "CGTAATGCGGCGA".to_string(),
-            "CGTAATGCGGCGC".to_string(),
-            "CGTAATGCGGCGG".to_string(),
-            "CGTAATGCGGCGT".to_string(),
-        ];
-        let mut result2 = resolve_primer(seq2);
-        result2.sort();
-        expected2.sort();
+        let mut expected2:HashSet<String> = HashSet::new();
+        expected2.insert("CGTAATGCGGCGA".to_string());
+        expected2.insert("CGTAATGCGGCGC".to_string());
+        expected2.insert("CGTAATGCGGCGG".to_string());
+        expected2.insert("CGTAATGCGGCGT".to_string());
+
+        let result2 = resolve_primer(seq2);
         assert_eq!(result2, expected2);
 
         // Check with one ambiguous nucleotide
         let seq3 = "CGTAATRCGGCGA".to_string();
-        let mut expected3 = vec!["CGTAATACGGCGA".to_string(), "CGTAATGCGGCGA".to_string()];
-        let mut result3 = resolve_primer(seq3);
-        result3.sort();
-        expected3.sort();
+        let mut expected3:HashSet<String> = HashSet::new();
+        expected3.insert("CGTAATACGGCGA".to_string());
+        expected3.insert("CGTAATGCGGCGA".to_string());
+        let result3 = resolve_primer(seq3);
         assert_eq!(result3, expected3);
 
         // Check with two ambiguous nucleotides
         let seq4 = "CGTAATRCGGCGY".to_string();
-        let mut expected4 = vec![
-            "CGTAATACGGCGC".to_string(),
-            "CGTAATGCGGCGC".to_string(),
-            "CGTAATACGGCGT".to_string(),
-            "CGTAATGCGGCGT".to_string(),
-        ];
+        let mut expected4:HashSet<String> = HashSet::new();
+        expected4.insert("CGTAATACGGCGC".to_string());
+        expected4.insert("CGTAATGCGGCGC".to_string());
+        expected4.insert("CGTAATACGGCGT".to_string());
+        expected4.insert("CGTAATGCGGCGT".to_string());
+
         let mut result4 = resolve_primer(seq4);
-        result4.sort();
-        expected4.sort();
         assert_eq!(result4, expected4);
     }
 
@@ -877,26 +882,30 @@ mod tests {
     fn test_permute_sequences() {
 
         // Check specific permutations for a tiny example
-        let seq1 = vec!["CG".to_string()];
-        let mut expected1 = vec![
-            "CA".to_string(),
-            "CC".to_string(),
-            "CG".to_string(),
-            "CT".to_string(),
-            "AG".to_string(),
-            "GG".to_string(),
-            "TG".to_string(),
-        ];
-        let mut result1 = permute_sequences(seq1, &1_usize);
-        result1.sort();
-        println!("Permutations: {}", result1.join(", "));
-        expected1.sort();
+        let mut seq1:HashSet<String> = HashSet::new();
+        seq1.insert("CG".to_string());
+
+        let mut expected1:HashSet<String> = HashSet::new();
+        expected1.insert("CA".to_string());
+        expected1.insert("CC".to_string());
+        expected1.insert("CG".to_string());
+        expected1.insert("CT".to_string());
+        expected1.insert("AG".to_string());
+        expected1.insert("GG".to_string());
+        expected1.insert("TG".to_string());
+
+        let result1 = permute_sequences(seq1, &1_usize);
+        println!("Permutations: {}", result1.iter().cloned().collect::<Vec<_>>().join(", "));
+
         assert_eq!(result1, expected1);
 
         // Check number of permutations for a larger example
-        let r:usize = 2;
-        let seq2 = vec!["CGTAGCTA".to_string()];
-        let n = seq2[0].len();
+        let r:usize = 2;;
+        let s = "CGTAGCTA".to_string();
+        let n = s.len();
+        let mut seq2:HashSet<String> = HashSet::new();
+        seq2.insert(s);
+        
         let result2 = permute_sequences(seq2, &r);
         //assert_eq!(result2.len(), expected_permutations(n, r));
 
@@ -933,7 +942,8 @@ mod tests {
         
         // Construct all the permutations procedurally
         // check n=3 r=2 for CGT
-        let seq3 = vec!["CGT".to_string()];
+        let mut seq3:HashSet<String> = HashSet::new();
+        seq3.insert("CGT".to_string());
         let r:usize = 2;
         let n:usize = 3;
         // First, use nested loops to get all the combinations of the 4 bases
