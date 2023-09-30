@@ -61,10 +61,9 @@ fn string_to_oligo(seq: &str) -> Oligo {
 fn resolve_primer(primer: String) -> HashSet<String> {
     // Add the original sequence to the set
     let mut sequences: HashSet<String> = HashSet::new();
-    let mut changed = false;
 
     // For each nucleotide in the primer
-    for (idx, nuc) in primer.chars().enumerate() {
+    for nuc in primer.chars() {
         let possible_nucs = match nuc {
             // IUPAC nucleotide codes for ambiguous bases
             'R' => vec!["A".to_string(), "G".to_string()],
@@ -87,24 +86,24 @@ fn resolve_primer(primer: String) -> HashSet<String> {
             _ => vec![nuc.to_string()],
         };
 
-        if possible_nucs.len() > 1 {
-            changed = true;
-        }
-
-        let mut new_sequences = Vec::new();
-        for seq in &sequences {
+        // If sequences is empty, add each of the possible nucleotides as its own sequence
+        if sequences.is_empty() {
             for possible_nuc in &possible_nucs {
-                let mut new_seq: Vec<char> = seq.chars().collect();
-                new_seq[idx] = possible_nuc.chars().next().unwrap();
-                new_sequences.push(new_seq.into_iter().collect());
+                sequences.insert(possible_nuc.to_string());
             }
+        } else {
+            // Otherwise, for each sequence in sequences, add a new sequence for each possible nucleotide
+            let mut new_sequences: HashSet<String> = HashSet::new();
+            for seq in &sequences {
+                for possible_nuc in &possible_nucs {
+                    let mut new_seq: Vec<char> = seq.chars().collect(); 
+                    new_seq.push(possible_nuc.chars().next().unwrap());
+                    new_sequences.insert(new_seq.into_iter().collect());
+                }
+            }
+            // Replace the old shorter sequences with the new extended sequences
+            sequences = new_sequences;
         }
-        // Add new sequences to sequences
-        sequences.extend(new_sequences);
-    }
-
-    if !changed {
-        sequences.insert(primer);
     }
 
     sequences
