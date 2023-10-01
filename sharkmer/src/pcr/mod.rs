@@ -113,15 +113,15 @@ fn resolve_primer(primer: String) -> HashSet<String> {
 /// from each original sequence at up to r positions. Includes the original
 /// sequences.
 fn permute_sequences(sequences: HashSet<String>, r: &usize) -> HashSet<String> {
-    let mut unique_sequences = HashSet::new();
+    let mut permutations = HashSet::new();
 
     for seq in &sequences {
         for positions in combinations(seq.len(), *r) {
-            generate_recursive_permutations(seq, &positions, 0, &mut unique_sequences);
+            generate_recursive_permutations(seq, &positions, 0, &mut permutations);
         }
     }
 
-    unique_sequences
+    permutations
 }
 
 fn combinations(n: usize, r: usize) -> Vec<Vec<usize>> {
@@ -873,7 +873,7 @@ mod tests {
         expected4.insert("CGTAATACGGCGT".to_string());
         expected4.insert("CGTAATGCGGCGT".to_string());
 
-        let mut result4 = resolve_primer(seq4);
+        let result4 = resolve_primer(seq4);
         assert_eq!(result4, expected4);
 
         // Check when the first nucleotide is ambiguous
@@ -905,73 +905,28 @@ mod tests {
         println!("Permutations: {}", result1.iter().cloned().collect::<Vec<_>>().join(", "));
 
         assert_eq!(result1, expected1);
-
-        // Check number of permutations for a larger example
-        let r:usize = 2;;
-        let s = "CGTAGCTA".to_string();
-        let n = s.len();
-        let mut seq2:HashSet<String> = HashSet::new();
-        seq2.insert(s);
-        
-        let result2 = permute_sequences(seq2, &r);
-        //assert_eq!(result2.len(), expected_permutations(n, r));
-
-        // check n=3 r=2
-        let seq3 = vec!["CGT".to_string()];
-        let mut expected3 = vec![
-            "AAT".to_string(),
-            "ATT".to_string(),
-            "ACT".to_string(),
-            "TAT".to_string(),
-            "TTT".to_string(),
-            "TCT".to_string(),
-            "GAT".to_string(),
-            "GTT".to_string(),
-            "GCT".to_string(),
-            "AGA".to_string(),
-            "AGC".to_string(),
-            "AGG".to_string(),
-            "TGA".to_string(),
-            "TGC".to_string(),
-            "TGG".to_string(),
-            "GGA".to_string(),
-            "GGC".to_string(),
-            "GGG".to_string(),
-            "CAA".to_string(),
-            "CAC".to_string(),
-            "CAG".to_string(),
-            "CTA".to_string(),
-            "CTC".to_string(),
-            "CTG".to_string(),
-            "CCA".to_string(),
-            "CCC".to_string(),
-            "CCG".to_string()];
         
         // Construct all the permutations procedurally
         // check n=3 r=2 for CGT
-        let mut seq3:HashSet<String> = HashSet::new();
-        seq3.insert("CGT".to_string());
+        let mut seq:HashSet<String> = HashSet::new();
+        seq.insert("CGT".to_string());
         let r:usize = 2;
         let n:usize = 3;
         // First, use nested loops to get all the combinations of the 4 bases
         let bases = vec!['A', 'C', 'G', 'T'];
-        let mut expected_3: HashSet<String> = HashSet::new();
+        let mut expected: HashSet<String> = HashSet::new();
         for i in 0..4 {
             for j in 0..4 {
-                expected_3.insert(format!("C{}{}", bases[i], bases[j]));
-                expected_3.insert(format!("{}G{}", bases[i], bases[j]));
-                expected_3.insert(format!("{}{}T", bases[i], bases[j]));
+                expected.insert(format!("C{}{}", bases[i], bases[j]));
+                expected.insert(format!("{}G{}", bases[i], bases[j]));
+                expected.insert(format!("{}{}T", bases[i], bases[j]));
             }
         }
-        println!("There are {} combinations for n={} r={}", expected_3.len(), n, r);
+        println!("There are {} combinations for n={} r={}", expected.len(), n, r);
 
-        let result3 = permute_sequences(seq3, &r);
+        let result = permute_sequences(seq, &r);
         //assert_eq!(expected_3.len(), n_combinations(n, r));
-        assert_eq!(expected_3.len(), result3.len());
-
-
-
-
+        assert_eq!(expected.len(), result.len());
 
     }
 
