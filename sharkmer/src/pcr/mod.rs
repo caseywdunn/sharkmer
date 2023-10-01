@@ -887,48 +887,86 @@ mod tests {
 
     #[test]
     fn test_permute_sequences() {
-
+    
         // Check specific permutations for a tiny example
-        let mut seq1:HashSet<String> = HashSet::new();
-        seq1.insert("CG".to_string());
-
-        let mut expected1:HashSet<String> = HashSet::new();
-        expected1.insert("CA".to_string());
-        expected1.insert("CC".to_string());
-        expected1.insert("CG".to_string());
-        expected1.insert("CT".to_string());
-        expected1.insert("AG".to_string());
-        expected1.insert("GG".to_string());
-        expected1.insert("TG".to_string());
-
-        let result1 = permute_sequences(seq1, &1_usize);
-        println!("Permutations: {}", result1.iter().cloned().collect::<Vec<_>>().join(", "));
-
-        assert_eq!(result1, expected1);
-        
-        // Construct all the permutations procedurally
-        // check n=3 r=2 for CGT
-        let mut seq:HashSet<String> = HashSet::new();
-        seq.insert("CGT".to_string());
-        let r:usize = 2;
-        let n:usize = 3;
-        // First, use nested loops to get all the combinations of the 4 bases
-        let bases = vec!['A', 'C', 'G', 'T'];
-        let mut expected: HashSet<String> = HashSet::new();
-        for i in 0..4 {
-            for j in 0..4 {
-                expected.insert(format!("C{}{}", bases[i], bases[j]));
-                expected.insert(format!("{}G{}", bases[i], bases[j]));
-                expected.insert(format!("{}{}T", bases[i], bases[j]));
-            }
+        {
+            let mut seq: HashSet<String> = HashSet::new();
+            seq.insert("CG".to_string());
+    
+            let mut expected: HashSet<String> = HashSet::new();
+            expected.insert("CA".to_string());
+            expected.insert("CC".to_string());
+            expected.insert("CG".to_string());
+            expected.insert("CT".to_string());
+            expected.insert("AG".to_string());
+            expected.insert("GG".to_string());
+            expected.insert("TG".to_string());
+    
+            let result = permute_sequences(seq, &1_usize);
+            println!("Permutations: {}", result.iter().cloned().collect::<Vec<_>>().join(", "));
+            assert_eq!(result, expected);
         }
-        println!("There are {} combinations for n={} r={}", expected.len(), n, r);
+    
+        // Check sequence length 3 and r=3
+        {
+            let mut seq: HashSet<String> = HashSet::new();
+            seq.insert("CGT".to_string());
+    
+            let result = permute_sequences(seq, &3_usize);
+            
+            // All sites permuted, so there should be 4^n sequences
+            assert_eq!(result.len(), 64);
 
-        let result = permute_sequences(seq, &r);
-        //assert_eq!(expected_3.len(), n_combinations(n, r));
-        assert_eq!(expected.len(), result.len());
-
+        }
+    
+        // Construct all the permutations procedurally
+        {
+            let mut seq: HashSet<String> = HashSet::new();
+            seq.insert("CGT".to_string());
+            let r: usize = 2;
+            let n: usize = 3;
+    
+            let bases = vec!['A', 'C', 'G', 'T'];
+            let mut expected: HashSet<String> = HashSet::new();
+            for i in 0..4 {
+                for j in 0..4 {
+                    expected.insert(format!("C{}{}", bases[i], bases[j]));
+                    expected.insert(format!("{}G{}", bases[i], bases[j]));
+                    expected.insert(format!("{}{}T", bases[i], bases[j]));
+                }
+            }
+    
+            println!("There are {} combinations for n={} r={}", expected.len(), n, r);
+            let result = permute_sequences(seq, &r);
+            assert_eq!(expected.len(), result.len());
+        }
+    
+        // Procedural test where n=4 and r=2
+        {
+            let mut seq: HashSet<String> = HashSet::new();
+            seq.insert("ACGT".to_string());
+            let r: usize = 2;
+            let n: usize = 4;
+    
+            let bases = vec!['A', 'C', 'G', 'T'];
+            let mut expected: HashSet<String> = HashSet::new();
+            for i in 0..4 {
+                for j in 0..4 {
+                    expected.insert(format!("{}{}GT", bases[i], bases[j]));
+                    expected.insert(format!("{}C{}T", bases[i], bases[j]));
+                    expected.insert(format!("{}CG{}", bases[i], bases[j]));
+                    expected.insert(format!("A{}{}T", bases[i], bases[j]));
+                    expected.insert(format!("A{}G{}", bases[i], bases[j]));
+                    expected.insert(format!("AC{}{}", bases[i], bases[j]));
+                }
+            }
+    
+            println!("There are {} combinations for n={} r={}", expected.len(), n, r);
+            let result = permute_sequences(seq, &r);
+            assert_eq!(expected.len(), result.len());
+        }
     }
+    
 
     #[test]
     fn test_string_to_oligo() {
