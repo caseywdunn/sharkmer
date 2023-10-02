@@ -312,9 +312,9 @@ fn get_dbedge(kmer: &u64, kmer_counts: &FxHashMap<u64, u64>, k: &usize) -> DBEdg
 }
 
 pub struct PCRParams {
-    pub max_length: usize,
     pub forward_seq: String,
     pub reverse_seq: String,
+    pub max_length: usize,
     pub run_name: String,
     pub coverage: u64,
     pub mismatches: usize,
@@ -331,8 +331,8 @@ pub fn do_pcr(
     let mut records: Vec<fasta::Record> = Vec::new();
 
     // Preprocess the primers
-    let mut forward = params.forward_seq;
-    let mut reverse = params.reverse_seq;
+    let mut forward = params.forward_seq.clone();
+    let mut reverse = params.reverse_seq.clone();
 
     // Check if either is longer than k, if so retain only the last k nucleotides
     if forward.len() > *k {
@@ -350,8 +350,8 @@ pub fn do_pcr(
     let mut reverse_variants = resolve_primer(reverse);
 
     // Get all possible variants of the primers
-    forward_variants = permute_sequences(forward_variants, mismatches);
-    reverse_variants = permute_sequences(reverse_variants, mismatches);
+    forward_variants = permute_sequences(forward_variants, &params.mismatches);
+    reverse_variants = permute_sequences(reverse_variants, &params.mismatches);
 
     // Replace the reverse variants with their reverse complements
     let mut reverse_variants_revcomp = HashSet::new();
@@ -442,8 +442,8 @@ pub fn do_pcr(
 
     let coverage_multiplier = 5;
     let new_coverage = min_count / coverage_multiplier;
-    if min_count > coverage_multiplier * coverage {
-        println!("The count of kmers containing primers have high coverage {} relative to the coverage threshold of {}.  Increasing min coverage to {}.", min_count, coverage, new_coverage);
+    if min_count > coverage_multiplier * params.coverage {
+        println!("The count of kmers containing primers have high coverage {} relative to the coverage threshold of {}.  Increasing min coverage to {}.", min_count, params.coverage, new_coverage);
 
         // Create a hash set of the keys of kmer_counts
         println!("  Updating hash set of kmers to include only those that exceed updated coverage threshold.");
@@ -744,7 +744,7 @@ pub fn do_pcr(
                 *start,
                 *end,
                 1,
-                Some(*max_length - (*k) + 1),
+                Some(params.max_length - (*k) + 1),
             );
 
             all_paths.extend(paths_for_this_pair);
@@ -765,7 +765,7 @@ pub fn do_pcr(
             }
         }
         println!("{}", sequence);
-        let id = format!("{} product {} length {}", run_name, i, sequence.len());
+        let id = format!("{} product {} length {}", params.run_name, i, sequence.len());
         let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
         records.push(record);
     }

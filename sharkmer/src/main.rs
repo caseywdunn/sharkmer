@@ -545,17 +545,23 @@ fn main() {
                 }
             }
 
+            let params = pcr::PCRParams {
+                forward_seq: forward.to_string(),
+                reverse_seq: reverse.to_string(),
+                max_length: max_length,
+                run_name: pcr_strings[3].to_string(),
+                coverage: 3,
+                mismatches: 2,
+                trim: 15,
+            };
+
             let fasta = pcr::do_pcr(
                 &kmer_counts_filtered,
                 &{ args.k },
-                &max_length,
-                forward,
-                reverse,
-                &pcr_string,
-                &args.coverage,
-                &3_usize,
                 args.verbosity,
+                &params,
             );
+
             println!("There are {} subassemblies", fasta.len());
             if !fasta.is_empty() {
                 let fasta_path = format!("{}{}_{}.fasta", directory, out_name, pcr_string);
