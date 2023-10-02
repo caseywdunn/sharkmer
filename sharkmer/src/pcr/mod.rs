@@ -6,7 +6,16 @@ use petgraph::Direction;
 use petgraph::Graph;
 use rustc_hash::FxHashMap;
 use std::collections::HashSet;
+use std::collections::HashMap;
 use std::io::Write;
+
+/// The multiplier for establishing when a kmer is considered to have high coverage,
+/// relative to the coverage threshold. It is then used to also adjust the threshold.
+const COVERAGE_MULTIPLIER:u64 = 5;
+
+/// The maximum number of kmers containing the forward or reverse primers to maintain,
+/// with only those with the highest count being retained
+const MAX_NUM_PRIMER_KMERS:usize = 10;
 
 // Create a structure to hold a kmer representing an oligo up to 32 nucleotides long in the
 // length*2 least significant bits
@@ -408,14 +417,47 @@ pub fn do_pcr(
     let start = std::time::Instant::now();
     print!("Finding kmers that contain the forward primer...");
     std::io::stdout().flush().unwrap();
-    let forward_matches =
+    let mut forward_matches =
         find_oligos_in_kmers(&forward_oligos, &kmers, k, PrimerDirection::Forward);
 
     println!(" done, time: {:?}", start.elapsed());
 
-    let mut max_forward_count: u64 = 0;
+    let mut forward_matches_map: HashMap<u64,u64> = HashMap::new();
+    let mut forward_counts: Vec<u64> = Vec::new();
     println!("  There are {} forward matches", forward_matches.len());
     for f in &forward_matches {
+        let count = crate::kmer::get_kmer_count(kmer_counts, f, k);
+        forward_counts.push(count);
+        forward_matches_map.insert(*f, count);
+    }
+
+    forward_counts.sort();
+    forward_counts.reverse();
+    let max_forward_count = forward_counts[0];
+
+    // set equal to last element
+    let mut forward_top_count_cutoff = forward_counts.last().unwrap();
+
+    if forward_counts.len() > MAX_NUM_PRIMER_KMERS {
+        forward_top_count_cutoff = &forward_counts[MAX_NUM_PRIMER_KMERS];
+    }
+
+    // If there are less than MAX_NUM_PRIMER_KMERS forward matches, this is the lowest count
+    // If there are more than MAX_NUM_PRIMER_KMERS or more forward matches, get the count of the 
+    // MAX_NUM_PRIMER_KMERS highest count forward matches and use that as the cutoff
+    let mut forward_top_count_cutoff: u64 = max_forward_count;
+
+    if forward_matches.len() > MAX_NUM_PRIMER_KMERS {
+        let mut forward_counts: Vec<u64> = forward_matches_map.values().cloned().collect();
+        forward_counts.sort();
+        forward_counts.reverse();
+        forward_top_count_cutoff = forward_counts[MAX_NUM_PRIMER_KMERS];
+    }
+
+
+
+
+    for (kmer, count) in forward_matches_map {
         let count = crate::kmer::get_kmer_count(kmer_counts, f, k);
         if count > max_forward_count {
             max_forward_count = count;
@@ -453,9 +495,8 @@ pub fn do_pcr(
         min_count = max_forward_count;
     }
 
-    let coverage_multiplier = 5;
-    let new_coverage = min_count / coverage_multiplier;
-    if min_count > coverage_multiplier * params.coverage {
+    let new_coverage = min_count / COVERAGE_MULTIPLIER;
+    if min_count > COVERAGE_MULTIPLIER * params.coverage {
         println!("The count of kmers containing primers have high coverage {} relative to the coverage threshold of {}.  Increasing min coverage to {}.", min_count, params.coverage, new_coverage);
 
         // Create a hash set of the keys of kmer_counts
@@ -742,10 +783,10 @@ pub fn do_pcr(
 
     println!("done.  Time to extend graph: {:?}", start.elapsed());
 
+    // Get all paths from start nodes to terminal nodes
     let start = std::time::Instant::now();
     println!("Traversing the assembly graph...");
 
-    // Get all paths from start nodes to terminal nodes
     let mut all_paths = Vec::new();
 
     for start in &start_nodes {
