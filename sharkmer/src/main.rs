@@ -101,10 +101,10 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<HashMap<String, ParameterVal
     );
 
     // Loop over additional parameters, which are of the form key=value and are separated by underscores
-    for i in 4..split.len() {
-        let key_value: Vec<&str> = split[i].split('=').collect();
+    for item in split.iter().skip(4) {
+        let key_value: Vec<&str> = item.split('=').collect();
         if key_value.len() != 2 {
-            return Err(format!("Invalid parameter: {}", split[i]));
+            return Err(format!("Invalid parameter: {}", item));
         }
 
         let key = key_value[0].to_string();
@@ -125,6 +125,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<HashMap<String, ParameterVal
         // Otherwise, insert the value as a string
         parameters.insert(key, ParameterValue::Str(value));
     }
+
 
     Ok(parameters)
 }
@@ -548,7 +549,7 @@ fn main() {
             let params = pcr::PCRParams {
                 forward_seq: forward.to_string(),
                 reverse_seq: reverse.to_string(),
-                max_length: max_length,
+                max_length,
                 run_name: pcr_strings[3].to_string(),
                 coverage: 3,
                 mismatches: 2,

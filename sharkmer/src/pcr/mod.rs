@@ -691,15 +691,7 @@ pub fn do_pcr(
 
                         // If the path length is None, the node is part of a cycle and is marked terminal.
                         // If the path length is Some, is marked terminal if the path length is >= max_length-k+1
-                        if path_length.is_none() {
-                            graph[new_node].is_terminal = true;
-                            if verbosity > 1 {
-                                print!("Marking new node {} as terminal because it is part of a cycle. ", new_node.index());
-                                std::io::stdout().flush().unwrap();
-                            }
-                        } else {
-                            let path_length = path_length.unwrap();
-
+                        if let Some(path_length) = path_length {
                             if verbosity > 1 {
                                 print!("Path length is {}. ", path_length);
                                 std::io::stdout().flush().unwrap();
@@ -711,6 +703,12 @@ pub fn do_pcr(
                                     print!("Marking new node {} as terminal because it exceeds max_length from start. ", new_node.index());
                                     std::io::stdout().flush().unwrap();
                                 }
+                            }
+                        } else {
+                            graph[new_node].is_terminal = true;
+                            if verbosity > 1 {
+                                print!("Marking new node {} as terminal because it is part of a cycle. ", new_node.index());
+                                std::io::stdout().flush().unwrap();
                             }
                         }
                     }
