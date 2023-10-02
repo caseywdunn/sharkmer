@@ -316,7 +316,7 @@ pub struct PCRParams {
     pub forward_seq: String,
     pub reverse_seq: String,
     pub max_length: usize,
-    pub run_name: String,
+    pub gene_name: String,
     pub coverage: u64,
     pub mismatches: usize,
     pub trim: usize,
@@ -766,7 +766,7 @@ pub fn do_pcr(
         println!("{}", sequence);
         let id = format!(
             "{} product {} length {}",
-            params.run_name,
+            params.gene_name,
             i,
             sequence.len()
         );
