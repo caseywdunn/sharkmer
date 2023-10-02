@@ -311,23 +311,28 @@ fn get_dbedge(kmer: &u64, kmer_counts: &FxHashMap<u64, u64>, k: &usize) -> DBEdg
     }
 }
 
+pub struct PCRParams {
+    pub max_length: usize,
+    pub forward_seq: String,
+    pub reverse_seq: String,
+    pub run_name: String,
+    pub coverage: u64,
+    pub mismatches: usize,
+    pub trim: usize,
+}
+
 pub fn do_pcr(
     kmer_counts: &FxHashMap<u64, u64>,
     k: &usize,
-    max_length: &usize,
-    forward_seq: &str,
-    reverse_seq: &str,
-    run_name: &str,
-    coverage: &u64,
-    mismatches: &usize,
     verbosity: usize,
+    params: &PCRParams,
 ) -> Vec<bio::io::fasta::Record> {
     // Create a vector to hold the fasta records
     let mut records: Vec<fasta::Record> = Vec::new();
 
     // Preprocess the primers
-    let mut forward = forward_seq.to_string();
-    let mut reverse = reverse_seq.to_string();
+    let mut forward = params.forward_seq;
+    let mut reverse = params.reverse_seq;
 
     // Check if either is longer than k, if so retain only the last k nucleotides
     if forward.len() > *k {
@@ -700,7 +705,7 @@ pub fn do_pcr(
                                 std::io::stdout().flush().unwrap();
                             }
 
-                            if path_length > *max_length - (*k) {
+                            if path_length > params.max_length - (*k) {
                                 graph[new_node].is_terminal = true;
                                 if verbosity > 1 {
                                     print!("Marking new node {} as terminal because it exceeds max_length from start. ", new_node.index());
