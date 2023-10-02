@@ -325,6 +325,7 @@ pub struct PCRParams {
 pub fn do_pcr(
     kmer_counts: &FxHashMap<u64, u64>,
     k: &usize,
+    sample_name: &str,
     verbosity: usize,
     params: &PCRParams,
 ) -> Vec<bio::io::fasta::Record> {
@@ -335,15 +336,26 @@ pub fn do_pcr(
     let mut forward = params.forward_seq.clone();
     let mut reverse = params.reverse_seq.clone();
 
+    // Check if either is longer than trim, if so retain only the last trim nucleotides
+    if forward.len() > params.trim {
+        forward = forward[forward.len() - params.trim ..].to_string();
+        println!("Trimming the forward primer to {} so that it is within the trim length of  {}", forward, params.trim);
+    }
+
+    if reverse.len() > params.trim {
+        reverse = reverse[reverse.len() - params.trim ..].to_string();
+        println!("Trimming the reverse primer to {} so that it is within the trim length of  {}", reverse, params.trim);
+    }
+
     // Check if either is longer than k, if so retain only the last k nucleotides
     if forward.len() > *k {
         forward = forward[forward.len() - *k..].to_string();
-        println!("Truncated the forward primer to {}", forward);
+        println!("Truncated the forward primer to {} so that it fits within k {}", forward, k);
     }
 
     if reverse.len() > *k {
         reverse = reverse[reverse.len() - *k..].to_string();
-        println!("Truncated the reverse primer to {}", reverse);
+        println!("Truncated the reverse primer to {} so that it fits within k {}", reverse, k);
     }
 
     // Expand ambigous nucleotides
@@ -763,13 +775,16 @@ pub fn do_pcr(
                 sequence = format!("{}{}", sequence, subread.chars().last().unwrap(),);
             }
         }
-        println!("{}", sequence);
+        
         let id = format!(
-            "{} product {} length {}",
+            "{} {} product {} length {}",
+            sample_name,
             params.gene_name,
             i,
             sequence.len()
         );
+        println!(">{}", id);
+        println!("{}", sequence);
         let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
         records.push(record);
     }

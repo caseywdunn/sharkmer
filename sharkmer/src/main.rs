@@ -6,6 +6,7 @@ use rustc_hash::FxHashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
+use std::path::PathBuf;
 
 mod kmer;
 mod pcr;
@@ -144,9 +145,14 @@ struct Args {
     #[arg(short = 't', long, default_value_t = 1)]
     threads: usize,
 
-    /// Directory and filename prefix for analysis output, for example out_dir/Nanomia-bijuga
+    /// Name of the sample, could be species and sample ID eg Nanomia-bijuga-YPMIZ035039
+    /// Will be used as the prefix for output files and some outout products
     #[arg(short, long, default_value_t = String::from("sample") )]
-    output: String,
+    sample: String,
+
+    /// Directory for output files, defaults to current directory
+    #[arg(short, long, default_value_t = String::from("./") )]
+    outdir: String,
 
     /// Input files, fastq. If no files are specified, data will be read
     /// from stdin. This can be used to uncompress a gz file and send them
@@ -191,16 +197,15 @@ fn main() {
     // Print the arguments
     println!("{:?}", args);
 
-    // Parse the output path and create directories if necessary
-    let path = Path::new(&args.output);
-    let out_name = path.file_name().unwrap().to_str().unwrap(); // This is the prefix of the output files
-    let parent = path.parent().unwrap();
-    let parent_directory = parent.to_str().unwrap();
-    let mut directory = String::from(parent_directory);
-    if !directory.is_empty() {
-        directory = format!("{}/", directory);
-        let _ = std::fs::create_dir_all(Path::new(directory.as_str()));
-    }
+    // Parse the outdir path and sample, create directories if necessary
+    // output directory is outdir/sample
+    let mut path = PathBuf::from(&args.outdir);
+    path.push(&args.sample);
+    
+    // Create the output directory if it does not exist
+    let directory = format!("{}/", path.to_str().unwrap());
+    println!("Full output directory: {}", directory);
+    std::fs::create_dir_all(&directory).unwrap();
 
     let k = args.k;
 
@@ -227,6 +232,16 @@ fn main() {
             Err(err) => {
                 panic!("Error parsing pcr string: {}", err);
             }
+        }
+    }
+
+    // Check that there are no duplicate gene names
+    let mut gene_names: Vec<String> = Vec::new();
+    for pcr_params in pcr_runs.iter() {
+        if gene_names.contains(&pcr_params.gene_name) {
+            panic!("Duplicate gene name: {}", pcr_params.gene_name);
+        } else {
+            gene_names.push(pcr_params.gene_name.clone());
         }
     }
 
@@ -381,7 +396,7 @@ fn main() {
     // Skip the first row, which is the count of 0. Do not include a header
     print!("Writing histograms to file...");
     std::io::stdout().flush().unwrap();
-    let mut file = std::fs::File::create(format!("{}{}.histo", directory, out_name)).unwrap();
+    let mut file = std::fs::File::create(format!("{}{}.histo", directory, args.sample)).unwrap();
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
         for histo in histos.iter() {
@@ -398,7 +413,7 @@ fn main() {
     let mut n_kmers: u64 = 0;
     let n_singleton_kmers: u64 = histos[histos.len() - 1][1];
     std::io::stdout().flush().unwrap();
-    let mut file = std::fs::File::create(format!("{}{}.final.histo", directory, out_name)).unwrap();
+    let mut file = std::fs::File::create(format!("{}{}.final.histo", directory, args.sample)).unwrap();
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
 
@@ -413,7 +428,7 @@ fn main() {
 
     print!("Writing stats to file...");
     std::io::stdout().flush().unwrap();
-    let mut file_stats = std::fs::File::create(format!("{}{}.stats", directory, out_name)).unwrap();
+    let mut file_stats = std::fs::File::create(format!("{}{}.stats", directory, args.sample)).unwrap();
     let mut line = format!("arguments\t{:?}\n", args);
     line = format!("{}kmer_length\t{}\n", line, args.k);
     line = format!("{}n_reads_read\t{}\n", line, n_reads_read);
@@ -460,11 +475,11 @@ fn main() {
 
         for pcr_params in pcr_runs.iter() {
 
-            let fasta = pcr::do_pcr(&kmer_counts_filtered, &{ args.k }, args.verbosity, &pcr_params);
+            let fasta = pcr::do_pcr(&kmer_counts_filtered, &{ args.k }, &args.sample, args.verbosity, &pcr_params);
 
             println!("There are {} subassemblies", fasta.len());
             if !fasta.is_empty() {
-                let fasta_path = format!("{}{}_{}.fasta", directory, out_name, pcr_params.gene_name);
+                let fasta_path = format!("{}{}_{}.fasta", directory, args.sample, pcr_params.gene_name);
                 let mut fasta_writer =
                     fasta::Writer::new(std::fs::File::create(fasta_path).unwrap());
                 for record in fasta {
