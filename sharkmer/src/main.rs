@@ -126,7 +126,6 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<HashMap<String, ParameterVal
         parameters.insert(key, ParameterValue::Str(value));
     }
 
-
     Ok(parameters)
 }
 
@@ -396,8 +395,6 @@ fn main() {
     // Iterate over the chunks
     let n: usize = args.n;
 
-    
-
     let chunk_kmer_counts: Vec<kmer::KmerSummary> = (0..n)
         .into_par_iter()
         .map(|i| {
@@ -556,12 +553,7 @@ fn main() {
                 trim: 15,
             };
 
-            let fasta = pcr::do_pcr(
-                &kmer_counts_filtered,
-                &{ args.k },
-                args.verbosity,
-                &params,
-            );
+            let fasta = pcr::do_pcr(&kmer_counts_filtered, &{ args.k }, args.verbosity, &params);
 
             println!("There are {} subassemblies", fasta.len());
             if !fasta.is_empty() {

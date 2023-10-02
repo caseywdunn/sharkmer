@@ -31,7 +31,7 @@ struct DBNode {
 }
 
 struct DBEdge {
-    _kmer: u64,  // kmer that contains overlap between sub_kmers
+    _kmer: u64, // kmer that contains overlap between sub_kmers
     count: u64, // Number of times this kmer was observed
 }
 
@@ -96,7 +96,7 @@ fn resolve_primer(primer: String) -> HashSet<String> {
             let mut new_sequences: HashSet<String> = HashSet::new();
             for seq in &sequences {
                 for possible_nuc in &possible_nucs {
-                    let mut new_seq: Vec<char> = seq.chars().collect(); 
+                    let mut new_seq: Vec<char> = seq.chars().collect();
                     new_seq.push(possible_nuc.chars().next().unwrap());
                     new_sequences.insert(new_seq.into_iter().collect());
                 }
@@ -109,7 +109,7 @@ fn resolve_primer(primer: String) -> HashSet<String> {
     sequences
 }
 
-/// Given a set of sequences, return a set of all sequences that differ 
+/// Given a set of sequences, return a set of all sequences that differ
 /// from each original sequence at up to r positions. Includes the original
 /// sequences.
 fn permute_sequences(sequences: HashSet<String>, r: &usize) -> HashSet<String> {
@@ -139,12 +139,8 @@ fn combinations(n: usize, r: usize) -> Vec<Vec<usize>> {
         item.push(n - 1);
     }
 
-    without_last
-        .into_iter()
-        .chain(with_last)
-        .collect()
+    without_last.into_iter().chain(with_last).collect()
 }
-
 
 fn generate_recursive_permutations(
     seq: &str,
@@ -153,17 +149,22 @@ fn generate_recursive_permutations(
     unique_sequences: &mut HashSet<String>,
 ) {
     let nucleotides = ["A", "T", "C", "G"];
-    
+
     if current == positions.len() {
         unique_sequences.insert(seq.to_string());
         return;
     }
-    
+
     let pos = positions[current];
     for &nucleotide in nucleotides.iter() {
         let mut new_seq = seq.chars().collect::<Vec<_>>();
         new_seq[pos] = nucleotide.chars().next().unwrap();
-        generate_recursive_permutations(&new_seq.iter().collect::<String>(), positions, current + 1, unique_sequences);
+        generate_recursive_permutations(
+            &new_seq.iter().collect::<String>(),
+            positions,
+            current + 1,
+            unique_sequences,
+        );
     }
 }
 
@@ -763,7 +764,12 @@ pub fn do_pcr(
             }
         }
         println!("{}", sequence);
-        let id = format!("{} product {} length {}", params.run_name, i, sequence.len());
+        let id = format!(
+            "{} product {} length {}",
+            params.run_name,
+            i,
+            sequence.len()
+        );
         let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
         records.push(record);
     }
@@ -772,8 +778,6 @@ pub fn do_pcr(
 
     records
 }
-
-
 
 #[cfg(test)]
 mod tests {
@@ -788,18 +792,18 @@ mod tests {
         result
     }
 
-    fn n_combinations(n:usize, r:usize) -> usize{
+    fn n_combinations(n: usize, r: usize) -> usize {
         // Given a sequence of length n and r sites that can be permuted,
         // there are (n! / (r!(n-r)!)) combinations of r sites in the sequence.
-        factorial(n) / (factorial(r) * factorial(n-r))
+        factorial(n) / (factorial(r) * factorial(n - r))
     }
 
-    fn expected_permutations(n:usize, r:usize) -> usize{
+    fn expected_permutations(n: usize, r: usize) -> usize {
         // Given a sequence of length n and r sites that can be permuted,
         // there are (n! / (r!(n-r)!)) combinations of r sites in the sequence and
-        // 4^r permutations of the r sites. 
+        // 4^r permutations of the r sites.
         // So there are (n! / (r!(n-r)!)) * 4^r permutations.
-        // The original sequence is included in each combination, but we only 
+        // The original sequence is included in each combination, but we only
         // want to include it once. Se we subtract the number of combinations
         // and add 1.
 
@@ -831,12 +835,12 @@ mod tests {
 
         // Make sure that the combinations are unique
         let combos = combinations(8, 5);
-        let combos_set:HashSet<Vec<usize>> = HashSet::from_iter(combos.clone());
+        let combos_set: HashSet<Vec<usize>> = HashSet::from_iter(combos.clone());
         assert_eq!(combos.len(), combos_set.len());
     }
 
     #[test]
-    fn test_expected_permutations () {
+    fn test_expected_permutations() {
         assert_eq!(expected_permutations(2, 1), 7);
     }
 
@@ -844,14 +848,14 @@ mod tests {
     fn test_resolve_primers() {
         // Check with no ambiguous nucleotides
         let seq1 = "CGTAATGCGGCGA".to_string();
-        let mut expected1:HashSet<String> = HashSet::new();
+        let mut expected1: HashSet<String> = HashSet::new();
         expected1.insert(seq1.clone());
         let result1 = resolve_primer(seq1);
         assert_eq!(result1, expected1);
 
         // Check with one ambiguous nucleotide
         let seq2 = "CGTAATGCGGCGN".to_string();
-        let mut expected2:HashSet<String> = HashSet::new();
+        let mut expected2: HashSet<String> = HashSet::new();
         expected2.insert("CGTAATGCGGCGA".to_string());
         expected2.insert("CGTAATGCGGCGC".to_string());
         expected2.insert("CGTAATGCGGCGG".to_string());
@@ -862,7 +866,7 @@ mod tests {
 
         // Check with one ambiguous nucleotide
         let seq3 = "CGTAATRCGGCGA".to_string();
-        let mut expected3:HashSet<String> = HashSet::new();
+        let mut expected3: HashSet<String> = HashSet::new();
         expected3.insert("CGTAATACGGCGA".to_string());
         expected3.insert("CGTAATGCGGCGA".to_string());
         let result3 = resolve_primer(seq3);
@@ -870,7 +874,7 @@ mod tests {
 
         // Check with two ambiguous nucleotides
         let seq4 = "CGTAATRCGGCGY".to_string();
-        let mut expected4:HashSet<String> = HashSet::new();
+        let mut expected4: HashSet<String> = HashSet::new();
         expected4.insert("CGTAATACGGCGC".to_string());
         expected4.insert("CGTAATGCGGCGC".to_string());
         expected4.insert("CGTAATACGGCGT".to_string());
@@ -881,7 +885,7 @@ mod tests {
 
         // Check when the first nucleotide is ambiguous
         let seq5 = "RCGTAATCGGCGA".to_string();
-        let mut expected5:HashSet<String> = HashSet::new();
+        let mut expected5: HashSet<String> = HashSet::new();
         expected5.insert("ACGTAATCGGCGA".to_string());
         expected5.insert("GCGTAATCGGCGA".to_string());
         let result5 = resolve_primer(seq5);
@@ -890,12 +894,11 @@ mod tests {
 
     #[test]
     fn test_permute_sequences() {
-    
         // Check specific permutations for a tiny example
         {
             let mut seq: HashSet<String> = HashSet::new();
             seq.insert("CG".to_string());
-    
+
             let mut expected: HashSet<String> = HashSet::new();
             expected.insert("CA".to_string());
             expected.insert("CC".to_string());
@@ -904,31 +907,33 @@ mod tests {
             expected.insert("AG".to_string());
             expected.insert("GG".to_string());
             expected.insert("TG".to_string());
-    
+
             let result = permute_sequences(seq, &1_usize);
-            println!("Permutations: {}", result.iter().cloned().collect::<Vec<_>>().join(", "));
+            println!(
+                "Permutations: {}",
+                result.iter().cloned().collect::<Vec<_>>().join(", ")
+            );
             assert_eq!(result, expected);
         }
-    
+
         // Check sequence length 3 and r=3
         {
             let mut seq: HashSet<String> = HashSet::new();
             seq.insert("CGT".to_string());
-    
+
             let result = permute_sequences(seq, &3_usize);
-            
+
             // All sites permuted, so there should be 4^n sequences
             assert_eq!(result.len(), 64);
-
         }
-    
+
         // Construct all the permutations procedurally
         {
             let mut seq: HashSet<String> = HashSet::new();
             seq.insert("CGT".to_string());
             let r: usize = 2;
             let n: usize = 3;
-    
+
             let bases = vec!['A', 'C', 'G', 'T'];
             let mut expected: HashSet<String> = HashSet::new();
             for i in 0..4 {
@@ -938,19 +943,24 @@ mod tests {
                     expected.insert(format!("{}{}T", bases[i], bases[j]));
                 }
             }
-    
-            println!("There are {} combinations for n={} r={}", expected.len(), n, r);
+
+            println!(
+                "There are {} combinations for n={} r={}",
+                expected.len(),
+                n,
+                r
+            );
             let result = permute_sequences(seq, &r);
             assert_eq!(expected.len(), result.len());
         }
-    
+
         // Procedural test where n=4 and r=2
         {
             let mut seq: HashSet<String> = HashSet::new();
             seq.insert("ACGT".to_string());
             let r: usize = 2;
             let n: usize = 4;
-    
+
             let bases = vec!['A', 'C', 'G', 'T'];
             let mut expected: HashSet<String> = HashSet::new();
             for i in 0..4 {
@@ -963,13 +973,17 @@ mod tests {
                     expected.insert(format!("AC{}{}", bases[i], bases[j]));
                 }
             }
-    
-            println!("There are {} combinations for n={} r={}", expected.len(), n, r);
+
+            println!(
+                "There are {} combinations for n={} r={}",
+                expected.len(),
+                n,
+                r
+            );
             let result = permute_sequences(seq, &r);
             assert_eq!(expected.len(), result.len());
         }
     }
-    
 
     #[test]
     fn test_string_to_oligo() {
