@@ -1,6 +1,7 @@
 use crate::kmer::*;
 use bio::io::fasta;
 use petgraph::algo::{all_simple_paths, is_cyclic_directed, connected_components};
+use petgraph::visit::{Bfs, Walker};
 use petgraph::graph::NodeIndex;
 use petgraph::Direction;
 use petgraph::Graph;
@@ -319,6 +320,17 @@ fn get_dbedge(kmer: &u64, kmer_counts: &FxHashMap<u64, u64>, k: &usize) -> DBEdg
         _kmer: *kmer,
         count: crate::kmer::get_kmer_count(kmer_counts, kmer, k),
     }
+}
+
+fn would_form_cycle(graph: &Graph<DBNode, DBEdge>, parent: NodeIndex, child: NodeIndex) -> bool {
+    // If there's a path from the `child` to `parent`, adding an edge from `parent` to `child` would create a cycle
+    let mut bfs = Bfs::new(graph, child);
+    while let Some(node) = bfs.next(graph) {
+        if node == parent {
+            return true;
+        }
+    }
+    false
 }
 
 pub struct PCRParams {
@@ -702,7 +714,7 @@ pub fn do_pcr(
                 // If there are no candidate kmers, the node is terminal
                 if candidate_kmers.is_empty() {
                     if verbosity > 1 {
-                        print!("Marking node as terminal because there are no candidates for extension. ");
+                        println!("Marking node as terminal because there are no candidates for extension. ");
                         std::io::stdout().flush().unwrap();
                     }
                     graph[node].is_terminal = true;
@@ -730,12 +742,28 @@ pub fn do_pcr(
 
                     // If the node with sub_kmer == suffix already exists, add an edge to the existing node
                     // Otherwise, create a new node with sub_kmer == suffix, and add an edge to the new node
-
-                    let mut node_exists = false;
+                    
+                   let mut node_exists = false;
                     for existing_node in graph.node_indices() {
                         if graph[existing_node].sub_kmer == suffix {
-                            let edge = get_dbedge(kmer, kmer_counts, k);
-                            graph.add_edge(node, existing_node, edge);
+
+
+                            if !would_form_cycle(&graph, node, existing_node) {
+                                let edge = get_dbedge(kmer, kmer_counts, k);
+                                graph.add_edge(node, existing_node, edge);
+                            } else {
+                                graph[node].is_terminal = true;
+
+                                if verbosity > 1 {
+                                    print!(
+                                        "Adding edge to node {} would form cycle. Not adding edge, and marking current node as terminal. ",
+                                        node.index()
+                                    );
+                                    std::io::stdout().flush().unwrap();
+                                }
+                            }
+
+
                             node_exists = true;
                             break;
                         }
@@ -777,6 +805,7 @@ pub fn do_pcr(
 
                             if path_length > params.max_length - (*k) {
                                 graph[new_node].is_terminal = true;
+                                graph[new_node].visited = true;
                                 if verbosity > 1 {
                                     print!("Marking new node {} as terminal because it exceeds max_length from start. ", new_node.index());
                                     std::io::stdout().flush().unwrap();
