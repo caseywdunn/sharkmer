@@ -101,7 +101,7 @@ First download the data as follows (this is the full dataset, so it will be quit
 
 An example analysis would look like this:
 
-    sharkmer -k 21 -n 10 --histo-max 10000 -o Cordagalma-ordinatum SRR23143278.fastq
+    sharkmer -k 21 -n 10 --histo-max 10000 -s Cordagalma-ordinatum SRR23143278.fastq
 
 The incremental histogram files in this case would be:
 
@@ -115,7 +115,7 @@ Then to explore the results:
 
 The final histogram on all the data is also written to its own file, and you can view that with, for example, [GenomeScope2](https://github.com/tbenavi1/genomescope2.0):
 
-    genomescope2 -i Cordagalma-ordinatum.final.histo -o Cordagalma-ordinatum -k 21
+    genomescope2 -i Cordagalma-ordinatum.final.histo -s Cordagalma-ordinatum -k 21
 
 The included `genomemovie.sh` script will generate a movie of the incremental GenomeScope2 histograms. For example, to create a movie of the `Cordagalma` test dataset:
 
@@ -147,7 +147,7 @@ Download one million reads of the **Cordagalma ordinatum** dataset:
 Then run sPCR on the downloaded reads by specifying primer pairs with the `--pcr` argument:
 
     sharkmer \
-      -k 31 -n 100 -t 4 -o Cordagalma_CWD6 --coverage 3 \
+      -k 31 -n 100 -t 4 -s Cordagalma_CWD6 --coverage 3 \
       --pcr "GACTGTTTACCAAAAACATA_AATTCAACATCGAGG_1000_16s" \
       --pcr "TCATAAAGATATTGG_ATGCCCGAAAAACCA_2000_co1" \
       --pcr "AACCTGGTTGATCCTGCCAGT_TGATCCTTCTGCAGGTTCACCTAC_2500_18s" \
@@ -163,7 +163,7 @@ This analysis will generate one fasta file for each primer pair. These fasta fil
 `sharkmer` does not read compressed data directly, but it can read uncompressed data from `stdin`.
 So, for example, you could `gunzip` files and pipe them to `sharkmer`:
 
-    zcat agalma_*.fastq.gz | sharkmer -k 21 -n 10 --histo-max 10000 -o Agalma-elegans
+    zcat agalma_*.fastq.gz | sharkmer -k 21 -n 10 --histo-max 10000 -s Agalma-elegans
 
 Decompressing files takes quite a bit of compute. Handling decompression outside of `sharkmer` allows you to 
 use whichever approach you prefer on your system, for example parallel tools such as `pigz`. 
