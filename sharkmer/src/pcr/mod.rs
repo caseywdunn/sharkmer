@@ -1,7 +1,7 @@
 use crate::kmer::*;
 use bio::io::fasta;
 use petgraph::algo::{all_simple_paths, is_cyclic_directed, connected_components};
-use petgraph::visit::{Bfs, Walker};
+use petgraph::visit::Bfs;
 use petgraph::graph::NodeIndex;
 use petgraph::Direction;
 use petgraph::Graph;
@@ -834,6 +834,38 @@ pub fn do_pcr(
         }
     }
 
+
+    // Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
+    let mut start_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
+    let mut end_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
+
+    for node in graph.node_indices() {
+        if graph[node].is_start {
+            start_nodes_map.insert(node, graph.neighbors_directed(node, Direction::Outgoing).count());
+        }
+        if graph[node].is_end {
+            end_nodes_map.insert(node, graph.neighbors_directed(node, Direction::Incoming).count());
+        }
+    }
+
+    if verbosity > 0 {
+        // Print the number of edges for each start node
+        for (node, edge_count) in &start_nodes_map {
+            // Print the node subkmer and number of edges
+            println!("  Start node {} with subkmer {} has {} edges", node.index(), crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(*k - 1)), edge_count);
+        }
+
+        // Print the number of edges for each end node
+        for (node, edge_count) in &end_nodes_map {
+            // Print the node subkmer and number of edges
+            println!("  End node {} with subkmer {} has {} edges", node.index(), crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(*k - 1)), edge_count);
+        }
+    }
+
+    // Drop entries that have no edges
+    start_nodes_map.retain(|_node, edge_count| *edge_count > 0);
+    end_nodes_map.retain(|_node, edge_count| *edge_count > 0);
+
     println!("done.  Time to extend graph: {:?}", start.elapsed());
 
     // Get all paths from start nodes to terminal nodes
@@ -843,6 +875,9 @@ pub fn do_pcr(
     // Print the number of nodes and edges in the graph
     println!("  There are {} nodes in the graph", graph.node_count());
     println!("  There are {} edges in the graph", graph.edge_count());
+
+    println!("  There are {} start nodes with edges", start_nodes_map.len());
+    println!("  There are {} end nodes with edges", end_nodes_map.len());
 
     let n_components = connected_components(&graph);
     println!("  There are {} components in the graph", n_components);
@@ -856,8 +891,8 @@ pub fn do_pcr(
 
     let mut all_paths = Vec::new();
 
-    for start in &start_nodes {
-        for end in &end_nodes {
+    for (start, _) in &start_nodes_map {
+        for (end, _) in &end_nodes_map {
             let paths_for_this_pair = all_simple_paths::<Vec<NodeIndex>, &Graph<DBNode, DBEdge>>(
                 &graph,
                 *start,
