@@ -1,6 +1,6 @@
 use crate::kmer::*;
 use bio::io::fasta;
-use petgraph::algo::all_simple_paths;
+use petgraph::algo::{all_simple_paths, is_cyclic_directed, connected_components};
 use petgraph::graph::NodeIndex;
 use petgraph::Direction;
 use petgraph::Graph;
@@ -810,6 +810,20 @@ pub fn do_pcr(
     // Get all paths from start nodes to terminal nodes
     let start = std::time::Instant::now();
     println!("Traversing the assembly graph...");
+
+    // Print the number of nodes and edges in the graph
+    println!("  There are {} nodes in the graph", graph.node_count());
+    println!("  There are {} edges in the graph", graph.edge_count());
+
+    let n_components = connected_components(&graph);
+    println!("  There are {} components in the graph", n_components);
+
+    let has_cycles = is_cyclic_directed(&graph);
+    if has_cycles {
+        println!("  The graph has cycles");
+    } else {
+        println!("  The graph does not have cycles");
+    }
 
     let mut all_paths = Vec::new();
 
