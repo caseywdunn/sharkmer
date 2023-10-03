@@ -439,55 +439,79 @@ pub fn do_pcr(
     let mut forward_top_count_cutoff = forward_counts.last().unwrap();
 
     if forward_counts.len() > MAX_NUM_PRIMER_KMERS {
-        forward_top_count_cutoff = &forward_counts[MAX_NUM_PRIMER_KMERS];
+        forward_top_count_cutoff = &forward_counts[MAX_NUM_PRIMER_KMERS-1];
     }
 
     // If there are less than MAX_NUM_PRIMER_KMERS forward matches, this is the lowest count
     // If there are more than MAX_NUM_PRIMER_KMERS or more forward matches, get the count of the 
     // MAX_NUM_PRIMER_KMERS highest count forward matches and use that as the cutoff
-    let mut forward_top_count_cutoff: u64 = max_forward_count;
 
-    if forward_matches.len() > MAX_NUM_PRIMER_KMERS {
-        let mut forward_counts: Vec<u64> = forward_matches_map.values().cloned().collect();
-        forward_counts.sort();
-        forward_counts.reverse();
-        forward_top_count_cutoff = forward_counts[MAX_NUM_PRIMER_KMERS];
+    forward_matches.clear();
+    for (kmer, count) in forward_matches_map {
+        let mut keep: bool = false;
+        if count >= *forward_top_count_cutoff {
+            forward_matches.insert(kmer);
+            keep = true;
+        }
+        println!("  {}, count {}, keep {}", crate::kmer::kmer_to_seq(&kmer, k), count, keep);
     }
 
-
-
-
-    for (kmer, count) in forward_matches_map {
-        let count = crate::kmer::get_kmer_count(kmer_counts, f, k);
-        if count > max_forward_count {
-            max_forward_count = count;
-        }
-        println!("  {}, count {}", crate::kmer::kmer_to_seq(f, k), count);
+    if forward_matches.len() < forward_counts.len() {
+        println!("  There are more than {} forward matches.  Retaining only the {} forward matches with the highest counts.", MAX_NUM_PRIMER_KMERS, MAX_NUM_PRIMER_KMERS);
+    } else {
+        println!("  Retaining all forward matches.");
     }
 
     let start = std::time::Instant::now();
     print!("Finding kmers that contain the reverse primer...");
     std::io::stdout().flush().unwrap();
-    let reverse_matches =
+    let mut reverse_matches =
         find_oligos_in_kmers(&reverse_oligos, &kmers, k, PrimerDirection::Reverse);
-
+    
     println!(" done, time: {:?}", start.elapsed());
-
-    let mut max_reverse_count: u64 = 0;
+    
+    let mut reverse_matches_map: HashMap<u64,u64> = HashMap::new();
+    let mut reverse_counts: Vec<u64> = Vec::new();
     println!("  There are {} reverse matches", reverse_matches.len());
     for f in &reverse_matches {
         let count = crate::kmer::get_kmer_count(kmer_counts, f, k);
-        if count > max_reverse_count {
-            max_reverse_count = count;
-        }
-        println!("  {}, count {}", crate::kmer::kmer_to_seq(f, k), count);
+        reverse_counts.push(count);
+        reverse_matches_map.insert(*f, count);
     }
-
+    
+    reverse_counts.sort();
+    reverse_counts.reverse();
+    let max_reverse_count = reverse_counts[0];
+    
+    // set equal to last element
+    let mut reverse_top_count_cutoff = reverse_counts.last().unwrap();
+    
+    if reverse_counts.len() > MAX_NUM_PRIMER_KMERS {
+        reverse_top_count_cutoff = &reverse_counts[MAX_NUM_PRIMER_KMERS-1];
+    }
+    
+    reverse_matches.clear();
+    for (kmer, count) in reverse_matches_map {
+        let mut keep: bool = false;
+        if count >= *reverse_top_count_cutoff {
+            reverse_matches.insert(kmer);
+            keep = true;
+        }
+        println!("  {}, count {}, keep {}", crate::kmer::kmer_to_seq(&kmer, k), count, keep);
+    }
+    
+    if reverse_matches.len() < reverse_counts.len() {
+        println!("  There are more than {} reverse matches.  Retaining only the {} reverse matches with the highest counts.", MAX_NUM_PRIMER_KMERS, MAX_NUM_PRIMER_KMERS);
+    } else {
+        println!("  Retaining all reverse matches.");
+    }
+    
     // If the forward_matches or the reverse_matches are empty, exit
     if forward_matches.is_empty() | reverse_matches.is_empty() {
         println!("Binding sites were not found for both primers. Not searching for products.");
         return records;
     }
+    
 
     // If the count of kmers containing primers is significantly higher than min_count, apply a higher min coverage
     let mut min_count = max_reverse_count;
