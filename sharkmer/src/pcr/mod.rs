@@ -905,6 +905,12 @@ pub fn do_pcr(
         }
     }
 
+    println!("  There are {} paths in the graph", all_paths.len());
+
+    println!("done.  Time to traverse graph: {:?}", start.elapsed());
+
+    println!("Generating sequences from paths...");
+
     // For each path, get the sequence of the path
     for (i, path) in all_paths.into_iter().enumerate() {
         let mut sequence = String::new();
@@ -932,7 +938,8 @@ pub fn do_pcr(
         records.push(record);
     }
 
-    println!("done.  Time to traverse graph: {:?}", start.elapsed());
+    println!("done.");
+    
 
     records
 }
