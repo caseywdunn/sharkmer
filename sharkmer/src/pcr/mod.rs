@@ -884,7 +884,11 @@ pub fn do_pcr(
     }
     println!("done.  Time to extend graph: {:?}", start.elapsed());
 
+
     // Simplify the graph
+    // all_simple_paths() hangs if the input graph is too complex
+    // Also want to regularize some graph features
+    
     let start = std::time::Instant::now();
     println!("Pruning the assembly graph...");
 
@@ -910,19 +914,21 @@ pub fn do_pcr(
         }
     }
 
-    // Remove start nodes without edges
-    // There shouldn't be any after the above pruning
-    for (node, edge_count) in &start_nodes_map {
-        if *edge_count == 0 {
-            graph.remove_node(*node);
-        }
-    }
+    // Start nodes without edges will be removed above
 
     // Remove end nodes without edges
-    for (node, edge_count) in &end_nodes_map {
-        if *edge_count == 0 {
-            graph.remove_node(*node);
-        }
+    let nodes_to_remove: Vec<NodeIndex> = graph.node_indices()
+        .filter(|&node| {
+            if graph[node].is_end {
+                graph.neighbors_directed(node, Direction::Incoming).count() == 0
+            } else {
+                false
+            }
+        })
+        .collect();
+    
+    for node in nodes_to_remove {
+        graph.remove_node(node);
     }
 
     // Update start and end nodes
@@ -936,10 +942,7 @@ pub fn do_pcr(
             end_nodes.push(node);
         }
     }
-    println!("  There are {} start nodes", n_start_nodes);
-    println!("  There are {} end nodes", n_end_nodes);
 
-    
     println!("  There are {} nodes in the graph", graph.node_count());
     println!("  There are {} edges in the graph", graph.edge_count());
 
