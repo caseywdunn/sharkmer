@@ -526,12 +526,17 @@ pub fn do_pcr(
     
 
     // If the count of kmers containing primers is significantly higher than min_count, apply a higher min coverage
+
+    // Get the minimum of (max_forward_count, max_reverse_count), consider this as the observed count of the region
     let mut min_count = max_reverse_count;
     if max_forward_count < max_reverse_count {
         min_count = max_forward_count;
     }
 
-    let new_coverage = min_count / COVERAGE_MULTIPLIER;
+    // Create a new coverage threshold
+    let new_coverage = min_count / COVERAGE_MULTIPLIER / 2;
+
+    // If the observed coverage exceeds COVERAGE_MULTIPLIER * default coverage, then apply the new threshold
     if min_count > COVERAGE_MULTIPLIER * params.coverage {
         println!("The count of kmers containing primers have high coverage {} relative to the coverage threshold of {}.  Increasing min coverage to {}.", min_count, params.coverage, new_coverage);
 
