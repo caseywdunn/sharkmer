@@ -866,12 +866,6 @@ pub fn do_pcr(
     start_nodes_map.retain(|_node, edge_count| *edge_count > 0);
     end_nodes_map.retain(|_node, edge_count| *edge_count > 0);
 
-    println!("done.  Time to extend graph: {:?}", start.elapsed());
-
-    // Get all paths from start nodes to terminal nodes
-    let start = std::time::Instant::now();
-    println!("Traversing the assembly graph...");
-
     // Print the number of nodes and edges in the graph
     println!("  There are {} nodes in the graph", graph.node_count());
     println!("  There are {} edges in the graph", graph.edge_count());
@@ -888,11 +882,82 @@ pub fn do_pcr(
     } else {
         println!("  The graph does not have cycles");
     }
+    println!("done.  Time to extend graph: {:?}", start.elapsed());
 
+    // Simplify the graph
+    let start = std::time::Instant::now();
+    println!("Pruning the assembly graph...");
+
+    // Iteratively remove nodes that do not have outgoing edges and are not end nodes
+    // These are terminal side branches.
+    let mut removed_nodes = 1;
+    while removed_nodes > 0 {
+        removed_nodes = 0;
+    
+        let nodes_to_remove: Vec<_> = graph.node_indices()
+            .filter(|&node| {
+                if graph[node].is_end {
+                    false
+                } else {
+                    graph.neighbors_directed(node, Direction::Outgoing).count() == 0
+                }
+            })
+            .collect();
+    
+        for node in nodes_to_remove {
+            graph.remove_node(node);
+            removed_nodes += 1;
+        }
+    }
+
+    // Remove start nodes without edges
+    // There shouldn't be any after the above pruning
+    for (node, edge_count) in &start_nodes_map {
+        if *edge_count == 0 {
+            graph.remove_node(*node);
+        }
+    }
+
+    // Remove end nodes without edges
+    for (node, edge_count) in &end_nodes_map {
+        if *edge_count == 0 {
+            graph.remove_node(*node);
+        }
+    }
+
+    // Update start and end nodes
+    start_nodes.clear();
+    end_nodes.clear();
+    for node in graph.node_indices() {
+        if graph[node].is_start {
+            start_nodes.push(node);
+        }
+        if graph[node].is_end {
+            end_nodes.push(node);
+        }
+    }
+    println!("  There are {} start nodes", n_start_nodes);
+    println!("  There are {} end nodes", n_end_nodes);
+
+    
+    println!("  There are {} nodes in the graph", graph.node_count());
+    println!("  There are {} edges in the graph", graph.edge_count());
+
+    println!("  There are {} start nodes", start_nodes.len());
+    println!("  There are {} end nodes", end_nodes.len());
+
+    let n_components = connected_components(&graph);
+    println!("  There are {} components in the graph", n_components);
+    println!("done.  Time to prune graph: {:?}", start.elapsed());
+
+
+    // Get all paths from start nodes to terminal nodes
+    let start = std::time::Instant::now();
+    println!("Traversing the assembly graph to find paths from forward to reverse primers...");
     let mut all_paths = Vec::new();
 
-    for (start, _) in &start_nodes_map {
-        for (end, _) in &end_nodes_map {
+    for start in &start_nodes {
+        for end in &end_nodes {
             let paths_for_this_pair = all_simple_paths::<Vec<NodeIndex>, &Graph<DBNode, DBEdge>>(
                 &graph,
                 *start,
@@ -905,8 +970,7 @@ pub fn do_pcr(
         }
     }
 
-    println!("  There are {} paths in the graph", all_paths.len());
-
+    println!("  There are {} paths from forward to reverse primers in the graph", all_paths.len());
     println!("done.  Time to traverse graph: {:?}", start.elapsed());
 
     println!("Generating sequences from paths...");
