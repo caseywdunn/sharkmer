@@ -18,6 +18,11 @@ const COVERAGE_MULTIPLIER:u64 = 5;
 /// with only those with the highest count being retained
 const MAX_NUM_PRIMER_KMERS:usize = 10;
 
+struct AssemblyRecord {
+    fasta_record: fasta::Record,
+    kmer_min_count: u64,
+}
+
 // Create a structure to hold a kmer representing an oligo up to 32 nucleotides long in the
 // length*2 least significant bits
 struct Oligo {
@@ -43,6 +48,25 @@ struct DBNode {
 struct DBEdge {
     _kmer: u64, // kmer that contains overlap between sub_kmers
     count: u64, // Number of times this kmer was observed
+}
+
+
+fn compute_mean(numbers: &[u64]) -> f64 {
+    let sum: u64 = numbers.iter().sum();
+    sum as f64 / numbers.len() as f64
+}
+
+fn compute_median(numbers: &[u64]) -> f64 {
+    let mut sorted = numbers.to_vec();
+    sorted.sort();
+
+    let mid = sorted.len() / 2;
+    
+    if sorted.len() % 2 == 0 {
+        (sorted[mid - 1] + sorted[mid]) as f64 / 2.0
+    } else {
+        sorted[mid] as f64
+    }
 }
 
 // Given an oligo as a String, return a Oligo struct representing it
@@ -351,7 +375,7 @@ pub fn do_pcr(
     params: &PCRParams,
 ) -> Vec<bio::io::fasta::Record> {
     // Create a vector to hold the fasta records
-    let mut records: Vec<fasta::Record> = Vec::new();
+    let mut assembly_records : Vec<AssemblyRecord> = Vec::new();
 
     // Preprocess the primers
     let mut forward = params.forward_seq.clone();
@@ -521,6 +545,7 @@ pub fn do_pcr(
     // If the forward_matches or the reverse_matches are empty, exit
     if forward_matches.is_empty() | reverse_matches.is_empty() {
         println!("Binding sites were not found for both primers. Not searching for products.");
+        let records: Vec<fasta::Record> = Vec::new();
         return records;
     }
     
@@ -534,7 +559,7 @@ pub fn do_pcr(
     }
 
     // Create a new coverage threshold
-    let new_coverage = min_count / COVERAGE_MULTIPLIER / 2;
+    let new_coverage = min_count / COVERAGE_MULTIPLIER;
 
     // If the observed coverage exceeds COVERAGE_MULTIPLIER * default coverage, then apply the new threshold
     if min_count > COVERAGE_MULTIPLIER * params.coverage {
@@ -986,33 +1011,64 @@ pub fn do_pcr(
     // For each path, get the sequence of the path
     for (i, path) in all_paths.into_iter().enumerate() {
         let mut sequence = String::new();
+        let mut edge_counts: Vec<u64> = Vec::new();
+        let mut parent_node: NodeIndex = NodeIndex::new(0);
         // The first time through the loop add the whole sequence, after that just add the last base
         for node in path.iter() {
             let node_data = graph.node_weight(*node).unwrap();
             let subread = crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(*k - 1));
             if sequence.is_empty() {
                 sequence = subread;
+                parent_node = *node;
             } else {
                 sequence = format!("{}{}", sequence, subread.chars().last().unwrap(),);
+
+                // Get the edge count for the edge from the parent node to this node
+                let edge = graph.find_edge(parent_node, *node).unwrap();
+                let edge_data = graph.edge_weight(edge).unwrap();
+                edge_counts.push(edge_data.count);
+                parent_node = *node;
             }
         }
+
+        // Get some stats on the path counts
+        let count_mean = compute_mean(&edge_counts);
+        let count_median = compute_median(&edge_counts);
+        let count_min = edge_counts.iter().min().unwrap();
+        let count_max = edge_counts.iter().max().unwrap();
         
         let id = format!(
-            "{} {} product {} length {}",
+            "{} {} product {} length {} kmer count stats mean {:.2} median {} min {} max {}",
             sample_name,
             params.gene_name,
             i,
-            sequence.len()
+            sequence.len(),
+            count_mean,
+            count_median,
+            count_min,
+            count_max
         );
         println!(">{}", id);
         println!("{}", sequence);
         let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
-        records.push(record);
+        // Create fasta record and add to vector
+        let assembly_record:AssemblyRecord = AssemblyRecord {
+            fasta_record: record,
+            kmer_min_count: *count_min,
+        };
+        assembly_records.push(assembly_record);
     }
 
     println!("done.");
-    
 
+    // Order the records by descending kmer_min_count
+    assembly_records.sort_by(|a, b| b.kmer_min_count.cmp(&a.kmer_min_count));
+
+    // Return the records
+    let mut records: Vec<fasta::Record> = Vec::new();
+    for fasta_record in assembly_records {
+        records.push(fasta_record.fasta_record);
+    }
     records
 }
 
