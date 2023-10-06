@@ -357,6 +357,34 @@ fn would_form_cycle(graph: &Graph<DBNode, DBEdge>, parent: NodeIndex, child: Nod
     false
 }
 
+use std::collections::VecDeque;
+// Find the number of descendants of a node, each descendent no more than `depth` edges away
+fn n_descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex, depth: usize) -> usize {
+    let mut visited = vec![false; graph.node_count()];
+    let mut queue = VecDeque::new();
+
+    queue.push_back((node, 0));
+    visited[node.index()] = true;
+
+    let mut n_descendants = 0;
+
+    while let Some((current_node, current_depth)) = queue.pop_front() {
+        if current_depth >= depth {
+            continue;
+        }
+
+        for neighbor in graph.neighbors(current_node) {
+            if !visited[neighbor.index()] {
+                n_descendants += 1;
+                visited[neighbor.index()] = true;
+                queue.push_back((neighbor, current_depth + 1));
+            }
+        }
+    }
+
+    n_descendants
+}
+
 pub struct PCRParams {
     pub forward_seq: String,
     pub reverse_seq: String,
@@ -493,7 +521,7 @@ pub fn do_pcr(
     }
 
     if forward_matches.len() < forward_counts.len() {
-        println!("  There are more than {} forward matches.  Retaining only the {} forward matches with the highest counts.", MAX_NUM_PRIMER_KMERS, MAX_NUM_PRIMER_KMERS);
+        println!("  There are more than {} forward matches.  Retaining only the forward matches with the same counts as the {} highest counts.", MAX_NUM_PRIMER_KMERS, MAX_NUM_PRIMER_KMERS);
     } else {
         println!("  Retaining all forward matches.");
     }
@@ -537,7 +565,7 @@ pub fn do_pcr(
     }
     
     if reverse_matches.len() < reverse_counts.len() {
-        println!("  There are more than {} reverse matches.  Retaining only the {} reverse matches with the highest counts.", MAX_NUM_PRIMER_KMERS, MAX_NUM_PRIMER_KMERS);
+        println!("  There are more than {} reverse matches. Retaining only the reverse matches with the same counts as the {} highest counts.", MAX_NUM_PRIMER_KMERS, MAX_NUM_PRIMER_KMERS);
     } else {
         println!("  Retaining all reverse matches.");
     }
@@ -912,6 +940,25 @@ pub fn do_pcr(
     } else {
         println!("  The graph does not have cycles");
     }
+
+    // Create a vector of n_descendants for each node given a depth of 4
+    let depth = 4;
+    let mut n_descendants_vec: Vec<usize> = Vec::new();
+    for node in graph.node_indices() {
+        let n_descendants = n_descendants(&graph, node, depth);
+        n_descendants_vec.push(n_descendants);
+    }
+
+    // create vector of u64 from n_descendants_vec
+    let n_descendants_vec_u64: Vec<u64> = n_descendants_vec.iter().map(|&x| x as u64).collect();
+
+    let max_n_descendants = n_descendants_vec_u64.iter().max().unwrap();
+    let mean_n_descendants = compute_mean(&n_descendants_vec_u64);
+    let median_n_descendants = compute_median(&n_descendants_vec_u64);
+
+    println!("  Number of descendants to a depth of {}, max {} mean {} median {}", depth, max_n_descendants, mean_n_descendants, median_n_descendants);
+
+
     println!("done.  Time to extend graph: {:?}", start.elapsed());
 
 
@@ -1284,4 +1331,5 @@ mod tests {
         assert_eq!(oligo.kmer, 0b1001_1000);
         assert_eq!(oligo.length, 4);
     }
+
 }
