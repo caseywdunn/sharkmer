@@ -10,6 +10,8 @@ use std::collections::HashSet;
 use std::collections::HashMap;
 use std::io::Write;
 
+// Constants that may require tuning
+
 /// The multiplier for establishing when a kmer is considered to have high coverage,
 /// relative to the coverage threshold. It is then used to also adjust the threshold.
 const COVERAGE_MULTIPLIER:u64 = 5;
@@ -17,6 +19,16 @@ const COVERAGE_MULTIPLIER:u64 = 5;
 /// The maximum number of kmers containing the forward or reverse primers to maintain,
 /// with only those with the highest count being retained
 const MAX_NUM_PRIMER_KMERS:usize = 10;
+
+/// How frequently to check extension graph for ballooning growth
+const EXTENSION_EVALUATION_FREQUENCY: usize = 10_000;
+
+/// The graph depth over which to evaluate ballooning growth
+const EXTENSION_EVALUATION_DEPTH: usize = 4;
+
+/// Sets the threshold for detecting ballooning, where threshold is
+/// 4^(EXTENSION_EVALUATION_DEPTH-EXTENSION_EVALUATION_DIFF)
+const EXTENSION_EVALUATION_DIFF: usize = 1;
 
 struct AssemblyRecord {
     fasta_record: fasta::Record,
@@ -385,6 +397,62 @@ fn n_descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex, depth: usize) -
     n_descendants
 }
 
+// Get all descendants of a node in a directed graph
+fn get_descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex) -> Vec<NodeIndex> {
+    let mut visited = HashSet::new();
+    let mut stack = vec![node];
+    visited.insert(node); // mark the original node as visited
+
+    while let Some(node) = stack.pop() {
+        for neighbor in graph.neighbors(node) {
+            if !visited.contains(&neighbor) {
+                visited.insert(neighbor); // mark neighbor as visited
+                stack.push(neighbor);
+            }
+        }
+    }
+
+    // Remove the original node from the set before converting it to a Vec
+    visited.remove(&node);
+
+    visited.into_iter().collect()
+}
+
+fn summarize_extension(graph: &Graph<DBNode, DBEdge>, pad: &str){
+    // Print the number of nodes and edges in the graph
+    println!("{}There are {} nodes in the graph", pad, graph.node_count());
+    println!("{}There are {} edges in the graph", pad, graph.edge_count());
+
+
+    let n_components = connected_components(&graph);
+    println!("{}There are {} components in the graph", pad, n_components);
+
+    let has_cycles = is_cyclic_directed(&graph);
+    if has_cycles {
+        println!("{}The graph has cycles", pad);
+    } else {
+        println!("{}The graph does not have cycles", pad);
+    }
+
+    // Create a vector of n_descendants for each node given a depth of EXTENSION_EVALUATION_DEPTH
+
+    let mut n_descendants_vec: Vec<usize> = Vec::new();
+    for node in graph.node_indices() {
+        let n_descendants = n_descendants(&graph, node, EXTENSION_EVALUATION_DEPTH);
+        n_descendants_vec.push(n_descendants);
+    }
+
+    // create vector of u64 from n_descendants_vec
+    let n_descendants_vec_u64: Vec<u64> = n_descendants_vec.iter().map(|&x| x as u64).collect();
+
+    let max_n_descendants = n_descendants_vec_u64.iter().max().unwrap();
+    let mean_n_descendants = compute_mean(&n_descendants_vec_u64);
+    let median_n_descendants = compute_median(&n_descendants_vec_u64);
+
+    println!("{}Number of descendants to a depth of {}, max {} mean {} median {}", pad, EXTENSION_EVALUATION_DEPTH, max_n_descendants, mean_n_descendants, median_n_descendants);
+
+}
+
 pub struct PCRParams {
     pub forward_seq: String,
     pub reverse_seq: String,
@@ -734,7 +802,56 @@ pub fn do_pcr(
     // - The suffix of the kmer of the node is the sub_kmer of the new node in the graph
     // - If a node with the sub_kmer already exists, add a new edge to the existing node
 
+    let mut last_check: usize = 0;
     while n_unvisited_nodes_in_graph(&graph) > 0 {
+        // Some graphs balloon in size and get to hundreds of thousands of nodes while extension gets
+        // slower and slower because there are so many growing tips. This may be due to a sequencing 
+        // adapter becoming integrated into the graph, for example. So periodically check for a region
+        // of high degree and prune it if found
+
+        let n_nodes = graph.node_count();
+        if (n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY {
+            last_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
+
+            println!("  Evaluating extension ...");
+            summarize_extension(&graph, "    ");
+
+            // Vector to hold nodes to be clipped, ie have all their descendants pruned
+            let mut to_clip: Vec<NodeIndex> = Vec::new();
+            for node in graph.node_indices() {
+                let n_descendants = n_descendants(&graph, node, EXTENSION_EVALUATION_DEPTH);
+                // The maximum number of descendants would be 4^EXTENSION_EVALUATION_DEPTH
+                if n_descendants > 4_usize.pow((EXTENSION_EVALUATION_DEPTH-EXTENSION_EVALUATION_DIFF) as u32) {
+                    to_clip.push(node);
+                }
+            }
+
+            // Vector to hold nodes to be pruned
+            let mut to_prune: Vec<NodeIndex> = Vec::new();
+            for node in &to_clip {
+                // Node may have been removed already, so check if it is in graph
+                if graph.node_weight(*node).is_some() {
+                    // prune away all the descendants of the node, but keep the node
+                    let mut descendants = get_descendants(&graph, *node);
+                    to_prune.append(&mut descendants);
+                } 
+            }
+
+            if to_prune.len() > 0 {
+                println!("    Removing {} nodes descended from {} nodes with ballooning graph extension", to_prune.len(), to_clip.len());
+            }
+
+            // Remove the nodes in to_prune
+            for node in to_prune {
+                graph.remove_node(node);
+            }
+
+            // Mark the clipped nodes ast terminal
+            for node in to_clip {
+                graph[node].is_terminal = true;
+            }
+        }
+        
         // Iterate over the nodes
         for node in graph.node_indices() {
             if !(graph[node].visited) {
@@ -890,6 +1007,9 @@ pub fn do_pcr(
                 }
             }
         }
+
+        
+
     }
 
 
@@ -924,40 +1044,10 @@ pub fn do_pcr(
     start_nodes_map.retain(|_node, edge_count| *edge_count > 0);
     end_nodes_map.retain(|_node, edge_count| *edge_count > 0);
 
-    // Print the number of nodes and edges in the graph
-    println!("  There are {} nodes in the graph", graph.node_count());
-    println!("  There are {} edges in the graph", graph.edge_count());
 
+    summarize_extension(&graph, "  ");
     println!("  There are {} start nodes with edges", start_nodes_map.len());
     println!("  There are {} end nodes with edges", end_nodes_map.len());
-
-    let n_components = connected_components(&graph);
-    println!("  There are {} components in the graph", n_components);
-
-    let has_cycles = is_cyclic_directed(&graph);
-    if has_cycles {
-        println!("  The graph has cycles");
-    } else {
-        println!("  The graph does not have cycles");
-    }
-
-    // Create a vector of n_descendants for each node given a depth of 4
-    let depth = 4;
-    let mut n_descendants_vec: Vec<usize> = Vec::new();
-    for node in graph.node_indices() {
-        let n_descendants = n_descendants(&graph, node, depth);
-        n_descendants_vec.push(n_descendants);
-    }
-
-    // create vector of u64 from n_descendants_vec
-    let n_descendants_vec_u64: Vec<u64> = n_descendants_vec.iter().map(|&x| x as u64).collect();
-
-    let max_n_descendants = n_descendants_vec_u64.iter().max().unwrap();
-    let mean_n_descendants = compute_mean(&n_descendants_vec_u64);
-    let median_n_descendants = compute_median(&n_descendants_vec_u64);
-
-    println!("  Number of descendants to a depth of {}, max {} mean {} median {}", depth, max_n_descendants, mean_n_descendants, median_n_descendants);
-
 
     println!("done.  Time to extend graph: {:?}", start.elapsed());
 
