@@ -468,7 +468,7 @@ fn summarize_extension(graph: &Graph<DBNode, DBEdge>, pad: &str) {
     let median_n_descendants = compute_median(&n_descendants_vec_u64);
 
     println!(
-        "{}Number of descendants to a depth of {}, max {} mean {} median {}",
+        "{}Number of descendants to a depth of {}, max {} mean {:.2} median {:.1}",
         pad,
         EXTENSION_EVALUATION_DEPTH,
         max_n_descendants,
