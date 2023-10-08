@@ -1,4 +1,5 @@
 use bio::io::fasta;
+use bio::alignment::distance::simd::*;
 use petgraph::algo::{all_simple_paths, connected_components, is_cyclic_directed};
 use petgraph::graph::NodeIndex;
 use petgraph::visit::Bfs;
@@ -36,6 +37,9 @@ const EXTENSION_EVALUATION_DEPTH: usize = 4;
 /// Sets the threshold for detecting ballooning, where threshold is
 /// 4^(EXTENSION_EVALUATION_DEPTH-EXTENSION_EVALUATION_DIFF)
 const EXTENSION_EVALUATION_DIFF: usize = 1;
+
+/// Edit threshold for https://docs.rs/bio/latest/bio/alignment/distance/simd/fn.bounded_levenshtein.html
+const DISTANCE_EDIT_THRESHOLD: u32 = 10;
 
 struct AssemblyRecord {
     fasta_record: fasta::Record,
@@ -484,6 +488,23 @@ fn summarize_extension(graph: &Graph<DBNode, DBEdge>, pad: &str) {
     );
 }
 
+fn pairwise_sequence_distances(records: &Vec<fasta::Record>) -> Vec<Vec<Option<u32>>> {
+    // https://docs.rs/bio/latest/bio/alignment/distance/simd/fn.bounded_levenshtein.html
+
+    let n = records.len();
+    let mut matrix: Vec<Vec<Option<u32>>> = vec![vec![Some(0); n]; n];
+
+    for i in 0..n {
+        for j in i+1..n {
+            let dist = bounded_levenshtein(&records[i].seq(), &records[j].seq(), DISTANCE_EDIT_THRESHOLD);
+            matrix[i][j] = dist;
+            matrix[j][i] = dist; // Symmetric matrix
+        }
+    }
+
+    matrix
+}
+
 pub struct PCRParams {
     pub forward_seq: String,
     pub reverse_seq: String,
@@ -858,7 +879,9 @@ pub fn do_pcr(
         // of high degree and prune it if found
 
         let n_nodes = graph.node_count();
-        if (n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY {
+
+        // After pruning, n_nodes can be less than last_check and there will be an overflow on subtracting
+        if (n_nodes > last_check) & ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
             last_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
 
             println!("  Evaluating extension:");
@@ -1283,14 +1306,36 @@ pub fn do_pcr(
     // Order the records by descending kmer_min_count
     assembly_records.sort_by(|a, b| b.kmer_min_count.cmp(&a.kmer_min_count));
 
-    // Return the records
     let mut records: Vec<fasta::Record> = Vec::new();
     for fasta_record in assembly_records {
         records.push(fasta_record.fasta_record);
     }
 
-    println!("{}", format!("For gene {}, {} PCR products were generated.", params.gene_name, records.len()).color(COLOR_SUCCESS));
+    let num_records_all = records.len();
+    
+    // Thin the records to remove nearly-duplicate sequences that are highly similar. These can be abundant when coverage is high.
+    // Calculate pairwise distances between all sequences
+    let distances = pairwise_sequence_distances(&records);
 
+    // Get the first column of the matrix
+    let first_column: Vec<Option<u32>> = distances.iter().filter_map(|row| row.get(0).cloned()).collect();
+    
+    // Loop through the indices and values of first_column in reverse order. If the value is Sone, drop the corresponding
+    // element of records because it is so similar to the first.
+    for (index, &value) in first_column.iter().enumerate().rev() {
+        if index > 0 {
+            if value.is_some() {
+                records.remove(index);
+            }
+        }
+    }
+
+
+    println!("{}", format!("For gene {}, {} PCR products were generated and {} were retained (the others were minor variants of the first).", params.gene_name, num_records_all, records.len()).color(COLOR_SUCCESS));
+
+    
+
+    // Return the records
     records
 }
 
