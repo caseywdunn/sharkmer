@@ -494,6 +494,8 @@ pub fn do_pcr(
     verbosity: usize,
     params: &PCRParams,
 ) -> Vec<bio::io::fasta::Record> {
+
+    println!("Running PCR on gene {}", params.gene_name);
     // Create a vector to hold the fasta records
     let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
 
