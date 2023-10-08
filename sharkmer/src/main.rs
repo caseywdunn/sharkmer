@@ -95,13 +95,19 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<pcr::PCRParams, String> {
 
         match key {
             "coverage" => {
-                coverage = value.parse().map_err(|_| format!("Invalid value for {}: {}", key, value))?;
+                coverage = value
+                    .parse()
+                    .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
             }
             "mismatches" => {
-                mismatches = value.parse().map_err(|_| format!("Invalid value for {}: {}", key, value))?;
+                mismatches = value
+                    .parse()
+                    .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
             }
             "trim" => {
-                trim = value.parse().map_err(|_| format!("Invalid value for {}: {}", key, value))?;
+                trim = value
+                    .parse()
+                    .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
             }
             _ => {
                 return Err(format!("Unexpected parameter: {}", key));
@@ -119,7 +125,6 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<pcr::PCRParams, String> {
         trim,
     })
 }
-
 
 /// A collection of kmer counting and analysis tools
 #[derive(Parser, Debug)]
@@ -201,7 +206,7 @@ fn main() {
     // output directory is outdir/sample
     let mut path = PathBuf::from(&args.outdir);
     path.push(&args.sample);
-    
+
     // Create the output directory if it does not exist
     let directory = format!("{}/", path.to_str().unwrap());
     println!("Full output directory: {}", directory);
@@ -221,7 +226,7 @@ fn main() {
 
     // Create an empty data frame for pcr runs
     let mut pcr_runs: Vec<pcr::PCRParams> = Vec::new();
-    
+
     // Loop over the pcr strings, check that they are valid, and add each to the pcr_runs vector
     for pcr_string in args.pcr.iter() {
         let parsed_pcr = parse_pcr_string(pcr_string);
@@ -413,7 +418,8 @@ fn main() {
     let mut n_kmers: u64 = 0;
     let n_singleton_kmers: u64 = histos[histos.len() - 1][1];
     std::io::stdout().flush().unwrap();
-    let mut file = std::fs::File::create(format!("{}{}.final.histo", directory, args.sample)).unwrap();
+    let mut file =
+        std::fs::File::create(format!("{}{}.final.histo", directory, args.sample)).unwrap();
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
 
@@ -428,7 +434,8 @@ fn main() {
 
     print!("Writing stats to file...");
     std::io::stdout().flush().unwrap();
-    let mut file_stats = std::fs::File::create(format!("{}{}.stats", directory, args.sample)).unwrap();
+    let mut file_stats =
+        std::fs::File::create(format!("{}{}.stats", directory, args.sample)).unwrap();
     let mut line = format!("arguments\t{:?}\n", args);
     line = format!("{}kmer_length\t{}\n", line, args.k);
     line = format!("{}n_reads_read\t{}\n", line, n_reads_read);
@@ -474,12 +481,20 @@ fn main() {
         );
 
         for pcr_params in pcr_runs.iter() {
-
-            let fasta = pcr::do_pcr(&kmer_counts_filtered, &{ args.k }, &args.sample, args.verbosity, pcr_params);
+            let fasta = pcr::do_pcr(
+                &kmer_counts_filtered,
+                &{ args.k },
+                &args.sample,
+                args.verbosity,
+                pcr_params,
+            );
 
             println!("There are {} subassemblies", fasta.len());
             if !fasta.is_empty() {
-                let fasta_path = format!("{}{}_{}.fasta", directory, args.sample, pcr_params.gene_name);
+                let fasta_path = format!(
+                    "{}{}_{}.fasta",
+                    directory, args.sample, pcr_params.gene_name
+                );
                 let mut fasta_writer =
                     fasta::Writer::new(std::fs::File::create(fasta_path).unwrap());
                 for record in fasta {

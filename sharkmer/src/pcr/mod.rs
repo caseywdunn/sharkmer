@@ -1,24 +1,24 @@
 use crate::kmer::*;
 use bio::io::fasta;
-use petgraph::algo::{all_simple_paths, is_cyclic_directed, connected_components};
-use petgraph::visit::Bfs;
+use petgraph::algo::{all_simple_paths, connected_components, is_cyclic_directed};
 use petgraph::graph::NodeIndex;
+use petgraph::visit::Bfs;
 use petgraph::Direction;
 use petgraph::Graph;
 use rustc_hash::FxHashMap;
-use std::collections::HashSet;
 use std::collections::HashMap;
+use std::collections::HashSet;
 use std::io::Write;
 
 // Constants that may require tuning
 
 /// The multiplier for establishing when a kmer is considered to have high coverage,
 /// relative to the coverage threshold. It is then used to also adjust the threshold.
-const COVERAGE_MULTIPLIER:u64 = 5;
+const COVERAGE_MULTIPLIER: u64 = 5;
 
 /// The maximum number of kmers containing the forward or reverse primers to maintain,
 /// with only those with the highest count being retained
-const MAX_NUM_PRIMER_KMERS:usize = 10;
+const MAX_NUM_PRIMER_KMERS: usize = 10;
 
 /// How frequently to check extension graph for ballooning growth
 const EXTENSION_EVALUATION_FREQUENCY: usize = 10_000;
@@ -62,7 +62,6 @@ struct DBEdge {
     count: u64, // Number of times this kmer was observed
 }
 
-
 fn compute_mean(numbers: &[u64]) -> f64 {
     let sum: u64 = numbers.iter().sum();
     sum as f64 / numbers.len() as f64
@@ -73,7 +72,7 @@ fn compute_median(numbers: &[u64]) -> f64 {
     sorted.sort();
 
     let mid = sorted.len() / 2;
-    
+
     if sorted.len() % 2 == 0 {
         (sorted[mid - 1] + sorted[mid]) as f64 / 2.0
     } else {
@@ -369,7 +368,6 @@ fn would_form_cycle(graph: &Graph<DBNode, DBEdge>, parent: NodeIndex, child: Nod
     false
 }
 
-
 fn get_start_nodes(graph: &Graph<DBNode, DBEdge>) -> Vec<NodeIndex> {
     let mut nodes: Vec<NodeIndex> = Vec::new();
     for node in graph.node_indices() {
@@ -439,11 +437,10 @@ fn get_descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex) -> Vec<NodeIn
     visited.into_iter().collect()
 }
 
-fn summarize_extension(graph: &Graph<DBNode, DBEdge>, pad: &str){
+fn summarize_extension(graph: &Graph<DBNode, DBEdge>, pad: &str) {
     // Print the number of nodes and edges in the graph
     println!("{}There are {} nodes in the graph", pad, graph.node_count());
     println!("{}There are {} edges in the graph", pad, graph.edge_count());
-
 
     let n_components = connected_components(graph);
     println!("{}There are {} components in the graph", pad, n_components);
@@ -470,8 +467,14 @@ fn summarize_extension(graph: &Graph<DBNode, DBEdge>, pad: &str){
     let mean_n_descendants = compute_mean(&n_descendants_vec_u64);
     let median_n_descendants = compute_median(&n_descendants_vec_u64);
 
-    println!("{}Number of descendants to a depth of {}, max {} mean {} median {}", pad, EXTENSION_EVALUATION_DEPTH, max_n_descendants, mean_n_descendants, median_n_descendants);
-
+    println!(
+        "{}Number of descendants to a depth of {}, max {} mean {} median {}",
+        pad,
+        EXTENSION_EVALUATION_DEPTH,
+        max_n_descendants,
+        mean_n_descendants,
+        median_n_descendants
+    );
 }
 
 pub struct PCRParams {
@@ -492,7 +495,7 @@ pub fn do_pcr(
     params: &PCRParams,
 ) -> Vec<bio::io::fasta::Record> {
     // Create a vector to hold the fasta records
-    let mut assembly_records : Vec<AssemblyRecord> = Vec::new();
+    let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
 
     // Preprocess the primers
     let mut forward = params.forward_seq.clone();
@@ -500,24 +503,36 @@ pub fn do_pcr(
 
     // Check if either is longer than trim, if so retain only the last trim nucleotides
     if forward.len() > params.trim {
-        forward = forward[forward.len() - params.trim ..].to_string();
-        println!("Trimming the forward primer to {} so that it is within the trim length of  {}", forward, params.trim);
+        forward = forward[forward.len() - params.trim..].to_string();
+        println!(
+            "Trimming the forward primer to {} so that it is within the trim length of  {}",
+            forward, params.trim
+        );
     }
 
     if reverse.len() > params.trim {
-        reverse = reverse[reverse.len() - params.trim ..].to_string();
-        println!("Trimming the reverse primer to {} so that it is within the trim length of  {}", reverse, params.trim);
+        reverse = reverse[reverse.len() - params.trim..].to_string();
+        println!(
+            "Trimming the reverse primer to {} so that it is within the trim length of  {}",
+            reverse, params.trim
+        );
     }
 
     // Check if either is longer than k, if so retain only the last k nucleotides
     if forward.len() > *k {
         forward = forward[forward.len() - *k..].to_string();
-        println!("Truncated the forward primer to {} so that it fits within k {}", forward, k);
+        println!(
+            "Truncated the forward primer to {} so that it fits within k {}",
+            forward, k
+        );
     }
 
     if reverse.len() > *k {
         reverse = reverse[reverse.len() - *k..].to_string();
-        println!("Truncated the reverse primer to {} so that it fits within k {}", reverse, k);
+        println!(
+            "Truncated the reverse primer to {} so that it fits within k {}",
+            reverse, k
+        );
     }
 
     // Expand ambigous nucleotides
@@ -575,7 +590,7 @@ pub fn do_pcr(
 
     println!(" done, time: {:?}", start.elapsed());
 
-    let mut forward_matches_map: HashMap<u64,u64> = HashMap::new();
+    let mut forward_matches_map: HashMap<u64, u64> = HashMap::new();
     let mut forward_counts: Vec<u64> = Vec::new();
     println!("  There are {} forward matches", forward_matches.len());
     for f in &forward_matches {
@@ -592,11 +607,11 @@ pub fn do_pcr(
     let mut forward_top_count_cutoff = forward_counts.last().unwrap();
 
     if forward_counts.len() > MAX_NUM_PRIMER_KMERS {
-        forward_top_count_cutoff = &forward_counts[MAX_NUM_PRIMER_KMERS-1];
+        forward_top_count_cutoff = &forward_counts[MAX_NUM_PRIMER_KMERS - 1];
     }
 
     // If there are less than MAX_NUM_PRIMER_KMERS forward matches, this is the lowest count
-    // If there are more than MAX_NUM_PRIMER_KMERS or more forward matches, get the count of the 
+    // If there are more than MAX_NUM_PRIMER_KMERS or more forward matches, get the count of the
     // MAX_NUM_PRIMER_KMERS highest count forward matches and use that as the cutoff
 
     forward_matches.clear();
@@ -606,7 +621,12 @@ pub fn do_pcr(
             forward_matches.insert(kmer);
             keep = true;
         }
-        println!("  {}, count {}, keep {}", crate::kmer::kmer_to_seq(&kmer, k), count, keep);
+        println!(
+            "  {}, count {}, keep {}",
+            crate::kmer::kmer_to_seq(&kmer, k),
+            count,
+            keep
+        );
     }
 
     if forward_matches.len() < forward_counts.len() {
@@ -620,10 +640,10 @@ pub fn do_pcr(
     std::io::stdout().flush().unwrap();
     let mut reverse_matches =
         find_oligos_in_kmers(&reverse_oligos, &kmers, k, PrimerDirection::Reverse);
-    
+
     println!(" done, time: {:?}", start.elapsed());
-    
-    let mut reverse_matches_map: HashMap<u64,u64> = HashMap::new();
+
+    let mut reverse_matches_map: HashMap<u64, u64> = HashMap::new();
     let mut reverse_counts: Vec<u64> = Vec::new();
     println!("  There are {} reverse matches", reverse_matches.len());
     for f in &reverse_matches {
@@ -631,18 +651,18 @@ pub fn do_pcr(
         reverse_counts.push(count);
         reverse_matches_map.insert(*f, count);
     }
-    
+
     reverse_counts.sort();
     reverse_counts.reverse();
     let max_reverse_count = reverse_counts[0];
-    
+
     // set equal to last element
     let mut reverse_top_count_cutoff = reverse_counts.last().unwrap();
-    
+
     if reverse_counts.len() > MAX_NUM_PRIMER_KMERS {
-        reverse_top_count_cutoff = &reverse_counts[MAX_NUM_PRIMER_KMERS-1];
+        reverse_top_count_cutoff = &reverse_counts[MAX_NUM_PRIMER_KMERS - 1];
     }
-    
+
     reverse_matches.clear();
     for (kmer, count) in reverse_matches_map {
         let mut keep: bool = false;
@@ -650,22 +670,26 @@ pub fn do_pcr(
             reverse_matches.insert(kmer);
             keep = true;
         }
-        println!("  {}, count {}, keep {}", crate::kmer::kmer_to_seq(&kmer, k), count, keep);
+        println!(
+            "  {}, count {}, keep {}",
+            crate::kmer::kmer_to_seq(&kmer, k),
+            count,
+            keep
+        );
     }
-    
+
     if reverse_matches.len() < reverse_counts.len() {
         println!("  There are more than {} reverse matches. Retaining only the reverse matches with the same counts as the {} highest counts.", MAX_NUM_PRIMER_KMERS, MAX_NUM_PRIMER_KMERS);
     } else {
         println!("  Retaining all reverse matches.");
     }
-    
+
     // If the forward_matches or the reverse_matches are empty, exit
     if forward_matches.is_empty() | reverse_matches.is_empty() {
         println!("Binding sites were not found for both primers. Not searching for products.");
         let records: Vec<fasta::Record> = Vec::new();
         return records;
     }
-    
 
     // If the count of kmers containing primers is significantly higher than min_count, apply a higher min coverage
 
@@ -811,7 +835,7 @@ pub fn do_pcr(
     let mut last_check: usize = 0;
     while n_unvisited_nodes_in_graph(&graph) > 0 {
         // Some graphs balloon in size and get to hundreds of thousands of nodes while extension gets
-        // slower and slower because there are so many growing tips. This may be due to a sequencing 
+        // slower and slower because there are so many growing tips. This may be due to a sequencing
         // adapter becoming integrated into the graph, for example. So periodically check for a region
         // of high degree and prune it if found
 
@@ -827,7 +851,9 @@ pub fn do_pcr(
             for node in graph.node_indices() {
                 let n_descendants = n_descendants(&graph, node, EXTENSION_EVALUATION_DEPTH);
                 // The maximum number of descendants would be 4^EXTENSION_EVALUATION_DEPTH
-                if n_descendants > 4_usize.pow((EXTENSION_EVALUATION_DEPTH-EXTENSION_EVALUATION_DIFF) as u32) {
+                if n_descendants
+                    > 4_usize.pow((EXTENSION_EVALUATION_DEPTH - EXTENSION_EVALUATION_DIFF) as u32)
+                {
                     to_clip.push(node);
                 }
             }
@@ -845,14 +871,18 @@ pub fn do_pcr(
                     // prune away all the descendants of the node, but keep the node
                     let mut descendants = get_descendants(&graph, *node);
                     to_prune.append(&mut descendants);
-                } 
+                }
             }
 
             if !to_prune.is_empty() {
-                println!("    Removing {} nodes descended from {} nodes with ballooning graph extension", to_prune.len(), to_clip.len());
+                println!(
+                    "    Removing {} nodes descended from {} nodes with ballooning graph extension",
+                    to_prune.len(),
+                    to_clip.len()
+                );
             }
 
-            // Sort in descending order. This is because node indices following pruned node are decremented, 
+            // Sort in descending order. This is because node indices following pruned node are decremented,
             // so the highest ones need to be pruned first or the remaining indices are no longer valid
             to_prune.sort_by(|a, b| b.cmp(a));
 
@@ -860,10 +890,8 @@ pub fn do_pcr(
             for node in to_prune {
                 graph.remove_node(node);
             }
-
-            
         }
-        
+
         // Iterate over the nodes
         for node in graph.node_indices() {
             if !(graph[node].visited) {
@@ -929,12 +957,10 @@ pub fn do_pcr(
 
                     // If the node with sub_kmer == suffix already exists, add an edge to the existing node
                     // Otherwise, create a new node with sub_kmer == suffix, and add an edge to the new node
-                    
-                   let mut node_exists = false;
+
+                    let mut node_exists = false;
                     for existing_node in graph.node_indices() {
                         if graph[existing_node].sub_kmer == suffix {
-
-
                             if !would_form_cycle(&graph, node, existing_node) {
                                 let edge = get_dbedge(kmer, kmer_counts, k);
                                 graph.add_edge(node, existing_node, edge);
@@ -949,7 +975,6 @@ pub fn do_pcr(
                                     std::io::stdout().flush().unwrap();
                                 }
                             }
-
 
                             node_exists = true;
                             break;
@@ -1019,11 +1044,7 @@ pub fn do_pcr(
                 }
             }
         }
-
-        
-
     }
-
 
     // Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
     let mut start_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
@@ -1031,10 +1052,16 @@ pub fn do_pcr(
 
     for node in graph.node_indices() {
         if graph[node].is_start {
-            start_nodes_map.insert(node, graph.neighbors_directed(node, Direction::Outgoing).count());
+            start_nodes_map.insert(
+                node,
+                graph.neighbors_directed(node, Direction::Outgoing).count(),
+            );
         }
         if graph[node].is_end {
-            end_nodes_map.insert(node, graph.neighbors_directed(node, Direction::Incoming).count());
+            end_nodes_map.insert(
+                node,
+                graph.neighbors_directed(node, Direction::Incoming).count(),
+            );
         }
     }
 
@@ -1042,13 +1069,23 @@ pub fn do_pcr(
         // Print the number of edges for each start node
         for (node, edge_count) in &start_nodes_map {
             // Print the node subkmer and number of edges
-            println!("  Start node {} with subkmer {} has {} edges", node.index(), crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(*k - 1)), edge_count);
+            println!(
+                "  Start node {} with subkmer {} has {} edges",
+                node.index(),
+                crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(*k - 1)),
+                edge_count
+            );
         }
 
         // Print the number of edges for each end node
         for (node, edge_count) in &end_nodes_map {
             // Print the node subkmer and number of edges
-            println!("  End node {} with subkmer {} has {} edges", node.index(), crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(*k - 1)), edge_count);
+            println!(
+                "  End node {} with subkmer {} has {} edges",
+                node.index(),
+                crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(*k - 1)),
+                edge_count
+            );
         }
     }
 
@@ -1056,18 +1093,19 @@ pub fn do_pcr(
     start_nodes_map.retain(|_node, edge_count| *edge_count > 0);
     end_nodes_map.retain(|_node, edge_count| *edge_count > 0);
 
-
     summarize_extension(&graph, "  ");
-    println!("  There are {} start nodes with edges", start_nodes_map.len());
+    println!(
+        "  There are {} start nodes with edges",
+        start_nodes_map.len()
+    );
     println!("  There are {} end nodes with edges", end_nodes_map.len());
 
     println!("done.  Time to extend graph: {:?}", start.elapsed());
 
-
     // Simplify the graph
     // all_simple_paths() hangs if the input graph is too complex
     // Also want to regularize some graph features
-    
+
     let start = std::time::Instant::now();
     println!("Pruning the assembly graph...");
 
@@ -1076,8 +1114,9 @@ pub fn do_pcr(
     let mut removed_nodes = 1;
     while removed_nodes > 0 {
         removed_nodes = 0;
-    
-        let mut nodes_to_remove: Vec<_> = graph.node_indices()
+
+        let mut nodes_to_remove: Vec<_> = graph
+            .node_indices()
             .filter(|&node| {
                 if graph[node].is_end {
                     false
@@ -1086,7 +1125,7 @@ pub fn do_pcr(
                 }
             })
             .collect();
-        
+
         nodes_to_remove.sort_by(|a, b| b.cmp(a));
 
         for node in nodes_to_remove {
@@ -1098,7 +1137,8 @@ pub fn do_pcr(
     // Start nodes without edges will be removed above
 
     // Remove end nodes without edges
-    let mut nodes_to_remove: Vec<NodeIndex> = graph.node_indices()
+    let mut nodes_to_remove: Vec<NodeIndex> = graph
+        .node_indices()
         .filter(|&node| {
             if graph[node].is_end {
                 graph.neighbors_directed(node, Direction::Incoming).count() == 0
@@ -1107,7 +1147,7 @@ pub fn do_pcr(
             }
         })
         .collect();
-    
+
     nodes_to_remove.sort_by(|a, b| b.cmp(a));
 
     for node in nodes_to_remove {
@@ -1123,7 +1163,6 @@ pub fn do_pcr(
     let n_components = connected_components(&graph);
     println!("  There are {} components in the graph", n_components);
     println!("done.  Time to prune graph: {:?}", start.elapsed());
-
 
     // Get all paths from start nodes to terminal nodes
     let start = std::time::Instant::now();
@@ -1144,7 +1183,10 @@ pub fn do_pcr(
         }
     }
 
-    println!("  There are {} paths from forward to reverse primers in the graph", all_paths.len());
+    println!(
+        "  There are {} paths from forward to reverse primers in the graph",
+        all_paths.len()
+    );
     println!("done.  Time to traverse graph: {:?}", start.elapsed());
 
     println!("Generating sequences from paths...");
@@ -1177,7 +1219,7 @@ pub fn do_pcr(
         let count_median = compute_median(&edge_counts);
         let count_min = edge_counts.iter().min().unwrap();
         let count_max = edge_counts.iter().max().unwrap();
-        
+
         let id = format!(
             "{} {} product {} length {} kmer count stats mean {:.2} median {} min {} max {}",
             sample_name,
@@ -1193,7 +1235,7 @@ pub fn do_pcr(
         println!("{}", sequence);
         let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
         // Create fasta record and add to vector
-        let assembly_record:AssemblyRecord = AssemblyRecord {
+        let assembly_record: AssemblyRecord = AssemblyRecord {
             fasta_record: record,
             kmer_min_count: *count_min,
         };
@@ -1425,5 +1467,4 @@ mod tests {
         assert_eq!(oligo.kmer, 0b1001_1000);
         assert_eq!(oligo.length, 4);
     }
-
 }
