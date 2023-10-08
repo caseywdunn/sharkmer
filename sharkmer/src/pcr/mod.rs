@@ -1,4 +1,3 @@
-use crate::kmer::*;
 use bio::io::fasta;
 use petgraph::algo::{all_simple_paths, connected_components, is_cyclic_directed};
 use petgraph::graph::NodeIndex;
@@ -9,6 +8,14 @@ use rustc_hash::FxHashMap;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::io::Write;
+use std::collections::VecDeque;
+use colored::*;
+
+use crate::kmer::*;
+use crate::COLOR_NOTE;
+use crate::COLOR_SUCCESS;
+use crate::COLOR_FAIL;
+
 
 // Constants that may require tuning
 
@@ -388,7 +395,7 @@ fn get_end_nodes(graph: &Graph<DBNode, DBEdge>) -> Vec<NodeIndex> {
     nodes
 }
 
-use std::collections::VecDeque;
+
 // Find the number of descendants of a node, each descendent no more than `depth` edges away
 fn n_descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex, depth: usize) -> usize {
     let mut visited = vec![false; graph.node_count()];
@@ -495,7 +502,7 @@ pub fn do_pcr(
     params: &PCRParams,
 ) -> Vec<bio::io::fasta::Record> {
 
-    println!("Running PCR on gene {}", params.gene_name);
+    println!("{}", format!("Running PCR on gene {}", params.gene_name).color(COLOR_NOTE));
     // Create a vector to hold the fasta records
     let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
 
@@ -687,8 +694,17 @@ pub fn do_pcr(
     }
 
     // If the forward_matches or the reverse_matches are empty, exit
-    if forward_matches.is_empty() | reverse_matches.is_empty() {
-        println!("Binding sites were not found for both primers. Not searching for products.");
+    if forward_matches.is_empty() {
+        println!("{}", format!("For gene {}, binding sites were not found for the forward primer. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
+        println!("{}", format!("  Suggested action: optimize primer sequence.").color(COLOR_FAIL));
+        let records: Vec<fasta::Record> = Vec::new();
+        return records;
+    }
+
+    // If the forward_matches or the reverse_matches are empty, exit
+    if reverse_matches.is_empty() {
+        println!("{}", format!("For gene {}, binding sites were not found for the reverse primer. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
+        println!("{}", format!("  Suggested action: optimize primer sequence.").color(COLOR_FAIL));
         let records: Vec<fasta::Record> = Vec::new();
         return records;
     }
@@ -845,7 +861,7 @@ pub fn do_pcr(
         if (n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY {
             last_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
 
-            println!("  Evaluating extension ...");
+            println!("  Evaluating extension:");
             summarize_extension(&graph, "    ");
 
             // Vector to hold nodes to be clipped, ie have all their descendants pruned
@@ -1095,7 +1111,8 @@ pub fn do_pcr(
     start_nodes_map.retain(|_node, edge_count| *edge_count > 0);
     end_nodes_map.retain(|_node, edge_count| *edge_count > 0);
 
-    summarize_extension(&graph, "  ");
+    println!("Final extension statistics:");
+    summarize_extension(&graph, "    ");
     println!(
         "  There are {} start nodes with edges",
         start_nodes_map.len()
@@ -1191,6 +1208,23 @@ pub fn do_pcr(
     );
     println!("done.  Time to traverse graph: {:?}", start.elapsed());
 
+    if all_paths.is_empty() {
+        println!("{}", format!("For gene {}, no path was found from a forward primer binding site to a reverse binding site. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
+        println!("{}", format!("  Suggested actions:").color(COLOR_FAIL));
+        println!("{}", format!("    - The max_length for the PCR product of {} my be too short. Consider increasing it.", params.max_length).color(COLOR_FAIL));
+        println!("{}", format!("    - The primers may have non-specific binding and are not close enough to generate a product. Consider increasing the primer TRIM length from the default to create a more specific primer.").color(COLOR_FAIL));
+        println!("{}", format!("      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large differences in value can indicate non-specific binding of one of the primers.", max_forward_count, max_reverse_count).color(COLOR_FAIL));
+
+        let count_threshold = 5;
+        if (max_forward_count < count_threshold) | (max_reverse_count < count_threshold) {
+            println!("{}", format!("    - The maximum count of a forward kmer is {} and of a reverse kmer is {}. A low value, in this case less than {}, for either can indicate that read coverage for this gene is too low to traverse from a forward to reverse primer. Consider increasing coverage.", max_forward_count, max_reverse_count, count_threshold).color(COLOR_FAIL));
+
+        }
+
+        let records: Vec<fasta::Record> = Vec::new();
+        return records;
+    }
+
     println!("Generating sequences from paths...");
 
     // For each path, get the sequence of the path
@@ -1254,6 +1288,9 @@ pub fn do_pcr(
     for fasta_record in assembly_records {
         records.push(fasta_record.fasta_record);
     }
+
+    println!("{}", format!("For gene {}, {} PCR products were generated.", params.gene_name, records.len()).color(COLOR_SUCCESS));
+
     records
 }
 

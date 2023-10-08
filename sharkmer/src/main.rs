@@ -7,9 +7,14 @@ use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+use colored::*;
 
 mod kmer;
 mod pcr;
+
+pub const COLOR_NOTE: &str = "blue";
+pub const COLOR_SUCCESS: &str = "green";
+pub const COLOR_FAIL: &str = "magenta";
 
 pub enum ParameterValue {
     Int(u32),
@@ -201,6 +206,8 @@ fn main() {
     println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
     // Print the arguments
     println!("{:?}", args);
+
+    println!("{}", format!("Processing sample {}", args.sample).color(COLOR_NOTE));
 
     // Parse the outdir path and sample, create directories if necessary
     // output directory is outdir/sample
@@ -489,7 +496,6 @@ fn main() {
                 pcr_params,
             );
 
-            println!("There are {} subassemblies", fasta.len());
             if !fasta.is_empty() {
                 let fasta_path = format!(
                     "{}{}_{}.fasta",
