@@ -369,6 +369,27 @@ fn would_form_cycle(graph: &Graph<DBNode, DBEdge>, parent: NodeIndex, child: Nod
     false
 }
 
+
+fn get_start_nodes(graph: &Graph<DBNode, DBEdge>) -> Vec<NodeIndex> {
+    let mut nodes: Vec<NodeIndex> = Vec::new();
+    for node in graph.node_indices() {
+        if graph[node].is_start {
+            nodes.push(node)
+        }
+    }
+    nodes
+}
+
+fn get_end_nodes(graph: &Graph<DBNode, DBEdge>) -> Vec<NodeIndex> {
+    let mut nodes: Vec<NodeIndex> = Vec::new();
+    for node in graph.node_indices() {
+        if graph[node].is_end {
+            nodes.push(node)
+        }
+    }
+    nodes
+}
+
 use std::collections::VecDeque;
 // Find the number of descendants of a node, each descendent no more than `depth` edges away
 fn n_descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex, depth: usize) -> usize {
@@ -683,7 +704,6 @@ pub fn do_pcr(
     let suffix_mask: u64 = (1 << (2 * (*k - 1))) - 1;
 
     // Add the forward matches to the graph
-    let mut start_nodes: Vec<NodeIndex> = Vec::new();
     for &kmer in &forward_matches {
         let prefix = kmer >> 2;
 
@@ -700,19 +720,17 @@ pub fn do_pcr(
         }
 
         if !node_exists {
-            let new_node = graph.add_node(DBNode {
+            graph.add_node(DBNode {
                 sub_kmer: prefix,
                 is_start: true,
                 is_end: false,
                 is_terminal: false,
                 visited: false, // Will not be extended
             });
-            start_nodes.push(new_node);
         }
     }
 
     // Add the reverse matches to the graph
-    let mut end_nodes: Vec<NodeIndex> = Vec::new();
     for &kmer in &reverse_matches {
         let suffix = kmer & suffix_mask;
 
@@ -730,14 +748,13 @@ pub fn do_pcr(
         }
 
         if !node_exists {
-            let new_node = graph.add_node(DBNode {
+            graph.add_node(DBNode {
                 sub_kmer: suffix,
                 is_start: false,
                 is_end: true,
                 is_terminal: true,
                 visited: true,
             });
-            end_nodes.push(new_node);
         }
     }
 
@@ -752,19 +769,8 @@ pub fn do_pcr(
         }
     }
 
-    // Print a summary of how many start and end nodes there are
-    let mut n_start_nodes = 0;
-    let mut n_end_nodes = 0;
-    for node in graph.node_indices() {
-        if graph[node].is_start {
-            n_start_nodes += 1;
-        }
-        if graph[node].is_end {
-            n_end_nodes += 1;
-        }
-    }
-    println!("There are {} start nodes", n_start_nodes);
-    println!("There are {} end nodes", n_end_nodes);
+    println!("There are {} start nodes", get_start_nodes(&graph).len());
+    println!("There are {} end nodes", get_end_nodes(&graph).len());
 
     if verbosity > 1 {
         // Print the information for each node
@@ -1108,23 +1114,11 @@ pub fn do_pcr(
         graph.remove_node(node);
     }
 
-    // Update start and end nodes
-    start_nodes.clear();
-    end_nodes.clear();
-    for node in graph.node_indices() {
-        if graph[node].is_start {
-            start_nodes.push(node);
-        }
-        if graph[node].is_end {
-            end_nodes.push(node);
-        }
-    }
-
     println!("  There are {} nodes in the graph", graph.node_count());
     println!("  There are {} edges in the graph", graph.edge_count());
 
-    println!("  There are {} start nodes", start_nodes.len());
-    println!("  There are {} end nodes", end_nodes.len());
+    println!("  There are {} start nodes", get_start_nodes(&graph).len());
+    println!("  There are {} end nodes", get_end_nodes(&graph).len());
 
     let n_components = connected_components(&graph);
     println!("  There are {} components in the graph", n_components);
@@ -1136,12 +1130,12 @@ pub fn do_pcr(
     println!("Traversing the assembly graph to find paths from forward to reverse primers...");
     let mut all_paths = Vec::new();
 
-    for start in &start_nodes {
-        for end in &end_nodes {
+    for start in get_start_nodes(&graph) {
+        for end in get_end_nodes(&graph) {
             let paths_for_this_pair = all_simple_paths::<Vec<NodeIndex>, &Graph<DBNode, DBEdge>>(
                 &graph,
-                *start,
-                *end,
+                start,
+                end,
                 1,
                 Some(params.max_length - (*k) + 1),
             );
