@@ -445,10 +445,10 @@ fn summarize_extension(graph: &Graph<DBNode, DBEdge>, pad: &str){
     println!("{}There are {} edges in the graph", pad, graph.edge_count());
 
 
-    let n_components = connected_components(&graph);
+    let n_components = connected_components(graph);
     println!("{}There are {} components in the graph", pad, n_components);
 
-    let has_cycles = is_cyclic_directed(&graph);
+    let has_cycles = is_cyclic_directed(graph);
     if has_cycles {
         println!("{}The graph has cycles", pad);
     } else {
@@ -459,7 +459,7 @@ fn summarize_extension(graph: &Graph<DBNode, DBEdge>, pad: &str){
 
     let mut n_descendants_vec: Vec<usize> = Vec::new();
     for node in graph.node_indices() {
-        let n_descendants = n_descendants(&graph, node, EXTENSION_EVALUATION_DEPTH);
+        let n_descendants = n_descendants(graph, node, EXTENSION_EVALUATION_DEPTH);
         n_descendants_vec.push(n_descendants);
     }
 
@@ -848,7 +848,7 @@ pub fn do_pcr(
                 } 
             }
 
-            if to_prune.len() > 0 {
+            if !to_prune.is_empty() {
                 println!("    Removing {} nodes descended from {} nodes with ballooning graph extension", to_prune.len(), to_clip.len());
             }
 

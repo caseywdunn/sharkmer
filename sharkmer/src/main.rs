@@ -475,7 +475,7 @@ fn main() {
 
         for pcr_params in pcr_runs.iter() {
 
-            let fasta = pcr::do_pcr(&kmer_counts_filtered, &{ args.k }, &args.sample, args.verbosity, &pcr_params);
+            let fasta = pcr::do_pcr(&kmer_counts_filtered, &{ args.k }, &args.sample, args.verbosity, pcr_params);
 
             println!("There are {} subassemblies", fasta.len());
             if !fasta.is_empty() {
