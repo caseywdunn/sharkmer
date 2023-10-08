@@ -826,6 +826,11 @@ pub fn do_pcr(
                 }
             }
 
+            // Mark the clipped nodes ast terminal
+            for node in &to_clip {
+                graph[*node].is_terminal = true;
+            }
+
             // Vector to hold nodes to be pruned
             let mut to_prune: Vec<NodeIndex> = Vec::new();
             for node in &to_clip {
@@ -841,15 +846,16 @@ pub fn do_pcr(
                 println!("    Removing {} nodes descended from {} nodes with ballooning graph extension", to_prune.len(), to_clip.len());
             }
 
+            // Sort in descending order. This is because node indices following pruned node are decremented, 
+            // so the highest ones need to be pruned first or the remaining indices are no longer valid
+            to_prune.sort_by(|a, b| b.cmp(a));
+
             // Remove the nodes in to_prune
             for node in to_prune {
                 graph.remove_node(node);
             }
 
-            // Mark the clipped nodes ast terminal
-            for node in to_clip {
-                graph[node].is_terminal = true;
-            }
+            
         }
         
         // Iterate over the nodes
@@ -1065,7 +1071,7 @@ pub fn do_pcr(
     while removed_nodes > 0 {
         removed_nodes = 0;
     
-        let nodes_to_remove: Vec<_> = graph.node_indices()
+        let mut nodes_to_remove: Vec<_> = graph.node_indices()
             .filter(|&node| {
                 if graph[node].is_end {
                     false
@@ -1074,7 +1080,9 @@ pub fn do_pcr(
                 }
             })
             .collect();
-    
+        
+        nodes_to_remove.sort_by(|a, b| b.cmp(a));
+
         for node in nodes_to_remove {
             graph.remove_node(node);
             removed_nodes += 1;
@@ -1084,7 +1092,7 @@ pub fn do_pcr(
     // Start nodes without edges will be removed above
 
     // Remove end nodes without edges
-    let nodes_to_remove: Vec<NodeIndex> = graph.node_indices()
+    let mut nodes_to_remove: Vec<NodeIndex> = graph.node_indices()
         .filter(|&node| {
             if graph[node].is_end {
                 graph.neighbors_directed(node, Direction::Incoming).count() == 0
@@ -1094,6 +1102,8 @@ pub fn do_pcr(
         })
         .collect();
     
+    nodes_to_remove.sort_by(|a, b| b.cmp(a));
+
     for node in nodes_to_remove {
         graph.remove_node(node);
     }
