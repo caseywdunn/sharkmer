@@ -250,10 +250,10 @@ fn reverse_complement(seq: &str) -> String {
 
 fn find_oligos_in_kmers(
     oligos: &[Oligo],
-    kmers: &HashSet<u64>,
+    kmers: &FxHashMap<u64, u64>,
     k: &usize,
     dir: &PrimerDirection,
-) -> HashSet<u64> {
+) -> FxHashMap<u64, u64> {
     // Find the kmers that contain the oligos.
     // If direction is forward, match the oligo at the start of the kmer.
     // If direction is reverse, match the oligo at the end of the kmer.
@@ -294,6 +294,17 @@ fn find_oligos_in_kmers(
         }
     }
 
+    let mut kmers_match: FxHashMap<u64, u64> = FxHashMap::default();
+
+    for (kmer, count) in kmers {
+        if oligo_set.contains(&(kmer & mask)) {
+            kmers_match.insert(*kmer, *count);
+        }
+    }
+
+    kmers_match
+
+    /* 
     // Create a mutable copy of kmers
     let mut kmers_match = kmers.clone();
 
@@ -301,6 +312,7 @@ fn find_oligos_in_kmers(
     kmers_match.retain(|kmer| oligo_set.contains(&(kmer & mask)));
 
     kmers_match
+    */
 }
 
 fn n_nonterminal_nodes_in_graph(graph: &Graph<DBNode, DBEdge>) -> usize {
@@ -558,19 +570,73 @@ fn preprocess_primer(params: &PCRParams, dir: PrimerDirection, k: &usize, _verbo
 /// Given a set of primer variants, return a set of kmers from the data that contain the primers
 fn get_kmers_from_primers(
     primer_variants: &HashSet<String>,
-    kmers: &HashSet<u64>,
+    kmer_counts: &FxHashMap<u64, u64>,
     k: &usize,
     dir: PrimerDirection,
-) -> HashSet<u64> {
+) -> FxHashMap<u64, u64> {
     // Get the kmers that contain the primers
     let mut oligos: Vec<Oligo> = Vec::new();
     for variant in primer_variants.iter() {
         oligos.push(string_to_oligo(variant));
     }
 
-    let matches = find_oligos_in_kmers(&oligos, &kmers, k, &dir);
+    let matches = find_oligos_in_kmers(&oligos, kmer_counts, k, &dir);
 
     matches
+}
+
+/// Given a set of kmers that contain primers, filter them to retain only those with the highest counts
+/// If there are more than MAX_NUM_PRIMER_KMERS, retain only the MAX_NUM_PRIMER_KMERS with the highest counts
+/// If there are less than MAX_NUM_PRIMER_KMERS, retain all of them
+/// Returns a hash map of the kmers and their counts
+fn filter_primer_kmers(matches: FxHashMap<u64, u64>, k: &usize) -> FxHashMap<u64, u64> {
+    let mut counts: Vec<u64> = Vec::new();
+    for (_, count) in &matches {
+        counts.push(*count);
+    }
+
+    counts.sort();
+    counts.reverse();
+
+    // set equal to last element
+    let mut top_count_cutoff = counts.last().unwrap();
+
+    if counts.len() > MAX_NUM_PRIMER_KMERS {
+        top_count_cutoff = &counts[MAX_NUM_PRIMER_KMERS - 1];
+    }
+
+    // If there are less than MAX_NUM_PRIMER_KMERS matches, this is the lowest count
+    // If there are more than MAX_NUM_PRIMER_KMERS matches, get the count of the
+    // MAX_NUM_PRIMER_KMERS highest count matches and use that as the cutoff
+
+    let mut matches_keep: FxHashMap<u64, u64> = FxHashMap::default();
+    for (kmer, count) in matches {
+        let mut keep: bool = false;
+        if count >= *top_count_cutoff {
+            // Add the kmer to the hash map
+            matches_keep.insert(kmer, count);
+            keep = true;
+        }
+        println!(
+            "  {}, count {}, keep {}",
+            crate::kmer::kmer_to_seq(&kmer, k),
+            count,
+            keep,
+        );
+    }
+
+    // Replace matches with matches_keep
+    matches_keep
+}
+
+fn get_max_count(kmer_counts: &FxHashMap<u64, u64>) -> u64 {
+    let mut max_count = 0;
+    for (_, count) in kmer_counts {
+        if *count > max_count {
+            max_count = *count;
+        }
+    }
+    max_count
 }
 
 // The primary function for PCR
@@ -585,7 +651,7 @@ pub struct PCRParams {
 }
 
 pub fn do_pcr(
-    kmer_counts: &FxHashMap<u64, u64>,
+    kmer_counts_map: &FxHashMap<u64, u64>,
     k: &usize,
     sample_name: &str,
     verbosity: usize,
@@ -596,146 +662,31 @@ pub fn do_pcr(
     // Create a vector to hold the fasta records
     let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
 
-    // Create a hash set of the keys of kmer_counts
-    std::io::stdout().flush().unwrap();
-    let mut kmers: std::collections::HashSet<u64> = kmer_counts.keys().copied().collect();
-
-    // Add the reverse complement of each key to the hash set with revcomp_kmer()
-    for kmer in kmer_counts.keys() {
-        kmers.insert(revcomp_kmer(kmer, k));
+    // The kmer_counts_map includes only canonical kmers. Add the reverse complements,
+    // while also filtering for coverage
+    let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
+    for (kmer,count) in kmer_counts_map {
+        if count >= &params.coverage {
+            kmer_counts.insert(*kmer, *count);
+            kmer_counts.insert(revcomp_kmer(kmer, k), *count);
+        }
     }
 
     // Preprocess the primers to get all variants to be considered
-    println!("Preprocessing forward primer");
+    println!("Expanding the forward primer into all variants");
     let forward_variants = preprocess_primer(params, PrimerDirection::Forward, k, verbosity);
-    println!("Preprocessing reverse primer");
+    println!("Expanding the reverse primer into all variants");
     let reverse_variants = preprocess_primer(params, PrimerDirection::Reverse, k, verbosity);
     
     // Get the kmers that contain the primers
     println!("Finding kmers that contain the forward primer");
-    let mut forward_matches = get_kmers_from_primers(&forward_variants, &kmers, k, PrimerDirection::Forward);
+    let mut forward_matches = get_kmers_from_primers(&forward_variants, &kmer_counts, k, PrimerDirection::Forward);
     println!("Finding kmers that contain the reverse primer");
-    let mut reverse_matches = get_kmers_from_primers(&reverse_variants, &kmers, k, PrimerDirection::Reverse);
+    let mut reverse_matches = get_kmers_from_primers(&reverse_variants, &kmer_counts, k, PrimerDirection::Reverse);
 
-    /* 
-    // Get the Oligos from the primer variants
-    let mut forward_oligos: Vec<Oligo> = Vec::new();
-    for variant in forward_variants.iter() {
-        forward_oligos.push(string_to_oligo(variant));
-    }
-
-    let mut reverse_oligos: Vec<Oligo> = Vec::new();
-    for variant in reverse_variants.iter() {
-        reverse_oligos.push(string_to_oligo(variant));
-    }
-    
-    
-    // Find the kmers that contain the forward and reverse primers
-    let start = std::time::Instant::now();
-    print!("Finding kmers that contain the forward primer...");
-    std::io::stdout().flush().unwrap();
-    let mut forward_matches =
-        find_oligos_in_kmers(&forward_oligos, &kmers, k, PrimerDirection::Forward);
-    
-
-    println!(" done, time: {:?}", start.elapsed());
-    */
-
-    let mut forward_matches_map: HashMap<u64, u64> = HashMap::new();
-    let mut forward_counts: Vec<u64> = Vec::new();
-    println!("  There are {} forward matches", forward_matches.len());
-    for f in &forward_matches {
-        let count = crate::kmer::get_kmer_count(kmer_counts, f, k);
-        forward_counts.push(count);
-        forward_matches_map.insert(*f, count);
-    }
-
-    forward_counts.sort();
-    forward_counts.reverse();
-    let max_forward_count = forward_counts[0];
-
-    // set equal to last element
-    let mut forward_top_count_cutoff = forward_counts.last().unwrap();
-
-    if forward_counts.len() > MAX_NUM_PRIMER_KMERS {
-        forward_top_count_cutoff = &forward_counts[MAX_NUM_PRIMER_KMERS - 1];
-    }
-
-    // If there are less than MAX_NUM_PRIMER_KMERS forward matches, this is the lowest count
-    // If there are more than MAX_NUM_PRIMER_KMERS or more forward matches, get the count of the
-    // MAX_NUM_PRIMER_KMERS highest count forward matches and use that as the cutoff
-
-    forward_matches.clear();
-    for (kmer, count) in forward_matches_map {
-        let mut keep: bool = false;
-        if count >= *forward_top_count_cutoff {
-            forward_matches.insert(kmer);
-            keep = true;
-        }
-        println!(
-            "  {}, count {}, keep {}",
-            crate::kmer::kmer_to_seq(&kmer, k),
-            count,
-            keep
-        );
-    }
-
-    if forward_matches.len() < forward_counts.len() {
-        println!("  There are more than {} forward matches.  Retaining only the forward matches with the same counts as the {} highest counts.", MAX_NUM_PRIMER_KMERS, MAX_NUM_PRIMER_KMERS);
-    } else {
-        println!("  Retaining all forward matches.");
-    }
-
-    /* 
-    let start = std::time::Instant::now();
-    print!("Finding kmers that contain the reverse primer...");
-    std::io::stdout().flush().unwrap();
-    let mut reverse_matches =
-        find_oligos_in_kmers(&reverse_oligos, &kmers, k, PrimerDirection::Reverse);
-
-    println!(" done, time: {:?}", start.elapsed());
-    */
-
-    let mut reverse_matches_map: HashMap<u64, u64> = HashMap::new();
-    let mut reverse_counts: Vec<u64> = Vec::new();
-    println!("  There are {} reverse matches", reverse_matches.len());
-    for f in &reverse_matches {
-        let count = crate::kmer::get_kmer_count(kmer_counts, f, k);
-        reverse_counts.push(count);
-        reverse_matches_map.insert(*f, count);
-    }
-
-    reverse_counts.sort();
-    reverse_counts.reverse();
-    let max_reverse_count = reverse_counts[0];
-
-    // set equal to last element
-    let mut reverse_top_count_cutoff = reverse_counts.last().unwrap();
-
-    if reverse_counts.len() > MAX_NUM_PRIMER_KMERS {
-        reverse_top_count_cutoff = &reverse_counts[MAX_NUM_PRIMER_KMERS - 1];
-    }
-
-    reverse_matches.clear();
-    for (kmer, count) in reverse_matches_map {
-        let mut keep: bool = false;
-        if count >= *reverse_top_count_cutoff {
-            reverse_matches.insert(kmer);
-            keep = true;
-        }
-        println!(
-            "  {}, count {}, keep {}",
-            crate::kmer::kmer_to_seq(&kmer, k),
-            count,
-            keep
-        );
-    }
-
-    if reverse_matches.len() < reverse_counts.len() {
-        println!("  There are more than {} reverse matches. Retaining only the reverse matches with the same counts as the {} highest counts.", MAX_NUM_PRIMER_KMERS, MAX_NUM_PRIMER_KMERS);
-    } else {
-        println!("  Retaining all reverse matches.");
-    }
+    // Filter the kmers to retain only those with the highest counts
+    forward_matches = filter_primer_kmers(forward_matches, k);
+    reverse_matches = filter_primer_kmers(reverse_matches, k);
 
     if forward_matches.is_empty() {
         println!("{}", format!("For gene {}, binding sites were not found for the forward primer. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
@@ -752,8 +703,10 @@ pub fn do_pcr(
     }
 
     // If the count of kmers containing primers is significantly higher than min_count, apply a higher min coverage
-
     // Get the minimum of (max_forward_count, max_reverse_count), consider this as the observed count of the region
+    let max_forward_count = get_max_count(&forward_matches);
+    let max_reverse_count = get_max_count(&reverse_matches);
+    
     let mut min_count = max_reverse_count;
     if max_forward_count < max_reverse_count {
         min_count = max_forward_count;
@@ -766,29 +719,30 @@ pub fn do_pcr(
     if min_count > COVERAGE_MULTIPLIER * params.coverage {
         println!("The count of kmers containing primers have high coverage {} relative to the coverage threshold of {}.  Increasing min coverage to {}.", min_count, params.coverage, new_coverage);
 
-        // Create a hash set of the keys of kmer_counts
-        println!("  Updating hash set of kmers to include only those that exceed updated coverage threshold.");
-        // Remove all members of kmers
-        kmers.clear();
-
-        // Add each kmer and its reverse complement to kmers if the kmer count is >= new_coverage
-        for kmer in kmer_counts.keys() {
-            if kmer_counts[kmer] >= new_coverage {
-                kmers.insert(*kmer);
-                kmers.insert(revcomp_kmer(kmer, k));
+        // Retain only the kmer_counts with coverage >= new_coverage
+        let mut kmer_counts_new: FxHashMap<u64, u64> = FxHashMap::default();
+        for (kmer,count) in &kmer_counts {
+            if count >= &new_coverage {
+                kmer_counts_new.insert(*kmer, *count);
             }
         }
+        kmer_counts = kmer_counts_new;
+
     }
 
     // Construct the graph
     println!("Creating graph, seeding with nodes that contain primer matches...");
     let mut graph: Graph<DBNode, DBEdge> = Graph::new();
 
+    // Create a hash set of the keys of kmer_counts
+    let kmers: std::collections::HashSet<u64> = kmer_counts.keys().copied().collect();
+
+
     // Create a suffix mask with 1 in the (2 * (k - 1)) least significant bits
     let suffix_mask: u64 = (1 << (2 * (*k - 1))) - 1;
 
     // Add the forward matches to the graph
-    for &kmer in &forward_matches {
+    for (kmer, _) in &forward_matches {
         let prefix = kmer >> 2;
 
         // If the node with sub_kmer == suffix already exists, update the node so that is_start = true
@@ -815,7 +769,7 @@ pub fn do_pcr(
     }
 
     // Add the reverse matches to the graph
-    for &kmer in &reverse_matches {
+    for (kmer, _) in &reverse_matches {
         let suffix = kmer & suffix_mask;
 
         // If the node with sub_kmer == suffix already exists, update the node so that is_end = true
@@ -1024,7 +978,7 @@ pub fn do_pcr(
                     for existing_node in graph.node_indices() {
                         if graph[existing_node].sub_kmer == suffix {
                             if !would_form_cycle(&graph, node, existing_node) {
-                                let edge = get_dbedge(kmer, kmer_counts, k);
+                                let edge = get_dbedge(kmer, &kmer_counts, k);
                                 graph.add_edge(node, existing_node, edge);
                             } else {
                                 graph[node].is_terminal = true;
@@ -1051,7 +1005,7 @@ pub fn do_pcr(
                             is_terminal: false,
                             visited: false,
                         });
-                        let edge = get_dbedge(kmer, kmer_counts, k);
+                        let edge = get_dbedge(kmer, &kmer_counts, k);
                         let edge_count = edge.count;
                         graph.add_edge(node, new_node, edge);
 
