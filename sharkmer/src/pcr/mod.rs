@@ -563,15 +563,14 @@ fn get_kmers_from_primers(
     dir: PrimerDirection,
 ) -> HashSet<u64> {
     // Get the kmers that contain the primers
-    let mut oligo_kmers: HashSet<u64> = HashSet::new();
+    let mut oligos: Vec<Oligo> = Vec::new();
     for variant in primer_variants.iter() {
-        let oligo = string_to_oligo(variant);
-        let oligos = vec![oligo];
-        let new_oligo_kmers = find_oligos_in_kmers(&oligos, &kmers, k, &dir);
-        oligo_kmers.extend(new_oligo_kmers);
+        oligos.push(string_to_oligo(variant));
     }
 
-    oligo_kmers
+    let matches = find_oligos_in_kmers(&oligos, &kmers, k, &dir);
+
+    matches
 }
 
 // The primary function for PCR
