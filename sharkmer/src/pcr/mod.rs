@@ -505,6 +505,53 @@ fn pairwise_sequence_distances(records: &Vec<fasta::Record>) -> Vec<Vec<Option<u
     matrix
 }
 
+// Individual steps in the PCR process
+
+fn preprocess_primer(params: &PCRParams, dir: PrimerDirection, k: &usize, _verbosity: usize) -> HashSet<String> {
+    let mut primer = params.forward_seq.clone();
+    if dir == PrimerDirection::Reverse {
+        primer = params.reverse_seq.clone();
+    }
+
+    let mut trim = params.trim;
+    if trim > (k-1) {
+        println!("  Primer must not be longer than k-1. Trim length is {}, k is {}, so adjusting trim length to {}", trim, k, k-1);
+        trim = k-1;
+    }
+
+    // Check if either is longer than trim, if so retain only the last trim nucleotides
+    if primer.len() > trim {
+        primer = primer[primer.len() - trim..].to_string();
+        println!(
+            "  Trimming the primer to {} so that it is within the trim length of {}.",
+            primer, trim
+        );
+    }
+
+    // Expand ambigous nucleotides
+    let mut primer_variants = resolve_primer(primer);
+
+    // Get all possible variants of the primers
+    primer_variants = permute_sequences(primer_variants, &params.mismatches);
+
+    if dir == PrimerDirection::Reverse {
+        // Replace the reverse variants with their reverse complements
+        let mut primer_variants_revcomp = HashSet::new();
+        for variant in primer_variants.iter() {
+            primer_variants_revcomp.insert(reverse_complement(variant));
+        }
+        primer_variants = primer_variants_revcomp;
+    }
+
+    println!(
+        "  There are {} variants of the primer",
+        primer_variants.len()
+    );
+
+    primer_variants
+}
+
+// The primary function for PCR
 pub struct PCRParams {
     pub forward_seq: String,
     pub reverse_seq: String,
@@ -527,67 +574,12 @@ pub fn do_pcr(
     // Create a vector to hold the fasta records
     let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
 
-    // Preprocess the primers
-    let mut forward = params.forward_seq.clone();
-    let mut reverse = params.reverse_seq.clone();
-
-    // Check if either is longer than trim, if so retain only the last trim nucleotides
-    if forward.len() > params.trim {
-        forward = forward[forward.len() - params.trim..].to_string();
-        println!(
-            "Trimming the forward primer to {} so that it is within the trim length of  {}",
-            forward, params.trim
-        );
-    }
-
-    if reverse.len() > params.trim {
-        reverse = reverse[reverse.len() - params.trim..].to_string();
-        println!(
-            "Trimming the reverse primer to {} so that it is within the trim length of  {}",
-            reverse, params.trim
-        );
-    }
-
-    // Check if either is longer than k, if so retain only the last k nucleotides
-    if forward.len() > *k {
-        forward = forward[forward.len() - *k..].to_string();
-        println!(
-            "Truncated the forward primer to {} so that it fits within k {}",
-            forward, k
-        );
-    }
-
-    if reverse.len() > *k {
-        reverse = reverse[reverse.len() - *k..].to_string();
-        println!(
-            "Truncated the reverse primer to {} so that it fits within k {}",
-            reverse, k
-        );
-    }
-
-    // Expand ambigous nucleotides
-    let mut forward_variants = resolve_primer(forward);
-    let mut reverse_variants = resolve_primer(reverse);
-
-    // Get all possible variants of the primers
-    forward_variants = permute_sequences(forward_variants, &params.mismatches);
-    reverse_variants = permute_sequences(reverse_variants, &params.mismatches);
-
-    // Replace the reverse variants with their reverse complements
-    let mut reverse_variants_revcomp = HashSet::new();
-    for variant in reverse_variants.iter() {
-        reverse_variants_revcomp.insert(reverse_complement(variant));
-    }
-    reverse_variants = reverse_variants_revcomp;
-
-    println!(
-        "There are {} variants of the forward primer",
-        forward_variants.len()
-    );
-    println!(
-        "There are {} variants of the reverse primer",
-        reverse_variants.len()
-    );
+    // Preprocess the primers to get all variants to be considered
+    println!("Preprocessing forward primer");
+    let forward_variants = preprocess_primer(params, PrimerDirection::Forward, k, verbosity);
+    println!("Preprocessing reverse primer");
+    let reverse_variants = preprocess_primer(params, PrimerDirection::Reverse, k, verbosity);
+    
 
     // Get the Oligos from the primer variants
     let mut forward_oligos: Vec<Oligo> = Vec::new();
@@ -714,7 +706,6 @@ pub fn do_pcr(
         println!("  Retaining all reverse matches.");
     }
 
-    // If the forward_matches or the reverse_matches are empty, exit
     if forward_matches.is_empty() {
         println!("{}", format!("For gene {}, binding sites were not found for the forward primer. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
         println!("{}", format!("  Suggested action: optimize primer sequence.").color(COLOR_FAIL));
@@ -722,7 +713,6 @@ pub fn do_pcr(
         return records;
     }
 
-    // If the forward_matches or the reverse_matches are empty, exit
     if reverse_matches.is_empty() {
         println!("{}", format!("For gene {}, binding sites were not found for the reverse primer. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
         println!("{}", format!("  Suggested action: optimize primer sequence.").color(COLOR_FAIL));
