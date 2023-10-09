@@ -574,6 +574,15 @@ pub fn do_pcr(
     // Create a vector to hold the fasta records
     let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
 
+    // Create a hash set of the keys of kmer_counts
+    std::io::stdout().flush().unwrap();
+    let mut kmers: std::collections::HashSet<u64> = kmer_counts.keys().copied().collect();
+
+    // Add the reverse complement of each key to the hash set with revcomp_kmer()
+    for kmer in kmer_counts.keys() {
+        kmers.insert(revcomp_kmer(kmer, k));
+    }
+
     // Preprocess the primers to get all variants to be considered
     println!("Preprocessing forward primer");
     let forward_variants = preprocess_primer(params, PrimerDirection::Forward, k, verbosity);
@@ -583,25 +592,15 @@ pub fn do_pcr(
 
     // Get the Oligos from the primer variants
     let mut forward_oligos: Vec<Oligo> = Vec::new();
-    let mut reverse_oligos: Vec<Oligo> = Vec::new();
     for variant in forward_variants.iter() {
         forward_oligos.push(string_to_oligo(variant));
     }
+
+    let mut reverse_oligos: Vec<Oligo> = Vec::new();
     for variant in reverse_variants.iter() {
         reverse_oligos.push(string_to_oligo(variant));
     }
 
-    // Create a hash set of the keys of kmer_counts
-    print!("Creating hash set of kmers for assembly...");
-    std::io::stdout().flush().unwrap();
-    let mut kmers: std::collections::HashSet<u64> = kmer_counts.keys().copied().collect();
-
-    // Add the reverse complement of each key to the hash set with revcomp_kmer()
-    for kmer in kmer_counts.keys() {
-        kmers.insert(revcomp_kmer(kmer, k));
-    }
-
-    println!(" done");
 
     // Find the kmers that contain the forward and reverse primers
     let start = std::time::Instant::now();
