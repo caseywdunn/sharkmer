@@ -497,8 +497,8 @@ fn pairwise_sequence_distances(records: &Vec<fasta::Record>) -> Vec<Vec<Option<u
     for i in 0..n {
         for j in i + 1..n {
             let dist = bounded_levenshtein(
-                &records[i].seq(),
-                &records[j].seq(),
+                records[i].seq(),
+                records[j].seq(),
                 DISTANCE_EDIT_THRESHOLD,
             );
             matrix[i][j] = dist;
@@ -577,9 +577,7 @@ fn get_kmers_from_primers(
         oligos.push(string_to_oligo(variant));
     }
 
-    let matches = find_oligos_in_kmers(&oligos, kmer_counts, k, &dir);
-
-    matches
+    find_oligos_in_kmers(&oligos, kmer_counts, k, &dir)
 }
 
 /// Given a set of kmers that contain primers, filter them to retain only those with the highest counts
@@ -588,7 +586,7 @@ fn get_kmers_from_primers(
 /// Returns a hash map of the kmers and their counts
 fn filter_primer_kmers(matches: FxHashMap<u64, u64>, k: &usize) -> FxHashMap<u64, u64> {
     let mut counts: Vec<u64> = Vec::new();
-    for (_, count) in &matches {
+    for count in matches.values() {
         counts.push(*count);
     }
 
@@ -628,7 +626,7 @@ fn filter_primer_kmers(matches: FxHashMap<u64, u64>, k: &usize) -> FxHashMap<u64
 
 fn get_max_count(kmer_counts: &FxHashMap<u64, u64>) -> u64 {
     let mut max_count = 0;
-    for (_, count) in kmer_counts {
+    for count in kmer_counts.values() {
         if *count > max_count {
             max_count = *count;
         }
@@ -760,7 +758,7 @@ pub fn do_pcr(
     let suffix_mask: u64 = (1 << (2 * (*k - 1))) - 1;
 
     // Add the forward matches to the graph
-    for (kmer, _) in &forward_matches {
+    for kmer in forward_matches.keys() {
         let prefix = kmer >> 2;
 
         // If the node with sub_kmer == suffix already exists, update the node so that is_start = true
@@ -787,7 +785,7 @@ pub fn do_pcr(
     }
 
     // Add the reverse matches to the graph
-    for (kmer, _) in &reverse_matches {
+    for kmer in reverse_matches.keys() {
         let suffix = kmer & suffix_mask;
 
         // If the node with sub_kmer == suffix already exists, update the node so that is_end = true
