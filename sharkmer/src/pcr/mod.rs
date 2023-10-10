@@ -5,6 +5,7 @@ use petgraph::algo::{all_simple_paths, connected_components, is_cyclic_directed}
 use petgraph::graph::NodeIndex;
 use petgraph::visit::Bfs;
 use petgraph::Direction;
+use petgraph::Directed;
 use petgraph::Graph;
 use rustc_hash::FxHashMap;
 use std::collections::HashMap;
@@ -757,7 +758,7 @@ pub fn do_pcr(
 
     // Construct the graph
     println!("Creating graph, seeding with nodes that contain primer matches...");
-    let mut graph: Graph<DBNode, DBEdge> = Graph::new();
+    let mut graph: Graph<DBNode, DBEdge, Directed> = Graph::new();
 
     // Create a hash set of the keys of kmer_counts
     let kmers: std::collections::HashSet<u64> = kmer_counts.keys().copied().collect();
@@ -889,14 +890,14 @@ pub fn do_pcr(
             // Vector to hold nodes to be clipped, ie have all their descendants pruned
             let mut to_clip: Vec<NodeIndex> = Vec::new();
             for node in graph.node_indices() {
-                let n_descendants = n_descendants(&graph, node, EXTENSION_EVALUATION_DEPTH);
+                let n = n_descendants(&graph, node, EXTENSION_EVALUATION_DEPTH);
                 // The maximum number of descendants would be 4^EXTENSION_EVALUATION_DEPTH
-                if n_descendants > 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)
+                if n > 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)
                 {
-                    println!("{}", format!("WARNING: Node {} has {} descendants at a depth of {}. This exceed the maximum of 4^{}={} that is expected", node.index(), n_descendants, EXTENSION_EVALUATION_DEPTH, EXTENSION_EVALUATION_DEPTH, 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)).color(COLOR_WARNING));
+                    println!("{}", format!("WARNING: Node {} has {} descendants at a depth of {}. This exceed the maximum of 4^{}={} that is expected", node.index(), n, EXTENSION_EVALUATION_DEPTH, EXTENSION_EVALUATION_DEPTH, 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)).color(COLOR_WARNING));
                 }
 
-                if n_descendants
+                if n
                     > 4_usize.pow((EXTENSION_EVALUATION_DEPTH - EXTENSION_EVALUATION_DIFF) as u32)
                 {
                     to_clip.push(node);
@@ -1379,6 +1380,69 @@ mod tests {
         // and add 1.
 
         n_combinations(n, r) * 4_usize.pow(r as u32) - n_combinations(n, r) + 1
+    }
+
+    // Create a test graph of known structure
+    fn create_test_graph() -> (Graph<DBNode, DBEdge, Directed>, HashMap<&'static str, NodeIndex>) {
+        let mut graph: Graph<DBNode, DBEdge, Directed> = Graph::new();
+        let mut nodes = HashMap::new();
+
+        // Add nodes and store their indices in the HashMap
+        nodes.insert("a", graph.add_node(DBNode {
+            sub_kmer: 0,
+            is_start: false,
+            is_end: false,
+            is_terminal: false,
+            visited: false,
+        }));
+        nodes.insert("b", graph.add_node(DBNode {
+            sub_kmer: 1,
+            is_start: false,
+            is_end: false,
+            is_terminal: false,
+            visited: false,
+        }));
+        nodes.insert("c", graph.add_node(DBNode {
+            sub_kmer: 2,
+            is_start: false,
+            is_end: false,
+            is_terminal: false,
+            visited: false,
+        }));
+        nodes.insert("d", graph.add_node(DBNode {
+            sub_kmer: 3,
+            is_start: false,
+            is_end: false,
+            is_terminal: false,
+            visited: false,
+        }));
+        nodes.insert("e", graph.add_node(DBNode {
+            sub_kmer: 4,
+            is_start: false,
+            is_end: false,
+            is_terminal: false,
+            visited: false,
+        }));
+
+        // Add directed edges
+        graph.add_edge(nodes["a"], nodes["b"], DBEdge { _kmer: 10, count: 1 });
+        graph.add_edge(nodes["b"], nodes["c"], DBEdge { _kmer: 11, count: 1 });
+        graph.add_edge(nodes["c"], nodes["d"], DBEdge { _kmer: 12, count: 1 });
+        graph.add_edge(nodes["c"], nodes["e"], DBEdge { _kmer: 13, count: 1 });
+
+        (graph, nodes)
+    }
+
+    #[test]
+    fn test_n_descendants() {
+        let (graph, nodes) = create_test_graph();
+
+        // Testing using the node indices from the HashMap
+        assert_eq!(n_descendants(&graph, nodes["a"], 1), 1); // Direct successor
+        assert_eq!(n_descendants(&graph, nodes["a"], 2), 2); // Including b's successors
+        assert_eq!(n_descendants(&graph, nodes["a"], 3), 4); // All nodes reachable from a within 3 steps
+        assert_eq!(n_descendants(&graph, nodes["a"], 4), 4); // All nodes reachable from a within 4 steps
+        assert_eq!(n_descendants(&graph, nodes["b"], 2), 3); // Direct successor and its successor
     }
 
     #[test]
