@@ -1010,6 +1010,12 @@ pub fn do_pcr(
                             if !would_form_cycle(&graph, node, existing_node) {
                                 let edge = get_dbedge(kmer, &kmer_counts, k);
                                 graph.add_edge(node, existing_node, edge);
+                                let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
+                                if outgoing > 4 {
+                                    println!("{}",
+                                        format!("WARNING: Node {} has {} outgoing edges. This exceed the maximum of 4 that is expected", node.index(), outgoing).color(COLOR_WARNING)
+                                    );
+                                }
                             } else {
                                 graph[node].is_terminal = true;
 
@@ -1038,6 +1044,12 @@ pub fn do_pcr(
                         let edge = get_dbedge(kmer, &kmer_counts, k);
                         let edge_count = edge.count;
                         graph.add_edge(node, new_node, edge);
+                        let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
+                        if outgoing > 4 {
+                            println!("{}",
+                                format!("WARNING: Node {} has {} outgoing edges when adding new node. This exceed the maximum of 4 that is expected", node.index(), outgoing).color(COLOR_WARNING)
+                            );
+                        }
 
                         if verbosity > 1 {
                             print!(
@@ -1442,7 +1454,7 @@ mod tests {
         assert_eq!(n_descendants(&graph, nodes["a"], 2), 2); // Including b's successors
         assert_eq!(n_descendants(&graph, nodes["a"], 3), 4); // All nodes reachable from a within 3 steps
         assert_eq!(n_descendants(&graph, nodes["a"], 4), 4); // All nodes reachable from a within 4 steps
-        assert_eq!(n_descendants(&graph, nodes["b"], 2), 3); // Direct successor and its successor
+        assert_eq!(n_descendants(&graph, nodes["b"], 2), 3);
     }
 
     #[test]
