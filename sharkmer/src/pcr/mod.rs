@@ -1237,15 +1237,15 @@ pub fn do_pcr(
     println!("done.  Time to traverse graph: {:?}", start.elapsed());
 
     if all_paths.is_empty() {
-        println!("{}", format!("For gene {}, no path was found from a forward primer binding site to a reverse binding site. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
+        println!("{}", format!("For gene {}, no path was found from a forward primer binding site to a reverse binding \nsite. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
         println!("{}", format!("  Suggested actions:").color(COLOR_FAIL));
         println!("{}", format!("    - The max_length for the PCR product of {} my be too short. Consider increasing it.", params.max_length).color(COLOR_FAIL));
-        println!("{}", format!("    - The primers may have non-specific binding and are not close enough to generate a product. Consider increasing the primer TRIM length from the default to create a more specific primer.").color(COLOR_FAIL));
-        println!("{}", format!("      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large differences in value can indicate non-specific binding of one of the primers.", max_forward_count, max_reverse_count).color(COLOR_FAIL));
+        println!("{}", format!("    - The primers may have non-specific binding and are not close enough to generate a \n      product. Consider increasing the primer TRIM length from the default to \n      create a more specific primer.").color(COLOR_FAIL));
+        println!("{}", format!("      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large \n        differences in value can indicate non-specific binding of one of the primers.", max_forward_count, max_reverse_count).color(COLOR_FAIL));
 
         let count_threshold = 5;
         if (max_forward_count < count_threshold) | (max_reverse_count < count_threshold) {
-            println!("{}", format!("    - The maximum count of a forward kmer is {} and of a reverse kmer is {}. A low value, in this case less than {}, for either can indicate that read coverage for this gene is too low to traverse from a forward to reverse primer. Consider increasing coverage.", max_forward_count, max_reverse_count, count_threshold).color(COLOR_FAIL));
+            println!("{}", format!("    - The maximum count of a forward kmer is {} and of a reverse kmer is {}. A \n      low value, in this case less than {}, for either can indicate that read \n      coverage for this gene is too low to traverse from a forward to reverse \n      primer. Consider increasing coverage.", max_forward_count, max_reverse_count, count_threshold).color(COLOR_FAIL));
         }
 
         let records: Vec<fasta::Record> = Vec::new();
@@ -1335,8 +1335,11 @@ pub fn do_pcr(
         }
     }
 
-    println!("{}", format!("For gene {}, {} PCR products were generated and {} were retained (the others were minor variants of the first).", params.gene_name, num_records_all, records.len()).color(COLOR_SUCCESS));
-
+    if num_records_all == records.len(){
+        println!("{}", format!("For gene {}, {} PCR products were generated and retained.", params.gene_name, num_records_all).color(COLOR_SUCCESS));
+    } else {
+        println!("{}", format!("For gene {}, {} PCR products were generated and {} were retained (the others were minor variants of the first).", params.gene_name, num_records_all, records.len()).color(COLOR_SUCCESS));
+    }
     // Return the records
     records
 }

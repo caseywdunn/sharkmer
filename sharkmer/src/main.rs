@@ -389,7 +389,7 @@ fn main() {
     println!(" done, time: {:?}", start.elapsed());
 
     // Create the histograms
-    print!("Creating histograms...");
+    print!("Consolidating chunks and creating histograms...");
     let start = std::time::Instant::now();
     std::io::stdout().flush().unwrap();
     let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
