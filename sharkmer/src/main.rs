@@ -95,7 +95,8 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<pcr::PCRParams, String> {
             return Err(format!("Invalid parameter: {}", item));
         }
 
-        let key = key_value[0];
+        let key = key_value[0].to_lowercase();
+        let key = key.as_str();
         let value = key_value[1];
 
         match key {
@@ -171,7 +172,7 @@ struct Args {
     input: Option<Vec<String>>,
 
     /// Optional primer pairs for in silico PCR (sPCR). The format is:
-    /// --pcr "forward_reverse_max-length_name"
+    /// --pcr "forward_reverse_max-length_name_key1=value1_key2=value2"
     /// Where:
     ///   forward is the forward primer sequence in 5' to 3' orientation
     ///   reverse is the reverse primer sequence in 5' to 3' orientation
@@ -183,14 +184,18 @@ struct Args {
     ///   name is a unique name for the primer pair or amplified gene
     ///     region. This will be used to specify amplified regions in
     ///     the output fasta file.
+    ///   key=value pairs are optional parameters. The following are
+    ///    supported:
+    ///    coverage: minimum coverage for a kmer to be included in the
+    ///      amplified region. Default is 3.
+    ///    mismatches: maximum number of mismatches allowed between the
+    ///      primer and the kmer. Default is 2.
+    ///    trim: number of bases to keep at the 3' end of each primer. 
+    ///      Default is 15.
     /// More than one primer pair can be specified, for example:
     /// --pcr "forward1_reverse1_1000_name1" --pcr "forward2_reverse2_2000_name2"
     #[arg(short = 'p', long)]
     pcr: Vec<String>,
-
-    /// Minimum coverage for kmer to be included in sPCR
-    #[arg(short, long, default_value_t = 3)]
-    coverage: u64,
 
     /// Verbosity
     #[arg(long, default_value_t = 0)]
@@ -462,37 +467,9 @@ fn main() {
     if !pcr_runs.is_empty() {
         println!("Running in silico PCR...");
 
-        // Remove kmer_counts entries with less than coverage
-        print!(
-            "Removing kmers with coverage less than {}...",
-            args.coverage
-        );
-        std::io::stdout().flush().unwrap();
-        let mut kmer_counts_filtered: FxHashMap<u64, u64> = FxHashMap::default();
-        let mut count_filtered_total: u64 = 0;
-        let mut count_raw_total: u64 = 0;
-
-        for (&kmer, &count) in &kmer_counts {
-            if count >= args.coverage {
-                kmer_counts_filtered.insert(kmer, count);
-                count_filtered_total += count;
-            }
-            count_raw_total += count;
-        }
-
-        println!(
-            "The total kmer count went from {} to {}",
-            count_raw_total, count_filtered_total
-        );
-        println!(
-            "The number of unique kmers went from {} to {}",
-            kmer_counts.len(),
-            kmer_counts_filtered.len()
-        );
-
         for pcr_params in pcr_runs.iter() {
             let fasta = pcr::do_pcr(
-                &kmer_counts_filtered,
+                &kmer_counts,
                 &{ args.k },
                 &args.sample,
                 args.verbosity,

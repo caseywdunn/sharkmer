@@ -659,15 +659,29 @@ pub fn do_pcr(
     // Create a vector to hold the fasta records
     let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
 
+    // Remove kmer_counts entries with less than coverage
+    println!(
+        "Removing kmers with coverage less than {}...",
+        params.coverage
+    );
+
     // The kmer_counts_map includes only canonical kmers. Add the reverse complements,
     // while also filtering for coverage
     let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
+    let mut n_unique_kmers: u64 = 0;
     for (kmer, count) in kmer_counts_map {
         if count >= &params.coverage {
             kmer_counts.insert(*kmer, *count);
             kmer_counts.insert(revcomp_kmer(kmer, k), *count);
+            n_unique_kmers += 1;
         }
     }
+
+    println!(
+        "  The number of unique kmers went from {} to {}",
+        kmer_counts_map.len(),
+        n_unique_kmers
+    );
 
     // Preprocess the primers to get all variants to be considered
     println!("Expanding the forward primer into all variants");
