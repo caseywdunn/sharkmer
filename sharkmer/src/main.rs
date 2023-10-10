@@ -1,5 +1,6 @@
 use bio::io::fasta;
 use clap::Parser;
+use colored::*;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
 use rustc_hash::FxHashMap;
@@ -7,7 +8,6 @@ use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
-use colored::*;
 
 mod kmer;
 mod pcr;
@@ -207,7 +207,10 @@ fn main() {
     // Print the arguments
     println!("{:?}", args);
 
-    println!("{}", format!("Processing sample {}", args.sample).color(COLOR_NOTE));
+    println!(
+        "{}",
+        format!("Processing sample {}", args.sample).color(COLOR_NOTE)
+    );
 
     // Parse the outdir path and sample, create directories if necessary
     // output directory is outdir/sample
