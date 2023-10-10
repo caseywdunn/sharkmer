@@ -496,11 +496,8 @@ fn pairwise_sequence_distances(records: &Vec<fasta::Record>) -> Vec<Vec<Option<u
 
     for i in 0..n {
         for j in i + 1..n {
-            let dist = bounded_levenshtein(
-                records[i].seq(),
-                records[j].seq(),
-                DISTANCE_EDIT_THRESHOLD,
-            );
+            let dist =
+                bounded_levenshtein(records[i].seq(), records[j].seq(), DISTANCE_EDIT_THRESHOLD);
             matrix[i][j] = dist;
             matrix[j][i] = dist; // Symmetric matrix
         }
@@ -1335,8 +1332,15 @@ pub fn do_pcr(
         }
     }
 
-    if num_records_all == records.len(){
-        println!("{}", format!("For gene {}, {} PCR products were generated and retained.", params.gene_name, num_records_all).color(COLOR_SUCCESS));
+    if num_records_all == records.len() {
+        println!(
+            "{}",
+            format!(
+                "For gene {}, {} PCR products were generated and retained.",
+                params.gene_name, num_records_all
+            )
+            .color(COLOR_SUCCESS)
+        );
     } else {
         println!("{}", format!("For gene {}, {} PCR products were generated and {} were retained (the others were minor variants of the first).", params.gene_name, num_records_all, records.len()).color(COLOR_SUCCESS));
     }

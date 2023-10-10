@@ -190,7 +190,7 @@ struct Args {
     ///      amplified region. Default is 3.
     ///    mismatches: maximum number of mismatches allowed between the
     ///      primer and the kmer. Default is 2.
-    ///    trim: number of bases to keep at the 3' end of each primer. 
+    ///    trim: number of bases to keep at the 3' end of each primer.
     ///      Default is 15.
     /// More than one primer pair can be specified, for example:
     /// --pcr "forward1_reverse1_1000_name1" --pcr "forward2_reverse2_2000_name2"
