@@ -304,15 +304,6 @@ fn find_oligos_in_kmers(
 
     kmers_match
 
-    /* 
-    // Create a mutable copy of kmers
-    let mut kmers_match = kmers.clone();
-
-    // Retain only the elements of kmers that intersect with oligo_set
-    kmers_match.retain(|kmer| oligo_set.contains(&(kmer & mask)));
-
-    kmers_match
-    */
 }
 
 fn n_nonterminal_nodes_in_graph(graph: &Graph<DBNode, DBEdge>) -> usize {
@@ -681,11 +672,10 @@ pub fn do_pcr(
     // Get the kmers that contain the primers
     println!("Finding kmers that contain the forward primer");
     let mut forward_matches = get_kmers_from_primers(&forward_variants, &kmer_counts, k, PrimerDirection::Forward);
+    forward_matches = filter_primer_kmers(forward_matches, k);
+
     println!("Finding kmers that contain the reverse primer");
     let mut reverse_matches = get_kmers_from_primers(&reverse_variants, &kmer_counts, k, PrimerDirection::Reverse);
-
-    // Filter the kmers to retain only those with the highest counts
-    forward_matches = filter_primer_kmers(forward_matches, k);
     reverse_matches = filter_primer_kmers(reverse_matches, k);
 
     if forward_matches.is_empty() {
