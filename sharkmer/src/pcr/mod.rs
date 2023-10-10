@@ -16,6 +16,7 @@ use crate::kmer::*;
 use crate::COLOR_FAIL;
 use crate::COLOR_NOTE;
 use crate::COLOR_SUCCESS;
+use crate::COLOR_WARNING;
 
 // Constants that may require tuning
 
@@ -464,19 +465,15 @@ fn summarize_extension(graph: &Graph<DBNode, DBEdge>, pad: &str) {
     }
 
     // Create a vector of n_descendants for each node given a depth of EXTENSION_EVALUATION_DEPTH
-
-    let mut n_descendants_vec: Vec<usize> = Vec::new();
+    let mut n_descendants_vec: Vec<u64> = Vec::new();
     for node in graph.node_indices() {
-        let n_descendants = n_descendants(graph, node, EXTENSION_EVALUATION_DEPTH);
-        n_descendants_vec.push(n_descendants);
+        let n = n_descendants(graph, node, EXTENSION_EVALUATION_DEPTH);
+        n_descendants_vec.push(n as u64);
     }
 
-    // create vector of u64 from n_descendants_vec
-    let n_descendants_vec_u64: Vec<u64> = n_descendants_vec.iter().map(|&x| x as u64).collect();
-
-    let max_n_descendants = n_descendants_vec_u64.iter().max().unwrap();
-    let mean_n_descendants = compute_mean(&n_descendants_vec_u64);
-    let median_n_descendants = compute_median(&n_descendants_vec_u64);
+    let max_n_descendants = n_descendants_vec.iter().max().unwrap();
+    let mean_n_descendants = compute_mean(&n_descendants_vec);
+    let median_n_descendants = compute_median(&n_descendants_vec);
 
     println!(
         "{}Number of descendants to a depth of {}, max {} mean {:.2} median {:.1}",
@@ -827,9 +824,9 @@ pub fn do_pcr(
     // If so, print a warning
     for node in graph.node_indices() {
         if graph[node].is_start && graph[node].is_end {
-            println!(
-                "Warning: node {} is both a start and end node",
-                node.index()
+            println!("{}",
+                format! ("WARNING: node {} is both a start and end node",
+                node.index()).color(COLOR_WARNING)
             );
         }
     }
@@ -894,6 +891,11 @@ pub fn do_pcr(
             for node in graph.node_indices() {
                 let n_descendants = n_descendants(&graph, node, EXTENSION_EVALUATION_DEPTH);
                 // The maximum number of descendants would be 4^EXTENSION_EVALUATION_DEPTH
+                if n_descendants > 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)
+                {
+                    println!("{}", format!("WARNING: Node {} has {} descendants at a depth of {}. This exceed the maximum of 4^{}={} that is expected", node.index(), n_descendants, EXTENSION_EVALUATION_DEPTH, EXTENSION_EVALUATION_DEPTH, 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)).color(COLOR_WARNING));
+                }
+
                 if n_descendants
                     > 4_usize.pow((EXTENSION_EVALUATION_DEPTH - EXTENSION_EVALUATION_DIFF) as u32)
                 {

@@ -15,6 +15,7 @@ mod pcr;
 pub const COLOR_NOTE: &str = "blue";
 pub const COLOR_SUCCESS: &str = "green";
 pub const COLOR_FAIL: &str = "magenta";
+pub const COLOR_WARNING: &str = "yellow";
 
 pub enum ParameterValue {
     Int(u32),
