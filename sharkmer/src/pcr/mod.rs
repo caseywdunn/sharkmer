@@ -403,7 +403,7 @@ fn get_end_nodes(graph: &Graph<DBNode, DBEdge>) -> Vec<NodeIndex> {
 }
 
 // Find the number of descendants of a node, each descendent no more than `depth` edges away
-fn n_descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex, depth: usize) -> usize {
+fn descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex, depth: usize) -> HashSet<NodeIndex> {
     let mut visited = vec![false; graph.node_count()];
     let mut queue = VecDeque::new();
 
@@ -411,6 +411,7 @@ fn n_descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex, depth: usize) -
     visited[node.index()] = true;
 
     let mut n_descendants = 0;
+    let mut descendants: Vec<NodeIndex> = Vec::new();
 
     while let Some((current_node, current_depth)) = queue.pop_front() {
         if current_depth >= depth {
@@ -420,13 +421,15 @@ fn n_descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex, depth: usize) -
         for neighbor in graph.neighbors(current_node) {
             if !visited[neighbor.index()] {
                 n_descendants += 1;
+                descendants.push(neighbor);
                 visited[neighbor.index()] = true;
                 queue.push_back((neighbor, current_depth + 1));
             }
         }
     }
 
-    n_descendants
+    let descendants_set = descendants.into_iter().collect::<HashSet<_>>();
+    descendants_set
 }
 
 // Get all descendants of a node in a directed graph
@@ -468,7 +471,7 @@ fn summarize_extension(graph: &Graph<DBNode, DBEdge>, pad: &str) {
     // Create a vector of n_descendants for each node given a depth of EXTENSION_EVALUATION_DEPTH
     let mut n_descendants_vec: Vec<u64> = Vec::new();
     for node in graph.node_indices() {
-        let n = n_descendants(graph, node, EXTENSION_EVALUATION_DEPTH);
+        let n = descendants(graph, node, EXTENSION_EVALUATION_DEPTH).len();
         n_descendants_vec.push(n as u64);
     }
 
@@ -890,11 +893,28 @@ pub fn do_pcr(
             // Vector to hold nodes to be clipped, ie have all their descendants pruned
             let mut to_clip: Vec<NodeIndex> = Vec::new();
             for node in graph.node_indices() {
-                let n = n_descendants(&graph, node, EXTENSION_EVALUATION_DEPTH);
+                let d = descendants(&graph, node, EXTENSION_EVALUATION_DEPTH);
+                let n = d.len();
                 // The maximum number of descendants would be 4^EXTENSION_EVALUATION_DEPTH
                 if n > 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)
                 {
-                    println!("{}", format!("WARNING: Node {} has {} descendants at a depth of {}. This exceed the maximum of 4^{}={} that is expected", node.index(), n, EXTENSION_EVALUATION_DEPTH, EXTENSION_EVALUATION_DEPTH, 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)).color(COLOR_WARNING));
+                    let seq = crate::kmer::kmer_to_seq(
+                        &graph[node].sub_kmer,
+                        &(*k - 1),
+                    );
+                    println!("{}", format!("WARNING: Node {} with sequence {} has {} descendants at a depth of {}. This exceed the maximum of 4^{}={} that is expected", node.index(), seq, n, EXTENSION_EVALUATION_DEPTH, EXTENSION_EVALUATION_DEPTH, 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)).color(COLOR_WARNING));
+                    // println!("  Descendants: {:?}", d);
+
+                    // Get a vector of sequences of the descendants
+                    let mut seqs: Vec<String> = Vec::new();
+                    for descendant in d {
+                        seqs.push(crate::kmer::kmer_to_seq(
+                            &graph[descendant].sub_kmer,
+                            &(*k - 1),
+                        ));
+                    }
+
+                    println!("  Sequences: {:?}", seqs);
                 }
 
                 if n
@@ -1450,11 +1470,11 @@ mod tests {
         let (graph, nodes) = create_test_graph();
 
         // Testing using the node indices from the HashMap
-        assert_eq!(n_descendants(&graph, nodes["a"], 1), 1); // Direct successor
-        assert_eq!(n_descendants(&graph, nodes["a"], 2), 2); // Including b's successors
-        assert_eq!(n_descendants(&graph, nodes["a"], 3), 4); // All nodes reachable from a within 3 steps
-        assert_eq!(n_descendants(&graph, nodes["a"], 4), 4); // All nodes reachable from a within 4 steps
-        assert_eq!(n_descendants(&graph, nodes["b"], 2), 3);
+        assert_eq!(descendants(&graph, nodes["a"], 1).len(), 1); // Direct successor
+        assert_eq!(descendants(&graph, nodes["a"], 2).len(), 2); // Including b's successors
+        assert_eq!(descendants(&graph, nodes["a"], 3).len(), 4); // All nodes reachable from a within 3 steps
+        assert_eq!(descendants(&graph, nodes["a"], 4).len(), 4); // All nodes reachable from a within 4 steps
+        assert_eq!(descendants(&graph, nodes["b"], 2).len(), 3);
     }
 
     #[test]
