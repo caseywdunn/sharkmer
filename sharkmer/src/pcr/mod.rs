@@ -468,6 +468,37 @@ fn summarize_extension(graph: &Graph<DBNode, DBEdge>, pad: &str) {
         println!("{}The graph does not have cycles", pad);
     }
 
+    // Print the mean, median, and max degree of all nodes
+    let mut degrees: Vec<usize> = Vec::new();
+    for node in graph.node_indices() {
+        degrees.push(graph.neighbors(node).count());
+    }
+
+    let max_degree = degrees.iter().max().unwrap();
+    let degrees_u64: Vec<u64> = degrees.iter().map(|&x| x as u64).collect();
+    let mean_degree = compute_mean(&degrees_u64);
+    let median_degree = compute_median(&degrees_u64);
+
+    println!(
+        "{}Max node degree {}, mean {:.2} median {:.1}",
+        pad, max_degree, mean_degree, median_degree
+    );
+
+    // Print the mean, median, and max count of edges
+    let mut counts: Vec<u64> = Vec::new();
+    for edge in graph.edge_indices() {
+        counts.push(graph[edge].count);
+    }
+
+    let max_count = counts.iter().max().unwrap();
+    let mean_count = compute_mean(&counts);
+    let median_count = compute_median(&counts);
+
+    println!(
+        "{}Max edge count {}, mean {:.2} median {:.1}",
+        pad, max_count, mean_count, median_count
+    );
+
     // Create a vector of n_descendants for each node given a depth of EXTENSION_EVALUATION_DEPTH
     let mut n_descendants_vec: Vec<u64> = Vec::new();
     for node in graph.node_indices() {
