@@ -26,12 +26,11 @@ def main():
 	for line in verbose:
 		match = re.search(r'([CGTA]+) sub_kmer .+ Added sub_kmer ([CGTA]+)', line)
 		if match:
-			print(line)
 			parent = match.group(1)
 			child = match.group(2)
 			if parent in path:
 				path.append(child)
-				print(f"{child}")
+				print(line)
 
 	verbose.close()
 

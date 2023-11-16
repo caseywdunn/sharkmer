@@ -955,7 +955,7 @@ pub fn do_pcr(
                 }
             }
 
-            // Mark the clipped nodes ast terminal
+            // Mark the clipped nodes as terminal
             for node in &to_clip {
                 graph[*node].is_terminal = true;
             }
@@ -1010,9 +1010,9 @@ pub fn do_pcr(
                 for base in 0..4 {
                     let kmer = (sub_kmer << 2) | base;
                     candidate_kmers.insert(kmer);
-                }
+                } 
 
-                // Retain only the candidate kmers that are in the set of kmers
+                // Retain only the candidate kmers that are in the kmers hash
                 candidate_kmers.retain(|kmer| kmers.contains(kmer));
 
                 if verbosity > 1 {
