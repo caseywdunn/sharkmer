@@ -2,7 +2,7 @@ use bio::alignment::distance::simd::*;
 use bio::io::fasta;
 use colored::*;
 use petgraph::algo::{all_simple_paths, connected_components, is_cyclic_directed};
-use petgraph::graph::NodeIndex;
+use petgraph::graph::{NodeIndex, self};
 use petgraph::visit::Bfs;
 use petgraph::Direction;
 use petgraph::Directed;
@@ -452,6 +452,75 @@ fn get_descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex) -> Vec<NodeIn
 
     visited.into_iter().collect()
 }
+
+fn pop_balloons(graph: &mut Graph<DBNode, DBEdge>, k: &usize) {
+    let mut to_clip: Vec<NodeIndex> = Vec::new();
+    for node in graph.node_indices() {
+        let d = descendants(&graph, node, EXTENSION_EVALUATION_DEPTH);
+        let n = d.len();
+        // The maximum number of descendants would be 4^EXTENSION_EVALUATION_DEPTH
+        if n > 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)
+        {
+            let seq = crate::kmer::kmer_to_seq(
+                &graph[node].sub_kmer,
+                &(*k - 1),
+            );
+            println!("{}", format!("WARNING: Node {} with sequence {} has {} descendants at a depth of {}. This exceed the maximum of 4^{}={} that is expected", node.index(), seq, n, EXTENSION_EVALUATION_DEPTH, EXTENSION_EVALUATION_DEPTH, 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)).color(COLOR_WARNING));
+            // println!("  Descendants: {:?}", d);
+
+            // Get a vector of sequences of the descendants
+            let mut seqs: Vec<String> = Vec::new();
+            for descendant in d {
+                seqs.push(crate::kmer::kmer_to_seq(
+                    &graph[descendant].sub_kmer,
+                    &(*k - 1),
+                ));
+            }
+
+            println!("  Sequences: {:?}", seqs);
+        }
+
+        if n
+            > 4_usize.pow((EXTENSION_EVALUATION_DEPTH - EXTENSION_EVALUATION_DIFF) as u32)
+        {
+            to_clip.push(node);
+        }
+    }
+
+    // Mark the clipped nodes as terminal
+    for node in &to_clip {
+        graph[*node].is_terminal = true;
+    }
+
+    // Vector to hold nodes to be pruned
+    let mut to_prune: Vec<NodeIndex> = Vec::new();
+    for node in &to_clip {
+        // Node may have been removed already, so check if it is in graph
+        if graph.node_weight(*node).is_some() {
+            // prune away all the descendants of the node, but keep the node
+            let mut descendants = get_descendants(&graph, *node);
+            to_prune.append(&mut descendants);
+        }
+    }
+
+    if !to_prune.is_empty() {
+        println!(
+            "    Removing {} nodes descended from {} nodes with ballooning graph extension",
+            to_prune.len(),
+            to_clip.len()
+        );
+    }
+
+    // Sort in descending order. This is because node indices following pruned node are decremented,
+    // so the highest ones need to be pruned first or the remaining indices are no longer valid
+    to_prune.sort_by(|a, b| b.cmp(a));
+
+    // Remove the nodes in to_prune
+    for node in to_prune {
+        graph.remove_node(node);
+    }
+}
+
 
 fn summarize_extension(graph: &Graph<DBNode, DBEdge>, pad: &str) {
     // Print the number of nodes and edges in the graph
@@ -907,13 +976,10 @@ pub fn do_pcr(
 
     let mut last_check: usize = 0;
     while n_unvisited_nodes_in_graph(&graph) > 0 {
-        // Some graphs balloon in size and get to hundreds of thousands of nodes while extension gets
-        // slower and slower because there are so many growing tips. This may be due to a sequencing
-        // adapter becoming integrated into the graph, for example. So periodically check for a region
-        // of high degree and prune it if found
 
         let n_nodes = graph.node_count();
 
+        // Periodically evaluate extension
         // After pruning, n_nodes can be less than last_check and there will be an overflow on subtracting
         if (n_nodes > last_check) & ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
             last_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
@@ -921,72 +987,12 @@ pub fn do_pcr(
             println!("  Evaluating extension:");
             summarize_extension(&graph, "    ");
 
-            // Vector to hold nodes to be clipped, ie have all their descendants pruned
-            let mut to_clip: Vec<NodeIndex> = Vec::new();
-            for node in graph.node_indices() {
-                let d = descendants(&graph, node, EXTENSION_EVALUATION_DEPTH);
-                let n = d.len();
-                // The maximum number of descendants would be 4^EXTENSION_EVALUATION_DEPTH
-                if n > 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)
-                {
-                    let seq = crate::kmer::kmer_to_seq(
-                        &graph[node].sub_kmer,
-                        &(*k - 1),
-                    );
-                    println!("{}", format!("WARNING: Node {} with sequence {} has {} descendants at a depth of {}. This exceed the maximum of 4^{}={} that is expected", node.index(), seq, n, EXTENSION_EVALUATION_DEPTH, EXTENSION_EVALUATION_DEPTH, 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)).color(COLOR_WARNING));
-                    // println!("  Descendants: {:?}", d);
-
-                    // Get a vector of sequences of the descendants
-                    let mut seqs: Vec<String> = Vec::new();
-                    for descendant in d {
-                        seqs.push(crate::kmer::kmer_to_seq(
-                            &graph[descendant].sub_kmer,
-                            &(*k - 1),
-                        ));
-                    }
-
-                    println!("  Sequences: {:?}", seqs);
-                }
-
-                if n
-                    > 4_usize.pow((EXTENSION_EVALUATION_DEPTH - EXTENSION_EVALUATION_DIFF) as u32)
-                {
-                    to_clip.push(node);
-                }
-            }
-
-            // Mark the clipped nodes as terminal
-            for node in &to_clip {
-                graph[*node].is_terminal = true;
-            }
-
-            // Vector to hold nodes to be pruned
-            let mut to_prune: Vec<NodeIndex> = Vec::new();
-            for node in &to_clip {
-                // Node may have been removed already, so check if it is in graph
-                if graph.node_weight(*node).is_some() {
-                    // prune away all the descendants of the node, but keep the node
-                    let mut descendants = get_descendants(&graph, *node);
-                    to_prune.append(&mut descendants);
-                }
-            }
-
-            if !to_prune.is_empty() {
-                println!(
-                    "    Removing {} nodes descended from {} nodes with ballooning graph extension",
-                    to_prune.len(),
-                    to_clip.len()
-                );
-            }
-
-            // Sort in descending order. This is because node indices following pruned node are decremented,
-            // so the highest ones need to be pruned first or the remaining indices are no longer valid
-            to_prune.sort_by(|a, b| b.cmp(a));
-
-            // Remove the nodes in to_prune
-            for node in to_prune {
-                graph.remove_node(node);
-            }
+            // Some graphs balloon in size and get to hundreds of thousands of nodes while extension gets
+            // slower and slower because there are so many growing tips. This may be due to a sequencing
+            // adapter becoming integrated into the graph, for example. So periodically check for a region
+            // of high degree and prune it if found
+            pop_balloons(&mut graph, &k);
+ 
         }
 
         // Iterate over the nodes
