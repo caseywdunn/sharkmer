@@ -6,7 +6,7 @@ use petgraph::graph::{NodeIndex, self};
 use petgraph::visit::Bfs;
 use petgraph::Direction;
 use petgraph::Directed;
-use petgraph::Graph;
+use petgraph::stable_graph::{StableDiGraph};
 use rustc_hash::FxHashMap;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -306,7 +306,7 @@ fn find_oligos_in_kmers(
     kmers_match
 }
 
-fn n_nonterminal_nodes_in_graph(graph: &Graph<DBNode, DBEdge>) -> usize {
+fn n_nonterminal_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize {
     let mut n_nonterminal_nodes = 0;
     for node in graph.node_indices() {
         if !graph[node].is_terminal {
@@ -316,7 +316,7 @@ fn n_nonterminal_nodes_in_graph(graph: &Graph<DBNode, DBEdge>) -> usize {
     n_nonterminal_nodes
 }
 
-fn n_unvisited_nodes_in_graph(graph: &Graph<DBNode, DBEdge>) -> usize {
+fn n_unvisited_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize {
     let mut n = 0;
     for node in graph.node_indices() {
         if !graph[node].visited {
@@ -326,7 +326,7 @@ fn n_unvisited_nodes_in_graph(graph: &Graph<DBNode, DBEdge>) -> usize {
     n
 }
 
-fn get_path_length(graph: &Graph<DBNode, DBEdge>, new_node: NodeIndex) -> Option<usize> {
+fn get_path_length(graph: &StableDiGraph<DBNode, DBEdge>, new_node: NodeIndex) -> Option<usize> {
     // Get the length of the path from the start node to the new node
     let mut path_length = 0;
     let mut current_node = new_node;
@@ -371,7 +371,7 @@ fn get_dbedge(kmer: &u64, kmer_counts: &FxHashMap<u64, u64>, k: &usize) -> DBEdg
     }
 }
 
-fn would_form_cycle(graph: &Graph<DBNode, DBEdge>, parent: NodeIndex, child: NodeIndex) -> bool {
+fn would_form_cycle(graph: &StableDiGraph<DBNode, DBEdge>, parent: NodeIndex, child: NodeIndex) -> bool {
     // If there's a path from the `child` to `parent`, adding an edge from `parent` to `child` would create a cycle
     let mut bfs = Bfs::new(graph, child);
     while let Some(node) = bfs.next(graph) {
@@ -382,7 +382,7 @@ fn would_form_cycle(graph: &Graph<DBNode, DBEdge>, parent: NodeIndex, child: Nod
     false
 }
 
-fn get_start_nodes(graph: &Graph<DBNode, DBEdge>) -> Vec<NodeIndex> {
+fn get_start_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
     let mut nodes: Vec<NodeIndex> = Vec::new();
     for node in graph.node_indices() {
         if graph[node].is_start {
@@ -392,7 +392,7 @@ fn get_start_nodes(graph: &Graph<DBNode, DBEdge>) -> Vec<NodeIndex> {
     nodes
 }
 
-fn get_end_nodes(graph: &Graph<DBNode, DBEdge>) -> Vec<NodeIndex> {
+fn get_end_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
     let mut nodes: Vec<NodeIndex> = Vec::new();
     for node in graph.node_indices() {
         if graph[node].is_end {
@@ -403,7 +403,7 @@ fn get_end_nodes(graph: &Graph<DBNode, DBEdge>) -> Vec<NodeIndex> {
 }
 
 // Find the number of descendants of a node, each descendent no more than `depth` edges away
-fn descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex, depth: usize) -> HashSet<NodeIndex> {
+fn descendants(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex, depth: usize) -> HashSet<NodeIndex> {
     let mut visited = vec![false; graph.node_count()];
     let mut queue = VecDeque::new();
 
@@ -433,7 +433,7 @@ fn descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex, depth: usize) -> 
 }
 
 // Get all descendants of a node in a directed graph
-fn get_descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex) -> Vec<NodeIndex> {
+fn get_descendants(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex) -> Vec<NodeIndex> {
     let mut visited = HashSet::new();
     let mut stack = vec![node];
     visited.insert(node); // mark the original node as visited
@@ -453,7 +453,7 @@ fn get_descendants(graph: &Graph<DBNode, DBEdge>, node: NodeIndex) -> Vec<NodeIn
     visited.into_iter().collect()
 }
 
-fn pop_balloons(graph: &mut Graph<DBNode, DBEdge>, k: &usize) {
+fn pop_balloons(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize, verbosity: usize) {
     let mut to_clip: Vec<NodeIndex> = Vec::new();
     for node in graph.node_indices() {
         let d = descendants(&graph, node, EXTENSION_EVALUATION_DEPTH);
@@ -484,6 +484,15 @@ fn pop_balloons(graph: &mut Graph<DBNode, DBEdge>, k: &usize) {
             > 4_usize.pow((EXTENSION_EVALUATION_DEPTH - EXTENSION_EVALUATION_DIFF) as u32)
         {
             to_clip.push(node);
+            if verbosity > 1 {
+                println!(
+                    "  Node {} with sequence {} has {} descendants at a depth of {}, descendents will be clipped",
+                    node.index(),
+                    crate::kmer::kmer_to_seq(&graph[node].sub_kmer, &(*k - 1)),
+                    n,
+                    EXTENSION_EVALUATION_DEPTH
+                );
+            }
         }
     }
 
@@ -522,13 +531,13 @@ fn pop_balloons(graph: &mut Graph<DBNode, DBEdge>, k: &usize) {
 }
 
 
-fn summarize_extension(graph: &Graph<DBNode, DBEdge>, pad: &str) {
+fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     // Print the number of nodes and edges in the graph
     println!("{}There are {} nodes in the graph", pad, graph.node_count());
     println!("{}There are {} edges in the graph", pad, graph.edge_count());
 
-    let n_components = connected_components(graph);
-    println!("{}There are {} components in the graph", pad, n_components);
+    //let n_components = connected_components(graph);
+    //println!("{}There are {} components in the graph", pad, n_components);
 
     let has_cycles = is_cyclic_directed(graph);
     if has_cycles {
@@ -861,7 +870,7 @@ pub fn do_pcr(
 
     // Construct the graph
     println!("Creating graph, seeding with nodes that contain primer matches...");
-    let mut graph: Graph<DBNode, DBEdge, Directed> = Graph::new();
+    let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
 
     // Create a hash set of the keys of kmer_counts
     let kmers: std::collections::HashSet<u64> = kmer_counts.keys().copied().collect();
@@ -981,7 +990,7 @@ pub fn do_pcr(
 
         // Periodically evaluate extension
         // After pruning, n_nodes can be less than last_check and there will be an overflow on subtracting
-        if (n_nodes > last_check) & ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
+        if (n_nodes > last_check) && ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
             last_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
 
             println!("  Evaluating extension:");
@@ -991,12 +1000,13 @@ pub fn do_pcr(
             // slower and slower because there are so many growing tips. This may be due to a sequencing
             // adapter becoming integrated into the graph, for example. So periodically check for a region
             // of high degree and prune it if found
-            pop_balloons(&mut graph, &k);
+            pop_balloons(&mut graph, &k, verbosity);
  
         }
 
         // Iterate over the nodes
-        for node in graph.node_indices() {
+        let node_indices: Vec<_> = graph.node_indices().collect();
+        for node in node_indices {
             if !(graph[node].visited) {
                 // Get the suffix of the kmer of the node
                 let sub_kmer = graph[node].sub_kmer;
@@ -1276,8 +1286,8 @@ pub fn do_pcr(
     println!("  There are {} start nodes", get_start_nodes(&graph).len());
     println!("  There are {} end nodes", get_end_nodes(&graph).len());
 
-    let n_components = connected_components(&graph);
-    println!("  There are {} components in the graph", n_components);
+    //let n_components = connected_components(&graph);
+    //println!("  There are {} components in the graph", n_components);
     println!("done.  Time to prune graph: {:?}", start.elapsed());
 
     // Get all paths from start nodes to terminal nodes
@@ -1287,7 +1297,7 @@ pub fn do_pcr(
 
     for start in get_start_nodes(&graph) {
         for end in get_end_nodes(&graph) {
-            let paths_for_this_pair = all_simple_paths::<Vec<NodeIndex>, &Graph<DBNode, DBEdge>>(
+            let paths_for_this_pair = all_simple_paths::<Vec<NodeIndex>, &StableDiGraph<DBNode, DBEdge>>(
                 &graph,
                 start,
                 end,
@@ -1453,7 +1463,7 @@ mod tests {
 
     // Create a test graph of known structure
     fn create_test_graph() -> (Graph<DBNode, DBEdge, Directed>, HashMap<&'static str, NodeIndex>) {
-        let mut graph: Graph<DBNode, DBEdge, Directed> = Graph::new();
+        let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
         let mut nodes = HashMap::new();
 
         // Add nodes and store their indices in the HashMap
@@ -1500,6 +1510,18 @@ mod tests {
         graph.add_edge(nodes["c"], nodes["e"], DBEdge { _kmer: 13, count: 1 });
 
         (graph, nodes)
+    }
+
+    #[test]
+    fn test_get_descendants() {
+        let (graph, nodes) = create_test_graph();
+
+        // Testing using the node indices from the HashMap
+        assert_eq!(get_descendants(&graph, nodes["a"]).len(), 4);
+        assert_eq!(get_descendants(&graph, nodes["b"]).len(), 3);
+        assert_eq!(get_descendants(&graph, nodes["c"]).len(), 2);
+        assert_eq!(get_descendants(&graph, nodes["d"]).len(), 0);
+        assert_eq!(get_descendants(&graph, nodes["e"]).len(), 0);
     }
 
     #[test]
