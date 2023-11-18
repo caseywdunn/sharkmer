@@ -1,11 +1,10 @@
 use bio::alignment::distance::simd::*;
 use bio::io::fasta;
 use colored::*;
-use petgraph::algo::{all_simple_paths, connected_components, is_cyclic_directed};
-use petgraph::graph::{NodeIndex, self};
+use petgraph::algo::{all_simple_paths, is_cyclic_directed};
+use petgraph::graph::{NodeIndex};
 use petgraph::visit::Bfs;
 use petgraph::Direction;
-use petgraph::Directed;
 use petgraph::stable_graph::{StableDiGraph};
 use rustc_hash::FxHashMap;
 use std::collections::HashMap;
@@ -538,9 +537,6 @@ fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     // Print the number of nodes and edges in the graph
     println!("{}There are {} nodes in the graph", pad, graph.node_count());
     println!("{}There are {} edges in the graph", pad, graph.edge_count());
-
-    //let n_components = connected_components(graph);
-    //println!("{}There are {} components in the graph", pad, n_components);
 
     let has_cycles = is_cyclic_directed(graph);
     if has_cycles {
@@ -1342,8 +1338,6 @@ pub fn do_pcr(
     println!("  There are {} start nodes", get_start_nodes(&graph).len());
     println!("  There are {} end nodes", get_end_nodes(&graph).len());
 
-    //let n_components = connected_components(&graph);
-    //println!("  There are {} components in the graph", n_components);
     println!("done.  Time to prune graph: {:?}", start.elapsed());
 
     // Get all paths from start nodes to terminal nodes
@@ -1560,9 +1554,9 @@ mod tests {
         }));
 
         // Add directed edges
-        graph.add_edge(nodes["a"], nodes["b"], DBEdge { _kmer: 10, count: 1 });
-        graph.add_edge(nodes["b"], nodes["c"], DBEdge { _kmer: 11, count: 1 });
-        graph.add_edge(nodes["c"], nodes["d"], DBEdge { _kmer: 12, count: 1 });
+        graph.add_edge(nodes["a"], nodes["b"], DBEdge { _kmer: 10, count: 5 });
+        graph.add_edge(nodes["b"], nodes["c"], DBEdge { _kmer: 11, count: 10 });
+        graph.add_edge(nodes["c"], nodes["d"], DBEdge { _kmer: 12, count: 4 });
         graph.add_edge(nodes["c"], nodes["e"], DBEdge { _kmer: 13, count: 1 });
 
         (graph, nodes)
