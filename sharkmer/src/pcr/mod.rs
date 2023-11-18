@@ -458,7 +458,7 @@ fn get_descendants(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex) -> Ve
 fn pop_balloons(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize, verbosity: usize) {
     let mut to_clip: Vec<NodeIndex> = Vec::new();
     for node in graph.node_indices() {
-        let d = descendants(&graph, node, EXTENSION_EVALUATION_DEPTH);
+        let d = descendants(graph, node, EXTENSION_EVALUATION_DEPTH);
         let n = d.len();
         // The maximum number of descendants would be 4^EXTENSION_EVALUATION_DEPTH
         if n > 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)
@@ -509,7 +509,7 @@ fn pop_balloons(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize, verbosity:
         // Node may have been removed already, so check if it is in graph
         if graph.node_weight(*node).is_some() {
             // prune away all the descendants of the node, but keep the node
-            let mut descendants = get_descendants(&graph, *node);
+            let mut descendants = get_descendants(graph, *node);
             to_prune.append(&mut descendants);
         }
     }
@@ -836,7 +836,7 @@ pub fn do_pcr(
         );
         println!(
             "{}",
-            format!("  Suggested action: optimize primer sequence.").color(COLOR_FAIL)
+            "  Suggested action: optimize primer sequence.".to_string().color(COLOR_FAIL)
         );
         let records: Vec<fasta::Record> = Vec::new();
         return records;
@@ -853,7 +853,7 @@ pub fn do_pcr(
         );
         println!(
             "{}",
-            format!("  Suggested action: optimize primer sequence.").color(COLOR_FAIL)
+            "  Suggested action: optimize primer sequence.".to_string().color(COLOR_FAIL)
         );
         let records: Vec<fasta::Record> = Vec::new();
         return records;
@@ -1031,7 +1031,7 @@ pub fn do_pcr(
             // slower and slower because there are so many growing tips. This may be due to a sequencing
             // adapter becoming integrated into the graph, for example. So periodically check for a region
             // of high degree and prune it if found
-            pop_balloons(&mut graph, &k, verbosity);
+            pop_balloons(&mut graph, k, verbosity);
  
         }
 
@@ -1146,7 +1146,7 @@ pub fn do_pcr(
                                     edge_count,
                                     BALLOONING_COUNT_THRESHOLD_MULTIPLIER,
                                     edge_count_summary,
-                                    crate::kmer::kmer_to_seq(kmer, &k),
+                                    crate::kmer::kmer_to_seq(kmer, k),
                                     crate::kmer::kmer_to_seq(&suffix, &(*k - 1))
                                 );
                                 std::io::stdout().flush().unwrap();
