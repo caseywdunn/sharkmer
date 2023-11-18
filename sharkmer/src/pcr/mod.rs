@@ -688,6 +688,11 @@ fn get_kmers_from_primers(
 /// If there are less than MAX_NUM_PRIMER_KMERS, retain all of them
 /// Returns a hash map of the kmers and their counts
 fn filter_primer_kmers(matches: FxHashMap<u64, u64>, k: &usize) -> FxHashMap<u64, u64> {
+
+    if matches.is_empty() {
+        return matches;
+    }
+
     let mut counts: Vec<u64> = Vec::new();
     for count in matches.values() {
         counts.push(*count);
