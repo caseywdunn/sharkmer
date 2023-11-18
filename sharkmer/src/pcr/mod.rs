@@ -42,6 +42,10 @@ const EXTENSION_EVALUATION_DIFF: usize = 1;
 /// Edit threshold for https://docs.rs/bio/latest/bio/alignment/distance/simd/fn.bounded_levenshtein.html
 const DISTANCE_EDIT_THRESHOLD: u32 = 10;
 
+/// If an edges count has more than BALLOONING_COUNT_THRESHOLD_MULTIPLIER * median_edge_count, it is 
+/// likely going to balloon and is not added to the graph
+const BALLOONING_COUNT_THRESHOLD_MULTIPLIER: f64 = 10.0;
+
 struct AssemblyRecord {
     fasta_record: fasta::Record,
     kmer_min_count: u64,
@@ -742,6 +746,20 @@ fn get_max_count(kmer_counts: &FxHashMap<u64, u64>) -> u64 {
     max_count
 }
 
+fn get_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64> {
+    let mut counts: Vec<u64> = Vec::new();
+    for edge in graph.edge_indices() {
+        counts.push(graph[edge].count);
+    }
+
+    if counts.is_empty() {
+        return None;
+    }
+
+    let median_edge_count = compute_median(&counts);
+    Some(median_edge_count)
+}
+
 // The primary function for PCR
 pub struct PCRParams {
     pub forward_seq: String,
@@ -989,6 +1007,12 @@ pub fn do_pcr(
 
         let n_nodes = graph.node_count();
 
+        // Get the median edge count, or min_count if there are no edges
+        let edge_count_summary:f64 = match get_median_edge_count(&graph) {
+            Some(count) => count,
+            None => min_count as f64,
+        };
+
         // Periodically evaluate extension
         // After pruning, n_nodes can be less than last_check and there will be an overflow on subtracting
         if (n_nodes > last_check) && ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
@@ -1102,6 +1126,25 @@ pub fn do_pcr(
                     }
 
                     if !node_exists {
+                        let edge = get_dbedge(kmer, &kmer_counts, k);
+                        let edge_count = edge.count;
+
+                        // Don't add node and edge if the edge count is very high
+                        if (edge_count as f64) > (edge_count_summary * BALLOONING_COUNT_THRESHOLD_MULTIPLIER) {
+                            if verbosity > 1 {
+                                print!(
+                                    "Edge count {} exceeds {} * median edge count {}. Not adding edge with kmer {} or node with sub_kmer {}. ",
+                                    edge_count,
+                                    BALLOONING_COUNT_THRESHOLD_MULTIPLIER,
+                                    edge_count_summary,
+                                    crate::kmer::kmer_to_seq(kmer, &k),
+                                    crate::kmer::kmer_to_seq(&suffix, &(*k - 1))
+                                );
+                                std::io::stdout().flush().unwrap();
+                            }
+                            continue;
+                        }
+
                         let new_node = graph.add_node(DBNode {
                             sub_kmer: suffix,
                             is_start: false,
@@ -1109,8 +1152,7 @@ pub fn do_pcr(
                             is_terminal: false,
                             visited: false,
                         });
-                        let edge = get_dbedge(kmer, &kmer_counts, k);
-                        let edge_count = edge.count;
+                        
                         graph.add_edge(node, new_node, edge);
                         let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
                         if outgoing > 4 {
