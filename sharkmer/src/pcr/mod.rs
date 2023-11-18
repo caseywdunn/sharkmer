@@ -404,14 +404,13 @@ fn get_end_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
 
 // Find the number of descendants of a node, each descendent no more than `depth` edges away
 fn descendants(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex, depth: usize) -> HashSet<NodeIndex> {
-    let mut visited = vec![false; graph.node_count()];
+    let mut visited: HashSet<NodeIndex> = HashSet::new();
     let mut queue = VecDeque::new();
 
     queue.push_back((node, 0));
-    visited[node.index()] = true;
+    visited.insert(node);
 
-    let mut n_descendants = 0;
-    let mut descendants: Vec<NodeIndex> = Vec::new();
+    let mut descendants: HashSet<NodeIndex> = HashSet::new();
 
     while let Some((current_node, current_depth)) = queue.pop_front() {
         if current_depth >= depth {
@@ -419,17 +418,14 @@ fn descendants(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex, depth: us
         }
 
         for neighbor in graph.neighbors(current_node) {
-            if !visited[neighbor.index()] {
-                n_descendants += 1;
-                descendants.push(neighbor);
-                visited[neighbor.index()] = true;
+            if visited.insert(neighbor) { // insert returns false if the item was already in the set
+                descendants.insert(neighbor);
                 queue.push_back((neighbor, current_depth + 1));
             }
         }
     }
 
-    let descendants_set = descendants.into_iter().collect::<HashSet<_>>();
-    descendants_set
+    descendants
 }
 
 // Get all descendants of a node in a directed graph
