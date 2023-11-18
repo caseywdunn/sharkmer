@@ -2,10 +2,10 @@ use bio::alignment::distance::simd::*;
 use bio::io::fasta;
 use colored::*;
 use petgraph::algo::{all_simple_paths, is_cyclic_directed};
-use petgraph::graph::{NodeIndex};
+use petgraph::graph::NodeIndex;
+use petgraph::stable_graph::StableDiGraph;
 use petgraph::visit::Bfs;
 use petgraph::Direction;
-use petgraph::stable_graph::{StableDiGraph};
 use rustc_hash::FxHashMap;
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -41,7 +41,7 @@ const EXTENSION_EVALUATION_DIFF: usize = 1;
 /// Edit threshold for https://docs.rs/bio/latest/bio/alignment/distance/simd/fn.bounded_levenshtein.html
 const DISTANCE_EDIT_THRESHOLD: u32 = 10;
 
-/// If an edges count has more than BALLOONING_COUNT_THRESHOLD_MULTIPLIER * median_edge_count, it is 
+/// If an edges count has more than BALLOONING_COUNT_THRESHOLD_MULTIPLIER * median_edge_count, it is
 /// likely going to balloon and is not added to the graph
 const BALLOONING_COUNT_THRESHOLD_MULTIPLIER: f64 = 10.0;
 
@@ -377,7 +377,11 @@ fn get_dbedge(kmer: &u64, kmer_counts: &FxHashMap<u64, u64>, k: &usize) -> DBEdg
     }
 }
 
-fn would_form_cycle(graph: &StableDiGraph<DBNode, DBEdge>, parent: NodeIndex, child: NodeIndex) -> bool {
+fn would_form_cycle(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    parent: NodeIndex,
+    child: NodeIndex,
+) -> bool {
     // If there's a path from the `child` to `parent`, adding an edge from `parent` to `child` would create a cycle
     let mut bfs = Bfs::new(graph, child);
     while let Some(node) = bfs.next(graph) {
@@ -409,7 +413,11 @@ fn get_end_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
 }
 
 // Find the number of descendants of a node, each descendent no more than `depth` edges away
-fn descendants(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex, depth: usize) -> HashSet<NodeIndex> {
+fn descendants(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    node: NodeIndex,
+    depth: usize,
+) -> HashSet<NodeIndex> {
     let mut visited: HashSet<NodeIndex> = HashSet::new();
     let mut queue = VecDeque::new();
 
@@ -424,7 +432,8 @@ fn descendants(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex, depth: us
         }
 
         for neighbor in graph.neighbors(current_node) {
-            if visited.insert(neighbor) { // insert returns false if the item was already in the set
+            if visited.insert(neighbor) {
+                // insert returns false if the item was already in the set
                 descendants.insert(neighbor);
                 queue.push_back((neighbor, current_depth + 1));
             }
@@ -461,12 +470,8 @@ fn pop_balloons(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize, verbosity:
         let d = descendants(graph, node, EXTENSION_EVALUATION_DEPTH);
         let n = d.len();
         // The maximum number of descendants would be 4^EXTENSION_EVALUATION_DEPTH
-        if n > 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)
-        {
-            let seq = crate::kmer::kmer_to_seq(
-                &graph[node].sub_kmer,
-                &(*k - 1),
-            );
+        if n > 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32) {
+            let seq = crate::kmer::kmer_to_seq(&graph[node].sub_kmer, &(*k - 1));
             println!("{}", format!("WARNING: Node {} with sequence {} has {} descendants at a depth of {}. This exceed the maximum of 4^{}={} that is expected", node.index(), seq, n, EXTENSION_EVALUATION_DEPTH, EXTENSION_EVALUATION_DEPTH, 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)).color(COLOR_WARNING));
             // println!("  Descendants: {:?}", d);
 
@@ -482,9 +487,7 @@ fn pop_balloons(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize, verbosity:
             println!("  Sequences: {:?}", seqs);
         }
 
-        if n
-            > 4_usize.pow((EXTENSION_EVALUATION_DEPTH - EXTENSION_EVALUATION_DIFF) as u32)
-        {
+        if n > 4_usize.pow((EXTENSION_EVALUATION_DEPTH - EXTENSION_EVALUATION_DIFF) as u32) {
             to_clip.push(node);
             if verbosity > 1 {
                 println!(
@@ -531,7 +534,6 @@ fn pop_balloons(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize, verbosity:
         graph.remove_node(node);
     }
 }
-
 
 fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     // Print the number of nodes and edges in the graph
@@ -691,7 +693,6 @@ fn get_kmers_from_primers(
 /// If there are less than MAX_NUM_PRIMER_KMERS, retain all of them
 /// Returns a hash map of the kmers and their counts
 fn filter_primer_kmers(matches: FxHashMap<u64, u64>, k: &usize) -> FxHashMap<u64, u64> {
-
     if matches.is_empty() {
         return matches;
     }
@@ -836,7 +837,9 @@ pub fn do_pcr(
         );
         println!(
             "{}",
-            "  Suggested action: optimize primer sequence.".to_string().color(COLOR_FAIL)
+            "  Suggested action: optimize primer sequence."
+                .to_string()
+                .color(COLOR_FAIL)
         );
         let records: Vec<fasta::Record> = Vec::new();
         return records;
@@ -853,7 +856,9 @@ pub fn do_pcr(
         );
         println!(
             "{}",
-            "  Suggested action: optimize primer sequence.".to_string().color(COLOR_FAIL)
+            "  Suggested action: optimize primer sequence."
+                .to_string()
+                .color(COLOR_FAIL)
         );
         let records: Vec<fasta::Record> = Vec::new();
         return records;
@@ -955,9 +960,13 @@ pub fn do_pcr(
     // If so, print a warning
     for node in graph.node_indices() {
         if graph[node].is_start && graph[node].is_end {
-            println!("{}",
-                format! ("WARNING: node {} is both a start and end node",
-                node.index()).color(COLOR_WARNING)
+            println!(
+                "{}",
+                format!(
+                    "WARNING: node {} is both a start and end node",
+                    node.index()
+                )
+                .color(COLOR_WARNING)
             );
         }
     }
@@ -1003,7 +1012,6 @@ pub fn do_pcr(
 
     let mut last_check: usize = 0;
     while n_unvisited_nodes_in_graph(&graph) > 0 {
-
         let n_nodes = graph.node_count();
 
         if n_nodes > MAX_NUM_NODES {
@@ -1014,7 +1022,7 @@ pub fn do_pcr(
         }
 
         // Get the median edge count, or min_count if there are no edges
-        let edge_count_summary:f64 = match get_median_edge_count(&graph) {
+        let edge_count_summary: f64 = match get_median_edge_count(&graph) {
             Some(count) => count,
             None => min_count as f64,
         };
@@ -1032,7 +1040,6 @@ pub fn do_pcr(
             // adapter becoming integrated into the graph, for example. So periodically check for a region
             // of high degree and prune it if found
             pop_balloons(&mut graph, k, verbosity);
- 
         }
 
         // Iterate over the nodes
@@ -1057,7 +1064,7 @@ pub fn do_pcr(
                 for base in 0..4 {
                     let kmer = (sub_kmer << 2) | base;
                     candidate_kmers.insert(kmer);
-                } 
+                }
 
                 // Retain only the candidate kmers that are in the kmers hash
                 candidate_kmers.retain(|kmer| kmers.contains(kmer));
@@ -1111,7 +1118,8 @@ pub fn do_pcr(
                                 if graph[existing_node].is_end {
                                     println!("End node incorporated into graph, complete PCR product found.");
                                 }
-                                let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
+                                let outgoing =
+                                    graph.neighbors_directed(node, Direction::Outgoing).count();
                                 if outgoing > 4 {
                                     println!("{}",
                                         format!("WARNING: Node {} has {} outgoing edges. This exceed the maximum of 4 that is expected", node.index(), outgoing).color(COLOR_WARNING)
@@ -1139,7 +1147,9 @@ pub fn do_pcr(
                         let edge_count = edge.count;
 
                         // Don't add node and edge if the edge count is very high
-                        if (edge_count as f64) > (edge_count_summary * BALLOONING_COUNT_THRESHOLD_MULTIPLIER) {
+                        if (edge_count as f64)
+                            > (edge_count_summary * BALLOONING_COUNT_THRESHOLD_MULTIPLIER)
+                        {
                             if verbosity > 1 {
                                 print!(
                                     "Edge count {} exceeds {} * median edge count {}. Not adding edge with kmer {} or node with sub_kmer {}. ",
@@ -1161,7 +1171,7 @@ pub fn do_pcr(
                             is_terminal: false,
                             visited: false,
                         });
-                        
+
                         graph.add_edge(node, new_node, edge);
                         let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
                         if outgoing > 4 {
@@ -1347,12 +1357,11 @@ pub fn do_pcr(
 
     for start in get_start_nodes(&graph) {
         for end in get_end_nodes(&graph) {
-            let paths_for_this_pair = all_simple_paths::<Vec<NodeIndex>, &StableDiGraph<DBNode, DBEdge>>(
-                &graph,
-                start,
-                end,
-                1,
-                Some(params.max_length - (*k) + 1),
+            let paths_for_this_pair = all_simple_paths::<
+                Vec<NodeIndex>,
+                &StableDiGraph<DBNode, DBEdge>,
+            >(
+                &graph, start, end, 1, Some(params.max_length - (*k) + 1)
             );
 
             all_paths.extend(paths_for_this_pair);
@@ -1512,52 +1521,98 @@ mod tests {
     }
 
     // Create a test graph of known structure
-    fn create_test_graph() -> (StableDiGraph<DBNode, DBEdge>, HashMap<&'static str, NodeIndex>) {
+    fn create_test_graph() -> (
+        StableDiGraph<DBNode, DBEdge>,
+        HashMap<&'static str, NodeIndex>,
+    ) {
         let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
         let mut nodes = HashMap::new();
 
         // Add nodes and store their indices in the HashMap
-        nodes.insert("a", graph.add_node(DBNode {
-            sub_kmer: 0,
-            is_start: false,
-            is_end: false,
-            is_terminal: false,
-            visited: false,
-        }));
-        nodes.insert("b", graph.add_node(DBNode {
-            sub_kmer: 1,
-            is_start: false,
-            is_end: false,
-            is_terminal: false,
-            visited: false,
-        }));
-        nodes.insert("c", graph.add_node(DBNode {
-            sub_kmer: 2,
-            is_start: false,
-            is_end: false,
-            is_terminal: false,
-            visited: false,
-        }));
-        nodes.insert("d", graph.add_node(DBNode {
-            sub_kmer: 3,
-            is_start: false,
-            is_end: false,
-            is_terminal: false,
-            visited: false,
-        }));
-        nodes.insert("e", graph.add_node(DBNode {
-            sub_kmer: 4,
-            is_start: false,
-            is_end: false,
-            is_terminal: false,
-            visited: false,
-        }));
+        nodes.insert(
+            "a",
+            graph.add_node(DBNode {
+                sub_kmer: 0,
+                is_start: false,
+                is_end: false,
+                is_terminal: false,
+                visited: false,
+            }),
+        );
+        nodes.insert(
+            "b",
+            graph.add_node(DBNode {
+                sub_kmer: 1,
+                is_start: false,
+                is_end: false,
+                is_terminal: false,
+                visited: false,
+            }),
+        );
+        nodes.insert(
+            "c",
+            graph.add_node(DBNode {
+                sub_kmer: 2,
+                is_start: false,
+                is_end: false,
+                is_terminal: false,
+                visited: false,
+            }),
+        );
+        nodes.insert(
+            "d",
+            graph.add_node(DBNode {
+                sub_kmer: 3,
+                is_start: false,
+                is_end: false,
+                is_terminal: false,
+                visited: false,
+            }),
+        );
+        nodes.insert(
+            "e",
+            graph.add_node(DBNode {
+                sub_kmer: 4,
+                is_start: false,
+                is_end: false,
+                is_terminal: false,
+                visited: false,
+            }),
+        );
 
         // Add directed edges
-        graph.add_edge(nodes["a"], nodes["b"], DBEdge { _kmer: 10, count: 5 });
-        graph.add_edge(nodes["b"], nodes["c"], DBEdge { _kmer: 11, count: 10 });
-        graph.add_edge(nodes["c"], nodes["d"], DBEdge { _kmer: 12, count: 4 });
-        graph.add_edge(nodes["c"], nodes["e"], DBEdge { _kmer: 13, count: 1 });
+        graph.add_edge(
+            nodes["a"],
+            nodes["b"],
+            DBEdge {
+                _kmer: 10,
+                count: 5,
+            },
+        );
+        graph.add_edge(
+            nodes["b"],
+            nodes["c"],
+            DBEdge {
+                _kmer: 11,
+                count: 10,
+            },
+        );
+        graph.add_edge(
+            nodes["c"],
+            nodes["d"],
+            DBEdge {
+                _kmer: 12,
+                count: 4,
+            },
+        );
+        graph.add_edge(
+            nodes["c"],
+            nodes["e"],
+            DBEdge {
+                _kmer: 13,
+                count: 1,
+            },
+        );
 
         (graph, nodes)
     }
