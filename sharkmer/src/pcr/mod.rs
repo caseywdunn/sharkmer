@@ -46,6 +46,9 @@ const DISTANCE_EDIT_THRESHOLD: u32 = 10;
 /// likely going to balloon and is not added to the graph
 const BALLOONING_COUNT_THRESHOLD_MULTIPLIER: f64 = 10.0;
 
+/// Give up if the graph gets too large
+const MAX_NUM_NODES: usize = 100_000;
+
 struct AssemblyRecord {
     fasta_record: fasta::Record,
     kmer_min_count: u64,
@@ -1007,6 +1010,13 @@ pub fn do_pcr(
 
         let n_nodes = graph.node_count();
 
+        if n_nodes > MAX_NUM_NODES {
+            println!("{}",
+                format!("WARNING: There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.", n_nodes, MAX_NUM_NODES).color(COLOR_WARNING)
+            );
+            break;
+        }
+
         // Get the median edge count, or min_count if there are no edges
         let edge_count_summary:f64 = match get_median_edge_count(&graph) {
             Some(count) => count,
@@ -1102,6 +1112,9 @@ pub fn do_pcr(
                             if !would_form_cycle(&graph, node, existing_node) {
                                 let edge = get_dbedge(kmer, &kmer_counts, k);
                                 graph.add_edge(node, existing_node, edge);
+                                if graph[existing_node].is_end {
+                                    println!("End node incorporated into graph, complete PCR product found.");
+                                }
                                 let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
                                 if outgoing > 4 {
                                     println!("{}",
