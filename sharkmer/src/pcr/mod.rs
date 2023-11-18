@@ -1518,7 +1518,7 @@ mod tests {
     }
 
     // Create a test graph of known structure
-    fn create_test_graph() -> (Graph<DBNode, DBEdge, Directed>, HashMap<&'static str, NodeIndex>) {
+    fn create_test_graph() -> (StableDiGraph<DBNode, DBEdge>, HashMap<&'static str, NodeIndex>) {
         let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
         let mut nodes = HashMap::new();
 
