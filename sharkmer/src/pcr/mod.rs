@@ -48,7 +48,7 @@ const DISTANCE_EDIT_THRESHOLD: u32 = 10;
 const BALLOONING_COUNT_THRESHOLD_MULTIPLIER: f64 = 10.0;
 
 /// Give up if the graph gets too large
-const MAX_NUM_NODES: usize = 10_000;
+const MAX_NUM_NODES: usize = 50_000;
 
 struct AssemblyRecord {
     fasta_record: fasta::Record,

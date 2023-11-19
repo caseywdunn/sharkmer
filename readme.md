@@ -1,9 +1,9 @@
-# sharkmer - a kmer counter and analysis tool
+# sharkmer - a kmer analysis tool
 
 Functionalities of sharkmer include:
 
 - Incremental kmer counting. This allows you to run kmers on incrementally larger subsets of your data. Applications include assessing the robustness of genome size estimates to sequencing depth.
-- in silico PCR. This allows you to supply primer pairs and a fastq file, and get a fasta file of the amplicons that would be produced by PCR. This is useful for assembling and isolating particular genes from raw genome skimming data.  
+- *in silico* PCR (sPCR). You supply a fastq file of illumina whole genome reads and sequences for primer pairs, and get a fasta file of the amplicons that would be produced by PCR on the genome. This is useful for assembling and isolating particular genes from raw genome skimming data.  
 
 There are two components to sharkmer:
 
@@ -25,19 +25,15 @@ Here is an overview of how kmer counting works in `sharkmer`:
    and speed at the cost of discarding a small fraction of bases (about 1.3% for 150bp reads). The discarded
    bases are at the ends of reads, which tend to be lower quality anyway.
 2. The order of the subreads is shuffled.
-3. The subreads are broken into `n` chunks of subreads. Within each chunk, kmers in the bloom filter 
-   (ie, kmers that were observed more than once) are counted in a hashmap. This excludes singleton reads,
-   which are abundant and almost all sequencing errors, from counting and greatly reduces the size of these 
-   hashmaps. This improves 
-   RAM and computational performance. The counting of kmers in parallelized across chunks, allowing multiple
-   threads to be used.
+3. The subreads are broken into `n` chunks of subreads. Within each chunk, kmers are counted in a hashmap. 
+   The counting of kmers in parallelized across chunks, allowing multiple threads to be used.
 4. The hashmaps for the `n` chunks are summed one by one, and a histogram is generated after each chunk of 
    counts is added in. This produces `n` histograms, each summarizing more reads than the last.
 
 A few notes:
 
 - The read data must be uncompressed before analysis. No `.fastq.gz` files, just `.fastq`.
-- All the read data are stored in RAM in a compressed integer format. This is a tradeoff that improves speed at the cost of requiring more memory. Every 4 gigabases of sequence reads will need about 1 GB of RAM to store. This means that a 2 gigabase genome with 60x coverage (120 gigabases of reads) will need 30GB of RAM just to store the reads. Additional memory is needed for the hashmaps. For some analyses, such as **in silico PCR**, you can use a small subset of reads and easily run analyses on a laptop.
+- All the read data are stored in RAM in a compressed integer format. This is a tradeoff that improves speed at the cost of requiring more memory. Every 4 gigabases of sequence reads will need about 1 GB of RAM to store. This means that a 2 gigabase genome with 60x coverage (120 gigabases of reads) will need 30GB of RAM just to store the reads. Additional memory is needed for the hashmaps. For some analyses, such as *in silico* PCR, you can use a small subset of reads and easily run analyses on a laptop.
 
 ## Installation
 
@@ -124,7 +120,7 @@ The included `genomemovie.sh` script will generate a movie of the incremental Ge
 
 ### *in silico* PCR (sPCR)
 
-Investigators often want to pull small genome regions out of genome skimming data, for example to blast a commonly sequenced gene to verify that the sample you sequenced is the species you expected. This task is surprisingly challenging in practice, though. You can map reads to known sequences and then collapse them into a sequence prediction, but this does not always work well across species and can miss variable regions. You can assemble all the reads and then pull out the region of interest, but this is computationally expensive and often the region of interest is not assembled well given how shallow skimming data often are.
+Investigators often want to pull small genome regions out of genome skimming data, for example to blast a commonly sequenced gene to verify that the sample is the expected species. This task is surprisingly challenging in practice, though. You can map reads to known sequences and then collapse them into a sequence prediction, but this does not always work well across species and can miss variable regions. You can assemble all the reads and then pull out the region of interest, but this is computationally expensive and often the region of interest is not assembled well given how shallow skimming data often are.
 
 *in silico* PCR (sPCR) is a new alternative approach. You specify a file with raw reads and one or more primer pairs, and sharkmer outputs a fasta file with the sequence of the region that would be amplified by PCR on the genome the reads are derived from. There are multiple advantages to this approach:
 
@@ -154,7 +150,7 @@ Then run sPCR on the downloaded reads by specifying primer pairs with the `--pcr
       --pcr "CCYYAGTAACGGCGAGT_SWACAGATGGTAGCTTCG_4000_28s"  \
       SRR23143278.fastq
 
-The `--pcr` argument passes a string with the format `forward_reverse_max-length_name`.
+The `--pcr` argument passes a string with the format `forward_reverse_max-length_gene-name`. Note that underscores delimit fields. `max-length` should be greater than the expect PCR product size. It indicates the furthest distance from the forward primer that sharkmer should search for a reverse primer.
 
 This analysis will generate one fasta file for each primer pair. These fasta files are named with the argument passed to `--pcr`. If no product was found, the fasta file is not present. The fasta file can contain more than one sequence.
 
@@ -180,10 +176,3 @@ Some common tasks in development:
     cargo fmt
     cargo build # Debug
     cargo build --release
-
-### Docker
-
-Example:
-    cd docker
-    docker build -t shark .
-    docker run -itv /myhome/repos/sharkmer:/sharkmer shark /bin/bash
