@@ -1,12 +1,51 @@
 //! This module provides kmer functions.
-//!
 
 use rustc_hash::FxHashMap;
 
-// Create a structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
+// A structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
 pub struct KmerSummary {
     pub kmer_counts: FxHashMap<u64, u64>,
     pub n_singletons: u64,
+}
+
+/// A structure to hold a read in two bit encoding of bases
+/// * `00` represents `A`
+/// * `01` represents `C`
+/// * `10` represents `G`
+/// * `11` represents `T`
+///
+/// If the length is not divisible by 4, the least significant bits of the last byte will be ignored.
+#[derive(Debug)]
+pub struct Read {
+    pub sequence: Vec<u8>,
+    pub length: usize, // Number of bases in the read
+}
+
+impl Read {
+    pub fn new(sequence: Vec<u8>, length: usize) -> Read {
+        Read { sequence, length }
+    }
+
+    pub fn validate(&self) -> bool {
+        let mut valid = true;
+        if self.length % 4 == 0 {
+            if self.sequence.len() != self.length / 4 {
+                valid = false;
+            }
+        } else {
+            if self.sequence.len() != (self.length / 4 + 1) {
+                valid = false;
+            }
+        }
+
+        valid
+    }
+}
+
+impl PartialEq for Read {
+    fn eq(&self, other: &Self) -> bool {
+        self.sequence == other.sequence && self.length == other.length
+    }
 }
 
 /// Returns the reverse complement of a specified kmer.
@@ -44,7 +83,7 @@ pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
     revcomp
 }
 
-/// Converts a DNA sequence into a vector of integer representations.
+/// Converts a DNA sequence into a vector of Reads (really subreads).
 ///
 /// This function encodes a DNA sequence into a series of 8-bit integers,
 /// where each integer represents 4 consecutive bases from the sequence.
@@ -56,8 +95,8 @@ pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
 /// * `T` -> `11`
 ///
 /// Any sequence containing the base `N` is split into multiple sub-sequences at that point,
-/// and each sub-sequence is encoded separately. The result is a vector of vectors,
-/// with each inner vector holding the integer representation of a sub-sequence.
+/// and each sub-sequence is encoded separately. The result is a vector of Reads,
+/// with each Read holding the integer representation of a sub-sequence.
 ///
 /// # Arguments
 ///
@@ -65,8 +104,8 @@ pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
 ///
 /// # Returns
 ///
-/// A vector of 8-bit integer vectors, where each inner vector represents an encoded
-/// DNA sub-sequence. Sub-sequences are separated by any occurrence of the base `N`.
+/// A vector of Reads, where each inner vector represents an encoded
+/// DNA sub-sequence.
 ///
 /// # Panics
 ///
@@ -76,16 +115,16 @@ pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
 ///
 /// ```rust
 /// let sequence = "ACGTNAGCT";
-/// let encoded = seq_to_ints(&sequence);
-/// // Here, encoded would be a vector containing two inner vectors.
-/// // The first inner vector would represent "ACGT" and the second would represent "AGCT".
+/// let reads = seq_to_ints(&sequence);
 /// ```
-pub fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
-    let mut result: Vec<Vec<u8>> = Vec::new();
-    let mut ints: Vec<u8> = Vec::with_capacity(seq.len() / 4);
+pub fn seq_to_reads(seq: &str) -> Vec<Read> {
+    let mut reads: Vec<Read> = Vec::new();
+    let mut ints: Vec<u8> = Vec::with_capacity(seq.len() / 4 + 1);
     let mut frame: u8 = 0;
     let mut position: usize = 0; // position in the sequence. not including Ns
+    let mut length: usize = 0; // length of the read
     for c in seq.chars() {
+        length += 1;
         let base = match c {
             'A' => 0, // 00
             'C' => 1, // 01
@@ -93,8 +132,10 @@ pub fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
             'T' => 3, // 11
             'N' => {
                 if !ints.is_empty() {
-                    result.push(ints);
-                    ints = Vec::with_capacity(seq.len() / 4);
+                    let read = Read::new(ints, length);
+                    reads.push(read);
+                    length = 0;
+                    ints = Vec::with_capacity(seq.len() / 4 + 1);
                     frame = 0; // Reset frame before starting a new subread
                 }
                 continue;
@@ -111,11 +152,13 @@ pub fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
         }
         position += 1;
     }
-    if !ints.is_empty() || result.is_empty() {
+    if !ints.is_empty() || reads.is_empty() {
         // Don't miss the last part
-        result.push(ints);
+        let read = Read::new(ints, position);
+        reads.push(read);
+        length = 0;
     }
-    result
+    reads
 }
 
 /// Converts a vector of 8-bit integers into a vector of canonical kmers.
@@ -146,9 +189,10 @@ pub fn seq_to_ints(seq: &str) -> Vec<Vec<u8>> {
 /// ```rust
 /// let encoded_sequence: Vec<u8> = /* some encoded sequence */;
 /// let kmer_length: usize = /* desired kmer length */;
-/// let canonical_kmers = ints_to_kmers(&encoded_sequence, &kmer_length);
+/// let canonical_kmers = read_to_kmers(&encoded_sequence, &kmer_length);
 /// ```
-pub fn ints_to_kmers(ints: &Vec<u8>, k: &usize) -> Vec<u64> {
+pub fn read_to_kmers(read: &Read, k: &usize) -> Vec<u64> {
+    let ints = &read.sequence; // TODO: handle case where length is not divisible by 4
     let mut kmers: Vec<u64> = Vec::with_capacity((ints.len() * 4 / k) + 1);
     let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
     let mut revframe: u64 = 0; // read the bits for complement into the least significant end of this integer
@@ -268,26 +312,26 @@ mod tests {
     }
 
     #[test]
-    fn test_seq_to_ints() {
+    fn test_seq_to_reads() {
         // 'A' => 0, // 00
         // 'C' => 1, // 01
         // 'G' => 2, // 10
         // 'T' => 3, // 11
         let seq = "CGTAATGCGGCGA";
-        let expected = vec![vec![0b01101100, 0b00111001, 0b10100110]];
-        let actual = seq_to_ints(seq);
+        let expected = vec![Read::new(vec![0b01101100, 0b00111001, 0b10100110, 0b00000000], 13)];
+        let actual = seq_to_reads(seq);
         assert_eq!(actual, expected);
     }
 
     #[test]
-    fn test_seq_to_ints_n() {
+    fn test_seq_to_reads_n() {
         // 'A' => 0, // 00
         // 'C' => 1, // 01
         // 'G' => 2, // 10
         // 'T' => 3, // 11
         let seq = "CGTANATGCGGCGA";
-        let expected = vec![vec![0b01101100], vec![0b00111001, 0b10100110]];
-        let actual = seq_to_ints(seq);
+        let expected = vec![Read::new(vec![0b01101100], 4), Read::new(vec![0b00111001, 0b10100110, 0b00000000], 9)];
+        let actual = seq_to_reads(seq);
         assert_eq!(actual, expected);
     }
 
@@ -313,8 +357,9 @@ mod tests {
     }
 
     #[test]
-    fn test_ints_to_kmers() {
+    fn test_read_to_kmers() {
         let ints = vec![0b01101100, 0b00111001, 0b10100110];
+        let read = Read::new(ints, 12);
         // original	                // reverse complement
         // 0b01101100_00111001_10   0b01_10010011_11000110  >
         // 0b101100_00111001_1010   0b0101_10010011_110001  >
@@ -325,9 +370,9 @@ mod tests {
             0b01_1001_0011_1100_0110,
             0b01_0110_0100_1111_0001,
             0b10_0101_1001_0011_1100,
-            0b00_0011_1001_1010_0110,
+            0b00_0011_1001_1010_0110, 
         ];
-        let actual = ints_to_kmers(&ints, &9usize);
+        let actual = read_to_kmers(&read, &9usize);
         assert_eq!(actual, expected);
     }
 

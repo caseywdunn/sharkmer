@@ -202,6 +202,7 @@ struct Args {
     #[arg(long, default_value_t = 0)]
     verbosity: usize,
 }
+
 fn main() {
     let start_run = std::time::Instant::now();
 
@@ -276,7 +277,7 @@ fn main() {
     let start = std::time::Instant::now();
     print!("Ingesting reads...");
     std::io::stdout().flush().unwrap();
-    let mut reads: Vec<Vec<u8>> = Vec::new();
+    let mut reads: Vec<kmer::Read> = Vec::new();
     let mut n_reads_read = 0;
     let mut n_bases_read = 0;
 
@@ -296,8 +297,8 @@ fn main() {
                         // This is a sequence line
                         let line = line.unwrap();
                         n_bases_read += line.len();
-                        let ints = kmer::seq_to_ints(&line);
-                        reads.extend(ints);
+                        let new_reads = kmer::seq_to_reads(&line);
+                        reads.extend(new_reads);
                         n_reads_read += 1;
                     }
                     if args.max_reads > 0 && n_reads_read >= args.max_reads as usize {
@@ -321,8 +322,8 @@ fn main() {
                     // This is a sequence line
                     let line = line.unwrap();
                     n_bases_read += line.len();
-                    let ints = kmer::seq_to_ints(&line);
-                    reads.extend(ints);
+                    let new_reads = kmer::seq_to_reads(&line);
+                    reads.extend(new_reads);
                     n_reads_read += 1;
                 }
                 if args.max_reads > 0 && n_reads_read >= args.max_reads as usize {
@@ -333,7 +334,7 @@ fn main() {
     }
 
     println!(" done");
-    let n_bases_ingested = reads.iter().map(|x| x.len()).sum::<usize>() * 4;
+    let n_bases_ingested = reads.iter().map(|x| x.length).sum::<usize>();
 
     // Print some stats
     println!("  Read {} reads", n_reads_read);
@@ -373,7 +374,7 @@ fn main() {
             let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
 
             for read in reads[start..end].iter() {
-                let kmers = kmer::ints_to_kmers(read, &k);
+                let kmers = kmer::read_to_kmers(read, &k);
                 for kmer in kmers {
                     let count = kmer_counts.entry(kmer).or_insert(0);
                     *count += 1;
