@@ -186,7 +186,7 @@ pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
 pub fn seq_to_reads(seq: &str) -> Vec<Read> {
     let mut reads: Vec<Read> = Vec::new();
     let mut ints: Vec<u8> = Vec::with_capacity(seq.len() / 4 + 1);
-    let mut frame: u8 = 0;
+    let mut frame: u8 = 0; // The current 8-bit integer being constructed
     let mut position: usize = 0; // position in the sequence. not including Ns
     let mut length: usize = 0; // length of the read
     for c in seq.chars() {
@@ -198,11 +198,22 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
             'T' => 3, // 11
             'N' => {
                 if !ints.is_empty() {
+                    // Check if there is anything left in the frame,
+                    // if so shift it left to the most significan bits and push it to the vector
+                    let modulo = (position + 1) % 4;
+                    if modulo != 0 {
+                        let shift = 2 * (4 - modulo);
+                        frame = frame << shift;
+                        ints.push(frame);
+                    }
+
+                    // Create and push the read to the vector
                     let read = Read::new(ints, length);
                     reads.push(read);
                     length = 0;
                     ints = Vec::with_capacity(seq.len() / 4 + 1);
                     frame = 0; // Reset frame before starting a new subread
+                    position = 0;
                 }
                 continue;
             }
@@ -219,7 +230,16 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
         position += 1;
     }
     if !ints.is_empty() || reads.is_empty() {
-        // Don't miss the last part
+        // Check if there is anything left in the frame,
+        // if so shift it left to the most significan bits and push it to the vector
+        let modulo = (position + 1) % 4;
+        if modulo != 0 {
+            let shift = 2 * (4 - modulo);
+            frame = frame << shift;
+            ints.push(frame);
+        }
+
+        // Create and push the read to the vector
         let read = Read::new(ints, position);
         reads.push(read);
         length = 0;
