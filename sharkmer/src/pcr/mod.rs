@@ -4,7 +4,7 @@ use colored::*;
 use petgraph::algo::{all_simple_paths, is_cyclic_directed};
 use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
-use petgraph::visit::{IntoEdgeReferences, EdgeRef, Bfs};
+use petgraph::visit::{EdgeRef, Bfs};
 use petgraph::Direction;
 use petgraph::dot::{Dot, Config};
 use rustc_hash::FxHashMap;
@@ -14,7 +14,6 @@ use std::collections::VecDeque;
 use std::io::Write;
 use std::fs::File;
 
-use crate::kmer::*;
 use crate::COLOR_FAIL;
 use crate::COLOR_NOTE;
 use crate::COLOR_SUCCESS;
@@ -856,7 +855,7 @@ pub fn do_pcr(
     for (kmer, count) in kmer_counts_map {
         if count >= &params.coverage {
             kmer_counts.insert(*kmer, *count);
-            kmer_counts.insert(revcomp_kmer(kmer, k), *count);
+            kmer_counts.insert(crate::kmer::revcomp_kmer(kmer, k), *count);
             n_unique_kmers += 1;
         }
     }

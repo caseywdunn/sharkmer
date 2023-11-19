@@ -181,7 +181,7 @@ pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
 ///
 /// ```rust
 /// let sequence = "ACGTNAGCT";
-/// let reads = seq_to_ints(&sequence);
+/// let reads = seq_to_reads(&sequence);
 /// ```
 pub fn seq_to_reads(seq: &str) -> Vec<Read> {
     let mut reads: Vec<Read> = Vec::new();
@@ -200,7 +200,7 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
                 if !ints.is_empty() {
                     // Check if there is anything left in the frame,
                     // if so shift it left to the most significan bits and push it to the vector
-                    let modulo = (position + 1) % 4;
+                    let modulo = position % 4;
                     if modulo != 0 {
                         let shift = 2 * (4 - modulo);
                         frame = frame << shift;
@@ -208,7 +208,7 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
                     }
 
                     // Create and push the read to the vector
-                    let read = Read::new(ints, length);
+                    let read = Read::new(ints, length-1); // Don't count this N in the length
                     reads.push(read);
                     length = 0;
                     ints = Vec::with_capacity(seq.len() / 4 + 1);
@@ -232,7 +232,7 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
     if !ints.is_empty() || reads.is_empty() {
         // Check if there is anything left in the frame,
         // if so shift it left to the most significan bits and push it to the vector
-        let modulo = (position + 1) % 4;
+        let modulo = position % 4;
         if modulo != 0 {
             let shift = 2 * (4 - modulo);
             frame = frame << shift;
@@ -242,7 +242,6 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
         // Create and push the read to the vector
         let read = Read::new(ints, position);
         reads.push(read);
-        length = 0;
     }
     reads
 }
@@ -331,6 +330,18 @@ mod tests {
     #[test]
     fn test_tests() {
         assert_eq!(2 + 2, 4);
+    }
+
+    #[test]
+    fn test_read_validate() {
+        let good_read = Read::new(vec![0b01101100, 0b00111001, 0b10100110, 0b00000000], 13);
+        assert!(good_read.validate());
+
+        let bad_read1 = Read::new(vec![0b01101100, 0b00111001, 0b10100110, 0b00000000], 10);
+        assert!(!bad_read1.validate());
+
+        let bad_read2 = Read::new(vec![0b01101100, 0b00111001, 0b10100110, 0b00000000], 17);
+        assert!(!bad_read2.validate());
     }
 
     #[test]
