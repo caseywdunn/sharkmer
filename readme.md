@@ -59,7 +59,7 @@ The executable will be in `sharkmer/target/release/sharkmer`. Move it to a locat
 
 ### Python components
 
-You can create a conda environment with all needed python components as follows:
+You can create a conda environment with all python components as follows:
 
     conda create -n shark -c conda-forge -c bioconda python==3.10 ffmpeg genomescope2
     conda activate shark
@@ -122,14 +122,14 @@ The included `genomemovie.sh` script will generate a movie of the incremental Ge
     conda activate shark
     bash genomescopemovie.sh Cordagalma-ordinatum.histo Cordagalma-ordinatum.output
 
-### **in silico** PCR (sPCR)
+### *in silico* PCR (sPCR)
 
-It is often very useful to pull small genome regions out of genome skimming data, for example to blast a commonly sequenced gene to verify that the sample you sequenced is the species you expected. This common task is surprisingly challenging in practice, though. You can map reads to known sequences and then collapse them into a sequence prediction, but this does not always work well across species and can miss variable regions. You can assemble all the reads and then pull out the region of interest, but this is computationally expensive and often the region of interest is not assembled well given how shallow skimming data often are.
+Investigators often want to pull small genome regions out of genome skimming data, for example to blast a commonly sequenced gene to verify that the sample you sequenced is the species you expected. This task is surprisingly challenging in practice, though. You can map reads to known sequences and then collapse them into a sequence prediction, but this does not always work well across species and can miss variable regions. You can assemble all the reads and then pull out the region of interest, but this is computationally expensive and often the region of interest is not assembled well given how shallow skimming data often are.
 
-**in silico** PCR (sPCR) is a new alternative approach. You specify file with raw reads and one or more primer pairs, and sharkmer outputs a fasta file with the sequence of the region that would be amplified by PCR on the genome the reads are derived from. There are multiple advantages to this approach:
+*in silico* PCR (sPCR) is a new alternative approach. You specify a file with raw reads and one or more primer pairs, and sharkmer outputs a fasta file with the sequence of the region that would be amplified by PCR on the genome the reads are derived from. There are multiple advantages to this approach:
 
 - sPCR directly leverages the decades of work that have been done to optimize PCR primers that work well across species and span informative gene regions. These primers tend to bind conserved regions that flank variable informative regions and have minimal off-target binding.
-- Because it is primer based, you can use it to obtain the exact same gene regions (co1, 16s, 18s, 28s, etc...) that have been PCR amplified for decades and still remain the most broadly sampled across species in public databases.
+- Because sPCR is primer based, you can use it to obtain the exact same gene regions (co1, 16s, 18s, 28s, etc...) that have been PCR amplified for decades and still remain the most broadly sampled across species in public databases.
 - sPCR doesn't take much data. You can use small datasets, or analyze small (eg one million read) subsets of your data.
 - sPCR is fast and has minimum computational requirements. It can be run on a laptop in a couple minutes on a million reads.
 - sPCR requires a single tool (sharkmer), not complex workflows with multiple tools.
@@ -138,9 +138,9 @@ sPCR is useful when you want specific genes from skimming datasets you have coll
 
 #### **in silico** PCR example
 
-sPCR of nuclear ribosomal RNA genes (eg animal 16s, 18s) and mitochondrial genes does not take much coverage, given the relatively high copy number of these genes in skimming data. For Illumina raw reads, 0.25x coverage of the genomes is sufficient. The **Cordagalma ordinatum** is 700Mb, so 1 million 150bp reads, a total of 150Mb of data, is sufficient.
+sPCR of nuclear ribosomal RNA genes (eg animal 16s, 18s) and mitochondrial genes does not take much coverage, given the relatively high copy number of these genes in skimming data. For Illumina raw reads, 0.25x coverage of the genomes is sufficient. The *Cordagalma ordinatum* is 700Mb, so 1 million 150bp reads, a total of 150Mb of data, is sufficient.
 
-Download one million reads of the **Cordagalma ordinatum** dataset:
+Download one million reads of the *Cordagalma ordinatum* dataset:
 
     fastq-dump -X 1000000 SRR23143278
 
