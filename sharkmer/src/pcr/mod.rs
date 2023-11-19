@@ -191,56 +191,44 @@ fn string_to_oligo(seq: &str) -> Oligo {
 // of sequences that include all possible resolutions of the ambiguity. If
 // there are no ambiguous nucleotides, the set contains only the original
 // sequence.
-fn resolve_primer(primer: String) -> HashSet<String> {
-    // Add the original sequence to the set
+fn resolve_primer(primer: &str) -> HashSet<String> {
     let mut sequences: HashSet<String> = HashSet::new();
 
-    // For each nucleotide in the primer
     for nuc in primer.chars() {
         let possible_nucs = match nuc {
-            // IUPAC nucleotide codes for ambiguous bases
-            'R' => vec!["A".to_string(), "G".to_string()],
-            'Y' => vec!["C".to_string(), "T".to_string()],
-            'S' => vec!["G".to_string(), "C".to_string()],
-            'W' => vec!["A".to_string(), "T".to_string()],
-            'K' => vec!["G".to_string(), "T".to_string()],
-            'M' => vec!["A".to_string(), "C".to_string()],
-            'B' => vec!["C".to_string(), "G".to_string(), "T".to_string()],
-            'D' => vec!["A".to_string(), "G".to_string(), "T".to_string()],
-            'H' => vec!["A".to_string(), "C".to_string(), "T".to_string()],
-            'V' => vec!["A".to_string(), "C".to_string(), "G".to_string()],
-            'N' => vec![
-                "A".to_string(),
-                "C".to_string(),
-                "G".to_string(),
-                "T".to_string(),
-            ],
-            // Return the same nucleotide if it's not ambiguous
-            _ => vec![nuc.to_string()],
+            'R' => vec!['A', 'G'],
+            'Y' => vec!['C', 'T'],
+            'S' => vec!['G', 'C'],
+            'W' => vec!['A', 'T'],
+            'K' => vec!['G', 'T'],
+            'M' => vec!['A', 'C'],
+            'B' => vec!['C', 'G', 'T'],
+            'D' => vec!['A', 'G', 'T'],
+            'H' => vec!['A', 'C', 'T'],
+            'V' => vec!['A', 'C', 'G'],
+            'N' => vec!['A', 'C', 'G', 'T'],
+            _ => vec![nuc],  // Use the nucleotide directly
         };
 
-        // If sequences is empty, add each of the possible nucleotides as its own sequence
         if sequences.is_empty() {
-            for possible_nuc in &possible_nucs {
+            for possible_nuc in possible_nucs {
                 sequences.insert(possible_nuc.to_string());
             }
         } else {
-            // Otherwise, for each sequence in sequences, add a new sequence for each possible nucleotide
-            let mut new_sequences: HashSet<String> = HashSet::new();
-            for seq in &sequences {
-                for possible_nuc in &possible_nucs {
-                    let mut new_seq: Vec<char> = seq.chars().collect();
-                    new_seq.push(possible_nuc.chars().next().unwrap());
-                    new_sequences.insert(new_seq.into_iter().collect());
+            let mut new_sequences = HashSet::new();
+            for seq in sequences.iter() {
+                for &possible_nuc in &possible_nucs {
+                    let new_seq = format!("{}{}", seq, possible_nuc);
+                    new_sequences.insert(new_seq);
                 }
             }
-            // Replace the old shorter sequences with the new extended sequences
             sequences = new_sequences;
         }
     }
 
     sequences
 }
+
 
 /// Given a set of sequences, return a set of all sequences that differ
 /// from each original sequence at up to r positions. Includes the original
@@ -720,7 +708,7 @@ fn preprocess_primer(
     }
 
     // Expand ambigous nucleotides
-    let mut primer_variants = resolve_primer(primer);
+    let mut primer_variants = resolve_primer(&primer);
 
     // Get all possible variants of the primers
     primer_variants = permute_sequences(primer_variants, &params.mismatches);
@@ -1822,7 +1810,7 @@ mod tests {
         let seq1 = "CGTAATGCGGCGA".to_string();
         let mut expected1: HashSet<String> = HashSet::new();
         expected1.insert(seq1.clone());
-        let result1 = resolve_primer(seq1);
+        let result1 = resolve_primer(&seq1);
         assert_eq!(result1, expected1);
 
         // Check with one ambiguous nucleotide
@@ -1833,7 +1821,7 @@ mod tests {
         expected2.insert("CGTAATGCGGCGG".to_string());
         expected2.insert("CGTAATGCGGCGT".to_string());
 
-        let result2 = resolve_primer(seq2);
+        let result2 = resolve_primer(&seq2);
         assert_eq!(result2, expected2);
 
         // Check with one ambiguous nucleotide
@@ -1841,7 +1829,7 @@ mod tests {
         let mut expected3: HashSet<String> = HashSet::new();
         expected3.insert("CGTAATACGGCGA".to_string());
         expected3.insert("CGTAATGCGGCGA".to_string());
-        let result3 = resolve_primer(seq3);
+        let result3 = resolve_primer(&seq3);
         assert_eq!(result3, expected3);
 
         // Check with two ambiguous nucleotides
@@ -1852,7 +1840,7 @@ mod tests {
         expected4.insert("CGTAATACGGCGT".to_string());
         expected4.insert("CGTAATGCGGCGT".to_string());
 
-        let result4 = resolve_primer(seq4);
+        let result4 = resolve_primer(&seq4);
         assert_eq!(result4, expected4);
 
         // Check when the first nucleotide is ambiguous
@@ -1860,7 +1848,7 @@ mod tests {
         let mut expected5: HashSet<String> = HashSet::new();
         expected5.insert("ACGTAATCGGCGA".to_string());
         expected5.insert("GCGTAATCGGCGA".to_string());
-        let result5 = resolve_primer(seq5);
+        let result5 = resolve_primer(&seq5);
         assert_eq!(result5, expected5);
     }
 
