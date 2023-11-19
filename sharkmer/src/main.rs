@@ -374,7 +374,7 @@ fn main() {
             let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
 
             for read in reads[start..end].iter() {
-                let kmers = kmer::read_to_kmers(read, &k);
+                let kmers = read.get_kmers(&k);
                 for kmer in kmers {
                     let count = kmer_counts.entry(kmer).or_insert(0);
                     *count += 1;

@@ -40,6 +40,72 @@ impl Read {
 
         valid
     }
+
+    /// Get canonical kmers from a Read.
+    ///
+    /// Given a sequence that's been encoded as a series of 8-bit integers (where each integer
+    /// represents 4 bases), this function extracts canonical kmers from it. A canonical kmer
+    /// is the lexicographically smaller of a kmer and its reverse complement.
+    ///
+    /// The encoding uses a 2-bit representation for each base:
+    ///
+    /// * `A` -> `00`
+    /// * `C` -> `01`
+    /// * `G` -> `10`
+    /// * `T` -> `11`
+    ///
+    /// # Arguments
+    ///
+    /// * `ints` - A reference to the vector of 8-bit integers which encode a DNA sequence.
+    /// * `k` - A reference to the length of the desired kmers (i.e., the number of bases in each kmer).
+    ///
+    /// # Returns
+    ///
+    /// A vector of 64-bit integers, where each integer represents a canonical kmer extracted
+    /// from the encoded sequence.
+    ///
+    /// # Example
+    ///
+    /// ```rust
+    /// let encoded_sequence: Vec<u8> = /* some encoded sequence */;
+    /// let kmer_length: usize = /* desired kmer length */;
+    /// let canonical_kmers = get_kmers(&encoded_sequence, &kmer_length);
+    /// ```
+    pub fn get_kmers(&self, k: &usize) -> Vec<u64> {
+        let ints = &self.sequence; // TODO: handle case where length is not divisible by 4
+        let mut kmers: Vec<u64> = Vec::with_capacity((ints.len() * 4 / k) + 1);
+        let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
+        let mut revframe: u64 = 0; // read the bits for complement into the least significant end of this integer
+        let mut n_valid = 0; // number of valid bases in the frame
+        let mask: u64 = (1 << (2 * k)) - 1;
+
+        // Iterate over the bases
+        for (_i, &int) in ints.iter().enumerate() {
+            // Iterate over the bases in the integer
+            for j in 0..4 {
+                // Get the base from the left side of the integer,
+                // move it to the least two significant bits and mask it
+                let base = ((int >> ((3 - j) * 2)) & 3) as u64;
+
+                frame = (frame << 2) | base;
+                revframe = (revframe >> 2) | ((3 - base) << (2 * (k - 1)));
+                n_valid += 1;
+                if n_valid >= *k {
+                    let forward = frame & mask;
+                    let reverse = revframe & mask;
+
+                    // assert_eq!(forward, revcomp_kmer(reverse, k));
+
+                    if forward < reverse {
+                        kmers.push(forward);
+                    } else {
+                        kmers.push(reverse);
+                    }
+                }
+            }
+        }
+        kmers
+    }
 }
 
 impl PartialEq for Read {
@@ -161,71 +227,7 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
     reads
 }
 
-/// Converts a vector of 8-bit integers into a vector of canonical kmers.
-///
-/// Given a sequence that's been encoded as a series of 8-bit integers (where each integer
-/// represents 4 bases), this function extracts canonical kmers from it. A canonical kmer
-/// is the lexicographically smaller of a kmer and its reverse complement.
-///
-/// The encoding uses a 2-bit representation for each base:
-///
-/// * `A` -> `00`
-/// * `C` -> `01`
-/// * `G` -> `10`
-/// * `T` -> `11`
-///
-/// # Arguments
-///
-/// * `ints` - A reference to the vector of 8-bit integers which encode a DNA sequence.
-/// * `k` - A reference to the length of the desired kmers (i.e., the number of bases in each kmer).
-///
-/// # Returns
-///
-/// A vector of 64-bit integers, where each integer represents a canonical kmer extracted
-/// from the encoded sequence.
-///
-/// # Example
-///
-/// ```rust
-/// let encoded_sequence: Vec<u8> = /* some encoded sequence */;
-/// let kmer_length: usize = /* desired kmer length */;
-/// let canonical_kmers = read_to_kmers(&encoded_sequence, &kmer_length);
-/// ```
-pub fn read_to_kmers(read: &Read, k: &usize) -> Vec<u64> {
-    let ints = &read.sequence; // TODO: handle case where length is not divisible by 4
-    let mut kmers: Vec<u64> = Vec::with_capacity((ints.len() * 4 / k) + 1);
-    let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
-    let mut revframe: u64 = 0; // read the bits for complement into the least significant end of this integer
-    let mut n_valid = 0; // number of valid bases in the frame
-    let mask: u64 = (1 << (2 * k)) - 1;
 
-    // Iterate over the bases
-    for (_i, &int) in ints.iter().enumerate() {
-        // Iterate over the bases in the integer
-        for j in 0..4 {
-            // Get the base from the left side of the integer,
-            // move it to the least two significant bits and mask it
-            let base = ((int >> ((3 - j) * 2)) & 3) as u64;
-
-            frame = (frame << 2) | base;
-            revframe = (revframe >> 2) | ((3 - base) << (2 * (k - 1)));
-            n_valid += 1;
-            if n_valid >= *k {
-                let forward = frame & mask;
-                let reverse = revframe & mask;
-
-                // assert_eq!(forward, revcomp_kmer(reverse, k));
-
-                if forward < reverse {
-                    kmers.push(forward);
-                } else {
-                    kmers.push(reverse);
-                }
-            }
-        }
-    }
-    kmers
-}
 
 /// Generates a histogram from kmer counts.
 ///
@@ -357,7 +359,7 @@ mod tests {
     }
 
     #[test]
-    fn test_read_to_kmers() {
+    fn test_get_kmers() {
         let ints = vec![0b01101100, 0b00111001, 0b10100110];
         let read = Read::new(ints, 12);
         // original	                // reverse complement
@@ -372,7 +374,7 @@ mod tests {
             0b10_0101_1001_0011_1100,
             0b00_0011_1001_1010_0110, 
         ];
-        let actual = read_to_kmers(&read, &9usize);
+        let actual = read.get_kmers(&9usize);
         assert_eq!(actual, expected);
     }
 
