@@ -168,7 +168,7 @@ fn compute_median(numbers: &[u64]) -> f64 {
     }
 }
 
-// Given an oligo as a String, return a Oligo struct representing it
+// Given an oligo, return a Oligo struct representing it
 fn string_to_oligo(seq: &str) -> Oligo {
     let mut kmer: u64 = 0;
     let mut length: usize = 0;
@@ -313,15 +313,15 @@ fn reverse_complement(seq: &str) -> String {
         .collect()
 }
 
+// Find the kmers that contain the oligos.
+// If direction is forward, match the oligo at the start of the kmer.
+// If direction is reverse, match the oligo at the end of the kmer.
 fn find_oligos_in_kmers(
     oligos: &[Oligo],
     kmers: &FxHashMap<u64, u64>,
     k: &usize,
     dir: &PrimerDirection,
 ) -> FxHashMap<u64, u64> {
-    // Find the kmers that contain the oligos.
-    // If direction is forward, match the oligo at the start of the kmer.
-    // If direction is reverse, match the oligo at the end of the kmer.
 
     // Assume all oligos have the same length
     let oligo_length = oligos[0].length;
@@ -470,7 +470,7 @@ fn get_end_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
     nodes
 }
 
-// Find the number of descendants of a node, each descendent no more than `depth` edges away
+// Find the descendants of a node, each descendent no more than `depth` edges away
 fn descendants(
     graph: &StableDiGraph<DBNode, DBEdge>,
     node: NodeIndex,
@@ -818,7 +818,6 @@ fn get_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64> {
     Some(median_edge_count)
 }
 
-// The primary function for PCR
 pub struct PCRParams {
     pub forward_seq: String,
     pub reverse_seq: String,
@@ -829,6 +828,7 @@ pub struct PCRParams {
     pub trim: usize,
 }
 
+// The primary function for PCR
 pub fn do_pcr(
     kmer_counts_map: &FxHashMap<u64, u64>,
     k: &usize,
