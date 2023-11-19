@@ -4,13 +4,15 @@ use colored::*;
 use petgraph::algo::{all_simple_paths, is_cyclic_directed};
 use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
-use petgraph::visit::Bfs;
+use petgraph::visit::{IntoEdgeReferences, EdgeRef, Bfs};
 use petgraph::Direction;
+use petgraph::dot::{Dot, Config};
 use rustc_hash::FxHashMap;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
 use std::io::Write;
+use std::fs::File;
 
 use crate::kmer::*;
 use crate::COLOR_FAIL;
@@ -29,7 +31,7 @@ const COVERAGE_MULTIPLIER: u64 = 5;
 const MAX_NUM_PRIMER_KMERS: usize = 10;
 
 /// How frequently to check extension graph for ballooning growth
-const EXTENSION_EVALUATION_FREQUENCY: usize = 10_000;
+const EXTENSION_EVALUATION_FREQUENCY: usize = 1_000;
 
 /// The graph depth over which to evaluate ballooning growth
 const EXTENSION_EVALUATION_DEPTH: usize = 4;
@@ -46,7 +48,7 @@ const DISTANCE_EDIT_THRESHOLD: u32 = 10;
 const BALLOONING_COUNT_THRESHOLD_MULTIPLIER: f64 = 10.0;
 
 /// Give up if the graph gets too large
-const MAX_NUM_NODES: usize = 100_000;
+const MAX_NUM_NODES: usize = 10_000;
 
 struct AssemblyRecord {
     fasta_record: fasta::Record,
@@ -67,6 +69,7 @@ enum PrimerDirection {
 }
 
 // De Bruijn graph node
+#[derive(Debug)]
 struct DBNode {
     sub_kmer: u64,     // k-1 mer that contains overlap between kmers
     is_start: bool,    // Contains the forward primer
@@ -75,10 +78,77 @@ struct DBNode {
     visited: bool,     // Has been visited during graph traversal
 }
 
+#[derive(Debug)]
 struct DBEdge {
     _kmer: u64, // kmer that contains overlap between sub_kmers
     count: u64, // Number of times this kmer was observed
 }
+
+// Get a vector of edge counts by traversing the graph backwards from the focal node
+fn get_backward_edge_counts(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    focal_node: NodeIndex,
+    depth: usize,
+) -> Vec<u64> {
+    let mut edge_counts = Vec::new();
+    let mut current_node = focal_node;
+    let mut current_depth = 0;
+
+    while current_depth < depth {
+        let incoming_edges: Vec<_> = graph
+            .edges_directed(current_node, Direction::Incoming)
+            .collect();
+
+        if incoming_edges.is_empty() {
+            // Stop if the current node has no incoming edges
+            break;
+        }
+
+        // Assuming there's only one incoming edge per node in this context
+        if let Some(edge) = incoming_edges.first() {
+            edge_counts.push(edge.weight().count);
+            current_node = edge.source();
+        }
+
+        current_depth += 1;
+    }
+
+    edge_counts
+}
+
+// Get a vector of node degrees by traversing the graph backwards from the focal node
+fn get_backward_node_degrees(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    focal_node: NodeIndex,
+    depth: usize,
+) -> Vec<usize> {
+    let mut node_degrees = Vec::new();
+    let mut current_node = focal_node;
+    let mut current_depth = 0;
+
+    while current_depth < depth {
+        // Get the number of outgoing edges from the current node
+        let degree = graph.edges_directed(current_node, Direction::Outgoing).count();
+        node_degrees.push(degree);
+
+        let incoming_edges: Vec<_> = graph
+        .edges_directed(current_node, Direction::Incoming)
+        .collect();
+
+        // Move to the next node (the source of the first incoming edge)
+        if let Some(edge) = incoming_edges.first() {
+            current_node = edge.source();
+        } else {
+            // Break if there are no incoming edges to follow
+            break;
+        }
+
+        current_depth += 1;
+    }
+
+    node_degrees
+}
+
 
 fn compute_mean(numbers: &[u64]) -> f64 {
     let sum: u64 = numbers.iter().sum();
@@ -1088,6 +1158,41 @@ pub fn do_pcr(
                     continue;
                 }
 
+                
+                // Get the degrees of ancestor nodes, skipping degree of this node
+                let node_degrees = get_backward_node_degrees(&graph, node, 20);
+                let node_degrees_slice = &node_degrees[1..];
+
+                // If the node is in a rapidly ballooning region of the graph, don't add it
+                if candidate_kmers.len() > 2 {
+                    if node_degrees_slice.len() >= 2 {
+                        if (node_degrees_slice[0] > 2) && (node_degrees_slice[1] > 2) {
+                            if verbosity > 1 {
+                                println!("Marking node as terminal because it and immediate ancestors have high degree. ");
+                                std::io::stdout().flush().unwrap();
+                            }
+                            graph[node].is_terminal = true;
+                            graph[node].visited = true;
+                            continue;
+                        }
+                    }
+                }
+
+                // Check for a lower growth rate over a longer path, and terminate if found
+                if node_degrees_slice.len() >= 15 {
+                    // Get the number of elements of node_degrees_slice that are greater than 1
+                    let n_high_degree = node_degrees_slice.iter().filter(|&x| *x > 1).count();
+                    if n_high_degree >= 3 {
+                        if verbosity > 1 {
+                            println!("Marking node as terminal because its recent ancestors have moderately elevated degree. ");
+                            std::io::stdout().flush().unwrap();
+                        }
+                        graph[node].is_terminal = true;
+                        graph[node].visited = true;
+                        continue;
+                    }
+                }
+
                 // Add new nodes if needed, and new edges
                 for kmer in candidate_kmers.iter() {
                     let suffix = kmer & suffix_mask;
@@ -1290,6 +1395,16 @@ pub fn do_pcr(
 
     println!("done.  Time to extend graph: {:?}", start.elapsed());
 
+    if verbosity > 5 {
+        let dot_format = format!("{:?}", Dot::with_config(&graph, &[Config::EdgeNoLabel]));
+
+        // Write the DOT format to a file
+        let file_name = format!("{}_{}.dot", sample_name, params.gene_name); // Concatenating the file extension
+        println!("Writing dot file {}", file_name);
+        let mut file = File::create(&file_name).expect("Unable to create file");
+        file.write_all(dot_format.as_bytes()).expect("Unable to write data");
+    }
+
     // Simplify the graph
     // all_simple_paths() hangs if the input graph is too complex
     // Also want to regularize some graph features
@@ -1485,6 +1600,7 @@ pub fn do_pcr(
     } else {
         println!("{}", format!("For gene {}, {} PCR products were generated and {} were retained (the others were minor variants of the first).", params.gene_name, num_records_all, records.len()).color(COLOR_SUCCESS));
     }
+
     // Return the records
     records
 }
@@ -1639,6 +1755,31 @@ mod tests {
         assert_eq!(descendants(&graph, nodes["a"], 3).len(), 4); // All nodes reachable from a within 3 steps
         assert_eq!(descendants(&graph, nodes["a"], 4).len(), 4); // All nodes reachable from a within 4 steps
         assert_eq!(descendants(&graph, nodes["b"], 2).len(), 3);
+    }
+
+    #[test]
+    fn test_get_backward_edge_counts() {
+        let (graph, nodes) = create_test_graph();
+
+        // Testing using the node indices from the HashMap
+        assert_eq!(get_backward_edge_counts(&graph, nodes["a"], 3).len(), 0);
+        assert_eq!(get_backward_edge_counts(&graph, nodes["b"], 3), [5]);
+        assert_eq!(get_backward_edge_counts(&graph, nodes["c"], 3), [10,5]);
+        assert_eq!(get_backward_edge_counts(&graph, nodes["d"], 3), [4,10,5]);
+        assert_eq!(get_backward_edge_counts(&graph, nodes["e"], 3), [1,10,5]);
+    }
+
+    #[test]
+    fn test_get_backward_node_degrees() {
+        let (graph, nodes) = create_test_graph();
+
+        // Testing using the node indices from the HashMap
+        assert_eq!(get_backward_node_degrees(&graph, nodes["a"], 3), [1]);
+        assert_eq!(get_backward_node_degrees(&graph, nodes["b"], 3), [1,1]);
+        assert_eq!(get_backward_node_degrees(&graph, nodes["c"], 3), [2,1,1]);
+        assert_eq!(get_backward_node_degrees(&graph, nodes["d"], 4), [0,2,1,1]);
+        assert_eq!(get_backward_node_degrees(&graph, nodes["e"], 4), [0,2,1,1]);
+        assert_eq!(get_backward_node_degrees(&graph, nodes["d"], 3), [0,2,1]);
     }
 
     #[test]
