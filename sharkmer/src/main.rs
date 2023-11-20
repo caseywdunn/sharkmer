@@ -101,7 +101,7 @@ pub fn parse_rad_string(rad_string: &str) -> Result<rad::RADParams, String> {
     let mut coverage: u64 = 3;
 
     // Loop over additional parameters, which are of the form key=value and are separated by underscores
-    for item in split.iter().skip(4) {
+    for item in split.iter().skip(5) {
         let key_value: Vec<&str> = item.split('=').collect();
         if key_value.len() != 2 {
             return Err(format!("Invalid parameter: {}", item));
@@ -302,7 +302,7 @@ struct Args {
     ///    supported:
     ///    [none for now]
     /// For example:
-    /// --pcr "forward1_reverse1_1000_name1" --pcr "forward2_reverse2_2000_name2"
+    /// --rad "CATG_AATT_625_750_kd"
     #[arg(short = 'r', long)]
     rad: Vec<String>,
 
@@ -649,6 +649,9 @@ fn main() {
                 for record in fasta {
                     fasta_writer.write_record(&record).unwrap();
                 }
+            }
+            else{
+                println!("No sequences found for {}", rad_params.name);
             }
         }
 

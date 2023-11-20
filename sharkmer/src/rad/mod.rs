@@ -103,9 +103,11 @@ pub fn do_rad(
 	// is less than the min length, continue to next cut1 kmer. If it is longer
 	// than min length, add it to the list of records. If you get to max length,
 	// stop and go to next cut1 kmer.
+	let mut start_primer_i = 0;
 	for starting_kmer in cut1_kmers {
 		let prefix = starting_kmer >> 2;
 		let mut n_records: usize = 0;
+		start_primer_i += 1;
 
 		let mut graph: StableDiGraph<crate::pcr::DBNode, crate::pcr::DBEdge> = StableDiGraph::new();
 		graph.add_node(crate::pcr::DBNode {
@@ -198,7 +200,7 @@ pub fn do_rad(
 									let edge = crate::pcr::get_dbedge(kmer, &kmer_counts, k);
 									graph.add_edge(node, existing_node, edge);
 									if graph[existing_node].is_end {
-										println!("End node incorporated into graph, complete PCR product found.");
+										println!("New edge added to End node.");
 									}
 									let outgoing =
 										graph.neighbors_directed(node, Direction::Outgoing).count();
@@ -259,6 +261,13 @@ pub fn do_rad(
 							// Check if the new node is max_length-k+1 from a start node
 							// If so, mark the new node as terminal
 							let path_length = crate::pcr::get_path_length(&graph, new_node);
+
+							if is_end {
+								//if verbosity > 1 {
+									println!("New node {} is an end node, with path length {}. ", new_node.index(), path_length.unwrap_or(0));
+									std::io::stdout().flush().unwrap();
+								//}
+							}
 	
 							// If the path length is None, the node is part of a cycle and is marked terminal.
 							// If the path length is Some, is marked terminal if the path length is >= max_length-k+1
@@ -421,6 +430,13 @@ pub fn do_rad(
 					parent_node = *node;
 				}
 			}
+
+			if sequence.len() < params.min_length {
+				println!("{}",
+					format!("RAD product {} is too short ({} bases). Skipping.", i, sequence.len()).color(COLOR_WARNING)
+				);
+				continue;
+			}
 	
 			// Get some stats on the path counts
 			let count_mean = crate::pcr::compute_mean(&edge_counts);
@@ -429,9 +445,10 @@ pub fn do_rad(
 			let count_max = edge_counts.iter().max().unwrap();
 	
 			let id = format!(
-				"{} {} product {} length {} kmer count stats mean {:.2} median {} min {} max {}",
+				"{} {} rad {} product {} length {} kmer count stats mean {:.2} median {} min {} max {}",
 				sample_name,
 				params.name,
+				start_primer_i,
 				i,
 				sequence.len(),
 				count_mean,
