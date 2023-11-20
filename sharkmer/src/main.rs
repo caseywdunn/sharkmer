@@ -98,12 +98,38 @@ pub fn parse_rad_string(rad_string: &str) -> Result<rad::RADParams, String> {
 
     let name = split[4].to_string();
 
+    let mut coverage: u64 = 3;
+
+    // Loop over additional parameters, which are of the form key=value and are separated by underscores
+    for item in split.iter().skip(4) {
+        let key_value: Vec<&str> = item.split('=').collect();
+        if key_value.len() != 2 {
+            return Err(format!("Invalid parameter: {}", item));
+        }
+
+        let key = key_value[0].to_lowercase();
+        let key = key.as_str();
+        let value = key_value[1];
+
+        match key {
+            "coverage" => {
+                coverage = value
+                    .parse()
+                    .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
+            }
+            _ => {
+                return Err(format!("Unexpected parameter: {}", key));
+            }
+        }
+    }
+
     Ok(rad::RADParams {
         cut1,
         cut2,
         min_length,
         max_length,
         name,
+        coverage,
     })
 }
 

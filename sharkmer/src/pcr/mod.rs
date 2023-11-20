@@ -56,9 +56,9 @@ struct AssemblyRecord {
 
 // Create a structure to hold a kmer representing an oligo up to 32 nucleotides long in the
 // length*2 least significant bits
-struct Oligo {
-    length: usize,
-    kmer: u64,
+pub struct Oligo {
+    pub length: usize,
+    pub kmer: u64,
 }
 
 #[derive(PartialEq)]
@@ -69,18 +69,18 @@ enum PrimerDirection {
 
 // De Bruijn graph node
 #[derive(Debug)]
-struct DBNode {
-    sub_kmer: u64,     // k-1 mer that contains overlap between kmers
-    is_start: bool,    // Contains the forward primer
-    is_end: bool,      // Contains the reverse complement of the reverse primer
-    is_terminal: bool, // Is a terminal node
-    visited: bool,     // Has been visited during graph traversal
+pub struct DBNode {
+    pub sub_kmer: u64,     // k-1 mer that contains overlap between kmers
+    pub is_start: bool,    // Contains the forward primer
+    pub is_end: bool,      // Contains the reverse complement of the reverse primer
+    pub is_terminal: bool, // Is a terminal node
+    pub visited: bool,     // Has been visited during graph traversal
 }
 
 #[derive(Debug)]
-struct DBEdge {
-    _kmer: u64, // kmer that contains overlap between sub_kmers
-    count: u64, // Number of times this kmer was observed
+pub struct DBEdge {
+    pub _kmer: u64, // kmer that contains overlap between sub_kmers
+    pub count: u64, // Number of times this kmer was observed
 }
 
 // Get a vector of edge counts by traversing the graph backwards from the focal node
@@ -149,12 +149,12 @@ fn get_backward_node_degrees(
 }
 
 
-fn compute_mean(numbers: &[u64]) -> f64 {
+pub fn compute_mean(numbers: &[u64]) -> f64 {
     let sum: u64 = numbers.iter().sum();
     sum as f64 / numbers.len() as f64
 }
 
-fn compute_median(numbers: &[u64]) -> f64 {
+pub fn compute_median(numbers: &[u64]) -> f64 {
     let mut sorted = numbers.to_vec();
     sorted.sort();
 
@@ -168,7 +168,7 @@ fn compute_median(numbers: &[u64]) -> f64 {
 }
 
 // Given an oligo, return a Oligo struct representing it
-fn string_to_oligo(seq: &str) -> Oligo {
+pub fn string_to_oligo(seq: &str) -> Oligo {
     let mut kmer: u64 = 0;
     let mut length: usize = 0;
     for c in seq.chars() {
@@ -369,7 +369,7 @@ fn find_oligos_in_kmers(
     kmers_match
 }
 
-fn n_nonterminal_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize {
+pub fn n_nonterminal_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize {
     let mut n_nonterminal_nodes = 0;
     for node in graph.node_indices() {
         if !graph[node].is_terminal {
@@ -379,7 +379,7 @@ fn n_nonterminal_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize 
     n_nonterminal_nodes
 }
 
-fn n_unvisited_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize {
+pub fn n_unvisited_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize {
     let mut n = 0;
     for node in graph.node_indices() {
         if !graph[node].visited {
@@ -389,7 +389,7 @@ fn n_unvisited_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize {
     n
 }
 
-fn get_path_length(graph: &StableDiGraph<DBNode, DBEdge>, new_node: NodeIndex) -> Option<usize> {
+pub fn get_path_length(graph: &StableDiGraph<DBNode, DBEdge>, new_node: NodeIndex) -> Option<usize> {
     // Get the length of the path from the start node to the new node
     let mut path_length = 0;
     let mut current_node = new_node;
@@ -427,14 +427,14 @@ fn get_path_length(graph: &StableDiGraph<DBNode, DBEdge>, new_node: NodeIndex) -
     Some(path_length)
 }
 
-fn get_dbedge(kmer: &u64, kmer_counts: &FxHashMap<u64, u64>, k: &usize) -> DBEdge {
+pub fn get_dbedge(kmer: &u64, kmer_counts: &FxHashMap<u64, u64>, k: &usize) -> DBEdge {
     DBEdge {
         _kmer: *kmer,
         count: crate::kmer::get_kmer_count(kmer_counts, kmer, k),
     }
 }
 
-fn would_form_cycle(
+pub fn would_form_cycle(
     graph: &StableDiGraph<DBNode, DBEdge>,
     parent: NodeIndex,
     child: NodeIndex,
@@ -449,7 +449,7 @@ fn would_form_cycle(
     false
 }
 
-fn get_start_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
+pub fn get_start_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
     let mut nodes: Vec<NodeIndex> = Vec::new();
     for node in graph.node_indices() {
         if graph[node].is_start {
@@ -459,7 +459,7 @@ fn get_start_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
     nodes
 }
 
-fn get_end_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
+pub fn get_end_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
     let mut nodes: Vec<NodeIndex> = Vec::new();
     for node in graph.node_indices() {
         if graph[node].is_end {
@@ -592,7 +592,7 @@ fn pop_balloons(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize, verbosity:
     }
 }
 
-fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
+pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     // Print the number of nodes and edges in the graph
     println!("{}There are {} nodes in the graph", pad, graph.node_count());
     println!("{}There are {} edges in the graph", pad, graph.edge_count());
