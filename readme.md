@@ -143,11 +143,12 @@ Download one million reads of the *Cordagalma ordinatum* dataset:
 Then run sPCR on the downloaded reads by specifying primer pairs with the `--pcr` argument:
 
     sharkmer \
-      -k 31 -n 100 -t 4 -s Cordagalma_CWD6 --coverage 3 \
+      -k 31 -n 100 -t 4 -s Cordagalma_CWD6 \
       --pcr "GACTGTTTACCAAAAACATA_AATTCAACATCGAGG_1000_16s" \
       --pcr "TCATAAAGATATTGG_ATGCCCGAAAAACCA_2000_co1" \
       --pcr "AACCTGGTTGATCCTGCCAGT_TGATCCTTCTGCAGGTTCACCTAC_2500_18s" \
       --pcr "CCYYAGTAACGGCGAGT_SWACAGATGGTAGCTTCG_4000_28s"  \
+      --pcr "TACACACCGCCCGTCGCTACTA_ACTCGCCGTTACTRRGG_1000_ITSfull" \
       SRR23143278.fastq
 
 The `--pcr` argument passes a string with the format `forward_reverse_max-length_gene-name`. Note that underscores delimit fields. `max-length` should be greater than the expect PCR product size. It indicates the furthest distance from the forward primer that sharkmer should search for a reverse primer.
