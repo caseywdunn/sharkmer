@@ -158,7 +158,7 @@ struct Args {
     threads: usize,
 
     /// Name of the sample, could be species and sample ID eg Nanomia-bijuga-YPMIZ035039
-    /// Will be used as the prefix for output files and some outout products
+    /// Will be used as the prefix for output files
     #[arg(short, long, default_value_t = String::from("sample") )]
     sample: String,
 
@@ -220,9 +220,7 @@ fn main() {
     );
 
     // Parse the outdir path and sample, create directories if necessary
-    // output directory is outdir/sample
     let mut path = PathBuf::from(&args.outdir);
-    path.push(&args.sample);
 
     // Create the output directory if it does not exist
     let directory = format!("{}/", path.to_str().unwrap());
