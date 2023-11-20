@@ -72,7 +72,7 @@ impl Read {
     /// let canonical_kmers = get_kmers(&encoded_sequence, &kmer_length);
     /// ```
     pub fn get_kmers(&self, k: &usize) -> Vec<u64> {
-        let ints = &self.sequence; // TODO: handle case where length is not divisible by 4
+        let ints = &self.sequence;
         let mut kmers: Vec<u64> = Vec::with_capacity((ints.len() * 4 / k) + 1);
         let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
         let mut revframe: u64 = 0; // read the bits for complement into the least significant end of this integer
@@ -104,6 +104,15 @@ impl Read {
                 }
             }
         }
+
+        // If the read length is not divisible by 4, the last byte will have some extra bases
+        // that result in extra kmers we need to remove
+        let modulo = self.length % 4;
+        if modulo != 0 {
+            let n_extra_bases = 4 - modulo;
+            kmers.truncate(kmers.len() - n_extra_bases);
+        }
+
         kmers
     }
 }
@@ -354,6 +363,16 @@ mod tests {
         let expected = vec![Read::new(vec![0b01101100, 0b00111001, 0b10100110, 0b00000000], 13)];
         let actual = seq_to_reads(seq);
         assert_eq!(actual, expected);
+
+        let seq = "C";
+        let expected = vec![Read::new(vec![0b01000000], 1)];
+        let actual = seq_to_reads(seq);
+        assert_eq!(actual, expected);
+
+        let seq = "CGTAATGCGGCG";
+        let expected = vec![Read::new(vec![0b01101100, 0b00111001, 0b10100110], 12)];
+        let actual = seq_to_reads(seq);
+        assert_eq!(actual, expected);
     }
 
     #[test]
@@ -392,7 +411,7 @@ mod tests {
     #[test]
     fn test_get_kmers() {
         let ints = vec![0b01101100, 0b00111001, 0b10100110];
-        let read = Read::new(ints, 12);
+        let read = Read::new(ints.clone(), 12);
         // original	                // reverse complement
         // 0b01101100_00111001_10   0b01_10010011_11000110  >
         // 0b101100_00111001_1010   0b0101_10010011_110001  >
@@ -404,6 +423,25 @@ mod tests {
             0b01_0110_0100_1111_0001,
             0b10_0101_1001_0011_1100,
             0b00_0011_1001_1010_0110, 
+        ];
+        let actual = read.get_kmers(&9usize);
+        assert_eq!(actual, expected);
+
+        // Test cases where read length not divisible by 4
+        let read = Read::new(ints.clone(), 11);
+        let expected = vec![
+            0b01_1001_0011_1100_0110,
+            0b01_0110_0100_1111_0001,
+            0b10_0101_1001_0011_1100,
+        ];
+        let actual = read.get_kmers(&9usize);
+        assert_eq!(actual, expected);
+
+        // Test cases where read length not divisible by 4
+        let read = Read::new(ints.clone(), 10);
+        let expected = vec![
+            0b01_1001_0011_1100_0110,
+            0b01_0110_0100_1111_0001,
         ];
         let actual = read.get_kmers(&9usize);
         assert_eq!(actual, expected);
