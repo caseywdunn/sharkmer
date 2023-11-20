@@ -11,6 +11,7 @@ use std::path::PathBuf;
 
 mod kmer;
 mod pcr;
+mod rad;
 
 pub const COLOR_NOTE: &str = "blue";
 pub const COLOR_SUCCESS: &str = "green";
@@ -42,6 +43,68 @@ fn is_valid_nucleotide(c: char) -> bool {
         'N' => true, // A or C or G or T
         _ => false,
     }
+}
+
+pub fn parse_rad_string(rad_string: &str) -> Result<rad::RADParams, String> {
+    // Split the string on underscores
+    let split: Vec<&str> = rad_string.split('_').collect();
+
+    // Check that there are at least 5 elements
+    if split.len() < 5 {
+        return Err(format!(
+            "Invalid rad string, there are less than 5 elements separated by underscores: {}",
+            rad_string
+        ));
+    }
+
+    let cut1 = split[0].to_uppercase();
+    let cut2 = split[1].to_uppercase();
+
+    // Check that the cut sites contain only valid nucleotides
+    for c in cut1.chars() {
+        if !is_valid_nucleotide(c) {
+            return Err(format!(
+                "Invalid nucleotide {} in cut site 1 {}",
+                c, split[0]
+            ));
+        }
+    }
+    for c in cut2.chars() {
+        if !is_valid_nucleotide(c) {
+            return Err(format!(
+                "Invalid nucleotide {} in cut site 2 {}",
+                c, split[1]
+            ));
+        }
+    }
+
+    // Check that the min-length and max-length are integers
+    let min_length: usize = match split[2].parse() {
+        Ok(n) => n,
+        Err(_) => return Err(format!("Invalid min-length: {}", split[2])),
+    };
+    let max_length: usize = match split[3].parse() {
+        Ok(n) => n,
+        Err(_) => return Err(format!("Invalid max-length: {}", split[3])),
+    };
+
+    // Check that max is greater than min
+    if max_length <= min_length {
+        return Err(format!(
+            "Invalid min-length and max-length: {} {}",
+            min_length, max_length
+        ));
+    }
+
+    let name = split[4].to_string();
+
+    Ok(rad::RADParams {
+        cut1,
+        cut2,
+        min_length,
+        max_length,
+        name,
+    })
 }
 
 pub fn parse_pcr_string(pcr_string: &str) -> Result<pcr::PCRParams, String> {
@@ -198,6 +261,25 @@ struct Args {
     #[arg(short = 'p', long)]
     pcr: Vec<String>,
 
+    /// Optional primer pairs for in silico Rad-seq (isRad-seq). The format is:
+    /// --rad "cut1_cut2_min-length_max-length_name_key1=value1_key2=value2"
+    /// Where:
+    ///   cut1 is the restriction site for the first enzyme
+    ///   cut2 is the restriction site for the second enzyme. If using 
+    ///     a single enzyme, set cut2 to the same value as cut1.
+    ///   min-length is the minimum length of the digest product, 
+    ///    including the full cut site.
+    ///   max-length is the maximum length of the digest product, 
+    ///    including the full cut site.
+    ///   name is a unique name for this rad-seq configuration.
+    ///   key=value pairs are optional parameters. The following are
+    ///    supported:
+    ///    [none for now]
+    /// For example:
+    /// --pcr "forward1_reverse1_1000_name1" --pcr "forward2_reverse2_2000_name2"
+    #[arg(short = 'r', long)]
+    rad: Vec<String>,
+
     /// Verbosity
     #[arg(long, default_value_t = 0)]
     verbosity: usize,
@@ -266,6 +348,31 @@ fn main() {
             gene_names.push(pcr_params.gene_name.clone());
         }
     }
+
+    // Loop over the rad strings, check that they are valid, and add each to the rad_runs vector
+    let mut rad_runs: Vec<rad::RADParams> = Vec::new();
+    for rad_string in args.rad.iter() {
+        let parsed_rad = parse_rad_string(rad_string);
+        match parsed_rad {
+            Ok(rad_params) => {
+                rad_runs.push(rad_params);
+            }
+            Err(err) => {
+                panic!("Error parsing rad string: {}", err);
+            }
+        }
+    }
+
+    // Check that there are no duplicate rad names
+    let mut rad_names: Vec<String> = Vec::new();
+    for rad_params in rad_runs.iter() {
+        if rad_names.contains(&rad_params.name) {
+            panic!("Duplicate rad name: {}", rad_params.name);
+        } else {
+            rad_names.push(rad_params.name.clone());
+        }
+    }
+
 
     // Set the number of threads for Rayon to use
     rayon::ThreadPoolBuilder::new()
@@ -492,6 +599,34 @@ fn main() {
         }
 
         println!("Done running in silico PCR");
+    }
+
+    if !rad_runs.is_empty() {
+        println!("Running in silico RAD-seq...");
+
+        for rad_params in rad_runs.iter() {
+            let fasta = rad::do_rad(
+                &kmer_counts,
+                &{ args.k },
+                &args.sample,
+                args.verbosity,
+                rad_params,
+            );
+
+            if !fasta.is_empty() {
+                let fasta_path = format!(
+                    "{}{}_{}.fasta",
+                    directory, args.sample, rad_params.name
+                );
+                let mut fasta_writer =
+                    fasta::Writer::new(std::fs::File::create(fasta_path).unwrap());
+                for record in fasta {
+                    fasta_writer.write_record(&record).unwrap();
+                }
+            }
+        }
+
+        println!("Done running in silico RAD-seq");
     }
 
     println!("Total run time: {:?}", start_run.elapsed());
