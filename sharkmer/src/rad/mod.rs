@@ -106,8 +106,11 @@ pub fn do_rad(
 	let mut start_primer_i = 0;
 	for starting_kmer in cut1_kmers {
 		let prefix = starting_kmer >> 2;
-		let mut n_records: usize = 0;
 		start_primer_i += 1;
+
+		if verbosity > 0 {
+			println!("{} Starting kmer analysis", crate::kmer::kmer_to_seq(&starting_kmer, &k));
+		}
 
 		let mut graph: StableDiGraph<crate::pcr::DBNode, crate::pcr::DBEdge> = StableDiGraph::new();
 		graph.add_node(crate::pcr::DBNode {
@@ -133,7 +136,7 @@ pub fn do_rad(
 					// Get the suffix of the kmer of the node
 					let sub_kmer = graph[node].sub_kmer;
 
-					if verbosity > 1 {
+					if verbosity > 9 {
 						print!(
 							"  {} sub_kmer being extended for node {}. ",
 							crate::kmer::kmer_to_seq(&sub_kmer, &(*k - 1)),
@@ -153,7 +156,7 @@ pub fn do_rad(
 					// Retain only the candidate kmers that are in the kmers hash
 					candidate_kmers.retain(|kmer| kmers.contains(kmer));
 	
-					if verbosity > 1 {
+					if verbosity > 9 {
 						print!(
 							"There are {} candidate kmers for extension. ",
 							candidate_kmers.len()
@@ -163,7 +166,7 @@ pub fn do_rad(
 	
 					// If there are no candidate kmers, the node is terminal
 					if candidate_kmers.is_empty() {
-						if verbosity > 1 {
+						if verbosity > 9 {
 							println!("Marking node as terminal because there are no candidates for extension. ");
 							std::io::stdout().flush().unwrap();
 						}
@@ -180,7 +183,7 @@ pub fn do_rad(
 						if suffix == sub_kmer {
 							graph[node].is_terminal = true;
 							graph[node].visited = true;
-							if verbosity > 1 {
+							if verbosity > 9 {
 								print!(
 									"Node {} extends itself. Marking as terminal. ",
 									node.index()
@@ -199,8 +202,11 @@ pub fn do_rad(
 								if !crate::pcr::would_form_cycle(&graph, node, existing_node) {
 									let edge = crate::pcr::get_dbedge(kmer, &kmer_counts, k);
 									graph.add_edge(node, existing_node, edge);
+									
 									if graph[existing_node].is_end {
-										println!("New edge added to End node.");
+										if verbosity > 5 {
+											println!("New edge added to End node.");
+										}
 									}
 									let outgoing =
 										graph.neighbors_directed(node, Direction::Outgoing).count();
@@ -212,7 +218,7 @@ pub fn do_rad(
 								} else {
 									graph[node].is_terminal = true;
 	
-									if verbosity > 1 {
+									if verbosity > 2 {
 										print!(
 											"Adding edge to node {} would form cycle. Not adding edge, and marking current node as terminal. ",
 											node.index()
@@ -248,7 +254,7 @@ pub fn do_rad(
 								);
 							}
 	
-							if verbosity > 1 {
+							if verbosity > 9 {
 								print!(
 									"Added sub_kmer {} for new node {} with edge kmer count {}. ",
 									crate::kmer::kmer_to_seq(&suffix, &(*k - 1)),
@@ -263,16 +269,16 @@ pub fn do_rad(
 							let path_length = crate::pcr::get_path_length(&graph, new_node);
 
 							if is_end {
-								//if verbosity > 1 {
-									println!("New node {} is an end node, with path length {}. ", new_node.index(), path_length.unwrap_or(0));
+								if verbosity > 1 {
+									println!("  New node {} is an end node, with path length {}. ", new_node.index(), path_length.unwrap_or(0));
 									std::io::stdout().flush().unwrap();
-								//}
+								}
 							}
 	
 							// If the path length is None, the node is part of a cycle and is marked terminal.
 							// If the path length is Some, is marked terminal if the path length is >= max_length-k+1
 							if let Some(path_length) = path_length {
-								if verbosity > 1 {
+								if verbosity > 9 {
 									print!("Path length is {}. ", path_length);
 									std::io::stdout().flush().unwrap();
 								}
@@ -280,14 +286,14 @@ pub fn do_rad(
 								if path_length > params.max_length - (*k) {
 									graph[new_node].is_terminal = true;
 									graph[new_node].visited = true;
-									if verbosity > 1 {
+									if verbosity > 5 {
 										print!("Marking new node {} as terminal because it exceeds max_length from start. ", new_node.index());
 										std::io::stdout().flush().unwrap();
 									}
 								}
 							} else {
 								graph[new_node].is_terminal = true;
-								if verbosity > 1 {
+								if verbosity > 5 {
 									print!("Marking new node {} as terminal because it is part of a cycle. ", new_node.index());
 									std::io::stdout().flush().unwrap();
 								}
@@ -296,7 +302,7 @@ pub fn do_rad(
 					}
 					graph[node].visited = true;
 	
-					if verbosity > 1 {
+					if verbosity > 2 {
 						println!(
 							"There are now {} unvisited and {} non-terminal nodes in the graph. ",
 							crate::pcr::n_unvisited_nodes_in_graph(&graph),
