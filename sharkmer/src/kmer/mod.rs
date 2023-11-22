@@ -212,7 +212,7 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
                     let modulo = position % 4;
                     if modulo != 0 {
                         let shift = 2 * (4 - modulo);
-                        frame = frame << shift;
+                        frame <<= shift;
                         ints.push(frame);
                     }
 
@@ -244,7 +244,7 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
         let modulo = position % 4;
         if modulo != 0 {
             let shift = 2 * (4 - modulo);
-            frame = frame << shift;
+            frame <<= shift;
             ints.push(frame);
         }
 

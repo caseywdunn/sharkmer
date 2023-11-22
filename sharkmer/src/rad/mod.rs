@@ -29,7 +29,7 @@ fn generate_fastas(
     let mut to_print = String::new();
     let mut records_vec: Vec<fasta::Record> = Vec::new();
     let prefix = starting_kmer >> 2;
-    let starting_seq = crate::kmer::kmer_to_seq(&starting_kmer, &k);
+    let starting_seq = crate::kmer::kmer_to_seq(starting_kmer, k);
     let suffix_mask: u64 = (1 << (2 * (*k - 1))) - 1;
 
     // Get the kmer and mask for cut1 and the end of the kmer
@@ -139,7 +139,7 @@ fn generate_fastas(
                     for existing_node in graph.node_indices() {
                         if graph[existing_node].sub_kmer == suffix {
                             if !crate::pcr::would_form_cycle(&graph, node, existing_node) {
-                                let edge = crate::pcr::get_dbedge(kmer, &kmer_counts, k);
+                                let edge = crate::pcr::get_dbedge(kmer, kmer_counts, k);
                                 graph.add_edge(node, existing_node, edge);
 
                                 if graph[existing_node].is_end {
@@ -169,12 +169,12 @@ fn generate_fastas(
                     }
 
                     if !node_exists {
-                        let edge = crate::pcr::get_dbedge(kmer, &kmer_counts, k);
+                        let edge = crate::pcr::get_dbedge(kmer, kmer_counts, k);
                         let edge_count = edge.count;
 
                         // Add the new node, marking it as an end node if it matches the cut2 kmer
                         let is_end = kmer & cut2_mask_terminal == cut2_kmer_terminal;
-                        let mut new_node: NodeIndex = NodeIndex::new(0);
+                        let new_node: NodeIndex;
                         if kmer & cut2_mask_terminal == cut2_kmer_terminal {
                             // kmer ends with cut2, so it is terminal and end
                             new_node = graph.add_node(crate::pcr::DBNode {
@@ -297,7 +297,7 @@ fn generate_fastas(
         to_print = format!(
             "{}  No end nodes found for cut1 kmer {}\n",
             to_print,
-            crate::kmer::kmer_to_seq(&starting_kmer, &(*k - 1))
+            crate::kmer::kmer_to_seq(starting_kmer, &(*k - 1))
         );
         if verbosity > 0 {
             print!("{}", to_print);
@@ -351,7 +351,6 @@ fn generate_fastas(
 
     // Look for paths between each combination of start and end nodes
 
-    let mut i_path = 0;
     for start in crate::pcr::get_start_nodes(&graph) {
         for end in crate::pcr::get_end_nodes(&graph) {
             let paths_for_this_pair =
@@ -417,7 +416,7 @@ fn generate_fastas(
         }
     }
 
-    return records_vec;
+    records_vec
 }
 
 pub struct RADParams {
@@ -463,7 +462,6 @@ pub fn do_rad(
 
     // Create a hash set of the keys of kmer_counts
     let kmers: std::collections::HashSet<u64> = kmer_counts.keys().copied().collect();
-    let suffix_mask: u64 = (1 << (2 * (*k - 1))) - 1;
 
     println!(
         "  The number of unique kmers went from {} to {}",
@@ -483,7 +481,7 @@ pub fn do_rad(
 
     // Get all the kmers that start with cut1
     let mut cut1_kmers: Vec<u64> = Vec::new();
-    for (kmer, _count) in &kmer_counts {
+    for kmer in kmer_counts.keys() {
         if kmer & cut1_mask == cut1_kmer {
             cut1_kmers.push(*kmer);
         }
