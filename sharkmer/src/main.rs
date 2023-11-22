@@ -640,6 +640,7 @@ fn main() {
             );
 
             if !fasta.is_empty() {
+                println!("{} rad sequences found for {}", fasta.len(), rad_params.name);
                 let fasta_path = format!(
                     "{}{}_{}.fasta",
                     directory, args.sample, rad_params.name

@@ -25,7 +25,6 @@ fn generate_fastas(
 	kmer_counts: &FxHashMap<u64, u64>,
 	kmers: &std::collections::HashSet<u64>, 
 	starting_kmer: &u64, 
-	cut2_kmer: &u64,
 	k: &usize, 
 	verbosity: usize
 ) -> Vec<fasta::Record> {
@@ -35,14 +34,23 @@ fn generate_fastas(
 	let starting_seq = crate::kmer::kmer_to_seq(&starting_kmer, &k);
 	let suffix_mask: u64 = (1 << (2 * (*k - 1))) - 1;
 
-	let mut cut2_mask: u64 = 0;
-	for _i in 0..(2 * params.cut2.len()) {
-		cut2_mask = (cut2_mask << 1) | 1;
+	// Get the kmer and mask for cut1 and the end of the kmer
+	let cut1_kmer_terminal = crate::pcr::string_to_oligo(&params.cut1).kmer;
+	let mut cut1_mask_terminal: u64 = 0;
+	for _i in 0..(2 * params.cut1.len()) {
+		cut1_mask_terminal = (cut1_mask_terminal << 1) | 1;
 	}
 
+	// Get the kmer and mask for cut2 and the end of the kmer
+	let cut2_kmer_terminal = crate::pcr::string_to_oligo(&params.cut2).kmer;
+	let mut cut2_mask_terminal: u64 = 0;
+	for _i in 0..(2 * params.cut2.len()) {
+		cut2_mask_terminal = (cut2_mask_terminal << 1) | 1;
+	}
 
 	to_print = format!("{}{} Starting kmer analysis\n", to_print, starting_seq);
 
+	// Create a graph with the starting kmer as the only node
 	let mut graph: StableDiGraph<crate::pcr::DBNode, crate::pcr::DBEdge> = StableDiGraph::new();
 	graph.add_node(crate::pcr::DBNode {
 		sub_kmer: prefix,
@@ -51,6 +59,8 @@ fn generate_fastas(
 		is_terminal: false,
 		visited: false, // Will not be extended
 	});
+
+	// Extend the graph until all nodes have been visited
 	while crate::pcr::n_unvisited_nodes_in_graph(&graph) > 0 {
 		let n_nodes = graph.node_count();
 
@@ -63,7 +73,7 @@ fn generate_fastas(
 		}
 
 		let node_indices: Vec<_> = graph.node_indices().collect();
-		for node in node_indices {
+		'nodes: for node in node_indices {
 			if !(graph[node].visited) {
 				// Get the suffix of the kmer of the node
 				let sub_kmer = graph[node].sub_kmer;
@@ -89,21 +99,21 @@ fn generate_fastas(
 				candidate_kmers.retain(|kmer| kmers.contains(kmer));
 
 				if verbosity > 9 {
-					print!(
-						"There are {} candidate kmers for extension. ",
+					to_print = format!(
+						"{}  There are {} candidate kmers for extension.\n",
+						to_print,
 						candidate_kmers.len()
 					);
-					std::io::stdout().flush().unwrap();
 				}
 
 				// If there are no candidate kmers, the node is terminal
 				if candidate_kmers.is_empty() {
 					if verbosity > 9 {
-						println!("  Marking node as terminal because there are no candidates for extension.\n");
+						to_print = format!("{}  There are no candidate kmers for extension. Marking node as terminal.\n", to_print);
 					}
 					graph[node].is_terminal = true;
 					graph[node].visited = true;
-					continue;
+					continue 'nodes;
 				}
 
 				// Add new nodes if needed, and new edges
@@ -115,13 +125,9 @@ fn generate_fastas(
 						graph[node].is_terminal = true;
 						graph[node].visited = true;
 						if verbosity > 9 {
-							print!(
-								"Node {} extends itself. Marking as terminal. ",
-								node.index()
-							);
-							std::io::stdout().flush().unwrap();
+							to_print = format!("{}  Node {} extends itself. Marking as terminal.\n", to_print, node.index());
 						}
-						break;
+						continue 'nodes;
 					}
 
 					// If the node with sub_kmer == suffix already exists, add an edge to the existing node
@@ -150,11 +156,7 @@ fn generate_fastas(
 								graph[node].is_terminal = true;
 
 								if verbosity > 2 {
-									print!(
-										"Adding edge to node {} would form cycle. Not adding edge, and marking current node as terminal. ",
-										node.index()
-									);
-									std::io::stdout().flush().unwrap();
+									to_print = format!("{}  Adding edge to node {} would form cycle. Not adding edge, and marking current node as terminal.\n", to_print, node.index());
 								}
 							}
 
@@ -168,14 +170,36 @@ fn generate_fastas(
 						let edge_count = edge.count;
 						
 						// Add the new node, marking it as an end node if it matches the cut2 kmer
-						let is_end = kmer & cut2_mask == *cut2_kmer;
-						let new_node = graph.add_node(crate::pcr::DBNode {
-							sub_kmer: suffix,
-							is_start: false,
-							is_end: is_end,
-							is_terminal: is_end,
-							visited: is_end,
-						});
+						let is_end = kmer & cut2_mask_terminal == cut2_kmer_terminal;
+						let mut new_node: NodeIndex = NodeIndex::new(0);
+						if kmer & cut2_mask_terminal == cut2_kmer_terminal {
+							// kmer ends with cut2, so it is terminal and end
+							new_node = graph.add_node(crate::pcr::DBNode {
+								sub_kmer: suffix,
+								is_start: false,
+								is_end: true,
+								is_terminal: true,
+								visited: true,
+							});
+						} else if kmer & cut1_mask_terminal == cut1_kmer_terminal {
+							// kmer ends with cut1, so it is terminal but not end
+							new_node = graph.add_node(crate::pcr::DBNode {
+								sub_kmer: suffix,
+								is_start: false,
+								is_end: false,
+								is_terminal: true,
+								visited: true,
+							});
+						} else {
+							// kmer is neither start nor end
+							new_node = graph.add_node(crate::pcr::DBNode {
+								sub_kmer: suffix,
+								is_start: false,
+								is_end: false,
+								is_terminal: false,
+								visited: false,
+							});
+						}
 
 						graph.add_edge(node, new_node, edge);
 						let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
@@ -186,13 +210,13 @@ fn generate_fastas(
 						}
 
 						if verbosity > 9 {
-							print!(
-								"Added sub_kmer {} for new node {} with edge kmer count {}. ",
+							to_print = format!(
+								"{}  Added sub_kmer {} for new node {} with edge kmer count {}.\n",
+								to_print,
 								crate::kmer::kmer_to_seq(&suffix, &(*k - 1)),
 								new_node.index(),
 								edge_count
 							);
-							std::io::stdout().flush().unwrap();
 						}
 
 						// Check if the new node is max_length-k+1 from a start node
@@ -216,15 +240,13 @@ fn generate_fastas(
 								graph[new_node].is_terminal = true;
 								graph[new_node].visited = true;
 								if verbosity > 5 {
-									print!("Marking new node {} as terminal because it exceeds max_length from start. ", new_node.index());
-									std::io::stdout().flush().unwrap();
+									to_print = format!("{}  Marking new node {} as terminal because it exceeds max_length from start.\n", to_print, new_node.index());
 								}
 							}
 						} else {
 							graph[new_node].is_terminal = true;
 							if verbosity > 5 {
-								print!("Marking new node {} as terminal because it is part of a cycle. ", new_node.index());
-								std::io::stdout().flush().unwrap();
+								to_print = format!("{}  Marking new node {} as terminal because it is part of a cycle.\n", to_print, new_node.index());
 							}
 						}
 					}
@@ -242,17 +264,10 @@ fn generate_fastas(
 			}
 		}
 	}
+	
 	// Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
 	let mut start_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
 	let mut end_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
-
-	if end_nodes_map.is_empty() {
-		to_print = format!("{}  No end nodes found for cut1 kmer {}\n", to_print, crate::kmer::kmer_to_seq(&starting_kmer, &(*k - 1)));
-		if verbosity > 0 {
-			print!("{}", to_print);
-		}
-		return records_vec;
-	}
 
 	for node in graph.node_indices() {
 		if graph[node].is_start {
@@ -267,6 +282,14 @@ fn generate_fastas(
 				graph.neighbors_directed(node, Direction::Incoming).count(),
 			);
 		}
+	}
+
+	if end_nodes_map.is_empty() {
+		to_print = format!("{}  No end nodes found for cut1 kmer {}\n", to_print, crate::kmer::kmer_to_seq(&starting_kmer, &(*k - 1)));
+		if verbosity > 0 {
+			print!("{}", to_print);
+		}
+		return records_vec;
 	}
 
 	// Drop entries that have no edges
@@ -341,7 +364,7 @@ fn generate_fastas(
 	}
 
 	// For each path, get the sequence of the path
-	for (i, path) in all_paths.into_iter().enumerate() {
+	'paths: for (i, path) in all_paths.into_iter().enumerate() {
 		let mut sequence = String::new();
 		let mut edge_counts: Vec<u64> = Vec::new();
 		let mut parent_node: NodeIndex = NodeIndex::new(0);
@@ -365,7 +388,7 @@ fn generate_fastas(
 
 		if sequence.len() < params.min_length {
 			to_print = format!("{}  RAD product {} is too short ({} bases). Skipping.\n", to_print, i, sequence.len());
-			continue;
+			continue 'paths;
 		}
 
 		// Get some stats on the path counts
@@ -452,10 +475,7 @@ pub fn do_rad(
 	// Get the cut1 kmer and rotate it to the start of the kmer
 	let mut cut1_kmer = crate::pcr::string_to_oligo(&params.cut1).kmer;
 	cut1_kmer <<= 2 * *k - 2 * params.cut1.len();
-	
 
-	// Get the cut2 kmer
-	let cut2_kmer = crate::pcr::string_to_oligo(&params.cut2).kmer;
 
 	// Get all the kmers that start with cut1
 	let mut cut1_kmers: Vec<u64> = Vec::new();
@@ -474,7 +494,7 @@ pub fn do_rad(
 	// stop and go to next cut1 kmer.
 
 	let records: Vec<fasta::Record> = cut1_kmers.par_iter()
-		.map(|starting_kmer| generate_fastas(params, sample_name, &kmer_counts, &kmers, starting_kmer, &cut2_kmer, k, verbosity) )
+		.map(|starting_kmer| generate_fastas(params, sample_name, &kmer_counts, &kmers, starting_kmer, k, verbosity) )
 		.flatten() // This flattens Vec<fasta::Record> into an iterator of fasta::Record
 		.collect();  // Collect all records into a Vec
 
