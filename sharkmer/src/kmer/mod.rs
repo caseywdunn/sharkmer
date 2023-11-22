@@ -217,7 +217,7 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
                     }
 
                     // Create and push the read to the vector
-                    let read = Read::new(ints, length-1); // Don't count this N in the length
+                    let read = Read::new(ints, length - 1); // Don't count this N in the length
                     reads.push(read);
                     length = 0;
                     ints = Vec::with_capacity(seq.len() / 4 + 1);
@@ -254,8 +254,6 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
     }
     reads
 }
-
-
 
 /// Generates a histogram from kmer counts.
 ///
@@ -360,7 +358,10 @@ mod tests {
         // 'G' => 2, // 10
         // 'T' => 3, // 11
         let seq = "CGTAATGCGGCGA";
-        let expected = vec![Read::new(vec![0b01101100, 0b00111001, 0b10100110, 0b00000000], 13)];
+        let expected = vec![Read::new(
+            vec![0b01101100, 0b00111001, 0b10100110, 0b00000000],
+            13,
+        )];
         let actual = seq_to_reads(seq);
         assert_eq!(actual, expected);
 
@@ -382,7 +383,10 @@ mod tests {
         // 'G' => 2, // 10
         // 'T' => 3, // 11
         let seq = "CGTANATGCGGCGA";
-        let expected = vec![Read::new(vec![0b01101100], 4), Read::new(vec![0b00111001, 0b10100110, 0b00000000], 9)];
+        let expected = vec![
+            Read::new(vec![0b01101100], 4),
+            Read::new(vec![0b00111001, 0b10100110, 0b00000000], 9),
+        ];
         let actual = seq_to_reads(seq);
         assert_eq!(actual, expected);
     }
@@ -422,7 +426,7 @@ mod tests {
             0b01_1001_0011_1100_0110,
             0b01_0110_0100_1111_0001,
             0b10_0101_1001_0011_1100,
-            0b00_0011_1001_1010_0110, 
+            0b00_0011_1001_1010_0110,
         ];
         let actual = read.get_kmers(&9usize);
         assert_eq!(actual, expected);
@@ -439,10 +443,7 @@ mod tests {
 
         // Test cases where read length not divisible by 4
         let read = Read::new(ints.clone(), 10);
-        let expected = vec![
-            0b01_1001_0011_1100_0110,
-            0b01_0110_0100_1111_0001,
-        ];
+        let expected = vec![0b01_1001_0011_1100_0110, 0b01_0110_0100_1111_0001];
         let actual = read.get_kmers(&9usize);
         assert_eq!(actual, expected);
     }

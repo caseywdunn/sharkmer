@@ -2,17 +2,17 @@ use bio::alignment::distance::simd::*;
 use bio::io::fasta;
 use colored::*;
 use petgraph::algo::{all_simple_paths, is_cyclic_directed};
+use petgraph::dot::{Config, Dot};
 use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
-use petgraph::visit::{EdgeRef, Bfs};
+use petgraph::visit::{Bfs, EdgeRef};
 use petgraph::Direction;
-use petgraph::dot::{Dot, Config};
 use rustc_hash::FxHashMap;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
-use std::io::Write;
 use std::fs::File;
+use std::io::Write;
 
 use crate::COLOR_FAIL;
 use crate::COLOR_NOTE;
@@ -127,12 +127,14 @@ fn get_backward_node_degrees(
 
     while current_depth < depth {
         // Get the number of outgoing edges from the current node
-        let degree = graph.edges_directed(current_node, Direction::Outgoing).count();
+        let degree = graph
+            .edges_directed(current_node, Direction::Outgoing)
+            .count();
         node_degrees.push(degree);
 
         let incoming_edges: Vec<_> = graph
-        .edges_directed(current_node, Direction::Incoming)
-        .collect();
+            .edges_directed(current_node, Direction::Incoming)
+            .collect();
 
         // Move to the next node (the source of the first incoming edge)
         if let Some(edge) = incoming_edges.first() {
@@ -147,7 +149,6 @@ fn get_backward_node_degrees(
 
     node_degrees
 }
-
 
 pub fn compute_mean(numbers: &[u64]) -> f64 {
     let sum: u64 = numbers.iter().sum();
@@ -206,7 +207,7 @@ fn resolve_primer(primer: &str) -> HashSet<String> {
             'H' => vec!['A', 'C', 'T'],
             'V' => vec!['A', 'C', 'G'],
             'N' => vec!['A', 'C', 'G', 'T'],
-            _ => vec![nuc],  // Use the nucleotide directly
+            _ => vec![nuc], // Use the nucleotide directly
         };
 
         if sequences.is_empty() {
@@ -227,7 +228,6 @@ fn resolve_primer(primer: &str) -> HashSet<String> {
 
     sequences
 }
-
 
 /// Given a set of sequences, return a set of all sequences that differ
 /// from each original sequence at up to r positions. Includes the original
@@ -321,7 +321,6 @@ fn find_oligos_in_kmers(
     k: &usize,
     dir: &PrimerDirection,
 ) -> FxHashMap<u64, u64> {
-
     // Assume all oligos have the same length
     let oligo_length = oligos[0].length;
 
@@ -389,7 +388,10 @@ pub fn n_unvisited_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usiz
     n
 }
 
-pub fn get_path_length(graph: &StableDiGraph<DBNode, DBEdge>, new_node: NodeIndex) -> Option<usize> {
+pub fn get_path_length(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    new_node: NodeIndex,
+) -> Option<usize> {
     // Get the length of the path from the start node to the new node
     let mut path_length = 0;
     let mut current_node = new_node;
@@ -1145,7 +1147,6 @@ pub fn do_pcr(
                     continue;
                 }
 
-                
                 // Get the degrees of ancestor nodes, skipping degree of this node
                 let node_degrees = get_backward_node_degrees(&graph, node, 20);
                 let node_degrees_slice = &node_degrees[1..];
@@ -1389,7 +1390,8 @@ pub fn do_pcr(
         let file_name = format!("{}_{}.dot", sample_name, params.gene_name); // Concatenating the file extension
         println!("Writing dot file {}", file_name);
         let mut file = File::create(&file_name).expect("Unable to create file");
-        file.write_all(dot_format.as_bytes()).expect("Unable to write data");
+        file.write_all(dot_format.as_bytes())
+            .expect("Unable to write data");
     }
 
     // Simplify the graph
@@ -1751,9 +1753,9 @@ mod tests {
         // Testing using the node indices from the HashMap
         assert_eq!(get_backward_edge_counts(&graph, nodes["a"], 3).len(), 0);
         assert_eq!(get_backward_edge_counts(&graph, nodes["b"], 3), [5]);
-        assert_eq!(get_backward_edge_counts(&graph, nodes["c"], 3), [10,5]);
-        assert_eq!(get_backward_edge_counts(&graph, nodes["d"], 3), [4,10,5]);
-        assert_eq!(get_backward_edge_counts(&graph, nodes["e"], 3), [1,10,5]);
+        assert_eq!(get_backward_edge_counts(&graph, nodes["c"], 3), [10, 5]);
+        assert_eq!(get_backward_edge_counts(&graph, nodes["d"], 3), [4, 10, 5]);
+        assert_eq!(get_backward_edge_counts(&graph, nodes["e"], 3), [1, 10, 5]);
     }
 
     #[test]
@@ -1762,11 +1764,17 @@ mod tests {
 
         // Testing using the node indices from the HashMap
         assert_eq!(get_backward_node_degrees(&graph, nodes["a"], 3), [1]);
-        assert_eq!(get_backward_node_degrees(&graph, nodes["b"], 3), [1,1]);
-        assert_eq!(get_backward_node_degrees(&graph, nodes["c"], 3), [2,1,1]);
-        assert_eq!(get_backward_node_degrees(&graph, nodes["d"], 4), [0,2,1,1]);
-        assert_eq!(get_backward_node_degrees(&graph, nodes["e"], 4), [0,2,1,1]);
-        assert_eq!(get_backward_node_degrees(&graph, nodes["d"], 3), [0,2,1]);
+        assert_eq!(get_backward_node_degrees(&graph, nodes["b"], 3), [1, 1]);
+        assert_eq!(get_backward_node_degrees(&graph, nodes["c"], 3), [2, 1, 1]);
+        assert_eq!(
+            get_backward_node_degrees(&graph, nodes["d"], 4),
+            [0, 2, 1, 1]
+        );
+        assert_eq!(
+            get_backward_node_degrees(&graph, nodes["e"], 4),
+            [0, 2, 1, 1]
+        );
+        assert_eq!(get_backward_node_degrees(&graph, nodes["d"], 3), [0, 2, 1]);
     }
 
     #[test]

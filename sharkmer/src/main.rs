@@ -291,11 +291,11 @@ struct Args {
     /// --rad "cut1_cut2_min-length_max-length_name_key1=value1_key2=value2"
     /// Where:
     ///   cut1 is the restriction site for the first enzyme
-    ///   cut2 is the restriction site for the second enzyme. If using 
+    ///   cut2 is the restriction site for the second enzyme. If using
     ///     a single enzyme, set cut2 to the same value as cut1.
-    ///   min-length is the minimum length of the digest product, 
+    ///   min-length is the minimum length of the digest product,
     ///    including the full cut site.
-    ///   max-length is the maximum length of the digest product, 
+    ///   max-length is the maximum length of the digest product,
     ///    including the full cut site.
     ///   name is a unique name for this rad-seq configuration.
     ///   key=value pairs are optional parameters. The following are
@@ -398,7 +398,6 @@ fn main() {
             rad_names.push(rad_params.name.clone());
         }
     }
-
 
     // Set the number of threads for Rayon to use
     rayon::ThreadPoolBuilder::new()
@@ -640,18 +639,18 @@ fn main() {
             );
 
             if !fasta.is_empty() {
-                println!("{} rad sequences found for {}", fasta.len(), rad_params.name);
-                let fasta_path = format!(
-                    "{}{}_{}.fasta",
-                    directory, args.sample, rad_params.name
+                println!(
+                    "{} rad sequences found for {}",
+                    fasta.len(),
+                    rad_params.name
                 );
+                let fasta_path = format!("{}{}_{}.fasta", directory, args.sample, rad_params.name);
                 let mut fasta_writer =
                     fasta::Writer::new(std::fs::File::create(fasta_path).unwrap());
                 for record in fasta {
                     fasta_writer.write_record(&record).unwrap();
                 }
-            }
-            else{
+            } else {
                 println!("No sequences found for {}", rad_params.name);
             }
         }
