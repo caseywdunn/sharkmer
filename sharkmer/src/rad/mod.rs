@@ -40,9 +40,8 @@ fn generate_fastas(
 		cut2_mask = (cut2_mask << 1) | 1;
 	}
 
-	if verbosity > 0 {
-		println!("{} Starting kmer analysis", starting_seq);
-	}
+
+	to_print = format!("{}{} Starting kmer analysis\n", to_print, starting_seq);
 
 	let mut graph: StableDiGraph<crate::pcr::DBNode, crate::pcr::DBEdge> = StableDiGraph::new();
 	graph.add_node(crate::pcr::DBNode {
@@ -100,8 +99,7 @@ fn generate_fastas(
 				// If there are no candidate kmers, the node is terminal
 				if candidate_kmers.is_empty() {
 					if verbosity > 9 {
-						println!("Marking node as terminal because there are no candidates for extension. ");
-						std::io::stdout().flush().unwrap();
+						println!("  Marking node as terminal because there are no candidates for extension.\n");
 					}
 					graph[node].is_terminal = true;
 					graph[node].visited = true;
@@ -138,7 +136,7 @@ fn generate_fastas(
 								
 								if graph[existing_node].is_end {
 									if verbosity > 5 {
-										println!("New edge added to End node.");
+										to_print = format!("{}  New edge added to End node.\n", to_print);
 									}
 								}
 								let outgoing =
@@ -203,8 +201,7 @@ fn generate_fastas(
 
 						if is_end {
 							if verbosity > 1 {
-								println!("  New node {} is an end node, with path length {}. ", new_node.index(), path_length.unwrap_or(0));
-								std::io::stdout().flush().unwrap();
+								to_print = format!("{}  New node {} is an end node, with path length {}.\n", to_print, new_node.index(), path_length.unwrap_or(0));
 							}
 						}
 
@@ -212,8 +209,7 @@ fn generate_fastas(
 						// If the path length is Some, is marked terminal if the path length is >= max_length-k+1
 						if let Some(path_length) = path_length {
 							if verbosity > 9 {
-								print!("Path length is {}. ", path_length);
-								std::io::stdout().flush().unwrap();
+								to_print = format!("{}  Path length is {}.\n", to_print, path_length);
 							}
 
 							if path_length > params.max_length - (*k) {
@@ -236,12 +232,12 @@ fn generate_fastas(
 				graph[node].visited = true;
 
 				if verbosity > 2 {
-					println!(
-						"There are now {} unvisited and {} non-terminal nodes in the graph. ",
+					to_print = format!(
+						"{}There are now {} unvisited and {} non-terminal nodes in the graph.\n",
+						to_print,
 						crate::pcr::n_unvisited_nodes_in_graph(&graph),
 						crate::pcr::n_nonterminal_nodes_in_graph(&graph)
 					);
-					std::io::stdout().flush().unwrap();
 				}
 			}
 		}
@@ -277,20 +273,16 @@ fn generate_fastas(
 	start_nodes_map.retain(|_node, edge_count| *edge_count > 0);
 	end_nodes_map.retain(|_node, edge_count| *edge_count > 0);
 
-	println!("Final extension statistics:");
-	crate::pcr::summarize_extension(&graph, "    ");
-	println!(
-		"  There are {} start nodes with edges",
+	to_print = format!(
+		"{}  There are {} start nodes with edges\n",
+		to_print,
 		start_nodes_map.len()
 	);
-	println!("  There are {} end nodes with edges", end_nodes_map.len());	
+	to_print = format!("{}  There are {} end nodes with edges\n", to_print, end_nodes_map.len());	
 
 	// Simplify the graph
 	// all_simple_paths() hangs if the input graph is too complex
 	// Also want to regularize some graph features
-
-	let start = std::time::Instant::now();
-	println!("Pruning the assembly graph...");
 
 	// Iteratively remove nodes that do not have outgoing edges and are not end nodes
 	// These are terminal side branches.
@@ -318,8 +310,6 @@ fn generate_fastas(
 	}
 
 	// Get all paths from start nodes to terminal nodes
-	let start = std::time::Instant::now();
-	println!("Traversing the assembly graph to find paths from forward to reverse primers...");
 	let mut all_paths = Vec::new();
 	
 
@@ -336,11 +326,11 @@ fn generate_fastas(
 		}
 	}
 
-	println!(
-		"  There are {} paths from forward to reverse primers in the graph",
+	to_print = format!(
+		"{}  There are {} paths from the start to end node in the graph\n",
+		to_print,
 		all_paths.len()
 	);
-	println!("done.  Time to traverse graph: {:?}", start.elapsed());
 
 	if all_paths.is_empty() {
 		to_print = format!("{}  No path found\n", to_print);
@@ -349,8 +339,6 @@ fn generate_fastas(
 		}
 		return records_vec;
 	}
-
-	println!("Generating sequences from paths...");
 
 	// For each path, get the sequence of the path
 	for (i, path) in all_paths.into_iter().enumerate() {
@@ -398,8 +386,6 @@ fn generate_fastas(
 			count_min,
 			count_max
 		);
-		println!(">{}", id);
-		println!("{}", sequence);
 		let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
 		records_vec.push(record);
 	}
