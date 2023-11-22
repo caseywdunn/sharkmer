@@ -264,7 +264,7 @@ fn generate_fastas(
 			}
 		}
 	}
-	
+
 	// Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
 	let mut start_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
 	let mut end_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
@@ -332,10 +332,9 @@ fn generate_fastas(
 		}
 	}
 
-	// Get all paths from start nodes to terminal nodes
-	let mut all_paths = Vec::new();
+	// Look for paths between each combination of start and end nodes
 	
-
+	let mut i_path = 0;
 	for start in crate::pcr::get_start_nodes(&graph) {
 		for end in crate::pcr::get_end_nodes(&graph) {
 			let paths_for_this_pair = all_simple_paths::<
@@ -344,74 +343,59 @@ fn generate_fastas(
 			>(
 				&graph, start, end, 1, Some(params.max_length - (*k) + 1)
 			);
+			
+			// For each path, get the sequence of the path
+			'paths: for (i, path) in paths_for_this_pair.into_iter().enumerate() {
+				let mut sequence = String::new();
+				let mut edge_counts: Vec<u64> = Vec::new();
+				let mut parent_node: NodeIndex = NodeIndex::new(0);
+				// The first time through the loop add the whole sequence, after that just add the last base
+				for node in path.iter() {
+					let node_data = graph.node_weight(*node).unwrap();
+					let subread = crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(*k - 1));
+					if sequence.is_empty() {
+						sequence = subread;
+						parent_node = *node;
+					} else {
+						sequence = format!("{}{}", sequence, subread.chars().last().unwrap(),);
 
-			all_paths.extend(paths_for_this_pair);
-		}
-	}
+						// Get the edge count for the edge from the parent node to this node
+						let edge = graph.find_edge(parent_node, *node).unwrap();
+						let edge_data = graph.edge_weight(edge).unwrap();
+						edge_counts.push(edge_data.count);
+						parent_node = *node;
+					}
+				}
 
-	to_print = format!(
-		"{}  There are {} paths from the start to end node in the graph\n",
-		to_print,
-		all_paths.len()
-	);
+				if sequence.len() < params.min_length {
+					to_print = format!("{}  RAD product {} is too short ({} bases). Skipping.\n", to_print, i, sequence.len());
+					continue 'paths;
+				}
 
-	if all_paths.is_empty() {
-		to_print = format!("{}  No path found\n", to_print);
-		if verbosity > 0 {
-			print!("{}", to_print);
-		}
-		return records_vec;
-	}
+				// Get some stats on the path counts
+				let count_mean = crate::pcr::compute_mean(&edge_counts);
+				let count_median = crate::pcr::compute_median(&edge_counts);
+				let count_min = edge_counts.iter().min().unwrap();
+				let count_max = edge_counts.iter().max().unwrap();
 
-	// For each path, get the sequence of the path
-	'paths: for (i, path) in all_paths.into_iter().enumerate() {
-		let mut sequence = String::new();
-		let mut edge_counts: Vec<u64> = Vec::new();
-		let mut parent_node: NodeIndex = NodeIndex::new(0);
-		// The first time through the loop add the whole sequence, after that just add the last base
-		for node in path.iter() {
-			let node_data = graph.node_weight(*node).unwrap();
-			let subread = crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(*k - 1));
-			if sequence.is_empty() {
-				sequence = subread;
-				parent_node = *node;
-			} else {
-				sequence = format!("{}{}", sequence, subread.chars().last().unwrap(),);
-
-				// Get the edge count for the edge from the parent node to this node
-				let edge = graph.find_edge(parent_node, *node).unwrap();
-				let edge_data = graph.edge_weight(edge).unwrap();
-				edge_counts.push(edge_data.count);
-				parent_node = *node;
+				let id = format!(
+					"{} {} start {} product {} length {} kmer count stats mean {:.2} median {} min {} max {}",
+					sample_name,
+					params.name,
+					starting_seq,
+					i,
+					sequence.len(),
+					count_mean,
+					count_median,
+					count_min,
+					count_max
+				);
+				let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
+				records_vec.push(record);
 			}
 		}
-
-		if sequence.len() < params.min_length {
-			to_print = format!("{}  RAD product {} is too short ({} bases). Skipping.\n", to_print, i, sequence.len());
-			continue 'paths;
-		}
-
-		// Get some stats on the path counts
-		let count_mean = crate::pcr::compute_mean(&edge_counts);
-		let count_median = crate::pcr::compute_median(&edge_counts);
-		let count_min = edge_counts.iter().min().unwrap();
-		let count_max = edge_counts.iter().max().unwrap();
-
-		let id = format!(
-			"{} {} start {} product {} length {} kmer count stats mean {:.2} median {} min {} max {}",
-			sample_name,
-			params.name,
-			starting_seq,
-			i,
-			sequence.len(),
-			count_mean,
-			count_median,
-			count_min,
-			count_max
-		);
-		let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
-		records_vec.push(record);
 	}
+
 	return records_vec;
 }
 
