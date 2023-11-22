@@ -29,6 +29,7 @@ fn generate_fastas(
 	k: &usize, 
 	verbosity: usize
 ) -> Vec<fasta::Record> {
+	let mut to_print = String::new();
 	let mut records_vec: Vec<fasta::Record> = Vec::new();
 	let prefix = starting_kmer >> 2;
 	let starting_seq = crate::kmer::kmer_to_seq(&starting_kmer, &k);
@@ -55,10 +56,11 @@ fn generate_fastas(
 		let n_nodes = graph.node_count();
 
 		if n_nodes > MAX_NUM_NODES {
-			println!("{}",
-				format!("  There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.", n_nodes, MAX_NUM_NODES).color(COLOR_WARNING)
-			);
-			break;
+			to_print = format!("{}  There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.\n", to_print, n_nodes, MAX_NUM_NODES);
+			if verbosity > 0 {
+				print!("{}", to_print);
+			}
+			return records_vec;
 		}
 
 		let node_indices: Vec<_> = graph.node_indices().collect();
@@ -143,7 +145,7 @@ fn generate_fastas(
 									graph.neighbors_directed(node, Direction::Outgoing).count();
 								if outgoing > 4 {
 									println!("{}",
-										format!("WARNING: Node {} has {} outgoing edges. This exceed the maximum of 4 that is expected", node.index(), outgoing).color(COLOR_WARNING)
+										format!("WARNING: Node {} has {} outgoing edges. This exceed the maximum of 4 that is expected", node.index(), outgoing)
 									);
 								}
 							} else {
@@ -249,9 +251,10 @@ fn generate_fastas(
 	let mut end_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
 
 	if end_nodes_map.is_empty() {
-		println!("{}",
-			format!("  No end nodes found for cut1 kmer {}", crate::kmer::kmer_to_seq(&starting_kmer, &(*k - 1))).color(COLOR_WARNING)
-		);
+		to_print = format!("{}  No end nodes found for cut1 kmer {}\n", to_print, crate::kmer::kmer_to_seq(&starting_kmer, &(*k - 1)));
+		if verbosity > 0 {
+			print!("{}", to_print);
+		}
 		return records_vec;
 	}
 
@@ -340,7 +343,10 @@ fn generate_fastas(
 	println!("done.  Time to traverse graph: {:?}", start.elapsed());
 
 	if all_paths.is_empty() {
-		println!("No path found");
+		to_print = format!("{}  No path found\n", to_print);
+		if verbosity > 0 {
+			print!("{}", to_print);
+		}
 		return records_vec;
 	}
 
@@ -370,10 +376,8 @@ fn generate_fastas(
 		}
 
 		if sequence.len() < params.min_length {
-			println!("{}",
-				format!("RAD product {} is too short ({} bases). Skipping.", i, sequence.len()).color(COLOR_WARNING)
-			);
-			return records_vec;
+			to_print = format!("{}  RAD product {} is too short ({} bases). Skipping.\n", to_print, i, sequence.len());
+			continue;
 		}
 
 		// Get some stats on the path counts
