@@ -19,10 +19,25 @@ use crate::COLOR_WARNING;
 
 const MAX_NUM_NODES: usize = 5_000;
 
-fn generate_fastas(kmers: &std::collections::HashSet<u64>, starting_kmer: &u64, k: &usize, verbosity: &usize) -> Vec<fasta::Record> {
-	let records_vec: Vec<fasta::Record> = Vec::new();
+fn generate_fastas(
+	params: &RADParams,
+	sample_name: &str,
+	kmer_counts: &FxHashMap<u64, u64>,
+	kmers: &std::collections::HashSet<u64>, 
+	starting_kmer: &u64, 
+	cut2_kmer: &u64,
+	k: &usize, 
+	verbosity: usize
+) -> Vec<fasta::Record> {
+	let mut records_vec: Vec<fasta::Record> = Vec::new();
 	let prefix = starting_kmer >> 2;
 	let starting_seq = crate::kmer::kmer_to_seq(&starting_kmer, &k);
+	let suffix_mask: u64 = (1 << (2 * (*k - 1))) - 1;
+
+	let mut cut2_mask: u64 = 0;
+	for _i in 0..(2 * params.cut2.len()) {
+		cut2_mask = (cut2_mask << 1) | 1;
+	}
 
 	if verbosity > 0 {
 		println!("{} Starting kmer analysis", starting_seq);
@@ -41,7 +56,7 @@ fn generate_fastas(kmers: &std::collections::HashSet<u64>, starting_kmer: &u64, 
 
 		if n_nodes > MAX_NUM_NODES {
 			println!("{}",
-				format!("WARNING: There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.", n_nodes, MAX_NUM_NODES).color(COLOR_WARNING)
+				format!("  There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.", n_nodes, MAX_NUM_NODES).color(COLOR_WARNING)
 			);
 			break;
 		}
@@ -153,7 +168,7 @@ fn generate_fastas(kmers: &std::collections::HashSet<u64>, starting_kmer: &u64, 
 						let edge_count = edge.count;
 						
 						// Add the new node, marking it as an end node if it matches the cut2 kmer
-						let is_end = kmer & cut2_mask == cut2_kmer;
+						let is_end = kmer & cut2_mask == *cut2_kmer;
 						let new_node = graph.add_node(crate::pcr::DBNode {
 							sub_kmer: suffix,
 							is_start: false,
@@ -235,7 +250,7 @@ fn generate_fastas(kmers: &std::collections::HashSet<u64>, starting_kmer: &u64, 
 
 	if end_nodes_map.is_empty() {
 		println!("{}",
-			format!("No end nodes found for cut1 kmer {}", crate::kmer::kmer_to_seq(&starting_kmer, &(*k - 1))).color(COLOR_WARNING)
+			format!("  No end nodes found for cut1 kmer {}", crate::kmer::kmer_to_seq(&starting_kmer, &(*k - 1))).color(COLOR_WARNING)
 		);
 		return records_vec;
 	}
@@ -444,11 +459,6 @@ pub fn do_rad(
 	}
 	cut1_mask <<= 2 * *k - 2 * params.cut1.len();
 
-	let mut cut2_mask: u64 = 0;
-	for _i in 0..(2 * params.cut2.len()) {
-		cut2_mask = (cut2_mask << 1) | 1;
-	}
-
 	// Get the cut1 kmer and rotate it to the start of the kmer
 	let mut cut1_kmer = crate::pcr::string_to_oligo(&params.cut1).kmer;
 	cut1_kmer <<= 2 * *k - 2 * params.cut1.len();
@@ -474,8 +484,8 @@ pub fn do_rad(
 	// stop and go to next cut1 kmer.
 
 	let records: Vec<fasta::Record> = cut1_kmers.par_iter()
-		.map(|starting_kmer| generate_fastas(&kmers, starting_kmer, k, &verbosity) )
-		.flattten() // This flattens Vec<fasta::Record> into an iterator of fasta::Record
+		.map(|starting_kmer| generate_fastas(params, sample_name, &kmer_counts, &kmers, starting_kmer, &cut2_kmer, k, verbosity) )
+		.flatten() // This flattens Vec<fasta::Record> into an iterator of fasta::Record
 		.collect();  // Collect all records into a Vec
 
 	records
