@@ -1,9 +1,11 @@
+use bio::bio_types::sequence;
 use bio::io::fasta;
 use colored::*;
 use petgraph::algo::all_simple_paths;
-use petgraph::graph::NodeIndex;
+use petgraph::graph::{DiGraph, NodeIndex};
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::Direction;
+use petgraph::visit::{Dfs, Walker};
 use rayon::prelude::*;
 use rustc_hash::FxHashMap;
 use std::collections::HashMap;
@@ -17,6 +19,87 @@ use crate::COLOR_WARNING;
 
 const MAX_NUM_NODES: usize = 5_000;
 
+fn get_consensus(sequences: &Vec<String>) -> String {
+    let mut consensus = String::new();
+    let mut consensus_vec: Vec<char> = Vec::new();
+
+    // Get the length of the shortest sequence
+    let shortest_sequence_length = sequences
+        .iter()
+        .map(|sequence| sequence.len())
+        .min()
+        .unwrap_or(0);
+
+    // Get the consensus sequence
+    for i in 0..shortest_sequence_length {
+        let mut base_counts: HashMap<char, usize> = HashMap::new();
+        for sequence in sequences {
+            let base = sequence.chars().nth(i).unwrap();
+            let count = base_counts.entry(base).or_insert(0);
+            *count += 1;
+        }
+
+        let mut max_count = 0;
+        let mut max_base = 'N';
+        for (base, count) in base_counts {
+            if count > max_count {
+                max_count = count;
+                max_base = base;
+            }
+        }
+
+        consensus_vec.push(max_base);
+    }
+
+    consensus = consensus_vec.into_iter().collect();
+
+    consensus
+}
+
+fn mode(numbers: &Vec<usize>) -> usize {
+    let mut counts: HashMap<usize, usize> = HashMap::new();
+    for number in numbers {
+        let count = counts.entry(*number).or_insert(0);
+        *count += 1;
+    }
+
+    let mut max_count = 0;
+    let mut mode = 0;
+    for (number, count) in counts {
+        if count > max_count {
+            max_count = count;
+            mode = number;
+        }
+    }
+
+    mode
+}
+
+/// Removes all nodes from the graph that are not ancestors of the specified node.
+///
+/// # Arguments
+///
+/// * `graph` - The directed graph.
+/// * `node` - The node whose ancestors will be kept.
+fn remove_non_ancestors (graph: &mut StableDiGraph<crate::pcr::DBNode, crate::pcr::DBEdge>, node: &NodeIndex) {
+    // First, find all the ancestors of the given node
+    let mut ancestors = HashSet::new();
+    let mut dfs = Dfs::new(&*graph, *node);
+    while let Some(nx) = dfs.next(&*graph) {
+        ancestors.insert(nx);
+    }
+
+    // Then, remove all nodes that are not ancestors of the given node
+    let nodes_to_remove: Vec<_> = graph.node_indices()
+                                      .filter(|&n| !ancestors.contains(&n))
+                                      .collect();
+    
+    for n in nodes_to_remove {
+        graph.remove_node(n);
+    }
+}
+
+/// For a given starting kmer, generate fasta records
 fn generate_fastas(
     params: &RADParams,
     sample_name: &str,
@@ -32,14 +115,14 @@ fn generate_fastas(
     let starting_seq = crate::kmer::kmer_to_seq(starting_kmer, k);
     let suffix_mask: u64 = (1 << (2 * (*k - 1))) - 1;
 
-    // Get the kmer and mask for cut1 and the end of the kmer
+    // Get the kmer and mask for cut1 at the end of the kmer
     let cut1_kmer_terminal = crate::pcr::string_to_oligo(&params.cut1).kmer;
     let mut cut1_mask_terminal: u64 = 0;
     for _i in 0..(2 * params.cut1.len()) {
         cut1_mask_terminal = (cut1_mask_terminal << 1) | 1;
     }
 
-    // Get the kmer and mask for cut2 and the end of the kmer
+    // Get the kmer and mask for cut2 at the end of the kmer
     let cut2_kmer_terminal = crate::pcr::string_to_oligo(&params.cut2).kmer;
     let mut cut2_mask_terminal: u64 = 0;
     for _i in 0..(2 * params.cut2.len()) {
@@ -272,28 +355,22 @@ fn generate_fastas(
                 }
             }
         }
+    }  // End graph extension
+
+    // There should only be a single start node, the one that seeded the graph
+    let start_nodes = crate::pcr::get_start_nodes(&graph);
+    if start_nodes.len() != 1 {
+        panic!("There should be a single start node,");
     }
 
-    // Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
-    let mut start_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
-    let mut end_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
-
-    for node in graph.node_indices() {
-        if graph[node].is_start {
-            start_nodes_map.insert(
-                node,
-                graph.neighbors_directed(node, Direction::Outgoing).count(),
-            );
-        }
-        if graph[node].is_end {
-            end_nodes_map.insert(
-                node,
-                graph.neighbors_directed(node, Direction::Incoming).count(),
-            );
-        }
-    }
-
-    if end_nodes_map.is_empty() {
+    to_print = format!(
+        "{}  There are {} nodes in the raw graph.\n",
+        to_print,
+        graph.node_count()
+    );
+    
+    let end_nodes = crate::pcr::get_end_nodes(&graph);
+    if end_nodes.is_empty() {
         to_print = format!(
             "{}  No end nodes found for cut1 kmer {}\n",
             to_print,
@@ -303,22 +380,14 @@ fn generate_fastas(
             print!("{}", to_print);
         }
         return records_vec;
+    } else {
+        to_print = format!(
+            "{}  There are {} end nodes for cut1 kmer {}\n",
+            to_print,
+            end_nodes.len(),
+            crate::kmer::kmer_to_seq(starting_kmer, &(*k - 1))
+        );
     }
-
-    // Drop entries that have no edges
-    start_nodes_map.retain(|_node, edge_count| *edge_count > 0);
-    end_nodes_map.retain(|_node, edge_count| *edge_count > 0);
-
-    to_print = format!(
-        "{}  There are {} start nodes with edges\n",
-        to_print,
-        start_nodes_map.len()
-    );
-    to_print = format!(
-        "{}  There are {} end nodes with edges\n",
-        to_print,
-        end_nodes_map.len()
-    );
 
     // Simplify the graph
     // all_simple_paths() hangs if the input graph is too complex
@@ -349,70 +418,104 @@ fn generate_fastas(
         }
     }
 
-    // Look for paths between each combination of start and end nodes
+    if end_nodes.len() != crate::pcr::get_end_nodes(&graph).len() {
+        panic!("The number of end nodes changed after removing terminal side branches");
+    }
 
+    to_print = format!(
+        "{}  There are {} nodes in the simplified graph.\n",
+        to_print,
+        graph.node_count()
+    );
+
+    // Look for paths between each combination of start and end nodes
     for start in crate::pcr::get_start_nodes(&graph) {
-        for end in crate::pcr::get_end_nodes(&graph) {
+        let start_seq = crate::kmer::kmer_to_seq(&graph[start].sub_kmer, &(*k - 1));
+        'end_nodes: for end in crate::pcr::get_end_nodes(&graph) {
+
+            let end_seq = crate::kmer::kmer_to_seq(&graph[end].sub_kmer, &(*k - 1));
+
+			// Create a copy of the graph
+			let mut sub_graph = graph.clone();
+			remove_non_ancestors(&mut sub_graph, &end);
+
             let paths_for_this_pair =
                 all_simple_paths::<
                     Vec<NodeIndex>,
                     &StableDiGraph<crate::pcr::DBNode, crate::pcr::DBEdge>,
-                >(&graph, start, end, 1, Some(params.max_length - (*k) + 1));
+                >(&sub_graph, start, end, 1, Some(params.max_length - (*k) + 1));
 
+            // A vector of sequences for this pair of start and end nodes
+            let mut sequences_for_this_pair: Vec<String> = Vec::new();
             // For each path, get the sequence of the path
-            'paths: for (i, path) in paths_for_this_pair.into_iter().enumerate() {
+            for path in paths_for_this_pair.into_iter() {
                 let mut sequence = String::new();
-                let mut edge_counts: Vec<u64> = Vec::new();
-                let mut parent_node: NodeIndex = NodeIndex::new(0);
                 // The first time through the loop add the whole sequence, after that just add the last base
                 for node in path.iter() {
                     let node_data = graph.node_weight(*node).unwrap();
                     let subread = crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(*k - 1));
                     if sequence.is_empty() {
                         sequence = subread;
-                        parent_node = *node;
                     } else {
                         sequence = format!("{}{}", sequence, subread.chars().last().unwrap(),);
-
-                        // Get the edge count for the edge from the parent node to this node
-                        let edge = graph.find_edge(parent_node, *node).unwrap();
-                        let edge_data = graph.edge_weight(edge).unwrap();
-                        edge_counts.push(edge_data.count);
-                        parent_node = *node;
                     }
                 }
 
-                if sequence.len() < params.min_length {
-                    to_print = format!(
-                        "{}  RAD product {} is too short ({} bases). Skipping.\n",
-                        to_print,
-                        i,
-                        sequence.len()
-                    );
-                    continue 'paths;
+                if sequence.len() >= params.min_length && sequence.len() <= params.max_length {
+                    sequences_for_this_pair.push(sequence);
                 }
-
-                // Get some stats on the path counts
-                let count_mean = crate::pcr::compute_mean(&edge_counts);
-                let count_median = crate::pcr::compute_median(&edge_counts);
-                let count_min = edge_counts.iter().min().unwrap();
-                let count_max = edge_counts.iter().max().unwrap();
-
-                let id = format!(
-					"{} {} start {} product {} length {} kmer count stats mean {:.2} median {} min {} max {}",
-					sample_name,
-					params.name,
-					starting_seq,
-					i,
-					sequence.len(),
-					count_mean,
-					count_median,
-					count_min,
-					count_max
-				);
-                let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
-                records_vec.push(record);
             }
+
+            // Get a vector of sequence lengths
+            let mut sequence_lengths: Vec<usize> = sequences_for_this_pair
+                .iter()
+                .map(|sequence| sequence.len())
+                .collect();
+
+            let sequence_lengths_set: HashSet<usize> = sequence_lengths.iter().cloned().collect();
+            let sequence_lengths_mode = mode(&sequence_lengths);
+            if sequence_lengths_set.len() == 0 {
+                to_print = format!(
+                    "{}  No viable sequences found between start node {} and end node {}\n",
+                    to_print,
+                    start.index(),
+                    end.index()
+                );
+                continue 'end_nodes;
+            } else if sequence_lengths_set.len() == 1 {
+                to_print = format!(
+                    "{}  All {} sequences between start node {} and end node {} are {} bases long\n",
+                    to_print,
+                    sequences_for_this_pair.len(),
+                    start.index(),
+                    end.index(),
+                    sequence_lengths_mode
+                );
+            } else {
+                to_print = format!(
+                    "{}  The {} sequences between start node {} and end node {} have variable length\n    Subsetting to those with mode length {}",
+                    to_print,
+                    sequences_for_this_pair.len(),
+                    start.index(),
+                    end.index(),
+                    sequence_lengths_mode
+                );
+                sequences_for_this_pair.retain(|sequence| sequence.len() == sequence_lengths_mode);
+            }
+            let consensus_sequence = get_consensus(&sequences_for_this_pair);
+
+            // Create a fasta record for this sequence
+            let record = fasta::Record::with_attrs(
+                format!(
+                    "{}_{}-{}",
+                    sample_name,
+                    start_seq,
+                    end_seq
+                ).as_str(),
+                None,
+                &consensus_sequence.as_bytes(),
+            );
+            records_vec.push(record);
         }
     }
 

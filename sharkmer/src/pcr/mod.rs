@@ -68,7 +68,7 @@ enum PrimerDirection {
 }
 
 // De Bruijn graph node
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DBNode {
     pub sub_kmer: u64,     // k-1 mer that contains overlap between kmers
     pub is_start: bool,    // Contains the forward primer
@@ -77,7 +77,7 @@ pub struct DBNode {
     pub visited: bool,     // Has been visited during graph traversal
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct DBEdge {
     pub _kmer: u64, // kmer that contains overlap between sub_kmers
     pub count: u64, // Number of times this kmer was observed
