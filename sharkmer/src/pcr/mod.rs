@@ -83,6 +83,34 @@ pub struct DBEdge {
     pub count: u64, // Number of times this kmer was observed
 }
 
+// Iteratively remove nodes that do not have outgoing edges and are not end nodes
+// These are terminal side branches.
+pub fn remove_side_branches(graph: &mut StableDiGraph<DBNode, DBEdge>) {
+    let mut removed_nodes = 1;
+    while removed_nodes > 0 {
+        removed_nodes = 0;
+
+        let mut nodes_to_remove: Vec<_> = graph
+            .node_indices()
+            .filter(|&node| {
+                if graph[node].is_end {
+                    false
+                } else {
+                    graph.neighbors_directed(node, Direction::Outgoing).count() == 0
+                }
+            })
+            .collect();
+
+        nodes_to_remove.sort_by(|a, b| b.cmp(a));
+
+        for node in nodes_to_remove {
+            graph.remove_node(node);
+            removed_nodes += 1;
+        }
+    }
+}
+
+
 // Get a vector of edge counts by traversing the graph backwards from the focal node
 fn get_backward_edge_counts(
     graph: &StableDiGraph<DBNode, DBEdge>,
@@ -1401,32 +1429,7 @@ pub fn do_pcr(
     let start = std::time::Instant::now();
     println!("Pruning the assembly graph...");
 
-    // Iteratively remove nodes that do not have outgoing edges and are not end nodes
-    // These are terminal side branches.
-    let mut removed_nodes = 1;
-    while removed_nodes > 0 {
-        removed_nodes = 0;
-
-        let mut nodes_to_remove: Vec<_> = graph
-            .node_indices()
-            .filter(|&node| {
-                if graph[node].is_end {
-                    false
-                } else {
-                    graph.neighbors_directed(node, Direction::Outgoing).count() == 0
-                }
-            })
-            .collect();
-
-        nodes_to_remove.sort_by(|a, b| b.cmp(a));
-
-        for node in nodes_to_remove {
-            graph.remove_node(node);
-            removed_nodes += 1;
-        }
-    }
-
-    // Start nodes without edges will be removed above
+    remove_side_branches(&mut graph);
 
     // Remove end nodes without edges
     let mut nodes_to_remove: Vec<NodeIndex> = graph
