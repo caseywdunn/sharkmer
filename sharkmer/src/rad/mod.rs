@@ -566,7 +566,7 @@ pub fn do_rad(
         }
     }
 
-    print!("  Found {} kmers that start with cut1", cut1_kmers.len());
+    println!("  Found {} kmers that start with cut1", cut1_kmers.len());
 
     // Loop over all the cut1 kmers and try to extend them as a de bruijn graph.
     // Check if each extension matches the cut2 kmer. If it does, and the length
