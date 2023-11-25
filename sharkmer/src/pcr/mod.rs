@@ -1641,7 +1641,7 @@ mod tests {
             "a",
             graph.add_node(DBNode {
                 sub_kmer: 0,
-                is_start: false,
+                is_start: true,
                 is_end: false,
                 is_terminal: false,
                 visited: false,
@@ -1672,7 +1672,7 @@ mod tests {
             graph.add_node(DBNode {
                 sub_kmer: 3,
                 is_start: false,
-                is_end: false,
+                is_end: true,
                 is_terminal: false,
                 visited: false,
             }),
@@ -1682,7 +1682,7 @@ mod tests {
             graph.add_node(DBNode {
                 sub_kmer: 4,
                 is_start: false,
-                is_end: false,
+                is_end: true,
                 is_terminal: false,
                 visited: false,
             }),
@@ -1960,5 +1960,24 @@ mod tests {
         let oligo = string_to_oligo("GCGA");
         assert_eq!(oligo.kmer, 0b1001_1000);
         assert_eq!(oligo.length, 4);
+    }
+
+    #[test]
+    fn test_get_end_nodes(){
+        let (graph, nodes) = create_test_graph();
+
+        let end_nodes = get_end_nodes(&graph);
+        assert_eq!(end_nodes.len(), 2);
+        assert!(end_nodes.contains(&nodes["d"]));
+        assert!(end_nodes.contains(&nodes["e"]));
+    }
+
+    #[test]
+    fn test_get_start_nodes(){
+        let (graph, nodes) = create_test_graph();
+
+        let start_nodes = get_start_nodes(&graph);
+        assert_eq!(start_nodes.len(), 1);
+        assert!(start_nodes.contains(&nodes["a"]));
     }
 }

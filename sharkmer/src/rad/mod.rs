@@ -252,13 +252,10 @@ fn generate_fastas(
                     }
 
                     if !node_exists {
-                        let edge = crate::pcr::get_dbedge(kmer, kmer_counts, k);
-                        let edge_count = edge.count;
 
                         // Add the new node, marking it as an end node if it matches the cut2 kmer
-                        let is_end = kmer & cut2_mask_terminal == cut2_kmer_terminal;
                         let new_node: NodeIndex;
-                        if kmer & cut2_mask_terminal == cut2_kmer_terminal {
+                        if (kmer & cut2_mask_terminal) == cut2_kmer_terminal {
                             // kmer ends with cut2, so it is terminal and end
                             new_node = graph.add_node(crate::pcr::DBNode {
                                 sub_kmer: suffix,
@@ -267,7 +264,7 @@ fn generate_fastas(
                                 is_terminal: true,
                                 visited: true,
                             });
-                        } else if kmer & cut1_mask_terminal == cut1_kmer_terminal {
+                        } else if (kmer & cut1_mask_terminal) == cut1_kmer_terminal {
                             // kmer ends with cut1, so it is terminal but not end
                             new_node = graph.add_node(crate::pcr::DBNode {
                                 sub_kmer: suffix,
@@ -287,6 +284,8 @@ fn generate_fastas(
                             });
                         }
 
+                        let edge = crate::pcr::get_dbedge(kmer, kmer_counts, k);
+                        let edge_count = edge.count;
                         graph.add_edge(node, new_node, edge);
                         let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
                         if outgoing > 4 {
@@ -296,6 +295,7 @@ fn generate_fastas(
                         }
 
                         if verbosity > 9 {
+                            
                             to_print = format!(
                                 "{}  Added sub_kmer {} for new node {} with edge kmer count {}.\n",
                                 to_print,
@@ -308,9 +308,11 @@ fn generate_fastas(
                         // Check if the new node is max_length-k+1 from a start node
                         // If so, mark the new node as terminal
                         let path_length = crate::pcr::get_path_length(&graph, new_node);
-
-                        if is_end {
-                            if verbosity > 1 {
+                        
+                        
+                        if verbosity > 1 {
+                            let is_end = (kmer & cut2_mask_terminal) == cut2_kmer_terminal;
+                            if is_end {
                                 to_print = format!(
                                     "{}  New node {} is an end node, with path length {}.\n",
                                     to_print,
@@ -389,34 +391,8 @@ fn generate_fastas(
         );
     }
 
-    // Simplify the graph
-    // all_simple_paths() hangs if the input graph is too complex
-    // Also want to regularize some graph features
-
-    // Iteratively remove nodes that do not have outgoing edges and are not end nodes
-    // These are terminal side branches.
-    let mut removed_nodes = 1;
-    while removed_nodes > 0 {
-        removed_nodes = 0;
-
-        let mut nodes_to_remove: Vec<_> = graph
-            .node_indices()
-            .filter(|&node| {
-                if graph[node].is_end {
-                    false
-                } else {
-                    graph.neighbors_directed(node, Direction::Outgoing).count() == 0
-                }
-            })
-            .collect();
-
-        nodes_to_remove.sort_by(|a, b| b.cmp(a));
-
-        for node in nodes_to_remove {
-            graph.remove_node(node);
-            removed_nodes += 1;
-        }
-    }
+    // Simplify the graph by removing nodes that are not ancestors of any end node
+    crate::pcr::remove_side_branches(&mut graph);
 
     if end_nodes.len() != crate::pcr::get_end_nodes(&graph).len() {
         panic!("The number of end nodes changed after removing terminal side branches");

@@ -105,6 +105,11 @@ impl Read {
             }
         }
 
+        // kmers can be empty if the read is shorter than k
+        if kmers.is_empty() {
+            return kmers;
+        }
+
         // If the read length is not divisible by 4, the last byte will have some extra bases
         // that result in extra kmers we need to remove
         let modulo = self.length % 4;
