@@ -1,3 +1,4 @@
+// kmer/mod.rs
 //! This module provides kmer functions.
 
 use rustc_hash::FxHashMap;
@@ -79,6 +80,11 @@ impl Read {
         let mut n_valid = 0; // number of valid bases in the frame
         let mask: u64 = (1 << (2 * k)) - 1;
 
+        // No kmers if the read is shorter than k
+        if self.length < *k {
+            return kmers;
+        }
+
         // Iterate over the bases
         for (_i, &int) in ints.iter().enumerate() {
             // Iterate over the bases in the integer
@@ -103,11 +109,6 @@ impl Read {
                     }
                 }
             }
-        }
-
-        // kmers can be empty if the read is shorter than k
-        if kmers.is_empty() {
-            return kmers;
         }
 
         // If the read length is not divisible by 4, the last byte will have some extra bases
@@ -451,6 +452,21 @@ mod tests {
         let expected = vec![0b01_1001_0011_1100_0110, 0b01_0110_0100_1111_0001];
         let actual = read.get_kmers(&9usize);
         assert_eq!(actual, expected);
+
+        // Test cases where read length is k
+        let read = Read::new(ints.clone(), 9);
+        let expected = vec![0b01_1001_0011_1100_0110];
+        let actual = read.get_kmers(&9usize);
+        assert_eq!(actual, expected);
+
+        // Test cases where read length is < k
+        let ints_short = vec![0b01101100, 0b00111001];
+        let read = Read::new(ints_short, 8);
+        let expected = vec![];
+        let actual = read.get_kmers(&9usize);
+        assert_eq!(actual, expected);
+
+
     }
 
     #[test]

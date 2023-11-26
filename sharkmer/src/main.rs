@@ -468,6 +468,13 @@ fn main() {
     println!(" done");
     let n_bases_ingested = reads.iter().map(|x| x.length).sum::<usize>();
 
+    let mut n_expected_kmers: u64 = 0;
+    for read in reads.iter() {
+        if read.length >= k {
+            n_expected_kmers += read.length as u64 - k as u64 + 1;
+        }
+    }
+
     // Print some stats
     println!("  Read {} reads", n_reads_read);
     println!("  Read {} bases", n_bases_read);
@@ -477,6 +484,7 @@ fn main() {
         "  Yield {}",
         (n_bases_ingested as f64) / (n_bases_read as f64)
     );
+    println!("  Expect {} kmers", (n_expected_kmers as f64));
     println!("  Time to ingest reads: {:?}", start.elapsed());
 
     // Randomize the order of the reads in place
@@ -490,6 +498,7 @@ fn main() {
     if reads.len() < args.n {
         panic!("Number of reads is less than number of chunks");
     }
+
     let chunk_size = reads.len() / args.n;
 
     let start = std::time::Instant::now();
@@ -502,7 +511,11 @@ fn main() {
         .into_par_iter()
         .map(|i| {
             let start = i * chunk_size;
-            let end = (i + 1) * chunk_size;
+            let end = if i == n - 1 {
+                reads.len() // Ensure the last chunk includes all remaining elements
+            } else {
+                (i + 1) * chunk_size
+            };
             let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
 
             for read in reads[start..end].iter() {
@@ -545,6 +558,18 @@ fn main() {
         histos.push(histo.clone());
     }
     println!(" done, time: {:?}", start.elapsed());
+
+    let n_hashed_kmers: u64 = kmer_counts.values().sum();
+    println!("  {} unique kmers with a total count of {} were found", kmer_counts.len(), n_hashed_kmers);
+
+    if n_hashed_kmers != n_expected_kmers {
+        panic!(
+            "The total count of hashed kmers ({}) does not equal the expected number of kmers ({})",
+            n_hashed_kmers,
+            n_expected_kmers,
+        );
+    }
+
 
     // Write the histograms to a tab delimited file, with the first column being the count
     // Skip the first row, which is the count of 0. Do not include a header

@@ -1,3 +1,4 @@
+// rad/mod.rs
 use bio::bio_types::sequence;
 use bio::io::fasta;
 use colored::*;
