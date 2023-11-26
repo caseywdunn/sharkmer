@@ -119,6 +119,15 @@ impl Read {
             kmers.truncate(kmers.len() - n_extra_bases);
         }
 
+        if kmers.len() != self.length - *k + 1 {
+            panic!(
+                "Number of kmers ({}) does not match expected ({}) for read of length {}",
+                kmers.len(),
+                self.length - *k + 1,
+                self.length
+            );
+        }
+
         kmers
     }
 }
@@ -175,7 +184,7 @@ pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
 /// * `G` -> `10`
 /// * `T` -> `11`
 ///
-/// Any sequence containing the base `N` is split into multiple sub-sequences at that point,
+/// Any sequence containing the base `N` is split into multiple subsequences at that point,
 /// and each sub-sequence is encoded separately. The result is a vector of Reads,
 /// with each Read holding the integer representation of a sub-sequence.
 ///
@@ -204,7 +213,7 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
     let mut frame: u8 = 0; // The current 8-bit integer being constructed
     let mut position: usize = 0; // position in the sequence. not including Ns
     let mut length: usize = 0; // length of the read
-    for c in seq.chars() {
+    'char: for c in seq.chars() {
         length += 1;
         let base = match c {
             'A' => 0, // 00
@@ -214,7 +223,7 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
             'N' => {
                 if !ints.is_empty() {
                     // Check if there is anything left in the frame,
-                    // if so shift it left to the most significan bits and push it to the vector
+                    // if so shift it left to the most significant bits and push it to the vector
                     let modulo = position % 4;
                     if modulo != 0 {
                         let shift = 2 * (4 - modulo);
@@ -224,13 +233,16 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
 
                     // Create and push the read to the vector
                     let read = Read::new(ints, length - 1); // Don't count this N in the length
+                    if ! read.validate() {
+                        panic!("Invalid read {:?} from sequence {}", read, seq);
+                    }
                     reads.push(read);
-                    length = 0;
                     ints = Vec::with_capacity(seq.len() / 4 + 1);
                     frame = 0; // Reset frame before starting a new subread
                     position = 0;
                 }
-                continue;
+                length = 0;
+                continue 'char;
             }
             _ => 5,
         };
@@ -244,9 +256,10 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
         }
         position += 1;
     }
+
+    // Check if there is anything left in the frame,
+    // if so shift it left to the most significant bits and push it to the vector
     if !ints.is_empty() || reads.is_empty() {
-        // Check if there is anything left in the frame,
-        // if so shift it left to the most significan bits and push it to the vector
         let modulo = position % 4;
         if modulo != 0 {
             let shift = 2 * (4 - modulo);
@@ -388,7 +401,22 @@ mod tests {
         // 'C' => 1, // 01
         // 'G' => 2, // 10
         // 'T' => 3, // 11
+
+        let seq = "NCGTAATGCGGCG";
+        let expected = vec![Read::new(vec![0b01101100, 0b00111001, 0b10100110], 12)];
+        let actual = seq_to_reads(seq);
+        assert_eq!(actual, expected);
+
+
         let seq = "CGTANATGCGGCGA";
+        let expected = vec![
+            Read::new(vec![0b01101100], 4),
+            Read::new(vec![0b00111001, 0b10100110, 0b00000000], 9),
+        ];
+        let actual = seq_to_reads(seq);
+        assert_eq!(actual, expected);
+
+        let seq = "NCGTANATGCGGCGA";
         let expected = vec![
             Read::new(vec![0b01101100], 4),
             Read::new(vec![0b00111001, 0b10100110, 0b00000000], 9),
