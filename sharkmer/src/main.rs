@@ -287,7 +287,8 @@ struct Args {
     #[arg(short = 'p', long)]
     pcr: Vec<String>,
 
-    /// Optional primer pairs for in silico Rad-seq (isRad-seq). The format is:
+    /// EXPERIMENTAL - DO NOT USE
+    /// Optional cut sties for in silico Rad-seq (isRad-seq). The format is:
     /// --rad "cut1_cut2_min-length_max-length_name_key1=value1_key2=value2"
     /// Where:
     ///   cut1 is the restriction site for the first enzyme
@@ -303,7 +304,7 @@ struct Args {
     ///    [none for now]
     /// For example:
     /// --rad "CATG_AATT_625_750_kd"
-    #[arg(short = 'r', long)]
+    #[arg(short = 'r', long, hide = true)]
     rad: Vec<String>,
 
     /// Verbosity
