@@ -423,6 +423,23 @@ mod tests {
         ];
         let actual = seq_to_reads(seq);
         assert_eq!(actual, expected);
+
+        let seq = "NCGTANATGCGGCGANN";
+        let expected = vec![
+            Read::new(vec![0b01101100], 4),
+            Read::new(vec![0b00111001, 0b10100110, 0b00000000], 9),
+        ];
+        let actual = seq_to_reads(seq);
+        assert_eq!(actual, expected);
+
+        let seq = "NNCGTANATGCGGCGA";
+        let expected = vec![
+            Read::new(vec![0b01101100], 4),
+            Read::new(vec![0b00111001, 0b10100110, 0b00000000], 9),
+        ];
+        let actual = seq_to_reads(seq);
+        assert_eq!(actual, expected);
+
     }
 
     #[test]
