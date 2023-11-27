@@ -211,8 +211,7 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
     let mut reads: Vec<Read> = Vec::new();
     let mut ints: Vec<u8> = Vec::with_capacity(seq.len() / 4 + 1);
     let mut frame: u8 = 0; // The current 8-bit integer being constructed
-    let mut position: usize = 0; // position in the sequence. not including Ns
-    let mut length: usize = 0; // length of the read
+    let mut length: usize = 0; // length of the current subread
     'char: for c in seq.chars() {
         length += 1;
         let base = match c {
@@ -224,7 +223,7 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
                 if !ints.is_empty() {
                     // Check if there is anything left in the frame,
                     // if so shift it left to the most significant bits and push it to the vector
-                    let modulo = position % 4;
+                    let modulo = length % 4;
                     if modulo != 0 {
                         let shift = 2 * (4 - modulo);
                         frame <<= shift;
@@ -239,7 +238,6 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
                     reads.push(read);
                     ints = Vec::with_capacity(seq.len() / 4 + 1);
                     frame = 0; // Reset frame before starting a new subread
-                    position = 0;
                 }
                 length = 0;
                 continue 'char;
@@ -250,17 +248,16 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
             break;
         }
         frame = (frame << 2) | base;
-        if ((position + 1) % 4 == 0) & (position > 0) {
+        if (length) % 4 == 0 {
             ints.push(frame);
             frame = 0; // Reset frame after pushing to the vector
         }
-        position += 1;
     }
 
     // Check if there is anything left in the frame,
     // if so shift it left to the most significant bits and push it to the vector
     if !ints.is_empty() || reads.is_empty() {
-        let modulo = position % 4;
+        let modulo = length % 4;
         if modulo != 0 {
             let shift = 2 * (4 - modulo);
             frame <<= shift;
@@ -268,7 +265,7 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
         }
 
         // Create and push the read to the vector
-        let read = Read::new(ints, position);
+        let read = Read::new(ints, length);
         reads.push(read);
     }
     reads
@@ -368,6 +365,28 @@ mod tests {
 
         let bad_read2 = Read::new(vec![0b01101100, 0b00111001, 0b10100110, 0b00000000], 17);
         assert!(!bad_read2.validate());
+    }
+
+    #[test]
+    fn test_read_parsing() {
+        
+        let seq = "TANCACN";
+        let reads = seq_to_reads(seq);
+        for read in reads {
+            assert!(read.validate());
+        }
+
+        let seq = "NTANCACNAGAAAATC";
+        let reads = seq_to_reads(seq);
+        for read in reads {
+            assert!(read.validate());
+        }
+
+        let seq = "TATTAGCTCATCTANAACAATGAAAAATTGCATTGGCTNTAACTATGGATTTNTTAGAAATTAGTATTNATTTATCATTTTTAATTGGCATTATTNAACTCTTAAGAATAGATNGGAGTTCNCAATTAATTGAAGNTANCACNAGAAAATC";
+        let reads = seq_to_reads(seq);
+        for read in reads {
+            assert!(read.validate());
+        }
     }
 
     #[test]
