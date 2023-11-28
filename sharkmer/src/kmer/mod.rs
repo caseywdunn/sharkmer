@@ -27,6 +27,49 @@ impl Read {
         Read { sequence, length }
     }
 
+    /// This function encodes a DNA sequence into a series of 8-bit integers,
+    /// where each integer represents 4 consecutive bases from the sequence.
+    /// The encoding uses a 2-bit representation for each base:
+    ///
+    /// * `A` -> `00`
+    /// * `C` -> `01`
+    /// * `G` -> `10`
+    /// * `T` -> `11`
+    /// 
+    /// Any other character will cause the function to panic.
+    pub fn from_str(seq: &str) -> Read {
+        let mut ints: Vec<u8> = Vec::with_capacity(seq.len() / 4 + 1);
+        let mut frame: u8 = 0; // The current 8-bit integer being constructed
+        let mut length: usize = 0; // length of the current subread
+        for c in seq.chars() {
+            length += 1;
+            let base = match c {
+                'A' => 0, // 00
+                'C' => 1, // 01
+                'G' => 2, // 10
+                'T' => 3, // 11
+                _ => panic!("Invalid character {} in sequence {}. Only ACGT allowed.", c, seq),
+            };
+    
+            frame = (frame << 2) | base;
+            if (length) % 4 == 0 {
+                ints.push(frame);
+                frame = 0; // Reset frame after pushing to the vector
+            }
+        }
+    
+        // Check if there is anything left in the frame, and rotate it into place if so
+        let modulo = length % 4;
+        if modulo != 0 {
+            let shift = 2 * (4 - modulo);
+            frame <<= shift;
+            ints.push(frame);
+        }
+
+        // Create and return the read
+        Read::new(ints, length)
+    }
+
     pub fn validate(&self) -> bool {
         let mut valid = true;
         if self.length % 4 == 0 {
@@ -175,14 +218,6 @@ pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
 
 /// Converts a DNA sequence into a vector of Reads (really subreads).
 ///
-/// This function encodes a DNA sequence into a series of 8-bit integers,
-/// where each integer represents 4 consecutive bases from the sequence.
-/// The encoding uses a 2-bit representation for each base:
-///
-/// * `A` -> `00`
-/// * `C` -> `01`
-/// * `G` -> `10`
-/// * `T` -> `11`
 ///
 /// Any sequence containing the base `N` is split into multiple subsequences at that point,
 /// and each sub-sequence is encoded separately. The result is a vector of Reads,
@@ -209,64 +244,16 @@ pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
 /// ```
 pub fn seq_to_reads(seq: &str) -> Vec<Read> {
     let mut reads: Vec<Read> = Vec::new();
-    let mut ints: Vec<u8> = Vec::with_capacity(seq.len() / 4 + 1);
-    let mut frame: u8 = 0; // The current 8-bit integer being constructed
-    let mut length: usize = 0; // length of the current subread
-    'char: for c in seq.chars() {
-        length += 1;
-        let base = match c {
-            'A' => 0, // 00
-            'C' => 1, // 01
-            'G' => 2, // 10
-            'T' => 3, // 11
-            'N' => {
-                if !ints.is_empty() {
-                    // Check if there is anything left in the frame,
-                    // if so shift it left to the most significant bits and push it to the vector
-                    let modulo = length % 4;
-                    if modulo != 0 {
-                        let shift = 2 * (4 - modulo);
-                        frame <<= shift;
-                        ints.push(frame);
-                    }
-
-                    // Create and push the read to the vector
-                    let read = Read::new(ints, length - 1); // Don't count this N in the length
-                    if ! read.validate() {
-                        panic!("Invalid read {:?} from sequence {}", read, seq);
-                    }
-                    reads.push(read);
-                    ints = Vec::with_capacity(seq.len() / 4 + 1);
-                    frame = 0; // Reset frame before starting a new subread
-                }
-                length = 0;
-                continue 'char;
+    
+    // Split seq on N
+    for subseq in seq.split('N'){
+        if subseq.len() > 0 {
+            let read = Read::from_str(subseq);
+            if ! read.validate() {
+                panic!("Invalid read: {:?} from subsequence {}", read, subseq);
             }
-            _ => 5,
-        };
-        if base > 3 {
-            break;
+            reads.push(read);
         }
-        frame = (frame << 2) | base;
-        if (length) % 4 == 0 {
-            ints.push(frame);
-            frame = 0; // Reset frame after pushing to the vector
-        }
-    }
-
-    // Check if there is anything left in the frame,
-    // if so shift it left to the most significant bits and push it to the vector
-    if !ints.is_empty() || reads.is_empty() {
-        let modulo = length % 4;
-        if modulo != 0 {
-            let shift = 2 * (4 - modulo);
-            frame <<= shift;
-            ints.push(frame);
-        }
-
-        // Create and push the read to the vector
-        let read = Read::new(ints, length);
-        reads.push(read);
     }
     reads
 }
@@ -411,6 +398,33 @@ mod tests {
         let seq = "CGTAATGCGGCG";
         let expected = vec![Read::new(vec![0b01101100, 0b00111001, 0b10100110], 12)];
         let actual = seq_to_reads(seq);
+        assert_eq!(actual, expected);
+    }
+
+    #[test]
+    fn test_from_str() {
+        // 'A' => 0, // 00
+        // 'C' => 1, // 01
+        // 'G' => 2, // 10
+        // 'T' => 3, // 11
+        let seq = "CGTAATGCGGCGA";
+        let expected = Read::new(vec![0b01101100, 0b00111001, 0b10100110, 0b00000000], 13);
+        let actual = Read::from_str(seq);
+        assert_eq!(actual, expected);
+
+        let seq = "C";
+        let expected = Read::new(vec![0b01000000], 1);
+        let actual = Read::from_str(seq);
+        assert_eq!(actual, expected);
+
+        let seq = "CGTAATGCGGCG";
+        let expected = Read::new(vec![0b01101100, 0b00111001, 0b10100110], 12);
+        let actual = Read::from_str(seq);
+        assert_eq!(actual, expected);
+
+        let seq = "";
+        let expected = Read::new(vec![], 0);
+        let actual = Read::from_str(seq);
         assert_eq!(actual, expected);
     }
 
