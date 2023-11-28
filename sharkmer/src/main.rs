@@ -329,13 +329,10 @@ fn main() {
     );
 
     // Parse the outdir path and sample, create directories if necessary
-    // output directory is outdir/sample
     let mut path = PathBuf::from(&args.outdir);
-    path.push(&args.sample);
 
     // Create the output directory if it does not exist
     let directory = format!("{}/", path.to_str().unwrap());
-    println!("Full output directory: {}", directory);
     std::fs::create_dir_all(&directory).unwrap();
 
     let k = args.k;
