@@ -76,7 +76,10 @@ To get a sense of the tool it is best to grab larger datasetsets. The examples b
 
 > Ahuja, N., Cao, X., Schultz, D. T., Picciani, N., Lord, A., Shao, S., Burdick, D. R., Haddock, S. H. D., Li, Y., & Dunn, C. W. (2023). Giants among Cnidaria: large nuclear genomes and rearranged mitochondrial genomes in siphonophores. bioRxiv. https://doi.org/10.1101/2023.05.12.540511
 
-To retrieve these data, first download and install the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit). Details on downloading data are provided in the examples below.
+To retrieve these data, first download and install the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit). Then run the following commands:
+
+    cd sharkmer/data/
+    fasterq-dump SRR23143278
 
 ## Usage
 
@@ -88,21 +91,17 @@ To get full usage information, run
 
 Incremental kmer counting for genome size estimation takes a lot of data (about 50x coverage of the genome), and a large amount of RAM. So this example isn't practical on most laptops, given their disk and RAM limitations, and will require a workstation or cluster.
 
-First download the *Cordagalma* data as follows (this is the full dataset, so it will be quite large):
+Here is how you count kmers in the *Cordagalma ordinatum* dataset downloaded above:
 
-    fasterq-dump SRR23143278
+    sharkmer -k 21 -o output/ -s Cordagalma-ordinatum data/SRR23143278_1.fastq data/SRR23143278_2.fastq
 
-An example analysis would look like this:
-
-    sharkmer -k 21 -s Cordagalma-ordinatum SRR23143278_1.fastq SRR23143278_2.fastq
-
-Notice that you can specify multiple fastq files, in this case the R1 and R2 reads.
+Notice that you can specify multiple fastq files, in this case the R1 and R2 reads. The `-o` argument specifies the output directory. The `-s` argument specifies a prefix for the output files. The output files will be named with this prefix.
 
 The incremental histogram files in this case would be:
 
-    Cordagalma-ordinatum.histo # All the incremental histograms, each in their own column. Suitable for analysis with `sharkmer_viewer.py`.
+    output/Cordagalma-ordinatum.histo # All the incremental histograms, each in their own column. Suitable for analysis with `sharkmer_viewer.py`.
 
-    Cordagalma-ordinatum.final.histo # Just the final histogram with all data. Suitable for analysis with genomescope and other tools.
+    output/Cordagalma-ordinatum.final.histo # Just the final histogram with all data. Suitable for analysis with genomescope and other tools.
 
 Then to explore the results with the optional python tools:
 
