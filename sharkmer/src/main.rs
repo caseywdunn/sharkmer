@@ -638,7 +638,7 @@ fn main() {
         );
     }
 
-    if n_unique_kmers_histo != kmer_counts.len() {
+    if n_unique_kmers_histo != kmer_counts.len() as u64 {
         panic!(
             "The total count of unique kmers in the histogram ({}) does not equal the total count of hashed kmers ({})",
             n_unique_kmers_histo,
