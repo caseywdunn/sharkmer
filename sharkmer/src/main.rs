@@ -4,6 +4,7 @@ use colored::*;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
 use rustc_hash::FxHashMap;
+use std::collections::HashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
@@ -43,6 +44,21 @@ fn is_valid_nucleotide(c: char) -> bool {
         'N' => true, // A or C or G or T
         _ => false,
     }
+}
+
+fn histo_map_to_vector(histo_map: &HashMap<u64,u64>, histo_max: &u64) -> Vec<u64> {
+    let length = *histo_max as usize + 2;
+    let mut histo: Vec<u64> = vec![0; length]; // +2 to allow for 0 and for >histo_max
+
+    for (i, count) in histo_map.iter() {
+        if *i <= *histo_max {
+            histo[*i as usize] = count.clone();
+        } else {
+            histo[length - 1] += count;
+        }
+    }
+
+    histo
 }
 
 pub fn parse_rad_string(rad_string: &str) -> Result<rad::RADParams, String> {
@@ -539,7 +555,7 @@ fn main() {
     std::io::stdout().flush().unwrap();
     let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
 
-    let mut histos: Vec<Vec<u64>> = Vec::with_capacity(args.n);
+    let mut histos: Vec<HashMap<u64,u64>> = Vec::with_capacity(args.n);
 
     // Iterate over the chunks
     for chunk_kmer_count in chunk_kmer_counts {
@@ -548,12 +564,9 @@ fn main() {
             *count += kmer_count;
         }
 
-        let mut histo = kmer::count_histogram(&kmer_counts, &args.histo_max);
+        let histo: HashMap<u64,u64> = kmer::count_histogram(&kmer_counts);
 
-        // Add the number of singletons to the histogram at index 1
-        histo[1] += chunk_kmer_count.n_singletons;
-
-        histos.push(histo.clone());
+        histos.push(histo);
     }
     println!(" done, time: {:?}", start.elapsed());
 
@@ -576,7 +589,8 @@ fn main() {
     let mut file = std::fs::File::create(format!("{}{}.histo", directory, args.sample)).unwrap();
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
-        for histo in histos.iter() {
+        for histo_map in histos.iter() {
+            let histo = histo_map_to_vector(histo_map, &args.histo_max);
             line = format!("{}\t{}", line, histo[i]);
         }
         line = format!("{}\n", line);
@@ -587,22 +601,50 @@ fn main() {
 
     // Write the final histogram to a file, ready for GenomeScope2 etc...
     print!("Writing final histogram to file...");
-    let mut n_kmers: u64 = 0;
-    let n_singleton_kmers: u64 = histos[histos.len() - 1][1];
     std::io::stdout().flush().unwrap();
+
+    let last_histo = histo_map_to_vector(&histos[histos.len() - 1], &args.histo_max);
     let mut file =
         std::fs::File::create(format!("{}{}.final.histo", directory, args.sample)).unwrap();
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
 
-        line = format!("{}\t{}", line, histos[histos.len() - 1][i]);
-        n_kmers += histos[histos.len() - 1][i];
+        line = format!("{}\t{}", line, last_histo[i]);
 
         line = format!("{}\n", line);
         file.write_all(line.as_bytes()).unwrap();
     }
 
     println!(" done");
+
+    
+    let n_singleton_kmers = last_histo[1];
+    let mut n_unique_kmers_histo: u64 = 0;
+    let mut n_kmers_histo: u64 = 0;
+
+    for (i, count) in histos[histos.len() - 1].iter(){
+        n_unique_kmers_histo += count;
+        n_kmers_histo += count * i;
+    }
+
+    println!("  {} unique kmers in histogram", n_unique_kmers_histo);
+    println!("  {} kmers in histogram", n_kmers_histo);
+
+    if n_kmers_histo != n_expected_kmers {
+        panic!(
+            "The total count of kmers in the histogram ({}) does not equal the total expected count of kmers ({})",
+            n_kmers_histo,
+            n_expected_kmers,
+        );
+    }
+
+    if n_unique_kmers_histo != kmer_counts.len() {
+        panic!(
+            "The total count of unique kmers in the histogram ({}) does not equal the total count of hashed kmers ({})",
+            n_unique_kmers_histo,
+            kmer_counts.len(),
+        );
+    }
 
     print!("Writing stats to file...");
     std::io::stdout().flush().unwrap();
@@ -614,8 +656,8 @@ fn main() {
     line = format!("{}n_bases_read\t{}\n", line, n_bases_read);
     line = format!("{}n_subreads_ingested\t{}\n", line, reads.len());
     line = format!("{}n_bases_ingested\t{}\n", line, n_bases_ingested);
-    line = format!("{}n_kmers\t{}\n", line, n_kmers);
-    line = format!("{}n_multi_kmers\t{}\n", line, n_kmers - n_singleton_kmers);
+    line = format!("{}n_kmers\t{}\n", line, n_expected_kmers);
+    line = format!("{}n_multi_kmers\t{}\n", line, n_expected_kmers - n_singleton_kmers);
     line = format!("{}n_singleton_kmers\t{}\n", line, n_singleton_kmers);
 
     file_stats.write_all(line.as_bytes()).unwrap();
@@ -685,4 +727,24 @@ fn main() {
 }
 
 #[cfg(test)]
-mod test;
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_histo_map_to_vector(){
+        let mut histo_map: HashMap<u64,u64> = HashMap::new();
+        histo_map.insert(1, 5);
+        histo_map.insert(2, 7);
+        histo_map.insert(11, 2);
+        histo_map.insert(12, 1);
+
+        let histo_max = 10;
+
+        let histo = histo_map_to_vector(&histo_map, &histo_max);
+
+        assert_eq!(histo.len(), histo_max as usize + 2);
+        let expected_histo: Vec<u64> = vec![0, 5, 7, 0, 0, 0, 0, 0, 0, 0, 0, 3];
+        assert_eq!(histo, expected_histo);
+
+    }
+}

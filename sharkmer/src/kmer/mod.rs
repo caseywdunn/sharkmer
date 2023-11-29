@@ -2,6 +2,7 @@
 //! This module provides kmer functions.
 
 use rustc_hash::FxHashMap;
+use std::collections::HashMap;
 
 // A structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
 pub struct KmerSummary {
@@ -258,50 +259,13 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
     reads
 }
 
-/// Generates a histogram from kmer counts.
-///
-/// This function produces a histogram where the indices represent the counts of a kmer,
-/// and the values at those indices represent the number of kmers with that count.
-/// If a kmer's count exceeds the specified `histo_max`, it gets placed in the final bucket.
-///
-/// # Arguments
-///
-/// * `kmer_counts` - A reference to a `FxHashMap` where keys are kmers (as 64-bit integers)
-///   and values are the corresponding counts of each kmer.
-/// * `histo_max` - A reference to the maximum count to be considered for individual bins
-///   in the histogram. Kmer counts exceeding this value will be lumped into a single
-///   overflow bin.
-///
-/// # Returns
-///
-/// A vector representing the histogram. The value at index `i` represents the number of
-/// kmers that appeared `i` times. The last value in the vector represents the number of
-/// kmers with counts greater than `histo_max`.
-///
-/// # Example
-///
-/// ```rust
-/// use rustc_hash::FxHashMap;
-///
-/// let mut kmer_counts = FxHashMap::default();
-/// kmer_counts.insert(12345, 3);
-/// kmer_counts.insert(67890, 5);
-/// // ... populate more kmers and counts ...
-///
-/// let histo_max = 10;
-/// let histogram = count_histogram(&kmer_counts, &histo_max);
-/// // histogram will have 12 entries: one for each count from 0 to 10,
-/// // plus an additional one for counts greater than 10.
-/// ```
-pub fn count_histogram(kmer_counts: &FxHashMap<u64, u64>, histo_max: &u64) -> Vec<u64> {
+
+pub fn count_histogram(kmer_counts: &FxHashMap<u64, u64>) -> HashMap<u64,u64> {
     // Create a histogram of counts
-    let mut histo: Vec<u64> = vec![0; *histo_max as usize + 2]; // +2 to allow for 0 and for >histo_max
+    let mut histo:HashMap<u64,u64> = HashMap::new();
     for count in kmer_counts.values() {
-        if *count <= *histo_max {
-            histo[*count as usize] += 1;
-        } else {
-            histo[*histo_max as usize + 1] += 1;
-        }
+        let entry = histo.entry(*count).or_insert(0);
+        *entry += 1;
     }
     histo
 }
