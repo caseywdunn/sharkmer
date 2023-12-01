@@ -6,7 +6,7 @@ use petgraph::algo::all_simple_paths;
 use petgraph::graph::{DiGraph, NodeIndex};
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::Direction;
-use petgraph::visit::{Dfs, Walker};
+use petgraph::visit::{Dfs};
 use rayon::prelude::*;
 use rustc_hash::FxHashMap;
 use std::collections::HashMap;
@@ -444,14 +444,14 @@ fn generate_fastas(
             }
 
             // Get a vector of sequence lengths
-            let mut sequence_lengths: Vec<usize> = sequences_for_this_pair
+            let sequence_lengths: Vec<usize> = sequences_for_this_pair
                 .iter()
                 .map(|sequence| sequence.len())
                 .collect();
 
             let sequence_lengths_set: HashSet<usize> = sequence_lengths.iter().cloned().collect();
             let sequence_lengths_mode = mode(&sequence_lengths);
-            if sequence_lengths_set.len() == 0 {
+            if sequence_lengths_set.is_empty() {
                 to_print = format!(
                     "{}  No viable sequences found between start node {} and end node {}\n",
                     to_print,
@@ -490,7 +490,7 @@ fn generate_fastas(
                     end_seq
                 ).as_str(),
                 None,
-                &consensus_sequence.as_bytes(),
+                consensus_sequence.as_bytes(),
             );
             records_vec.push(record);
         }

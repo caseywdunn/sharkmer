@@ -46,21 +46,6 @@ fn is_valid_nucleotide(c: char) -> bool {
     }
 }
 
-fn histo_map_to_vector(histo_map: &HashMap<u64,u64>, histo_max: &u64) -> Vec<u64> {
-    let length = *histo_max as usize + 2;
-    let mut histo: Vec<u64> = vec![0; length]; // +2 to allow for 0 and for >histo_max
-
-    for (i, count) in histo_map.iter() {
-        if *i <= *histo_max {
-            histo[*i as usize] = count.clone();
-        } else {
-            histo[length - 1] += count;
-        }
-    }
-
-    histo
-}
-
 pub fn parse_rad_string(rad_string: &str) -> Result<rad::RADParams, String> {
     // Split the string on underscores
     let split: Vec<&str> = rad_string.split('_').collect();
@@ -345,7 +330,7 @@ fn main() {
     );
 
     // Parse the outdir path and sample, create directories if necessary
-    let mut path = PathBuf::from(&args.outdir);
+    let path = PathBuf::from(&args.outdir);
 
     // Create the output directory if it does not exist
     let directory = format!("{}/", path.to_str().unwrap());
@@ -621,8 +606,8 @@ fn main() {
 
     
     let n_singleton_kmers = last_histo_vec[1];
-    let mut n_unique_kmers_histo: u64 = last_histo.get_n_unique_kmers();
-    let mut n_kmers_histo: u64 = last_histo.get_n_kmers();
+    let n_unique_kmers_histo: u64 = last_histo.get_n_unique_kmers();
+    let n_kmers_histo: u64 = last_histo.get_n_kmers();
 
     println!("  {} unique kmers in histogram", n_unique_kmers_histo);
     println!("  {} kmers in histogram", n_kmers_histo);
@@ -725,23 +710,5 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
 
-    #[test]
-    fn test_histo_map_to_vector(){
-        let mut histo_map: HashMap<u64,u64> = HashMap::new();
-        histo_map.insert(1, 5);
-        histo_map.insert(2, 7);
-        histo_map.insert(11, 2);
-        histo_map.insert(12, 1);
-
-        let histo_max = 10;
-
-        let histo = histo_map_to_vector(&histo_map, &histo_max);
-
-        assert_eq!(histo.len(), histo_max as usize + 2);
-        let expected_histo: Vec<u64> = vec![0, 5, 7, 0, 0, 0, 0, 0, 0, 0, 0, 3];
-        assert_eq!(histo, expected_histo);
-
-    }
 }

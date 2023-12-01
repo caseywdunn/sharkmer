@@ -200,6 +200,10 @@ impl Histogram {
         self.histo.iter_mut()
     }
 
+    pub fn from_hashmap(histo: HashMap<u64, u64>) -> Histogram {
+        Histogram{histo}
+    }
+
     pub fn from_kmer_counts(kmer_counts: &FxHashMap<u64, u64>) -> Histogram {
         // Create a histogram of counts
         let mut histo:HashMap<u64,u64> = HashMap::new();
@@ -239,7 +243,7 @@ impl Histogram {
     
         for (i, count) in self.iter() {
             if *i <= *histo_max {
-                histo_vec[*i as usize] = count.clone();
+                histo_vec[*i as usize] = *count;
             } else {
                 histo_vec[length - 1] += count;
             }
@@ -315,7 +319,7 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
     
     // Split seq on N
     for subseq in seq.split('N'){
-        if subseq.len() > 0 {
+        if !subseq.is_empty() {
             let read = Read::from_str(subseq);
             if ! read.validate() {
                 panic!("Invalid read: {:?} from subsequence {}", read, subseq);
@@ -588,5 +592,24 @@ mod tests {
         let kmer = 0b1001_1000_1001_1000;
         let seq = crate::kmer::kmer_to_seq(&kmer, &8usize);
         assert_eq!(seq, "GCGAGCGA");
+    }
+
+    #[test]
+    fn test_histogram() {
+        let mut histo_map: HashMap<u64,u64> = HashMap::new();
+        histo_map.insert(1, 5);
+        histo_map.insert(2, 7);
+        histo_map.insert(11, 2);
+        histo_map.insert(12, 1);
+
+        let histo = Histogram::from_hashmap(histo_map);
+
+        let histo_max = 10;
+
+        let histo_vec = histo.get_vector(&histo_max);
+
+        assert_eq!(histo_vec.len(), histo_max as usize + 2);
+        let expected_histo: Vec<u64> = vec![0, 5, 7, 0, 0, 0, 0, 0, 0, 0, 0, 3];
+        assert_eq!(histo_vec, expected_histo);
     }
 }
