@@ -319,19 +319,6 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
     reads
 }
 
-pub fn count_histogram(
-    kmer_counts: &FxHashMap<u64, u64>,
-) -> HashMap<u64, u64, nohash_hasher::BuildNoHashHasher<u64>> {
-    // Create a histogram of counts
-    let mut histo: HashMap<u64, u64, nohash_hasher::BuildNoHashHasher<u64>> =
-        HashMap::with_hasher(nohash_hasher::BuildNoHashHasher::default());
-    for count in kmer_counts.values() {
-        let entry = histo.entry(*count).or_insert(0);
-        *entry += 1;
-    }
-    histo
-}
-
 pub fn kmer_to_seq(kmer: &u64, k: &usize) -> String {
     let mut seq = String::new();
     for i in 0..*k {
