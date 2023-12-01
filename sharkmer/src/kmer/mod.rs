@@ -1,9 +1,9 @@
 // kmer/mod.rs
 //! This module provides kmer functions.
 
+use nohash_hasher::NoHashHasher;
 use rustc_hash::FxHashMap;
 use std::collections::HashMap;
-use nohash_hasher::NoHashHasher;
 use std::hash::BuildHasherDefault;
 
 // A structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
@@ -38,7 +38,7 @@ impl Read {
     /// * `C` -> `01`
     /// * `G` -> `10`
     /// * `T` -> `11`
-    /// 
+    ///
     /// Any other character will cause the function to panic.
     pub fn from_str(seq: &str) -> Read {
         let mut ints: Vec<u8> = Vec::with_capacity(seq.len() / 4 + 1);
@@ -51,16 +51,19 @@ impl Read {
                 'C' => 1, // 01
                 'G' => 2, // 10
                 'T' => 3, // 11
-                _ => panic!("Invalid character {} in sequence {}. Only ACGT allowed.", c, seq),
+                _ => panic!(
+                    "Invalid character {} in sequence {}. Only ACGT allowed.",
+                    c, seq
+                ),
             };
-    
+
             frame = (frame << 2) | base;
             if (length) % 4 == 0 {
                 ints.push(frame);
                 frame = 0; // Reset frame after pushing to the vector
             }
         }
-    
+
         // Check if there is anything left in the frame, and rotate it into place if so
         let modulo = length % 4;
         if modulo != 0 {
@@ -186,12 +189,11 @@ impl PartialEq for Read {
 
 /// A structure to hold a histogram of kmer counts.
 /// #[derive(Debug)]
-pub struct Histogram{
+pub struct Histogram {
     pub histo: HashMap<u64, u64>,
 }
 
 impl Histogram {
-
     pub fn iter(&self) -> std::collections::hash_map::Iter<u64, u64> {
         self.histo.iter()
     }
@@ -201,17 +203,17 @@ impl Histogram {
     }
 
     pub fn from_hashmap(histo: HashMap<u64, u64>) -> Histogram {
-        Histogram{histo}
+        Histogram { histo }
     }
 
     pub fn from_kmer_counts(kmer_counts: &FxHashMap<u64, u64>) -> Histogram {
         // Create a histogram of counts
-        let mut histo:HashMap<u64,u64> = HashMap::new();
+        let mut histo: HashMap<u64, u64> = HashMap::new();
         for count in kmer_counts.values() {
             let entry = histo.entry(*count).or_insert(0);
             *entry += 1;
         }
-        Histogram{histo}
+        Histogram { histo }
     }
 
     pub fn get(&self, count: &u64) -> u64 {
@@ -240,7 +242,7 @@ impl Histogram {
     pub fn get_vector(&self, histo_max: &u64) -> Vec<u64> {
         let length = *histo_max as usize + 2;
         let mut histo_vec: Vec<u64> = vec![0; length]; // +2 to allow for 0 and for >histo_max
-    
+
         for (i, count) in self.iter() {
             if *i <= *histo_max {
                 histo_vec[*i as usize] = *count;
@@ -248,7 +250,7 @@ impl Histogram {
                 histo_vec[length - 1] += count;
             }
         }
-    
+
         histo_vec
     }
 }
@@ -316,12 +318,12 @@ pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
 /// ```
 pub fn seq_to_reads(seq: &str) -> Vec<Read> {
     let mut reads: Vec<Read> = Vec::new();
-    
+
     // Split seq on N
-    for subseq in seq.split('N'){
+    for subseq in seq.split('N') {
         if !subseq.is_empty() {
             let read = Read::from_str(subseq);
-            if ! read.validate() {
+            if !read.validate() {
                 panic!("Invalid read: {:?} from subsequence {}", read, subseq);
             }
             reads.push(read);
@@ -330,10 +332,11 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
     reads
 }
 
-
-pub fn count_histogram(kmer_counts: &FxHashMap<u64, u64>) -> HashMap<u64, u64, nohash_hasher::BuildNoHashHasher<u64>> {
+pub fn count_histogram(
+    kmer_counts: &FxHashMap<u64, u64>,
+) -> HashMap<u64, u64, nohash_hasher::BuildNoHashHasher<u64>> {
     // Create a histogram of counts
-    let mut histo:HashMap<u64,u64, nohash_hasher::BuildNoHashHasher<u64>> = 
+    let mut histo: HashMap<u64, u64, nohash_hasher::BuildNoHashHasher<u64>> =
         HashMap::with_hasher(nohash_hasher::BuildNoHashHasher::default());
     for count in kmer_counts.values() {
         let entry = histo.entry(*count).or_insert(0);
@@ -392,7 +395,6 @@ mod tests {
 
     #[test]
     fn test_read_parsing() {
-        
         let seq = "TANCACN";
         let reads = seq_to_reads(seq);
         for read in reads {
@@ -476,7 +478,6 @@ mod tests {
         let actual = seq_to_reads(seq);
         assert_eq!(actual, expected);
 
-
         let seq = "CGTANATGCGGCGA";
         let expected = vec![
             Read::new(vec![0b01101100], 4),
@@ -508,7 +509,6 @@ mod tests {
         ];
         let actual = seq_to_reads(seq);
         assert_eq!(actual, expected);
-
     }
 
     #[test]
@@ -579,8 +579,6 @@ mod tests {
         let expected = vec![];
         let actual = read.get_kmers(&9usize);
         assert_eq!(actual, expected);
-
-
     }
 
     #[test]
@@ -596,7 +594,7 @@ mod tests {
 
     #[test]
     fn test_histogram() {
-        let mut histo_map: HashMap<u64,u64> = HashMap::new();
+        let mut histo_map: HashMap<u64, u64> = HashMap::new();
         histo_map.insert(1, 5);
         histo_map.insert(2, 7);
         histo_map.insert(11, 2);

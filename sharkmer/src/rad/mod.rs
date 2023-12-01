@@ -5,8 +5,8 @@ use colored::*;
 use petgraph::algo::all_simple_paths;
 use petgraph::graph::{DiGraph, NodeIndex};
 use petgraph::stable_graph::StableDiGraph;
+use petgraph::visit::Dfs;
 use petgraph::Direction;
-use petgraph::visit::{Dfs};
 use rayon::prelude::*;
 use rustc_hash::FxHashMap;
 use std::collections::HashMap;
@@ -82,7 +82,10 @@ fn mode(numbers: &Vec<usize>) -> usize {
 ///
 /// * `graph` - The directed graph.
 /// * `node` - The node whose ancestors will be kept.
-fn remove_non_ancestors (graph: &mut StableDiGraph<crate::pcr::DBNode, crate::pcr::DBEdge>, node: &NodeIndex) {
+fn remove_non_ancestors(
+    graph: &mut StableDiGraph<crate::pcr::DBNode, crate::pcr::DBEdge>,
+    node: &NodeIndex,
+) {
     // First, find all the ancestors of the given node
     let mut ancestors = HashSet::new();
     let mut dfs = Dfs::new(&*graph, *node);
@@ -91,10 +94,11 @@ fn remove_non_ancestors (graph: &mut StableDiGraph<crate::pcr::DBNode, crate::pc
     }
 
     // Then, remove all nodes that are not ancestors of the given node
-    let nodes_to_remove: Vec<_> = graph.node_indices()
-                                      .filter(|&n| !ancestors.contains(&n))
-                                      .collect();
-    
+    let nodes_to_remove: Vec<_> = graph
+        .node_indices()
+        .filter(|&n| !ancestors.contains(&n))
+        .collect();
+
     for n in nodes_to_remove {
         graph.remove_node(n);
     }
@@ -253,7 +257,6 @@ fn generate_fastas(
                     }
 
                     if !node_exists {
-
                         // Add the new node, marking it as an end node if it matches the cut2 kmer
                         let new_node: NodeIndex;
                         if (kmer & cut2_mask_terminal) == cut2_kmer_terminal {
@@ -296,7 +299,6 @@ fn generate_fastas(
                         }
 
                         if verbosity > 9 {
-                            
                             to_print = format!(
                                 "{}  Added sub_kmer {} for new node {} with edge kmer count {}.\n",
                                 to_print,
@@ -309,8 +311,7 @@ fn generate_fastas(
                         // Check if the new node is max_length-k+1 from a start node
                         // If so, mark the new node as terminal
                         let path_length = crate::pcr::get_path_length(&graph, new_node);
-                        
-                        
+
                         if verbosity > 1 {
                             let is_end = (kmer & cut2_mask_terminal) == cut2_kmer_terminal;
                             if is_end {
@@ -358,7 +359,7 @@ fn generate_fastas(
                 }
             }
         }
-    }  // End graph extension
+    } // End graph extension
 
     // There should only be a single start node, the one that seeded the graph
     let start_nodes = crate::pcr::get_start_nodes(&graph);
@@ -371,7 +372,7 @@ fn generate_fastas(
         to_print,
         graph.node_count()
     );
-    
+
     let end_nodes = crate::pcr::get_end_nodes(&graph);
     if end_nodes.is_empty() {
         to_print = format!(
@@ -409,18 +410,22 @@ fn generate_fastas(
     for start in crate::pcr::get_start_nodes(&graph) {
         let start_seq = crate::kmer::kmer_to_seq(&graph[start].sub_kmer, &(*k - 1));
         'end_nodes: for end in crate::pcr::get_end_nodes(&graph) {
-
             let end_seq = crate::kmer::kmer_to_seq(&graph[end].sub_kmer, &(*k - 1));
 
-			// Create a copy of the graph
-			let mut sub_graph = graph.clone();
-			remove_non_ancestors(&mut sub_graph, &end);
+            // Create a copy of the graph
+            let mut sub_graph = graph.clone();
+            remove_non_ancestors(&mut sub_graph, &end);
 
-            let paths_for_this_pair =
-                all_simple_paths::<
-                    Vec<NodeIndex>,
-                    &StableDiGraph<crate::pcr::DBNode, crate::pcr::DBEdge>,
-                >(&sub_graph, start, end, 1, Some(params.max_length - (*k) + 1));
+            let paths_for_this_pair = all_simple_paths::<
+                Vec<NodeIndex>,
+                &StableDiGraph<crate::pcr::DBNode, crate::pcr::DBEdge>,
+            >(
+                &sub_graph,
+                start,
+                end,
+                1,
+                Some(params.max_length - (*k) + 1),
+            );
 
             // A vector of sequences for this pair of start and end nodes
             let mut sequences_for_this_pair: Vec<String> = Vec::new();
@@ -483,12 +488,7 @@ fn generate_fastas(
 
             // Create a fasta record for this sequence
             let record = fasta::Record::with_attrs(
-                format!(
-                    "{}_{}-{}",
-                    sample_name,
-                    start_seq,
-                    end_seq
-                ).as_str(),
+                format!("{}_{}-{}", sample_name, start_seq, end_seq).as_str(),
                 None,
                 consensus_sequence.as_bytes(),
             );

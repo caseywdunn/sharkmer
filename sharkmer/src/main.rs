@@ -556,16 +556,18 @@ fn main() {
     println!(" done, time: {:?}", start.elapsed());
 
     let n_hashed_kmers: u64 = kmer_counts.values().sum();
-    println!("  {} unique kmers with a total count of {} were found", kmer_counts.len(), n_hashed_kmers);
+    println!(
+        "  {} unique kmers with a total count of {} were found",
+        kmer_counts.len(),
+        n_hashed_kmers
+    );
 
     if n_hashed_kmers != n_expected_kmers {
         panic!(
             "The total count of hashed kmers ({}) does not equal the expected number of kmers ({})",
-            n_hashed_kmers,
-            n_expected_kmers,
+            n_hashed_kmers, n_expected_kmers,
         );
     }
-
 
     // Write the histograms to a tab delimited file, with the first column being the count
     // Skip the first row, which is the count of 0. Do not include a header
@@ -590,7 +592,7 @@ fn main() {
 
     let last_histo = &histos[histos.len() - 1];
     let last_histo_vec = kmer::Histogram::get_vector(last_histo, &args.histo_max);
-    
+
     let mut file =
         std::fs::File::create(format!("{}{}.final.histo", directory, args.sample)).unwrap();
     for i in 1..args.histo_max as usize + 2 {
@@ -604,7 +606,6 @@ fn main() {
 
     println!(" done");
 
-    
     let n_singleton_kmers = last_histo_vec[1];
     let n_unique_kmers_histo: u64 = last_histo.get_n_unique_kmers();
     let n_kmers_histo: u64 = last_histo.get_n_kmers();
@@ -639,7 +640,11 @@ fn main() {
     line = format!("{}n_subreads_ingested\t{}\n", line, reads.len());
     line = format!("{}n_bases_ingested\t{}\n", line, n_bases_ingested);
     line = format!("{}n_kmers\t{}\n", line, n_expected_kmers);
-    line = format!("{}n_multi_kmers\t{}\n", line, n_expected_kmers - n_singleton_kmers);
+    line = format!(
+        "{}n_multi_kmers\t{}\n",
+        line,
+        n_expected_kmers - n_singleton_kmers
+    );
     line = format!("{}n_singleton_kmers\t{}\n", line, n_singleton_kmers);
 
     file_stats.write_all(line.as_bytes()).unwrap();
@@ -709,6 +714,4 @@ fn main() {
 }
 
 #[cfg(test)]
-mod tests {
-
-}
+mod tests {}

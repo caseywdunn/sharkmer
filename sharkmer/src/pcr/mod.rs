@@ -112,7 +112,6 @@ pub fn remove_side_branches(graph: &mut StableDiGraph<DBNode, DBEdge>) {
     }
 }
 
-
 // Get a vector of edge counts by traversing the graph backwards from the focal node
 fn get_backward_edge_counts(
     graph: &StableDiGraph<DBNode, DBEdge>,
@@ -1965,7 +1964,7 @@ mod tests {
     }
 
     #[test]
-    fn test_get_end_nodes(){
+    fn test_get_end_nodes() {
         let (graph, nodes) = create_test_graph();
 
         let end_nodes = get_end_nodes(&graph);
@@ -1975,7 +1974,7 @@ mod tests {
     }
 
     #[test]
-    fn test_get_start_nodes(){
+    fn test_get_start_nodes() {
         let (graph, nodes) = create_test_graph();
 
         let start_nodes = get_start_nodes(&graph);
