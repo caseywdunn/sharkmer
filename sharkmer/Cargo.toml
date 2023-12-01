@@ -17,3 +17,4 @@ petgraph = { version = "0.6.4"}
 bio = { version = "1.4.0"}
 colored = { version = "2" }
 nohash-hasher = { version = "0.2.0" }
+intmap =  { version = "2.0.0" }

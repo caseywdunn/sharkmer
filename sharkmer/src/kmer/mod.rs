@@ -1,10 +1,10 @@
 // kmer/mod.rs
 //! This module provides kmer functions.
 
-use nohash_hasher::NoHashHasher;
 use rustc_hash::FxHashMap;
 use std::collections::HashMap;
-use std::hash::BuildHasherDefault;
+use intmap::{IntMap, Entry};
+
 
 // A structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
 pub struct KmerSummary {
@@ -190,62 +190,55 @@ impl PartialEq for Read {
 /// A structure to hold a histogram of kmer counts.
 /// #[derive(Debug)]
 pub struct Histogram {
-    pub histo: HashMap<u64, u64>,
+    pub histo: IntMap<u64>,
 }
 
 impl Histogram {
-    pub fn iter(&self) -> std::collections::hash_map::Iter<u64, u64> {
+    fn iter(&self) -> impl Iterator<Item = (&u64, &u64)> {
         self.histo.iter()
     }
 
-    pub fn iter_mut(&mut self) -> std::collections::hash_map::IterMut<u64, u64> {
-        self.histo.iter_mut()
-    }
-
-    pub fn from_hashmap(histo: HashMap<u64, u64>) -> Histogram {
-        Histogram { histo }
+    pub fn from_hashmap(histo: std::collections::HashMap<u64, u64>) -> Histogram {
+        let mut intmap_histo = IntMap::new();
+        for (key, value) in histo {
+            intmap_histo.insert(key, value);
+        }
+        Histogram { histo: intmap_histo }
     }
 
     pub fn from_kmer_counts(kmer_counts: &FxHashMap<u64, u64>) -> Histogram {
-        // Create a histogram of counts
-        let mut histo: HashMap<u64, u64> = HashMap::new();
+        let mut histo: IntMap<u64> = IntMap::new();
+        // From https://docs.rs/intmap/2.0.0/intmap/struct.IntMap.html#method.entry
         for count in kmer_counts.values() {
-            let entry = histo.entry(*count).or_insert(0);
-            *entry += 1;
+            let counter = match histo.entry(*count) {
+                Entry::Occupied(entry) => entry.into_mut(),
+                Entry::Vacant(entry) => entry.insert(0),
+            };
+            *counter += 1;
         }
+        
         Histogram { histo }
     }
 
     pub fn get(&self, count: &u64) -> u64 {
-        match self.histo.get(count) {
-            Some(count) => *count,
-            None => 0,
-        }
+        *self.histo.get(*count).unwrap_or(&0)
     }
 
     pub fn get_n_kmers(&self) -> u64 {
-        let mut total = 0;
-        for (count, count_total) in self.histo.iter() {
-            total += count * count_total;
-        }
-        total
+        self.histo.iter().map(|(count, count_total)| count * count_total).sum()
     }
 
     pub fn get_n_unique_kmers(&self) -> u64 {
-        let mut total = 0;
-        for (count, count_total) in self.histo.iter() {
-            total += count_total;
-        }
-        total
+        self.histo.iter().map(|(_, count_total)| count_total).sum::<u64>()
     }
 
     pub fn get_vector(&self, histo_max: &u64) -> Vec<u64> {
         let length = *histo_max as usize + 2;
-        let mut histo_vec: Vec<u64> = vec![0; length]; // +2 to allow for 0 and for >histo_max
+        let mut histo_vec: Vec<u64> = vec![0; length];
 
-        for (i, count) in self.iter() {
-            if *i <= *histo_max {
-                histo_vec[*i as usize] = *count;
+        for (&i, &count) in self.iter() {
+            if i <= *histo_max {
+                histo_vec[i as usize] = count;
             } else {
                 histo_vec[length - 1] += count;
             }
