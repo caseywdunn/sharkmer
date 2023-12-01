@@ -3,6 +3,8 @@
 
 use rustc_hash::FxHashMap;
 use std::collections::HashMap;
+use nohash_hasher::NoHashHasher;
+use std::hash::BuildHasherDefault;
 
 // A structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
 pub struct KmerSummary {
@@ -182,6 +184,71 @@ impl PartialEq for Read {
     }
 }
 
+/// A structure to hold a histogram of kmer counts.
+/// #[derive(Debug)]
+pub struct Histogram{
+    pub histo: HashMap<u64, u64>,
+}
+
+impl Histogram {
+
+    pub fn iter(&self) -> std::collections::hash_map::Iter<u64, u64> {
+        self.histo.iter()
+    }
+
+    pub fn iter_mut(&mut self) -> std::collections::hash_map::IterMut<u64, u64> {
+        self.histo.iter_mut()
+    }
+
+    pub fn from_kmer_counts(kmer_counts: &FxHashMap<u64, u64>) -> Histogram {
+        // Create a histogram of counts
+        let mut histo:HashMap<u64,u64> = HashMap::new();
+        for count in kmer_counts.values() {
+            let entry = histo.entry(*count).or_insert(0);
+            *entry += 1;
+        }
+        Histogram{histo}
+    }
+
+    pub fn get(&self, count: &u64) -> u64 {
+        match self.histo.get(count) {
+            Some(count) => *count,
+            None => 0,
+        }
+    }
+
+    pub fn get_n_kmers(&self) -> u64 {
+        let mut total = 0;
+        for (count, count_total) in self.histo.iter() {
+            total += count * count_total;
+        }
+        total
+    }
+
+    pub fn get_n_unique_kmers(&self) -> u64 {
+        let mut total = 0;
+        for (count, count_total) in self.histo.iter() {
+            total += count_total;
+        }
+        total
+    }
+
+    pub fn get_vector(&self, histo_max: &u64) -> Vec<u64> {
+        let length = *histo_max as usize + 2;
+        let mut histo_vec: Vec<u64> = vec![0; length]; // +2 to allow for 0 and for >histo_max
+    
+        for (i, count) in self.iter() {
+            if *i <= *histo_max {
+                histo_vec[*i as usize] = count.clone();
+            } else {
+                histo_vec[length - 1] += count;
+            }
+        }
+    
+        histo_vec
+    }
+}
+
 /// Returns the reverse complement of a specified kmer.
 ///
 /// The function computes the reverse complement of a kmer represented as a 64-bit unsigned integer.
@@ -260,9 +327,10 @@ pub fn seq_to_reads(seq: &str) -> Vec<Read> {
 }
 
 
-pub fn count_histogram(kmer_counts: &FxHashMap<u64, u64>) -> HashMap<u64,u64> {
+pub fn count_histogram(kmer_counts: &FxHashMap<u64, u64>) -> HashMap<u64, u64, nohash_hasher::BuildNoHashHasher<u64>> {
     // Create a histogram of counts
-    let mut histo:HashMap<u64,u64> = HashMap::new();
+    let mut histo:HashMap<u64,u64, nohash_hasher::BuildNoHashHasher<u64>> = 
+        HashMap::with_hasher(nohash_hasher::BuildNoHashHasher::default());
     for count in kmer_counts.values() {
         let entry = histo.entry(*count).or_insert(0);
         *entry += 1;

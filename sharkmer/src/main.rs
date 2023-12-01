@@ -555,7 +555,7 @@ fn main() {
     std::io::stdout().flush().unwrap();
     let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
 
-    let mut histos: Vec<HashMap<u64,u64>> = Vec::with_capacity(args.n);
+    let mut histos: Vec<kmer::Histogram> = Vec::with_capacity(args.n);
 
     // Iterate over the chunks
     for chunk_kmer_count in chunk_kmer_counts {
@@ -564,7 +564,7 @@ fn main() {
             *count += kmer_count;
         }
 
-        let histo: HashMap<u64,u64> = kmer::count_histogram(&kmer_counts);
+        let histo = kmer::Histogram::from_kmer_counts(&kmer_counts);
 
         histos.push(histo);
     }
@@ -589,9 +589,9 @@ fn main() {
     let mut file = std::fs::File::create(format!("{}{}.histo", directory, args.sample)).unwrap();
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
-        for histo_map in histos.iter() {
-            let histo = histo_map_to_vector(histo_map, &args.histo_max);
-            line = format!("{}\t{}", line, histo[i]);
+        for histo in histos.iter() {
+            let histo_vec = kmer::Histogram::get_vector(histo, &args.histo_max);
+            line = format!("{}\t{}", line, histo_vec[i]);
         }
         line = format!("{}\n", line);
         file.write_all(line.as_bytes()).unwrap();
@@ -603,13 +603,15 @@ fn main() {
     print!("Writing final histogram to file...");
     std::io::stdout().flush().unwrap();
 
-    let last_histo = histo_map_to_vector(&histos[histos.len() - 1], &args.histo_max);
+    let last_histo = &histos[histos.len() - 1];
+    let last_histo_vec = kmer::Histogram::get_vector(last_histo, &args.histo_max);
+    
     let mut file =
         std::fs::File::create(format!("{}{}.final.histo", directory, args.sample)).unwrap();
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
 
-        line = format!("{}\t{}", line, last_histo[i]);
+        line = format!("{}\t{}", line, last_histo_vec[i]);
 
         line = format!("{}\n", line);
         file.write_all(line.as_bytes()).unwrap();
@@ -618,14 +620,9 @@ fn main() {
     println!(" done");
 
     
-    let n_singleton_kmers = last_histo[1];
-    let mut n_unique_kmers_histo: u64 = 0;
-    let mut n_kmers_histo: u64 = 0;
-
-    for (i, count) in histos[histos.len() - 1].iter(){
-        n_unique_kmers_histo += count;
-        n_kmers_histo += count * i;
-    }
+    let n_singleton_kmers = last_histo_vec[1];
+    let mut n_unique_kmers_histo: u64 = last_histo.get_n_unique_kmers();
+    let mut n_kmers_histo: u64 = last_histo.get_n_kmers();
 
     println!("  {} unique kmers in histogram", n_unique_kmers_histo);
     println!("  {} kmers in histogram", n_kmers_histo);
