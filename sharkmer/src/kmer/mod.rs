@@ -6,12 +6,6 @@ use std::collections::HashMap;
 use intmap::{IntMap, Entry};
 
 
-// A structure with a hashmap for kmer counts and a u64 for the number of singleton kmers
-pub struct KmerSummary {
-    pub kmer_counts: FxHashMap<u64, u64>,
-    pub n_singletons: u64,
-}
-
 /// A structure to hold a read in two bit encoding of bases
 /// * `00` represents `A`
 /// * `01` represents `C`

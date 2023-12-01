@@ -506,7 +506,7 @@ fn main() {
     // Iterate over the chunks
     let n: usize = args.n;
 
-    let chunk_kmer_counts: Vec<kmer::KmerSummary> = (0..n)
+    let chunk_kmer_counts: Vec<FxHashMap<u64, u64>> = (0..n)
         .into_par_iter()
         .map(|i| {
             let start = i * chunk_size;
@@ -525,10 +525,8 @@ fn main() {
                 }
             }
 
-            kmer::KmerSummary {
-                kmer_counts,
-                n_singletons: 0,
-            }
+            kmer_counts
+
         })
         .collect();
 
@@ -544,7 +542,7 @@ fn main() {
 
     // Iterate over the chunks
     for chunk_kmer_count in chunk_kmer_counts {
-        for (kmer, kmer_count) in chunk_kmer_count.kmer_counts {
+        for (kmer, kmer_count) in chunk_kmer_count {
             let count = kmer_counts.entry(kmer).or_insert(0);
             *count += kmer_count;
         }
