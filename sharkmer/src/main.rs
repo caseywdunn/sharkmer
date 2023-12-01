@@ -416,7 +416,7 @@ fn main() {
         Some(input_files) => {
             // read from one or more files
             'processing_files: for file_name in input_files.iter() {
-                let mut line_n = 0;
+                let mut line_n:u64 = 0;
                 // Open the file for buffered reading
                 let file_path = Path::new(&file_name);
                 let file = std::fs::File::open(file_path).unwrap();
