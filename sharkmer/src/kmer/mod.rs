@@ -181,8 +181,63 @@ impl PartialEq for Read {
     }
 }
 
+pub struct KmerCounts {
+    pub kmers: IntMap<u64>,
+}
+
+impl KmerCounts {
+    fn iter(&self) -> impl Iterator<Item = (&u64, &u64)> {
+        self.kmers.iter()
+    }
+
+    pub fn new() -> KmerCounts {
+        KmerCounts {
+            kmers: IntMap::new(),
+        }
+    }
+
+    pub fn ingest_reads(&mut self, reads: &Vec<Read>, k: &usize) {
+        for read in reads {
+            for kmer in read.get_kmers(k) {
+                let counter = match self.kmers.entry(kmer) {
+                    Entry::Occupied(entry) => entry.into_mut(),
+                    Entry::Vacant(entry) => entry.insert(0),
+                };
+                *counter += 1;
+            }
+        }
+    }
+
+    pub fn extend(&mut self, other: &KmerCounts) {
+        for (kmer, count) in other.iter() {
+            let counter = match self.kmers.entry(*kmer) {
+                Entry::Occupied(entry) => entry.into_mut(),
+                Entry::Vacant(entry) => entry.insert(0),
+            };
+            *counter += count;
+        }
+    }
+
+    pub fn get(&self, kmer: &u64) -> u64 {
+        *self.kmers.get(*kmer).unwrap_or(&0)
+    }
+
+    pub fn get_n_kmers(&self) -> u64 {
+        self.kmers.iter().map(|(_, count)| count).sum()
+    }
+
+    pub fn get_n_unique_kmers(&self) -> u64 {
+        self.kmers.len() as u64
+    }
+
+    pub fn get_max_count(&self) -> u64 {
+        *self.kmers.values().max().unwrap_or(&0)
+    }
+}
+
+
 /// A structure to hold a histogram of kmer counts.
-/// #[derive(Debug)]
+#[derive(Debug)]
 pub struct Histogram {
     pub histo: IntMap<u64>,
 }

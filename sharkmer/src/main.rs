@@ -4,7 +4,6 @@ use colored::*;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
 use rustc_hash::FxHashMap;
-use std::collections::HashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
@@ -444,7 +443,7 @@ fn main() {
             // Lock stdin for exclusive access
             let handle = stdin.lock();
 
-            let mut line_n = 0;
+            let mut line_n:u64 = 0;
 
             // Create a buffer for reading lines
             for line in handle.lines() {
