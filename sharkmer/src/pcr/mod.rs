@@ -1476,7 +1476,7 @@ pub fn do_pcr(
         // The first time through the loop add the whole sequence, after that just add the last base
         for node in path.iter() {
             let node_data = graph.node_weight(*node).unwrap();
-            let subread = crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(kmer_counts.get_k() - 1));
+            let subread = crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(*k - 1));
             if sequence.is_empty() {
                 sequence = subread;
                 parent_node = *node;

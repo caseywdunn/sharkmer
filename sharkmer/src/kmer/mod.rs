@@ -2,7 +2,6 @@
 //! This module provides kmer functions.
 
 use intmap::{IntMap, Entry};
-use std::collections::HashMap;
 
 
 /// A structure to hold a read in two bit encoding of bases

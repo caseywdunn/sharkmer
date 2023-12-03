@@ -494,6 +494,11 @@ fn main() {
         }
     }
 
+    // Ingest any remaining reads
+    chunks[chunk_index].ingest_reads(&reads);
+    reads.clear();
+
+
     println!(" done");
 
     let mut n_reads_ingested: u64 = 0;
