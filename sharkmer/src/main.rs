@@ -248,7 +248,7 @@ struct Args {
     threads: usize,
 
     /// Name of the sample, could be species and sample ID eg Nanomia-bijuga-YPMIZ035039
-    /// Will be used as the prefix for output files and some outout products
+    /// Will be used as the prefix for output files
     #[arg(short, long, default_value_t = String::from("sample") )]
     sample: String,
 
