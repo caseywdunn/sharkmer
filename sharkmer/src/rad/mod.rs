@@ -1,22 +1,19 @@
 // rad/mod.rs
-use bio::bio_types::sequence;
 use bio::io::fasta;
 use colored::*;
 use petgraph::algo::all_simple_paths;
-use petgraph::graph::{DiGraph, NodeIndex};
+use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::visit::Dfs;
 use petgraph::Direction;
 use rayon::prelude::*;
-use rustc_hash::FxHashMap;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::io::Write;
 
-use crate::COLOR_FAIL;
 use crate::COLOR_NOTE;
-use crate::COLOR_SUCCESS;
 use crate::COLOR_WARNING;
+use crate::kmer::KmerCounts;
 
 const MAX_NUM_NODES: usize = 5_000;
 
@@ -108,7 +105,7 @@ fn remove_non_ancestors(
 fn generate_fastas(
     params: &RADParams,
     sample_name: &str,
-    kmer_counts: &FxHashMap<u64, u64>,
+    kmer_counts: &KmerCounts,
     kmers: &std::collections::HashSet<u64>,
     starting_kmer: &u64,
     k: &usize,
@@ -227,7 +224,7 @@ fn generate_fastas(
                     for existing_node in graph.node_indices() {
                         if graph[existing_node].sub_kmer == suffix {
                             if !crate::pcr::would_form_cycle(&graph, node, existing_node) {
-                                let edge = crate::pcr::get_dbedge(kmer, kmer_counts, k);
+                                let edge = crate::pcr::get_dbedge(kmer, kmer_counts);
                                 graph.add_edge(node, existing_node, edge);
 
                                 if graph[existing_node].is_end {
@@ -288,7 +285,7 @@ fn generate_fastas(
                             });
                         }
 
-                        let edge = crate::pcr::get_dbedge(kmer, kmer_counts, k);
+                        let edge = crate::pcr::get_dbedge(kmer, kmer_counts);
                         let edge_count = edge.count;
                         graph.add_edge(node, new_node, edge);
                         let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
@@ -509,7 +506,7 @@ pub struct RADParams {
 }
 
 pub fn do_rad(
-    kmer_counts_map: &FxHashMap<u64, u64>,
+    kmer_counts_all: &KmerCounts,
     k: &usize,
     sample_name: &str,
     verbosity: usize,
@@ -528,26 +525,21 @@ pub fn do_rad(
         params.coverage
     );
 
-    // The kmer_counts_map includes only canonical kmers. Add the reverse complements,
+    // The kmer_counts_all includes only canonical kmers. Add the reverse complements,
     // while also filtering for coverage
-    let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
-    let mut n_unique_kmers: u64 = 0;
-    for (kmer, count) in kmer_counts_map {
-        if count >= &params.coverage {
-            kmer_counts.insert(*kmer, *count);
-            kmer_counts.insert(crate::kmer::revcomp_kmer(kmer, k), *count);
-            n_unique_kmers += 1;
-        }
-    }
-
-    // Create a hash set of the keys of kmer_counts
-    let kmers: std::collections::HashSet<u64> = kmer_counts.keys().copied().collect();
-
+    let mut kmer_counts = kmer_counts_all.clone();
+    kmer_counts.remove_low_count_kmers(&params.coverage);
+    
     println!(
         "  The number of unique kmers went from {} to {}",
-        kmer_counts_map.len(),
-        n_unique_kmers
+        kmer_counts_all.get_n_unique_kmers(),
+        kmer_counts.get_n_unique_kmers()
     );
+
+    kmer_counts.add_reverse_complements();
+
+    // Create a hash set of the keys of kmer_counts
+    let kmers: std::collections::HashSet<u64> = HashSet::from_iter(kmer_counts.kmers().into_iter()); 
 
     let mut cut1_mask: u64 = 0;
     for _i in 0..(2 * params.cut1.len()) {
@@ -561,9 +553,9 @@ pub fn do_rad(
 
     // Get all the kmers that start with cut1
     let mut cut1_kmers: Vec<u64> = Vec::new();
-    for kmer in kmer_counts.keys() {
+    for kmer in kmer_counts.kmers() {
         if kmer & cut1_mask == cut1_kmer {
-            cut1_kmers.push(*kmer);
+            cut1_kmers.push(kmer);
         }
     }
 

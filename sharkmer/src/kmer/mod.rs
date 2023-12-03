@@ -1,9 +1,8 @@
 // kmer/mod.rs
 //! This module provides kmer functions.
 
-use rustc_hash::FxHashMap;
-use std::collections::HashMap;
 use intmap::{IntMap, Entry};
+use std::collections::HashMap;
 
 
 /// A structure to hold a read in two bit encoding of bases
@@ -182,23 +181,25 @@ impl PartialEq for Read {
 }
 
 pub struct KmerCounts {
-    pub kmers: IntMap<u64>,
+    kmers: IntMap<u64>,
+    k: usize,
 }
 
 impl KmerCounts {
-    fn iter(&self) -> impl Iterator<Item = (&u64, &u64)> {
+    pub fn iter(&self) -> impl Iterator<Item = (&u64, &u64)> {
         self.kmers.iter()
     }
 
-    pub fn new() -> KmerCounts {
+    pub fn new(k: &usize) -> KmerCounts {
         KmerCounts {
             kmers: IntMap::new(),
+            k: *k,
         }
     }
 
-    pub fn ingest_reads(&mut self, reads: &Vec<Read>, k: &usize) {
+    pub fn ingest_reads(&mut self, reads: &[Read]) {
         for read in reads {
-            for kmer in read.get_kmers(k) {
+            for kmer in read.get_kmers(&self.k) {
                 let counter = match self.kmers.entry(kmer) {
                     Entry::Occupied(entry) => entry.into_mut(),
                     Entry::Vacant(entry) => entry.insert(0),
@@ -208,7 +209,21 @@ impl KmerCounts {
         }
     }
 
+    /// Adds a kmer and its count to the KmerCounts object.
+    pub fn insert(&mut self, kmer: &u64, count: &u64) {
+        let counter = match self.kmers.entry(*kmer) {
+            Entry::Occupied(entry) => entry.into_mut(),
+            Entry::Vacant(entry) => entry.insert(0),
+        };
+        *counter += count;
+    }
+
+    /// Adds the counts from another KmerCounts object to this one.
     pub fn extend(&mut self, other: &KmerCounts) {
+        if self.k != other.k {
+            panic!("Cannot extend KmerCounts with different k");
+        }
+
         for (kmer, count) in other.iter() {
             let counter = match self.kmers.entry(*kmer) {
                 Entry::Occupied(entry) => entry.into_mut(),
@@ -218,8 +233,18 @@ impl KmerCounts {
         }
     }
 
+    pub fn get_k(&self) -> usize {
+        self.k
+    }
+
     pub fn get(&self, kmer: &u64) -> u64 {
         *self.kmers.get(*kmer).unwrap_or(&0)
+    }
+
+    pub fn get_canonical(&self, kmer: &u64) -> u64 {
+        let revcomp = revcomp_kmer(kmer, &self.k);
+        let canonical = if *kmer < revcomp { *kmer } else { revcomp };
+        *self.kmers.get(canonical).unwrap_or(&0)
     }
 
     pub fn get_n_kmers(&self) -> u64 {
@@ -230,11 +255,51 @@ impl KmerCounts {
         self.kmers.len() as u64
     }
 
+    pub fn counts(&self) -> Vec<u64> {
+        self.kmers.values().map(|&count| count).collect()
+    }
+
+    pub fn kmers(&self) -> Vec<u64> {
+        self.kmers.keys().map(|&kmer| kmer).collect()
+    }
+
     pub fn get_max_count(&self) -> u64 {
         *self.kmers.values().max().unwrap_or(&0)
     }
+
+    pub fn is_empty(&self) -> bool {
+        self.kmers.is_empty()
+    }
+
+    pub fn contains(&self, kmer: &u64) -> bool {
+        self.kmers.contains_key(*kmer)
+    }
+
+    pub fn remove_low_count_kmers(&mut self, min_count: &u64) {
+        self.kmers.retain(|_, count| count >= min_count);
+    }
+
+    // Expand the KmerCounts object to include the reverse complements of all the kmers, not just canonical kmers
+    pub fn add_reverse_complements(&mut self) {
+        let mut new_kmers = KmerCounts::new(&self.k);
+        for (kmer, count) in self.iter() {
+            new_kmers.insert(&crate::kmer::revcomp_kmer(&kmer, &self.k), count);
+        }
+
+        // TODO - will increase counts if kmers already present, should
+        // check if they are there before extending
+        self.extend(&new_kmers);
+    }
 }
 
+impl Clone for KmerCounts {
+    fn clone(&self) -> Self {
+        KmerCounts {
+            kmers: self.kmers.clone(),
+            k: self.k,
+        }
+    }
+}
 
 /// A structure to hold a histogram of kmer counts.
 #[derive(Debug)]
@@ -255,11 +320,11 @@ impl Histogram {
         Histogram { histo: intmap_histo }
     }
 
-    pub fn from_kmer_counts(kmer_counts: &FxHashMap<u64, u64>) -> Histogram {
+    pub fn from_kmer_counts(kmer_counts: &KmerCounts) -> Histogram {
         let mut histo: IntMap<u64> = IntMap::new();
         // From https://docs.rs/intmap/2.0.0/intmap/struct.IntMap.html#method.entry
-        for count in kmer_counts.values() {
-            let counter = match histo.entry(*count) {
+        for count in kmer_counts.counts() {
+            let counter = match histo.entry(count) {
                 Entry::Occupied(entry) => entry.into_mut(),
                 Entry::Vacant(entry) => entry.insert(0),
             };
@@ -388,17 +453,6 @@ pub fn kmer_to_seq(kmer: &u64, k: &usize) -> String {
         seq.push(base);
     }
     seq
-}
-
-// Returns the count of a specified kmer, or 0 if the kmer is not present.
-// Uses canonical kmer
-pub fn get_kmer_count(kmer_counts: &FxHashMap<u64, u64>, kmer: &u64, k: &usize) -> u64 {
-    let revcomp = revcomp_kmer(kmer, k);
-    let canonical = if *kmer < revcomp { *kmer } else { revcomp };
-    match kmer_counts.get(&canonical) {
-        Some(count) => *count,
-        None => 0,
-    }
 }
 
 #[cfg(test)]

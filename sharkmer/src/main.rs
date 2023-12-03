@@ -3,11 +3,12 @@ use clap::Parser;
 use colored::*;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
-use rustc_hash::FxHashMap;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
+
+use crate::kmer::KmerCounts;
 
 mod kmer;
 mod pcr;
@@ -505,7 +506,7 @@ fn main() {
     // Iterate over the chunks
     let n: usize = args.n;
 
-    let chunk_kmer_counts: Vec<FxHashMap<u64, u64>> = (0..n)
+    let chunk_kmer_counts: Vec<KmerCounts> = (0..n)
         .into_par_iter()
         .map(|i| {
             let start = i * chunk_size;
@@ -514,18 +515,10 @@ fn main() {
             } else {
                 (i + 1) * chunk_size
             };
-            let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
 
-            for read in reads[start..end].iter() {
-                let kmers = read.get_kmers(&k);
-                for kmer in kmers {
-                    let count = kmer_counts.entry(kmer).or_insert(0);
-                    *count += 1;
-                }
-            }
-
+            let mut kmer_counts: KmerCounts = KmerCounts::new(&k);
+            kmer_counts.ingest_reads(&reads[start..end]);
             kmer_counts
-
         })
         .collect();
 
@@ -535,16 +528,13 @@ fn main() {
     print!("Consolidating chunks and creating histograms...");
     let start = std::time::Instant::now();
     std::io::stdout().flush().unwrap();
-    let mut kmer_counts: FxHashMap<u64, u64> = FxHashMap::default();
+    let mut kmer_counts: KmerCounts = KmerCounts::new(&k);
 
     let mut histos: Vec<kmer::Histogram> = Vec::with_capacity(args.n);
 
     // Iterate over the chunks
     for chunk_kmer_count in chunk_kmer_counts {
-        for (kmer, kmer_count) in chunk_kmer_count {
-            let count = kmer_counts.entry(kmer).or_insert(0);
-            *count += kmer_count;
-        }
+        kmer_counts.extend(&chunk_kmer_count);
 
         let histo = kmer::Histogram::from_kmer_counts(&kmer_counts);
 
@@ -552,10 +542,10 @@ fn main() {
     }
     println!(" done, time: {:?}", start.elapsed());
 
-    let n_hashed_kmers: u64 = kmer_counts.values().sum();
+    let n_hashed_kmers: u64 = kmer_counts.get_n_kmers();
     println!(
         "  {} unique kmers with a total count of {} were found",
-        kmer_counts.len(),
+        kmer_counts.get_n_unique_kmers(),
         n_hashed_kmers
     );
 
@@ -618,11 +608,11 @@ fn main() {
         );
     }
 
-    if n_unique_kmers_histo != kmer_counts.len() as u64 {
+    if n_unique_kmers_histo != kmer_counts.get_n_unique_kmers() as u64 {
         panic!(
             "The total count of unique kmers in the histogram ({}) does not equal the total count of hashed kmers ({})",
             n_unique_kmers_histo,
-            kmer_counts.len(),
+            kmer_counts.get_n_unique_kmers(),
         );
     }
 
@@ -653,7 +643,6 @@ fn main() {
         for pcr_params in pcr_runs.iter() {
             let fasta = pcr::do_pcr(
                 &kmer_counts,
-                &{ args.k },
                 &args.sample,
                 args.verbosity,
                 pcr_params,
