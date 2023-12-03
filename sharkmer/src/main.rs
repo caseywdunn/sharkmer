@@ -8,11 +8,14 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+use crate::kmer::Chunk;
 use crate::kmer::KmerCounts;
 
 mod kmer;
 mod pcr;
 mod rad;
+
+const N_READS_PER_CHUNK : u64 = 1000;
 
 pub const COLOR_NOTE: &str = "blue";
 pub const COLOR_SUCCESS: &str = "green";
@@ -404,13 +407,20 @@ fn main() {
         .build_global()
         .unwrap();
 
-    // Ingest the fastq files
+    // Ingest the fastq data
     let start = std::time::Instant::now();
     print!("Ingesting reads...");
     std::io::stdout().flush().unwrap();
+
+    let mut chunks: Vec<kmer::Chunk> = Vec::new();
+    for _ in 0..args.n {
+        chunks.push(Chunk::new(&k));
+    }
+    let mut chunk_index: usize = 0;
+
     let mut reads: Vec<kmer::Read> = Vec::new();
-    let mut n_reads_read = 0;
-    let mut n_bases_read = 0;
+    let mut n_reads_read: u64 = 0;
+    let mut n_bases_read: u64 = 0;
 
     match &args.input {
         Some(input_files) => {
@@ -427,12 +437,22 @@ fn main() {
                     if line_n % 4 == 2 {
                         // This is a sequence line
                         let line = line.unwrap();
-                        n_bases_read += line.len();
+                        n_bases_read += line.len() as u64;
                         let new_reads = kmer::seq_to_reads(&line);
                         reads.extend(new_reads);
                         n_reads_read += 1;
+
+                        // If we have read enough reads, ingest them into current chunk
+                        if n_reads_read % N_READS_PER_CHUNK == 0 {
+                            chunks[chunk_index].ingest_reads(&reads);
+                            chunk_index += 1;
+                            if chunk_index == args.n {
+                                chunk_index = 0;
+                            }
+                            reads.clear();
+                        }
                     }
-                    if args.max_reads > 0 && n_reads_read >= args.max_reads as usize {
+                    if args.max_reads > 0 && n_reads_read >= args.max_reads {
                         break 'processing_files;
                     }
                 }
@@ -452,12 +472,22 @@ fn main() {
                 if line_n % 4 == 2 {
                     // This is a sequence line
                     let line = line.unwrap();
-                    n_bases_read += line.len();
+                    n_bases_read += line.len() as u64;
                     let new_reads = kmer::seq_to_reads(&line);
                     reads.extend(new_reads);
                     n_reads_read += 1;
+
+                    // If we have read enough reads, ingest them into current chunk
+                    if n_reads_read % N_READS_PER_CHUNK == 0 {
+                        chunks[chunk_index].ingest_reads(&reads);
+                        chunk_index += 1;
+                        if chunk_index == args.n {
+                            chunk_index = 0;
+                        }
+                        reads.clear();
+                    }
                 }
-                if args.max_reads > 0 && n_reads_read >= args.max_reads as usize {
+                if args.max_reads > 0 && n_reads_read >= args.max_reads {
                     break;
                 }
             }
@@ -465,76 +495,35 @@ fn main() {
     }
 
     println!(" done");
-    let n_bases_ingested = reads.iter().map(|x| x.length).sum::<usize>();
 
-    let mut n_expected_kmers: u64 = 0;
-    for read in reads.iter() {
-        if read.length >= k {
-            n_expected_kmers += read.length as u64 - k as u64 + 1;
-        }
+    let mut n_reads_ingested: u64 = 0;
+    let mut n_bases_ingested: u64 = 0;
+    let mut n_kmers_ingested: u64 = 0;
+    for chunk in chunks.iter() {
+        n_reads_ingested += chunk.get_n_reads();
+        n_bases_ingested += chunk.get_n_bases();
+        n_kmers_ingested += chunk.get_n_kmers();
     }
 
     // Print some stats
     println!("  Read {} reads", n_reads_read);
     println!("  Read {} bases", n_bases_read);
-    println!("  Ingested {} subreads", reads.len());
+    println!("  Ingested {} subreads", n_reads_ingested);
     println!("  Ingested {} bases", n_bases_ingested);
-    println!(
-        "  Yield {}",
-        (n_bases_ingested as f64) / (n_bases_read as f64)
-    );
-    println!("  Expect {} kmers", (n_expected_kmers as f64));
+    println!("  Ingested {} kmers", n_kmers_ingested);
     println!("  Time to ingest reads: {:?}", start.elapsed());
-
-    // Randomize the order of the reads in place
-    print!("Randomizing read order...");
-    std::io::stdout().flush().unwrap();
-    let mut rng = rand::thread_rng();
-    reads.shuffle(&mut rng);
-    println!(" done");
-
-    // Create a hash table for each of n chunks of reads
-    if reads.len() < args.n {
-        panic!("Number of reads is less than number of chunks");
-    }
-
-    let chunk_size = reads.len() / args.n;
-
-    let start = std::time::Instant::now();
-    print!("Hashing each chunk of reads...");
-    std::io::stdout().flush().unwrap();
-    // Iterate over the chunks
-    let n: usize = args.n;
-
-    let chunk_kmer_counts: Vec<KmerCounts> = (0..n)
-        .into_par_iter()
-        .map(|i| {
-            let start = i * chunk_size;
-            let end = if i == n - 1 {
-                reads.len() // Ensure the last chunk includes all remaining elements
-            } else {
-                (i + 1) * chunk_size
-            };
-
-            let mut kmer_counts: KmerCounts = KmerCounts::new(&k);
-            kmer_counts.ingest_reads(&reads[start..end]);
-            kmer_counts
-        })
-        .collect();
-
-    println!(" done, time: {:?}", start.elapsed());
 
     // Create the histograms
     print!("Consolidating chunks and creating histograms...");
     let start = std::time::Instant::now();
     std::io::stdout().flush().unwrap();
-    let mut kmer_counts: KmerCounts = KmerCounts::new(&k);
 
+    let mut kmer_counts: KmerCounts = KmerCounts::new(&k);
     let mut histos: Vec<kmer::Histogram> = Vec::with_capacity(args.n);
 
     // Iterate over the chunks
-    for chunk_kmer_count in chunk_kmer_counts {
-        kmer_counts.extend(&chunk_kmer_count);
+    for chunk in chunks.iter() {
+        kmer_counts.extend(&chunk.get_kmer_counts());
 
         let histo = kmer::Histogram::from_kmer_counts(&kmer_counts);
 
@@ -549,10 +538,10 @@ fn main() {
         n_hashed_kmers
     );
 
-    if n_hashed_kmers != n_expected_kmers {
+    if n_hashed_kmers != n_kmers_ingested {
         panic!(
-            "The total count of hashed kmers ({}) does not equal the expected number of kmers ({})",
-            n_hashed_kmers, n_expected_kmers,
+            "The total count of hashed kmers ({}) does not equal the number of ingested kmers ({})",
+            n_hashed_kmers, n_kmers_ingested,
         );
     }
 
@@ -600,11 +589,11 @@ fn main() {
     println!("  {} unique kmers in histogram", n_unique_kmers_histo);
     println!("  {} kmers in histogram", n_kmers_histo);
 
-    if n_kmers_histo != n_expected_kmers {
+    if n_kmers_histo != n_kmers_ingested {
         panic!(
             "The total count of kmers in the histogram ({}) does not equal the total expected count of kmers ({})",
             n_kmers_histo,
-            n_expected_kmers,
+            n_kmers_ingested,
         );
     }
 
@@ -626,11 +615,11 @@ fn main() {
     line = format!("{}n_bases_read\t{}\n", line, n_bases_read);
     line = format!("{}n_subreads_ingested\t{}\n", line, reads.len());
     line = format!("{}n_bases_ingested\t{}\n", line, n_bases_ingested);
-    line = format!("{}n_kmers\t{}\n", line, n_expected_kmers);
+    line = format!("{}n_kmers\t{}\n", line, n_kmers_ingested);
     line = format!(
         "{}n_multi_kmers\t{}\n",
         line,
-        n_expected_kmers - n_singleton_kmers
+        n_kmers_ingested - n_singleton_kmers
     );
     line = format!("{}n_singleton_kmers\t{}\n", line, n_singleton_kmers);
 
