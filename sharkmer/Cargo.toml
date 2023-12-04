@@ -10,7 +10,7 @@ repository = "https://github.com/caseywdunn/sharkmer"
 [features]
 default = ["fxhashmap"]
 intmap = []
-hashmap = []
+nohashmap = []
 fxhashmap = []
 
 

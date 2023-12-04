@@ -3,6 +3,32 @@
 
 use intmap::{IntMap, Entry};
 use rustc_hash::FxHashMap;
+use std::collections::HashMap;
+use std::hash::{BuildHasherDefault, Hasher};
+
+type NoHashHashMap<K, V> = HashMap<K, V, BuildHasherDefault<NoHashHasher>>;
+
+struct NoHashHasher(u64); // Add a field to store the hash
+
+impl Hasher for NoHashHasher {
+    fn finish(&self) -> u64 {
+        self.0 // Return the stored hash
+    }
+
+    fn write(&mut self, _: &[u8]) {
+        // This method is required but won't be used
+    }
+
+    fn write_u64(&mut self, i: u64) {
+        self.0 = i; // Store the key as the hash
+    }
+}
+
+impl Default for NoHashHasher {
+    fn default() -> Self {
+        NoHashHasher(0) // Initialize the hash with 0
+    }
+}
 
 
 /// A structure to hold a read in two bit encoding of bases
@@ -187,6 +213,9 @@ type MapType = IntMap<u64>;
 #[cfg(feature = "fxhashmap")]
 type MapType = rustc_hash::FxHashMap<u64, u64>;
 
+#[cfg(feature = "nohashmap")]
+type MapType = NoHashHashMap::<u64, u64>;
+
 pub struct KmerCounts {
     kmers: MapType,
     k: usize,
@@ -258,6 +287,60 @@ impl KmerCounts {
     pub fn new(k: &usize) -> KmerCounts {
         KmerCounts {
             kmers: FxHashMap::default(),
+            k: *k,
+        }
+    }
+
+    pub fn ingest_reads(&mut self, reads: &[Read]) {
+        for read in reads {
+            for kmer in read.get_kmers(&self.k) {
+                let count = self.kmers.entry(kmer).or_insert(0);
+                *count += 1;
+            }
+        }
+    }
+
+    /// Adds a kmer and its count to the KmerCounts object.
+    pub fn insert(&mut self, kmer: &u64, count: &u64) {
+        let old_count = self.kmers.entry(*kmer).or_insert(0);
+        *old_count += count;
+    }
+
+    /// Adds the counts from another KmerCounts object to this one.
+    pub fn extend(&mut self, other: &KmerCounts) {
+        if self.k != other.k {
+            panic!("Cannot extend KmerCounts with different k");
+        }
+
+        for (kmer, other_count) in other.iter() {
+            let count = self.kmers.entry(*kmer).or_insert(0);
+            *count += other_count;
+        }
+    }
+
+    pub fn get_canonical(&self, kmer: &u64) -> u64 {
+        let revcomp = revcomp_kmer(kmer, &self.k);
+        let canonical = if *kmer < revcomp { *kmer } else { revcomp };
+        *self.kmers.get(&canonical).unwrap_or(&0)
+    }
+
+    pub fn contains(&self, kmer: &u64) -> bool {
+        self.kmers.contains_key(kmer)
+    }
+
+    pub fn remove_low_count_kmers(&mut self, min_count: &u64) {
+        let mut min = *min_count;
+        let min_ref = &mut min;
+        self.kmers.retain(|_, count| count >= min_ref);
+    }
+
+}
+
+#[cfg(feature = "nohashmap")]
+impl KmerCounts {
+    pub fn new(k: &usize) -> KmerCounts {
+        KmerCounts {
+            kmers: NoHashHashMap::<u64, u64>::default(),
             k: *k,
         }
     }
