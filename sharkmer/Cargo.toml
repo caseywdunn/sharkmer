@@ -6,8 +6,16 @@ description = "A collection of kmer counting and analysis tools."
 edition = "2021"
 repository = "https://github.com/caseywdunn/sharkmer"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+# To switch between different implementations of the kmer counting data structure, set the default below.
+[features]
+default = ["fxhashmap"]
+intmap = []
+hashmap = []
+fxhashmap = []
 
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 clap = { version = "4.2.7", features = ["derive"]}
 rand = { version = "0.8.5"}
@@ -16,3 +24,4 @@ petgraph = { version = "0.6.4"}
 bio = { version = "1.4.0"}
 colored = { version = "2" }
 intmap =  { version = "2.0.0" }
+rustc-hash = { version = "1.1" }
