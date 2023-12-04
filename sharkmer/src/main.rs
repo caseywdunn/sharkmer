@@ -15,7 +15,7 @@ mod kmer;
 mod pcr;
 mod rad;
 
-const N_READS_PER_CHUNK : u64 = 1000;
+const N_READS_PER_BATCH : u64 = 1000;
 
 pub const COLOR_NOTE: &str = "blue";
 pub const COLOR_SUCCESS: &str = "green";
@@ -443,7 +443,7 @@ fn main() {
                         n_reads_read += 1;
 
                         // If we have read enough reads, ingest them into current chunk
-                        if n_reads_read % N_READS_PER_CHUNK == 0 {
+                        if n_reads_read % N_READS_PER_BATCH == 0 {
                             chunks[chunk_index].ingest_reads(&reads);
                             chunk_index += 1;
                             if chunk_index == args.n {
@@ -478,7 +478,7 @@ fn main() {
                     n_reads_read += 1;
 
                     // If we have read enough reads, ingest them into current chunk
-                    if n_reads_read % N_READS_PER_CHUNK == 0 {
+                    if n_reads_read % N_READS_PER_BATCH == 0 {
                         chunks[chunk_index].ingest_reads(&reads);
                         chunk_index += 1;
                         if chunk_index == args.n {
