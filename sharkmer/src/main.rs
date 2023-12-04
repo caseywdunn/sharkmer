@@ -530,7 +530,7 @@ fn main() {
     for chunk in chunks.iter() {
         kmer_counts.extend(&chunk.get_kmer_counts());
 
-        let histo = kmer::Histogram::from_kmer_counts(&kmer_counts);
+        let histo = kmer::Histogram::from_kmer_counts(&kmer_counts, &args.histo_max);
 
         histos.push(histo);
     }
@@ -558,7 +558,7 @@ fn main() {
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
         for histo in histos.iter() {
-            let histo_vec = kmer::Histogram::get_vector(histo, &args.histo_max);
+            let histo_vec = kmer::Histogram::get_vector(histo);
             line = format!("{}\t{}", line, histo_vec[i]);
         }
         line = format!("{}\n", line);
@@ -572,7 +572,7 @@ fn main() {
     std::io::stdout().flush().unwrap();
 
     let last_histo = &histos[histos.len() - 1];
-    let last_histo_vec = kmer::Histogram::get_vector(last_histo, &args.histo_max);
+    let last_histo_vec = kmer::Histogram::get_vector(last_histo);
 
     let mut file =
         std::fs::File::create(format!("{}{}.final.histo", directory, args.sample)).unwrap();

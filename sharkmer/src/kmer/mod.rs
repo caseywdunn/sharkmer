@@ -485,60 +485,80 @@ impl Chunk {
 }
 
 /// A structure to hold a histogram of kmer counts.
+/// For each count, the histogram stores the number of kmers (n_kmers) with that count.
 #[derive(Debug)]
 pub struct Histogram {
-    pub histo: IntMap<u64>,
+    histo: Vec<u64>, // for 0 through histo_max, the number of kmers with that count. 0 isn't actually expected to have a value.
+    histo_large: rustc_hash::FxHashMap<u64, u64>, // for counts larger than histo_max, the number of kmers with that count
+    histo_max: u64,
 }
 
 impl Histogram {
-    fn iter(&self) -> impl Iterator<Item = (&u64, &u64)> {
-        self.histo.iter()
+
+    pub fn new(histo_max: &u64) -> Histogram {
+        let length = *histo_max as usize + 2;
+        let histo: Vec<u64> = vec![0; length];
+        let histo_large: rustc_hash::FxHashMap<u64, u64> = rustc_hash::FxHashMap::default();
+        Histogram { histo, histo_large, histo_max: *histo_max }
     }
 
-    pub fn from_hashmap(histo: std::collections::HashMap<u64, u64>) -> Histogram {
-        let mut intmap_histo = IntMap::new();
-        for (key, value) in histo {
-            intmap_histo.insert(key, value);
+    pub fn ingest_kmer_counts(&mut self, kmer_counts: &KmerCounts) {
+        for (_, count) in kmer_counts.iter() {
+            if *count <= self.histo_max {
+                self.histo[*count as usize] += 1;
+            } else {
+                let counter = self.histo_large.entry(*count).or_insert(0);
+                *counter += 1;
+            }
         }
-        Histogram { histo: intmap_histo }
     }
 
-    pub fn from_kmer_counts(kmer_counts: &KmerCounts) -> Histogram {
-        let mut histo: IntMap<u64> = IntMap::new();
-        // From https://docs.rs/intmap/2.0.0/intmap/struct.IntMap.html#method.entry
-        for count in kmer_counts.counts() {
-            let counter = match histo.entry(count) {
-                Entry::Occupied(entry) => entry.into_mut(),
-                Entry::Vacant(entry) => entry.insert(0),
-            };
-            *counter += 1;
-        }
-        
-        Histogram { histo }
+    pub fn from_kmer_counts(kmer_counts: &KmerCounts, histo_max: &u64) -> Histogram {
+        let mut histo = Histogram::new(histo_max);
+        histo.ingest_kmer_counts(kmer_counts);
+        histo
     }
 
     pub fn get(&self, count: &u64) -> u64 {
-        *self.histo.get(*count).unwrap_or(&0)
+        if *count <= self.histo_max {
+            self.histo[*count as usize]
+        } else {
+            *self.histo_large.get(count).unwrap_or(&0)
+        }
     }
 
     pub fn get_n_kmers(&self) -> u64 {
-        self.histo.iter().map(|(count, count_total)| count * count_total).sum()
+        let mut sum: u64 = 0;
+        for i in 1..self.histo.len() {
+            sum += self.histo[i] * i as u64;
+        }
+
+        for (count, n_kmers) in self.histo_large.iter() {
+            sum += count * n_kmers;
+        }
+
+        sum
     }
 
     pub fn get_n_unique_kmers(&self) -> u64 {
-        self.histo.iter().map(|(_, count_total)| count_total).sum::<u64>()
+        let mut sum: u64 = 0;
+        for i in 1..self.histo.len() {
+            sum += self.histo[i];
+        }
+
+        for (count, n_kmers) in self.histo_large.iter() {
+            sum += n_kmers;
+        }
+
+        sum
     }
 
-    pub fn get_vector(&self, histo_max: &u64) -> Vec<u64> {
-        let length = *histo_max as usize + 2;
-        let mut histo_vec: Vec<u64> = vec![0; length];
+    pub fn get_vector(&self) -> Vec<u64> {
+        let mut histo_vec = self.histo.clone();
+        let mut last = histo_vec.last_mut().unwrap();
 
-        for (&i, &count) in self.iter() {
-            if i <= *histo_max {
-                histo_vec[i as usize] = count;
-            } else {
-                histo_vec[length - 1] += count;
-            }
+        for (count, n_kmers) in self.histo_large.iter() {
+            *last += n_kmers;
         }
 
         histo_vec
@@ -860,20 +880,21 @@ mod tests {
 
     #[test]
     fn test_histogram() {
-        let mut histo_map: HashMap<u64, u64> = HashMap::new();
-        histo_map.insert(1, 5);
-        histo_map.insert(2, 7);
-        histo_map.insert(11, 2);
-        histo_map.insert(12, 1);
 
-        let histo = Histogram::from_hashmap(histo_map);
+        let mut kmers = KmerCounts::new(&11usize);
+        kmers.insert(&1, &5);
+        kmers.insert(&20, &5);
+        kmers.insert(&2, &7);
+        kmers.insert(&11, &11);
+        kmers.insert(&12, &12);
 
         let histo_max = 10;
+        let histo = Histogram::from_kmer_counts(&kmers, &histo_max);
 
-        let histo_vec = histo.get_vector(&histo_max);
+        let histo_vec = histo.get_vector();
 
         assert_eq!(histo_vec.len(), histo_max as usize + 2);
-        let expected_histo: Vec<u64> = vec![0, 5, 7, 0, 0, 0, 0, 0, 0, 0, 0, 3];
+        let expected_histo: Vec<u64> = vec![0, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0, 2];
         assert_eq!(histo_vec, expected_histo);
     }
 }
