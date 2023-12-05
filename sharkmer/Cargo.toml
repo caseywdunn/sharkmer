@@ -1,6 +1,6 @@
 [package]
 name = "sharkmer"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Casey Dunn <casey.dunn@yale.edu>"]
 description = "A collection of kmer counting and analysis tools."
 edition = "2021"
