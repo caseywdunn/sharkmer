@@ -539,7 +539,7 @@ pub fn do_rad(
     kmer_counts.add_reverse_complements();
 
     // Create a hash set of the keys of kmer_counts
-    let kmers: std::collections::HashSet<u64> = HashSet::from_iter(kmer_counts.kmers().into_iter());
+    let kmers: std::collections::HashSet<u64> = HashSet::from_iter(kmer_counts.kmers());
 
     let mut cut1_mask: u64 = 0;
     for _i in 0..(2 * params.cut1.len()) {

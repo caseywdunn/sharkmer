@@ -805,7 +805,7 @@ fn filter_primer_kmers(matches: KmerCounts) -> KmerCounts {
         }
         println!(
             "  {}, count {}, keep {}",
-            crate::kmer::kmer_to_seq(&kmer, &matches.get_k()),
+            crate::kmer::kmer_to_seq(kmer, &matches.get_k()),
             count,
             keep,
         );

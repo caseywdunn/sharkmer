@@ -527,7 +527,7 @@ fn main() {
 
     // Iterate over the chunks
     for chunk in chunks.iter() {
-        kmer_counts.extend(&chunk.get_kmer_counts());
+        kmer_counts.extend(chunk.get_kmer_counts());
 
         let histo = kmer::Histogram::from_kmer_counts(&kmer_counts, &args.histo_max);
 
@@ -601,7 +601,7 @@ fn main() {
         );
     }
 
-    if n_unique_kmers_histo != kmer_counts.get_n_unique_kmers() as u64 {
+    if n_unique_kmers_histo != kmer_counts.get_n_unique_kmers() {
         panic!(
             "The total count of unique kmers in the histogram ({}) does not equal the total count of hashed kmers ({})",
             n_unique_kmers_histo,

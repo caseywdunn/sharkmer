@@ -1,15 +1,25 @@
 // kmer/mod.rs
 //! This module provides kmer functions.
 
-use intmap::{IntMap, Entry};
-use rustc_hash::FxHashMap;
 use std::collections::HashMap;
 use std::hash::{BuildHasherDefault, Hasher};
 
+#[cfg(feature = "intmap")]
+use intmap::{IntMap, Entry};
+
+#[cfg(feature = "fxhashmap")]
+use rustc_hash::FxHashMap;
+
+
+
+
+#[cfg(feature = "nohashmap")]
 type NoHashHashMap<K, V> = HashMap<K, V, BuildHasherDefault<NoHashHasher>>;
 
+#[cfg(feature = "nohashmap")]
 struct NoHashHasher(u64); // Add a field to store the hash
 
+#[cfg(feature = "nohashmap")]
 impl Hasher for NoHashHasher {
     fn finish(&self) -> u64 {
         self.0 // Return the stored hash
@@ -24,6 +34,7 @@ impl Hasher for NoHashHasher {
     }
 }
 
+#[cfg(feature = "nohashmap")]
 impl Default for NoHashHasher {
     fn default() -> Self {
         NoHashHasher(0) // Initialize the hash with 0
@@ -423,7 +434,7 @@ impl KmerCounts {
     pub fn add_reverse_complements(&mut self) {
         let mut new_kmers = KmerCounts::new(&self.k);
         for (kmer, count) in self.iter() {
-            new_kmers.insert(&crate::kmer::revcomp_kmer(&kmer, &self.k), count);
+            new_kmers.insert(&crate::kmer::revcomp_kmer(kmer, &self.k), count);
         }
 
         // TODO - will increase counts if kmers already present, should
@@ -553,9 +564,9 @@ impl Histogram {
 
     pub fn get_vector(&self) -> Vec<u64> {
         let mut histo_vec = self.histo.clone();
-        let mut last = histo_vec.last_mut().unwrap();
+        let last = histo_vec.last_mut().unwrap();
 
-        for (count, n_kmers) in self.histo_large.iter() {
+        for (_, n_kmers) in self.histo_large.iter() {
             *last += n_kmers;
         }
 
