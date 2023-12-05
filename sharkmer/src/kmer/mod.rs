@@ -30,7 +30,6 @@ impl Default for NoHashHasher {
     }
 }
 
-
 /// A structure to hold a read in two bit encoding of bases
 /// * `00` represents `A`
 /// * `01` represents `C`
@@ -206,7 +205,6 @@ impl PartialEq for Read {
     }
 }
 
-
 #[cfg(feature = "intmap")]
 type MapType = IntMap<u64>;
 
@@ -214,7 +212,7 @@ type MapType = IntMap<u64>;
 type MapType = rustc_hash::FxHashMap<u64, u64>;
 
 #[cfg(feature = "nohashmap")]
-type MapType = NoHashHashMap::<u64, u64>;
+type MapType = NoHashHashMap<u64, u64>;
 
 pub struct KmerCounts {
     kmers: MapType,
@@ -279,7 +277,6 @@ impl KmerCounts {
     pub fn remove_low_count_kmers(&mut self, min_count: &u64) {
         self.kmers.retain(|_, count| count >= min_count);
     }
-
 }
 
 #[cfg(feature = "fxhashmap")]
@@ -333,7 +330,6 @@ impl KmerCounts {
         let min_ref = &mut min;
         self.kmers.retain(|_, count| count >= min_ref);
     }
-
 }
 
 #[cfg(feature = "nohashmap")]
@@ -387,7 +383,6 @@ impl KmerCounts {
         let min_ref = &mut min;
         self.kmers.retain(|_, count| count >= min_ref);
     }
-
 }
 
 // Generic methods that don't depend on the hash map implementation
@@ -494,12 +489,15 @@ pub struct Histogram {
 }
 
 impl Histogram {
-
     pub fn new(histo_max: &u64) -> Histogram {
         let length = *histo_max as usize + 2;
         let histo: Vec<u64> = vec![0; length];
         let histo_large: rustc_hash::FxHashMap<u64, u64> = rustc_hash::FxHashMap::default();
-        Histogram { histo, histo_large, histo_max: *histo_max }
+        Histogram {
+            histo,
+            histo_large,
+            histo_max: *histo_max,
+        }
     }
 
     pub fn ingest_kmer_counts(&mut self, kmer_counts: &KmerCounts) {
@@ -880,7 +878,6 @@ mod tests {
 
     #[test]
     fn test_histogram() {
-
         let mut kmers = KmerCounts::new(&11usize);
         kmers.insert(&1, &5);
         kmers.insert(&20, &5);

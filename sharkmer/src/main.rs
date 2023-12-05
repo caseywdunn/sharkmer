@@ -15,7 +15,7 @@ mod kmer;
 mod pcr;
 mod rad;
 
-const N_READS_PER_BATCH : u64 = 1000;
+const N_READS_PER_BATCH: u64 = 1000;
 
 pub const COLOR_NOTE: &str = "blue";
 pub const COLOR_SUCCESS: &str = "green";
@@ -426,7 +426,7 @@ fn main() {
         Some(input_files) => {
             // read from one or more files
             'processing_files: for file_name in input_files.iter() {
-                let mut line_n:u64 = 0;
+                let mut line_n: u64 = 0;
                 // Open the file for buffered reading
                 let file_path = Path::new(&file_name);
                 let file = std::fs::File::open(file_path).unwrap();
@@ -464,7 +464,7 @@ fn main() {
             // Lock stdin for exclusive access
             let handle = stdin.lock();
 
-            let mut line_n:u64 = 0;
+            let mut line_n: u64 = 0;
 
             // Create a buffer for reading lines
             for line in handle.lines() {
@@ -497,7 +497,6 @@ fn main() {
     // Ingest any remaining reads
     chunks[chunk_index].ingest_reads(&reads);
     reads.clear();
-
 
     println!(" done");
 
@@ -635,12 +634,7 @@ fn main() {
         println!("Running in silico PCR...");
 
         for pcr_params in pcr_runs.iter() {
-            let fasta = pcr::do_pcr(
-                &kmer_counts,
-                &args.sample,
-                args.verbosity,
-                pcr_params,
-            );
+            let fasta = pcr::do_pcr(&kmer_counts, &args.sample, args.verbosity, pcr_params);
 
             if !fasta.is_empty() {
                 let fasta_path = format!(

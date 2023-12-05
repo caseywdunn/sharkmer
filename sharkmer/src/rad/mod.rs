@@ -11,9 +11,9 @@ use std::collections::HashMap;
 use std::collections::HashSet;
 use std::io::Write;
 
+use crate::kmer::KmerCounts;
 use crate::COLOR_NOTE;
 use crate::COLOR_WARNING;
-use crate::kmer::KmerCounts;
 
 const MAX_NUM_NODES: usize = 5_000;
 
@@ -529,7 +529,7 @@ pub fn do_rad(
     // while also filtering for coverage
     let mut kmer_counts = kmer_counts_all.clone();
     kmer_counts.remove_low_count_kmers(&params.coverage);
-    
+
     println!(
         "  The number of unique kmers went from {} to {}",
         kmer_counts_all.get_n_unique_kmers(),
@@ -539,7 +539,7 @@ pub fn do_rad(
     kmer_counts.add_reverse_complements();
 
     // Create a hash set of the keys of kmer_counts
-    let kmers: std::collections::HashSet<u64> = HashSet::from_iter(kmer_counts.kmers().into_iter()); 
+    let kmers: std::collections::HashSet<u64> = HashSet::from_iter(kmer_counts.kmers().into_iter());
 
     let mut cut1_mask: u64 = 0;
     for _i in 0..(2 * params.cut1.len()) {

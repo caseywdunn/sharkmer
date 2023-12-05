@@ -344,11 +344,7 @@ fn reverse_complement(seq: &str) -> String {
 // Find the kmers that contain the oligos.
 // If direction is forward, match the oligo at the start of the kmer.
 // If direction is reverse, match the oligo at the end of the kmer.
-fn find_oligos_in_kmers(
-    oligos: &[Oligo],
-    kmers: &KmerCounts,
-    dir: &PrimerDirection,
-) -> KmerCounts {
+fn find_oligos_in_kmers(oligos: &[Oligo], kmers: &KmerCounts, dir: &PrimerDirection) -> KmerCounts {
     // Assume all oligos have the same length
     let oligo_length = oligos[0].length;
 
@@ -876,9 +872,19 @@ pub fn do_pcr(
 
     // Preprocess the primers to get all variants to be considered
     println!("Expanding the forward primer into all variants");
-    let forward_variants = preprocess_primer(params, PrimerDirection::Forward, &kmer_counts.get_k(), verbosity);
+    let forward_variants = preprocess_primer(
+        params,
+        PrimerDirection::Forward,
+        &kmer_counts.get_k(),
+        verbosity,
+    );
     println!("Expanding the reverse primer into all variants");
-    let reverse_variants = preprocess_primer(params, PrimerDirection::Reverse, &kmer_counts.get_k(), verbosity);
+    let reverse_variants = preprocess_primer(
+        params,
+        PrimerDirection::Reverse,
+        &kmer_counts.get_k(),
+        verbosity,
+    );
 
     // Get the kmers that contain the primers
     println!("Finding kmers that contain the forward primer");
@@ -1433,12 +1439,14 @@ pub fn do_pcr(
 
     for start in get_start_nodes(&graph) {
         for end in get_end_nodes(&graph) {
-            let paths_for_this_pair = all_simple_paths::<
-                Vec<NodeIndex>,
-                &StableDiGraph<DBNode, DBEdge>,
-            >(
-                &graph, start, end, 1, Some(params.max_length - (kmer_counts.get_k()) + 1)
-            );
+            let paths_for_this_pair =
+                all_simple_paths::<Vec<NodeIndex>, &StableDiGraph<DBNode, DBEdge>>(
+                    &graph,
+                    start,
+                    end,
+                    1,
+                    Some(params.max_length - (kmer_counts.get_k()) + 1),
+                );
 
             all_paths.extend(paths_for_this_pair);
         }
