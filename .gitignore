@@ -1,5 +1,9 @@
 .DS_Store
 *.mp4
 *.output
+*.tmp
+*.0
+
+SRR23143278*
 
 tmp/

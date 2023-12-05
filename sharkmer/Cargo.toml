@@ -1,14 +1,27 @@
 [package]
 name = "sharkmer"
-version = "0.1.0"
+version = "0.2.0"
+authors = ["Casey Dunn <casey.dunn@yale.edu>"]
+description = "A collection of kmer counting and analysis tools."
 edition = "2021"
+repository = "https://github.com/caseywdunn/sharkmer"
+
+# To switch between different implementations of the kmer counting data structure, set the default below.
+[features]
+default = ["fxhashmap"]
+intmap = []
+nohashmap = []
+fxhashmap = []
+
+
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 clap = { version = "4.2.7", features = ["derive"]}
 rand = { version = "0.8.5"}
 rayon = { version = "1.7.0"}
-bloom = { version = "0.3.2"}
-rustc-hash = { version = "1.1.0"}
-
+petgraph = { version = "0.6.4"}
+bio = { version = "1.4.0"}
+colored = { version = "2" }
+intmap =  { version = "2.0.0" }
+rustc-hash = { version = "1.1" }
