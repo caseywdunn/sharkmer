@@ -2,8 +2,6 @@ use bio::io::fasta;
 use clap::Parser;
 use colored::*;
 use pcr::preconfigured;
-use rand::prelude::SliceRandom;
-use rayon::prelude::*;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;

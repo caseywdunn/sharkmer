@@ -1,5 +1,6 @@
 use super::PCRParams;
 
+#[allow(dead_code)]
 struct PCRPanel {
     name: String,
     description: String,

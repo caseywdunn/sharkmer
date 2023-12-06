@@ -1,7 +1,10 @@
 // kmer/mod.rs
 //! This module provides kmer functions.
 
+#[cfg(feature = "nohashmap")]
 use std::collections::HashMap;
+
+#[cfg(feature = "nohashmap")]
 use std::hash::{BuildHasherDefault, Hasher};
 
 #[cfg(feature = "intmap")]
@@ -528,7 +531,7 @@ impl Histogram {
         histo
     }
 
-    pub fn get(&self, count: &u64) -> u64 {
+    pub fn _get(&self, count: &u64) -> u64 {
         if *count <= self.histo_max {
             self.histo[*count as usize]
         } else {
@@ -555,7 +558,7 @@ impl Histogram {
             sum += self.histo[i];
         }
 
-        for (count, n_kmers) in self.histo_large.iter() {
+        for (_count, n_kmers) in self.histo_large.iter() {
             sum += n_kmers;
         }
 
