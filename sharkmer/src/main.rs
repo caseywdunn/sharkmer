@@ -1,6 +1,7 @@
 use bio::io::fasta;
 use clap::Parser;
 use colored::*;
+use pcr::preconfigured;
 use rand::prelude::SliceRandom;
 use rayon::prelude::*;
 use std::io::BufRead;
@@ -137,12 +138,18 @@ pub fn parse_rad_string(rad_string: &str) -> Result<rad::RADParams, String> {
     })
 }
 
-pub fn parse_pcr_string(pcr_string: &str) -> Result<pcr::PCRParams, String> {
-    // Split the string on underscores
+pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String> {
+
+    if pcr_string.len() == 0 {
+        return Err(format!("Invalid empty pcr string"));
+    }
+
+    // Split the string on commas
     let split: Vec<&str> = pcr_string.split(',').collect();
 
-    if split.is_empty() {
-        return prec
+    // If the string is a single element, check if it is a preconfigured panel
+    if split.len() == 1 {
+        return preconfigured::get_panel(pcr_string);
     }
 
     // Check that there are at least 4 elements
@@ -219,7 +226,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<pcr::PCRParams, String> {
         }
     }
 
-    Ok(pcr::PCRParams {
+    Ok(vec![pcr::PCRParams {
         forward_seq,
         reverse_seq,
         max_length,
@@ -227,7 +234,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<pcr::PCRParams, String> {
         coverage,
         mismatches,
         trim,
-    })
+    }])
 }
 
 /// A collection of kmer counting and analysis tools
@@ -363,7 +370,7 @@ fn main() {
         let parsed_pcr = parse_pcr_string(pcr_string);
         match parsed_pcr {
             Ok(pcr_params) => {
-                pcr_runs.push(pcr_params);
+                pcr_runs.extend(pcr_params);
             }
             Err(err) => {
                 panic!("Error parsing pcr string: {}", err);

@@ -831,6 +831,7 @@ fn get_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64> {
     Some(median_edge_count)
 }
 
+#[derive(Clone)]
 pub struct PCRParams {
     pub forward_seq: String,
     pub reverse_seq: String,
