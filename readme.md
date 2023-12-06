@@ -139,14 +139,14 @@ Run sPCR on the downloaded reads by specifying primer pairs with the `--pcr` arg
 
     sharkmer \
       -k 31 -t 4 -s Cordagalma_CWD6 --max_reads 1000000 \
-      --pcr "GACTGTTTACCAAAAACATA_AATTCAACATCGAGG_1000_16s" \
-      --pcr "TCATAAAGATATTGG_ATGCCCGAAAAACCA_2000_co1" \
-      --pcr "AACCTGGTTGATCCTGCCAGT_TGATCCTTCTGCAGGTTCACCTAC_2500_18s" \
-      --pcr "CCYYAGTAACGGCGAGT_SWACAGATGGTAGCTTCG_4000_28s"  \
-      --pcr "TACACACCGCCCGTCGCTACTA_ACTCGCCGTTACTRRGG_1000_ITSfull" \
+      --pcr "GACTGTTTACCAAAAACATA,AATTCAACATCGAGG,1000,16s" \
+      --pcr "TCATAAAGATATTGG,ATGCCCGAAAAACCA,2000,co1" \
+      --pcr "AACCTGGTTGATCCTGCCAGT,TGATCCTTCTGCAGGTTCACCTAC,2500,18s" \
+      --pcr "CCYYAGTAACGGCGAGT,SWACAGATGGTAGCTTCG,4000,28s"  \
+      --pcr "TACACACCGCCCGTCGCTACTA,ACTCGCCGTTACTRRGG,1000,ITSfull" \
       SRR23143278_1.fastq
 
-The `--pcr` argument passes a string with the format `forward_reverse_max-length_gene-name`. Note that underscores delimit fields. `max-length` should be greater than the expect PCR product size. It indicates the furthest distance from the forward primer that sharkmer should search for a reverse primer.
+The `--pcr` argument passes a string with the format `forward,reverse,max-length,gene-name`. Note that commas delimit fields. `max-length` should be greater than the expect PCR product size. It indicates the furthest distance from the forward primer that sharkmer should search for a reverse primer.
 
 The `--max_reads 1000000` arguments indicates that the first million reads should be used. THis is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since it occurs in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes would require more data.
 
