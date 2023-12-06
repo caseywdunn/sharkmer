@@ -1,3 +1,5 @@
+use clap::Error;
+
 use super::PCRParams; // Assuming PCRParams is defined in mod.rs
 
 pub const CNIDARIA: &[PCRParams] = &[
@@ -11,7 +13,7 @@ pub const CNIDARIA: &[PCRParams] = &[
         mismatches: 2,
         trim: 15,
     },
-  	// --pcr "TCATAAAGATATTGG,ATGCCCGAAAAACCA,2000,co1" \
+  // --pcr "TCATAAAGATATTGG,ATGCCCGAAAAACCA,2000,co1" \
 	PCRParams {
         forward_seq: "TCATAAAGATATTGG".to_string(),
         reverse_seq: "ATGCCCGAAAAACCA".to_string(),
@@ -53,9 +55,9 @@ pub const CNIDARIA: &[PCRParams] = &[
     },	
 ];
 
-pub fn get_panel(panel: &str) -> Option<&[PCRParams]> {
+pub fn get_panel(panel: &str) -> Result<&[PCRParams]> {
 	match panel {
-		"cnidaria" => Some(CNIDARIA),
-		_ => None,
+		"cnidaria" => Ok(CNIDARIA),
+		_ => Err(Error::with_description("Invalid preconfigured pcr", clap::ErrorKind::InvalidValue))
 	}
 }

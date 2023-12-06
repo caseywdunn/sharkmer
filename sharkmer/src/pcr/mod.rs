@@ -21,6 +21,8 @@ use crate::COLOR_SUCCESS;
 use crate::COLOR_WARNING;
 use crate::kmer::KmerCounts;
 
+pub mod preconfigured;
+
 // Constants that may require tuning
 
 /// The multiplier for establishing when a kmer is considered to have high coverage,

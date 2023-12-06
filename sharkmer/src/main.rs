@@ -141,6 +141,10 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<pcr::PCRParams, String> {
     // Split the string on underscores
     let split: Vec<&str> = pcr_string.split(',').collect();
 
+    if split.is_empty() {
+        return prec
+    }
+
     // Check that there are at least 4 elements
     if split.len() < 4 {
         return Err(format!(
