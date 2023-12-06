@@ -143,7 +143,7 @@ Run sPCR on the downloaded reads by specifying that we want to run a panel of cn
 This is equivalent to specifying the primer pairs manually, also with the `--pcr` argument:
 
     sharkmer \
-      --max_reads 1000000 \
+      --max-reads 1000000 \
       -s Cordagalma_CWD6 -o output/ \
       --pcr "GACTGTTTACCAAAAACATA,AATTCAACATCGAGG,1000,16s" \
       --pcr "TCATAAAGATATTGG,ATGCCCGAAAAACCA,2000,co1" \
@@ -154,9 +154,11 @@ This is equivalent to specifying the primer pairs manually, also with the `--pcr
 
 The `--pcr` argument passes a string with the format `forward,reverse,max-length,gene-name`. Note that commas delimit fields. `max-length` should be greater than the expect PCR product size. It indicates the furthest distance from the forward primer that sharkmer should search for a reverse primer.
 
-The `--max_reads 1000000` arguments indicates that the first million reads should be used. THis is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since it occurs in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes would require more data.
+The `--max-reads 1000000` arguments indicates that the first million reads should be used. THis is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since it occurs in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes would require more data.
 
 This analysis will generate one fasta file for each primer pair. These fasta files are named with the argument passed to `--pcr`. If no product was found, the fasta file is not present. The fasta file can contain more than one sequence.
+
+There are a limited set of preconfigured primer panels available at this time. You can see where they are hard coded [here](https://github.com/caseywdunn/sharkmer/blob/dev/sharkmer/src/pcr/preconfigured.rs). If you have other primers that you would like to have added to the tool, or suggestings for optimizing the primers that are already there, please open an issue in the [issue tracker](https://github.com/caseywdunn/sharkmer/issues).
 
 ### Reading compressed data
 
