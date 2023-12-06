@@ -18,7 +18,6 @@ use crate::COLOR_WARNING;
 const MAX_NUM_NODES: usize = 5_000;
 
 fn get_consensus(sequences: &Vec<String>) -> String {
-    let mut consensus = String::new();
     let mut consensus_vec: Vec<char> = Vec::new();
 
     // Get the length of the shortest sequence
@@ -49,9 +48,8 @@ fn get_consensus(sequences: &Vec<String>) -> String {
         consensus_vec.push(max_base);
     }
 
-    consensus = consensus_vec.into_iter().collect();
+    consensus_vec.into_iter().collect()
 
-    consensus
 }
 
 fn mode(numbers: &Vec<usize>) -> usize {

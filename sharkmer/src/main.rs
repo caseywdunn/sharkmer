@@ -1,8 +1,7 @@
 use bio::io::fasta;
 use clap::Parser;
 use colored::*;
-use rand::prelude::SliceRandom;
-use rayon::prelude::*;
+use pcr::preconfigured;
 use std::io::BufRead;
 use std::io::Write;
 use std::path::Path;
@@ -51,12 +50,12 @@ fn is_valid_nucleotide(c: char) -> bool {
 
 pub fn parse_rad_string(rad_string: &str) -> Result<rad::RADParams, String> {
     // Split the string on underscores
-    let split: Vec<&str> = rad_string.split('_').collect();
+    let split: Vec<&str> = rad_string.split(',').collect();
 
     // Check that there are at least 5 elements
     if split.len() < 5 {
         return Err(format!(
-            "Invalid rad string, there are less than 5 elements separated by underscores: {}",
+            "Invalid rad string, there are less than 5 elements separated by commas: {}",
             rad_string
         ));
     }
@@ -137,14 +136,24 @@ pub fn parse_rad_string(rad_string: &str) -> Result<rad::RADParams, String> {
     })
 }
 
-pub fn parse_pcr_string(pcr_string: &str) -> Result<pcr::PCRParams, String> {
-    // Split the string on underscores
-    let split: Vec<&str> = pcr_string.split('_').collect();
+pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String> {
+
+    if pcr_string.len() == 0 {
+        return Err(format!("Invalid empty pcr string"));
+    }
+
+    // Split the string on commas
+    let split: Vec<&str> = pcr_string.split(',').collect();
+
+    // If the string is a single element, check if it is a preconfigured panel
+    if split.len() == 1 {
+        return preconfigured::get_panel(pcr_string);
+    }
 
     // Check that there are at least 4 elements
     if split.len() < 4 {
         return Err(format!(
-            "Invalid pcr string, there are less than 4 elements separated by underscores: {}",
+            "Invalid pcr string, there are less than 4 elements separated by commas: {}",
             pcr_string
         ));
     }
@@ -215,7 +224,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<pcr::PCRParams, String> {
         }
     }
 
-    Ok(pcr::PCRParams {
+    Ok(vec![pcr::PCRParams {
         forward_seq,
         reverse_seq,
         max_length,
@@ -223,7 +232,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<pcr::PCRParams, String> {
         coverage,
         mismatches,
         trim,
-    })
+    }])
 }
 
 /// A collection of kmer counting and analysis tools
@@ -266,7 +275,7 @@ struct Args {
     input: Option<Vec<String>>,
 
     /// Optional primer pairs for in silico PCR (sPCR). The format is:
-    /// --pcr "forward_reverse_max-length_name_key1=value1_key2=value2"
+    /// --pcr "forward,reverse,max-length,name,key1=value1,key2=value2"
     /// Where:
     ///   forward is the forward primer sequence in 5' to 3' orientation
     ///   reverse is the reverse primer sequence in 5' to 3' orientation
@@ -287,13 +296,13 @@ struct Args {
     ///    trim: number of bases to keep at the 3' end of each primer.
     ///      Default is 15.
     /// More than one primer pair can be specified, for example:
-    /// --pcr "forward1_reverse1_1000_name1" --pcr "forward2_reverse2_2000_name2"
+    /// --pcr "forward1,reverse1,1000,name1" --pcr "forward2,reverse2,2000,name2"
     #[arg(short = 'p', long)]
     pcr: Vec<String>,
 
     /// EXPERIMENTAL - DO NOT USE
     /// Optional cut sties for in silico Rad-seq (isRad-seq). The format is:
-    /// --rad "cut1_cut2_min-length_max-length_name_key1=value1_key2=value2"
+    /// --rad "cut1,cut2,min-length,max-length,name,key1=value1,key2=value2"
     /// Where:
     ///   cut1 is the restriction site for the first enzyme
     ///   cut2 is the restriction site for the second enzyme. If using
@@ -307,7 +316,7 @@ struct Args {
     ///    supported:
     ///    [none for now]
     /// For example:
-    /// --rad "CATG_AATT_625_750_kd"
+    /// --rad "CATG,AATT,625,750,kd"
     #[arg(short = 'r', long, hide = true)]
     rad: Vec<String>,
 
@@ -359,7 +368,7 @@ fn main() {
         let parsed_pcr = parse_pcr_string(pcr_string);
         match parsed_pcr {
             Ok(pcr_params) => {
-                pcr_runs.push(pcr_params);
+                pcr_runs.extend(pcr_params);
             }
             Err(err) => {
                 panic!("Error parsing pcr string: {}", err);

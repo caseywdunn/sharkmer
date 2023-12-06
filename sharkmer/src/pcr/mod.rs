@@ -21,11 +21,16 @@ use crate::COLOR_SUCCESS;
 use crate::COLOR_WARNING;
 use crate::kmer::KmerCounts;
 
+pub mod preconfigured;
+
 // Constants that may require tuning
 
 /// The multiplier for establishing when a kmer is considered to have high coverage,
 /// relative to the coverage threshold. It is then used to also adjust the threshold.
 const COVERAGE_MULTIPLIER: u64 = 5;
+
+/// A multiplier for adjusting the threshold as it is applied.
+const COVERAGE_MULTIPLIER_ADJUST: u64 = 1;
 
 /// The maximum number of kmers containing the forward or reverse primers to maintain,
 /// with only those with the highest count being retained
@@ -113,6 +118,7 @@ pub fn remove_side_branches(graph: &mut StableDiGraph<DBNode, DBEdge>) {
 }
 
 // Get a vector of edge counts by traversing the graph backwards from the focal node
+#[allow(dead_code)]
 fn get_backward_edge_counts(
     graph: &StableDiGraph<DBNode, DBEdge>,
     focal_node: NodeIndex,
@@ -829,6 +835,7 @@ fn get_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64> {
     Some(median_edge_count)
 }
 
+#[derive(Clone)]
 pub struct PCRParams {
     pub forward_seq: String,
     pub reverse_seq: String,
@@ -946,7 +953,7 @@ pub fn do_pcr(
     }
 
     // Create a new coverage threshold
-    let new_coverage = min_count / COVERAGE_MULTIPLIER;
+    let new_coverage = min_count / COVERAGE_MULTIPLIER / COVERAGE_MULTIPLIER_ADJUST;
 
     // If the observed coverage exceeds COVERAGE_MULTIPLIER * default coverage, then apply the new threshold
     if min_count > COVERAGE_MULTIPLIER * params.coverage {

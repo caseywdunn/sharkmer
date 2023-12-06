@@ -20,17 +20,15 @@ Here is an overview of how kmer counting works in `sharkmer`:
 
 1. fastq data are ingested one read at a time and recoded as 8 bit integers, with 2 bits per base. Reads 
    are broken into subreads at any instances of `N`, since 2 bit encoding only covers the 4 unambiguous 
-   bases and kmers can't span N anyway.
-2. The order of the subreads is shuffled.
-3. The subreads are broken into `n` chunks of subreads. Within each chunk, kmers are counted in a hashmap. 
+   bases and kmers can't span N anyway. The subreads are distributed across `n` chunks of subreads as thew are read. 
+2. Within each chunk, kmers are counted in a hashmap. 
    The counting of kmers in parallelized across chunks, allowing multiple threads to be used.
-4. The hashmaps for the `n` chunks are summed one by one, and a histogram is generated after each chunk of 
+3. The hashmaps for the `n` chunks are summed one by one, and a histogram is generated after each chunk of 
    counts is added in. This produces `n` histograms, each summarizing more reads than the last.
 
 A few notes:
 
 - The read data must be uncompressed before analysis. No `.fastq.gz` files, just `.fastq`.
-- All the read data are stored in RAM in a compressed integer format. This is a tradeoff that improves speed at the cost of requiring more memory. Every 4 gigabases of sequence reads will need about 1 GB of RAM to store. This means that a 2 gigabase genome with 60x coverage (120 gigabases of reads) will need 30GB of RAM just to store the reads. Additional memory is needed for the hashmaps. For some analyses, such as *in silico* PCR, you can use a small subset of reads and easily run analyses on a laptop.
 
 ## Installation
 
@@ -70,16 +68,10 @@ After cloning the repo, gunzip the `data` in the data dir:
     cd sharkmer/data/ # Note that this is the sharkmer folder within the sharkmer repository
     gunzip -c SRR5324768_pass_1.fastq.gz > SRR5324768_pass_1.fastq
 
-### *Cordagalma ordinatum*
+### Additional datasets
 
-To get a sense of the tool it is best to grab larger datasetsets. The examples below will use a dataset from the siphonophore *Cordagalma ordinatum*. This dataset is available from the NCBI SRA as [SRR23143278](https://trace.ncbi.nlm.nih.gov/Traces/sra/?run=SRR23143278), and is from the manuscript:
+Additional datasets are available from the [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra). Install the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit) to download these datasets as described below.
 
-> Ahuja, N., Cao, X., Schultz, D. T., Picciani, N., Lord, A., Shao, S., Burdick, D. R., Haddock, S. H. D., Li, Y., & Dunn, C. W. (2023). Giants among Cnidaria: large nuclear genomes and rearranged mitochondrial genomes in siphonophores. bioRxiv. https://doi.org/10.1101/2023.05.12.540511
-
-To retrieve these data, first download and install the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit). Then run the following commands:
-
-    cd sharkmer/data/
-    fasterq-dump SRR23143278
 
 ## Usage
 
@@ -91,11 +83,15 @@ To get full usage information, run
 
 Incremental kmer counting for genome size estimation takes a lot of data (about 50x coverage of the genome), and a large amount of RAM. So this example isn't practical on most laptops, given their disk and RAM limitations, and will require a workstation or cluster.
 
-Here is how you count kmers in the *Cordagalma ordinatum* dataset downloaded above:
+We will need a relatively large dataset. Download this *Cordagalma ordinatum* dataset from [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra/SRX10340700) using the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit):
 
-    sharkmer -k 21 -o output/ -s Cordagalma-ordinatum data/SRR23143278_1.fastq data/SRR23143278_2.fastq
+    fastq-dump --split-files SRR23143278
 
-Notice that you can specify multiple fastq files, in this case the R1 and R2 reads. The `-o` argument specifies the output directory. The `-s` argument specifies a prefix for the output files. The output files will be named with this prefix.
+Now perform incremental kmer counting on the downloaded reads:
+
+    sharkmer -o output/ -s Cordagalma-ordinatum data/SRR23143278_1.fastq data/SRR23143278_2.fastq
+
+Notice that you can specify multiple fastq files, in this case the R1 and R2 reads. The `-o` argument specifies the output directory. The `-s` argument specifies a prefix for the output files.
 
 The incremental histogram files in this case would be:
 
@@ -133,24 +129,36 @@ sPCR is useful when you want specific genes from skimming datasets you have coll
 
 #### *in silico* PCR example
 
-sPCR of nuclear ribosomal RNA genes (eg animal 16s, 18s) and mitochondrial genes does not take much coverage, given the relatively high copy number of these genes in skimming data. For Illumina raw reads, 0.25x coverage of the genomes is sufficient. The *Cordagalma ordinatum* is 700Mb, so 1 million 150bp reads, a total of 150Mb of data, is sufficient.
+sPCR of nuclear ribosomal RNA genes (eg animal 16s, 18s) and mitochondrial genes does not take much coverage, given the relatively high copy number of these genes in skimming data. For Illumina raw reads, 0.25x coverage of the genomes is sufficient.
 
-Run sPCR on the downloaded reads by specifying primer pairs with the `--pcr` argument:
+We will download a smaller dataset from the coral *Stenogorgia casta*:
+
+    fasterq-dump SRR26955578
+
+Run sPCR on the downloaded reads by specifying that we want to run a panel of cnidarian primers:
+
+    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr cnidaria SRR26955578_1.fastq SRR26955578_2.fastq
+
+
+This is equivalent to specifying the primer pairs manually, also with the `--pcr` argument:
 
     sharkmer \
-      -k 31 -t 4 -s Cordagalma_CWD6 --max_reads 1000000 \
-      --pcr "GACTGTTTACCAAAAACATA_AATTCAACATCGAGG_1000_16s" \
-      --pcr "TCATAAAGATATTGG_ATGCCCGAAAAACCA_2000_co1" \
-      --pcr "AACCTGGTTGATCCTGCCAGT_TGATCCTTCTGCAGGTTCACCTAC_2500_18s" \
-      --pcr "CCYYAGTAACGGCGAGT_SWACAGATGGTAGCTTCG_4000_28s"  \
-      --pcr "TACACACCGCCCGTCGCTACTA_ACTCGCCGTTACTRRGG_1000_ITSfull" \
-      SRR23143278_1.fastq
+      --max-reads 1000000 \
+      -s Cordagalma_CWD6 -o output/ \
+      --pcr "GACTGTTTACCAAAAACATA,AATTCAACATCGAGG,1000,16s" \
+      --pcr "TCATAAAGATATTGG,ATGCCCGAAAAACCA,2000,co1" \
+      --pcr "AACCTGGTTGATCCTGCCAGT,TGATCCTTCTGCAGGTTCACCTAC,2500,18s" \
+      --pcr "CCYYAGTAACGGCGAGT,SWACAGATGGTAGCTTCG,4000,28s"  \
+      --pcr "TACACACCGCCCGTCGCTACTA,ACTCGCCGTTACTRRGG,1000,ITSfull" \
+      SRR26955578_1.fastq SRR26955578_2.fastq
 
-The `--pcr` argument passes a string with the format `forward_reverse_max-length_gene-name`. Note that underscores delimit fields. `max-length` should be greater than the expect PCR product size. It indicates the furthest distance from the forward primer that sharkmer should search for a reverse primer.
+The `--pcr` argument passes a string with the format `forward,reverse,max-length,gene-name`. Note that commas delimit fields. `max-length` should be greater than the expect PCR product size. It indicates the furthest distance from the forward primer that sharkmer should search for a reverse primer.
 
-The `--max_reads 1000000` arguments indicates that the first million reads should be used. THis is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since it occurs in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes would require more data.
+The `--max-reads 1000000` arguments indicates that the first million reads should be used. THis is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since it occurs in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes would require more data.
 
 This analysis will generate one fasta file for each primer pair. These fasta files are named with the argument passed to `--pcr`. If no product was found, the fasta file is not present. The fasta file can contain more than one sequence.
+
+There are a limited set of preconfigured primer panels available at this time. You can see where they are hard coded [here](https://github.com/caseywdunn/sharkmer/blob/dev/sharkmer/src/pcr/preconfigured.rs). If you have other primers that you would like to have added to the tool, or suggestings for optimizing the primers that are already there, please open an issue in the [issue tracker](https://github.com/caseywdunn/sharkmer/issues).
 
 ### Reading compressed data
 
