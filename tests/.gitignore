@@ -1,3 +1,6 @@
 *.csv
 output/
 data/
+benchmarks/
+logs/
+.snakemake/

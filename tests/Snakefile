@@ -1,19 +1,17 @@
 """
-This snakefile makes k-mer spectra using a bunch of reads in a file
+Examine sPCR across a panel of genomes
 """
 configfile: "config.yaml"
 
-target_kmers = [21]
-
 rule all:
-    input:,
-        expand("output/{sample}_k{thisk}.sharkmer.histo", sample = config["sample"], thisk = target_kmers),
+    input:
+        expand("output/{sample}.histo", sample = config["sample"]),
 
 rule download_reads:
     params:
         reads = lambda wildcards: [x for x in config["sample"][wildcards.sample]["reads"]]
     output:
-        reads_temp = directory(temp("data/{sample}_reads_downloaded")),"))    
+        reads_temp = directory(temp("data/{sample}_reads_downloaded")),    
         reads = "data/{sample}.fastq",
     shell:
         """
@@ -25,18 +23,16 @@ rule sharkmer_pcr:
     input:
         reads = "data/{sample}.fastq"
     output:
-        histo = "output/{sample}_k{thisk}.sharkmer.histo",
-        stats = "output/{sample}_k{thisk}.sharkmer.stats",
-        final_histo = "output/{sample}_k{thisk}.sharkmer.final.histo",
+        histo = "output/{sample}.histo",
+        stats = "output/{sample}.stats",
+        final_histo = "output/{sample}.final.histo",
     params:
         sample = lambda wildcards: wildcards.sample,
-        thisk = lambda wildcards: wildcards.thisk,
-        base_name = "output/{sample}_k{thisk}.sharkmer",
         arguments = lambda wildcards: config["sample"][wildcards.sample]["arguments"],
     threads: workflow.cores
-    benchmark: "benchmarks/sharkmer.{sample}_k{thisk}.benchmark.txt"
-    log: "logs/sharkmer.{sample}_k{thisk}.log"
+    benchmark: "benchmarks/sharkmer.{sample}.benchmark.txt"
+    log: "logs/sharkmer.{sample}.log"
     shell:
         """
-        sharkmer -k {params.thisk} -t {threads} --max-reads 1000000 -o output -s {params.sample} {params.arguments} {input.reads}
+        sharkmer -k 21 -t {threads} --max-reads 1000000 -o output -s {params.sample} {params.arguments} {input.reads} > {log} 2>&1
         """
