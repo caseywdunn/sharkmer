@@ -1,0 +1,25 @@
+sample:
+  Stenogorgia_casta:
+    reads:
+      - SRR26955578
+    arguments: "--pcr cnidaria"
+  Acropora_millepora:
+    reads:
+      - SRR8119878
+    arguments: "--pcr cnidaria"
+  Haliclystus_octoradiatus:
+    reads:
+      - ERR6745737
+    arguments: "--pcr cnidaria"
+  Tamoya_ohboya:
+    reads:
+      - SRR13036460
+    arguments: "--pcr cnidaria"
+  Catostylus_townsendi:
+    reads:
+      - SRR16643387
+    arguments: "--pcr cnidaria"
+  Agalma_elegans:
+    reads:
+      - SRR25099394
+    arguments: "--pcr cnidaria"
