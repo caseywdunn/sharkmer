@@ -8,13 +8,22 @@ struct PCRPanel {
 }
 
 fn get_preconfigured_panels() -> Vec<PCRPanel> {
-  vec![
+  let mut panels = vec![
     PCRPanel {
         name: "cnidaria".to_string(),
         description: "18S, 28S, ITS, 16S, and CO1".to_string(),
         params: get_cnidaria(),
     },
-  ]
+  ];
+
+  // Loop over the panels and prepend the PCRPanel name to the PCRParams genename, using _ as a deimiter
+  for panel in panels.iter_mut() {
+    for param in panel.params.iter_mut() {
+      param.gene_name = format!("{}_{}", panel.name, param.gene_name);
+      }
+  }
+
+  panels
 }
 
 fn get_cnidaria() -> Vec<PCRParams> {
