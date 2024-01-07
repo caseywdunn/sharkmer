@@ -14,6 +14,7 @@ use std::collections::HashSet;
 use std::collections::VecDeque;
 use std::fs::File;
 use std::io::Write;
+use textwrap::{fill, indent};
 
 use crate::{COLOR_FAIL, kmer};
 use crate::COLOR_NOTE;
@@ -203,7 +204,7 @@ pub fn compute_median(numbers: &[u64]) -> f64 {
     }
 }
 
-// Given an oligo, return a Oligo struct representing it
+// Given an oligo sequence, return a Oligo struct representing it
 pub fn string_to_oligo(seq: &str) -> Oligo {
     let mut kmer: u64 = 0;
     let mut length: usize = 0;
@@ -396,6 +397,11 @@ fn find_oligos_in_kmers(oligos: &[Oligo], kmers: &KmerCounts, dir: &PrimerDirect
     }
 
     kmers_match
+}
+
+fn get_suffix_mask(k: &usize) -> u64 {
+    let suffix_mask: u64 = (1 << (2 * *k - 1)) - 1;
+    suffix_mask
 }
 
 pub fn n_nonterminal_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize {
@@ -738,7 +744,7 @@ fn preprocess_primer(
         );
     }
 
-    // Expand ambigous nucleotides
+    // Expand ambiguous nucleotides
     let mut primer_variants = resolve_primer(&primer);
 
     // Get all possible variants of the primers
@@ -833,6 +839,292 @@ fn get_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64> {
 
     let median_edge_count = compute_median(&counts);
     Some(median_edge_count)
+}
+
+
+// Extend graph by adding edges and new nodes to non-terminal nodes.
+// Terminal nodes have any of the following properties:
+// - is_end = true
+// - kmers that extend the node have been searched for but not found
+// - The node has a path length longer than max_length-k+1 from a start node
+
+// Extension continues until all nodes have been visited
+
+// Extension proceeds by:
+// - For each non-terminal node, find the kmers that extend the node
+// - Get the suffix of each kmer that extends the node
+// - If a node with sub_kmer == suffix already exists, add an edge to the existing node
+// - Otherwise, create a new node with sub_kmer == suffix, and add an edge to the new node
+
+// where:
+// - The prefix of the kmer of the node is the sub_kmer of the parent node in the graph
+// - The suffix of the kmer of the node is the sub_kmer of the new node in the graph
+// - If a node with the sub_kmer already exists, add a new edge to the existing node
+fn extend_graph(seed_graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCounts, min_count: &u64, params: &PCRParams, verbosity: &usize) -> StableDiGraph<DBNode, DBEdge> {
+
+    let suffix_mask: u64 = get_suffix_mask( &kmer_counts.get_k() );
+
+    let mut graph = seed_graph.clone();
+
+    let mut last_check: usize = 0;
+    while n_unvisited_nodes_in_graph(&graph) > 0 {
+        let n_nodes = graph.node_count();
+
+        if n_nodes > MAX_NUM_NODES {
+            println!("{}",
+                format!("WARNING: There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.", n_nodes, MAX_NUM_NODES).color(COLOR_WARNING)
+            );
+            break;
+        }
+
+        // Get the median edge count, or min_count if there are no edges
+        let edge_count_summary: f64 = match get_median_edge_count(&graph) {
+            Some(count) => count,
+            None => *min_count as f64,
+        };
+
+        // Periodically evaluate extension
+        // After pruning, n_nodes can be less than last_check and there will be an overflow on subtracting
+        if (n_nodes > last_check) && ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
+            last_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
+
+            println!("  Evaluating extension:");
+            summarize_extension(&graph, "    ");
+
+            // Some graphs balloon in size and get to hundreds of thousands of nodes while extension gets
+            // slower and slower because there are so many growing tips. This may be due to a sequencing
+            // adapter becoming integrated into the graph, for example. So periodically check for a region
+            // of high degree and prune it if found
+            pop_balloons(&mut graph, &kmer_counts.get_k(), *verbosity);
+        }
+
+        // Iterate over the nodes
+        let node_indices: Vec<_> = graph.node_indices().collect();
+        for node in node_indices {
+            if !(graph[node].visited) {
+                // Get the suffix of the kmer of the node
+                let sub_kmer = graph[node].sub_kmer;
+
+                if *verbosity > 1 {
+                    print!(
+                        "  {} sub_kmer being extended for node {}. ",
+                        crate::kmer::kmer_to_seq(&sub_kmer, &(kmer_counts.get_k() - 1)),
+                        node.index()
+                    );
+                    std::io::stdout().flush().unwrap();
+                }
+
+                // Get the kmers that could extend the node
+                let mut candidate_kmers: HashSet<u64> = HashSet::new();
+
+                for base in 0..4 {
+                    let kmer = (sub_kmer << 2) | base;
+                    candidate_kmers.insert(kmer);
+                }
+
+                // Retain only the candidate kmers that are in the kmers hash
+                candidate_kmers.retain(|kmer| kmer_counts.contains(kmer));
+
+                if *verbosity > 1 {
+                    print!(
+                        "There are {} candidate kmers for extension. ",
+                        candidate_kmers.len()
+                    );
+                    std::io::stdout().flush().unwrap();
+                }
+
+                // If there are no candidate kmers, the node is terminal
+                if candidate_kmers.is_empty() {
+                    if *verbosity > 1 {
+                        println!("Marking node as terminal because there are no candidates for extension. ");
+                        std::io::stdout().flush().unwrap();
+                    }
+                    graph[node].is_terminal = true;
+                    graph[node].visited = true;
+                    continue;
+                }
+
+                // Get the degrees of ancestor nodes, skipping degree of this node
+                let node_degrees = get_backward_node_degrees(&graph, node, 20);
+                let node_degrees_slice = &node_degrees[1..];
+
+                // If the node is in a rapidly ballooning region of the graph, don't add it
+                if candidate_kmers.len() > 2 {
+                    if node_degrees_slice.len() >= 2 {
+                        if (node_degrees_slice[0] > 2) && (node_degrees_slice[1] > 2) {
+                            if *verbosity > 1 {
+                                println!("Marking node as terminal because it and immediate ancestors have high degree. ");
+                                std::io::stdout().flush().unwrap();
+                            }
+                            graph[node].is_terminal = true;
+                            graph[node].visited = true;
+                            continue;
+                        }
+                    }
+                }
+
+                // Check for a lower growth rate over a longer path, and terminate if found
+                if node_degrees_slice.len() >= 15 {
+                    // Get the number of elements of node_degrees_slice that are greater than 1
+                    let n_high_degree = node_degrees_slice.iter().filter(|&x| *x > 1).count();
+                    if n_high_degree >= 3 {
+                        if *verbosity > 1 {
+                            println!("Marking node as terminal because its recent ancestors have moderately elevated degree. ");
+                            std::io::stdout().flush().unwrap();
+                        }
+                        graph[node].is_terminal = true;
+                        graph[node].visited = true;
+                        continue;
+                    }
+                }
+
+                // Add new nodes if needed, and new edges
+                for kmer in candidate_kmers.iter() {
+                    let suffix = kmer & suffix_mask;
+
+                    // Check if the node extends by itself and mark it as terminal if it does
+                    if suffix == sub_kmer {
+                        graph[node].is_terminal = true;
+                        graph[node].visited = true;
+                        if *verbosity > 1 {
+                            print!(
+                                "Node {} extends itself. Marking as terminal. ",
+                                node.index()
+                            );
+                            std::io::stdout().flush().unwrap();
+                        }
+                        break;
+                    }
+
+                    // If the node with sub_kmer == suffix already exists, add an edge to the existing node
+                    // Otherwise, create a new node with sub_kmer == suffix, and add an edge to the new node
+
+                    let mut node_exists = false;
+                    for existing_node in graph.node_indices() {
+                        if graph[existing_node].sub_kmer == suffix {
+                            if !would_form_cycle(&graph, node, existing_node) {
+                                let edge = get_dbedge(kmer, &kmer_counts);
+                                graph.add_edge(node, existing_node, edge);
+                                if graph[existing_node].is_end {
+                                    println!("End node incorporated into graph, complete PCR product found.");
+                                }
+                                let outgoing =
+                                    graph.neighbors_directed(node, Direction::Outgoing).count();
+                                if outgoing > 4 {
+                                    println!("{}",
+                                        format!("WARNING: Node {} has {} outgoing edges. This exceed the maximum of 4 that is expected", node.index(), outgoing).color(COLOR_WARNING)
+                                    );
+                                }
+                            } else {
+                                graph[node].is_terminal = true;
+
+                                if *verbosity > 1 {
+                                    print!(
+                                        "Adding edge to node {} would form cycle. Not adding edge, and marking current node as terminal. ",
+                                        node.index()
+                                    );
+                                    std::io::stdout().flush().unwrap();
+                                }
+                            }
+
+                            node_exists = true;
+                            break;
+                        }
+                    }
+
+                    if !node_exists {
+                        let edge = get_dbedge(kmer, &kmer_counts);
+                        let edge_count = edge.count;
+
+                        // Don't add node and edge if the edge count is very high
+                        if (edge_count as f64)
+                            > (edge_count_summary * BALLOONING_COUNT_THRESHOLD_MULTIPLIER)
+                        {
+                            if *verbosity > 1 {
+                                print!(
+                                    "Edge count {} exceeds {} * median edge count {}. Not adding edge with kmer {} or node with sub_kmer {}. ",
+                                    edge_count,
+                                    BALLOONING_COUNT_THRESHOLD_MULTIPLIER,
+                                    edge_count_summary,
+                                    crate::kmer::kmer_to_seq(kmer, &kmer_counts.get_k()),
+                                    crate::kmer::kmer_to_seq(&suffix, &(kmer_counts.get_k() - 1))
+                                );
+                                std::io::stdout().flush().unwrap();
+                            }
+                            continue;
+                        }
+
+                        let new_node = graph.add_node(DBNode {
+                            sub_kmer: suffix,
+                            is_start: false,
+                            is_end: false,
+                            is_terminal: false,
+                            visited: false,
+                        });
+
+                        graph.add_edge(node, new_node, edge);
+                        let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
+                        if outgoing > 4 {
+                            println!("{}",
+                                format!("WARNING: Node {} has {} outgoing edges when adding new node. This exceed the maximum of 4 that is expected", node.index(), outgoing).color(COLOR_WARNING)
+                            );
+                        }
+
+                        if *verbosity > 1 {
+                            print!(
+                                "Added sub_kmer {} for new node {} with edge kmer count {}. ",
+                                crate::kmer::kmer_to_seq(&suffix, &(kmer_counts.get_k() - 1)),
+                                new_node.index(),
+                                edge_count
+                            );
+                            std::io::stdout().flush().unwrap();
+                        }
+
+                        // Check if the new node is max_length-k+1 from a start node
+                        // If so, mark the new node as terminal
+                        let path_length = get_path_length(&graph, new_node);
+
+                        // If the path length is None, the node is part of a cycle and is marked terminal.
+                        // If the path length is Some, is marked terminal if the path length is >= max_length-k+1
+                        if let Some(path_length) = path_length {
+                            if *verbosity > 1 {
+                                print!("Path length is {}. ", path_length);
+                                std::io::stdout().flush().unwrap();
+                            }
+
+                            if path_length > params.max_length - (kmer_counts.get_k()) {
+                                graph[new_node].is_terminal = true;
+                                graph[new_node].visited = true;
+                                if *verbosity > 1 {
+                                    print!("Marking new node {} as terminal because it exceeds max_length from start. ", new_node.index());
+                                    std::io::stdout().flush().unwrap();
+                                }
+                            }
+                        } else {
+                            graph[new_node].is_terminal = true;
+                            if *verbosity > 1 {
+                                print!("Marking new node {} as terminal because it is part of a cycle. ", new_node.index());
+                                std::io::stdout().flush().unwrap();
+                            }
+                        }
+                    }
+                }
+                graph[node].visited = true;
+
+                if *verbosity > 1 {
+                    println!(
+                        "There are now {} unvisited and {} non-terminal nodes in the graph. ",
+                        n_unvisited_nodes_in_graph(&graph),
+                        n_nonterminal_nodes_in_graph(&graph)
+                    );
+                    std::io::stdout().flush().unwrap();
+                }
+            }
+        }
+    }
+
+    graph
+
 }
 
 #[derive(Clone)]
@@ -965,10 +1257,10 @@ pub fn do_pcr(
 
     // Construct the graph
     println!("Creating graph, seeding with nodes that contain primer matches...");
-    let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+    let mut seed_graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
 
     // Create a suffix mask with 1 in the (2 * (k - 1)) least significant bits
-    let suffix_mask: u64 = (1 << (2 * (kmer_counts.get_k() - 1))) - 1;
+    let suffix_mask: u64 = get_suffix_mask( &kmer_counts.get_k() );
 
     // Add the forward matches to the graph
     for kmer in forward_matches.kmers() {
@@ -978,16 +1270,16 @@ pub fn do_pcr(
         // Otherwise, create a new node
 
         let mut node_exists = false;
-        for node in graph.node_indices() {
-            if graph[node].sub_kmer == prefix {
-                graph[node].is_start = true;
+        for node in seed_graph.node_indices() {
+            if seed_graph[node].sub_kmer == prefix {
+                seed_graph[node].is_start = true;
                 node_exists = true;
                 break;
             }
         }
 
         if !node_exists {
-            graph.add_node(DBNode {
+            seed_graph.add_node(DBNode {
                 sub_kmer: prefix,
                 is_start: true,
                 is_end: false,
@@ -1005,17 +1297,17 @@ pub fn do_pcr(
         // Otherwise, create a new node
 
         let mut node_exists = false;
-        for node in graph.node_indices() {
-            if graph[node].sub_kmer == suffix {
-                graph[node].is_end = true;
-                graph[node].is_terminal = true;
+        for node in seed_graph.node_indices() {
+            if seed_graph[node].sub_kmer == suffix {
+                seed_graph[node].is_end = true;
+                seed_graph[node].is_terminal = true;
                 node_exists = true;
                 break;
             }
         }
 
         if !node_exists {
-            graph.add_node(DBNode {
+            seed_graph.add_node(DBNode {
                 sub_kmer: suffix,
                 is_start: false,
                 is_end: true,
@@ -1027,8 +1319,8 @@ pub fn do_pcr(
 
     // Loop over the nodes and see if any of the nodes are start and end nodes
     // If so, print a warning
-    for node in graph.node_indices() {
-        if graph[node].is_start && graph[node].is_end {
+    for node in seed_graph.node_indices() {
+        if seed_graph[node].is_start && seed_graph[node].is_end {
             println!(
                 "{}",
                 format!(
@@ -1040,301 +1332,27 @@ pub fn do_pcr(
         }
     }
 
-    println!("There are {} start nodes", get_start_nodes(&graph).len());
-    println!("There are {} end nodes", get_end_nodes(&graph).len());
+    println!("There are {} start nodes", get_start_nodes(&seed_graph).len());
+    println!("There are {} end nodes", get_end_nodes(&seed_graph).len());
 
     if verbosity > 1 {
         // Print the information for each node
-        for node in graph.node_indices() {
+        for node in seed_graph.node_indices() {
             println!("Node {}:", node.index());
             println!(
                 "  sub_kmer: {}",
-                crate::kmer::kmer_to_seq(&graph[node].sub_kmer, &(kmer_counts.get_k() - 1))
+                crate::kmer::kmer_to_seq(&seed_graph[node].sub_kmer, &(kmer_counts.get_k() - 1))
             );
-            println!("  is_start: {}", graph[node].is_start);
-            println!("  is_end: {}", graph[node].is_end);
-            println!("  is_terminal: {}", graph[node].is_terminal);
+            println!("  is_start: {}", seed_graph[node].is_start);
+            println!("  is_end: {}", seed_graph[node].is_end);
+            println!("  is_terminal: {}", seed_graph[node].is_terminal);
         }
     }
 
     let start = std::time::Instant::now();
     println!("Extending the assembly graph...");
 
-    // Extend graph by adding edges and new nodes to non-terminal nodes.
-    // Terminal nodes have any of the following properties:
-    // - is_end = true
-    // - kmers that extend the node have been searched for but not found
-    // - The node has a path length longer than max_length-k+1 from a start node
-
-    // Extension continues until all nodes have been visited
-
-    // Extension proceeds by:
-    // - For each non-terminal node, find the kmers that extend the node
-    // - Get the suffix of each kmer that extends the node
-    // - If a node with sub_kmer == suffix already exists, add an edge to the existing node
-    // - Otherwise, create a new node with sub_kmer == suffix, and add an edge to the new node
-
-    // where:
-    // - The prefix of the kmer of the node is the sub_kmer of the parent node in the graph
-    // - The suffix of the kmer of the node is the sub_kmer of the new node in the graph
-    // - If a node with the sub_kmer already exists, add a new edge to the existing node
-
-    let mut last_check: usize = 0;
-    while n_unvisited_nodes_in_graph(&graph) > 0 {
-        let n_nodes = graph.node_count();
-
-        if n_nodes > MAX_NUM_NODES {
-            println!("{}",
-                format!("WARNING: There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.", n_nodes, MAX_NUM_NODES).color(COLOR_WARNING)
-            );
-            break;
-        }
-
-        // Get the median edge count, or min_count if there are no edges
-        let edge_count_summary: f64 = match get_median_edge_count(&graph) {
-            Some(count) => count,
-            None => min_count as f64,
-        };
-
-        // Periodically evaluate extension
-        // After pruning, n_nodes can be less than last_check and there will be an overflow on subtracting
-        if (n_nodes > last_check) && ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
-            last_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
-
-            println!("  Evaluating extension:");
-            summarize_extension(&graph, "    ");
-
-            // Some graphs balloon in size and get to hundreds of thousands of nodes while extension gets
-            // slower and slower because there are so many growing tips. This may be due to a sequencing
-            // adapter becoming integrated into the graph, for example. So periodically check for a region
-            // of high degree and prune it if found
-            pop_balloons(&mut graph, &kmer_counts.get_k(), verbosity);
-        }
-
-        // Iterate over the nodes
-        let node_indices: Vec<_> = graph.node_indices().collect();
-        for node in node_indices {
-            if !(graph[node].visited) {
-                // Get the suffix of the kmer of the node
-                let sub_kmer = graph[node].sub_kmer;
-
-                if verbosity > 1 {
-                    print!(
-                        "  {} sub_kmer being extended for node {}. ",
-                        crate::kmer::kmer_to_seq(&sub_kmer, &(kmer_counts.get_k() - 1)),
-                        node.index()
-                    );
-                    std::io::stdout().flush().unwrap();
-                }
-
-                // Get the kmers that could extend the node
-                let mut candidate_kmers: HashSet<u64> = HashSet::new();
-
-                for base in 0..4 {
-                    let kmer = (sub_kmer << 2) | base;
-                    candidate_kmers.insert(kmer);
-                }
-
-                // Retain only the candidate kmers that are in the kmers hash
-                candidate_kmers.retain(|kmer| kmer_counts.contains(kmer));
-
-                if verbosity > 1 {
-                    print!(
-                        "There are {} candidate kmers for extension. ",
-                        candidate_kmers.len()
-                    );
-                    std::io::stdout().flush().unwrap();
-                }
-
-                // If there are no candidate kmers, the node is terminal
-                if candidate_kmers.is_empty() {
-                    if verbosity > 1 {
-                        println!("Marking node as terminal because there are no candidates for extension. ");
-                        std::io::stdout().flush().unwrap();
-                    }
-                    graph[node].is_terminal = true;
-                    graph[node].visited = true;
-                    continue;
-                }
-
-                // Get the degrees of ancestor nodes, skipping degree of this node
-                let node_degrees = get_backward_node_degrees(&graph, node, 20);
-                let node_degrees_slice = &node_degrees[1..];
-
-                // If the node is in a rapidly ballooning region of the graph, don't add it
-                if candidate_kmers.len() > 2 {
-                    if node_degrees_slice.len() >= 2 {
-                        if (node_degrees_slice[0] > 2) && (node_degrees_slice[1] > 2) {
-                            if verbosity > 1 {
-                                println!("Marking node as terminal because it and immediate ancestors have high degree. ");
-                                std::io::stdout().flush().unwrap();
-                            }
-                            graph[node].is_terminal = true;
-                            graph[node].visited = true;
-                            continue;
-                        }
-                    }
-                }
-
-                // Check for a lower growth rate over a longer path, and terminate if found
-                if node_degrees_slice.len() >= 15 {
-                    // Get the number of elements of node_degrees_slice that are greater than 1
-                    let n_high_degree = node_degrees_slice.iter().filter(|&x| *x > 1).count();
-                    if n_high_degree >= 3 {
-                        if verbosity > 1 {
-                            println!("Marking node as terminal because its recent ancestors have moderately elevated degree. ");
-                            std::io::stdout().flush().unwrap();
-                        }
-                        graph[node].is_terminal = true;
-                        graph[node].visited = true;
-                        continue;
-                    }
-                }
-
-                // Add new nodes if needed, and new edges
-                for kmer in candidate_kmers.iter() {
-                    let suffix = kmer & suffix_mask;
-
-                    // Check if the node extends by itself and mark it as terminal if it does
-                    if suffix == sub_kmer {
-                        graph[node].is_terminal = true;
-                        graph[node].visited = true;
-                        if verbosity > 1 {
-                            print!(
-                                "Node {} extends itself. Marking as terminal. ",
-                                node.index()
-                            );
-                            std::io::stdout().flush().unwrap();
-                        }
-                        break;
-                    }
-
-                    // If the node with sub_kmer == suffix already exists, add an edge to the existing node
-                    // Otherwise, create a new node with sub_kmer == suffix, and add an edge to the new node
-
-                    let mut node_exists = false;
-                    for existing_node in graph.node_indices() {
-                        if graph[existing_node].sub_kmer == suffix {
-                            if !would_form_cycle(&graph, node, existing_node) {
-                                let edge = get_dbedge(kmer, &kmer_counts);
-                                graph.add_edge(node, existing_node, edge);
-                                if graph[existing_node].is_end {
-                                    println!("End node incorporated into graph, complete PCR product found.");
-                                }
-                                let outgoing =
-                                    graph.neighbors_directed(node, Direction::Outgoing).count();
-                                if outgoing > 4 {
-                                    println!("{}",
-                                        format!("WARNING: Node {} has {} outgoing edges. This exceed the maximum of 4 that is expected", node.index(), outgoing).color(COLOR_WARNING)
-                                    );
-                                }
-                            } else {
-                                graph[node].is_terminal = true;
-
-                                if verbosity > 1 {
-                                    print!(
-                                        "Adding edge to node {} would form cycle. Not adding edge, and marking current node as terminal. ",
-                                        node.index()
-                                    );
-                                    std::io::stdout().flush().unwrap();
-                                }
-                            }
-
-                            node_exists = true;
-                            break;
-                        }
-                    }
-
-                    if !node_exists {
-                        let edge = get_dbedge(kmer, &kmer_counts);
-                        let edge_count = edge.count;
-
-                        // Don't add node and edge if the edge count is very high
-                        if (edge_count as f64)
-                            > (edge_count_summary * BALLOONING_COUNT_THRESHOLD_MULTIPLIER)
-                        {
-                            if verbosity > 1 {
-                                print!(
-                                    "Edge count {} exceeds {} * median edge count {}. Not adding edge with kmer {} or node with sub_kmer {}. ",
-                                    edge_count,
-                                    BALLOONING_COUNT_THRESHOLD_MULTIPLIER,
-                                    edge_count_summary,
-                                    crate::kmer::kmer_to_seq(kmer, &kmer_counts.get_k()),
-                                    crate::kmer::kmer_to_seq(&suffix, &(kmer_counts.get_k() - 1))
-                                );
-                                std::io::stdout().flush().unwrap();
-                            }
-                            continue;
-                        }
-
-                        let new_node = graph.add_node(DBNode {
-                            sub_kmer: suffix,
-                            is_start: false,
-                            is_end: false,
-                            is_terminal: false,
-                            visited: false,
-                        });
-
-                        graph.add_edge(node, new_node, edge);
-                        let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
-                        if outgoing > 4 {
-                            println!("{}",
-                                format!("WARNING: Node {} has {} outgoing edges when adding new node. This exceed the maximum of 4 that is expected", node.index(), outgoing).color(COLOR_WARNING)
-                            );
-                        }
-
-                        if verbosity > 1 {
-                            print!(
-                                "Added sub_kmer {} for new node {} with edge kmer count {}. ",
-                                crate::kmer::kmer_to_seq(&suffix, &(kmer_counts.get_k() - 1)),
-                                new_node.index(),
-                                edge_count
-                            );
-                            std::io::stdout().flush().unwrap();
-                        }
-
-                        // Check if the new node is max_length-k+1 from a start node
-                        // If so, mark the new node as terminal
-                        let path_length = get_path_length(&graph, new_node);
-
-                        // If the path length is None, the node is part of a cycle and is marked terminal.
-                        // If the path length is Some, is marked terminal if the path length is >= max_length-k+1
-                        if let Some(path_length) = path_length {
-                            if verbosity > 1 {
-                                print!("Path length is {}. ", path_length);
-                                std::io::stdout().flush().unwrap();
-                            }
-
-                            if path_length > params.max_length - (kmer_counts.get_k()) {
-                                graph[new_node].is_terminal = true;
-                                graph[new_node].visited = true;
-                                if verbosity > 1 {
-                                    print!("Marking new node {} as terminal because it exceeds max_length from start. ", new_node.index());
-                                    std::io::stdout().flush().unwrap();
-                                }
-                            }
-                        } else {
-                            graph[new_node].is_terminal = true;
-                            if verbosity > 1 {
-                                print!("Marking new node {} as terminal because it is part of a cycle. ", new_node.index());
-                                std::io::stdout().flush().unwrap();
-                            }
-                        }
-                    }
-                }
-                graph[node].visited = true;
-
-                if verbosity > 1 {
-                    println!(
-                        "There are now {} unvisited and {} non-terminal nodes in the graph. ",
-                        n_unvisited_nodes_in_graph(&graph),
-                        n_nonterminal_nodes_in_graph(&graph)
-                    );
-                    std::io::stdout().flush().unwrap();
-                }
-            }
-        }
-    }
+    let mut graph = extend_graph(&seed_graph, &kmer_counts, &min_count, &params, &verbosity);
 
     // Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
     let mut start_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
