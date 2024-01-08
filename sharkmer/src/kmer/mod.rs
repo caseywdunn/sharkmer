@@ -421,6 +421,10 @@ impl KmerCounts {
         self.kmers.values().map(|&count| count).collect()
     }
 
+    pub fn get_count(&self, kmer: &u64) -> u64 {
+        *self.kmers.get(kmer).unwrap_or(&0)
+    }
+
     pub fn kmers(&self) -> Vec<u64> {
         self.kmers.keys().map(|&kmer| kmer).collect()
     }

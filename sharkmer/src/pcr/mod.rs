@@ -351,7 +351,7 @@ fn reverse_complement(seq: &str) -> String {
 // Find the kmers that contain the oligos.
 // If direction is forward, match the oligo at the start of the kmer.
 // If direction is reverse, match the oligo at the end of the kmer.
-fn find_oligos_in_kmers(oligos: &[Oligo], kmers: &KmerCounts, dir: &PrimerDirection) -> KmerCounts {
+fn find_oligos_in_kmers(oligos: &[Oligo], kmers: &KmerCounts, dir: &PrimerDirection, min_count: &u64) -> KmerCounts {
     // Assume all oligos have the same length
     let oligo_length = oligos[0].length;
 
@@ -391,7 +391,7 @@ fn find_oligos_in_kmers(oligos: &[Oligo], kmers: &KmerCounts, dir: &PrimerDirect
     let mut kmers_match: KmerCounts = KmerCounts::new(&kmers.get_k());
 
     for (kmer, count) in kmers.iter() {
-        if oligo_set.contains(&(kmer & mask)) {
+        if oligo_set.contains(&(kmer & mask)) && count >= min_count {
             kmers_match.insert(kmer, count);
         }
     }
@@ -772,6 +772,7 @@ fn get_kmers_from_primers(
     primer_variants: &HashSet<String>,
     kmer_counts: &KmerCounts,
     dir: PrimerDirection,
+    min_count: &u64,
 ) -> KmerCounts {
     // Get the kmers that contain the primers
     let mut oligos: Vec<Oligo> = Vec::new();
@@ -779,7 +780,7 @@ fn get_kmers_from_primers(
         oligos.push(string_to_oligo(variant));
     }
 
-    find_oligos_in_kmers(&oligos, kmer_counts, &dir)
+    find_oligos_in_kmers(&oligos, kmer_counts, &dir, min_count)
 }
 
 /// Given a set of kmers that contain primers, filter them to retain only those with the highest counts
@@ -919,11 +920,16 @@ fn extend_graph(seed_graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCo
 
                 for base in 0..4 {
                     let kmer = (sub_kmer << 2) | base;
-                    candidate_kmers.insert(kmer);
-                }
 
-                // Retain only the candidate kmers that are in the kmers hash
-                candidate_kmers.retain(|kmer| kmer_counts.contains(kmer));
+                    // If the kmer is in the kmer_counts hash and has count >= min_count, 
+                    // add it to the candidate kmers
+                    if kmer_counts.contains(&kmer) {
+                        if kmer_counts.get_count(&kmer) >= *min_count {
+                            candidate_kmers.insert(kmer);
+                        }
+                    }
+                    
+                }
 
                 if *verbosity > 1 {
                     print!(
@@ -1140,7 +1146,7 @@ pub struct PCRParams {
 
 // The primary function for PCR
 pub fn do_pcr(
-    kmer_counts_all: &KmerCounts,
+    kmer_counts: &KmerCounts,
     sample_name: &str,
     verbosity: usize,
     params: &PCRParams,
@@ -1149,25 +1155,9 @@ pub fn do_pcr(
         "{}",
         format!("Running PCR on gene {}", params.gene_name).color(COLOR_NOTE)
     );
+
     // Create a vector to hold the fasta records
     let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
-
-    // Remove kmer_counts entries with less than coverage
-    println!(
-        "Removing kmers with coverage less than {}...",
-        params.coverage
-    );
-
-    let mut kmer_counts = kmer_counts_all.clone();
-    kmer_counts.remove_low_count_kmers(&params.coverage);
-
-    println!(
-        "  The number of unique kmers went from {} to {}",
-        kmer_counts_all.get_n_unique_kmers(),
-        kmer_counts.get_n_unique_kmers()
-    );
-
-    kmer_counts.add_reverse_complements();
 
     // Preprocess the primers to get all variants to be considered
     println!("Expanding the forward primer into all variants");
@@ -1188,12 +1178,12 @@ pub fn do_pcr(
     // Get the kmers that contain the primers
     println!("Finding kmers that contain the forward primer");
     let mut forward_matches =
-        get_kmers_from_primers(&forward_variants, &kmer_counts, PrimerDirection::Forward);
+        get_kmers_from_primers(&forward_variants, &kmer_counts, PrimerDirection::Forward, &params.coverage);
     forward_matches = filter_primer_kmers(forward_matches);
 
     println!("Finding kmers that contain the reverse primer");
     let mut reverse_matches =
-        get_kmers_from_primers(&reverse_variants, &kmer_counts, PrimerDirection::Reverse);
+        get_kmers_from_primers(&reverse_variants, &kmer_counts, PrimerDirection::Reverse, &params.coverage);
     reverse_matches = filter_primer_kmers(reverse_matches);
 
     if forward_matches.is_empty() {
@@ -1234,27 +1224,6 @@ pub fn do_pcr(
         return records;
     }
 
-    // If the count of kmers containing primers is significantly higher than min_count, apply a higher min coverage
-    // Get the minimum of (max_forward_count, max_reverse_count), consider this as the observed count of the region
-    let max_forward_count = forward_matches.get_max_count();
-    let max_reverse_count = reverse_matches.get_max_count();
-
-    let mut min_count = max_reverse_count;
-    if max_forward_count < max_reverse_count {
-        min_count = max_forward_count;
-    }
-
-    // Create a new coverage threshold
-    let new_coverage = min_count / COVERAGE_MULTIPLIER / COVERAGE_MULTIPLIER_ADJUST;
-
-    // If the observed coverage exceeds COVERAGE_MULTIPLIER * default coverage, then apply the new threshold
-    if min_count > COVERAGE_MULTIPLIER * params.coverage {
-        println!("The count of kmers containing primers have high coverage {} relative to the coverage threshold of {}.  Increasing min coverage to {}.", min_count, params.coverage, new_coverage);
-
-        // Retain only the kmer_counts with coverage >= new_coverage
-        kmer_counts.remove_low_count_kmers(&new_coverage);
-    }
-
     // Construct the graph
     println!("Creating graph, seeding with nodes that contain primer matches...");
     let mut seed_graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
@@ -1262,7 +1231,7 @@ pub fn do_pcr(
     // Create a suffix mask with 1 in the (2 * (k - 1)) least significant bits
     let suffix_mask: u64 = get_suffix_mask( &kmer_counts.get_k() );
 
-    // Add the forward matches to the graph
+    // Add the forward primer matches to the graph
     for kmer in forward_matches.kmers() {
         let prefix = kmer >> 2;
 
@@ -1289,7 +1258,7 @@ pub fn do_pcr(
         }
     }
 
-    // Add the reverse matches to the graph
+    // Add the reverse primer matches to the graph
     for kmer in reverse_matches.kmers() {
         let suffix = kmer & suffix_mask;
 
@@ -1351,6 +1320,30 @@ pub fn do_pcr(
 
     let start = std::time::Instant::now();
     println!("Extending the assembly graph...");
+
+    // Get the minimum of (max_forward_count, max_reverse_count), consider this as the observed count of the primers
+    // and a preliminary expectation for the coverage of the PCR product
+    let max_forward_count = forward_matches.get_max_count();
+    let max_reverse_count = reverse_matches.get_max_count();
+
+    let mut primer_count = max_reverse_count;
+    if max_forward_count < max_reverse_count {
+        primer_count = max_forward_count;
+    }
+
+    // Set the min_count to the user specified minimum coverage
+    let mut min_count = params.coverage;
+
+    // If the count of kmers containing primers is significantly higher than the specified coverage, then increase the coverage threshold
+
+
+    // Create a new coverage threshold
+    let new_coverage = primer_count / COVERAGE_MULTIPLIER / COVERAGE_MULTIPLIER_ADJUST;
+    println!("User specified minimum coverage is {}, observed primer coverage is {}", params.coverage, primer_count);
+    if new_coverage > min_count {
+        min_count = new_coverage;
+        println!("  Adjusting minimum coverage up to {}", min_count);
+    }
 
     let mut graph = extend_graph(&seed_graph, &kmer_counts, &min_count, &params, &verbosity);
 
