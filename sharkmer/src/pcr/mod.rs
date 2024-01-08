@@ -1985,4 +1985,8 @@ mod tests {
         assert_eq!(start_nodes.len(), 1);
         assert!(start_nodes.contains(&nodes["a"]));
     }
+
+    fn create_kmers() -> KmerCounts {
+        let read_string = "";
+    }
 }
