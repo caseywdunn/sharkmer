@@ -28,10 +28,10 @@ pub mod preconfigured;
 
 /// The multiplier for establishing when a kmer is considered to have high coverage,
 /// relative to the coverage threshold. It is then used to also adjust the threshold.
-const COVERAGE_MULTIPLIER: u64 = 5;
+const COVERAGE_MULTIPLIER: u64 = 2;
 
 /// A multiplier for adjusting the threshold as it is applied.
-const COVERAGE_MULTIPLIER_ADJUST: u64 = 1;
+const COVERAGE_STEPS: u64 = 4;
 
 /// The maximum number of kmers containing the forward or reverse primers to maintain,
 /// with only those with the highest count being retained
@@ -1156,9 +1156,6 @@ pub fn do_pcr(
         format!("Running PCR on gene {}", params.gene_name).color(COLOR_NOTE)
     );
 
-    // Create a vector to hold the fasta records
-    let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
-
     // Preprocess the primers to get all variants to be considered
     println!("Expanding the forward primer into all variants");
     let forward_variants = preprocess_primer(
@@ -1321,6 +1318,9 @@ pub fn do_pcr(
     let start = std::time::Instant::now();
     println!("Extending the assembly graph...");
 
+    // Create a vector to hold the fasta records
+    let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
+
     // Get the minimum of (max_forward_count, max_reverse_count), consider this as the observed count of the primers
     // and a preliminary expectation for the coverage of the PCR product
     let max_forward_count = forward_matches.get_max_count();
@@ -1330,219 +1330,229 @@ pub fn do_pcr(
     if max_forward_count < max_reverse_count {
         primer_count = max_forward_count;
     }
+    
+    println!("Observed primer coverage is {}, user specified minimum coverage is {}", primer_count, params.coverage);
 
-    // Set the min_count to the user specified minimum coverage
-    let mut min_count = params.coverage;
+    // Creates a vector of coverage thresholds, starting with coverage_high_threshold and decreasing to params.coverage
+    // in COVERAGE_STEPS steps
+    let coverage_high_threshold = primer_count / COVERAGE_MULTIPLIER;
+    let mut coverage_thresholds: Vec<u64> = Vec::new();
+    let step_size = (coverage_high_threshold - params.coverage) / (COVERAGE_STEPS-1);
 
-    // If the count of kmers containing primers is significantly higher than the specified coverage, then increase the coverage threshold
-
-
-    // Create a new coverage threshold
-    let new_coverage = primer_count / COVERAGE_MULTIPLIER / COVERAGE_MULTIPLIER_ADJUST;
-    println!("User specified minimum coverage is {}, observed primer coverage is {}", params.coverage, primer_count);
-    if new_coverage > min_count {
-        min_count = new_coverage;
-        println!("  Adjusting minimum coverage up to {}", min_count);
+    for i in 0..COVERAGE_STEPS {
+        coverage_thresholds.push(coverage_high_threshold - (i * step_size));
     }
 
-    let mut graph = extend_graph(&seed_graph, &kmer_counts, &min_count, &params, &verbosity);
+    // Make sure the last element is params.coverage, even if there are rounding errors
+    coverage_thresholds[COVERAGE_STEPS as usize -1] = params.coverage;
 
-    // Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
-    let mut start_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
-    let mut end_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
+    for min_count in coverage_thresholds.iter() {
+        println!("  Extending graph with minimum kmer count {}", min_count);
+        let mut graph = extend_graph(&seed_graph, &kmer_counts, &min_count, &params, &verbosity);
 
-    for node in graph.node_indices() {
-        if graph[node].is_start {
-            start_nodes_map.insert(
-                node,
-                graph.neighbors_directed(node, Direction::Outgoing).count(),
-            );
-        }
-        if graph[node].is_end {
-            end_nodes_map.insert(
-                node,
-                graph.neighbors_directed(node, Direction::Incoming).count(),
-            );
-        }
-    }
+        // Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
+        let mut start_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
+        let mut end_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
 
-    if verbosity > 0 {
-        // Print the number of edges for each start node
-        for (node, edge_count) in &start_nodes_map {
-            // Print the node subkmer and number of edges
-            println!(
-                "  Start node {} with subkmer {} has {} edges",
-                node.index(),
-                crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(kmer_counts.get_k() - 1)),
-                edge_count
-            );
-        }
-
-        // Print the number of edges for each end node
-        for (node, edge_count) in &end_nodes_map {
-            // Print the node subkmer and number of edges
-            println!(
-                "  End node {} with subkmer {} has {} edges",
-                node.index(),
-                crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(kmer_counts.get_k() - 1)),
-                edge_count
-            );
-        }
-    }
-
-    // Drop entries that have no edges
-    start_nodes_map.retain(|_node, edge_count| *edge_count > 0);
-    end_nodes_map.retain(|_node, edge_count| *edge_count > 0);
-
-    println!("Final extension statistics:");
-    summarize_extension(&graph, "    ");
-    println!(
-        "  There are {} start nodes with edges",
-        start_nodes_map.len()
-    );
-    println!("  There are {} end nodes with edges", end_nodes_map.len());
-
-    println!("done.  Time to extend graph: {:?}", start.elapsed());
-
-    if verbosity > 5 {
-        let dot_format = format!("{:?}", Dot::with_config(&graph, &[Config::EdgeNoLabel]));
-
-        // Write the DOT format to a file
-        let file_name = format!("{}_{}.dot", sample_name, params.gene_name); // Concatenating the file extension
-        println!("Writing dot file {}", file_name);
-        let mut file = File::create(&file_name).expect("Unable to create file");
-        file.write_all(dot_format.as_bytes())
-            .expect("Unable to write data");
-    }
-
-    // Simplify the graph
-    // all_simple_paths() hangs if the input graph is too complex
-    // Also want to regularize some graph features
-
-    let start = std::time::Instant::now();
-    println!("Pruning the assembly graph...");
-
-    remove_side_branches(&mut graph);
-
-    // Remove end nodes without edges
-    let mut nodes_to_remove: Vec<NodeIndex> = graph
-        .node_indices()
-        .filter(|&node| {
-            if graph[node].is_end {
-                graph.neighbors_directed(node, Direction::Incoming).count() == 0
-            } else {
-                false
-            }
-        })
-        .collect();
-
-    nodes_to_remove.sort_by(|a, b| b.cmp(a));
-
-    for node in nodes_to_remove {
-        graph.remove_node(node);
-    }
-
-    println!("  There are {} nodes in the graph", graph.node_count());
-    println!("  There are {} edges in the graph", graph.edge_count());
-
-    println!("  There are {} start nodes", get_start_nodes(&graph).len());
-    println!("  There are {} end nodes", get_end_nodes(&graph).len());
-
-    println!("done.  Time to prune graph: {:?}", start.elapsed());
-
-    // Get all paths from start nodes to terminal nodes
-    let start = std::time::Instant::now();
-    println!("Traversing the assembly graph to find paths from forward to reverse primers...");
-    let mut all_paths = Vec::new();
-
-    for start in get_start_nodes(&graph) {
-        for end in get_end_nodes(&graph) {
-            let paths_for_this_pair =
-                all_simple_paths::<Vec<NodeIndex>, &StableDiGraph<DBNode, DBEdge>>(
-                    &graph,
-                    start,
-                    end,
-                    1,
-                    Some(params.max_length - (kmer_counts.get_k()) + 1),
+        for node in graph.node_indices() {
+            if graph[node].is_start {
+                start_nodes_map.insert(
+                    node,
+                    graph.neighbors_directed(node, Direction::Outgoing).count(),
                 );
-
-            all_paths.extend(paths_for_this_pair);
-        }
-    }
-
-    println!(
-        "  There are {} paths from forward to reverse primers in the graph",
-        all_paths.len()
-    );
-    println!("done.  Time to traverse graph: {:?}", start.elapsed());
-
-    if all_paths.is_empty() {
-        println!("{}", format!("For gene {}, no path was found from a forward primer binding site to a reverse binding \nsite. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
-        println!("{}", format!("  Suggested actions:").color(COLOR_FAIL));
-        println!("{}", format!("    - The max_length for the PCR product of {} my be too short. Consider increasing it.", params.max_length).color(COLOR_FAIL));
-        println!("{}", format!("    - The primers may have non-specific binding and are not close enough to generate a \n      product. Consider increasing the primer TRIM length from the default to \n      create a more specific primer.").color(COLOR_FAIL));
-        println!("{}", format!("      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large \n        differences in value can indicate non-specific binding of one of the primers.", max_forward_count, max_reverse_count).color(COLOR_FAIL));
-
-        let count_threshold = 5;
-        if (max_forward_count < count_threshold) | (max_reverse_count < count_threshold) {
-            println!("{}", format!("    - The maximum count of a forward kmer is {} and of a reverse kmer is {}. A \n      low value, in this case less than {}, for either can indicate that read \n      coverage for this gene is too low to traverse from a forward to reverse \n      primer. Consider increasing coverage.", max_forward_count, max_reverse_count, count_threshold).color(COLOR_FAIL));
-        }
-
-        let records: Vec<fasta::Record> = Vec::new();
-        return records;
-    }
-
-    println!("Generating sequences from paths...");
-
-    // For each path, get the sequence of the path
-    for (i, path) in all_paths.into_iter().enumerate() {
-        let mut sequence = String::new();
-        let mut edge_counts: Vec<u64> = Vec::new();
-        let mut parent_node: NodeIndex = NodeIndex::new(0);
-        // The first time through the loop add the whole sequence, after that just add the last base
-        for node in path.iter() {
-            let node_data = graph.node_weight(*node).unwrap();
-            let subread = crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(kmer_counts.get_k() - 1));
-            if sequence.is_empty() {
-                sequence = subread;
-                parent_node = *node;
-            } else {
-                sequence = format!("{}{}", sequence, subread.chars().last().unwrap(),);
-
-                // Get the edge count for the edge from the parent node to this node
-                let edge = graph.find_edge(parent_node, *node).unwrap();
-                let edge_data = graph.edge_weight(edge).unwrap();
-                edge_counts.push(edge_data.count);
-                parent_node = *node;
+            }
+            if graph[node].is_end {
+                end_nodes_map.insert(
+                    node,
+                    graph.neighbors_directed(node, Direction::Incoming).count(),
+                );
             }
         }
 
-        // Get some stats on the path counts
-        let count_mean = compute_mean(&edge_counts);
-        let count_median = compute_median(&edge_counts);
-        let count_min = edge_counts.iter().min().unwrap();
-        let count_max = edge_counts.iter().max().unwrap();
+        if verbosity > 0 {
+            // Print the number of edges for each start node
+            for (node, edge_count) in &start_nodes_map {
+                // Print the node subkmer and number of edges
+                println!(
+                    "  Start node {} with subkmer {} has {} edges",
+                    node.index(),
+                    crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(kmer_counts.get_k() - 1)),
+                    edge_count
+                );
+            }
 
-        let id = format!(
-            "{} {} product {} length {} kmer count stats mean {:.2} median {} min {} max {}",
-            sample_name,
-            params.gene_name,
-            i,
-            sequence.len(),
-            count_mean,
-            count_median,
-            count_min,
-            count_max
+            // Print the number of edges for each end node
+            for (node, edge_count) in &end_nodes_map {
+                // Print the node subkmer and number of edges
+                println!(
+                    "  End node {} with subkmer {} has {} edges",
+                    node.index(),
+                    crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(kmer_counts.get_k() - 1)),
+                    edge_count
+                );
+            }
+        }
+
+        // Drop entries that have no edges
+        start_nodes_map.retain(|_node, edge_count| *edge_count > 0);
+        end_nodes_map.retain(|_node, edge_count| *edge_count > 0);
+
+        println!("Final extension statistics:");
+        summarize_extension(&graph, "    ");
+        println!(
+            "  There are {} start nodes with edges",
+            start_nodes_map.len()
         );
-        println!(">{}", id);
-        println!("{}", sequence);
-        let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
-        // Create fasta record and add to vector
-        let assembly_record: AssemblyRecord = AssemblyRecord {
-            fasta_record: record,
-            kmer_min_count: *count_min,
-        };
-        assembly_records.push(assembly_record);
+        println!("  There are {} end nodes with edges", end_nodes_map.len());
+
+        println!("done.  Time to extend graph: {:?}", start.elapsed());
+
+        if verbosity > 5 {
+            let dot_format = format!("{:?}", Dot::with_config(&graph, &[Config::EdgeNoLabel]));
+
+            // Write the DOT format to a file
+            let file_name = format!("{}_{}.dot", sample_name, params.gene_name); // Concatenating the file extension
+            println!("Writing dot file {}", file_name);
+            let mut file = File::create(&file_name).expect("Unable to create file");
+            file.write_all(dot_format.as_bytes())
+                .expect("Unable to write data");
+        }
+
+        // Simplify the graph
+        // all_simple_paths() hangs if the input graph is too complex
+        // Also want to regularize some graph features
+
+        let start = std::time::Instant::now();
+        println!("Pruning the assembly graph...");
+
+        remove_side_branches(&mut graph);
+
+        // Remove end nodes without edges
+        let mut nodes_to_remove: Vec<NodeIndex> = graph
+            .node_indices()
+            .filter(|&node| {
+                if graph[node].is_end {
+                    graph.neighbors_directed(node, Direction::Incoming).count() == 0
+                } else {
+                    false
+                }
+            })
+            .collect();
+
+        nodes_to_remove.sort_by(|a, b| b.cmp(a));
+
+        for node in nodes_to_remove {
+            graph.remove_node(node);
+        }
+
+        println!("  There are {} nodes in the graph", graph.node_count());
+        println!("  There are {} edges in the graph", graph.edge_count());
+
+        println!("  There are {} start nodes", get_start_nodes(&graph).len());
+        println!("  There are {} end nodes", get_end_nodes(&graph).len());
+
+        println!("done.  Time to prune graph: {:?}", start.elapsed());
+
+        // Get all paths from start nodes to terminal nodes
+        let start = std::time::Instant::now();
+        println!("Traversing the assembly graph to find paths from forward to reverse primers...");
+        let mut all_paths = Vec::new();
+
+        for start in get_start_nodes(&graph) {
+            for end in get_end_nodes(&graph) {
+                let paths_for_this_pair =
+                    all_simple_paths::<Vec<NodeIndex>, &StableDiGraph<DBNode, DBEdge>>(
+                        &graph,
+                        start,
+                        end,
+                        1,
+                        Some(params.max_length - (kmer_counts.get_k()) + 1),
+                    );
+
+                all_paths.extend(paths_for_this_pair);
+            }
+        }
+
+        println!(
+            "  There are {} paths from forward to reverse primers in the graph",
+            all_paths.len()
+        );
+        println!("done.  Time to traverse graph: {:?}", start.elapsed());
+
+        if all_paths.is_empty() {
+            println!("{}", format!("For gene {}, no path was found from a forward primer binding site to a reverse binding \nsite. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
+            println!("{}", format!("  Suggested actions:").color(COLOR_FAIL));
+            println!("{}", format!("    - The max_length for the PCR product of {} my be too short. Consider increasing it.", params.max_length).color(COLOR_FAIL));
+            println!("{}", format!("    - The primers may have non-specific binding and are not close enough to generate a \n      product. Consider increasing the primer TRIM length from the default to \n      create a more specific primer.").color(COLOR_FAIL));
+            println!("{}", format!("      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large \n        differences in value can indicate non-specific binding of one of the primers.", max_forward_count, max_reverse_count).color(COLOR_FAIL));
+
+            let count_threshold = 5;
+            if (max_forward_count < count_threshold) | (max_reverse_count < count_threshold) {
+                println!("{}", format!("    - The maximum count of a forward kmer is {} and of a reverse kmer is {}. A \n      low value, in this case less than {}, for either can indicate that read \n      coverage for this gene is too low to traverse from a forward to reverse \n      primer. Consider increasing coverage.", max_forward_count, max_reverse_count, count_threshold).color(COLOR_FAIL));
+            }
+
+            let records: Vec<fasta::Record> = Vec::new();
+            return records;
+        }
+
+        println!("Generating sequences from paths...");
+
+        // For each path, get the sequence of the path
+        for (i, path) in all_paths.into_iter().enumerate() {
+            let mut sequence = String::new();
+            let mut edge_counts: Vec<u64> = Vec::new();
+            let mut parent_node: NodeIndex = NodeIndex::new(0);
+            // The first time through the loop add the whole sequence, after that just add the last base
+            for node in path.iter() {
+                let node_data = graph.node_weight(*node).unwrap();
+                let subread = crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(kmer_counts.get_k() - 1));
+                if sequence.is_empty() {
+                    sequence = subread;
+                    parent_node = *node;
+                } else {
+                    sequence = format!("{}{}", sequence, subread.chars().last().unwrap(),);
+
+                    // Get the edge count for the edge from the parent node to this node
+                    let edge = graph.find_edge(parent_node, *node).unwrap();
+                    let edge_data = graph.edge_weight(edge).unwrap();
+                    edge_counts.push(edge_data.count);
+                    parent_node = *node;
+                }
+            }
+
+            // Get some stats on the path counts
+            let count_mean = compute_mean(&edge_counts);
+            let count_median = compute_median(&edge_counts);
+            let count_min = edge_counts.iter().min().unwrap();
+            let count_max = edge_counts.iter().max().unwrap();
+
+            let id = format!(
+                "{} {} product {} length {} kmer count stats mean {:.2} median {} min {} max {}",
+                sample_name,
+                params.gene_name,
+                i,
+                sequence.len(),
+                count_mean,
+                count_median,
+                count_min,
+                count_max
+            );
+            println!(">{}", id);
+            println!("{}", sequence);
+            let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
+            // Create fasta record and add to vector
+            let assembly_record: AssemblyRecord = AssemblyRecord {
+                fasta_record: record,
+                kmer_min_count: *count_min,
+            };
+            assembly_records.push(assembly_record);
+        }
+        if assembly_records.is_empty() {
+            print!("Did not obtain PCR product.");
+        } else {
+            print!("Obtained PCR product.");
+            break;
+        }
     }
 
     println!("done.");
