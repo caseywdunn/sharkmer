@@ -19,7 +19,7 @@
 					"kind": "bin"
 				}
 			},
-			"args": ["-k", "21", "-n", "10", "--histo-max", "10000", "-s", "Thermus-thermophilus", "--pcr", "GAGGACCAGAGGCCTTTC_TTGAGCGGCACCACGCCG_200_test_trim=17", "--rad", "CATG_AATT_50_150_kd", "data/SRR5324768_pass_1.fastq"],
+			"args": ["-k", "21", "-n", "10", "--histo-max", "10000", "-s", "Thermus-thermophilus", "--pcr", "GAGGACCAGAGGCCTTTC,TTGAGCGGCACCACGCCG,200,test,trim=17", "data/SRR5324768_pass_1.fastq"],
 			"cwd": "${workspaceFolder}"
 		},
 		{
