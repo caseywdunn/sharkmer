@@ -1892,6 +1892,7 @@ mod tests {
                 result.iter().cloned().collect::<Vec<_>>().join(", ")
             );
             assert_eq!(result, expected);
+
         }
 
         // Check sequence length 3 and r=3
@@ -1961,6 +1962,22 @@ mod tests {
             let result = permute_sequences(seq, &r);
             assert_eq!(expected.len(), result.len());
         }
+
+        // Check for inclusion of particular strings as a spot check
+        {
+            let mut seq: HashSet<String> = HashSet::new();
+            seq.insert("TGCAGGTTCACCTAC".to_string());
+            let r: usize = 2;
+            let result = permute_sequences(seq, &r);
+
+            // Check for inclusion of original sequence
+            assert!(result.contains("TGCAGGTTCACCTAC"));
+
+            // Check for inclusion of "GGCAGGTTCACCTAC"
+            assert!(result.contains("GGCAGGTTCACCTAC"));
+
+            
+        }
     }
 
     #[test]
@@ -1989,30 +2006,27 @@ mod tests {
         assert!(start_nodes.contains(&nodes["a"]));
     }
 
-    #[test]
-    fn test_integration() {
+    fn build_test_case() -> (String, usize, usize, KmerCounts, PCRParams) {
         // This is the 18s that was assembled from https://trace.ncbi.nlm.nih.gov/Traces/?run=SRR26955578, per the readme tutorial
         // Padded with C's at the ends
-        let read_string = "CCCCCCCCCCCCGTTGATCCTGCCAGTATCATATGCTTGTCTCAAAGATTAAGCCATGCATGTCTAAGTATAAGCACTTGTACTGTGAAACTGCGAATGGCTCATTAAATCAGTTATCGTTTATTTGATTGTACTCTCTTACTACTTGGATAACCGTAGTAATTCTAGAGCTAATACATGCGAAAAGTCCCGACTCTCGTGGAAGGGATGTATTTATTAGATTAAAAACCAATGCGGCTTAACGGCCGCTTACAAACTTGGTGATTCATAGTAACTGTTCGAATCGCATGGCCTTCTCTGTTCGTGCCGGCGATGTTTCATTCAAATTTCTGCCCTATCAACTGTCGATGGTAAGATAGTGGCTTACCATGGTCGCAACGGGTGACGGAGAATTAGGGTTCGATTCCGGAGAGGGAGCCTGAGAAACGGCTACCACATCCAAGGAAGGCAGCAGGCGCGCAAATTACCCAATCCTGACGTGGGGAGGTAGTGACAAAAAATAACAATACAGGGCTTTTTTGTAGTCTTGTAATTGGAATGAGTACAATTTAAATCTCTTAACGAGGACCAATTGGAGGGCAAGTCTGGTGCCAGCAGCCGCGGTAATTCCAGCTCCAATAGCGTATTGTAAAGTTGTTGCAGTTAAAAAGCTCGTAGTTGGATTTCGGGCTCGACGGCGACGGTCAGCCGCAAGGTATGTCACTGTCGACGTTGGCCTTCTTCGCGCAGACTTCGCGTGCTCTTAACTGAGTGTGCGTTGGATACGCGACGTTTACTTTGAAAAAATTAGAGTGTTCAAAGCAGGCTTGTGCTTGGATACATAAGCATGGAATAATGGAATAGGACTTTGGTTCTATTTTCCGTTGGTTTCTGGAACCGAAGTAATGATTAATAGGGACAGTTGGGGGCATTCGTATTTCGTTGTCAGAGGTGAAATTCTTGGATTTACGAAAGACGAACTAATGCGAAAGCATTTGCCAAGAATGTTTTCATTAATCAAGAACGAAAGTTAGAGGATCGAAGACGATCAGATACCGTCCTAGTTCTAACCATAAACGATGCCGACTAGGGATCAGCGAGTGTTATTTGATGACCTCGTTGGCACCTTATGGGAAACCAAAGTTTTTGGGTTCCGGGGGAAGTATGGTTGCAAAGCTGAAACTTAAAGGAATTGACGGAAGGGCACCACCAGGAGTGGAGCCTGCGGCTTAATTTGACTCAACACGGGAAAACTCACCAGGTCCAGACATAGTAAGGATTGACAGATTGAGAGCTCTTTCTTGATTCTATGGGTGGTGGTGCATGGCCGTTCTTAGTTGGTGGAGTGATTTGTCTGGTTAATTCCGTTAACGAACGAGACCTTGACCTGCTAAATAGTCAGACGATTCTCGAATCGCTCTCGACTTCTTAGAGGGACTGTTGCGTGTTTAACCAAAGTCAGGAAGGCAATAACAGGTCTGTGATGCCCTTAGATGTCCTGGGCCGCACGCGCGCTACACTGACGATGGCAACGAGTCGCTCCTTCACCGAAAGGTGTGGGTAATCTTGTGAATCATCGTCGTGCTGGGGATAGATCATTGTAATTCTTGATCTTGAACGAGGAATTCCTAGTAAGCGCGAGTCATCAGCTCGCGTTGATTACGTCCCTGCCCTTTGTACACACCGCCCGTCGCTACTACCGATTGAATGGTTTAGTGAGGCCTCCGGATTGGCACTGTCAGATGGGCTTCGGTCCATCCGACGGACGTCAAAAAGTTGGTCAAACTTGATCATTTAGAGGAAGTAAAAGTCGTAACAAGGTTTCCGTAGGTGAACCTGCGCCCCCCCCCCCC";
-        
-        // Create the same string to reads multiple times
+        let read_string = "CCCCCCCCCCCCGTTGATCCTGCCAGTATCATATGCTTGTCTCAAAGATTAAGCCATGCATGTCTAAGTATAAGCACTTGTACTGTGAAACTGCGAATGGCTCATTAAATCAGTTATCGTTTATTTGATTGTACTCTCTTACTACTTGGATAACCGTAGTAATTCTAGAGCTAATACATGCGAAAAGTCCCGACTCTCGTGGAAGGGATGTATTTATTAGATTAAAAACCAATGCGGCTTAACGGCCGCTTACAAACTTGGTGATTCATAGTAACTGTTCGAATCGCATGGCCTTCTCTGTTCGTGCCGGCGATGTTTCATTCAAATTTCTGCCCTATCAACTGTCGATGGTAAGATAGTGGCTTACCATGGTCGCAACGGGTGACGGAGAATTAGGGTTCGATTCCGGAGAGGGAGCCTGAGAAACGGCTACCACATCCAAGGAAGGCAGCAGGCGCGCAAATTACCCAATCCTGACGTGGGGAGGTAGTGACAAAAAATAACAATACAGGGCTTTTTTGTAGTCTTGTAATTGGAATGAGTACAATTTAAATCTCTTAACGAGGACCAATTGGAGGGCAAGTCTGGTGCCAGCAGCCGCGGTAATTCCAGCTCCAATAGCGTATTGTAAAGTTGTTGCAGTTAAAAAGCTCGTAGTTGGATTTCGGGCTCGACGGCGACGGTCAGCCGCAAGGTATGTCACTGTCGACGTTGGCCTTCTTCGCGCAGACTTCGCGTGCTCTTAACTGAGTGTGCGTTGGATACGCGACGTTTACTTTGAAAAAATTAGAGTGTTCAAAGCAGGCTTGTGCTTGGATACATAAGCATGGAATAATGGAATAGGACTTTGGTTCTATTTTCCGTTGGTTTCTGGAACCGAAGTAATGATTAATAGGGACAGTTGGGGGCATTCGTATTTCGTTGTCAGAGGTGAAATTCTTGGATTTACGAAAGACGAACTAATGCGAAAGCATTTGCCAAGAATGTTTTCATTAATCAAGAACGAAAGTTAGAGGATCGAAGACGATCAGATACCGTCCTAGTTCTAACCATAAACGATGCCGACTAGGGATCAGCGAGTGTTATTTGATGACCTCGTTGGCACCTTATGGGAAACCAAAGTTTTTGGGTTCCGGGGGAAGTATGGTTGCAAAGCTGAAACTTAAAGGAATTGACGGAAGGGCACCACCAGGAGTGGAGCCTGCGGCTTAATTTGACTCAACACGGGAAAACTCACCAGGTCCAGACATAGTAAGGATTGACAGATTGAGAGCTCTTTCTTGATTCTATGGGTGGTGGTGCATGGCCGTTCTTAGTTGGTGGAGTGATTTGTCTGGTTAATTCCGTTAACGAACGAGACCTTGACCTGCTAAATAGTCAGACGATTCTCGAATCGCTCTCGACTTCTTAGAGGGACTGTTGCGTGTTTAACCAAAGTCAGGAAGGCAATAACAGGTCTGTGATGCCCTTAGATGTCCTGGGCCGCACGCGCGCTACACTGACGATGGCAACGAGTCGCTCCTTCACCGAAAGGTGTGGGTAATCTTGTGAATCATCGTCGTGCTGGGGATAGATCATTGTAATTCTTGATCTTGAACGAGGAATTCCTAGTAAGCGCGAGTCATCAGCTCGCGTTGATTACGTCCCTGCCCTTTGTACACACCGCCCGTCGCTACTACCGATTGAATGGTTTAGTGAGGCCTCCGGATTGGCACTGTCAGATGGGCTTCGGTCCATCCGACGGACGTCAAAAAGTTGGTCAAACTTGATCATTTAGAGGAAGTAAAAGTCGTAACAAGGTTTCCGTAGGTGAACCTGCGCCCCCCCCCCCC".to_string();
+
         let k:usize = 21;
-        let replicates = 10;
+        let replicates: usize = 10;
         let mut kmer_counts = KmerCounts::new(&k);
         for _i in 0..replicates {
-            let reads = kmer::seq_to_reads(read_string);
+            let reads = kmer::seq_to_reads(&read_string);
             kmer_counts.ingest_reads(&reads);
         }
 
-        // Check the number of kmers
-        assert_eq!(kmer_counts.len(), read_string.len() - k + 1);
-
-        // Check the total count of kmers
-        assert_eq!(kmer_counts.get_n_kmers(), ((read_string.len() - k + 1) * replicates) as u64);
-
+        kmer_counts.add_reverse_complements();
 
         let params = PCRParams {
             forward_seq: "AACCTGGTTGATCCTGCCAGT".to_string(),
+
+            // AGTAAAAGTCGTAACAAGGTTTCCGTAGGTGAACCTGCG 3' end of 18S above
+            // CGCAGGTTCACCTACGGAAACCTTGTTACGACTTTTACT revcomp of above
+
             reverse_seq: "TGATCCTTCTGCAGGTTCACCTAC".to_string(),
             max_length: 2500,
             gene_name: "18s".to_string(),
@@ -2020,6 +2034,58 @@ mod tests {
             mismatches: 2,
             trim: 15,
         };
+
+        (read_string, k, replicates, kmer_counts, params)
+    }
+
+    #[test]
+    fn test_primer_preprocessing_steps() {
+        let (_, _, _, kmer_counts, params) = build_test_case();
+        
+        let verbosity: usize = 0;
+        let reverse_variants = preprocess_primer(
+            &params,
+            PrimerDirection::Reverse,
+            &kmer_counts.get_k(),
+            &verbosity,
+        );
+
+        // There should be 991 variants of the reverse primer when r=2
+        assert_eq!(reverse_variants.len(), 991);
+
+        println!("Reverse variants: {:?}", reverse_variants);
+
+        // Check for inclusion of revcomp of original sequence TGCAGGTTCACCTAC
+        let member = "GTAGGTGAACCTGCA".to_string();
+        assert!(reverse_variants.contains(&member));
+
+        // Check for inclusion of revcomp of off by one variant GGCAGGTTCACCTAC
+        let member = "GTAGGTGAACCTGCC".to_string();
+        assert!(reverse_variants.contains(&member));
+
+        let mut reverse_primer_kmers =
+        get_kmers_from_primers(&reverse_variants, &kmer_counts, PrimerDirection::Reverse, &params.coverage);
+        
+        // Check for kmer
+        assert_eq!(reverse_primer_kmers.len(), 1);
+        
+        reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers);
+
+        // Check for kmer after filtering
+        assert_eq!(reverse_primer_kmers.len(), 1);
+    }
+
+    #[test]
+    fn test_integration() {
+
+        let (read_string, k, replicates, kmer_counts, params) = build_test_case();
+
+        // Check the number of kmers
+        // Times 2 on right since reverse complements are added
+        assert_eq!(kmer_counts.len(), (read_string.len() - k + 1)*2);
+
+        // Check the total count of kmers
+        assert_eq!(kmer_counts.get_n_kmers(), ((read_string.len() - k + 1) * replicates * 2) as u64);
 
         let verbosity = 0;
         let (forward_primer_kmers, reverse_primer_kmers) = get_primer_kmers(&params, &kmer_counts, &verbosity);
