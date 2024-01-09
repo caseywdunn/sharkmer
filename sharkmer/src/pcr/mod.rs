@@ -722,7 +722,7 @@ fn preprocess_primer(
     params: &PCRParams,
     dir: PrimerDirection,
     k: &usize,
-    _verbosity: usize,
+    _verbosity: &usize,
 ) -> HashSet<String> {
     let mut primer = params.forward_seq.clone();
     if dir == PrimerDirection::Reverse {
@@ -840,6 +840,33 @@ fn get_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64> {
 
     let median_edge_count = compute_median(&counts);
     Some(median_edge_count)
+}
+
+fn get_primer_kmers(params: &PCRParams, kmer_counts: &KmerCounts, verbosity: &usize) -> (KmerCounts, KmerCounts) {
+    // Preprocess the primers to get all variants to be considered
+    let forward_variants = preprocess_primer(
+        params,
+        PrimerDirection::Forward,
+        &kmer_counts.get_k(),
+        verbosity,
+    );
+    let reverse_variants = preprocess_primer(
+        params,
+        PrimerDirection::Reverse,
+        &kmer_counts.get_k(),
+        verbosity,
+    );
+
+    // Get the kmers that contain the primers
+    let mut forward_primer_kmers =
+        get_kmers_from_primers(&forward_variants, &kmer_counts, PrimerDirection::Forward, &params.coverage);
+    forward_primer_kmers = filter_primer_kmers(forward_primer_kmers);
+
+    let mut reverse_primer_kmers =
+        get_kmers_from_primers(&reverse_variants, &kmer_counts, PrimerDirection::Reverse, &params.coverage);
+    reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers);
+
+    (forward_primer_kmers, reverse_primer_kmers)
 }
 
 
@@ -1156,34 +1183,10 @@ pub fn do_pcr(
         format!("Running PCR on gene {}", params.gene_name).color(COLOR_NOTE)
     );
 
-    // Preprocess the primers to get all variants to be considered
-    println!("Expanding the forward primer into all variants");
-    let forward_variants = preprocess_primer(
-        params,
-        PrimerDirection::Forward,
-        &kmer_counts.get_k(),
-        verbosity,
-    );
-    println!("Expanding the reverse primer into all variants");
-    let reverse_variants = preprocess_primer(
-        params,
-        PrimerDirection::Reverse,
-        &kmer_counts.get_k(),
-        verbosity,
-    );
-
-    // Get the kmers that contain the primers
-    println!("Finding kmers that contain the forward primer");
-    let mut forward_matches =
-        get_kmers_from_primers(&forward_variants, &kmer_counts, PrimerDirection::Forward, &params.coverage);
-    forward_matches = filter_primer_kmers(forward_matches);
-
-    println!("Finding kmers that contain the reverse primer");
-    let mut reverse_matches =
-        get_kmers_from_primers(&reverse_variants, &kmer_counts, PrimerDirection::Reverse, &params.coverage);
-    reverse_matches = filter_primer_kmers(reverse_matches);
-
-    if forward_matches.is_empty() {
+    println!("Preprocessing primers");
+    let (forward_primer_kmers, reverse_primer_kmers) = get_primer_kmers(params, kmer_counts, &verbosity);
+    
+    if forward_primer_kmers.is_empty() {
         println!(
             "{}",
             format!(
@@ -1202,7 +1205,7 @@ pub fn do_pcr(
         return records;
     }
 
-    if reverse_matches.is_empty() {
+    if reverse_primer_kmers.is_empty() {
         println!(
             "{}",
             format!(
@@ -1229,7 +1232,7 @@ pub fn do_pcr(
     let suffix_mask: u64 = get_suffix_mask( &kmer_counts.get_k() );
 
     // Add the forward primer matches to the graph
-    for kmer in forward_matches.kmers() {
+    for kmer in forward_primer_kmers.kmers() {
         let prefix = kmer >> 2;
 
         // If the node with sub_kmer == suffix already exists, update the node so that is_start = true
@@ -1256,7 +1259,7 @@ pub fn do_pcr(
     }
 
     // Add the reverse primer matches to the graph
-    for kmer in reverse_matches.kmers() {
+    for kmer in reverse_primer_kmers.kmers() {
         let suffix = kmer & suffix_mask;
 
         // If the node with sub_kmer == suffix already exists, update the node so that is_end = true
@@ -1323,8 +1326,8 @@ pub fn do_pcr(
 
     // Get the minimum of (max_forward_count, max_reverse_count), consider this as the observed count of the primers
     // and a preliminary expectation for the coverage of the PCR product
-    let max_forward_count = forward_matches.get_max_count();
-    let max_reverse_count = reverse_matches.get_max_count();
+    let max_forward_count = forward_primer_kmers.get_max_count();
+    let max_reverse_count = reverse_primer_kmers.get_max_count();
 
     let mut primer_count = max_reverse_count;
     if max_forward_count < max_reverse_count {
@@ -1986,7 +1989,44 @@ mod tests {
         assert!(start_nodes.contains(&nodes["a"]));
     }
 
-    fn create_kmers() -> KmerCounts {
-        let read_string = "";
+    #[test]
+    fn test_integration() {
+        // This is the 18s that was assembled from https://trace.ncbi.nlm.nih.gov/Traces/?run=SRR26955578, per the readme tutorial
+        // Padded with C's at the ends
+        let read_string = "CCCCCCCCCCCCGTTGATCCTGCCAGTATCATATGCTTGTCTCAAAGATTAAGCCATGCATGTCTAAGTATAAGCACTTGTACTGTGAAACTGCGAATGGCTCATTAAATCAGTTATCGTTTATTTGATTGTACTCTCTTACTACTTGGATAACCGTAGTAATTCTAGAGCTAATACATGCGAAAAGTCCCGACTCTCGTGGAAGGGATGTATTTATTAGATTAAAAACCAATGCGGCTTAACGGCCGCTTACAAACTTGGTGATTCATAGTAACTGTTCGAATCGCATGGCCTTCTCTGTTCGTGCCGGCGATGTTTCATTCAAATTTCTGCCCTATCAACTGTCGATGGTAAGATAGTGGCTTACCATGGTCGCAACGGGTGACGGAGAATTAGGGTTCGATTCCGGAGAGGGAGCCTGAGAAACGGCTACCACATCCAAGGAAGGCAGCAGGCGCGCAAATTACCCAATCCTGACGTGGGGAGGTAGTGACAAAAAATAACAATACAGGGCTTTTTTGTAGTCTTGTAATTGGAATGAGTACAATTTAAATCTCTTAACGAGGACCAATTGGAGGGCAAGTCTGGTGCCAGCAGCCGCGGTAATTCCAGCTCCAATAGCGTATTGTAAAGTTGTTGCAGTTAAAAAGCTCGTAGTTGGATTTCGGGCTCGACGGCGACGGTCAGCCGCAAGGTATGTCACTGTCGACGTTGGCCTTCTTCGCGCAGACTTCGCGTGCTCTTAACTGAGTGTGCGTTGGATACGCGACGTTTACTTTGAAAAAATTAGAGTGTTCAAAGCAGGCTTGTGCTTGGATACATAAGCATGGAATAATGGAATAGGACTTTGGTTCTATTTTCCGTTGGTTTCTGGAACCGAAGTAATGATTAATAGGGACAGTTGGGGGCATTCGTATTTCGTTGTCAGAGGTGAAATTCTTGGATTTACGAAAGACGAACTAATGCGAAAGCATTTGCCAAGAATGTTTTCATTAATCAAGAACGAAAGTTAGAGGATCGAAGACGATCAGATACCGTCCTAGTTCTAACCATAAACGATGCCGACTAGGGATCAGCGAGTGTTATTTGATGACCTCGTTGGCACCTTATGGGAAACCAAAGTTTTTGGGTTCCGGGGGAAGTATGGTTGCAAAGCTGAAACTTAAAGGAATTGACGGAAGGGCACCACCAGGAGTGGAGCCTGCGGCTTAATTTGACTCAACACGGGAAAACTCACCAGGTCCAGACATAGTAAGGATTGACAGATTGAGAGCTCTTTCTTGATTCTATGGGTGGTGGTGCATGGCCGTTCTTAGTTGGTGGAGTGATTTGTCTGGTTAATTCCGTTAACGAACGAGACCTTGACCTGCTAAATAGTCAGACGATTCTCGAATCGCTCTCGACTTCTTAGAGGGACTGTTGCGTGTTTAACCAAAGTCAGGAAGGCAATAACAGGTCTGTGATGCCCTTAGATGTCCTGGGCCGCACGCGCGCTACACTGACGATGGCAACGAGTCGCTCCTTCACCGAAAGGTGTGGGTAATCTTGTGAATCATCGTCGTGCTGGGGATAGATCATTGTAATTCTTGATCTTGAACGAGGAATTCCTAGTAAGCGCGAGTCATCAGCTCGCGTTGATTACGTCCCTGCCCTTTGTACACACCGCCCGTCGCTACTACCGATTGAATGGTTTAGTGAGGCCTCCGGATTGGCACTGTCAGATGGGCTTCGGTCCATCCGACGGACGTCAAAAAGTTGGTCAAACTTGATCATTTAGAGGAAGTAAAAGTCGTAACAAGGTTTCCGTAGGTGAACCTGCGCCCCCCCCCCCC";
+        
+        // Create the same string to reads multiple times
+        let k:usize = 21;
+        let replicates = 10;
+        let mut kmer_counts = KmerCounts::new(&k);
+        for _i in 0..replicates {
+            let reads = kmer::seq_to_reads(read_string);
+            kmer_counts.ingest_reads(&reads);
+        }
+
+        // Check the number of kmers
+        assert_eq!(kmer_counts.len(), read_string.len() - k + 1);
+
+        // Check the total count of kmers
+        assert_eq!(kmer_counts.get_n_kmers(), ((read_string.len() - k + 1) * replicates) as u64);
+
+
+        let params = PCRParams {
+            forward_seq: "AACCTGGTTGATCCTGCCAGT".to_string(),
+            reverse_seq: "TGATCCTTCTGCAGGTTCACCTAC".to_string(),
+            max_length: 2500,
+            gene_name: "18s".to_string(),
+            coverage: 3,
+            mismatches: 2,
+            trim: 15,
+        };
+
+        let verbosity = 0;
+        let (forward_primer_kmers, reverse_primer_kmers) = get_primer_kmers(&params, &kmer_counts, &verbosity);
+
+        assert_eq!(forward_primer_kmers.len(), 1);
+        assert_eq!(reverse_primer_kmers.len(), 1);
+
+
     }
 }

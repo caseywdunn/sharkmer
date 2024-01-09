@@ -405,6 +405,10 @@ impl KmerCounts {
         self.kmers.iter()
     }
 
+    pub fn len(&self) -> usize {
+        self.kmers.len()
+    }
+
     pub fn get_k(&self) -> usize {
         self.k
     }
