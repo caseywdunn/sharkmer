@@ -75,7 +75,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
           max_length: 1000,
           gene_name: "ITS".to_string(),
           coverage: 3,
-          mismatches: 2,
+          mismatches: 3,
           trim: 15,
       },	
   ]
