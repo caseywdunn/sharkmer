@@ -1162,7 +1162,7 @@ fn extend_graph(seed_graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCo
                                 let edge = get_dbedge(kmer, &kmer_counts);
                                 graph.add_edge(node, existing_node, edge);
                                 if graph[existing_node].is_end {
-                                    println!("End node incorporated into graph, complete PCR product found.");
+                                    println!("  End node incorporated into graph, complete PCR product found.");
                                 }
                                 let outgoing =
                                     graph.neighbors_directed(node, Direction::Outgoing).count();
@@ -1399,11 +1399,11 @@ pub fn do_pcr(
     // Make sure the last element is params.coverage, even if there are rounding errors
     coverage_thresholds[COVERAGE_STEPS as usize -1] = params.coverage;
 
-    for min_count in coverage_thresholds.iter() {
-        println!("  Extending graph with minimum kmer count {}", min_count);
-        let mut graph = extend_graph(&seed_graph, &kmer_counts, &min_count, &params, &verbosity);
+    println!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
-        
+    for min_count in coverage_thresholds.iter() {
+        println!("Extending graph with minimum kmer count {}", min_count);
+        let mut graph = extend_graph(&seed_graph, &kmer_counts, &min_count, &params, &verbosity);
 
         if verbosity > 0 {
             // Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
@@ -1448,7 +1448,7 @@ pub fn do_pcr(
             }
         }
 
-        println!("Final extension statistics:");
+        println!("  Final extension statistics:");
         summarize_extension(&graph, "    ");
         println!(
             "  There are {} start nodes with edges",
@@ -1467,53 +1467,42 @@ pub fn do_pcr(
                 .expect("Unable to write data");
         }
 
-        println!("done.  Time to extend graph: {:?}", start.elapsed());
+        println!("  Done. Time to extend graph: {:?}", start.elapsed());
 
         // Simplify the graph
         // all_simple_paths() hangs if the input graph is too complex
         // Also want to regularize some graph features
 
         let start = std::time::Instant::now();
-        println!("Pruning the assembly graph...");
+        println!("  Pruning the assembly graph...");
 
         remove_side_branches(&mut graph);
         remove_orphan_nodes(&mut graph);
         
 
-        println!("  There are {} nodes in the graph", graph.node_count());
-        println!("  There are {} edges in the graph", graph.edge_count());
+        println!("    There are {} nodes in the graph", graph.node_count());
+        println!("    There are {} edges in the graph", graph.edge_count());
 
-        println!("  There are {} start nodes", get_start_nodes(&graph).len());
-        println!("  There are {} end nodes", get_end_nodes(&graph).len());
+        println!("    There are {} start nodes", get_start_nodes(&graph).len());
+        println!("    There are {} end nodes", get_end_nodes(&graph).len());
 
-        println!("done.  Time to prune graph: {:?}", start.elapsed());
+        println!("  done. Time to prune graph: {:?}", start.elapsed());
 
         // Get all paths from start nodes to terminal nodes
         let start = std::time::Instant::now();
-        println!("Traversing the assembly graph to find paths from forward to reverse primers...");
+        println!("  Traversing the assembly graph to find paths from forward to reverse primers...");
 
         let all_paths = get_assembly_paths(&graph, &kmer_counts, &params);
 
         println!(
-            "  There are {} paths from forward to reverse primers in the graph",
+            "    There are {} paths from forward to reverse primers in the graph",
             all_paths.len()
         );
-        println!("done.  Time to traverse graph: {:?}", start.elapsed());
+        println!("  Done. Time to traverse graph: {:?}", start.elapsed());
 
         if all_paths.is_empty() {
-            println!("{}", format!("For gene {}, no path was found from a forward primer binding site to a reverse binding \nsite. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
-            println!("{}", format!("  Suggested actions:").color(COLOR_FAIL));
-            println!("{}", format!("    - The max_length for the PCR product of {} my be too short. Consider increasing it.", params.max_length).color(COLOR_FAIL));
-            println!("{}", format!("    - The primers may have non-specific binding and are not close enough to generate a \n      product. Consider increasing the primer TRIM length from the default to \n      create a more specific primer.").color(COLOR_FAIL));
-            println!("{}", format!("      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large \n        differences in value can indicate non-specific binding of one of the primers.", max_forward_count, max_reverse_count).color(COLOR_FAIL));
-
-            let count_threshold = 5;
-            if (max_forward_count < count_threshold) | (max_reverse_count < count_threshold) {
-                println!("{}", format!("    - The maximum count of a forward kmer is {} and of a reverse kmer is {}. A \n      low value, in this case less than {}, for either can indicate that read \n      coverage for this gene is too low to traverse from a forward to reverse \n      primer. Consider increasing coverage.", max_forward_count, max_reverse_count, count_threshold).color(COLOR_FAIL));
-            }
-
-            let records: Vec<fasta::Record> = Vec::new();
-            return records;
+            println!("  Extending graph with minimum kmer count {} failed to generate a PCR product.", min_count);
+            continue;
         }
 
         println!("Generating sequences from paths...");
@@ -1569,14 +1558,31 @@ pub fn do_pcr(
             assembly_records.push(assembly_record);
         }
         if assembly_records.is_empty() {
-            print!("Did not obtain PCR product.");
+            print!("  Did not obtain PCR product.");
         } else {
-            print!("Obtained PCR product.");
+            print!("  Obtained PCR product.");
             break;
         }
     }
 
     println!("done.");
+
+    if assembly_records.is_empty() {
+        println!("{}", format!("For gene {}, no path was found from a forward primer binding site to a reverse binding \nsite. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
+        println!("{}", format!("  Suggested actions:").color(COLOR_FAIL));
+        println!("{}", format!("    - The max_length for the PCR product of {} my be too short. Consider increasing it.", params.max_length).color(COLOR_FAIL));
+        println!("{}", format!("    - The primers may have non-specific binding and are not close enough to generate a \n      product. Consider increasing the primer TRIM length from the default to \n      create a more specific primer.").color(COLOR_FAIL));
+        println!("{}", format!("      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large \n        differences in value can indicate non-specific binding of one of the primers.", max_forward_count, max_reverse_count).color(COLOR_FAIL));
+
+        let count_threshold = 5;
+        if (max_forward_count < count_threshold) | (max_reverse_count < count_threshold) {
+            println!("{}", format!("    - The maximum count of a forward kmer is {} and of a reverse kmer is {}. A \n      low value, in this case less than {}, for either can indicate that read \n      coverage for this gene is too low to traverse from a forward to reverse \n      primer. Consider increasing coverage.", max_forward_count, max_reverse_count, count_threshold).color(COLOR_FAIL));
+        }
+
+        let records: Vec<fasta::Record> = Vec::new();
+        return records;
+    }
+
 
     // Order the records by descending kmer_min_count
     assembly_records.sort_by(|a, b| b.kmer_min_count.cmp(&a.kmer_min_count));
