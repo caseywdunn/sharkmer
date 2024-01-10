@@ -441,8 +441,9 @@ fn find_oligos_in_kmers(oligos: &[Oligo], kmers: &KmerCounts, dir: &PrimerDirect
     kmers_match
 }
 
+// A mask that can be used to isolate the last k-1 nucleotides of a kmer
 fn get_suffix_mask(k: &usize) -> u64 {
-    let suffix_mask: u64 = (1 << (2 * *k - 1)) - 1;
+    let suffix_mask: u64 = (1 << (2 * (*k - 1))) - 1;
     suffix_mask
 }
 
@@ -1075,8 +1076,7 @@ fn extend_graph(seed_graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCo
                         if kmer_counts.get_count(&kmer) >= *min_count {
                             candidate_kmers.insert(kmer);
                         }
-                    }
-                    
+                    } 
                 }
 
                 if *verbosity > 1 {
@@ -1623,6 +1623,8 @@ pub fn do_pcr(
 
 #[cfg(test)]
 mod tests {
+    use crate::kmer::seq_to_kmer;
+
     use super::*;
 
     // These functions are used in the tests
@@ -2022,6 +2024,17 @@ mod tests {
         assert!(start_nodes.contains(&nodes["a"]));
     }
 
+    #[test]
+    fn test_get_suffix_mask(){
+        
+        // If k is 21, then suffix should be 20 nucleotides long, and there are two bits per nucleotide 
+        let k: usize = 21;
+        assert_eq!(get_suffix_mask(&k), 0b11111111_11111111_11111111_11111111_11111111);
+
+        let k: usize = 3;
+        assert_eq!(get_suffix_mask(&k), 0b1111);
+    }
+
     fn build_test_case() -> (String, usize, usize, KmerCounts, PCRParams) {
         // This is the 18s that was assembled from https://trace.ncbi.nlm.nih.gov/Traces/?run=SRR26955578, per the readme tutorial
         // Padded with C's at the ends
@@ -2092,11 +2105,24 @@ mod tests {
     }
 
     #[test]
+    fn test_extension_steps() {
+        let (read_string, k, replicates, kmer_counts, params) = build_test_case();
+        let min_count = 5;
+        let verbosity = 3;
+
+        let seq = "TGATCCTGCCAGTATCATATG".to_string();
+        let kmer:u64 = seq_to_kmer(&seq);
+        assert!(kmer_counts.contains(&kmer));
+        
+
+    }
+
+    #[test]
     fn test_integration() {
 
         let (read_string, k, replicates, kmer_counts, params) = build_test_case();
         let min_count = 5;
-        let verbosity = 0;
+        let verbosity = 3;
 
         // Check the number of kmers
         // Times 2 on right since reverse complements are added
@@ -2118,13 +2144,18 @@ mod tests {
         assert_eq!(get_end_nodes(&seed_graph).len(), 1);
 
         let mut graph = extend_graph(&seed_graph, &kmer_counts, &min_count, &params, &verbosity);
+        // Print the number of nodes and edges in the graph
+        println!("There are {} nodes in the graph", graph.node_count());
+        println!("There are {} edges in the graph", graph.edge_count());
+
+
+        let all_paths = get_assembly_paths(&graph, &kmer_counts, &params);
+        assert_eq!(all_paths.len(), 1);
 
         remove_side_branches(&mut graph);
         remove_orphan_nodes(&mut graph);
 
         let all_paths = get_assembly_paths(&graph, &kmer_counts, &params);
-
-        // Check the number of paths
         assert_eq!(all_paths.len(), 1);
 
 
