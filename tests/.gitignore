@@ -4,3 +4,4 @@ data/
 benchmarks/
 logs/
 .snakemake/
+*.dot
