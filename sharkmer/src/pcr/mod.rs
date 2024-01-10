@@ -118,6 +118,48 @@ pub fn remove_side_branches(graph: &mut StableDiGraph<DBNode, DBEdge>) {
     }
 }
 
+// remove end nodes that have no incoming edges
+// TODO: Should maybe remove all orphan nodes?
+pub fn remove_orphan_nodes(graph: &mut StableDiGraph<DBNode, DBEdge>) {
+    let mut nodes_to_remove: Vec<NodeIndex> = graph
+        .node_indices()
+        .filter(|&node| {
+            if graph[node].is_end {
+                graph.neighbors_directed(node, Direction::Incoming).count() == 0
+            } else {
+                false
+            }
+        })
+        .collect();
+
+    nodes_to_remove.sort_by(|a, b| b.cmp(a));
+
+    for node in nodes_to_remove {
+        graph.remove_node(node);
+    }
+}
+
+pub fn get_assembly_paths(  graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCounts, params: &PCRParams ) -> Vec<Vec<NodeIndex>> {
+    let mut all_paths = Vec::new();
+
+    for start in get_start_nodes(&graph) {
+        for end in get_end_nodes(&graph) {
+            let paths_for_this_pair =
+                all_simple_paths::<Vec<NodeIndex>, &StableDiGraph<DBNode, DBEdge>>(
+                    &graph,
+                    start,
+                    end,
+                    1,
+                    Some(params.max_length - (kmer_counts.get_k()) + 1),
+                );
+
+            all_paths.extend(paths_for_this_pair);
+        }
+    }
+
+    all_paths
+}
+
 // Get a vector of edge counts by traversing the graph backwards from the focal node
 #[allow(dead_code)]
 fn get_backward_edge_counts(
@@ -869,6 +911,85 @@ fn get_primer_kmers(params: &PCRParams, kmer_counts: &KmerCounts, verbosity: &us
     (forward_primer_kmers, reverse_primer_kmers)
 }
 
+fn create_seed_graph(forward_primer_kmers: &KmerCounts, reverse_primer_kmers: &KmerCounts, kmer_counts: &KmerCounts) -> StableDiGraph<DBNode, DBEdge> {
+    let mut seed_graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+
+    // Create a suffix mask with 1 in the (2 * (k - 1)) least significant bits
+    let suffix_mask: u64 = get_suffix_mask( &kmer_counts.get_k() );
+
+    // Add the forward primer matches to the graph
+    for kmer in forward_primer_kmers.kmers() {
+        let prefix = kmer >> 2;
+
+        // If the node with sub_kmer == suffix already exists, update the node so that is_start = true
+        // Otherwise, create a new node
+
+        let mut node_exists = false;
+        for node in seed_graph.node_indices() {
+            if seed_graph[node].sub_kmer == prefix {
+                seed_graph[node].is_start = true;
+                node_exists = true;
+                break;
+            }
+        }
+
+        if !node_exists {
+            seed_graph.add_node(DBNode {
+                sub_kmer: prefix,
+                is_start: true,
+                is_end: false,
+                is_terminal: false,
+                visited: false, // Will not be extended
+            });
+        }
+    }
+
+    // Add the reverse primer matches to the graph
+    for kmer in reverse_primer_kmers.kmers() {
+        let suffix = kmer & suffix_mask;
+
+        // If the node with sub_kmer == suffix already exists, update the node so that is_end = true
+        // Otherwise, create a new node
+
+        let mut node_exists = false;
+        for node in seed_graph.node_indices() {
+            if seed_graph[node].sub_kmer == suffix {
+                seed_graph[node].is_end = true;
+                seed_graph[node].is_terminal = true;
+                node_exists = true;
+                break;
+            }
+        }
+
+        if !node_exists {
+            seed_graph.add_node(DBNode {
+                sub_kmer: suffix,
+                is_start: false,
+                is_end: true,
+                is_terminal: true,
+                visited: true,
+            });
+        }
+    }
+
+    // Loop over the nodes and see if any of the nodes are start and end nodes
+    // If so, print a warning
+    for node in seed_graph.node_indices() {
+        if seed_graph[node].is_start && seed_graph[node].is_end {
+            println!(
+                "{}",
+                format!(
+                    "WARNING: node {} is both a start and end node",
+                    node.index()
+                )
+                .color(COLOR_WARNING)
+            );
+        }
+    }
+
+    seed_graph
+}
+
 
 // Extend graph by adding edges and new nodes to non-terminal nodes.
 // Terminal nodes have any of the following properties:
@@ -1226,80 +1347,7 @@ pub fn do_pcr(
 
     // Construct the graph
     println!("Creating graph, seeding with nodes that contain primer matches...");
-    let mut seed_graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
-
-    // Create a suffix mask with 1 in the (2 * (k - 1)) least significant bits
-    let suffix_mask: u64 = get_suffix_mask( &kmer_counts.get_k() );
-
-    // Add the forward primer matches to the graph
-    for kmer in forward_primer_kmers.kmers() {
-        let prefix = kmer >> 2;
-
-        // If the node with sub_kmer == suffix already exists, update the node so that is_start = true
-        // Otherwise, create a new node
-
-        let mut node_exists = false;
-        for node in seed_graph.node_indices() {
-            if seed_graph[node].sub_kmer == prefix {
-                seed_graph[node].is_start = true;
-                node_exists = true;
-                break;
-            }
-        }
-
-        if !node_exists {
-            seed_graph.add_node(DBNode {
-                sub_kmer: prefix,
-                is_start: true,
-                is_end: false,
-                is_terminal: false,
-                visited: false, // Will not be extended
-            });
-        }
-    }
-
-    // Add the reverse primer matches to the graph
-    for kmer in reverse_primer_kmers.kmers() {
-        let suffix = kmer & suffix_mask;
-
-        // If the node with sub_kmer == suffix already exists, update the node so that is_end = true
-        // Otherwise, create a new node
-
-        let mut node_exists = false;
-        for node in seed_graph.node_indices() {
-            if seed_graph[node].sub_kmer == suffix {
-                seed_graph[node].is_end = true;
-                seed_graph[node].is_terminal = true;
-                node_exists = true;
-                break;
-            }
-        }
-
-        if !node_exists {
-            seed_graph.add_node(DBNode {
-                sub_kmer: suffix,
-                is_start: false,
-                is_end: true,
-                is_terminal: true,
-                visited: true,
-            });
-        }
-    }
-
-    // Loop over the nodes and see if any of the nodes are start and end nodes
-    // If so, print a warning
-    for node in seed_graph.node_indices() {
-        if seed_graph[node].is_start && seed_graph[node].is_end {
-            println!(
-                "{}",
-                format!(
-                    "WARNING: node {} is both a start and end node",
-                    node.index()
-                )
-                .color(COLOR_WARNING)
-            );
-        }
-    }
+    let seed_graph = create_seed_graph(&forward_primer_kmers, &reverse_primer_kmers, &kmer_counts);
 
     println!("There are {} start nodes", get_start_nodes(&seed_graph).len());
     println!("There are {} end nodes", get_end_nodes(&seed_graph).len());
@@ -1353,26 +1401,28 @@ pub fn do_pcr(
         println!("  Extending graph with minimum kmer count {}", min_count);
         let mut graph = extend_graph(&seed_graph, &kmer_counts, &min_count, &params, &verbosity);
 
-        // Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
-        let mut start_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
-        let mut end_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
-
-        for node in graph.node_indices() {
-            if graph[node].is_start {
-                start_nodes_map.insert(
-                    node,
-                    graph.neighbors_directed(node, Direction::Outgoing).count(),
-                );
-            }
-            if graph[node].is_end {
-                end_nodes_map.insert(
-                    node,
-                    graph.neighbors_directed(node, Direction::Incoming).count(),
-                );
-            }
-        }
+        
 
         if verbosity > 0 {
+            // Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
+            let mut start_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
+            let mut end_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
+
+            for node in graph.node_indices() {
+                if graph[node].is_start {
+                    start_nodes_map.insert(
+                        node,
+                        graph.neighbors_directed(node, Direction::Outgoing).count(),
+                    );
+                }
+                if graph[node].is_end {
+                    end_nodes_map.insert(
+                        node,
+                        graph.neighbors_directed(node, Direction::Incoming).count(),
+                    );
+                }
+            }
+
             // Print the number of edges for each start node
             for (node, edge_count) in &start_nodes_map {
                 // Print the node subkmer and number of edges
@@ -1396,19 +1446,13 @@ pub fn do_pcr(
             }
         }
 
-        // Drop entries that have no edges
-        start_nodes_map.retain(|_node, edge_count| *edge_count > 0);
-        end_nodes_map.retain(|_node, edge_count| *edge_count > 0);
-
         println!("Final extension statistics:");
         summarize_extension(&graph, "    ");
         println!(
             "  There are {} start nodes with edges",
-            start_nodes_map.len()
+            get_start_nodes(&graph).len()
         );
-        println!("  There are {} end nodes with edges", end_nodes_map.len());
-
-        println!("done.  Time to extend graph: {:?}", start.elapsed());
+        println!("  There are {} end nodes with edges", get_end_nodes(&graph).len());
 
         if verbosity > 5 {
             let dot_format = format!("{:?}", Dot::with_config(&graph, &[Config::EdgeNoLabel]));
@@ -1421,6 +1465,8 @@ pub fn do_pcr(
                 .expect("Unable to write data");
         }
 
+        println!("done.  Time to extend graph: {:?}", start.elapsed());
+
         // Simplify the graph
         // all_simple_paths() hangs if the input graph is too complex
         // Also want to regularize some graph features
@@ -1429,24 +1475,8 @@ pub fn do_pcr(
         println!("Pruning the assembly graph...");
 
         remove_side_branches(&mut graph);
-
-        // Remove end nodes without edges
-        let mut nodes_to_remove: Vec<NodeIndex> = graph
-            .node_indices()
-            .filter(|&node| {
-                if graph[node].is_end {
-                    graph.neighbors_directed(node, Direction::Incoming).count() == 0
-                } else {
-                    false
-                }
-            })
-            .collect();
-
-        nodes_to_remove.sort_by(|a, b| b.cmp(a));
-
-        for node in nodes_to_remove {
-            graph.remove_node(node);
-        }
+        remove_orphan_nodes(&mut graph);
+        
 
         println!("  There are {} nodes in the graph", graph.node_count());
         println!("  There are {} edges in the graph", graph.edge_count());
@@ -1459,22 +1489,8 @@ pub fn do_pcr(
         // Get all paths from start nodes to terminal nodes
         let start = std::time::Instant::now();
         println!("Traversing the assembly graph to find paths from forward to reverse primers...");
-        let mut all_paths = Vec::new();
 
-        for start in get_start_nodes(&graph) {
-            for end in get_end_nodes(&graph) {
-                let paths_for_this_pair =
-                    all_simple_paths::<Vec<NodeIndex>, &StableDiGraph<DBNode, DBEdge>>(
-                        &graph,
-                        start,
-                        end,
-                        1,
-                        Some(params.max_length - (kmer_counts.get_k()) + 1),
-                    );
-
-                all_paths.extend(paths_for_this_pair);
-            }
-        }
+        let all_paths = get_assembly_paths(&graph, &kmer_counts, &params);
 
         println!(
             "  There are {} paths from forward to reverse primers in the graph",
@@ -2079,6 +2095,8 @@ mod tests {
     fn test_integration() {
 
         let (read_string, k, replicates, kmer_counts, params) = build_test_case();
+        let min_count = 5;
+        let verbosity = 0;
 
         // Check the number of kmers
         // Times 2 on right since reverse complements are added
@@ -2087,11 +2105,31 @@ mod tests {
         // Check the total count of kmers
         assert_eq!(kmer_counts.get_n_kmers(), ((read_string.len() - k + 1) * replicates * 2) as u64);
 
-        let verbosity = 0;
         let (forward_primer_kmers, reverse_primer_kmers) = get_primer_kmers(&params, &kmer_counts, &verbosity);
 
         assert_eq!(forward_primer_kmers.len(), 1);
         assert_eq!(reverse_primer_kmers.len(), 1);
+
+        let seed_graph = create_seed_graph(&forward_primer_kmers, &reverse_primer_kmers, &kmer_counts);
+
+        // Check the number of nodes in the seed graph
+        assert_eq!(seed_graph.node_count(), 2);
+        assert_eq!(get_start_nodes(&seed_graph).len(), 1);
+        assert_eq!(get_end_nodes(&seed_graph).len(), 1);
+
+        let mut graph = extend_graph(&seed_graph, &kmer_counts, &min_count, &params, &verbosity);
+
+        remove_side_branches(&mut graph);
+        remove_orphan_nodes(&mut graph);
+
+        let all_paths = get_assembly_paths(&graph, &kmer_counts, &params);
+
+        // Check the number of paths
+        assert_eq!(all_paths.len(), 1);
+
+
+
+
 
 
     }
