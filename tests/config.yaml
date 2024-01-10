@@ -11,9 +11,13 @@ sample:
     reads:
       - ERR6745737
     arguments: "--pcr cnidaria"
-  Tamoya_ohboya:
+#  Tamoya_ohboya:
+#    reads:
+#      - SRR13036460
+#    arguments: "--pcr cnidaria"
+  Morbakka_sp:
     reads:
-      - SRR13036460
+      - SRR25627438
     arguments: "--pcr cnidaria"
   Catostylus_townsendi:
     reads:
