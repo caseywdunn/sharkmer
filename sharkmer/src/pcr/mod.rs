@@ -1470,7 +1470,7 @@ pub fn do_pcr(
             let dot_format = format!("{:?}", Dot::with_config(&graph, &[Config::EdgeNoLabel]));
 
             // Write the DOT format to a file
-            let file_name = format!("{}_{}.dot", sample_name, params.gene_name); // Concatenating the file extension
+            let file_name = format!("{}_{}_.dot", sample_name, params.gene_name, min_count); // Concatenating the file extension
             println!("Writing dot file {}", file_name);
             let mut file = File::create(&file_name).expect("Unable to create file");
             file.write_all(dot_format.as_bytes())
