@@ -860,7 +860,7 @@ fn filter_primer_kmers(matches: KmerCounts) -> KmerCounts {
             keep = true;
         }
         println!(
-            "  {}, count {}, keep {}",
+            "    {}, count {}, keep {}",
             crate::kmer::kmer_to_seq(kmer, &matches.get_k()),
             count,
             keep,
@@ -901,10 +901,12 @@ fn get_primer_kmers(params: &PCRParams, kmer_counts: &KmerCounts, verbosity: &us
     );
 
     // Get the kmers that contain the primers
+    println!("  Searching kmers that contain the forward primer variants");
     let mut forward_primer_kmers =
         get_kmers_from_primers(&forward_variants, &kmer_counts, PrimerDirection::Forward, &params.coverage);
     forward_primer_kmers = filter_primer_kmers(forward_primer_kmers);
 
+    println!("  Searching kmers that contain the reverse primer variants");
     let mut reverse_primer_kmers =
         get_kmers_from_primers(&reverse_variants, &kmer_counts, PrimerDirection::Reverse, &params.coverage);
     reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers);
