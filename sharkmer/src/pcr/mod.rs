@@ -691,6 +691,11 @@ pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
         degrees.push(graph.neighbors(node).count());
     }
 
+    if degrees.is_empty() {
+        println!("{}There are no nodes in the graph, terminating summary.", pad);
+        return;
+    }
+
     let max_degree = degrees.iter().max().unwrap();
     let degrees_u64: Vec<u64> = degrees.iter().map(|&x| x as u64).collect();
     let mean_degree = compute_mean(&degrees_u64);
@@ -705,6 +710,11 @@ pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     let mut counts: Vec<u64> = Vec::new();
     for edge in graph.edge_indices() {
         counts.push(graph[edge].count);
+    }
+
+    if counts.is_empty() {
+        println!("{}There are no edges in the graph, terminating summary.", pad);
+        return;
     }
 
     let max_count = counts.iter().max().unwrap();
