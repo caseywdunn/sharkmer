@@ -28,10 +28,10 @@ fn get_preconfigured_panels() -> Vec<PCRPanel> {
 
 fn get_cnidaria() -> Vec<PCRParams> {
   vec![
-    // --pcr "GACTGTTTACCAAAAACATA,GACTGTTTACCAAAAACATA,1000,16s" \
+    // --pcr "GACTGTTTACCAAAAACATA,AATTCAACATCGAGG,1000,16s" \
     PCRParams {
           forward_seq: "GACTGTTTACCAAAAACATA".to_string(),
-          reverse_seq: "GACTGTTTACCAAAAACATA".to_string(),
+          reverse_seq: "AATTCAACATCGAGG".to_string(),
           max_length: 1000,
           gene_name: "16s".to_string(),
           coverage: 3,
