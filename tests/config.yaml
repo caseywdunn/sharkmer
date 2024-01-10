@@ -7,6 +7,10 @@ sample:
     reads:
       - SRR8119878
     arguments: "--pcr cnidaria"
+  Stylopathes_americana:
+    reads:
+      - SRR26955517
+    arguments: "--pcr cnidaria"
   Haliclystus_octoradiatus:
     reads:
       - ERR6745737
