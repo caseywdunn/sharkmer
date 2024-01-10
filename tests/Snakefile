@@ -29,10 +29,11 @@ rule sharkmer_pcr:
     params:
         sample = lambda wildcards: wildcards.sample,
         arguments = lambda wildcards: config["sample"][wildcards.sample]["arguments"],
+        max_reads = 2000000,
     threads: workflow.cores
     benchmark: "benchmarks/sharkmer.{sample}.benchmark.txt"
     log: "logs/sharkmer.{sample}.log"
     shell:
         """
-        sharkmer -k 21 -t {threads} --max-reads 1000000 -o output -s {params.sample} {params.arguments} {input.reads} > {log} 2>&1
+        sharkmer -k 21 -t {threads} --max-reads {params.max_reads} -o output -s {params.sample} {params.arguments} {input.reads} > {log} 2>&1
         """
