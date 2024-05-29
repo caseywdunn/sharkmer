@@ -35,10 +35,10 @@ sample:
     reads:
       - SRR12854958
     arguments: "--pcr teleostei"
-  Fundulus_heteroclitus:
-    reads:
-      - SRR24443964
-    arguments: "--pcr teleostei"
+#  Fundulus_heteroclitus:
+#    reads:
+#      - SRR24443964
+#    arguments: "--pcr teleostei"
   Oncorhynchus_mykiss:
     reads:
       - SRR20078170
