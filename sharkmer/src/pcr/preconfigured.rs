@@ -43,10 +43,10 @@ fn get_cnidaria() -> Vec<PCRParams> {
           mismatches: 2,
           trim: 15,
       },
-    // --pcr "TCATAAAGATATTGG,ATGCCCGAAAAACCA,2000,co1" \
+    // --pcr "TCATAARGATATHGG,RTGNCCAAAAAACCA,2000,co1" \
     PCRParams {
-          forward_seq: "TCATAAAGATATTGG".to_string(),
-          reverse_seq: "ATGCCCGAAAAACCA".to_string(),
+          forward_seq: "TCATAARGATATHGG".to_string(),
+          reverse_seq: "RTGNCCAAAAAACCA".to_string(),
           max_length: 2000,
           gene_name: "co1".to_string(),
           coverage: 3,
