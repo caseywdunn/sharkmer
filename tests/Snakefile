@@ -45,7 +45,7 @@ rule fastqc:
         R1 = "data/{sample}.fastq",
     output:
         html_R1 = "output/fastqc/{sample}_fastqc.html",
-        zip_R1 = "output/fastqc/{sample}_fastqc.zip",
+        zip_R1 = temp("output/fastqc/{sample}_fastqc.zip"),
     params:
         outdir = "output/fastqc"
     log: "logs/fastqc/fastqc_{sample}.log"

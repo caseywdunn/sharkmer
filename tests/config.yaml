@@ -1,33 +1,46 @@
 sample:
   Stenogorgia_casta:
+    taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Pterogorgiidae; Stenogorgia"
     reads:
       - SRR26955578
     arguments: "--pcr cnidaria"
   Acropora_millepora:
+    taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Astrocoeniina; Acroporidae; Acropora"
     reads:
       - SRR8119878
     arguments: "--pcr cnidaria"
+  Acropora_tenuis:
+    taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Astrocoeniina; Acroporidae; Acropora"
+    reads:
+      - SRR18094419
+    arguments: "--pcr cnidaria"
   Haliclystus_octoradiatus:
+    taxonomy: "Eumetazoa; Cnidaria; Staurozoa; Stauromedusae; Myostaurida; Haliclystidae; Haliclystus"
     reads:
       - ERR6745737
     arguments: "--pcr cnidaria"
   Morbakka_sp:
+    taxonomy: "Eumetazoa; Cnidaria; Cubozoa; Carybdeida; Carukiidae; Morbakka"
     reads:
       - SRR25627438
     arguments: "--pcr cnidaria"
   Catostylus_townsendi:
+    taxonomy: "Cnidaria; Scyphozoa; Rhizostomeae; Catostylidae; Catostylus"
     reads:
       - SRR16643387
     arguments: "--pcr cnidaria"
   Agalma_elegans:
+    taxonomy: "Eumetazoa; Cnidaria; Hydrozoa; Hydroidolina; Siphonophorae; Physonectae; Agalmatidae; Agalma"
     reads:
       - SRR25099394
     arguments: "--pcr cnidaria"
   Anguilla_anguilla:
+    taxonomy: """
     reads:
       - SRR12854958
     arguments: "--pcr teleostei"
   Oncorhynchus_mykiss:
+    taxonomy: """
     reads:
       - SRR20078170
     arguments: "--pcr teleostei"
@@ -40,6 +53,7 @@ sample:
 #    reads:
 #      - SRR13036460
 #    arguments: "--pcr cnidaria"
+# Ends of all sequences are ploy G
 #  Stylopathes_americana:
 #    reads:
 #      - SRR26955517
