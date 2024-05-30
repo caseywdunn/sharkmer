@@ -35,12 +35,12 @@ sample:
       - SRR25099394
     arguments: "--pcr cnidaria"
   Anguilla_anguilla:
-    taxonomy: """
+    taxonomy: ""
     reads:
       - SRR12854958
     arguments: "--pcr teleostei"
   Oncorhynchus_mykiss:
-    taxonomy: """
+    taxonomy: ""
     reads:
       - SRR20078170
     arguments: "--pcr teleostei"
