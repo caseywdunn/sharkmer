@@ -7,18 +7,10 @@ sample:
     reads:
       - SRR8119878
     arguments: "--pcr cnidaria"
-  Stylopathes_americana:
-    reads:
-      - SRR26955517
-    arguments: "--pcr cnidaria"
   Haliclystus_octoradiatus:
     reads:
       - ERR6745737
     arguments: "--pcr cnidaria"
-#  Tamoya_ohboya:
-#    reads:
-#      - SRR13036460
-#    arguments: "--pcr cnidaria"
   Morbakka_sp:
     reads:
       - SRR25627438
@@ -35,11 +27,20 @@ sample:
     reads:
       - SRR12854958
     arguments: "--pcr teleostei"
-#  Fundulus_heteroclitus:
-#    reads:
-#      - SRR24443964
-#    arguments: "--pcr teleostei"
   Oncorhynchus_mykiss:
     reads:
       - SRR20078170
     arguments: "--pcr teleostei"
+# Problematic
+#  Fundulus_heteroclitus:
+#    reads:
+#      - SRR24443964
+#    arguments: "--pcr teleostei"
+#  Tamoya_ohboya:
+#    reads:
+#      - SRR13036460
+#    arguments: "--pcr cnidaria"
+#  Stylopathes_americana:
+#    reads:
+#      - SRR26955517
+#    arguments: "--pcr cnidaria"
