@@ -35,7 +35,7 @@ const COVERAGE_STEPS: u64 = 4;
 
 /// The maximum number of kmers containing the forward or reverse primers to maintain,
 /// with only those with the highest count being retained
-const MAX_NUM_PRIMER_KMERS: usize = 10;
+const MAX_NUM_PRIMER_KMERS: usize = 100;
 
 /// How frequently to check extension graph for ballooning growth
 const EXTENSION_EVALUATION_FREQUENCY: usize = 1_000;
