@@ -83,7 +83,8 @@ fn get_cnidaria() -> Vec<PCRParams> {
       },	
       // --pcr "TACACACCGCCCGTCGCTACTA,ACTCGCCGTTACTRRGG,1000,ITSfull" \
     PCRParams {
-          forward_seq: "TACACACCGCCCGTCGCTACTA".to_string(),
+          // forward_seq: "TACACACCGCCCGTCGCTACTA".to_string(), // CAS18sF1
+          forward_seq: "GTAGGTGAACCTGCAGAAGGATCA".to_string(), // Reverse complement of 18s reverse primer
           reverse_seq: "ACTCGCCGTTACTRRGG".to_string(),
           max_length: 1000,
           gene_name: "ITS".to_string(),
