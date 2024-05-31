@@ -232,6 +232,8 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
         coverage,
         mismatches,
         trim,
+        citation: "".to_string(),
+        notes: "".to_string(),
     }])
 }
 

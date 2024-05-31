@@ -42,6 +42,8 @@ fn get_cnidaria() -> Vec<PCRParams> {
           coverage: 3,
           mismatches: 2,
           trim: 15,
+          citation: "Modified from Cunningham and Buss 1993 https://doi.org/10.1016/0305-1978(93)90009-G ".to_string(),
+          notes: "Amplifies portions of domains IV and V".to_string(),
       },
     // --pcr "TCATAARGATATHGG,RTGNCCAAAAAACCA,2000,co1" \
     PCRParams {
@@ -52,6 +54,8 @@ fn get_cnidaria() -> Vec<PCRParams> {
           coverage: 3,
           mismatches: 2,
           trim: 15,
+          citation: "Modified from Folmer et al. 1994".to_string(),
+          notes: "".to_string(),
       },	
       // --pcr "AACCTGGTTGATCCTGCCAGT,TGATCCTTCTGCAGGTTCACCTAC,2500,18s" \
     PCRParams {
@@ -62,6 +66,8 @@ fn get_cnidaria() -> Vec<PCRParams> {
           coverage: 3,
           mismatches: 2,
           trim: 15,
+          citation: "Medlin et al. 1988 https://doi.org/10.1016/0378-1119(88)90066-2".to_string(),
+          notes: "".to_string(),
       },	
       // --pcr "CCYYAGTAACGGCGAGT,SWACAGATGGTAGCTTCG,4000,28s"  \
     PCRParams {
@@ -72,6 +78,8 @@ fn get_cnidaria() -> Vec<PCRParams> {
           coverage: 3,
           mismatches: 2,
           trim: 15,
+          citation: "Evans et al. 2008. https://doi.org/10.1186/1471-2148-8-139".to_string(),
+          notes: "Forward primer is F97, reverse is R3238".to_string(),
       },	
       // --pcr "TACACACCGCCCGTCGCTACTA,ACTCGCCGTTACTRRGG,1000,ITSfull" \
     PCRParams {
@@ -82,6 +90,8 @@ fn get_cnidaria() -> Vec<PCRParams> {
           coverage: 3,
           mismatches: 2,
           trim: 15,
+          citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x".to_string(),
+          notes: "Forward primer is CAS18sF1, position 1843, from Ji et al 2003. The reverse primer is the reverse complement of the 28s forward primer.".to_string(),
       },	
   ]
 }
@@ -98,6 +108,8 @@ fn get_teleostei() -> Vec<PCRParams> {
           coverage: 3,
           mismatches: 2,
           trim: 15,
+          citation: "".to_string(),
+          notes: "".to_string(),
       },
     // https://doi.org/10.1371/journal.pone.0266720 evaluates 
     // multiple primer pairs below
@@ -112,6 +124,8 @@ fn get_teleostei() -> Vec<PCRParams> {
           coverage: 3,
           mismatches: 2,
           trim: 15,
+          citation: "".to_string(),
+          notes: "".to_string(),
       },
       // https://doi.org/10.1002/ece3.3123
       // expected product is 219bp
@@ -123,6 +137,8 @@ fn get_teleostei() -> Vec<PCRParams> {
           coverage: 3,
           mismatches: 2,
           trim: 15,
+          citation: "".to_string(),
+          notes: "".to_string(),
       },
     ]
   }

@@ -1302,6 +1302,8 @@ pub struct PCRParams {
     pub coverage: u64,
     pub mismatches: usize,
     pub trim: usize,
+    pub citation: String,
+    pub notes: String,
 }
 
 // The primary function for PCR
@@ -2104,6 +2106,8 @@ mod tests {
             coverage: 3,
             mismatches: 2,
             trim: 15,
+            citation: "".to_string(),
+            notes: "".to_string(),
         };
 
         (read_string, k, replicates, kmer_counts, params)
