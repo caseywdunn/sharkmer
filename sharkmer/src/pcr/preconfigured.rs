@@ -49,7 +49,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
     PCRParams {
           forward_seq: "TCATAARGATATHGG".to_string(),
           reverse_seq: "RTGNCCAAAAAACCA".to_string(),
-          max_length: 2000,
+          max_length: 1000,
           gene_name: "co1".to_string(),
           coverage: 3,
           mismatches: 2,
