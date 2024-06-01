@@ -33,7 +33,7 @@ fn get_preconfigured_panels() -> Vec<PCRPanel> {
 
 fn get_cnidaria() -> Vec<PCRParams> {
   vec![
-    // --pcr "GRCTGTTTACCAAAAACATA,AATTCAACATMGAGG,1000,16s" \
+
     PCRParams {
           forward_seq: "GRCTGTTTACCAAAAACATA".to_string(),
           reverse_seq: "AATTCAACATMGAGG".to_string(),
@@ -45,7 +45,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
           citation: "Modified from Cunningham and Buss 1993 https://doi.org/10.1016/0305-1978(93)90009-G ".to_string(),
           notes: "Amplifies portions of domains IV and V".to_string(),
       },
-    // --pcr "TCATAARGATATHGG,RTGNCCAAAAAACCA,2000,co1" \
+
     PCRParams {
           forward_seq: "TCATAARGATATHGG".to_string(),
           reverse_seq: "RTGNCCAAAAAACCA".to_string(),
@@ -57,7 +57,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
           citation: "Modified from Folmer et al. 1994".to_string(),
           notes: "".to_string(),
       },	
-      // --pcr "AACCTGGTTGATCCTGCCAGT,TGATCCTTCTGCAGGTTCACCTAC,2500,18s" \
+
     PCRParams {
           forward_seq: "AACCTGGTTGATCCTGCCAGT".to_string(),
           reverse_seq: "TGATCCTTCTGCAGGTTCACCTAC".to_string(),
@@ -69,7 +69,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
           citation: "Medlin et al. 1988 https://doi.org/10.1016/0378-1119(88)90066-2".to_string(),
           notes: "".to_string(),
       },	
-      // --pcr "CCYYAGTAACGGCGAGT,SWACAGATGGTAGCTTCG,4000,28s"  \
+
     PCRParams {
           forward_seq: "CCYYAGTAACGGCGAGT".to_string(),
           reverse_seq: "SWACAGATGGTAGCTTCG".to_string(),
@@ -81,10 +81,10 @@ fn get_cnidaria() -> Vec<PCRParams> {
           citation: "Evans et al. 2008. https://doi.org/10.1186/1471-2148-8-139".to_string(),
           notes: "Forward primer is F97, reverse is R3238".to_string(),
       },	
-      // --pcr "TACACACCGCCCGTCGCTACTA,ACTCGCCGTTACTRRGG,1000,ITSfull" \
+
     PCRParams {
-          // forward_seq: "TACACACCGCCCGTCGCTACTA".to_string(), // CAS18sF1
-          forward_seq: "GTAGGTGAACCTGCAGAAGGATCA".to_string(), // Reverse complement of 18s reverse primer
+          forward_seq: "TACACACCGCCCGTCGCTACTA".to_string(), // CAS18sF1
+          // forward_seq: "GTAGGTGAACCTGCAGAAGGATCA".to_string(), // Reverse complement of 18s reverse primer
           reverse_seq: "ACTCGCCGTTACTRRGG".to_string(),
           max_length: 1000,
           gene_name: "ITS".to_string(),
@@ -99,8 +99,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
 
 fn get_teleostei() -> Vec<PCRParams> {
   vec![
-    // https://doi.org/10.1098/rstb.2005.1716
-    // expected product is 655bp
+
     PCRParams {
           forward_seq: "TCAACCAACCACAAAGACATTGGCAC".to_string(),
           reverse_seq: "TAGACTTCTGGGTGGCCAAAGAATCA".to_string(),
@@ -109,14 +108,12 @@ fn get_teleostei() -> Vec<PCRParams> {
           coverage: 3,
           mismatches: 2,
           trim: 15,
-          citation: "".to_string(),
-          notes: "".to_string(),
+          citation: "https://doi.org/10.1098/rstb.2005.1716".to_string(),
+          notes: "expected product is 655bp".to_string(),
       },
+
     // https://doi.org/10.1371/journal.pone.0266720 evaluates 
     // multiple primer pairs below
-    
-    // https://doi.org/10.1093/nar/gkr732
-    // expected product is 106bp
     PCRParams {
           forward_seq: "ACTGGGATTAGATACCCC".to_string(),
           reverse_seq: "TAGAACAGGCTCCTCTAG".to_string(),
@@ -125,11 +122,10 @@ fn get_teleostei() -> Vec<PCRParams> {
           coverage: 3,
           mismatches: 2,
           trim: 15,
-          citation: "".to_string(),
-          notes: "".to_string(),
+          citation: "https://doi.org/10.1093/nar/gkr732".to_string(),
+          notes: "expected product is 106bp".to_string(),
       },
-      // https://doi.org/10.1002/ece3.3123
-      // expected product is 219bp
+
       PCRParams {
           forward_seq: "GACCCTATGGAGCTTTAGAC".to_string(),
           reverse_seq: "CGCTGTTATCCCTADRGTAACT".to_string(),
@@ -138,8 +134,8 @@ fn get_teleostei() -> Vec<PCRParams> {
           coverage: 3,
           mismatches: 2,
           trim: 15,
-          citation: "".to_string(),
-          notes: "".to_string(),
+          citation: "https://doi.org/10.1002/ece3.3123".to_string(),
+          notes: "expected product is 219bp".to_string(),
       },
     ]
   }

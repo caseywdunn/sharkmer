@@ -1373,9 +1373,6 @@ pub fn do_pcr(
         let mut forward_primer_kmer = KmerCounts::new(&kmer_counts.get_k());
         forward_primer_kmer.insert(kmer, count);
 
-        // Create a vector to hold the fasta records
-        let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
-
         // Construct the graph
         println!("Creating graph, seeding with nodes that contain primer matches...");
         let seed_graph = create_seed_graph(&forward_primer_kmer, &reverse_primer_kmers, &kmer_counts);

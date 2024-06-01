@@ -680,7 +680,7 @@ pub fn kmer_to_seq(kmer: &u64, k: &usize) -> String {
 
 pub fn seq_to_kmer(seq: &str) -> u64 {
     let mut kmer = 0;
-    for (i, c) in seq.chars().enumerate() {
+    for (_i, c) in seq.chars().enumerate() {
         let base = match c {
             'A' => 0,
             'C' => 1,
