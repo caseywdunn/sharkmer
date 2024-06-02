@@ -9,6 +9,7 @@ use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::visit::{Bfs, EdgeRef};
 use petgraph::Direction;
+use std::char::MAX;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
@@ -56,6 +57,9 @@ const BALLOONING_COUNT_THRESHOLD_MULTIPLIER: f64 = 10.0;
 
 /// Give up if the graph gets too large
 const MAX_NUM_NODES: usize = 50_000;
+
+/// The maximum number of fasta records to return
+const MAX_NUM_AMPLICONS: usize = 20;
 
 struct AssemblyRecord {
     fasta_record: fasta::Record,
@@ -1537,6 +1541,7 @@ pub fn do_pcr(
 
             // For each path, get the sequence of the path
             for (_i, path) in all_paths.into_iter().enumerate() {
+
                 let mut sequence = String::new();
                 let mut edge_counts: Vec<u64> = Vec::new();
                 let mut parent_node: NodeIndex = NodeIndex::new(0);
@@ -1577,7 +1582,7 @@ pub fn do_pcr(
                 );
 
                 amplicon_index += 1;
-                
+
                 println!(">{}", id);
                 println!("{}", sequence);
                 let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
@@ -1661,6 +1666,20 @@ pub fn do_pcr(
         );
     } else {
         println!("{}", format!("For gene {}, {} PCR products were generated and {} were retained (the others were minor variants of the first).", params.gene_name, num_records_all, records.len()).color(COLOR_SUCCESS));
+    }
+
+    if records.len() > MAX_NUM_AMPLICONS{
+        println!(
+            "{}",
+            format!(
+                "WARNING: There are {} PCR products. This exceeds the maximum of {}. Retaining only the first {} records.",
+                records.len(),
+                MAX_NUM_AMPLICONS,
+                MAX_NUM_AMPLICONS
+            )
+            .color(COLOR_WARNING)
+        );
+        records.truncate(MAX_NUM_AMPLICONS);
     }
 
     // Return the records
