@@ -1362,6 +1362,8 @@ pub fn do_pcr(
     // Create a vector to hold the fasta records
     let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
 
+    let mut amplicon_index: usize = 0;
+
     // Loop over the forward_primer_kmers
     for (kmer, count) in forward_primer_kmers.iter() {
         println!(
@@ -1534,7 +1536,7 @@ pub fn do_pcr(
             println!("Generating sequences from paths...");
 
             // For each path, get the sequence of the path
-            for (i, path) in all_paths.into_iter().enumerate() {
+            for (_i, path) in all_paths.into_iter().enumerate() {
                 let mut sequence = String::new();
                 let mut edge_counts: Vec<u64> = Vec::new();
                 let mut parent_node: NodeIndex = NodeIndex::new(0);
@@ -1566,13 +1568,16 @@ pub fn do_pcr(
                     "{} {} product {} length {} kmer count stats mean {:.2} median {} min {} max {}",
                     sample_name,
                     params.gene_name,
-                    i,
+                    amplicon_index,
                     sequence.len(),
                     count_mean,
                     count_median,
                     count_min,
                     count_max
                 );
+
+                amplicon_index += 1;
+                
                 println!(">{}", id);
                 println!("{}", sequence);
                 let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
