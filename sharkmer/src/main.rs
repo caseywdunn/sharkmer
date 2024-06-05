@@ -187,9 +187,12 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
 
     let gene_name = split[3].to_string();
 
+    let mut min_length = 0;
     let mut coverage = 3;
     let mut mismatches = 2;
     let mut trim = 15;
+    let mut citation = "".to_string();
+    let mut notes = "".to_string();
 
     // Loop over additional parameters, which are of the form key=value and are separated by underscores
     for item in split.iter().skip(4) {
@@ -203,6 +206,11 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
         let value = key_value[1];
 
         match key {
+            "min_length" => {
+                min_length = value
+                    .parse()
+                    .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
+            }
             "coverage" => {
                 coverage = value
                     .parse()
@@ -218,6 +226,12 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
                     .parse()
                     .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
             }
+            "citation" => {
+                citation = value.to_string();
+            }
+            "notes" => {
+                notes = value.to_string();
+            }
             _ => {
                 return Err(format!("Unexpected parameter: {}", key));
             }
@@ -227,13 +241,14 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
     Ok(vec![pcr::PCRParams {
         forward_seq,
         reverse_seq,
+        min_length,
         max_length,
         gene_name,
         coverage,
         mismatches,
         trim,
-        citation: "".to_string(),
-        notes: "".to_string(),
+        citation,
+        notes,
     }])
 }
 

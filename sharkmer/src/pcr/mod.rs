@@ -9,13 +9,11 @@ use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::visit::{Bfs, EdgeRef};
 use petgraph::Direction;
-use std::char::MAX;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
 use std::fs::File;
 use std::io::Write;
-use textwrap::{fill, indent};
 
 use crate::{COLOR_FAIL, kmer};
 use crate::COLOR_NOTE;
@@ -1301,6 +1299,7 @@ fn extend_graph(seed_graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCo
 pub struct PCRParams {
     pub forward_seq: String,
     pub reverse_seq: String,
+    pub min_length: usize,
     pub max_length: usize,
     pub gene_name: String,
     pub coverage: u64,
@@ -1563,6 +1562,11 @@ pub fn do_pcr(
                     }
                 }
 
+                if sequence.len() < params.min_length {
+                    println!("  Path is {}, which is shorter than min_length {}. Skipping.", sequence.len(), params.min_length);
+                    continue;
+                }
+
                 // Get some stats on the path counts
                 let count_mean = compute_mean(&edge_counts);
                 let count_median = compute_median(&edge_counts);
@@ -1606,7 +1610,7 @@ pub fn do_pcr(
 
         let count_threshold = 5;
         if (max_forward_count < count_threshold) | (max_reverse_count < count_threshold) {
-            println!("{}", format!(". Primer kmer counts are low, in this case less than {}, .onsider increasing coverage.", count_threshold));
+            println!("{}", format!(". Primer kmer counts are low, in this case less than {}. Consider increasing coverage.", count_threshold));
         }
 
         // Add the assembly records to the all records vector
@@ -2122,6 +2126,7 @@ mod tests {
             // CGCAGGTTCACCTACGGAAACCTTGTTACGACTTTTACT revcomp of above
 
             reverse_seq: "TGATCCTTCTGCAGGTTCACCTAC".to_string(),
+            min_length: 0,
             max_length: 2500,
             gene_name: "18s".to_string(),
             coverage: 3,

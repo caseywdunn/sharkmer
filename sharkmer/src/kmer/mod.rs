@@ -405,6 +405,7 @@ impl KmerCounts {
         self.kmers.iter()
     }
 
+    #[allow(dead_code)]
     pub fn len(&self) -> usize {
         self.kmers.len()
     }
@@ -678,6 +679,7 @@ pub fn kmer_to_seq(kmer: &u64, k: &usize) -> String {
     seq
 }
 
+#[allow(dead_code)]
 pub fn seq_to_kmer(seq: &str) -> u64 {
     let mut kmer = 0;
     for (_i, c) in seq.chars().enumerate() {

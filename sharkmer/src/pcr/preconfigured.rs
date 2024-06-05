@@ -37,6 +37,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
     PCRParams {
           forward_seq: "GRCTGTTTACCAAAAACATA".to_string(),
           reverse_seq: "AATTCAACATMGAGG".to_string(),
+          min_length: 0,
           max_length: 1000,
           gene_name: "16s".to_string(),
           coverage: 3,
@@ -49,6 +50,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
     PCRParams {
           forward_seq: "TCATAARGATATHGG".to_string(),
           reverse_seq: "RTGNCCAAAAAACCA".to_string(),
+          min_length: 0,
           max_length: 1000,
           gene_name: "co1".to_string(),
           coverage: 3,
@@ -61,6 +63,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
     PCRParams {
           forward_seq: "AACCTGGTTGATCCTGCCAGT".to_string(),
           reverse_seq: "TGATCCTTCTGCAGGTTCACCTAC".to_string(),
+          min_length: 0,
           max_length: 2500,
           gene_name: "18s".to_string(),
           coverage: 3,
@@ -73,6 +76,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
     PCRParams {
           forward_seq: "CCYYAGTAACGGCGAGT".to_string(),
           reverse_seq: "SWACAGATGGTAGCTTCG".to_string(),
+          min_length: 0,
           max_length: 4000,
           gene_name: "28s".to_string(),
           coverage: 3,
@@ -86,6 +90,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
           forward_seq: "TACACACCGCCCGTCGCTACTA".to_string(), // CAS18sF1
           // forward_seq: "GTAGGTGAACCTGCAGAAGGATCA".to_string(), // Reverse complement of 18s reverse primer
           reverse_seq: "ACTCGCCGTTACTRRGG".to_string(),
+          min_length: 0,
           max_length: 1000,
           gene_name: "ITS".to_string(),
           coverage: 3,
@@ -103,6 +108,7 @@ fn get_teleostei() -> Vec<PCRParams> {
     PCRParams {
           forward_seq: "TCAACCAACCACAAAGACATTGGCAC".to_string(),
           reverse_seq: "TAGACTTCTGGGTGGCCAAAGAATCA".to_string(),
+          min_length: 0,
           max_length: 1000,
           gene_name: "co1".to_string(),
           coverage: 3,
@@ -117,6 +123,7 @@ fn get_teleostei() -> Vec<PCRParams> {
     PCRParams {
           forward_seq: "ACTGGGATTAGATACCCC".to_string(),
           reverse_seq: "TAGAACAGGCTCCTCTAG".to_string(),
+          min_length: 0,
           max_length: 200,
           gene_name: "12s".to_string(),
           coverage: 3,
@@ -129,6 +136,7 @@ fn get_teleostei() -> Vec<PCRParams> {
       PCRParams {
           forward_seq: "GACCCTATGGAGCTTTAGAC".to_string(),
           reverse_seq: "CGCTGTTATCCCTADRGTAACT".to_string(),
+          min_length: 0,
           max_length: 300,
           gene_name: "16s".to_string(),
           coverage: 3,
