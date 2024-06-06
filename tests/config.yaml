@@ -1,4 +1,33 @@
 sample:
+
+# Cnidarians slected because they have reference genome sequences available. Drawing on list by
+# Arianna Lord at https://github.com/dunnlab/siph_skimming/blob/main/analyses_cnidaria/genome_size_final.csv
+  Porites_lutea:
+    taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Fungiina; Poritidae; Porites"
+    reads:
+      - SRS1195408 # Alternate options - ERS514281
+    arguments: "--pcr cnidaria"
+    genome: GCA_958299795.1
+
+# Octocoral candidates: Paramuricea clavata N50 23.9 kb 
+  Xenia_sp:
+    taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Xeniidae; Xenia; unclassified Xenia"
+    reads:
+      - SRR9278432 # From genome bioproject
+    arguments: "--pcr cnidaria"
+    genome: GCF_021976095.1
+    biosample: https://www.ncbi.nlm.nih.gov/biosample/SAMN23741995/
+
+  Rhopilema_esculentum:
+    taxonomy: 
+    reads:
+      - SRR8617500
+    arguments: "--pcr cnidaria"
+
+
+# Cnidarians that were selected because they have small datasets available, which speeds downloads.
+# But some of these datasets may be a bit odd given their very small size, eg rejected for further
+# sequencing. And hard to troubleshoot since not many other resources are available for some species.
   Stenogorgia_casta:
     taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Pterogorgiidae; Stenogorgia"
     reads:
@@ -34,6 +63,8 @@ sample:
     reads:
       - SRR25099394
     arguments: "--pcr cnidaria"
+
+# Teleostei
   Anguilla_anguilla:
     taxonomy: ""
     reads:
