@@ -96,7 +96,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
           mismatches: 2,
           trim: 15,
           citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x".to_string(),
-          notes: "Forward primer is CAS18sF1, position 1843, from Ji et al 2003. The reverse primer is the reverse complement of the 28s forward primer. Product is about 800bp.".to_string(),
+          notes: "Forward primer is CAS18sF1, position 1843, from Ji et al 2003. The reverse primer is the reverse complement of the 28s forward primer. Product is about 770-880bp.".to_string(),
       },	
       
       PCRParams {
@@ -109,7 +109,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
         mismatches: 2,
         trim: 15,
         citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x".to_string(),
-        notes: "Forward primer is reverse complement of 18s reverse primer. The reverse primer is the reverse complement of the 28s forward primer. Product is about 800bp.".to_string(),
+        notes: "Forward primer is reverse complement of 18s reverse primer. The reverse primer is the reverse complement of the 28s forward primer. Product is about 620-730bp.".to_string(),
     },	
   ]
 }
