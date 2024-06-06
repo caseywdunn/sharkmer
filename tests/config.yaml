@@ -18,8 +18,8 @@ sample:
     genome: GCF_021976095.1
     biosample: https://www.ncbi.nlm.nih.gov/biosample/SAMN23741995/
 
-  Rhopilema_esculentum: "Eumetazoa; Cnidaria; Scyphozoa; Rhizostomeae; Rhizostomatidae; Rhopilema"
-    taxonomy: 
+  Rhopilema_esculentum:
+    taxonomy: "Eumetazoa; Cnidaria; Scyphozoa; Rhizostomeae; Rhizostomatidae; Rhopilema"
     reads:
       - SRR8617500
     arguments: "--pcr cnidaria"
