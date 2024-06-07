@@ -23,6 +23,7 @@ sample:
     reads:
       - SRR8617500
     arguments: "--pcr cnidaria"
+    genome: "GCF_013076305.1"
 
 
 # Cnidarians that were selected because they have small datasets available, which speeds downloads.
@@ -55,6 +56,7 @@ sample:
     reads:
       - SRR25627438
     arguments: "--pcr cnidaria"
+    genome: "GCA_003991215.1"
   Catostylus_townsendi:
     taxonomy: "Cnidaria; Scyphozoa; Rhizostomeae; Catostylidae; Catostylus"
     reads:
