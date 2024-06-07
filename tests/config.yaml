@@ -33,11 +33,12 @@ sample:
     reads:
       - SRR26955578
     arguments: "--pcr cnidaria"
-  Acropora_millepora:
-    taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Astrocoeniina; Acroporidae; Acropora"
-    reads:
-      - SRR8119878
-    arguments: "--pcr cnidaria"
+# Reads have lower quality at 3' end
+#  Acropora_millepora:
+#    taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Astrocoeniina; Acroporidae; Acropora"
+#    reads:
+#      - SRR8119878
+#    arguments: "--pcr cnidaria"
 # Run crashes
 #  Acropora_tenuis:
 #    taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Astrocoeniina; Acroporidae; Acropora"
