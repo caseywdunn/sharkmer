@@ -38,11 +38,12 @@ sample:
     reads:
       - SRR8119878
     arguments: "--pcr cnidaria"
-  Acropora_tenuis:
-    taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Astrocoeniina; Acroporidae; Acropora"
-    reads:
-      - SRR18094419
-    arguments: "--pcr cnidaria"
+# Run crashes
+#  Acropora_tenuis:
+#    taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Astrocoeniina; Acroporidae; Acropora"
+#    reads:
+#      - SRR18094419
+#    arguments: "--pcr cnidaria"
   Haliclystus_octoradiatus:
     taxonomy: "Eumetazoa; Cnidaria; Staurozoa; Stauromedusae; Myostaurida; Haliclystidae; Haliclystus"
     reads:
