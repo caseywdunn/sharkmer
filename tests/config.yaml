@@ -5,7 +5,7 @@ sample:
   Porites_lutea:
     taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Fungiina; Poritidae; Porites"
     reads:
-      - SRS1195408 # Alternate options - ERS514281
+      - SRR2976390 # Alternate options - ERS514281
     arguments: "--pcr cnidaria"
     genome: GCA_958299795.1
 
