@@ -113,10 +113,13 @@ fn get_cnidaria() -> Vec<PCRParams> {
     },
 
     PCRParams {
-        forward_seq: "ACGTGGTATGGTTGCCTCTG".to_string(), // Reverse complement of 18s reverse primer
-        reverse_seq: "CTTGATAACGCCAACGGCWAC".to_string(),
-        min_length: 0,
-        max_length: 3000,
+        // forward_seq: "ACGTGGTATGGTTGCCTCTG".to_string(),
+        // reverse_seq: "CTTGATAACGCCAACGGCWAC".to_string(),
+        // Custom primers based on alignment of a few cnidarian sequences
+        forward_seq: "AMGWGGHATGGTDGCTGGTG".to_string(),
+        reverse_seq: "YTTRATNAYDCCAACAGCWAC".to_string(),
+        min_length: 200,
+        max_length: 3000, // Exprected 350, but could have introns
         gene_name: "ef1a".to_string(),
         coverage: 3,
         mismatches: 2,
