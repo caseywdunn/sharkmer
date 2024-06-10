@@ -1,21 +1,26 @@
 sample:
 
-# Cnidarians slected because they have reference genome sequences available. Drawing on list by
+# Cnidarians selected because they have reference genome sequences available. Drawing on list by
 # Arianna Lord at https://github.com/dunnlab/siph_skimming/blob/main/analyses_cnidaria/genome_size_final.csv
   Porites_lutea:
     taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Fungiina; Poritidae; Porites"
     reads:
       - SRR2976390 # Alternate options - ERS514281
     arguments: "--pcr cnidaria"
-    genome: GCA_958299795.1
+    genome: 
+      accession: GCA_958299795.1
+      size_mb: 541.6
+      n50_mb: 36
 
-# Octocoral candidates: Paramuricea clavata N50 23.9 kb 
   Xenia_sp:
     taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Xeniidae; Xenia; unclassified Xenia"
     reads:
       - SRR9278432 # From genome bioproject
     arguments: "--pcr cnidaria"
-    genome: GCF_021976095.1
+    genome:  
+      accession: GCF_021976095.1
+      size_mb: 222.7 # 10x is about 15M reads
+      n50_mb: 14.8
     biosample: https://www.ncbi.nlm.nih.gov/biosample/SAMN23741995/
 
   Rhopilema_esculentum:
@@ -23,8 +28,30 @@ sample:
     reads:
       - SRR8617500
     arguments: "--pcr cnidaria"
-    genome: "GCF_013076305.1"
+    genome:
+      accession: "GCF_013076305.1"
+      size_mb: 256.7
+      n50_mb: 12.9
 
+  Haliclystus_octoradiatus:
+    taxonomy: "Eumetazoa; Cnidaria; Staurozoa; Stauromedusae; Myostaurida; Haliclystidae; Haliclystus"
+    reads:
+      - ERR6745737
+    arguments: "--pcr cnidaria"
+    genome:
+      accession: "GCA_916610825.1"
+      size_mb: 261.9
+      n50_mb: 29
+
+  Morbakka_sp:
+    taxonomy: "Eumetazoa; Cnidaria; Cubozoa; Carybdeida; Carukiidae; Morbakka"
+    reads:
+      - SRR25627438
+    arguments: "--pcr cnidaria"
+    genome: 
+      accession: "GCA_003991215.1"
+      size_mb: 951.6
+      n50_mb: 2.2
 
 # Cnidarians that were selected because they have small datasets available, which speeds downloads.
 # But some of these datasets may be a bit odd given their very small size, eg rejected for further
@@ -46,17 +73,7 @@ sample:
 #    reads:
 #      - SRR18094419
 #    arguments: "--pcr cnidaria"
-  Haliclystus_octoradiatus:
-    taxonomy: "Eumetazoa; Cnidaria; Staurozoa; Stauromedusae; Myostaurida; Haliclystidae; Haliclystus"
-    reads:
-      - ERR6745737
-    arguments: "--pcr cnidaria"
-  Morbakka_sp:
-    taxonomy: "Eumetazoa; Cnidaria; Cubozoa; Carybdeida; Carukiidae; Morbakka"
-    reads:
-      - SRR25627438
-    arguments: "--pcr cnidaria"
-    genome: "GCA_003991215.1"
+
   Catostylus_townsendi:
     taxonomy: "Cnidaria; Scyphozoa; Rhizostomeae; Catostylidae; Catostylus"
     reads:
