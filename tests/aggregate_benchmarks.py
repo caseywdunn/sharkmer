@@ -31,6 +31,9 @@ columns = ['filename', 'sample', 'million_reads', 's', 'h:m:s', 'max_rss', 'max_
 # Create a pandas DataFrame
 df = pd.DataFrame(data, columns=columns)
 
+# convert all columns to numeric
+df = df.apply(pd.to_numeric, errors='ignore')
+
 # Sort the DataFrame by sample and then by million_reads
 df.sort_values(['sample', 'million_reads'], inplace=True)
 
