@@ -36,7 +36,7 @@ rule sharkmer_pcr:
         verbosity = 6,
     threads: workflow.cores
     benchmark: "benchmarks/sharkmer.{m_reads}.{sample}.benchmark.txt"
-    log: "logs/sharkmer.{sample}.log"
+    log: "logs/sharkmer.{m_reads}.{sample}.log"
     shell:
         """
         sharkmer -k 21 -t {threads} --max-reads {params.max_reads} -o output_{int(m_reads*1e6)} -s {params.sample} --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
