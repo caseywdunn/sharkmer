@@ -453,6 +453,19 @@ impl KmerCounts {
         // check if they are there before extending
         self.extend(&new_kmers);
     }
+
+    // Create a new KmerCounts object that has kmers with at least min_count and 
+    // includes the reverse complements of all the kmers, not just canonical kmers
+    pub fn get_pcr_kmers(&self, min_count: &u64) -> KmerCounts {
+        let mut pcr_kmers = KmerCounts::new(&self.k);
+        for (kmer, count) in self.iter() {
+            if count >= min_count {
+                pcr_kmers.insert(kmer, count);
+                pcr_kmers.insert(&crate::kmer::revcomp_kmer(kmer, &self.k), count);
+            }
+        }
+        pcr_kmers
+    }
 }
 
 impl Clone for KmerCounts {

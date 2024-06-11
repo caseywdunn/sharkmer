@@ -661,10 +661,8 @@ fn main() {
 
         // Prep kmer counts for in silico PCR. Remove singleton kmers (to reduce size) and 
         // add reverse complements
-        let mut kmer_counts_pcr = kmer_counts.clone();
         let min_count: u64 = 2;
-        kmer_counts_pcr.remove_low_count_kmers(&min_count);
-        kmer_counts_pcr.add_reverse_complements();
+        let kmer_counts_pcr = kmer_counts.get_pcr_kmers(&min_count);
 
         for pcr_params in pcr_runs.iter() {
             let fasta = pcr::do_pcr(&kmer_counts_pcr, &args.sample, args.verbosity, pcr_params);
