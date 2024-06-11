@@ -14,11 +14,6 @@ fn get_preconfigured_panels() -> Vec<PCRPanel> {
         description: "18S, 28S, ITS, 16S, and CO1".to_string(),
         params: get_cnidaria(),
     },
-    PCRPanel {
-      name: "teleostei".to_string(),
-      description: "12S and CO1".to_string(),
-      params: get_teleostei(),
-  },
   ];
 
   // Loop over the panels and prepend the PCRPanel name to the PCRParams genename, using _ as a deimiter
@@ -129,52 +124,6 @@ fn get_cnidaria() -> Vec<PCRParams> {
     },	
   ]
 }
-
-fn get_teleostei() -> Vec<PCRParams> {
-  vec![
-
-    PCRParams {
-          forward_seq: "TCAACCAACCACAAAGACATTGGCAC".to_string(),
-          reverse_seq: "TAGACTTCTGGGTGGCCAAAGAATCA".to_string(),
-          min_length: 0,
-          max_length: 1000,
-          gene_name: "co1".to_string(),
-          coverage: 3,
-          mismatches: 2,
-          trim: 15,
-          citation: "https://doi.org/10.1098/rstb.2005.1716".to_string(),
-          notes: "expected product is 655bp".to_string(),
-      },
-
-    // https://doi.org/10.1371/journal.pone.0266720 evaluates 
-    // multiple primer pairs below
-    PCRParams {
-          forward_seq: "ACTGGGATTAGATACCCC".to_string(),
-          reverse_seq: "TAGAACAGGCTCCTCTAG".to_string(),
-          min_length: 0,
-          max_length: 200,
-          gene_name: "12s".to_string(),
-          coverage: 3,
-          mismatches: 2,
-          trim: 15,
-          citation: "https://doi.org/10.1093/nar/gkr732".to_string(),
-          notes: "expected product is 106bp".to_string(),
-      },
-
-      PCRParams {
-          forward_seq: "GACCCTATGGAGCTTTAGAC".to_string(),
-          reverse_seq: "CGCTGTTATCCCTADRGTAACT".to_string(),
-          min_length: 0,
-          max_length: 300,
-          gene_name: "16s".to_string(),
-          coverage: 3,
-          mismatches: 2,
-          trim: 15,
-          citation: "https://doi.org/10.1002/ece3.3123".to_string(),
-          notes: "expected product is 219bp".to_string(),
-      },
-    ]
-  }
 
 pub fn get_panel(panel_name: &str) -> Result<Vec<PCRParams>, String> {
   let panels = get_preconfigured_panels();

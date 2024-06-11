@@ -3,10 +3,12 @@ Examine sPCR across a panel of genomes
 """
 configfile: "config.yaml"
 
+million_reads = [1, 2, 4, 8, 16, 32]
+
 rule all:
     input:
-        expand("output/{sample}.histo", sample = config["sample"]),
-        expand("output/fastqc/{sample}_fastqc.html", sample = config["sample"]),
+        expand("output_{m_reads}/{sample}.histo", m_reads = million_reads, sample = config["sample"]),
+        expand("fastqc/{sample}_fastqc.html", sample = config["sample"]),
 
 rule download_reads:
     params:
@@ -24,20 +26,21 @@ rule sharkmer_pcr:
     input:
         reads = "data/{sample}.fastq"
     output:
-        histo = "output/{sample}.histo",
-        stats = "output/{sample}.stats",
-        final_histo = "output/{sample}.final.histo",
+        histo = "output_{m_reads}/{sample}.histo",
+        stats = "output_{m_reads}/{sample}.stats",
+        final_histo = "output_{m_reads}/{sample}.final.histo",
     params:
+        m_reads = lambda wildcards: wildcards.m_reads,
         sample = lambda wildcards: wildcards.sample,
         arguments = lambda wildcards: config["sample"][wildcards.sample]["arguments"],
-        max_reads = 2000000,
+        max_reads = int(m_reads * 1e6),
         verbosity = 6,
     threads: workflow.cores
-    benchmark: "benchmarks/sharkmer.{sample}.benchmark.txt"
+    benchmark: "benchmarks/sharkmer.{m_reads}.{sample}.benchmark.txt"
     log: "logs/sharkmer.{sample}.log"
     shell:
         """
-        sharkmer -k 21 -t {threads} --max-reads {params.max_reads} -o output -s {params.sample} --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
+        sharkmer -k 21 -t {threads} --max-reads {params.max_reads} -o output_{m_reads} -s {params.sample} --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
         """
 
 rule fastqc:

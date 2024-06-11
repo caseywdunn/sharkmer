@@ -85,28 +85,3 @@ sample:
       - SRR25099394
     arguments: "--pcr cnidaria"
 
-# Teleostei
-  Anguilla_anguilla:
-    taxonomy: ""
-    reads:
-      - SRR12854958
-    arguments: "--pcr teleostei"
-  Oncorhynchus_mykiss:
-    taxonomy: ""
-    reads:
-      - SRR20078170
-    arguments: "--pcr teleostei"
-# Problematic
-#  Fundulus_heteroclitus:
-#    reads:
-#      - SRR24443964
-#    arguments: "--pcr teleostei"
-#  Tamoya_ohboya:
-#    reads:
-#      - SRR13036460
-#    arguments: "--pcr cnidaria"
-# Ends of all sequences are ploy G
-#  Stylopathes_americana:
-#    reads:
-#      - SRR26955517
-#    arguments: "--pcr cnidaria"
