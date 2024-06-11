@@ -3,7 +3,8 @@ Examine sPCR across a panel of genomes
 """
 configfile: "config.yaml"
 
-million_reads = [1, 2, 4, 8, 16, 32]
+# million_reads = [1, 2, 4, 8, 16, 32]
+million_reads = [1, 2]
 
 rule all:
     input:
