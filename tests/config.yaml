@@ -53,32 +53,19 @@ sample:
       size_mb: 951.6
       n50_mb: 2.2
 
-# Cnidarians that were selected because they have small datasets available, which speeds downloads.
-# But some of these datasets may be a bit odd given their very small size, eg rejected for further
-# sequencing. And hard to troubleshoot since not many other resources are available for some species.
+# Without genomes
   Stenogorgia_casta:
     taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Pterogorgiidae; Stenogorgia"
     reads:
       - SRR26955578
     arguments: "--pcr cnidaria"
-# Reads have lower quality at 3' end
-#  Acropora_millepora:
-#    taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Astrocoeniina; Acroporidae; Acropora"
-#    reads:
-#      - SRR8119878
-#    arguments: "--pcr cnidaria"
-# Run crashes
-#  Acropora_tenuis:
-#    taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Astrocoeniina; Acroporidae; Acropora"
-#    reads:
-#      - SRR18094419
-#    arguments: "--pcr cnidaria"
 
   Catostylus_townsendi:
     taxonomy: "Cnidaria; Scyphozoa; Rhizostomeae; Catostylidae; Catostylus"
     reads:
       - SRR16643387
     arguments: "--pcr cnidaria"
+
   Agalma_elegans:
     taxonomy: "Eumetazoa; Cnidaria; Hydrozoa; Hydroidolina; Siphonophorae; Physonectae; Agalmatidae; Agalma"
     reads:
