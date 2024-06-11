@@ -31,7 +31,7 @@ rule sharkmer_pcr:
         final_histo = "output_{m_reads}/{sample}.final.histo",
     params:
         m_reads = lambda wildcards: wildcards.m_reads,
-        n_reads = m_reads * 1e6,
+        n_reads = lambda wildcards: wildcards.m_reads * 1e6,
         sample = lambda wildcards: wildcards.sample,
         arguments = lambda wildcards: config["sample"][wildcards.sample]["arguments"],
         verbosity = 6,
