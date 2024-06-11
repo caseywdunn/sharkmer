@@ -33,14 +33,13 @@ rule sharkmer_pcr:
         m_reads = lambda wildcards: wildcards.m_reads,
         sample = lambda wildcards: wildcards.sample,
         arguments = lambda wildcards: config["sample"][wildcards.sample]["arguments"],
-        max_reads = int(m_reads * 1e6),
         verbosity = 6,
     threads: workflow.cores
     benchmark: "benchmarks/sharkmer.{m_reads}.{sample}.benchmark.txt"
     log: "logs/sharkmer.{sample}.log"
     shell:
         """
-        sharkmer -k 21 -t {threads} --max-reads {params.max_reads} -o output_{m_reads} -s {params.sample} --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
+        sharkmer -k 21 -t {threads} --max-reads {params.max_reads} -o output_{int(m_reads*1e6)} -s {params.sample} --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
         """
 
 rule fastqc:
