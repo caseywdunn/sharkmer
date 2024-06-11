@@ -7,7 +7,7 @@ million_reads = [1, 2, 4, 8, 16, 32]
 
 rule all:
     input:
-        expand("output_{m_reads}/{sample}.histo", m_reads = million_reads, sample = config["sample"]),
+        expand("output/{sample}_{m_reads}M.histo", m_reads = million_reads, sample = config["sample"]),
         expand("fastqc/{sample}_fastqc.html", sample = config["sample"]),
 
 rule download_reads:
@@ -26,21 +26,21 @@ rule sharkmer_pcr:
     input:
         reads = "data/{sample}.fastq"
     output:
-        histo = "output_{m_reads}/{sample}.histo",
-        stats = "output_{m_reads}/{sample}.stats",
-        final_histo = "output_{m_reads}/{sample}.final.histo",
+        histo = "output/{sample}_{m_reads}M.histo",
+        stats = "output/{sample}_{m_reads}M.stats",
+        final_histo = "output/{sample}_{m_reads}M.final.histo",
     params:
         m_reads = lambda wildcards: wildcards.m_reads,
         n_reads = lambda wildcards: int(wildcards.m_reads) * 1e6,
         sample = lambda wildcards: wildcards.sample,
         arguments = lambda wildcards: config["sample"][wildcards.sample]["arguments"],
-        verbosity = 6,
+        verbosity = 0,
     threads: workflow.cores
-    benchmark: "benchmarks/sharkmer.{m_reads}.{sample}.benchmark.txt"
-    log: "logs/sharkmer.{m_reads}.{sample}.log"
+    benchmark: "benchmarks/sharkmer.{sample}.{m_reads}M.benchmark.txt"
+    log: "logs/sharkmer.{sample}.{m_reads}M.log"
     shell:
         """
-        sharkmer -k 21 -t {threads} --max-reads {params.n_reads} -o output_{params.m_reads} -s {params.sample + "_" + params.m_reads} --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
+        sharkmer -k 21 -t {threads} --max-reads {params.n_reads} -o output -s {params.sample}_{params.m_reads}M --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
         """
 
 rule fastqc:
