@@ -39,7 +39,7 @@ rule sharkmer_pcr:
     log: "logs/sharkmer.{m_reads}.{sample}.log"
     shell:
         """
-        sharkmer -k 21 -t {threads} --max-reads {params.max_reads} -o output_{int(m_reads*1e6)} -s {params.sample} --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
+        sharkmer -k 21 -t {threads} --max-reads {int(m_reads*1e6)} -o output_{m_reads} -s {params.sample} --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
         """
 
 rule fastqc:
