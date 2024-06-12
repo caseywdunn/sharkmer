@@ -56,6 +56,9 @@ const BALLOONING_COUNT_THRESHOLD_MULTIPLIER: f64 = 10.0;
 /// Give up if the graph gets too large
 const MAX_NUM_NODES: usize = 50_000;
 
+/// In cases where a primer pair has many possible paths, limit the number of paths to consider
+const MAX_NUM_PATHS_PER_PAIR: usize = 20;
+
 /// The maximum number of fasta records to return
 const MAX_NUM_AMPLICONS: usize = 20;
 
@@ -151,11 +154,12 @@ pub fn get_assembly_paths(  graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: 
                     &graph,
                     start,
                     end,
-                    1,
+                    params.min_length - (kmer_counts.get_k()) + 1,
                     Some(params.max_length - (kmer_counts.get_k()) + 1),
                 );
-
-            all_paths.extend(paths_for_this_pair);
+            
+            // Limit the number of paths to consider to MAX_NUM_PATHS_PER_PAIR
+            all_paths.extend(paths_for_this_pair.take(MAX_NUM_PATHS_PER_PAIR).collect::<Vec<Vec<NodeIndex>>>());
         }
     }
 
