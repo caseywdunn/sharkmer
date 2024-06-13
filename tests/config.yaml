@@ -16,7 +16,7 @@ sample:
   Xenia_sp:
     taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Xeniidae; Xenia; unclassified Xenia"
     reads:
-      - SRR9278432 # From genome bioproject
+      - SRR9278435 # From genome bioproject, SRR9278432 is a smaller dataset
     arguments: "--pcr cnidaria"
     genome:  
       accession: GCF_021976095.1
@@ -55,12 +55,6 @@ sample:
       n50_mb: 2.2
 
 # Without genomes
-
-  Catostylus_townsendi:
-    taxonomy: "Cnidaria; Scyphozoa; Rhizostomeae; Catostylidae; Catostylus"
-    reads:
-      - SRR16643387
-    arguments: "--pcr cnidaria"
 
   Agalma_elegans:
     taxonomy: "Eumetazoa; Cnidaria; Hydrozoa; Hydroidolina; Siphonophorae; Physonectae; Agalmatidae; Agalma"
