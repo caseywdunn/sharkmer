@@ -96,8 +96,8 @@ benchmark_df.to_csv('benchmarks.csv', index=False)
 
 # Plotting CPU time vs million reads
 plt.figure(figsize=(12, 6))
-for sample, group in benchmark_df.groupby('sample'):
-    plt.plot(group['million_reads'], group['cpu_time'], marker='o', label=sample)
+for species, group in benchmark_df.groupby('species'):
+    plt.plot(group['million_reads'], group['cpu_time'], marker='o', label=species)
 plt.xlabel('Million Reads')
 plt.ylabel('CPU Time (s)')
 plt.title('CPU Time vs Million Reads')
@@ -107,8 +107,8 @@ plt.savefig('cpu_time_vs_million_reads.png')
 
 # Plotting max RSS vs million reads
 plt.figure(figsize=(12, 6))
-for sample, group in benchmark_df.groupby('sample'):
-    plt.plot(group['million_reads'], group['max_rss'], marker='o', label=sample)
+for species, group in benchmark_df.groupby('species'):
+    plt.plot(group['million_reads'], group['max_rss'], marker='o', label=species)
 plt.xlabel('Million Reads')
 plt.ylabel('Max RSS (MB)')
 plt.title('Max RSS vs Million Reads')
