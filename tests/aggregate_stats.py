@@ -5,11 +5,14 @@ import matplotlib.pyplot as plt
 data_directory = './data'
 benchmark_directory = './benchmarks'
 
-# Loop over the fastq files in the data directory. Parse the species as everything before .fastq,
-# create a dictionary with key species and value number of lines divided by 4
-fastq_files = [f for f in os.listdir(data_directory) if f.endswith('.fastq')]
-fastq_files = {f.split('.')[0]: sum(1 for line in open(os.path.join(data_directory, f)) / 4) for f in fastq_files}
+reads_count = {}
+for f in fastq_files:
+    file_path = os.path.join(data_directory, f)
+    with open(file_path, 'r') as file:
+        line_count = sum(1 for line in file)  # Count lines in the file
+        reads_count[f.split('.')[0]] = line_count // 4  # Divide by 4 to get the number of reads
 
+print(reads_count)
 
 # List to store the data
 data = []
@@ -44,7 +47,7 @@ df = df.apply(pd.to_numeric, errors='ignore')
 df.sort_values(['sample', 'million_reads'], inplace=True)
 
 # For each entry in fastq_files, remove any row from data where the million_reads*1000000 is greater than the number of record in the fastq file
-for species, reads in fastq_files.items():
+for species, reads in reads_count.items():
     df = df[~((df['sample'] == species) & (df['million_reads']*1000000 > reads))]
 
 # save the DataFrame to a CSV file
