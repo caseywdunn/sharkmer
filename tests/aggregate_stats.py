@@ -14,7 +14,9 @@ for f in fastq_files:
         line_count = sum(1 for line in file)  # Count lines in the file
         reads_count[f.split('.')[0]] = line_count // 4  # Divide by 4 to get the number of reads
 
-print(reads_count)
+# Print the reads count, one per line.
+for species, reads in reads_count.items():
+    print(f'{species}: {reads}')
 
 # List to store the data
 data = []
@@ -28,7 +30,7 @@ for filename in os.listdir(benchmark_directory):
         million_reads = int(parts[2][:-1])  # Remove the 'M' and convert to int
 
         # Read the content of the file
-        with open(os.path.join(directory, filename), 'r') as file:
+        with open(os.path.join(benchmark_directory, filename), 'r') as file:
             lines = file.readlines()
             # Parse the data from the second line (assuming first line is header)
             values = lines[1].split()
