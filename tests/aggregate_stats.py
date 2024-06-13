@@ -21,14 +21,14 @@ for f in output_files:
     gene = parts[4].split('.')[0]
 
     with open(os.path.join(output_directory, f), 'r') as file:
-        read_count = sum(1 for line in file if line.startswith('>'))
+        seq_count = sum(1 for line in file if line.startswith('>'))
 
-    output_stats.append([f, species, million_reads, clade, gene, read_count])
+    output_stats.append([f, clade, gene, million_reads, species, seq_count])
 
-columns = ['filename', 'species', 'million_reads', 'clade', 'gene', 'sequences']
+columns = ['filename', 'clade', 'gene', 'million_reads', 'species',  'sequences']
 output_df = pd.DataFrame(output_stats, columns=columns)
 output_df = output_df.apply(pd.to_numeric, errors='ignore')
-output_df.sort_values(['clade', 'gene', 'species', 'million_reads'], inplace=True)
+output_df.sort_values(['clade', 'gene', 'million_reads', 'species'], inplace=True)
 
 # save the DataFrame to a CSV file
 output_df.to_csv('output_stats.csv', index=False)
