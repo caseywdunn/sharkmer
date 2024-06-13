@@ -15,10 +15,10 @@ output_files = [f for f in os.listdir(output_directory) if f.endswith('.fasta')]
 output_stats = []
 for f in output_files:
     parts = f.split('_')
-    species = parts[0]
-    million_reads = int(parts[1][:-1])  # Remove the 'M' and convert to int
-    clade = parts[2]
-    gene = parts[3].split('.')[0]
+    species = parts[0] + '_' + parts[1]  # Concatenate the first two parts to get the species name
+    million_reads = int(parts[2][:-1])  # Remove the 'M' and convert to int
+    clade = parts[3]
+    gene = parts[4].split('.')[0]
 
     with open(os.path.join(output_directory, f), 'r') as file:
         read_count = sum(1 for line in file if line.startswith('>'))
