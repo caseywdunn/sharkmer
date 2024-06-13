@@ -5,7 +5,8 @@ sample:
   Porites_lutea:
     taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Fungiina; Poritidae; Porites"
     reads:
-      - SRR2976390 # Alternate options - ERS514281
+      # - SRR2976390 # low quality at end of reads, small dataset. Alternate options - ERS514281
+      - ERR571460
     arguments: "--pcr cnidaria"
     genome: 
       accession: GCA_958299795.1
@@ -54,11 +55,6 @@ sample:
       n50_mb: 2.2
 
 # Without genomes
-  Stenogorgia_casta:
-    taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Pterogorgiidae; Stenogorgia"
-    reads:
-      - SRR26955578
-    arguments: "--pcr cnidaria"
 
   Catostylus_townsendi:
     taxonomy: "Cnidaria; Scyphozoa; Rhizostomeae; Catostylidae; Catostylus"
