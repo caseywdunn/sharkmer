@@ -5,6 +5,8 @@ import matplotlib.pyplot as plt
 data_directory = './data'
 benchmark_directory = './benchmarks'
 
+fastq_files = [f for f in os.listdir(data_directory) if f.endswith('.fastq')]
+
 reads_count = {}
 for f in fastq_files:
     file_path = os.path.join(data_directory, f)
