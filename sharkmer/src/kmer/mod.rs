@@ -405,6 +405,7 @@ impl KmerCounts {
         self.kmers.iter()
     }
 
+    #[allow(dead_code)]
     pub fn len(&self) -> usize {
         self.kmers.len()
     }
@@ -451,6 +452,19 @@ impl KmerCounts {
         // TODO - will increase counts if kmers already present, should
         // check if they are there before extending
         self.extend(&new_kmers);
+    }
+
+    // Create a new KmerCounts object that has kmers with at least min_count and 
+    // includes the reverse complements of all the kmers, not just canonical kmers
+    pub fn get_pcr_kmers(&self, min_count: &u64) -> KmerCounts {
+        let mut pcr_kmers = KmerCounts::new(&self.k);
+        for (kmer, count) in self.iter() {
+            if count >= min_count {
+                pcr_kmers.insert(kmer, count);
+                pcr_kmers.insert(&crate::kmer::revcomp_kmer(kmer, &self.k), count);
+            }
+        }
+        pcr_kmers
     }
 }
 
@@ -678,9 +692,10 @@ pub fn kmer_to_seq(kmer: &u64, k: &usize) -> String {
     seq
 }
 
+#[allow(dead_code)]
 pub fn seq_to_kmer(seq: &str) -> u64 {
     let mut kmer = 0;
-    for (i, c) in seq.chars().enumerate() {
+    for (_i, c) in seq.chars().enumerate() {
         let base = match c {
             'A' => 0,
             'C' => 1,

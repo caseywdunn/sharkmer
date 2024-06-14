@@ -187,9 +187,12 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
 
     let gene_name = split[3].to_string();
 
+    let mut min_length = 0;
     let mut coverage = 3;
     let mut mismatches = 2;
     let mut trim = 15;
+    let mut citation = "".to_string();
+    let mut notes = "".to_string();
 
     // Loop over additional parameters, which are of the form key=value and are separated by underscores
     for item in split.iter().skip(4) {
@@ -203,6 +206,11 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
         let value = key_value[1];
 
         match key {
+            "min_length" => {
+                min_length = value
+                    .parse()
+                    .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
+            }
             "coverage" => {
                 coverage = value
                     .parse()
@@ -218,6 +226,12 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
                     .parse()
                     .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
             }
+            "citation" => {
+                citation = value.to_string();
+            }
+            "notes" => {
+                notes = value.to_string();
+            }
             _ => {
                 return Err(format!("Unexpected parameter: {}", key));
             }
@@ -227,11 +241,14 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
     Ok(vec![pcr::PCRParams {
         forward_seq,
         reverse_seq,
+        min_length,
         max_length,
         gene_name,
         coverage,
         mismatches,
         trim,
+        citation,
+        notes,
     }])
 }
 
@@ -644,10 +661,8 @@ fn main() {
 
         // Prep kmer counts for in silico PCR. Remove singleton kmers (to reduce size) and 
         // add reverse complements
-        let mut kmer_counts_pcr = kmer_counts.clone();
         let min_count: u64 = 2;
-        kmer_counts_pcr.remove_low_count_kmers(&min_count);
-        kmer_counts_pcr.add_reverse_complements();
+        let kmer_counts_pcr = kmer_counts.get_pcr_kmers(&min_count);
 
         for pcr_params in pcr_runs.iter() {
             let fasta = pcr::do_pcr(&kmer_counts_pcr, &args.sample, args.verbosity, pcr_params);

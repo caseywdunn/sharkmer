@@ -3,9 +3,13 @@ Examine sPCR across a panel of genomes
 """
 configfile: "config.yaml"
 
+# million_reads = [1, 2, 4, 8, 16, 32]
+million_reads = [1, 2, 4, 8, 16]
+
 rule all:
     input:
-        expand("output/{sample}.histo", sample = config["sample"]),
+        expand("output/{sample}_{m_reads}M.histo", m_reads = million_reads, sample = config["sample"]),
+        expand("fastqc/{sample}_fastqc.html", sample = config["sample"]),
 
 rule download_reads:
     params:
@@ -23,18 +27,34 @@ rule sharkmer_pcr:
     input:
         reads = "data/{sample}.fastq"
     output:
-        histo = "output/{sample}.histo",
-        stats = "output/{sample}.stats",
-        final_histo = "output/{sample}.final.histo",
+        histo = "output/{sample}_{m_reads}M.histo",
+        stats = "output/{sample}_{m_reads}M.stats",
+        final_histo = "output/{sample}_{m_reads}M.final.histo",
     params:
+        m_reads = lambda wildcards: wildcards.m_reads,
+        n_reads = lambda wildcards: int(wildcards.m_reads) * 1000000,
         sample = lambda wildcards: wildcards.sample,
         arguments = lambda wildcards: config["sample"][wildcards.sample]["arguments"],
-        max_reads = 2000000,
-        verbosity = 6,
+        verbosity = 0,
     threads: workflow.cores
-    benchmark: "benchmarks/sharkmer.{sample}.benchmark.txt"
-    log: "logs/sharkmer.{sample}.log"
+    benchmark: "benchmarks/sharkmer.{sample}.{m_reads}M.benchmark.txt"
+    log: "logs/sharkmer.{sample}.{m_reads}M.log"
     shell:
         """
-        sharkmer -k 21 -t {threads} --max-reads {params.max_reads} -o output -s {params.sample} --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
+        sharkmer -k 21 -t {threads} --max-reads {params.n_reads} -o output -s {params.sample}_{params.m_reads}M --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
+        """
+
+rule fastqc:
+    input:
+        R1 = "data/{sample}.fastq",
+    output:
+        html_R1 = "fastqc/{sample}_fastqc.html",
+        zip_R1 = temp("fastqc/{sample}_fastqc.zip"),
+    params:
+        outdir = "fastqc"
+    log: "logs/fastqc/fastqc_{sample}.log"
+    priority: 15
+    shell:
+        """
+        fastqc -o {params.outdir} {input.R1} 2> {log}
         """
