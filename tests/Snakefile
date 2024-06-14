@@ -51,7 +51,7 @@ rule fastqc:
         html_R1 = "fastqc/{sample}_fastqc.html",
         zip_R1 = temp("fastqc/{sample}_fastqc.zip"),
     params:
-        outdir = "output/fastqc"
+        outdir = "fastqc"
     log: "logs/fastqc/fastqc_{sample}.log"
     priority: 15
     shell:
