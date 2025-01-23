@@ -238,7 +238,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
         }
     }
 
-    Ok(vec![pcr::PCRParams {
+    let pcr_params = pcr::PCRParams {
         forward_seq,
         reverse_seq,
         min_length,
@@ -249,7 +249,13 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
         trim,
         citation,
         notes,
-    }])
+    };
+
+    if let Err(err) = pcr::validate_pcr_params(&pcr_params) {
+        return Err(err);
+    }
+
+    Ok(vec![pcr_params])
 }
 
 /// A collection of kmer counting and analysis tools

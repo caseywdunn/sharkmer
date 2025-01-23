@@ -144,6 +144,19 @@ pub fn remove_orphan_nodes(graph: &mut StableDiGraph<DBNode, DBEdge>) {
     }
 }
 
+// Given the length of a sequence in bp, return the number of kmers needed to cover it
+// If the length is 0, return 0
+// If the length is greater than 0 and than or equal to k, return 1
+fn bp_length_to_kmer_length(bp_length: usize, k: usize) -> usize {
+    if bp_length <= 0 {
+        return 0;
+    } else if bp_length <= k {
+        return 1;
+    } else {
+        return (bp_length - k) + 1;
+    }
+}
+
 pub fn get_assembly_paths(  graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCounts, params: &PCRParams ) -> Vec<Vec<NodeIndex>> {
     let mut all_paths = Vec::new();
 
@@ -154,8 +167,8 @@ pub fn get_assembly_paths(  graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: 
                     &graph,
                     start,
                     end,
-                    params.min_length,
-                    Some(params.max_length - (kmer_counts.get_k()) + 1),
+                    bp_length_to_kmer_length(params.min_length, kmer_counts.get_k()),
+                    Some(bp_length_to_kmer_length(params.max_length, kmer_counts.get_k())),
                 );
             
             // Limit the number of paths to consider to MAX_NUM_PATHS_PER_PAIR
@@ -1311,6 +1324,31 @@ pub struct PCRParams {
     pub trim: usize,
     pub citation: String,
     pub notes: String,
+}
+
+pub fn validate_pcr_params(params: &PCRParams) -> Result<(), String> {
+    if params.forward_seq.len() < 2 {
+        return Err(format!(
+            "Forward primer sequence is too short: {}",
+            params.forward_seq
+        ));
+    }
+
+    if params.reverse_seq.len() < 2 {
+        return Err(format!(
+            "Reverse primer sequence is too short: {}",
+            params.reverse_seq
+        ));
+    }
+
+    if params.min_length > params.max_length {
+        return Err(format!(
+            "Minimum length is greater than maximum length: {} > {}",
+            params.min_length, params.max_length
+        ));
+    }
+
+    Ok(())
 }
 
 // The primary function for PCR
