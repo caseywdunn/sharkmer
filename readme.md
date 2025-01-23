@@ -145,12 +145,14 @@ This is equivalent to specifying the primer pairs manually, also with the `--pcr
     sharkmer \
       --max-reads 1000000 \
       -s Cordagalma_CWD6 -o output/ \
-      --pcr "GACTGTTTACCAAAAACATA,AATTCAACATCGAGG,1000,16s" \
-      --pcr "TCATAAAGATATTGG,ATGCCCGAAAAACCA,2000,co1" \
-      --pcr "AACCTGGTTGATCCTGCCAGT,TGATCCTTCTGCAGGTTCACCTAC,2500,18s" \
-      --pcr "CCYYAGTAACGGCGAGT,SWACAGATGGTAGCTTCG,4000,28s"  \
-      --pcr "TACACACCGCCCGTCGCTACTA,ACTCGCCGTTACTRRGG,1000,ITSfull" \
+      --pcr "GRCTGTTTACCAAAAACATA,AATTCAACATMGAGG,700,16s,min_length=500" \
+      --pcr "TCATAARGATATHGG,RTGNCCAAAAAACCA,800,co1,min_length=600" \
+      --pcr "AACCTGGTTGATCCTGCCAGT,TGATCCTTCTGCAGGTTCACCTAC,2000,18s,min_length=1600" \
+      --pcr "CCYYAGTAACGGCGAGT,SWACAGATGGTAGCTTCG,3500,28s,min_length=2900"  \
+      --pcr "TACACACCGCCCGTCGCTACTA,ACTCGCCGTTACTRRGG,1000,ITSfull,min_length=600" \
       SRR26955578_1.fastq SRR26955578_2.fastq
+
+
 
 The `--pcr` argument passes a string with the format `forward,reverse,max-length,gene-name`. Note that commas delimit fields. `max-length` should be greater than the expect PCR product size. It indicates the furthest distance from the forward primer that sharkmer should search for a reverse primer.
 

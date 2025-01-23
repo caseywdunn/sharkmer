@@ -4,7 +4,7 @@ Examine sPCR across a panel of genomes
 configfile: "config.yaml"
 
 # million_reads = [1, 2, 4, 8, 16, 32]
-million_reads = [1, 2, 4, 8, 16]
+million_reads = [1, 2, 4, 8, 16, 32]
 
 rule all:
     input:
@@ -41,7 +41,7 @@ rule sharkmer_pcr:
     log: "logs/sharkmer.{sample}.{m_reads}M.log"
     shell:
         """
-        sharkmer -k 21 -t {threads} --max-reads {params.n_reads} -o output -s {params.sample}_{params.m_reads}M --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
+        ../sharkmer/target/release/sharkmer -k 21 -t {threads} --max-reads {params.n_reads} -o output -s {params.sample}_{params.m_reads}M --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
         """
 
 rule fastqc:

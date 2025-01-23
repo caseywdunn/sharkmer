@@ -154,7 +154,7 @@ pub fn get_assembly_paths(  graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: 
                     &graph,
                     start,
                     end,
-                    params.min_length - (kmer_counts.get_k()) + 1,
+                    params.min_length,
                     Some(params.max_length - (kmer_counts.get_k()) + 1),
                 );
             
