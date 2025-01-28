@@ -271,7 +271,7 @@ struct Args {
     #[arg(short = 't', long, default_value_t = 1)]
     threads: usize,
 
-    /// Name of the sample, could be species and sample ID eg Nanomia-bijuga-YPMIZ035039
+    /// Name of the sample, could be species and sample ID eg Nanomia-bijuga-YPMIZ035039. 
     /// Will be used as the prefix for output files
     #[arg(short, long, default_value_t = String::from("sample") )]
     sample: String,
@@ -286,7 +286,7 @@ struct Args {
     #[arg()]
     input: Option<Vec<String>>,
 
-    /// Optional primer pairs for in silico PCR (sPCR). The format is:
+    /// Optional primer pairs and parameters for in silico PCR (sPCR). The format is:
     ///    --pcr "key1=value1,key2=value2,key3=value3,..."
     /// For example:
     ///    --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max_length=700,name=16s,min_length=500"
