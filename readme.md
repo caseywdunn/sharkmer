@@ -12,18 +12,18 @@ There are two components to sharkmer:
 
 `sharkmer` counts kmers
 on subsets of the data, and then builds incremental histograms from these counts. This is more efficient than counting kmers on all the data at once, and allows you
-to see how the results change as data are added. This builds more insight from the same data. It also 
-helps with practical questions, such as figuring out how much coverage you need to get good 
+to see how the results change as data are added. This builds more insight from the same data. It also
+helps with practical questions, such as figuring out how much coverage you need to get good
 genome size estimates in your organism and deciding whether to collect more data.
 
 Here is an overview of how kmer counting works in `sharkmer`:
 
-1. fastq data are ingested one read at a time and recoded as 8 bit integers, with 2 bits per base. Reads 
-   are broken into subreads at any instances of `N`, since 2 bit encoding only covers the 4 unambiguous 
-   bases and kmers can't span N anyway. The subreads are distributed across `n` chunks of subreads as thew are read. 
-2. Within each chunk, kmers are counted in a hashmap. 
+1. fastq data are ingested one read at a time and recoded as 8 bit integers, with 2 bits per base. Reads
+   are broken into subreads at any instances of `N`, since 2 bit encoding only covers the 4 unambiguous
+   bases and kmers can't span N anyway. The subreads are distributed across `n` chunks of subreads as thew are read.
+2. Within each chunk, kmers are counted in a hashmap.
    The counting of kmers in parallelized across chunks, allowing multiple threads to be used.
-3. The hashmaps for the `n` chunks are summed one by one, and a histogram is generated after each chunk of 
+3. The hashmaps for the `n` chunks are summed one by one, and a histogram is generated after each chunk of
    counts is added in. This produces `n` histograms, each summarizing more reads than the last.
 
 A few notes:
@@ -71,7 +71,6 @@ After cloning the repo, gunzip the `data` in the data dir:
 ### Additional datasets
 
 Additional datasets are available from the [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra). Install the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit) to download these datasets as described below.
-
 
 ## Usage
 
@@ -139,22 +138,19 @@ Run sPCR on the downloaded reads by specifying that we want to run a panel of cn
 
     sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr cnidaria SRR26955578_1.fastq SRR26955578_2.fastq
 
-
 This is equivalent to specifying the primer pairs manually, also with the `--pcr` argument:
 
     sharkmer \
       --max-reads 1000000 \
       -s Cordagalma_CWD6 -o output/ \
-      --pcr "GRCTGTTTACCAAAAACATA,AATTCAACATMGAGG,700,16s,min_length=500" \
-      --pcr "TCATAARGATATHGG,RTGNCCAAAAAACCA,800,co1,min_length=600" \
-      --pcr "AACCTGGTTGATCCTGCCAGT,TGATCCTTCTGCAGGTTCACCTAC,2000,18s,min_length=1600" \
-      --pcr "CCYYAGTAACGGCGAGT,SWACAGATGGTAGCTTCG,3500,28s,min_length=2900"  \
-      --pcr "TACACACCGCCCGTCGCTACTA,ACTCGCCGTTACTRRGG,1000,ITSfull,min_length=600" \
+      --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max_length=700,name=16s,min_length=500" \
+      --pcr "forward=TCATAARGATATHGG,reverse=RTGNCCAAAAAACCA,max_length=800,name=co1,min_length=600" \
+      --pcr "forward=AACCTGGTTGATCCTGCCAGT,reverse=TGATCCTTCTGCAGGTTCACCTAC,max_length=2000,name=18s,min_length=1600" \
+      --pcr "forward=CCYYAGTAACGGCGAGT,reverse=SWACAGATGGTAGCTTCG,max_length=3500,name=28s,min_length=2900"  \
+      --pcr "forward=TACACACCGCCCGTCGCTACTA,reverse=ACTCGCCGTTACTRRGG,max_length=1000,name=ITSfull,min_length=600" \
       SRR26955578_1.fastq SRR26955578_2.fastq
 
-
-
-The `--pcr` argument passes a string with the format `forward,reverse,max-length,gene-name`. Note that commas delimit fields. `max-length` should be greater than the expect PCR product size. It indicates the furthest distance from the forward primer that sharkmer should search for a reverse primer.
+The `--pcr` argument passes a string with the format `key1=value1,key2=value2,key3=value3,...`, where the required keys are `forward`, `reverse`, `name`, and `max_length`. Note that commas delimit fields. `max-length` should be greater than the expect PCR product size. It indicates the furthest distance from the forward primer that sharkmer should search for a reverse primer.
 
 The `--max-reads 1000000` arguments indicates that the first million reads should be used. THis is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since it occurs in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes would require more data.
 
@@ -169,8 +165,8 @@ So, for example, you could `gunzip` files and pipe them to `sharkmer`:
 
     zcat agalma_*.fastq.gz | sharkmer -k 21 -n 10 --histo-max 10000 -s Agalma-elegans
 
-Decompressing files takes quite a bit of compute. Handling decompression outside of `sharkmer` allows you to 
-use whichever approach you prefer on your system, for example parallel tools such as `pigz`. 
+Decompressing files takes quite a bit of compute. Handling decompression outside of `sharkmer` allows you to
+use whichever approach you prefer on your system, for example parallel tools such as `pigz`.
 
 ## Development
 

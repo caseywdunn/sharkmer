@@ -96,6 +96,28 @@ pub struct DBEdge {
     pub count: u64, // Number of times this kmer was observed
 }
 
+fn is_valid_nucleotide(c: char) -> bool {
+    match c {
+        'A' => true,
+        'C' => true,
+        'G' => true,
+        'T' => true,
+        'R' => true, // A or G
+        'Y' => true, // C or T
+        'S' => true, // C or G
+        'W' => true, // A or T
+        'K' => true, // G or T
+        'M' => true, // A or C
+        'B' => true, // C or G or T
+        'D' => true, // A or G or T
+        'H' => true, // A or C or T
+        'V' => true, // A or C or G
+        'N' => true, // A or C or G or T
+        _ => false,
+    }
+}
+
+
 // Iteratively remove nodes that do not have outgoing edges and are not end nodes
 // These are terminal side branches.
 pub fn remove_side_branches(graph: &mut StableDiGraph<DBNode, DBEdge>) {
@@ -1341,6 +1363,24 @@ pub fn validate_pcr_params(params: &PCRParams) -> Result<(), String> {
         ));
     }
 
+    for c in params.forward_seq.chars() {
+        if !is_valid_nucleotide(c) {
+            return Err(format!(
+                "Invalid nucleotide {} in forward primer {}",
+                c, params.forward_seq
+            ));
+        }
+    }
+
+    for c in params.reverse_seq.chars() {
+        if !is_valid_nucleotide(c) {
+            return Err(format!(
+                "Invalid nucleotide {} in reverse primer {}",
+                c, params.reverse_seq
+            ));
+        }
+    }
+
     if params.min_length > params.max_length {
         return Err(format!(
             "Minimum length is greater than maximum length: {} > {}",
@@ -1348,6 +1388,17 @@ pub fn validate_pcr_params(params: &PCRParams) -> Result<(), String> {
         ));
     }
 
+    if params.max_length == 0 {
+        return Err(format!(
+            "Maximum length must be specified and be greater than 0",
+        ));
+    }
+
+    if params.gene_name.is_empty() {
+        return Err(format!(
+            "Gene name must be specified and not be empty",
+        ));
+    }
     Ok(())
 }
 

@@ -147,46 +147,21 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
 
     // If the string is a single element, check if it is a preconfigured panel
     if split.len() == 1 {
-        return preconfigured::get_panel(pcr_string);
-    }
+        // If OK, validate and return the panel
+        // If not OK, return an error
 
-    // Check that there are at least 4 elements
-    if split.len() < 4 {
-        return Err(format!(
-            "Invalid pcr string, there are less than 4 elements separated by commas: {}",
-            pcr_string
-        ));
-    }
-
-    let forward_seq = split[0].to_uppercase();
-    let reverse_seq = split[1].to_uppercase();
-
-    // Check that the forward and reverse primers contain only valid nucleotides
-    for c in forward_seq.chars() {
-        if !is_valid_nucleotide(c) {
-            return Err(format!(
-                "Invalid nucleotide {} in forward primer {}",
-                c, split[0]
-            ));
-        }
-    }
-    for c in reverse_seq.chars() {
-        if !is_valid_nucleotide(c) {
-            return Err(format!(
-                "Invalid nucleotide {} in reverse primer {}",
-                c, split[1]
-            ));
+        match preconfigured::get_panel(pcr_string) {
+            Ok(params) => {
+                return Ok(params)
+            }
+            Err(_) => return Err(format!("Invalid preconfigured PCR panel: {}", pcr_string))
         }
     }
 
-    // Check that the max-length is an integer
-    let max_length: usize = match split[2].parse() {
-        Ok(n) => n,
-        Err(_) => return Err(format!("Invalid max-length: {}", split[2])),
-    };
-
-    let gene_name = split[3].to_string();
-
+    let mut forward_seq = split[0].to_uppercase();
+    let mut reverse_seq = split[1].to_uppercase();
+    let mut gene_name = "".to_string();
+    let mut max_length= 0;
     let mut min_length = 0;
     let mut coverage = 3;
     let mut mismatches = 2;
@@ -194,11 +169,11 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
     let mut citation = "".to_string();
     let mut notes = "".to_string();
 
-    // Loop over additional parameters, which are of the form key=value and are separated by underscores
-    for item in split.iter().skip(4) {
+    // Loop over additional parameters, which are of the form key=value and are separated by commas
+    for item in split.iter() {
         let key_value: Vec<&str> = item.split('=').collect();
         if key_value.len() != 2 {
-            return Err(format!("Invalid parameter: {}", item));
+            return Err(format!("Invalid parameter, should be in format key=value: {}", item));
         }
 
         let key = key_value[0].to_lowercase();
@@ -206,6 +181,20 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
         let value = key_value[1];
 
         match key {
+            "name" => {
+                gene_name = value.to_string();
+            }
+            "forward" => {
+                forward_seq = value.to_string().to_uppercase();
+            }
+            "reverse" => {
+                reverse_seq = value.to_string().to_uppercase();
+            }
+            "max_length" => {
+                max_length = value
+                    .parse()
+                    .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
+            }
             "min_length" => {
                 min_length = value
                     .parse()
@@ -275,7 +264,7 @@ struct Args {
     n: usize,
 
     /// Maximum number of reads to process
-    #[arg(short, long, default_value_t = 0)]
+    #[arg(short = 'm', long, default_value_t = 0)]
     max_reads: u64,
 
     /// Number of threads to use
@@ -298,20 +287,23 @@ struct Args {
     input: Option<Vec<String>>,
 
     /// Optional primer pairs for in silico PCR (sPCR). The format is:
-    /// --pcr "forward,reverse,max-length,name,key1=value1,key2=value2"
-    /// Where:
+    ///    --pcr "key1=value1,key2=value2,key3=value3,..."
+    /// For example:
+    ///    --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max_length=700,name=16s,min_length=500"
+    /// Where required keys are:
     ///   forward is the forward primer sequence in 5' to 3' orientation
     ///   reverse is the reverse primer sequence in 5' to 3' orientation
     ///     along the opposite strand as the forward primer, so that the
     ///     primers are in the same orientation that you would use in an
-    ///     actual in vitro PCR reaction.
-    ///   max-length is the maximum length of the PCR product, including
+    ///     actual in vitro PCR reaction (3' ends facing each other).
+    ///   max_length is the maximum length of the PCR product, including
     ///     the primers.
     ///   name is a unique name for the primer pair or amplified gene
     ///     region. This will be used to specify amplified regions in
     ///     the output fasta file.
-    ///   key=value pairs are optional parameters. The following are
-    ///    supported:
+    /// The following keys are optional: 
+    ///    min_length is the minimum length of the PCR product, including
+    ///     the primers. Default is 0.
     ///    coverage: minimum coverage for a kmer to be included in the
     ///      amplified region. Default is 3.
     ///    mismatches: maximum number of mismatches allowed between the
@@ -319,7 +311,7 @@ struct Args {
     ///    trim: number of bases to keep at the 3' end of each primer.
     ///      Default is 15.
     /// More than one primer pair can be specified, for example:
-    /// --pcr "forward1,reverse1,1000,name1" --pcr "forward2,reverse2,2000,name2"
+    /// --pcr "..." --pcr "..."
     #[arg(short = 'p', long)]
     pcr: Vec<String>,
 
