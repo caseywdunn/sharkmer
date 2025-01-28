@@ -29,6 +29,18 @@ A few notes:
 
 - The read data must be uncompressed before analysis. No `.fastq.gz` files, just `.fastq`. But you can uncompress data with an external tool and pipe it to `sharkmer`, see the [Reading compressed data](#reading-compressed-data) section below.
 
+## Citing
+
+We are working on a paper that describes sharkmer. In the meantime, please cite the two papers below. I wrote the tool for these projects, though we don't describe it in detail there.
+
+For incremental kmer counting:
+
+> N Ahuja, X Cao, DT Schultz, N Picciani, A Lord, S Shao, K Jia, DR Burdick, SH D Haddock, Y Li, CW Dunn (2024) Giants among Cnidaria: Large Nuclear Genomes and Rearranged Mitochondrial Genomes in Siphonophores. Genome Biology and Evolution, 16(3). [doi:10.1093/gbe/evae048](https://doi.org/10.1093/gbe/evae048).
+
+For *in silico* PCR:
+
+> Church et al. (2024) Global genomics of the man-o’-war (Physalia) reveals biodiversity at the ocean surface. [doi:10.1101/2024.07.10.602499](https://doi.org/10.1101/2024.07.10.602499)
+
 ## Installation
 
 This repository includes sharkmer, which is written in rust, and some helper programs written in python. The python components are optional tools for some followup analyses.
@@ -159,7 +171,7 @@ There are a limited set of preconfigured primer panels available at this time. Y
 
 #### Optimizing *in silico* PCR (sPCR)
 
-There are a few different strategies to take if you are not getting a sPCR product, or it is working inconsistently.
+There are a few different strategies to take if you are not getting a sPCR product, or it is working inconsistently. If you get things working, please let me know in in the [issue tracker](https://github.com/caseywdunn/sharkmer/issues) so I can improve the default primer sets and help other users. If you hit a wall, please also met me know in the issue tracker.
 
 The things you should try first are:
 
