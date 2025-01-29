@@ -500,7 +500,7 @@ pub struct RADParams {
     pub min_length: usize,
     pub max_length: usize,
     pub name: String,
-    pub coverage: u64,
+    pub min_coverage: u64,
 }
 
 pub fn do_rad(
@@ -520,13 +520,13 @@ pub fn do_rad(
     // Remove kmer_counts entries with less than coverage
     println!(
         "Removing kmers with coverage less than {}...",
-        params.coverage
+        params.min_coverage
     );
 
     // The kmer_counts_all includes only canonical kmers. Add the reverse complements,
     // while also filtering for coverage
     let mut kmer_counts = kmer_counts_all.clone();
-    kmer_counts.remove_low_count_kmers(&params.coverage);
+    kmer_counts.remove_low_count_kmers(&params.min_coverage);
 
     println!(
         "  The number of unique kmers went from {} to {}",

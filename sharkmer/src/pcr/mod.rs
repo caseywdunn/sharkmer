@@ -26,7 +26,7 @@ pub mod preconfigured;
 // Constants that may require tuning
 
 /// The multiplier for establishing when a kmer is considered to have high coverage,
-/// relative to the coverage threshold. It is then used to also adjust the threshold.
+/// relative to the min_coverage threshold. It is then used to also adjust the threshold.
 const COVERAGE_MULTIPLIER: u64 = 2;
 
 /// A multiplier for adjusting the threshold as it is applied.
@@ -954,12 +954,12 @@ fn get_primer_kmers(params: &PCRParams, kmer_counts: &KmerCounts, verbosity: &us
     // Get the kmers that contain the primers
     println!("  Searching kmers that contain the forward primer variants");
     let mut forward_primer_kmers =
-        get_kmers_from_primers(&forward_variants, &kmer_counts, PrimerDirection::Forward, &params.coverage);
+        get_kmers_from_primers(&forward_variants, &kmer_counts, PrimerDirection::Forward, &params.min_coverage);
     forward_primer_kmers = filter_primer_kmers(forward_primer_kmers);
 
     println!("  Searching kmers that contain the reverse primer variants");
     let mut reverse_primer_kmers =
-        get_kmers_from_primers(&reverse_variants, &kmer_counts, PrimerDirection::Reverse, &params.coverage);
+        get_kmers_from_primers(&reverse_variants, &kmer_counts, PrimerDirection::Reverse, &params.min_coverage);
     reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers);
 
     (forward_primer_kmers, reverse_primer_kmers)
@@ -1341,7 +1341,7 @@ pub struct PCRParams {
     pub min_length: usize,
     pub max_length: usize,
     pub gene_name: String,
-    pub coverage: u64,
+    pub min_coverage: u64,
     pub mismatches: usize,
     pub trim: usize,
     pub citation: String,
@@ -1385,6 +1385,13 @@ pub fn validate_pcr_params(params: &PCRParams) -> Result<(), String> {
         return Err(format!(
             "min-length is greater than max-length: {} > {}",
             params.min_length, params.max_length
+        ));
+    }
+
+    if params.min_coverage < 2 {
+        return Err(format!(
+            "min-coverage is {}, must be greater than 1",
+            params.min_coverage
         ));
     }
 
@@ -1508,20 +1515,20 @@ pub fn do_pcr(
             primer_count = max_forward_count;
         }
         
-        println!("Observed primer coverage is {}, user specified minimum coverage is {}", primer_count, params.coverage);
+        println!("Observed primer coverage is {}, user specified min-coverage is {}", primer_count, params.min_coverage);
 
-        // Creates a vector of coverage thresholds, starting with coverage_high_threshold and decreasing to params.coverage
+        // Creates a vector of coverage thresholds, starting with coverage_high_threshold and decreasing to params.min_coverage
         // in COVERAGE_STEPS steps
         let coverage_high_threshold = primer_count / COVERAGE_MULTIPLIER;
         let mut coverage_thresholds: Vec<u64> = Vec::new();
-        let step_size = (coverage_high_threshold - params.coverage) / (COVERAGE_STEPS-1);
+        let step_size = (coverage_high_threshold - params.min_coverage) / (COVERAGE_STEPS-1);
 
         for i in 0..COVERAGE_STEPS {
             coverage_thresholds.push(coverage_high_threshold - (i * step_size));
         }
 
-        // Make sure the last element is params.coverage, even if there are rounding errors
-        coverage_thresholds[COVERAGE_STEPS as usize -1] = params.coverage;
+        // Make sure the last element is params.min_coverage, even if there are rounding errors
+        coverage_thresholds[COVERAGE_STEPS as usize -1] = params.min_coverage;
 
         println!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
@@ -1703,7 +1710,7 @@ pub fn do_pcr(
 
         let count_threshold = 5;
         if (max_forward_count < count_threshold) | (max_reverse_count < count_threshold) {
-            println!("{}", format!(". Primer kmer counts are low, in this case less than {}. Consider increasing coverage.", count_threshold));
+            println!("{}", format!(". Primer kmer counts are low, in this case less than {}. Consider increasing the number of reads.", count_threshold));
         }
 
         // Add the assembly records to the all records vector
@@ -2222,7 +2229,7 @@ mod tests {
             min_length: 0,
             max_length: 2500,
             gene_name: "18s".to_string(),
-            coverage: 3,
+            min_coverage: 3,
             mismatches: 2,
             trim: 15,
             citation: "".to_string(),
@@ -2258,7 +2265,7 @@ mod tests {
         assert!(reverse_variants.contains(&member));
 
         let mut reverse_primer_kmers =
-        get_kmers_from_primers(&reverse_variants, &kmer_counts, PrimerDirection::Reverse, &params.coverage);
+        get_kmers_from_primers(&reverse_variants, &kmer_counts, PrimerDirection::Reverse, &params.min_coverage);
         
         // Check for kmer
         assert_eq!(reverse_primer_kmers.len(), 1);

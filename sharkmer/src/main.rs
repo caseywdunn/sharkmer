@@ -101,7 +101,7 @@ pub fn parse_rad_string(rad_string: &str) -> Result<rad::RADParams, String> {
 
     let name = split[4].to_string();
 
-    let mut coverage: u64 = 3;
+    let mut min_coverage: u64 = 2;
 
     // Loop over additional parameters, which are of the form key=value and are separated by underscores
     for item in split.iter().skip(5) {
@@ -115,8 +115,8 @@ pub fn parse_rad_string(rad_string: &str) -> Result<rad::RADParams, String> {
         let value = key_value[1];
 
         match key {
-            "coverage" => {
-                coverage = value
+            "min-coverage" => {
+                min_coverage = value
                     .parse()
                     .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
             }
@@ -132,7 +132,7 @@ pub fn parse_rad_string(rad_string: &str) -> Result<rad::RADParams, String> {
         min_length,
         max_length,
         name,
-        coverage,
+        min_coverage,
     })
 }
 
@@ -163,7 +163,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
     let mut gene_name = "".to_string();
     let mut max_length= 0;
     let mut min_length = 0;
-    let mut coverage = 3;
+    let mut min_coverage = 2;
     let mut mismatches = 2;
     let mut trim = 15;
     let mut citation = "".to_string();
@@ -200,8 +200,8 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
                     .parse()
                     .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
             }
-            "coverage" => {
-                coverage = value
+            "min-coverage" => {
+                min_coverage = value
                     .parse()
                     .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
             }
@@ -233,7 +233,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
         min_length,
         max_length,
         gene_name,
-        coverage,
+        min_coverage,
         mismatches,
         trim,
         citation,
@@ -304,8 +304,8 @@ struct Args {
     /// The following keys are optional: 
     ///    min-length is the minimum length of the PCR product, including
     ///     the primers. Default is 0.
-    ///    coverage: minimum coverage for a kmer to be included in the
-    ///      amplified region. Default is 3.
+    ///    min-coverage: minimum coverage for a kmer to be included in the
+    ///      amplified region. Default is 2.
     ///    mismatches: maximum number of mismatches allowed between the
     ///      primer and the kmer. Default is 2.
     ///    trim: number of bases to keep at the 3' end of each primer.

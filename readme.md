@@ -142,7 +142,7 @@ sPCR is useful when you want specific genes from skimming datasets you have coll
 
 #### *in silico* PCR example
 
-sPCR of nuclear ribosomal RNA genes (eg animal 16s, 18s) and mitochondrial genes does not take much coverage, given the relatively high copy number of these genes in skimming data. For Illumina raw reads, 0.25x coverage of the genomes is sufficient.
+sPCR of nuclear ribosomal RNA genes (eg animal 16s, 18s) and mitochondrial genes does not take much coverage, given the relatively high copy number of these genes. For Illumina raw reads, 0.25x coverage of the genomes is sufficient.
 
 We will download a smaller dataset from the coral *Stenogorgia casta*:
 
@@ -158,7 +158,7 @@ Run sPCR on the downloaded reads by specifying that we want to run a panel of cn
 This is equivalent to specifying the primer pairs manually, also with the `--pcr` argument:
 
     sharkmer \
-      --max_reads 1000000 \
+      --max-reads 1000000 \
       -s Cordagalma_CWD6 -o output/ \
       --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500" \
       --pcr "forward=TCATAARGATATHGG,reverse=RTGNCCAAAAAACCA,max-length=800,name=co1,min-length=600" \
@@ -185,19 +185,21 @@ The things you should try first are:
 
 - Optimize your primer sequences. Make some multiple sequence alignments of the desired sequence region from several closely related species, and refine the primer sequences to be more specific to the target region. You can use [degenerate nucleotide symbols](https://en.wikipedia.org/wiki/Nucleic_acid_notation), such as R for A or G, a variable sites in the site where you would like the sequence to bind. Remember that, just as in real PCR, the reverse primer should be reverse complemented.
 
-- Adjust the number of reads. If you are not getting a product, try increasing the number of reads. You can do this with the `--max_reads` argument. Likewise, if you are getting products and want to speed things up, or you are getting many products for a gene, reduce the number of reads.
+- Pick new primers that shorten the region you are trying to amplify. Shorter amplification fragments tend to require fewer reads to assemble.
 
 - Adjust the `--pcr` parameter `trim`. The default is 15. This is the max number of bases to keep at the 3' end of each primer. Primers used for real PCR tend to be longer than what is required for successful specific sPCR. This is becuase they are lengthened to adjust melting temperature. If you are getting no product, try reducing this value. If you are getting too many spurious products, try increasing this value.
+
+- Adjust the number of reads. If you are not getting a product, try increasing the number of reads. You can do this with the `--max_reads` argument. Likewise, if you are getting products and want to speed things up, or you are getting many products for a gene, reduce the number of reads.
 
 If these do not work, then you can try adjusting other parameters.
 
 - Specify a reasonable `--pcr` parameter `min-length`. This value defaults to 0, but raising it can get rid of small spurious products.
 
-- Adjust the `--pcr` parameter `coverage`. This is the depth of kmer coverage required to extend a sPCR product. It defaults to 3, and must be aat least 2 to avoid once off errors. You can try raising it to 4 or 5 to get only the best supported products, but this requires more data. For example, `--pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500,coverage=5"`
+- Adjust the `--pcr` parameter `min-coverage`. This is the depth of kmer coverage required to extend a sPCR product. It defaults to 2, and must be aat least 2 to avoid once off errors. You can try raising it to 3 or 4 to get only the best supported products, but this requires more data. For example, `--pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500,min-coverage=4"`
 
 - Adjust the `--pcr` parameter `mismatches`. This defaults to 2. You can try raising it to 3 or 4 if you aren't getting the desired product, but this may increase the number of spurious paths that need to be traversed and bog down the run.
 
-Keep in mind that there is no way to assemble a sPCR product without coverage along its full length that meets or exceeds the `coverage` parameter. The tool cannot output sequences that are not in the input. If you are trying to amplify a single copy nuclear gene, that means your sequencing depth (average coverage) of the genome will need to be quite a bit higher than the `coverage` parameter, since there will be fluctuations in coverage along the length of the region. If coverage at each site is independently distributed, then to have a 95% chance of coverage $\geq 3$ at each site in a region of nucleotide length $n$, you would need a sequencing depth of 15x for a 1000bp region, and 14x for a 500bp region. That is on the order of 30 million 150 bp reads for a 300Mb genome. This may place single copy nuclear genes out of reach for some organisms with larger genomes, especially if computer RAM limits the number of reads that can be processed.
+Keep in mind that there is no way to assemble a sPCR product without coverage along its full length that meets or exceeds the `coverage` parameter. The tool cannot output sequences that are not in the input. If you are trying to amplify a single copy nuclear gene, that means your sequencing depth (average coverage) of the genome will need to be quite a bit higher than the `coverage` parameter, since there will be fluctuations in coverage along the length of the region. If coverage at each site is independently distributed, then to have a 95% chance of coverage $\geq 2$ at each site in a region of nucleotide length $n$, you would need a sequencing depth of 13x for a 1000bp region. That is on the order of 26 million 150 bp reads for a 300Mb genome. This may place single copy nuclear genes out of reach for some organisms with larger genomes, especially if computer RAM limits the number of reads that can be processed.
 
 ### Reading compressed data
 
