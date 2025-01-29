@@ -159,7 +159,7 @@ This is equivalent to specifying the primer pairs manually, also with the `--pcr
 
     sharkmer \
       --max-reads 1000000 \
-      -s Cordagalma_CWD6 -o output/ \
+      -s Stenogorgia_casta -o output/ \
       --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500" \
       --pcr "forward=TCATAARGATATHGG,reverse=RTGNCCAAAAAACCA,max-length=800,name=co1,min-length=600" \
       --pcr "forward=AACCTGGTTGATCCTGCCAGT,reverse=TGATCCTTCTGCAGGTTCACCTAC,max-length=2000,name=18s,min-length=1600" \
