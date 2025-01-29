@@ -1049,7 +1049,7 @@ fn create_seed_graph(forward_primer_kmers: &KmerCounts, reverse_primer_kmers: &K
 // Terminal nodes have any of the following properties:
 // - is_end = true
 // - kmers that extend the node have been searched for but not found
-// - The node has a path length longer than max_length-k+1 from a start node
+// - The node has a path length longer than max-length - k + 1 from a start node
 
 // Extension continues until all nodes have been visited
 
@@ -1287,12 +1287,12 @@ fn extend_graph(seed_graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCo
                             std::io::stdout().flush().unwrap();
                         }
 
-                        // Check if the new node is max_length-k+1 from a start node
+                        // Check if the new node is max-length - k + 1 from a start node
                         // If so, mark the new node as terminal
                         let path_length = get_path_length(&graph, new_node);
 
                         // If the path length is None, the node is part of a cycle and is marked terminal.
-                        // If the path length is Some, is marked terminal if the path length is >= max_length-k+1
+                        // If the path length is Some, is marked terminal if the path length is >= max-length - k + 1
                         if let Some(path_length) = path_length {
                             if *verbosity > 1 {
                                 print!("Path length is {}. ", path_length);
@@ -1303,7 +1303,7 @@ fn extend_graph(seed_graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCo
                                 graph[new_node].is_terminal = true;
                                 graph[new_node].visited = true;
                                 if *verbosity > 1 {
-                                    print!("Marking new node {} as terminal because it exceeds max_length from start. ", new_node.index());
+                                    print!("Marking new node {} as terminal because it exceeds max-length from start. ", new_node.index());
                                     std::io::stdout().flush().unwrap();
                                 }
                             }
@@ -1383,14 +1383,14 @@ pub fn validate_pcr_params(params: &PCRParams) -> Result<(), String> {
 
     if params.min_length > params.max_length {
         return Err(format!(
-            "Minimum length is greater than maximum length: {} > {}",
+            "min-length is greater than max-length: {} > {}",
             params.min_length, params.max_length
         ));
     }
 
     if params.max_length == 0 {
         return Err(format!(
-            "Maximum length must be specified and be greater than 0",
+            "max-length must be specified and be greater than 0",
         ));
     }
 
@@ -1656,7 +1656,7 @@ pub fn do_pcr(
                 }
 
                 if sequence.len() < params.min_length {
-                    println!("  Path is {}, which is shorter than min_length {}. Skipping.", sequence.len(), params.min_length);
+                    println!("  Path is {}, which is shorter than min-length {}. Skipping.", sequence.len(), params.min_length);
                     continue;
                 }
 
@@ -1714,7 +1714,7 @@ pub fn do_pcr(
     if assembly_records_all.is_empty() {
         println!("{}", format!("For gene {}, no path was found from a forward primer binding site to a reverse binding \nsite. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
         println!("{}", format!("  Suggested actions:").color(COLOR_FAIL));
-        println!("{}", format!("    - The max_length for the PCR product of {} my be too short. Consider increasing it.", params.max_length).color(COLOR_FAIL));
+        println!("{}", format!("    - The max-length for the PCR product of {} my be too short. Consider increasing it.", params.max_length).color(COLOR_FAIL));
         println!("{}", format!("    - The primers may have non-specific binding and are not close enough to generate a \n      product. Consider increasing the primer TRIM length from the default to \n      create a more specific primer.").color(COLOR_FAIL));
 
 

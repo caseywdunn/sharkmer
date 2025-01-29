@@ -94,7 +94,7 @@ pub fn parse_rad_string(rad_string: &str) -> Result<rad::RADParams, String> {
     // Check that max is greater than min
     if max_length <= min_length {
         return Err(format!(
-            "Invalid min-length and max-length: {} {}",
+            "Invalid min-length {} is not less than max-length {}",
             min_length, max_length
         ));
     }
@@ -190,12 +190,12 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
             "reverse" => {
                 reverse_seq = value.to_string().to_uppercase();
             }
-            "max_length" => {
+            "max-length" => {
                 max_length = value
                     .parse()
                     .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
             }
-            "min_length" => {
+            "min-length" => {
                 min_length = value
                     .parse()
                     .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
@@ -289,20 +289,20 @@ struct Args {
     /// Optional primer pairs and parameters for in silico PCR (sPCR). The format is:
     ///    --pcr "key1=value1,key2=value2,key3=value3,..."
     /// For example:
-    ///    --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max_length=700,name=16s,min_length=500"
+    ///    --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500"
     /// Where required keys are:
     ///   forward is the forward primer sequence in 5' to 3' orientation
     ///   reverse is the reverse primer sequence in 5' to 3' orientation
     ///     along the opposite strand as the forward primer, so that the
     ///     primers are in the same orientation that you would use in an
     ///     actual in vitro PCR reaction (3' ends facing each other).
-    ///   max_length is the maximum length of the PCR product, including
+    ///   max-length is the maximum length of the PCR product, including
     ///     the primers.
     ///   name is a unique name for the primer pair or amplified gene
     ///     region. This will be used to specify amplified regions in
     ///     the output fasta file.
     /// The following keys are optional: 
-    ///    min_length is the minimum length of the PCR product, including
+    ///    min-length is the minimum length of the PCR product, including
     ///     the primers. Default is 0.
     ///    coverage: minimum coverage for a kmer to be included in the
     ///      amplified region. Default is 3.

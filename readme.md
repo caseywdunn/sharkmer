@@ -81,7 +81,7 @@ After cloning the repo, gunzip the `data` in the data dir:
 
 ### Additional datasets
 
-Additional datasets are available from the [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra). Install the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit) to download these datasets with `fastq-dump` as described below.
+Additional datasets are available from the [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra). Install the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit) to download these datasets with `fasterq-dump` as described below.
 
 ## Usage
 
@@ -95,7 +95,10 @@ Incremental kmer counting for genome size estimation takes a lot of data (about 
 
 We will need a relatively large dataset. Download this *Cordagalma ordinatum* dataset from [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra/SRX10340700) using the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit):
 
-    fastq-dump --split-files SRR23143278
+    cd data
+    prefetch SRR23143278
+    fasterq-dump --split-files SRR23143278
+    cd ..
 
 Now perform incremental kmer counting on the downloaded reads:
 
@@ -143,25 +146,28 @@ sPCR of nuclear ribosomal RNA genes (eg animal 16s, 18s) and mitochondrial genes
 
 We will download a smaller dataset from the coral *Stenogorgia casta*:
 
-    fasterq-dump SRR26955578
+    cd data
+    prefetch SRR26955578
+    fasterq-dump --split-files SRR26955578
+    cd ..
 
 Run sPCR on the downloaded reads by specifying that we want to run a panel of cnidarian primers:
 
-    sharkmer --max_reads 1000000 -s Stenogorgia_casta -o output/ --pcr cnidaria SRR26955578_1.fastq SRR26955578_2.fastq
+    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr cnidaria SRR26955578_1.fastq SRR26955578_2.fastq
 
 This is equivalent to specifying the primer pairs manually, also with the `--pcr` argument:
 
     sharkmer \
       --max_reads 1000000 \
       -s Cordagalma_CWD6 -o output/ \
-      --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max_length=700,name=16s,min_length=500" \
-      --pcr "forward=TCATAARGATATHGG,reverse=RTGNCCAAAAAACCA,max_length=800,name=co1,min_length=600" \
-      --pcr "forward=AACCTGGTTGATCCTGCCAGT,reverse=TGATCCTTCTGCAGGTTCACCTAC,max_length=2000,name=18s,min_length=1600" \
-      --pcr "forward=CCYYAGTAACGGCGAGT,reverse=SWACAGATGGTAGCTTCG,max_length=3500,name=28s,min_length=2900"  \
-      --pcr "forward=TACACACCGCCCGTCGCTACTA,reverse=ACTCGCCGTTACTRRGG,max_length=1000,name=ITSfull,min_length=600" \
-      SRR26955578_1.fastq SRR26955578_2.fastq
+      --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500" \
+      --pcr "forward=TCATAARGATATHGG,reverse=RTGNCCAAAAAACCA,max-length=800,name=co1,min-length=600" \
+      --pcr "forward=AACCTGGTTGATCCTGCCAGT,reverse=TGATCCTTCTGCAGGTTCACCTAC,max-length=2000,name=18s,min-length=1600" \
+      --pcr "forward=CCYYAGTAACGGCGAGT,reverse=SWACAGATGGTAGCTTCG,max-length=3500,name=28s,min-length=2900"  \
+      --pcr "forward=TACACACCGCCCGTCGCTACTA,reverse=ACTCGCCGTTACTRRGG,max-length=1000,name=ITSfull,min-length=600" \
+      data/SRR26955578_1.fastq data/SRR26955578_2.fastq
 
-The `--pcr` argument passes a string with the format `key1=value1,key2=value2,key3=value3,...`, where the required keys are `forward`, `reverse`, `name`, and `max_length`. Note that commas delimit fields. `max_-_length` should be greater than the expect PCR product size. It indicates the furthest distance from the forward primer that sharkmer should search for a reverse primer.
+The `--pcr` argument passes a string with the format `key1=value1,key2=value2,key3=value3,...`, where the required keys are `forward`, `reverse`, `name`, and `max-length`. Note that commas delimit fields. `max_-_length` should be greater than the expect PCR product size. It indicates the furthest distance from the forward primer that sharkmer should search for a reverse primer.
 
 The `--max_reads 1000000` arguments indicates that the first million reads should be used. This is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since it occurs in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes would require more data.
 
@@ -175,7 +181,7 @@ There are a few different strategies to take if you are not getting a sPCR produ
 
 The things you should try first are:
 
-- Increase the `--pcr` parameter `max_length`. It may be that the amplified region is longer than expected. And if there are introns, the amlified product can be much longer than the coding sequence.
+- Increase the `--pcr` parameter `max-length`. It may be that the amplified region is longer than expected. And if there are introns, the amlified product can be much longer than the coding sequence.
 
 - Optimize your primer sequences. Make some multiple sequence alignments of the desired sequence region from several closely related species, and refine the primer sequences to be more specific to the target region. You can use [degenerate nucleotide symbols](https://en.wikipedia.org/wiki/Nucleic_acid_notation), such as R for A or G, a variable sites in the site where you would like the sequence to bind. Remember that, just as in real PCR, the reverse primer should be reverse complemented.
 
@@ -185,9 +191,9 @@ The things you should try first are:
 
 If these do not work, then you can try adjusting other parameters.
 
-- Specify a reasonable `--pcr` parameter `min_length`. This value defaults to 0, but raising it can get rid of small spurious products.
+- Specify a reasonable `--pcr` parameter `min-length`. This value defaults to 0, but raising it can get rid of small spurious products.
 
-- Adjust the `--pcr` parameter `coverage`. This is the depth of kmer coverage required to extend a sPCR product. It defaults to 3, and must be aat least 2 to avoid once off errors. You can try raising it to 4 or 5 to get only the best supported products, but this requires more data. For example, `--pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max_length=700,name=16s,min_length=500,coverage=5"`
+- Adjust the `--pcr` parameter `coverage`. This is the depth of kmer coverage required to extend a sPCR product. It defaults to 3, and must be aat least 2 to avoid once off errors. You can try raising it to 4 or 5 to get only the best supported products, but this requires more data. For example, `--pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500,coverage=5"`
 
 - Adjust the `--pcr` parameter `mismatches`. This defaults to 2. You can try raising it to 3 or 4 if you aren't getting the desired product, but this may increase the number of spurious paths that need to be traversed and bog down the run.
 
