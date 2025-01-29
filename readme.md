@@ -197,6 +197,8 @@ If these do not work, then you can try adjusting other parameters.
 
 - Adjust the `--pcr` parameter `mismatches`. This defaults to 2. You can try raising it to 3 or 4 if you aren't getting the desired product, but this may increase the number of spurious paths that need to be traversed and bog down the run.
 
+Keep in mind that there is no way to assemble a sPCR product without coverage along its full length that meets or exceeds the `coverage` parameter. The tool cannot output sequences that are not in the input. If you are trying to amplify a single copy nuclear gene, that means your sequencing depth (average coverage) of the genome will need to be higher than the `coverage` parameter, since there will be fluctuations in coverage along the length of the region. If covereage at each site is independently distributed, then to have a 95% chance of coverage $\geq 3$ at each site in a region of nucleotide length $n$, you would need a sequencing depth of 15x for a 1000bp region, and 14x for a 500bp region. That is on the order of 30 million 150 bp reads for a 300Mb genome. This may place single copy nuclear genes out of reach for some organisms with larger genomes, especially if computer RAM limits the number of reads that can be processed.
+
 ### Reading compressed data
 
 `sharkmer` does not read compressed data directly, but it can read uncompressed data from `stdin`.
