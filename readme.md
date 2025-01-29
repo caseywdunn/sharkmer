@@ -153,7 +153,7 @@ We will download a smaller dataset from the coral *Stenogorgia casta*:
 
 Run sPCR on the downloaded reads by specifying that we want to run a panel of cnidarian primers:
 
-    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr cnidaria SRR26955578_1.fastq SRR26955578_2.fastq
+    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr cnidaria data/SRR26955578_1.fastq data/SRR26955578_2.fastq
 
 This is equivalent to specifying the primer pairs manually, also with the `--pcr` argument:
 
