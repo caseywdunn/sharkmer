@@ -62,8 +62,6 @@ sample:
       - SRR25099394
     arguments: "--pcr cnidaria"
 
-<<<<<<< Updated upstream
-=======
 # Insects 
   Drosophila_melanogaster:
     taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
@@ -94,4 +92,3 @@ sample:
     reads:
       - SRR27962769
     arguments: "--pcr insecta"
->>>>>>> Stashed changes
