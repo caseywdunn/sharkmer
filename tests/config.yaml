@@ -62,3 +62,36 @@ sample:
       - SRR25099394
     arguments: "--pcr cnidaria"
 
+<<<<<<< Updated upstream
+=======
+# Insects 
+  Drosophila_melanogaster:
+    taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
+    reads:
+      - SRR31887760
+    arguments: "--pcr insecta"
+  
+  Drosophila_sechellia:
+    taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
+    reads:
+      - SRR29149796
+    arguments: "--pcr insecta"
+  
+  Drosophila_tanythrix:
+    taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
+    reads:
+      - SRR26246479
+    arguments: "--pcr insecta"
+
+  Heliconius_pachinus:
+    taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Lepidoptera; Nymphalidae; Heliconius"
+    reads:
+      - SRR1057608
+    arguments: "--pcr insecta"
+
+  Gryllus_bimaculatus:
+    taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Orthoptera; Gryllidae; Gryllus"
+    reads:
+      - SRR27962769
+    arguments: "--pcr insecta"
+>>>>>>> Stashed changes
