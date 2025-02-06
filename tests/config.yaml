@@ -54,13 +54,38 @@ sample:
       size_mb: 951.6
       n50_mb: 2.2
 
-# Without genomes
+# Cnidarians without genomes
 
   Agalma_elegans:
     taxonomy: "Eumetazoa; Cnidaria; Hydrozoa; Hydroidolina; Siphonophorae; Physonectae; Agalmatidae; Agalma"
     reads:
       - SRR25099394
     arguments: "--pcr cnidaria"
+
+# Flowering plants
+ Liriodendron_tulipifera:
+   taxonomy: Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; Magnoliidae; Magnoliales; Magnoliaceae; Liriodendron
+   reads:
+     - SRR25378184
+   arguments: "--pcr angiospermae"
+
+ Acer_monspessulanum:
+   taxonomy: Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; rosids; malvids; Sapindales; Sapindaceae; Hippocastanoideae; Acereae; Acer
+   reads:
+     - ERR14009273
+   arguments: "--pcr angiospermae"
+
+ Opuntia_comonduensis:
+   taxonomy: Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; Caryophyllales; Cactineae; Cactaceae; Opuntioideae; Opuntia
+   reads:
+     - SRR26398994
+   arguments: "--pcr angiospermae"
+
+ Euphorbia_nicaeensis:
+   taxonomy: Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; rosids; fabids; Malpighiales; Euphorbiaceae; Euphorbioideae; Euphorbieae; Euphorbia; Euphorbia subgen. Esula; Euphorbia sect. Pithyusa; Euphorbia nicaeensis
+   reads:
+     - ERR14010214
+   arguments: "--pcr angiospermae"
 
 # Insects 
   Drosophila_melanogaster:
