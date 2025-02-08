@@ -1,18 +1,18 @@
 sample:
 
 # Gut content - metazoan metabarcoding
-  Bargmannia_gut_metagenome:
+  Bargmannia_gutmetagenome:
     reads:
       - SRR14670475
     arguments: "--pcr metazoa"
     
-  Sphaeronectes_gut_metagenome:
+  Sphaeronectes_gutmetagenome:
     reads:
       - SRR14670462
     arguments: "--pcr metazoa"
     
 # Bacterial metagenomics
-  Cover_crop_rhizosphere:
+  Covercrop_rhizosphere:
     reads:
       - SRR19418213
     arguments: "--pcr bacteria"
