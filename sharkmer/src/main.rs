@@ -149,18 +149,13 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
         // If OK, validate and return the panel
         // If not OK, return an error
 
-        match preconfigured::get_panel(pcr_string) {
-            Ok(params) => {
-                return Ok(params)
-            }
-            Err(_) => return Err(format!("Invalid preconfigured PCR panel: {}", pcr_string))
-        }
+
     }
 
     let mut forward_seq = split[0].to_uppercase();
     let mut reverse_seq = split[1].to_uppercase();
     let mut gene_name = "".to_string();
-    let mut max_length= 0;
+    let mut max_length= 10000;
     let mut min_length = 0;
     let mut min_coverage = 2;
     let mut mismatches = 2;
@@ -219,6 +214,17 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
             }
             "notes" => {
                 notes = value.to_string();
+            }
+            "panel" => {
+                if split.len() > 1 {
+                    return Err(format!("Invalid --pcr arguments, if a panel is specified it should the the only argument: {}", pcr_string));
+                }
+                match preconfigured::get_panel(value) {
+                    Ok(params) => {
+                        return Ok(params)
+                    }
+                    Err(_) => return Err(format!("Invalid preconfigured PCR panel: {}", value))
+                }
             }
             _ => {
                 return Err(format!("Unexpected parameter: {}", key));
@@ -288,38 +294,54 @@ struct Args {
     /// Optional primer pairs and parameters for in silico PCR (sPCR). 
     /// 
     /// To see a list of available preconfigured panels and exit, use:
+    /// 
     ///    --pcr panels
     /// 
-    /// To use a specific preconfigured panel, specify it by name. For example:
-    ///    --pcr cnidaria
+    /// To use a specific preconfigured panel, specify it by name with panel= . For example:
+    /// 
+    ///    --pcr panel=cnidaria
     /// 
     /// To manually specify a single primer pair, use the format:
+    /// 
     ///    --pcr "key1=value1,key2=value2,key3=value3,..."
     /// 
     /// For example:
+    /// 
     ///    --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500"
+    /// 
     /// Where required keys are:
+    /// 
     ///   forward is the forward primer sequence in 5' to 3' orientation
+    /// 
     ///   reverse is the reverse primer sequence in 5' to 3' orientation
     ///     along the opposite strand as the forward primer, so that the
     ///     primers are in the same orientation that you would use in an
     ///     actual in vitro PCR reaction (3' ends facing each other).
-    ///   max-length is the maximum length of the PCR product, including
-    ///     the primers.
+    /// 
     ///   name is a unique name for the primer pair or amplified gene
     ///     region. This will be used to specify amplified regions in
     ///     the output fasta file.
+    /// 
     /// The following keys are optional: 
+    /// 
     ///    min-length is the minimum length of the PCR product, including
     ///     the primers. Default is 0.
+    /// 
+    ///    max-length is the maximum length of the PCR product, including
+    ///     the primers. Default is 10000.
+    /// 
     ///    min-coverage: minimum coverage for a kmer to be included in the
     ///      amplified region. Default is 2.
+    /// 
     ///    mismatches: maximum number of mismatches allowed between the
     ///      primer and the kmer. Default is 2.
+    /// 
     ///    trim: number of bases to keep at the 3' end of each primer.
     ///      Default is 15.
+    /// 
     /// More than one primer pair can be specified, for example:
-    /// --pcr "..." --pcr "..."
+    /// 
+    ///    --pcr "..." --pcr "..."
     #[arg(short = 'p', long)]
     pcr: Vec<String>,
 
