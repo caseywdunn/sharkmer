@@ -1,4 +1,5 @@
 use super::PCRParams;
+use super::pcrparams_string;
 
 #[allow(dead_code)]
 struct PCRPanel {
@@ -46,13 +47,16 @@ fn get_preconfigured_panels() -> Vec<PCRPanel> {
         },
     ];
 
-  // Loop over the panels and prepend the PCRPanel name to the PCRParams genename, using _ as a deimiter
+    // Loop over the panels and prepend the PCRPanel name to the PCRParams genename, using _ as a deimiter
     for panel in panels.iter_mut() {
         for param in panel.params.iter_mut() {
         param.gene_name = format!("{}_{}", panel.name, param.gene_name);
         }
     }
-  panels
+
+    panels.sort_by_key(|panel| panel.name.clone());
+
+    panels
 }
 
 fn get_metazoa() -> Vec<PCRParams> {
@@ -1048,9 +1052,31 @@ fn get_cnidaria() -> Vec<PCRParams> {
 
 pub fn get_panel(panel_name: &str) -> Result<Vec<PCRParams>, String> {
     let panels = get_preconfigured_panels();
+
     panels
         .iter()
         .find(|panel| panel.name == panel_name)
         .map(|panel| panel.params.clone())
         .ok_or_else(|| format!("Invalid preconfigured PCR panel name '{}'", panel_name))
+}
+
+pub fn print_pcr_panels(){
+    let panels = get_preconfigured_panels();
+    for panel in panels {
+        println!("{}: {}", panel.name, panel.description);
+        for param in panel.params {
+            println!("  {}", param.gene_name);
+            println!("    forward: {}", param.forward_seq);
+            println!("    reverse: {}", param.reverse_seq);
+            println!("    min-length: {}", param.min_length);
+            println!("    max-length: {}", param.max_length);
+            println!("    min-coverage: {}", param.min_coverage);
+            println!("    mismatches: {}", param.mismatches);
+            println!("    trim: {}", param.trim);
+            println!("    citation: {}", param.citation);
+            println!("    notes: {}", param.notes);
+            println!("    arguments: --pcr \"{}\"", pcrparams_string(&param));
+            println!();
+        }
+    }
 }

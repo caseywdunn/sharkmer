@@ -1,6 +1,5 @@
 use bio::io::fasta;
 use clap::Parser;
-use colored::*;
 use pcr::preconfigured;
 use std::io::BufRead;
 use std::io::Write;
@@ -286,8 +285,17 @@ struct Args {
     #[arg()]
     input: Option<Vec<String>>,
 
-    /// Optional primer pairs and parameters for in silico PCR (sPCR). The format is:
+    /// Optional primer pairs and parameters for in silico PCR (sPCR). 
+    /// 
+    /// To see a list of available preconfigured panels and exit, use:
+    ///    --pcr panels
+    /// 
+    /// To use a specific preconfigured panel, specify it by name. For example:
+    ///    --pcr cnidaria
+    /// 
+    /// To manually specify a single primer pair, use the format:
     ///    --pcr "key1=value1,key2=value2,key3=value3,..."
+    /// 
     /// For example:
     ///    --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500"
     /// Where required keys are:
@@ -351,11 +359,6 @@ fn main() {
     // Print the arguments
     println!("{:?}", args);
 
-    println!(
-        "{}",
-        format!("Processing sample {}", args.sample).color(COLOR_NOTE)
-    );
-
     // Parse the outdir path and sample, create directories if necessary
     let path = PathBuf::from(&args.outdir);
 
@@ -380,6 +383,11 @@ fn main() {
 
     // Loop over the pcr strings, check that they are valid, and add each to the pcr_runs vector
     for pcr_string in args.pcr.iter() {
+        if pcr_string == "panels" {
+            println!("Available preconfigured PCR panels:");
+            preconfigured::print_pcr_panels();
+            std::process::exit(0);
+        }
         let parsed_pcr = parse_pcr_string(pcr_string);
         match parsed_pcr {
             Ok(pcr_params) => {

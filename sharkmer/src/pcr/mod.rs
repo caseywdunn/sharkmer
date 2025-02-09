@@ -1409,6 +1409,22 @@ pub fn validate_pcr_params(params: &PCRParams) -> Result<(), String> {
     Ok(())
 }
 
+/// Create a string representation of the PCR parameters that mimics command line usage
+pub fn pcrparams_string(params: &PCRParams) -> String {
+    let s = format!(
+        "forward={},reverse={},name={},max-length={},min-length={},min-coverage={},mismatches={},trim={}",
+        params.forward_seq,
+        params.reverse_seq,
+        params.gene_name,
+        params.max_length,
+        params.min_length,
+        params.min_coverage,
+        params.mismatches,
+        params.trim
+    );
+    s
+}
+
 // The primary function for PCR
 pub fn do_pcr(
     kmer_counts: &KmerCounts,
