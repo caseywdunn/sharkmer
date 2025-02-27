@@ -2294,9 +2294,7 @@ mod tests {
 
     #[test]
     fn test_extension_steps() {
-        let (read_string, k, replicates, kmer_counts, params) = build_test_case();
-        let min_count = 5;
-        let verbosity = 3;
+        let (_read_string, _k, _replicates, kmer_counts, _params) = build_test_case();
 
         let seq = "TGATCCTGCCAGTATCATATG".to_string();
         let kmer:u64 = seq_to_kmer(&seq);
