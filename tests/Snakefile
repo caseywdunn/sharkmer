@@ -3,12 +3,12 @@ Examine sPCR across a panel of genomes
 """
 configfile: "config.yaml"
 
-# million_reads = [1, 2, 4, 8, 16, 32]
-million_reads = [1, 2, 4, 8, 16, 32]
+thousand_reads = [1, 10, 50, 100, 500]
+#thousand_reads = [1000, 5000, 10000, 50000]
 
 rule all:
     input:
-        expand("output/{sample}_{m_reads}M.histo", m_reads = million_reads, sample = config["sample"]),
+        expand("output/{sample}_{k_reads}k.histo", k_reads = thousand_reads, sample = config["sample"]),
         expand("fastqc/{sample}_fastqc.html", sample = config["sample"]),
 
 rule download_reads:
@@ -27,21 +27,21 @@ rule sharkmer_pcr:
     input:
         reads = "data/{sample}.fastq"
     output:
-        histo = "output/{sample}_{m_reads}M.histo",
-        stats = "output/{sample}_{m_reads}M.stats",
-        final_histo = "output/{sample}_{m_reads}M.final.histo",
+        histo = "output/{sample}_{k_reads}k.histo",
+        stats = "output/{sample}_{k_reads}k.stats",
+        final_histo = "output/{sample}_{k_reads}k.final.histo",
     params:
-        m_reads = lambda wildcards: wildcards.m_reads,
-        n_reads = lambda wildcards: int(wildcards.m_reads) * 1000000,
+        k_reads = lambda wildcards: wildcards.k_reads,
+        n_reads = lambda wildcards: int(wildcards.k_reads) * 1000,
         sample = lambda wildcards: wildcards.sample,
         arguments = lambda wildcards: config["sample"][wildcards.sample]["arguments"],
         verbosity = 0,
-    threads: workflow.cores
-    benchmark: "benchmarks/sharkmer.{sample}.{m_reads}M.benchmark.txt"
-    log: "logs/sharkmer.{sample}.{m_reads}M.log"
+    threads: 8
+    benchmark: "benchmarks/sharkmer.{sample}.{k_reads}k.benchmark.txt"
+    log: "logs/sharkmer.{sample}.{k_reads}k.log"
     shell:
         """
-        ../sharkmer/target/release/sharkmer -k 21 -t {threads} --max-reads {params.n_reads} -o output -s {params.sample}_{params.m_reads}M --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
+        ../sharkmer/target/release/sharkmer -k 31 -t {threads} --max-reads {params.n_reads} -o output -s {params.sample}_{params.k_reads}k --verbosity {params.verbosity} {params.arguments} {input.reads} > {log} 2>&1
         """
 
 rule fastqc:
