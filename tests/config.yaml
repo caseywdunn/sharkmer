@@ -84,7 +84,7 @@ sample:
             - SRR19434448
         arguments: "--pcr teleostei"
 
-    Diaphus_fulgens:
+#    Diaphus_fulgens:
         taxonomy: Teleostei; Osteoglossocephalai; Clupeocephala; Euteleosteomorpha; Neoteleostei; Eurypterygia; Ctenosquamata; Myctophata; Myctophiformes; Myctophidae; Diaphus
         reads:
             - SRR22396907

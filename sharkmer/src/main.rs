@@ -52,9 +52,23 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
     if pcr_string.len() == 0 {
         return Err(format!("Invalid empty pcr string"));
     }
-
+    
     // Split the string on commas
     let split: Vec<&str> = pcr_string.split(',').collect();
+
+    
+    // If the string is a single element, check if it is a preconfigured panel
+    if split.len() == 1 {
+        // If OK, validate and return the panel
+        // If not OK, return an error
+
+        match preconfigured::get_panel(pcr_string) {
+            Ok(params) => {
+                return Ok(params)
+            }
+            Err(_) => return Err(format!("Invalid preconfigured PCR panel: {}", pcr_string))
+        }
+    }
 
     let mut forward_seq = split[0].to_uppercase();
     let mut reverse_seq = split[1].to_uppercase();
