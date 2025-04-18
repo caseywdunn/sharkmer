@@ -357,7 +357,14 @@ fn main() {
                 let mut line_n: u64 = 0;
                 // Open the file for buffered reading
                 let file_path = Path::new(&file_name);
+
+                // Check if the file exists
+                if !file_path.exists() {
+                    panic!("File {} does not exist", file_name);
+                }
+
                 let file = std::fs::File::open(file_path).unwrap();
+
                 let reader = std::io::BufReader::new(file);
                 // Iterate over the lines of the file
                 for line in reader.lines() {

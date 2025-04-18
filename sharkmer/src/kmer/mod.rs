@@ -288,6 +288,7 @@ impl KmerCounts {
         self.kmers.contains_key(*kmer)
     }
 
+    #[allow(dead_code)]
     pub fn remove_low_count_kmers(&mut self, min_count: &u64) {
         self.kmers.retain(|_, count| count >= min_count);
     }
@@ -339,6 +340,7 @@ impl KmerCounts {
         self.kmers.contains_key(kmer)
     }
 
+    #[allow(dead_code)]
     pub fn remove_low_count_kmers(&mut self, min_count: &u64) {
         let mut min = *min_count;
         let min_ref = &mut min;
@@ -392,6 +394,7 @@ impl KmerCounts {
         self.kmers.contains_key(kmer)
     }
 
+    #[allow(dead_code)]
     pub fn remove_low_count_kmers(&mut self, min_count: &u64) {
         let mut min = *min_count;
         let min_ref = &mut min;
@@ -440,18 +443,6 @@ impl KmerCounts {
 
     pub fn is_empty(&self) -> bool {
         self.kmers.is_empty()
-    }
-
-    // Expand the KmerCounts object to include the reverse complements of all the kmers, not just canonical kmers
-    pub fn add_reverse_complements(&mut self) {
-        let mut new_kmers = KmerCounts::new(&self.k);
-        for (kmer, count) in self.iter() {
-            new_kmers.insert(&crate::kmer::revcomp_kmer(kmer, &self.k), count);
-        }
-
-        // TODO - will increase counts if kmers already present, should
-        // check if they are there before extending
-        self.extend(&new_kmers);
     }
 
     // Create a new KmerCounts object that has kmers with at least min_count and 
