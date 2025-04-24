@@ -1,6 +1,5 @@
 use bio::io::fasta;
 use clap::Parser;
-use colored::*;
 use pcr::preconfigured;
 use std::io::BufRead;
 use std::io::Write;
@@ -12,7 +11,6 @@ use crate::kmer::KmerCounts;
 
 mod kmer;
 mod pcr;
-mod rad;
 
 const N_READS_PER_BATCH: u64 = 1000;
 
@@ -27,6 +25,7 @@ pub enum ParameterValue {
     Float(f64),
 }
 
+#[allow(dead_code)]
 fn is_valid_nucleotide(c: char) -> bool {
     match c {
         'A' => true,
@@ -48,103 +47,16 @@ fn is_valid_nucleotide(c: char) -> bool {
     }
 }
 
-pub fn parse_rad_string(rad_string: &str) -> Result<rad::RADParams, String> {
-    // Split the string on underscores
-    let split: Vec<&str> = rad_string.split(',').collect();
-
-    // Check that there are at least 5 elements
-    if split.len() < 5 {
-        return Err(format!(
-            "Invalid rad string, there are less than 5 elements separated by commas: {}",
-            rad_string
-        ));
-    }
-
-    let cut1 = split[0].to_uppercase();
-    let cut2 = split[1].to_uppercase();
-
-    // Check that the cut sites contain only valid nucleotides
-    for c in cut1.chars() {
-        if !is_valid_nucleotide(c) {
-            return Err(format!(
-                "Invalid nucleotide {} in cut site 1 {}",
-                c, split[0]
-            ));
-        }
-    }
-    for c in cut2.chars() {
-        if !is_valid_nucleotide(c) {
-            return Err(format!(
-                "Invalid nucleotide {} in cut site 2 {}",
-                c, split[1]
-            ));
-        }
-    }
-
-    // Check that the min-length and max-length are integers
-    let min_length: usize = match split[2].parse() {
-        Ok(n) => n,
-        Err(_) => return Err(format!("Invalid min-length: {}", split[2])),
-    };
-    let max_length: usize = match split[3].parse() {
-        Ok(n) => n,
-        Err(_) => return Err(format!("Invalid max-length: {}", split[3])),
-    };
-
-    // Check that max is greater than min
-    if max_length <= min_length {
-        return Err(format!(
-            "Invalid min-length {} is not less than max-length {}",
-            min_length, max_length
-        ));
-    }
-
-    let name = split[4].to_string();
-
-    let mut min_coverage: u64 = 2;
-
-    // Loop over additional parameters, which are of the form key=value and are separated by underscores
-    for item in split.iter().skip(5) {
-        let key_value: Vec<&str> = item.split('=').collect();
-        if key_value.len() != 2 {
-            return Err(format!("Invalid parameter: {}", item));
-        }
-
-        let key = key_value[0].to_lowercase();
-        let key = key.as_str();
-        let value = key_value[1];
-
-        match key {
-            "min-coverage" => {
-                min_coverage = value
-                    .parse()
-                    .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
-            }
-            _ => {
-                return Err(format!("Unexpected parameter: {}", key));
-            }
-        }
-    }
-
-    Ok(rad::RADParams {
-        cut1,
-        cut2,
-        min_length,
-        max_length,
-        name,
-        min_coverage,
-    })
-}
-
 pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String> {
 
     if pcr_string.len() == 0 {
         return Err(format!("Invalid empty pcr string"));
     }
-
+    
     // Split the string on commas
     let split: Vec<&str> = pcr_string.split(',').collect();
 
+    
     // If the string is a single element, check if it is a preconfigured panel
     if split.len() == 1 {
         // If OK, validate and return the panel
@@ -161,7 +73,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
     let mut forward_seq = split[0].to_uppercase();
     let mut reverse_seq = split[1].to_uppercase();
     let mut gene_name = "".to_string();
-    let mut max_length= 0;
+    let mut max_length= 10000;
     let mut min_length = 0;
     let mut min_coverage = 2;
     let mut mismatches = 2;
@@ -220,6 +132,17 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
             }
             "notes" => {
                 notes = value.to_string();
+            }
+            "panel" => {
+                if split.len() > 1 {
+                    return Err(format!("Invalid --pcr arguments, if a panel is specified it should the the only argument: {}", pcr_string));
+                }
+                match preconfigured::get_panel(value) {
+                    Ok(params) => {
+                        return Ok(params)
+                    }
+                    Err(_) => return Err(format!("Invalid preconfigured PCR panel: {}", value))
+                }
             }
             _ => {
                 return Err(format!("Unexpected parameter: {}", key));
@@ -286,54 +209,59 @@ struct Args {
     #[arg()]
     input: Option<Vec<String>>,
 
-    /// Optional primer pairs and parameters for in silico PCR (sPCR). The format is:
+    /// Optional primer pairs and parameters for in silico PCR (sPCR). 
+    /// 
+    /// To see a list of available preconfigured panels and exit, use:
+    /// 
+    ///    --pcr panels
+    /// 
+    /// To use a specific preconfigured panel, specify it by name with panel= . For example:
+    /// 
+    ///    --pcr panel=cnidaria
+    /// 
+    /// To manually specify a single primer pair, use the format:
+    /// 
     ///    --pcr "key1=value1,key2=value2,key3=value3,..."
+    /// 
     /// For example:
+    /// 
     ///    --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500"
+    /// 
     /// Where required keys are:
+    /// 
     ///   forward is the forward primer sequence in 5' to 3' orientation
+    /// 
     ///   reverse is the reverse primer sequence in 5' to 3' orientation
     ///     along the opposite strand as the forward primer, so that the
     ///     primers are in the same orientation that you would use in an
     ///     actual in vitro PCR reaction (3' ends facing each other).
-    ///   max-length is the maximum length of the PCR product, including
-    ///     the primers.
+    /// 
     ///   name is a unique name for the primer pair or amplified gene
     ///     region. This will be used to specify amplified regions in
     ///     the output fasta file.
+    /// 
     /// The following keys are optional: 
+    /// 
     ///    min-length is the minimum length of the PCR product, including
     ///     the primers. Default is 0.
+    /// 
+    ///    max-length is the maximum length of the PCR product, including
+    ///     the primers. Default is 10000.
+    /// 
     ///    min-coverage: minimum coverage for a kmer to be included in the
     ///      amplified region. Default is 2.
+    /// 
     ///    mismatches: maximum number of mismatches allowed between the
     ///      primer and the kmer. Default is 2.
+    /// 
     ///    trim: number of bases to keep at the 3' end of each primer.
     ///      Default is 15.
+    /// 
     /// More than one primer pair can be specified, for example:
-    /// --pcr "..." --pcr "..."
+    /// 
+    ///    --pcr "..." --pcr "..."
     #[arg(short = 'p', long)]
     pcr: Vec<String>,
-
-    /// EXPERIMENTAL - DO NOT USE
-    /// Optional cut sties for in silico Rad-seq (isRad-seq). The format is:
-    /// --rad "cut1,cut2,min-length,max-length,name,key1=value1,key2=value2"
-    /// Where:
-    ///   cut1 is the restriction site for the first enzyme
-    ///   cut2 is the restriction site for the second enzyme. If using
-    ///     a single enzyme, set cut2 to the same value as cut1.
-    ///   min-length is the minimum length of the digest product,
-    ///    including the full cut site.
-    ///   max-length is the maximum length of the digest product,
-    ///    including the full cut site.
-    ///   name is a unique name for this rad-seq configuration.
-    ///   key=value pairs are optional parameters. The following are
-    ///    supported:
-    ///    [none for now]
-    /// For example:
-    /// --rad "CATG,AATT,625,750,kd"
-    #[arg(short = 'r', long, hide = true)]
-    rad: Vec<String>,
 
     /// Verbosity
     #[arg(long, default_value_t = 0)]
@@ -350,11 +278,6 @@ fn main() {
     println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
     // Print the arguments
     println!("{:?}", args);
-
-    println!(
-        "{}",
-        format!("Processing sample {}", args.sample).color(COLOR_NOTE)
-    );
 
     // Parse the outdir path and sample, create directories if necessary
     let path = PathBuf::from(&args.outdir);
@@ -380,6 +303,11 @@ fn main() {
 
     // Loop over the pcr strings, check that they are valid, and add each to the pcr_runs vector
     for pcr_string in args.pcr.iter() {
+        if pcr_string == "panels" {
+            println!("Available preconfigured PCR panels:");
+            preconfigured::print_pcr_panels();
+            std::process::exit(0);
+        }
         let parsed_pcr = parse_pcr_string(pcr_string);
         match parsed_pcr {
             Ok(pcr_params) => {
@@ -398,30 +326,6 @@ fn main() {
             panic!("Duplicate gene name: {}", pcr_params.gene_name);
         } else {
             gene_names.push(pcr_params.gene_name.clone());
-        }
-    }
-
-    // Loop over the rad strings, check that they are valid, and add each to the rad_runs vector
-    let mut rad_runs: Vec<rad::RADParams> = Vec::new();
-    for rad_string in args.rad.iter() {
-        let parsed_rad = parse_rad_string(rad_string);
-        match parsed_rad {
-            Ok(rad_params) => {
-                rad_runs.push(rad_params);
-            }
-            Err(err) => {
-                panic!("Error parsing rad string: {}", err);
-            }
-        }
-    }
-
-    // Check that there are no duplicate rad names
-    let mut rad_names: Vec<String> = Vec::new();
-    for rad_params in rad_runs.iter() {
-        if rad_names.contains(&rad_params.name) {
-            panic!("Duplicate rad name: {}", rad_params.name);
-        } else {
-            rad_names.push(rad_params.name.clone());
         }
     }
 
@@ -453,7 +357,14 @@ fn main() {
                 let mut line_n: u64 = 0;
                 // Open the file for buffered reading
                 let file_path = Path::new(&file_name);
+
+                // Check if the file exists
+                if !file_path.exists() {
+                    panic!("File {} does not exist", file_name);
+                }
+
                 let file = std::fs::File::open(file_path).unwrap();
+
                 let reader = std::io::BufReader::new(file);
                 // Iterate over the lines of the file
                 for line in reader.lines() {
@@ -679,38 +590,6 @@ fn main() {
         }
 
         println!("Done running in silico PCR");
-    }
-
-    if !rad_runs.is_empty() {
-        println!("Running in silico RAD-seq...");
-
-        for rad_params in rad_runs.iter() {
-            let fasta = rad::do_rad(
-                &kmer_counts,
-                &{ args.k },
-                &args.sample,
-                args.verbosity,
-                rad_params,
-            );
-
-            if !fasta.is_empty() {
-                println!(
-                    "{} rad sequences found for {}",
-                    fasta.len(),
-                    rad_params.name
-                );
-                let fasta_path = format!("{}{}_{}.fasta", directory, args.sample, rad_params.name);
-                let mut fasta_writer =
-                    fasta::Writer::new(std::fs::File::create(fasta_path).unwrap());
-                for record in fasta {
-                    fasta_writer.write_record(&record).unwrap();
-                }
-            } else {
-                println!("No sequences found for {}", rad_params.name);
-            }
-        }
-
-        println!("Done running in silico RAD-seq");
     }
 
     println!("Total run time: {:?}", start_run.elapsed());

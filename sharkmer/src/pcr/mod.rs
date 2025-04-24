@@ -1409,6 +1409,22 @@ pub fn validate_pcr_params(params: &PCRParams) -> Result<(), String> {
     Ok(())
 }
 
+/// Create a string representation of the PCR parameters that mimics command line usage
+pub fn pcrparams_string(params: &PCRParams) -> String {
+    let s = format!(
+        "forward={},reverse={},name={},max-length={},min-length={},min-coverage={},mismatches={},trim={}",
+        params.forward_seq,
+        params.reverse_seq,
+        params.gene_name,
+        params.max_length,
+        params.min_length,
+        params.min_coverage,
+        params.mismatches,
+        params.trim
+    );
+    s
+}
+
 // The primary function for PCR
 pub fn do_pcr(
     kmer_counts: &KmerCounts,
@@ -2278,9 +2294,7 @@ mod tests {
 
     #[test]
     fn test_extension_steps() {
-        let (read_string, k, replicates, kmer_counts, params) = build_test_case();
-        let min_count = 5;
-        let verbosity = 3;
+        let (_read_string, _k, _replicates, kmer_counts, _params) = build_test_case();
 
         let seq = "TGATCCTGCCAGTATCATATG".to_string();
         let kmer:u64 = seq_to_kmer(&seq);

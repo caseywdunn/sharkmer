@@ -41,7 +41,7 @@ To get full usage information, run
 The sequence read data must be uncompressed before analysis. `sharkmer` doesn't directly ingest `.fastq.gz` files, just `.fastq`.
 But `sharkmer` can read uncompressed data from `stdin`. So you can `gunzip` files and pipe them to `sharkmer`:
 
-    zcat agalma_*.fastq.gz | sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr cnidaria 
+    zcat agalma_*.fastq.gz | sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr panel=cnidaria 
 
 Decompressing files takes quite a bit of compute (perhaps even more than the kmer analyses in some cases). Handling decompression outside of `sharkmer` allows you to
 use whichever approach you prefer on your system, for example parallel tools such as `pigz`.
@@ -73,7 +73,7 @@ We will download a small dataset from the coral *Stenogorgia casta*:
 
 Run sPCR on the downloaded reads by specifying that we want to use the built-in panel of cnidarian primers:
 
-    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr cnidaria data/SRR26955578_1.fastq data/SRR26955578_2.fastq
+    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr panel=cnidaria data/SRR26955578_1.fastq data/SRR26955578_2.fastq
 
 This is equivalent to specifying the primer pairs manually, also with the `--pcr` argument:
 
@@ -87,13 +87,17 @@ This is equivalent to specifying the primer pairs manually, also with the `--pcr
       --pcr "forward=TACACACCGCCCGTCGCTACTA,reverse=ACTCGCCGTTACTRRGG,max-length=1000,name=ITSfull,min-length=600" \
       data/SRR26955578_1.fastq data/SRR26955578_2.fastq
 
-The `--pcr` argument passes the name of a preconfigured primer panel or a manually specified PCR string with the format `key1=value1,key2=value2,key3=value3,...`, where the required keys are `forward`, `reverse`, `name`, and `max-length`. Note that commas delimit fields. `max-length` should be greater than the expect PCR product size. It indicates the furthest distance from the forward primer that sharkmer should search for a reverse primer.
+The `--pcr` argument passes the name of a preconfigured primer panel or a manually specified PCR string with the format `key1=value1,key2=value2,key3=value3,...`, where the required keys are `forward`, `reverse`, and `name`. Note that commas delimit fields.
 
-The `--max_reads 1000000` arguments indicates that the first million reads should be used. This is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since it occurs in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes require more data.
+The `--max-reads 1000000` arguments indicates that the first million reads should be used. This is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since it occurs in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes require more data.
 
 This analysis will generate one fasta file for each primer pair. These fasta files are named with the `name` argument passed to `--pcr`. If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found.
 
-There are a limited set of preconfigured primer panels available at this time. You can see where they are hard coded [here](https://github.com/caseywdunn/sharkmer/blob/dev/sharkmer/src/pcr/preconfigured.rs). If you have other primers that you would like to have added to the tool, please open an issue in the [issue tracker](https://github.com/caseywdunn/sharkmer/issues).
+You can see all the available built in PCR panels with the command:
+
+    sharkmer --pcr panels
+
+If you have other primers that you would like to have added to the tool, please submit them to the [issue tracker](https://github.com/caseywdunn/sharkmer/issues).
 
 ### Optimizing *in silico* PCR (sPCR)
 
@@ -101,7 +105,7 @@ There are a few different strategies to take if you are not getting a sPCR produ
 
 The things you should try first are:
 
-- Increase the `--pcr` parameter `max-length`. It may be that the amplified region is longer than expected. And if there are introns, the amlified product can be much longer than the coding sequence.
+- Specify a reasonable value for the `--pcr` parameter `max-length`, based on what is known about the gene. It does not need to be exact. It does need to be longer than the amplified product, but if it is much too long it may result in amplification of spurious products or runs that take too long without finding anything. Keep in mind that if there are introns, the amlified product can be much longer than the coding sequence.
 
 - Optimize your primer sequences. Make some multiple sequence alignments of the desired sequence region from several closely related species, and refine the primer sequences to be more specific to the target region. You can use [degenerate nucleotide symbols](https://en.wikipedia.org/wiki/Nucleic_acid_notation), such as R for A or G, a variable sites in the site where you would like the sequence to bind. Remember that, just as in real PCR, the reverse primer should be reverse complemented.
 

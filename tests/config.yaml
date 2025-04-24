@@ -1,64 +1,180 @@
 sample:
+### Public datasets of paired-end reads from NCBI SRA
 
-# Cnidarians selected because they have reference genome sequences available. Drawing on list by
+# Selected cndiarian datasets, drawing on list by
 # Arianna Lord at https://github.com/dunnlab/siph_skimming/blob/main/analyses_cnidaria/genome_size_final.csv
-  Porites_lutea:
-    taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Fungiina; Poritidae; Porites"
-    reads:
-      # - SRR2976390 # low quality at end of reads, small dataset. Alternate options - ERS514281
-      - ERR571460
-    arguments: "--pcr cnidaria"
-    genome: 
-      accession: GCA_958299795.1
-      size_mb: 541.6
-      n50_mb: 36
+    Porites_lutea:
+        taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Fungiina; Poritidae; Porites"
+        reads:
+            # - SRR2976390 # low quality at end of reads, small dataset. Alternate options - ERS514281
+            - ERR571460
+        arguments: "--pcr cnidaria"
+        genome: 
+            accession: "GCA_958299795.1"
+            size_mb: 541.6
+            n50_mb: 36
 
-  Xenia_sp:
-    taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Xeniidae; Xenia; unclassified Xenia"
-    reads:
-      - SRR9278435 # From genome bioproject, SRR9278432 is a smaller dataset
-    arguments: "--pcr cnidaria"
-    genome:  
-      accession: GCF_021976095.1
-      size_mb: 222.7 # 10x is about 15M reads
-      n50_mb: 14.8
-    biosample: https://www.ncbi.nlm.nih.gov/biosample/SAMN23741995/
+    Xenia_sp:
+        taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Xeniidae; Xenia; unclassified Xenia"
+        reads:
+            - SRR9278435 # From genome bioproject, SRR9278432 is a smaller dataset
+        arguments: "--pcr cnidaria"
+        genome:
+            accession: GCF_021976095.1
+            size_mb: 222.7 # 10x is about 15M reads
+            n50_mb: 14.8
+        biosample: https://www.ncbi.nlm.nih.gov/biosample/SAMN23741995/
 
-  Rhopilema_esculentum:
-    taxonomy: "Eumetazoa; Cnidaria; Scyphozoa; Rhizostomeae; Rhizostomatidae; Rhopilema"
-    reads:
-      - SRR8617500
-    arguments: "--pcr cnidaria"
-    genome:
-      accession: "GCF_013076305.1"
-      size_mb: 256.7
-      n50_mb: 12.9
+    Haliclystus_octoradiatus:
+        taxonomy: "Eumetazoa; Cnidaria; Staurozoa; Stauromedusae; Myostaurida; Haliclystidae; Haliclystus"
+        reads:
+            - ERR6745737
+        arguments: "--pcr cnidaria"
+        genome:
+            accession: "GCA_916610825.1"
+            size_mb: 261.9
+            n50_mb: 29
 
-  Haliclystus_octoradiatus:
-    taxonomy: "Eumetazoa; Cnidaria; Staurozoa; Stauromedusae; Myostaurida; Haliclystidae; Haliclystus"
-    reads:
-      - ERR6745737
-    arguments: "--pcr cnidaria"
-    genome:
-      accession: "GCA_916610825.1"
-      size_mb: 261.9
-      n50_mb: 29
+    Agalma_elegans:
+        taxonomy: "Eumetazoa; Cnidaria; Hydrozoa; Hydroidolina; Siphonophorae; Physonectae; Agalmatidae; Agalma"
+        reads:
+            - SRR25099394
+        arguments: "--pcr cnidaria"
+        # no public genome available March 2025
 
-  Morbakka_sp:
-    taxonomy: "Eumetazoa; Cnidaria; Cubozoa; Carybdeida; Carukiidae; Morbakka"
-    reads:
-      - SRR25627438
-    arguments: "--pcr cnidaria"
-    genome: 
-      accession: "GCA_003991215.1"
-      size_mb: 951.6
-      n50_mb: 2.2
+# These samples are selected for cnidarian sequences as well as bacterial carryover sequences
+    Rhopilema_esculentum:
+        taxonomy: "Eumetazoa; Cnidaria; Scyphozoa; Rhizostomeae; Rhizostomatidae; Rhopilema"
+        reads:
+            - SRR8617500
+        arguments: "--pcr cnidaria --pcr bacteria"
+        genome:
+            accession: "GCF_013076305.1"
+            size_mb: 256.7
+            n50_mb: 12.9
 
-# Without genomes
+    Morbakka_sp:
+        taxonomy: "Eumetazoa; Cnidaria; Cubozoa; Carybdeida; Carukiidae; Morbakka"
+        reads:
+            - SRR25627438
+        arguments: "--pcr cnidaria --pcr bacteria"
+        genome: 
+            accession: "GCA_003991215.1"
+            size_mb: 951.6
+            n50_mb: 2.2
 
-  Agalma_elegans:
-    taxonomy: "Eumetazoa; Cnidaria; Hydrozoa; Hydroidolina; Siphonophorae; Physonectae; Agalmatidae; Agalma"
-    reads:
-      - SRR25099394
-    arguments: "--pcr cnidaria"
+# Additional preconfigured datasets
+# Human sample            
+    Homo_sapiens:
+        taxonomy: Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Bilateria; Deuterostomia; Chordata; Craniata; Vertebrata; Gnathostomata; Teleostomi; Euteleostomi; Sarcopterygii; Dipnotetrapodomorpha; Tetrapoda; Amniota; Mammalia; Theria; Eutheria; Boreoeutheria; Euarchontoglires; Primates; Haplorrhini; Simiiformes; Catarrhini; Hominoidea; Hominidae; Homininae; Homo
+        reads:
+            - SRR17535371
+        arguments: "--pcr human"
 
+# Bony fishes - teleosts
+    Nomeus_gronovii:
+        taxonomy: Teleostei; Osteoglossocephalai; Clupeocephala; Euteleosteomorpha; Neoteleostei; Eurypterygia; Ctenosquamata; Acanthomorphata; Euacanthomorphacea; Percomorphaceae; Pelagiaria; Scombriformes; Nomeidae; Nomeus
+        reads:
+            - SRR22396603
+        arguments: "--pcr teleostei"
+
+    Hirundichthys_speculiger:
+        taxonomy: Teleostei; Osteoglossocephalai; Clupeocephala; Euteleosteomorpha; Neoteleostei; Eurypterygia; Ctenosquamata; Acanthomorphata; Euacanthomorphacea; Percomorphaceae; Ovalentaria; Atherinomorphae; Beloniformes; Belonoidei; Exocoetidae; Hirundichthys; Hirundichthys
+        reads:
+            - SRR19434448
+        arguments: "--pcr teleostei"
+
+#    Diaphus_fulgens:
+        taxonomy: Teleostei; Osteoglossocephalai; Clupeocephala; Euteleosteomorpha; Neoteleostei; Eurypterygia; Ctenosquamata; Myctophata; Myctophiformes; Myctophidae; Diaphus
+        reads:
+            - SRR22396907
+        arguments: "--pcr teleostei"
+
+    Engraulis_encrasicolus:
+        taxonomy: Teleostei; Osteoglossocephalai; Clupeocephala; Otomorpha; Clupei; Clupeiformes; Clupeoidei; Engraulidae; Engraulinae; Engraulis
+        reads:
+            - SRR11679523
+        arguments: "--pcr teleostei"
+
+# Flowering plants - angiosperms
+    Liriodendron_tulipifera:
+        taxonomy: Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; Magnoliidae; Magnoliales; Magnoliaceae; Liriodendron
+        reads:
+            - SRR25378184
+        arguments: "--pcr angiospermae"
+
+    Acer_monspessulanum:
+        taxonomy: Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; rosids; malvids; Sapindales; Sapindaceae; Hippocastanoideae; Acereae; Acer
+        reads:
+            - ERR14009273
+        arguments: "--pcr angiospermae"
+
+    Opuntia_comonduensis:
+        taxonomy: Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; Caryophyllales; Cactineae; Cactaceae; Opuntioideae; Opuntia
+        reads:
+            - SRR26398994
+        arguments: "--pcr angiospermae"
+
+    Euphorbia_nicaeensis:
+        taxonomy: Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; rosids; fabids; Malpighiales; Euphorbiaceae; Euphorbioideae; Euphorbieae; Euphorbia; Euphorbia subgen. Esula; Euphorbia sect. Pithyusa; Euphorbia nicaeensis
+        reads:
+            - ERR14010214
+        arguments: "--pcr angiospermae"
+
+# Insects - insecta
+    Drosophila_melanogaster:
+        taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
+        reads:
+            - SRR31887760
+        arguments: "--pcr insecta"
+    
+    Drosophila_sechellia:
+        taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
+        reads:
+            - SRR29149796
+        arguments: "--pcr insecta"
+    
+    Drosophila_tanythrix:
+        taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
+        reads:
+            - SRR26246479
+        arguments: "--pcr insecta"
+
+    Heliconius_pachinus:
+        taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Lepidoptera; Nymphalidae; Heliconius"
+        reads:
+            - SRR1057608
+        arguments: "--pcr insecta"
+
+    Gryllus_bimaculatus:
+        taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Orthoptera; Gryllidae; Gryllus"
+        reads:
+            - SRR27962769
+        arguments: "--pcr insecta"
+        
+# Metazoan metabarcoding - gut content datasets
+    Bargmannia_gutmetagenome:
+        reads:
+            - SRR14670475
+        arguments: "--pcr metazoa"
+        
+    Sphaeronectes_gutmetagenome:
+        reads:
+            - SRR14670462
+        arguments: "--pcr metazoa"
+            
+# Bacterial metagenomics
+    Covercrop_rhizosphere:
+        reads:
+            - SRR19418213
+        arguments: "--pcr bacteria"
+     
+    Coral_metagenome:
+        reads:
+            - SRR24806237
+        arguments: "--pcr bacteria"
+    
+    Seawater_metagenome:
+        reads:
+            - ERR2596344
+        arguments: "--pcr bacteria"
