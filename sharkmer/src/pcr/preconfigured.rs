@@ -924,6 +924,18 @@ fn get_metazoa() -> Vec<PCRParams> {
             notes: "Within V9".to_string(),
         },
 
+        PCRParams {
+            gene_name: "18S-V9-v2".to_string(),
+            forward_seq: "CCCTGCCHTTTGTACACAC".to_string(),
+            reverse_seq: "CCTTCYGCAGGTTCACCTAC".to_string(),
+            min_length: 1,
+            max_length: 300,
+            min_coverage: 2,
+            mismatches: 2,
+            trim: 15,
+            citation: "From Amaral-Zettler 2009, https://doi.org/10.1371/journal.pone.0006372".to_string(),
+            notes: "1380F;1510R".to_string(),
+        },
     ]
 }
 
@@ -1111,19 +1123,6 @@ fn get_bacteria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Sakai et al., 2004, doi: http://dx.doi.org/10.3389/fmicb.2016.00650".to_string(),
             notes: "V3-V4".to_string(),
-        },
-
-        PCRParams {
-            gene_name: "18S-V9-v2".to_string(),
-            forward_seq: "CCCTGCCHTTTGTACACAC".to_string(),
-            reverse_seq: "CCTTCYGCAGGTTCACCTAC".to_string(),
-            min_length: 1,
-            max_length: 300,
-            min_coverage: 2,
-            mismatches: 2,
-            trim: 15,
-            citation: "From Amaral-Zettler 2009, https://doi.org/10.1371/journal.pone.0006372".to_string(),
-            notes: "1380F;1510R".to_string(),
         },
     ]
 }
