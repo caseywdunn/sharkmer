@@ -41,7 +41,7 @@ To get full usage information, run
 The sequence read data must be uncompressed before analysis. `sharkmer` doesn't directly ingest `.fastq.gz` files, just `.fastq`.
 But `sharkmer` can read uncompressed data from `stdin`. So you can `gunzip` files and pipe them to `sharkmer`:
 
-    zcat agalma_*.fastq.gz | sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr panel=cnidaria 
+    zcat agalma_*.fastq.gz | sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr cnidaria 
 
 Decompressing files takes quite a bit of compute (perhaps even more than the kmer analyses in some cases). Handling decompression outside of `sharkmer` allows you to
 use whichever approach you prefer on your system, for example parallel tools such as `pigz`.
@@ -73,7 +73,7 @@ We will download a small dataset from the coral *Stenogorgia casta*:
 
 Run sPCR on the downloaded reads by specifying that we want to use the built-in panel of cnidarian primers:
 
-    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr panel=cnidaria data/SRR26955578_1.fastq data/SRR26955578_2.fastq
+    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr cnidaria data/SRR26955578_1.fastq data/SRR26955578_2.fastq
 
 This is equivalent to specifying the primer pairs manually, also with the `--pcr` argument:
 
