@@ -25,8 +25,8 @@ about:
   summary: "Kmer counter and seeded de Bruijn graph assembler for in silico PCR and genome size estimation"
   license: MIT
   license_file:
-    - sharkmer/LICENSE
-    - sharkmer/licenses/LICENSE.dependencies.json
+    - LICENSE
+    - LICENSE.dependencies.json
 
 extra:
   recipe-maintainers:
