@@ -27,7 +27,7 @@ Then clone this repository and build sharkmer:
     cd sharkmer/sharkmer
     cargo build --release
 
-Note that the `sharkmer` rust code is in the `sharkmer/sharkmer` folder, not the top level `sharkmer` folder.The compiled executable will be in `sharkmer/sharkmer/target/release/sharkmer`. Move it to a location in your path.
+Note that the `sharkmer` rust code is in the `sharkmer/sharkmer` folder, not the top level `sharkmer` folder. The compiled executable will be in `sharkmer/sharkmer/target/release/sharkmer`. Move it to a location in your path.
 
 If you would like to follow along with the examples below, also install the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit) so that you can download raw reads from 
 [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra) with `fasterq-dump`.
@@ -101,19 +101,19 @@ If you have other primers that you would like to have added to the tool, please 
 
 ### Optimizing *in silico* PCR (sPCR)
 
-There are a few different strategies to take if you are not getting a sPCR product, or it is working inconsistently. If you get things working, please let me know in in the [issue tracker](https://github.com/caseywdunn/sharkmer/issues) so I can improve the default primer sets and help other users. If you hit a wall, please also met me know in the issue tracker.
+There are a few different strategies to take if you are not getting a sPCR product, or it is working inconsistently. If you get things working, please let me know in in the [issue tracker](https://github.com/caseywdunn/sharkmer/issues) so I can improve the default primer sets and help other users. If you hit a wall, please also let me know in the issue tracker.
 
 The things you should try first are:
 
-- Specify a reasonable value for the `--pcr` parameter `max-length`, based on what is known about the gene. It does not need to be exact. It does need to be longer than the amplified product, but if it is much too long it may result in amplification of spurious products or runs that take too long without finding anything. Keep in mind that if there are introns, the amlified product can be much longer than the coding sequence.
+- Specify a reasonable value for the `--pcr` parameter `max-length`, based on what is known about the gene. It does not need to be exact. It does need to be longer than the amplified product, but if it is much too long it may result in amplification of spurious products or runs that take too long without finding anything. Keep in mind that if there are introns, the amplified product can be much longer than the coding sequence.
 
 - Optimize your primer sequences. Make some multiple sequence alignments of the desired sequence region from several closely related species, and refine the primer sequences to be more specific to the target region. You can use [degenerate nucleotide symbols](https://en.wikipedia.org/wiki/Nucleic_acid_notation), such as R for A or G, a variable sites in the site where you would like the sequence to bind. Remember that, just as in real PCR, the reverse primer should be reverse complemented.
 
 - Pick new primers that shorten the region you are trying to amplify. Shorter amplification fragments tend to require fewer reads to assemble.
 
-- Adjust the `--pcr` parameter `trim`. The default is 15. This is the max number of bases to keep at the 3' end of each primer. Primers used for real PCR tend to be longer than what is required for them to be unique within the genome. This is because they are lengthened to increase melting temperature. If you don't get a product, try reducing `trim` to reduce the specificity of the primer. If you are getting too many spurious products, try increasing this value. Modifying `trim` rather than adjusting hte primer sequence makes subsequent adjustments easier (since you don't have to look up the primer sequence again) and also makes the provenance of primer sequences clearer.
+- Adjust the `--pcr` parameter `trim`. The default is 15. This is the max number of bases to keep at the 3' end of each primer. Primers used for real PCR tend to be longer than what is required for them to be unique within the genome. This is because they are lengthened to increase melting temperature. If you don't get a product, try reducing `trim` to reduce the specificity of the primer. If you are getting too many spurious products, try increasing this value. Modifying `trim` rather than adjusting the primer sequence makes subsequent adjustments easier (since you don't have to look up the primer sequence again) and also makes the provenance of primer sequences clearer.
 
-- Adjust the number of reads. If you are not getting a product, try increasing the number of reads. You can do this with the `--max_reads` argument. Likewise, if you are getting products and want to speed things up, or you are getting many products for a gene, reduce the number of reads.
+- Adjust the number of reads. If you are not getting a product, try increasing the number of reads. You can do this with the `--max-reads` argument. Likewise, if you are getting products and want to speed things up, or you are getting many products for a gene, reduce the number of reads.
 
 If these do not work, then you can try adjusting other parameters.
 
@@ -121,7 +121,7 @@ If these do not work, then you can try adjusting other parameters.
 
 - Adjust the `--pcr` parameter `min-coverage`. This is the depth of kmer coverage required to extend a sPCR product. It defaults to 2, and must be at least 2 to avoid once-off sequencing errors. You can try raising it to 3 or 4 to get only the best supported products, but this requires more data. For example, `--pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500,min-coverage=4"`
 
-- Adjust the `--pcr` parameter `mismatches`. This defaults to 2. You can try raising it to 3 or 4 if you aren't getting the desired product. THis reduces specificity, but this may increase the number of spurious paths that need to be traversed and bog down the run.
+- Adjust the `--pcr` parameter `mismatches`. This defaults to 2. You can try raising it to 3 or 4 if you aren't getting the desired product. This reduces specificity, but this may increase the number of spurious paths that need to be traversed and bog down the run.
 
 Keep in mind that there is no way to assemble a sPCR product without coverage along its full length that meets or exceeds the `coverage` parameter. The tool cannot output assembled sequences in the fasta file that are not in the input raw reads from the fastq file. If you are trying to amplify a single copy nuclear gene, that means your sequencing depth (average coverage) of the genome will need to be quite a bit higher than the `coverage` parameter, since there will be fluctuations in coverage along the length of the target region. If coverage at each site is independently distributed, then to have a 95% chance of coverage $\geq 2$ at each site in a region of length $n$, you would need a sequencing depth of 13x for a 1000bp region. That is on the order of 26 million 150 bp reads for a 300Mb genome. This may place single copy nuclear genes out of reach for some organisms with larger genomes, especially if computer RAM limits the number of reads that can be processed.
 
@@ -129,7 +129,7 @@ Keep in mind that there is no way to assemble a sPCR product without coverage al
 
 Kmer analyses have become an essential component of many routine genomic analyses ([Manekar and Sathe, 2018](https://doi.org/10.1093/gigascience/giy125)). There are multiple excellent highly optimized stand-alone kmer counters, including [Jellyfish](https://github.com/gmarcais/Jellyfish) ([Marçais and Kingsford, 2011](https://doi.org/10.1093/bioinformatics/btr011)) and [KMC](https://github.com/refresh-bio/KMC) ([Kokot et al., 2017](https://doi.org/10.1093/bioinformatics/btx304)). These tools ingest sequence data, such as raw reads, and generate a variety of intermediate products, including count tables of all observed kmers and histograms of observed kmer counts. A variety of downstream tools are available for specific biological analyses. These include genome size estimation with GenomeScope2.0 ([Ranallo-Benavidez et al., 2020](https://doi.org/10.1038/s41467-020-14998-3)).
 
-Kmer spectra analyses typically focus on a single snapshot of data - the complete set of kmers at the time the analysis is performed. Many questions that motivate kmer spectrum analyses are about what happens as data are added. Rather than performing a single analysis on all the data, once can rarefy the data and look at progressively larger nested subsets of reads. This provides more insight into the data in hand, builds better intuition for what changes as data are added, and allows the investigator to better understand what would happen if more data were added. But reanalyzing nested this is computationally expensive, since all the data shared across nested subsets are reanalyzed.
+Kmer spectra analyses typically focus on a single snapshot of data - the complete set of kmers at the time the analysis is performed. Many questions that motivate kmer spectrum analyses are about what happens as data are added. Rather than performing a single analysis on all the data, one can rarefy the data and look at progressively larger nested subsets of reads. This provides more insight into the data in hand, builds better intuition for what changes as data are added, and allows the investigator to better understand what would happen if more data were added. But reanalyzing nested this is computationally expensive, since all the data shared across nested subsets are reanalyzed.
 
 Incremental k-mer counting, as implemented in `sharkmer`, allows investigators to efficiently investigate the effects of adding data without needing to re-analyze nested subsets. Instead, the data are broken into exclusive subsets. kmer spectra are calculated once for each, and then incrementally combined. 
 
@@ -185,9 +185,9 @@ The included `genomemovie.sh` script will generate a movie of the incremental Ge
 
 Here is an overview of how kmer counting works in `sharkmer`:
 
-1. fastq data are ingested one read at a time and recoded as 8 bit integers, with 2 bits per base. Reads
+1. Fastq data are ingested one read at a time and recoded as 8 bit integers, with 2 bits per base. Reads
    are broken into subreads at any instances of `N`, since 2 bit encoding only covers the 4 unambiguous
-   bases and kmers can't span N anyway. The subreads are distributed across `n` chunks of subreads as thew are read.
+   bases and kmers can't span N anyway. The subreads are distributed across `n` chunks of subreads as they are read.
 2. Within each chunk, kmers are counted in a hashmap.
 3. The hashmaps for the `n` chunks are summed one by one, and a histogram is generated after each chunk of
    counts is added in. This produces `n` histograms, each summarizing more reads than the last.
