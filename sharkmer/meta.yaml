@@ -1,20 +1,33 @@
 package:
-  name: sharkmer_rust
-  version: 0.1.0
+  name: sharkmer
+  version: 1.0.0
 
 source:
-  path: .
+  url: https://github.com/caseywdunn/sharkmer/archive/refs/tags/v1.0.0.tar.gz
+  sha256: PLACEHOLDER_SHA256
+
+build:
+  number: 0
+  run_exports:
+    - {{ pin_subpackage('sharkmer', max_pin='x') }}
 
 requirements:
   build:
-    - rust
-  host:
-    - rust
+    - {{ compiler('rust') }}
+    - cargo-bundle-licenses
 
 test:
-  source_files:
-    - Cargo.toml
-    - src/**/*.rs  # or whichever files are needed to run the tests
   commands:
     - sharkmer --help
-    - cargo test
+
+about:
+  home: https://github.com/caseywdunn/sharkmer
+  summary: "Kmer counter and seeded de Bruijn graph assembler for in silico PCR and genome size estimation"
+  license: MIT
+  license_file:
+    - sharkmer/LICENSE
+    - sharkmer/licenses/LICENSE.dependencies.json
+
+extra:
+  recipe-maintainers:
+    - caseywdunn

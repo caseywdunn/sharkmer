@@ -1,9 +1,8 @@
-# If data/SRR5324768_pass_1.fastq does not exist, uncompress data/SRR5324768_pass_1.fastq.gz
-if [ ! -f data/SRR5324768_pass_1.fastq ]; then
-	gunzip -c data/SRR5324768_pass_1.fastq.gz > data/SRR5324768_pass_1.fastq
-fi
+#!/bin/bash
+set -euo pipefail
 
-# Build 
-cargo build --release
-mkdir -p $PREFIX/bin
-cp target/release/sharkmer $PREFIX/bin
+cd sharkmer
+
+cargo-bundle-licenses --format json --output licenses/LICENSE.dependencies.json
+
+cargo install --locked --no-track --root "$PREFIX" --path .
