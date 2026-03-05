@@ -1,10 +1,10 @@
 package:
   name: sharkmer
-  version: 1.0.0
+  version: 1.0.1
 
 source:
-  url: https://github.com/caseywdunn/sharkmer/archive/refs/tags/v1.0.0.tar.gz
-  sha256: 5afe6fb8b64c7ec910d94efd83c0c6c98dcf84a0a0dea1cf9f186b071742a23f
+  url: https://github.com/caseywdunn/sharkmer/archive/refs/tags/v1.0.1.tar.gz
+  sha256: PLACEHOLDER_SHA256
 
 build:
   number: 0
