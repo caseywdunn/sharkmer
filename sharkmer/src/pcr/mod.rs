@@ -881,7 +881,7 @@ fn get_kmers_from_primers(
 /// If there are more than MAX_NUM_PRIMER_KMERS, retain only the MAX_NUM_PRIMER_KMERS with the highest counts
 /// If there are less than MAX_NUM_PRIMER_KMERS, retain all of them
 /// Returns a hash map of the kmers and their counts
-fn filter_primer_kmers(matches: KmerCounts) -> KmerCounts {
+fn filter_primer_kmers(matches: KmerCounts, verbosity: &usize) -> KmerCounts {
     if matches.is_empty() {
         return matches;
     }
@@ -910,12 +910,14 @@ fn filter_primer_kmers(matches: KmerCounts) -> KmerCounts {
             matches_keep.insert(kmer, count);
             keep = true;
         }
-        println!(
-            "    {}, count {}, keep {}",
-            crate::kmer::kmer_to_seq(kmer, &matches.get_k()),
-            count,
-            keep,
-        );
+        if *verbosity > 0 {
+            println!(
+                "    {}, count {}, keep {}",
+                crate::kmer::kmer_to_seq(kmer, &matches.get_k()),
+                count,
+                keep,
+            );
+        }
     }
 
     // Replace matches with matches_keep
@@ -955,12 +957,12 @@ fn get_primer_kmers(params: &PCRParams, kmer_counts: &KmerCounts, verbosity: &us
     println!("  Searching kmers that contain the forward primer variants");
     let mut forward_primer_kmers =
         get_kmers_from_primers(&forward_variants, &kmer_counts, PrimerDirection::Forward, &params.min_coverage);
-    forward_primer_kmers = filter_primer_kmers(forward_primer_kmers);
+    forward_primer_kmers = filter_primer_kmers(forward_primer_kmers, verbosity);
 
     println!("  Searching kmers that contain the reverse primer variants");
     let mut reverse_primer_kmers =
         get_kmers_from_primers(&reverse_variants, &kmer_counts, PrimerDirection::Reverse, &params.min_coverage);
-    reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers);
+    reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers, verbosity);
 
     (forward_primer_kmers, reverse_primer_kmers)
 }

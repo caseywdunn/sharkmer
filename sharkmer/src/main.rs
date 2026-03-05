@@ -70,8 +70,8 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
         }
     }
 
-    let mut forward_seq = split[0].to_uppercase();
-    let mut reverse_seq = split[1].to_uppercase();
+    let mut forward_seq = "".to_string();
+    let mut reverse_seq = "".to_string();
     let mut gene_name = "".to_string();
     let mut max_length= 10000;
     let mut min_length = 0;
@@ -552,7 +552,7 @@ fn main() {
     line = format!("{}kmer_length\t{}\n", line, args.k);
     line = format!("{}n_reads_read\t{}\n", line, n_reads_read);
     line = format!("{}n_bases_read\t{}\n", line, n_bases_read);
-    line = format!("{}n_subreads_ingested\t{}\n", line, reads.len());
+    line = format!("{}n_subreads_ingested\t{}\n", line, n_reads_ingested);
     line = format!("{}n_bases_ingested\t{}\n", line, n_bases_ingested);
     line = format!("{}n_kmers\t{}\n", line, n_kmers_ingested);
     line = format!(
