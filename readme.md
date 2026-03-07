@@ -196,20 +196,4 @@ Incremental kmer counting is used when ingesting reads for other features, inclu
 
 ## Development
 
-Some common rust tasks in development:
-
-    cargo test
-    cargo clippy
-    cargo clippy --fix
-    cargo fmt
-    cargo build # Debug
-    cargo build --release
-
-### Test data
-
-This repository includes a test [dataset from Thermus thermophilus](https://trace.ncbi.nlm.nih.gov/Traces/?view=run_browser&acc=SRR5324768&display=metadata) for simple tests and to develop against.
-
-After cloning the repo, gunzip the `data` in the data dir:
-
-    cd sharkmer/data/ # Note that this is the sharkmer folder within the sharkmer repository
-    gunzip -c SRR5324768_pass_1.fastq.gz > SRR5324768_pass_1.fastq
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development and testing information.
