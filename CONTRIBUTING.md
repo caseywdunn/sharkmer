@@ -45,6 +45,6 @@ Before submitting a pull request, test the recipe locally with:
     conda create -n bioconda-test -c conda-forge -c bioconda bioconda-utils 
 
     # each test
-    conda activate bioconda-utils
+    conda activate bioconda-test
     cd bioconda-recipes
     conda build recipes/sharkmer -c conda-forge -c bioconda
