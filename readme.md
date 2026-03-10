@@ -19,7 +19,23 @@ For incremental kmer counting:
 
 ## Installation
 
-sharkmer is written in rust and distributed as source code. So the first step installing `sharkmer` is to [install the rust build tools](https://www.rust-lang.org/tools/install).
+### With conda
+
+This is the simplest way to install sharkmer.
+
+If you don't have it already, [install miniconda](https://www.anaconda.com/docs/getting-started/miniconda/install).
+
+To install sharkmer into an existing active conda environment:
+
+    conda install -c bioconda -c conda-forge sharkmer
+
+To create a new environment (here called `sharkmer_env`, but you can name it anything you like) and install sharkmer in it:
+
+    conda create -n sharkmer_env -c bioconda -c conda-forge sharkmer
+
+### From the repository
+
+If you don't have them already, [install the rust build tools](https://www.rust-lang.org/tools/install).
 
 Then clone this repository and build sharkmer:
 
