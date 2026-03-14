@@ -1,5 +1,7 @@
 # sharkmer - a kmer analysis tool
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19020708.svg)](https://doi.org/10.5281/zenodo.19020708)
+
 `sharkmer` is a kmer counter and seeded *de Bruijn* graph assembler. `sharkmer` features include:
 
 - *in silico* PCR (sPCR). You supply a fastq file of whole genome shotgun reads and sequences for primer pairs, and get a fasta file of the amplicons that would be produced by PCR on the genome. This is useful for assembling and isolating particular genes from raw genome skimming data.  
