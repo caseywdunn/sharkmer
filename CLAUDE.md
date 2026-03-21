@@ -164,7 +164,8 @@ after each phase.
 - **Logging**: `log` + `env_logger`, `-v`/`-vv`/`-vvv` replaces `--verbosity N`
 - **Primer panels**: YAML files in `panels/` embedded via `include_str!()`.
   Shared parser for built-in and user-sideloaded panels.
-- **Error handling**: `anyhow` or `thiserror`, all panics removed from library
+- **Error handling**: `anyhow` for error propagation (chosen over `thiserror`
+  since sharkmer is a binary, not a library), all panics removed from library
   code, meaningful exit codes.
 - **Performance**: Eliminate PCR hash table copy (#28, #52), HashMap for node
   lookup (#27), parallelize sPCR across genes (#36), free chunks after
