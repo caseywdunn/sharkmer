@@ -24,10 +24,10 @@ Build testing and benchmarking infrastructure before any functional changes.
 
 Small, independent changes. Each should have its own branch from dev.
 
-- [ ] #38 Ensure deterministic output
-- [ ] #40 Add --cite flag
-- [ ] #42 Ensure FASTA line wrapping
-- [ ] #53 Free chunk hash tables after merging
+- [x] #38 Ensure deterministic output
+- [x] #40 Add --cite flag
+- [x] #42 Ensure FASTA line wrapping
+- [x] #53 Free chunk hash tables after merging
 - [ ] Run benchmark, commit result
 
 ## Phase 2 — Error handling
