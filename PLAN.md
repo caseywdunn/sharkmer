@@ -12,7 +12,7 @@ for detailed specifications.
 Build testing and benchmarking infrastructure before any functional changes.
 
 - [x] #18 Add CLAUDE.md (do first — provides context for all subsequent work)
-- [ ] #50 Build benchmark workflow and capture v1.0.1 baseline (NO code changes yet)
+- [x] #50 Build benchmark workflow and capture v1.0.1 baseline (Porites_lutea done; full suite across all samples pending — run on HPC)
 - [ ] #17 Fix broken test compilation
 - [ ] #20 Add workspace Cargo.toml at repo root
 - [ ] #19 Add GitHub Actions CI (depends on #17)
