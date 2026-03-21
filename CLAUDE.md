@@ -139,6 +139,19 @@ Version is `2.0.0-alpha` on `dev` branch. See PLAN.md for the phased
 execution order. 45 issues across 7 phases. Run regression benchmarks
 after each phase.
 
+## Issue workflow
+
+When working on an issue, complete a wrap-up phase before committing:
+
+1. **Summarize changes**: List what was modified and why, including any
+   non-obvious decisions made during implementation.
+2. **Flag concerns**: Note anything that came up during the work that may need
+   to be addressed in other issues — e.g. related code that looks fragile,
+   assumptions that may not hold, or scope that was intentionally deferred.
+   Open or reference issues for these as appropriate.
+3. **User review**: Present the summary and concerns to the user for review
+   before committing. Do not commit or close the issue until the user confirms.
+
 ## Key design decisions for v2.0
 
 - **CLI**: Split `--pcr` into `--pcr-panel`, `--pcr-file`, `--pcr-primers`.
