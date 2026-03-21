@@ -493,9 +493,10 @@ fn main() {
     let mut kmer_counts: KmerCounts = KmerCounts::new(&k);
     let mut histos: Vec<kmer::Histogram> = Vec::with_capacity(args.n);
 
-    // Iterate over the chunks
-    for chunk in chunks.iter() {
+    // Drain the chunks so each chunk's hash table is freed after merging
+    for chunk in chunks.drain(..) {
         kmer_counts.extend(chunk.get_kmer_counts());
+        drop(chunk);
 
         let histo = kmer::Histogram::from_kmer_counts(&kmer_counts, &args.histo_max);
 
