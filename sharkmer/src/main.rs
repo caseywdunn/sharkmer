@@ -261,6 +261,10 @@ struct Args {
     /// Verbosity
     #[arg(long, default_value_t = 0)]
     verbosity: usize,
+
+    /// Print citation information and exit
+    #[arg(long)]
+    cite: bool,
 }
 
 fn main() {
@@ -268,6 +272,24 @@ fn main() {
 
     // Ingest command line arguments
     let args = Args::parse();
+
+    // Print citation information and exit if --cite is specified
+    if args.cite {
+        println!("{} {}\n", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
+        println!("If you use sharkmer, please cite:\n");
+        println!("  Dunn et al. (2026) sharkmer: a kmer counter and seeded de Bruijn graph");
+        println!("  assembler for in silico PCR and incremental kmer counting.");
+        println!("  doi: 10.xxxx/xxxxx\n");
+        println!("BibTeX:");
+        println!("  @article{{dunn2026sharkmer,");
+        println!("    title={{sharkmer: a kmer counter and seeded de Bruijn graph assembler");
+        println!("           for in silico PCR and incremental kmer counting}},");
+        println!("    author={{Dunn, Casey W.}},");
+        println!("    year={{2026}},");
+        println!("    doi={{10.xxxx/xxxxx}}");
+        println!("  }}");
+        std::process::exit(0);
+    }
 
     // Print the program name and version
     println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
