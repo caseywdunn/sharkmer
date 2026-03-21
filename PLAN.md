@@ -17,7 +17,7 @@ Build testing and benchmarking infrastructure before any functional changes.
 - [x] #20 Add workspace Cargo.toml at repo root
 - [x] #19 Add GitHub Actions CI (depends on #17)
 - [x] #30 Add test fixtures from ERR571460 (depends on #17, #19)
-- [ ] #31 Expand integration test coverage (depends on #30)
+- [ ] #31 Deferred to Phase 6 — most tests would be invalidated by later phases (CLI #24, panels #33, error handling #21, FASTQ parsing #57). Add tests incrementally with each issue instead.
 - [ ] Run benchmark, commit result
 
 ## Phase 1 — Quick independent fixes

@@ -32,7 +32,6 @@ sharkmer/                  # Repo root
 │   │   └── spcr_18s.rs    # Integration test: 18S recovery from ERR571460
 │   └── src/
 │       ├── main.rs        # CLI entry point, FASTQ ingestion, orchestration
-│       ├── test.rs         # Integration test placeholder (mostly empty)
 │       ├── kmer/
 │       │   └── mod.rs     # 2-bit encoding, kmer extraction, counting, histograms
 │       └── pcr/
