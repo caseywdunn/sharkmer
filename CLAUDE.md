@@ -111,9 +111,6 @@ bacteria, metazoa). Issue #33 will replace with YAML files via
 
 ## Current known issues
 
-- **Tests don't compile**: `pcr/mod.rs:2238` calls nonexistent
-  `add_reverse_complements()`, line 2291 has wrong arity for
-  `filter_primer_kmers()`. See #17.
 - **Panics in library code**: ~30 `.unwrap()` calls and ~10 `panic!()` in
   library code. See #21.
 - **No CI**: No `.github/workflows/`. See #19.

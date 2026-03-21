@@ -2235,7 +2235,7 @@ mod tests {
             kmer_counts.ingest_reads(&reads);
         }
 
-        kmer_counts.add_reverse_complements();
+        let kmer_counts = kmer_counts.get_pcr_kmers(&1);
 
         let params = PCRParams {
             forward_seq: "AACCTGGTTGATCCTGCCAGT".to_string(),
@@ -2288,7 +2288,7 @@ mod tests {
         // Check for kmer
         assert_eq!(reverse_primer_kmers.len(), 1);
         
-        reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers);
+        reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers, &verbosity);
 
         // Check for kmer after filtering
         assert_eq!(reverse_primer_kmers.len(), 1);
