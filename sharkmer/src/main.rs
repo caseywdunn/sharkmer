@@ -262,6 +262,10 @@ struct Args {
     #[arg(long, default_value_t = 0)]
     validate_every: u64,
 
+    /// Minimum kmer count for sPCR (filters low-count kmers before PCR)
+    #[arg(long, default_value_t = 2)]
+    min_kmer_count: u64,
+
     /// Increase verbosity (-v info, -vv debug, -vvv trace)
     #[arg(short = 'v', long, action = clap::ArgAction::Count)]
     verbose: u8,
@@ -486,6 +490,10 @@ fn main() -> Result<()> {
         args.histo_max
     );
     ensure!(args.n > 0, "n must be greater than 0");
+    ensure!(
+        args.min_kmer_count >= 1,
+        "min-kmer-count must be at least 1"
+    );
 
     // Create an empty data frame for pcr runs
     let mut pcr_runs: Vec<pcr::PCRParams> = Vec::new();
@@ -756,10 +764,12 @@ fn main() -> Result<()> {
     if !pcr_runs.is_empty() {
         info!("Running in silico PCR...");
 
-        // Prep kmer counts for in silico PCR. Remove singleton kmers (to reduce size) and
-        // add reverse complements
-        let min_count: u64 = 2;
-        let kmer_counts_pcr = kmer_counts.get_pcr_kmers(&min_count);
+        // Prep kmer counts for in silico PCR. Filter low-count kmers and add reverse complements
+        info!(
+            "Filtering kmers with count < {} before PCR",
+            args.min_kmer_count
+        );
+        let kmer_counts_pcr = kmer_counts.get_pcr_kmers(&args.min_kmer_count);
 
         for pcr_params in pcr_runs.iter() {
             let fasta = pcr::do_pcr(&kmer_counts_pcr, &args.sample, pcr_params)?;
