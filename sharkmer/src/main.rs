@@ -332,6 +332,11 @@ fn main() -> Result<()> {
     ensure!(k > 0, "k must be greater than 0");
     ensure!(k % 2 == 1, "k must be odd");
     ensure!(args.histo_max > 0, "histo_max must be greater than 0");
+    ensure!(
+        args.histo_max <= 1_000_000,
+        "histo_max must not exceed 1000000, got {}",
+        args.histo_max
+    );
     ensure!(args.n > 0, "n must be greater than 0");
 
     // Create an empty data frame for pcr runs
@@ -481,6 +486,10 @@ fn main() -> Result<()> {
     println!("  Ingested {} bases", n_bases_ingested);
     println!("  Ingested {} kmers", n_kmers_ingested);
     println!("  Time to ingest reads: {:?}", start.elapsed());
+
+    if n_reads_ingested == 0 {
+        eprintln!("Warning: No reads were ingested. All output will be empty.");
+    }
 
     // Create the histograms
     print!("Consolidating chunks and creating histograms...");

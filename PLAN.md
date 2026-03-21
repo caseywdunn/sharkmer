@@ -37,7 +37,7 @@ kmer module → pcr module → main.rs.
 
 - [x] #21 Replace panics/unwraps with proper error handling
 - [x] #55 Fix unsigned integer underflow risks (depends on #21)
-- [ ] #60 Edge cases: empty inputs, degenerate primers (depends on #21)
+- [x] #60 Edge cases: empty inputs, degenerate primers (depends on #21)
 - [ ] Run benchmark, commit result
 
 ## Phase 3 — Core infrastructure

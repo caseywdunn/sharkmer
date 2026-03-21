@@ -281,11 +281,17 @@ fn get_backward_node_degrees(
 }
 
 pub fn compute_mean(numbers: &[u64]) -> f64 {
+    if numbers.is_empty() {
+        return 0.0;
+    }
     let sum: u64 = numbers.iter().sum();
     sum as f64 / numbers.len() as f64
 }
 
 pub fn compute_median(numbers: &[u64]) -> f64 {
+    if numbers.is_empty() {
+        return 0.0;
+    }
     let mut sorted = numbers.to_vec();
     sorted.sort();
 
@@ -375,6 +381,10 @@ fn permute_sequences(sequences: HashSet<String>, r: &usize) -> HashSet<String> {
 }
 
 fn combinations(n: usize, r: usize) -> Vec<Vec<usize>> {
+    if r > n {
+        return vec![];
+    }
+
     if r == 0 {
         return vec![Vec::new()];
     }
@@ -874,8 +884,22 @@ fn preprocess_primer(
     // Expand ambiguous nucleotides
     let mut primer_variants = resolve_primer(&primer);
 
+    const MAX_RESOLVED_VARIANTS: usize = 10_000;
+    if primer_variants.len() > MAX_RESOLVED_VARIANTS {
+        bail!(
+            "Primer {} has too many ambiguous bases: {} resolved variants exceeds limit of {}. \
+             Reduce ambiguity or use a more specific primer.",
+            primer,
+            primer_variants.len(),
+            MAX_RESOLVED_VARIANTS
+        );
+    }
+
+    // Clamp mismatches to the trimmed primer length
+    let mismatches = params.mismatches.min(primer.len());
+
     // Get all possible variants of the primers
-    primer_variants = permute_sequences(primer_variants, &params.mismatches);
+    primer_variants = permute_sequences(primer_variants, &mismatches);
 
     if dir == PrimerDirection::Reverse {
         // Replace the reverse variants with their reverse complements
