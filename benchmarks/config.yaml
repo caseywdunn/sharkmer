@@ -1,8 +1,7 @@
 sample:
 ### Public datasets of paired-end reads from NCBI SRA
 
-# Selected cndiarian datasets, drawing on list by
-# Arianna Lord at https://github.com/dunnlab/siph_skimming/blob/main/analyses_cnidaria/genome_size_final.csv
+# Selected cndiarian datasets
     Porites_lutea:
         taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Fungiina; Poritidae; Porites"
         reads:
@@ -13,27 +12,6 @@ sample:
             accession: "GCA_958299795.1"
             size_mb: 541.6
             n50_mb: 36
-
-    Xenia_sp:
-        taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Xeniidae; Xenia; unclassified Xenia"
-        reads:
-            - SRR9278435 # From genome bioproject, SRR9278432 is a smaller dataset
-        arguments: "--pcr cnidaria"
-        genome:
-            accession: GCF_021976095.1
-            size_mb: 222.7 # 10x is about 15M reads
-            n50_mb: 14.8
-        biosample: https://www.ncbi.nlm.nih.gov/biosample/SAMN23741995/
-
-    Haliclystus_octoradiatus:
-        taxonomy: "Eumetazoa; Cnidaria; Staurozoa; Stauromedusae; Myostaurida; Haliclystidae; Haliclystus"
-        reads:
-            - ERR6745737
-        arguments: "--pcr cnidaria"
-        genome:
-            accession: "GCA_916610825.1"
-            size_mb: 261.9
-            n50_mb: 29
 
     Agalma_elegans:
         taxonomy: "Eumetazoa; Cnidaria; Hydrozoa; Hydroidolina; Siphonophorae; Physonectae; Agalmatidae; Agalma"
@@ -53,16 +31,6 @@ sample:
             size_mb: 256.7
             n50_mb: 12.9
 
-    Morbakka_sp:
-        taxonomy: "Eumetazoa; Cnidaria; Cubozoa; Carybdeida; Carukiidae; Morbakka"
-        reads:
-            - SRR25627438
-        arguments: "--pcr cnidaria --pcr bacteria"
-        genome: 
-            accession: "GCA_003991215.1"
-            size_mb: 951.6
-            n50_mb: 2.2
-
 # Additional preconfigured datasets
 # Human sample            
     Homo_sapiens:
@@ -78,24 +46,6 @@ sample:
             - SRR22396603
         arguments: "--pcr teleostei"
 
-    Hirundichthys_speculiger:
-        taxonomy: Teleostei; Osteoglossocephalai; Clupeocephala; Euteleosteomorpha; Neoteleostei; Eurypterygia; Ctenosquamata; Acanthomorphata; Euacanthomorphacea; Percomorphaceae; Ovalentaria; Atherinomorphae; Beloniformes; Belonoidei; Exocoetidae; Hirundichthys; Hirundichthys
-        reads:
-            - SRR19434448
-        arguments: "--pcr teleostei"
-
-#    Diaphus_fulgens:
-        taxonomy: Teleostei; Osteoglossocephalai; Clupeocephala; Euteleosteomorpha; Neoteleostei; Eurypterygia; Ctenosquamata; Myctophata; Myctophiformes; Myctophidae; Diaphus
-        reads:
-            - SRR22396907
-        arguments: "--pcr teleostei"
-
-    Engraulis_encrasicolus:
-        taxonomy: Teleostei; Osteoglossocephalai; Clupeocephala; Otomorpha; Clupei; Clupeiformes; Clupeoidei; Engraulidae; Engraulinae; Engraulis
-        reads:
-            - SRR11679523
-        arguments: "--pcr teleostei"
-
 # Flowering plants - angiosperms
     Liriodendron_tulipifera:
         taxonomy: Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; Magnoliidae; Magnoliales; Magnoliaceae; Liriodendron
@@ -109,35 +59,12 @@ sample:
             - ERR14009273
         arguments: "--pcr angiospermae"
 
-    Opuntia_comonduensis:
-        taxonomy: Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; Caryophyllales; Cactineae; Cactaceae; Opuntioideae; Opuntia
-        reads:
-            - SRR26398994
-        arguments: "--pcr angiospermae"
-
-    Euphorbia_nicaeensis:
-        taxonomy: Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; rosids; fabids; Malpighiales; Euphorbiaceae; Euphorbioideae; Euphorbieae; Euphorbia; Euphorbia subgen. Esula; Euphorbia sect. Pithyusa; Euphorbia nicaeensis
-        reads:
-            - ERR14010214
-        arguments: "--pcr angiospermae"
 
 # Insects - insecta
     Drosophila_melanogaster:
         taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
         reads:
             - SRR31887760
-        arguments: "--pcr insecta"
-    
-    Drosophila_sechellia:
-        taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
-        reads:
-            - SRR29149796
-        arguments: "--pcr insecta"
-    
-    Drosophila_tanythrix:
-        taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
-        reads:
-            - SRR26246479
         arguments: "--pcr insecta"
 
     Heliconius_pachinus:
@@ -156,11 +83,6 @@ sample:
     Bargmannia_gutmetagenome:
         reads:
             - SRR14670475
-        arguments: "--pcr metazoa"
-        
-    Sphaeronectes_gutmetagenome:
-        reads:
-            - SRR14670462
         arguments: "--pcr metazoa"
             
 # Bacterial metagenomics
