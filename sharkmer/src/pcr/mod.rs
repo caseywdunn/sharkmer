@@ -1011,7 +1011,10 @@ fn create_seed_graph(
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
 
     // Add the forward primer matches to the graph
-    for kmer in forward_primer_kmers.kmers() {
+    // Sort kmers for deterministic output
+    let mut sorted_forward_kmers = forward_primer_kmers.kmers();
+    sorted_forward_kmers.sort();
+    for kmer in sorted_forward_kmers {
         let prefix = kmer >> 2;
 
         // If the node with sub_kmer == suffix already exists, update the node so that is_start = true
@@ -1038,7 +1041,10 @@ fn create_seed_graph(
     }
 
     // Add the reverse primer matches to the graph
-    for kmer in reverse_primer_kmers.kmers() {
+    // Sort kmers for deterministic output
+    let mut sorted_reverse_kmers = reverse_primer_kmers.kmers();
+    sorted_reverse_kmers.sort();
+    for kmer in sorted_reverse_kmers {
         let suffix = kmer & suffix_mask;
 
         // If the node with sub_kmer == suffix already exists, update the node so that is_end = true
@@ -1521,7 +1527,11 @@ pub fn do_pcr(
     let mut amplicon_index: usize = 0;
 
     // Loop over the forward_primer_kmers
-    for (kmer, count) in forward_primer_kmers.iter() {
+    // Sort by kmer value for deterministic output
+    let mut sorted_forward: Vec<(u64, u64)> =
+        forward_primer_kmers.iter().map(|(&k, &v)| (k, v)).collect();
+    sorted_forward.sort();
+    for (kmer, count) in sorted_forward.iter() {
         println!(
             "Attempting assembly with forward primer kmer {} with count {}",
             crate::kmer::kmer_to_seq(kmer, &kmer_counts.get_k()),
@@ -1809,8 +1819,12 @@ pub fn do_pcr(
         return records;
     }
 
-    // Order the records by descending kmer_min_count
-    assembly_records_all.sort_by(|a, b| b.kmer_min_count.cmp(&a.kmer_min_count));
+    // Order the records by descending kmer_min_count, with sequence as tiebreaker for determinism
+    assembly_records_all.sort_by(|a, b| {
+        b.kmer_min_count
+            .cmp(&a.kmer_min_count)
+            .then_with(|| a.fasta_record.seq().cmp(b.fasta_record.seq()))
+    });
 
     let mut records: Vec<fasta::Record> = Vec::new();
     for fasta_record in assembly_records_all {
