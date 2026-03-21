@@ -1,5 +1,5 @@
-use super::PCRParams;
 use super::pcrparams_string;
+use super::PCRParams;
 
 #[allow(dead_code)]
 struct PCRPanel {
@@ -57,7 +57,7 @@ fn get_preconfigured_panels() -> Vec<PCRPanel> {
     // Loop over the panels and prepend the PCRPanel name to the PCRParams genename, using _ as a deimiter
     for panel in panels.iter_mut() {
         for param in panel.params.iter_mut() {
-        param.gene_name = format!("{}_{}", panel.name, param.gene_name);
+            param.gene_name = format!("{}_{}", panel.name, param.gene_name);
         }
     }
 
@@ -93,7 +93,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Modified from Folmer et al. 1994".to_string(),
             notes: "Product is about 700bp long".to_string(),
-        },	
+        },
 
         PCRParams {
             forward_seq: "AACCTGGTTGATCCTGCCAGT".to_string(),
@@ -106,7 +106,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Medlin et al. 1988 https://doi.org/10.1016/0378-1119(88)90066-2".to_string(),
             notes: "Product is about 1790bp".to_string(),
-        },	
+        },
 
         PCRParams {
             forward_seq: "CCYYAGTAACGGCGAGT".to_string(),
@@ -119,7 +119,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Evans et al. 2008. https://doi.org/10.1186/1471-2148-8-139".to_string(),
             notes: "Forward primer is F97, reverse is R3238. Product is about 3230bp.".to_string(),
-        },	
+        },
 
         PCRParams {
             forward_seq: "TACACACCGCCCGTCGCTACTA".to_string(), // CAS18SF1
@@ -132,7 +132,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x".to_string(),
             notes: "Forward primer is CAS18SF1, position 1843, from Ji et al 2003. The reverse primer is the reverse complement of the 28S forward primer. Product is about 770-880bp.".to_string(),
-        },	
+        },
 
         PCRParams {
             forward_seq: "GTAGGTGAACCTGCAGAAGGATCA".to_string(), // Reverse complement of 18S reverse primer
@@ -161,7 +161,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "".to_string(),
             notes: "".to_string(),
-        },	
+        },
 
         PCRParams {
             forward_seq: "CGTGAAACCGYTRRAAGGG".to_string(),
@@ -174,15 +174,14 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "McCartin et al 2024. https://doi.org/10.7717/peerj.18607".to_string(),
             notes: "Anth-28S-eDNA; Product is about 540bp".to_string(),
-        },	
+        },
 
     ]
 }
 
 fn get_human() -> Vec<PCRParams> {
     vec![
-
-    // Human mt primers
+        // Human mt primers
         PCRParams {
             gene_name: "mt1404-3947".to_string(),
             forward_seq: "ACTTAAGGGTCGAAGGTGGATT".to_string(),
@@ -195,7 +194,6 @@ fn get_human() -> Vec<PCRParams> {
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
         },
-
         PCRParams {
             gene_name: "mt3734-6739".to_string(),
             forward_seq: "AAGTCACCCTAGCCATCATTCTA".to_string(),
@@ -208,7 +206,6 @@ fn get_human() -> Vec<PCRParams> {
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
         },
-
         PCRParams {
             gene_name: "mt6511-9220".to_string(),
             forward_seq: "CTGCTGGCATCACTATACTACTA".to_string(),
@@ -221,7 +218,6 @@ fn get_human() -> Vec<PCRParams> {
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
         },
-
         PCRParams {
             gene_name: "mt8910-10648".to_string(),
             forward_seq: "CTTACCACAAGGCACACCTACA".to_string(),
@@ -234,7 +230,6 @@ fn get_human() -> Vec<PCRParams> {
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
         },
-
         PCRParams {
             gene_name: "mt10360-12226".to_string(),
             forward_seq: "GTCTGGCCTATGAGTGACTACA".to_string(),
@@ -247,7 +242,6 @@ fn get_human() -> Vec<PCRParams> {
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
         },
-
         PCRParams {
             gene_name: "mt11977-13830".to_string(),
             forward_seq: "CTCCCTCTACATATTTACCACAAC".to_string(),
@@ -260,7 +254,6 @@ fn get_human() -> Vec<PCRParams> {
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
         },
-
         PCRParams {
             gene_name: "mt13477-15349".to_string(),
             forward_seq: "GCAGGAATACCTTTCCTCACAG".to_string(),
@@ -273,7 +266,6 @@ fn get_human() -> Vec<PCRParams> {
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
         },
-
         PCRParams {
             gene_name: "mt14898-151".to_string(),
             forward_seq: "TAGCCATGCACTACTCACCAGA".to_string(),
@@ -286,7 +278,6 @@ fn get_human() -> Vec<PCRParams> {
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
         },
-
         PCRParams {
             gene_name: "mt16488-1677".to_string(),
             forward_seq: "CTGTATCCGACATCTGGTTCCT".to_string(),
@@ -299,14 +290,12 @@ fn get_human() -> Vec<PCRParams> {
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
         },
-
     ]
 }
 
 fn get_teleostei() -> Vec<PCRParams> {
     vec![
-
-    // Universal fish primers
+        // Universal fish primers
         PCRParams {
             gene_name: "18S".to_string(),
             forward_seq: "TAACATATGCTTGTCTCAAAG".to_string(),
@@ -319,7 +308,6 @@ fn get_teleostei() -> Vec<PCRParams> {
             citation: "Karabanov et al 2014. https://doi.org/10.3390/w14030437".to_string(),
             notes: "if18S1".to_string(),
         },
-
         PCRParams {
             gene_name: "16S".to_string(),
             forward_seq: "CGCCTGTTTATCAAAAACAT".to_string(),
@@ -332,7 +320,6 @@ fn get_teleostei() -> Vec<PCRParams> {
             citation: "Ivanova et al 2007. doi: 10.1111/j.1471-8286.2007.01748.x".to_string(),
             notes: "16Sar".to_string(),
         },
-
         PCRParams {
             gene_name: "CO1".to_string(),
             forward_seq: "TCAACCAACCACAAAGACATTGGCAC".to_string(),
@@ -345,7 +332,6 @@ fn get_teleostei() -> Vec<PCRParams> {
             citation: "Naz et al 2023. doi: 10.2478/aoas-2022-0073".to_string(),
             notes: "Fish-R1".to_string(),
         },
-
         PCRParams {
             gene_name: "CytB".to_string(),
             forward_seq: "AAAGCTTCCATCCAACATCTCAGCATGATGAAA".to_string(),
@@ -355,10 +341,10 @@ fn get_teleostei() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "Nugroho et al 2007. https://www.bioflux.com.ro/docs/2019.1074-1079.pdf".to_string(),
+            citation: "Nugroho et al 2007. https://www.bioflux.com.ro/docs/2019.1074-1079.pdf"
+                .to_string(),
             notes: "L14841; H15149".to_string(),
         },
-
         PCRParams {
             gene_name: "12S".to_string(),
             forward_seq: "ACTGGGATTAGATACCCCACTATG".to_string(),
@@ -371,15 +357,12 @@ fn get_teleostei() -> Vec<PCRParams> {
             citation: "Zhang et al 2020. doi: 10.1111/2041-210X.13485 ".to_string(),
             notes: "Ac12S".to_string(),
         },
-
     ]
 }
 
-
 fn get_angiospermae() -> Vec<PCRParams> {
     vec![
-
-    // Universal flowering plant primers
+        // Universal flowering plant primers
         PCRParams {
             gene_name: "psbA-trnH".to_string(),
             forward_seq: "GTTATGCATGAACGTAATGCTC".to_string(),
@@ -392,7 +375,6 @@ fn get_angiospermae() -> Vec<PCRParams> {
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "psbA3'f; trnHf".to_string(),
         },
-
         PCRParams {
             gene_name: "rpl36-infA-rps8".to_string(),
             forward_seq: "CACAAATTTTACGAACGAAG".to_string(),
@@ -405,7 +387,6 @@ fn get_angiospermae() -> Vec<PCRParams> {
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "rpl36f; rps8r".to_string(),
         },
-
         PCRParams {
             gene_name: "trnK-rps16".to_string(),
             forward_seq: "TACTCTACCRTTGAGTTAGCAAC".to_string(),
@@ -418,20 +399,18 @@ fn get_angiospermae() -> Vec<PCRParams> {
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "trnK5'r; rps16-4546mod".to_string(),
         },
-
         PCRParams {
             gene_name: "trnV-atpE".to_string(),
             forward_seq: "GTGTAAACGAGTTGCTCTACCA".to_string(),
             reverse_seq: "CGACATTTGCACATTTAGATGCTAC".to_string(),
             min_length: 400,
             max_length: 1000,
-             min_coverage: 2,
+            min_coverage: 2,
             mismatches: 2,
             trim: 15,
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "trnV5f; S1022".to_string(),
         },
-
         PCRParams {
             gene_name: "trnC-ycf6".to_string(),
             forward_seq: "CCAGTTCAAATCTGGGTGTC".to_string(),
@@ -444,7 +423,6 @@ fn get_angiospermae() -> Vec<PCRParams> {
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "trnC; petN1r".to_string(),
         },
-
         PCRParams {
             gene_name: "ycf6-psbM".to_string(),
             forward_seq: "GGATATAGTAAGTCTTGCTTGGG".to_string(),
@@ -457,7 +435,6 @@ fn get_angiospermae() -> Vec<PCRParams> {
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "petN1; psbM2r".to_string(),
         },
-
         PCRParams {
             gene_name: "psbM-trnD".to_string(),
             forward_seq: "GCGGTAGGAACTAGAATAAATAG".to_string(),
@@ -470,7 +447,6 @@ fn get_angiospermae() -> Vec<PCRParams> {
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "psbMA1; trnD".to_string(),
         },
-
         PCRParams {
             gene_name: "atpB-rbcL".to_string(),
             forward_seq: "AGAAGTAGTAGGATTGATTCTCATA".to_string(),
@@ -483,7 +459,6 @@ fn get_angiospermae() -> Vec<PCRParams> {
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "S2r; RBCL1".to_string(),
         },
-
         PCRParams {
             gene_name: "trnL-F".to_string(),
             forward_seq: "GGTTCAAGTCCCTCTATCCC".to_string(),
@@ -496,7 +471,6 @@ fn get_angiospermae() -> Vec<PCRParams> {
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "e; f".to_string(),
         },
-
         PCRParams {
             gene_name: "ITS".to_string(),
             forward_seq: "CCTTATCATTTAGAGGAAGGAG".to_string(),
@@ -509,10 +483,8 @@ fn get_angiospermae() -> Vec<PCRParams> {
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "ITS5a; ITS4".to_string(),
         },
-
     ]
 }
-
 
 fn get_insecta() -> Vec<PCRParams> {
     vec![
@@ -799,7 +771,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Medlin et al. 1988 https://doi.org/10.1016/0378-1119(88)90066-2".to_string(),
             notes: "Product is about 1790bp".to_string(),
-        },	
+        },
 
         PCRParams {
             forward_seq: "CCYYAGTAACGGCGAGT".to_string(),
@@ -812,7 +784,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Evans et al. 2008. https://doi.org/10.1186/1471-2148-8-139".to_string(),
             notes: "Forward primer is F97, reverse is R3238. Product is about 3230bp.".to_string(),
-        },	
+        },
 
         PCRParams {
             forward_seq: "TACACACCGCCCGTCGCTACTA".to_string(), // CAS18SF1
@@ -825,7 +797,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x".to_string(),
             notes: "Forward primer is CAS18SF1, position 1843, from Ji et al 2003. The reverse primer is the reverse complement of the 28S forward primer. Product is about 770-880bp.".to_string(),
-        },	
+        },
 
         PCRParams {
             forward_seq: "GTAGGTGAACCTGCAGAAGGATCA".to_string(), // Reverse complement of 18S reverse primer
@@ -842,11 +814,9 @@ fn get_insecta() -> Vec<PCRParams> {
     ]
 }
 
-
 fn get_metazoa() -> Vec<PCRParams> {
     vec![
-
-    // Metabarcoding 18S primers
+        // Metabarcoding 18S primers
         PCRParams {
             gene_name: "18S-V3".to_string(),
             forward_seq: "AACGGCTACCACATCCAAGG".to_string(),
@@ -856,10 +826,10 @@ fn get_metazoa() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761".to_string(),
+            citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
+                .to_string(),
             notes: "Within V3".to_string(),
         },
-
         PCRParams {
             gene_name: "18S-V5-V7S".to_string(),
             forward_seq: "TGACGGAAGGGCACCACCAG".to_string(),
@@ -869,10 +839,10 @@ fn get_metazoa() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761".to_string(),
+            citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
+                .to_string(),
             notes: "Between V5 and beginning of V7 (short amplicon)".to_string(),
         },
-
         PCRParams {
             gene_name: "18S-V5-V7L".to_string(),
             forward_seq: "AAACGATGCCGACTAGCGAT".to_string(),
@@ -882,7 +852,8 @@ fn get_metazoa() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761".to_string(),
+            citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
+                .to_string(),
             notes: "Between V5 and beginning of V7 (long amplicon)".to_string(),
         },
         PCRParams {
@@ -894,10 +865,10 @@ fn get_metazoa() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761".to_string(),
+            citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
+                .to_string(),
             notes: "Within V7".to_string(),
         },
-
         PCRParams {
             gene_name: "18S-V7p-V8".to_string(),
             forward_seq: "AACAGGTCTGTGATGCCCTT".to_string(),
@@ -907,10 +878,10 @@ fn get_metazoa() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761".to_string(),
+            citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
+                .to_string(),
             notes: "Part of V7 and most of V8".to_string(),
         },
-
         PCRParams {
             gene_name: "18S-V9".to_string(),
             forward_seq: "CTTTGTACACACCGCCCGTC".to_string(),
@@ -920,10 +891,10 @@ fn get_metazoa() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761".to_string(),
+            citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
+                .to_string(),
             notes: "Within V9".to_string(),
         },
-
         PCRParams {
             gene_name: "18S-V9-v2".to_string(),
             forward_seq: "CCCTGCCHTTTGTACACAC".to_string(),
@@ -933,7 +904,8 @@ fn get_metazoa() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "From Amaral-Zettler 2009, https://doi.org/10.1371/journal.pone.0006372".to_string(),
+            citation: "From Amaral-Zettler 2009, https://doi.org/10.1371/journal.pone.0006372"
+                .to_string(),
             notes: "1380F;1510R".to_string(),
         },
     ]
@@ -941,8 +913,7 @@ fn get_metazoa() -> Vec<PCRParams> {
 
 fn get_bacteria() -> Vec<PCRParams> {
     vec![
-
-    // Bacterial 16S variable region primers
+        // Bacterial 16S variable region primers
         PCRParams {
             gene_name: "16S-27F-338R".to_string(),
             forward_seq: "AGAGTTTGATCCTGGCTCAG".to_string(),
@@ -955,7 +926,6 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V1-V2".to_string(),
         },
-
         PCRParams {
             gene_name: "16S-V2f-V3r".to_string(),
             forward_seq: "AGTGGCGGACGGGTGAGTAA".to_string(),
@@ -968,7 +938,6 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V2-V3".to_string(),
         },
-
         PCRParams {
             gene_name: "16S-341F-785R".to_string(),
             forward_seq: "CCTACGGGNGGCWGCAG".to_string(),
@@ -981,7 +950,6 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V3-V4".to_string(),
         },
-
         PCRParams {
             gene_name: "16S-PRK341F-PRK806R".to_string(),
             forward_seq: "CCTACGGGRBGCASCAG".to_string(),
@@ -994,7 +962,6 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V3-V4-v2".to_string(),
         },
-
         PCRParams {
             gene_name: "16S-515F-806R".to_string(),
             forward_seq: "GTGCCAGCMGCCGCGGTAA".to_string(),
@@ -1007,7 +974,6 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V4".to_string(),
         },
-
         PCRParams {
             gene_name: "16S-515F-806RB".to_string(),
             forward_seq: "GTGCCAGCMGCCGCGGTAA".to_string(),
@@ -1020,7 +986,6 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V4".to_string(),
         },
-
         PCRParams {
             gene_name: "16S-515F-Y-926R".to_string(),
             forward_seq: "GTGYCAGCMGCCGCGGTAA".to_string(),
@@ -1033,7 +998,6 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V4-V5".to_string(),
         },
-
         PCRParams {
             gene_name: "16S-B969F-BA1406R".to_string(),
             forward_seq: "ACGCGHNRAACCTTACC".to_string(),
@@ -1046,7 +1010,6 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V6-V8".to_string(),
         },
-
         PCRParams {
             gene_name: "16S-799F-1391R".to_string(),
             forward_seq: "AACMGGATTAGATACCCKG".to_string(),
@@ -1056,10 +1019,10 @@ fn get_bacteria() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "Chelius and Triplett, 2001, doi: http://dx.doi.org/10.3389/fmicb.2016.00650".to_string(),
+            citation: "Chelius and Triplett, 2001, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+                .to_string(),
             notes: "V5-V6-V7".to_string(),
         },
-
         PCRParams {
             gene_name: "16S-967F-1391R".to_string(),
             forward_seq: "CAACGCGAAGAACCTTACC".to_string(),
@@ -1069,10 +1032,10 @@ fn get_bacteria() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "Sogin et al., 2006, doi: http://dx.doi.org/10.3389/fmicb.2016.00650".to_string(),
+            citation: "Sogin et al., 2006, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+                .to_string(),
             notes: "V6-V7".to_string(),
         },
-
         PCRParams {
             gene_name: "16S-799F-1193R".to_string(),
             forward_seq: "AACMGGATTAGATACCCKG".to_string(),
@@ -1082,10 +1045,10 @@ fn get_bacteria() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "Bodenhausen et al., 2013, doi: http://dx.doi.org/10.3389/fmicb.2016.00650".to_string(),
+            citation: "Bodenhausen et al., 2013, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+                .to_string(),
             notes: "V5-V6-V7".to_string(),
         },
-
         PCRParams {
             gene_name: "16S-68F-783Rabc".to_string(),
             forward_seq: "TNANACATGCAAGTCGRRCG".to_string(),
@@ -1095,10 +1058,10 @@ fn get_bacteria() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "McAllister et al., 2011, doi: http://dx.doi.org/10.3389/fmicb.2016.00650".to_string(),
+            citation: "McAllister et al., 2011, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+                .to_string(),
             notes: "V1-V4".to_string(),
         },
-
         PCRParams {
             gene_name: "16S-68F-518R".to_string(),
             forward_seq: "TNANACATGCAAGTCGRRCG".to_string(),
@@ -1108,10 +1071,10 @@ fn get_bacteria() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "Lee et al., 2010, doi: http://dx.doi.org/10.3389/fmicb.2016.00650".to_string(),
+            citation: "Lee et al., 2010, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+                .to_string(),
             notes: "V1-V3".to_string(),
         },
-
         PCRParams {
             gene_name: "16S-341F-783Rabc".to_string(),
             forward_seq: "CCTACGGGNGGCWGCAG".to_string(),
@@ -1121,7 +1084,8 @@ fn get_bacteria() -> Vec<PCRParams> {
             min_coverage: 2,
             mismatches: 2,
             trim: 15,
-            citation: "Sakai et al., 2004, doi: http://dx.doi.org/10.3389/fmicb.2016.00650".to_string(),
+            citation: "Sakai et al., 2004, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+                .to_string(),
             notes: "V3-V4".to_string(),
         },
     ]
@@ -1137,7 +1101,7 @@ pub fn get_panel(panel_name: &str) -> Result<Vec<PCRParams>, String> {
         .ok_or_else(|| format!("Invalid preconfigured PCR panel name '{}'", panel_name))
 }
 
-pub fn print_pcr_panels(){
+pub fn print_pcr_panels() {
     let panels = get_preconfigured_panels();
     for panel in panels {
         println!("{}: {}", panel.name, panel.description);

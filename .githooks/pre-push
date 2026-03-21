@@ -1,0 +1,15 @@
+#!/bin/sh
+
+echo "Running cargo clippy..."
+cargo clippy -- -D warnings
+if [ $? -ne 0 ]; then
+    echo "Clippy check failed. Fix warnings before pushing."
+    exit 1
+fi
+
+echo "Running cargo test..."
+cargo test
+if [ $? -ne 0 ]; then
+    echo "Tests failed. Fix before pushing."
+    exit 1
+fi

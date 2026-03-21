@@ -2,6 +2,14 @@
 
 ## Development
 
+After cloning the repo, set up the git hooks:
+
+    git config core.hooksPath .githooks
+
+This enables:
+- **Pre-commit**: runs `cargo fmt --check` (instant)
+- **Pre-push**: runs `cargo clippy -- -D warnings` and `cargo test`
+
 Some common rust tasks in development:
 
     cargo test

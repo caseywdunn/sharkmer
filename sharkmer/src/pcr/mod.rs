@@ -15,11 +15,11 @@ use std::collections::VecDeque;
 use std::fs::File;
 use std::io::Write;
 
-use crate::{COLOR_FAIL, kmer};
+use crate::kmer::KmerCounts;
 use crate::COLOR_NOTE;
 use crate::COLOR_SUCCESS;
 use crate::COLOR_WARNING;
-use crate::kmer::KmerCounts;
+use crate::{kmer, COLOR_FAIL};
 
 pub mod preconfigured;
 
@@ -117,7 +117,6 @@ fn is_valid_nucleotide(c: char) -> bool {
     }
 }
 
-
 // Iteratively remove nodes that do not have outgoing edges and are not end nodes
 // These are terminal side branches.
 pub fn remove_side_branches(graph: &mut StableDiGraph<DBNode, DBEdge>) {
@@ -170,31 +169,42 @@ pub fn remove_orphan_nodes(graph: &mut StableDiGraph<DBNode, DBEdge>) {
 // If the length is 0, return 0
 // If the length is greater than 0 and than or equal to k, return 1
 fn bp_length_to_kmer_length(bp_length: usize, k: usize) -> usize {
-    if bp_length <= 0 {
-        return 0;
+    if bp_length == 0 {
+        0
     } else if bp_length <= k {
-        return 1;
+        1
     } else {
-        return (bp_length - k) + 1;
+        (bp_length - k) + 1
     }
 }
 
-pub fn get_assembly_paths(  graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCounts, params: &PCRParams ) -> Vec<Vec<NodeIndex>> {
+pub fn get_assembly_paths(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    kmer_counts: &KmerCounts,
+    params: &PCRParams,
+) -> Vec<Vec<NodeIndex>> {
     let mut all_paths = Vec::new();
 
-    for start in get_start_nodes(&graph) {
-        for end in get_end_nodes(&graph) {
+    for start in get_start_nodes(graph) {
+        for end in get_end_nodes(graph) {
             let paths_for_this_pair =
                 all_simple_paths::<Vec<NodeIndex>, &StableDiGraph<DBNode, DBEdge>>(
-                    &graph,
+                    graph,
                     start,
                     end,
                     bp_length_to_kmer_length(params.min_length, kmer_counts.get_k()),
-                    Some(bp_length_to_kmer_length(params.max_length, kmer_counts.get_k())),
+                    Some(bp_length_to_kmer_length(
+                        params.max_length,
+                        kmer_counts.get_k(),
+                    )),
                 );
-            
+
             // Limit the number of paths to consider to MAX_NUM_PATHS_PER_PAIR
-            all_paths.extend(paths_for_this_pair.take(MAX_NUM_PATHS_PER_PAIR).collect::<Vec<Vec<NodeIndex>>>());
+            all_paths.extend(
+                paths_for_this_pair
+                    .take(MAX_NUM_PATHS_PER_PAIR)
+                    .collect::<Vec<Vec<NodeIndex>>>(),
+            );
         }
     }
 
@@ -280,7 +290,7 @@ pub fn compute_median(numbers: &[u64]) -> f64 {
 
     let mid = sorted.len() / 2;
 
-    if sorted.len() % 2 == 0 {
+    if sorted.len().is_multiple_of(2) {
         (sorted[mid - 1] + sorted[mid]) as f64 / 2.0
     } else {
         sorted[mid] as f64
@@ -434,7 +444,12 @@ fn reverse_complement(seq: &str) -> String {
 // Find the kmers that contain the oligos.
 // If direction is forward, match the oligo at the start of the kmer.
 // If direction is reverse, match the oligo at the end of the kmer.
-fn find_oligos_in_kmers(oligos: &[Oligo], kmers: &KmerCounts, dir: &PrimerDirection, min_count: &u64) -> KmerCounts {
+fn find_oligos_in_kmers(
+    oligos: &[Oligo],
+    kmers: &KmerCounts,
+    dir: &PrimerDirection,
+    min_count: &u64,
+) -> KmerCounts {
     // Assume all oligos have the same length
     let oligo_length = oligos[0].length;
 
@@ -733,7 +748,10 @@ pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     }
 
     if degrees.is_empty() {
-        println!("{}There are no nodes in the graph, terminating summary.", pad);
+        println!(
+            "{}There are no nodes in the graph, terminating summary.",
+            pad
+        );
         return;
     }
 
@@ -754,7 +772,10 @@ pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     }
 
     if counts.is_empty() {
-        println!("{}There are no edges in the graph, terminating summary.", pad);
+        println!(
+            "{}There are no edges in the graph, terminating summary.",
+            pad
+        );
         return;
     }
 
@@ -788,7 +809,7 @@ pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     );
 }
 
-fn pairwise_sequence_distances(records: &Vec<fasta::Record>) -> Vec<Vec<Option<u32>>> {
+fn pairwise_sequence_distances(records: &[fasta::Record]) -> Vec<Vec<Option<u32>>> {
     // https://docs.rs/bio/latest/bio/alignment/distance/simd/fn.bounded_levenshtein.html
 
     let n = records.len();
@@ -938,7 +959,11 @@ fn get_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64> {
     Some(median_edge_count)
 }
 
-fn get_primer_kmers(params: &PCRParams, kmer_counts: &KmerCounts, verbosity: &usize) -> (KmerCounts, KmerCounts) {
+fn get_primer_kmers(
+    params: &PCRParams,
+    kmer_counts: &KmerCounts,
+    verbosity: &usize,
+) -> (KmerCounts, KmerCounts) {
     // Preprocess the primers to get all variants to be considered
     let forward_variants = preprocess_primer(
         params,
@@ -955,23 +980,35 @@ fn get_primer_kmers(params: &PCRParams, kmer_counts: &KmerCounts, verbosity: &us
 
     // Get the kmers that contain the primers
     println!("  Searching kmers that contain the forward primer variants");
-    let mut forward_primer_kmers =
-        get_kmers_from_primers(&forward_variants, &kmer_counts, PrimerDirection::Forward, &params.min_coverage);
+    let mut forward_primer_kmers = get_kmers_from_primers(
+        &forward_variants,
+        kmer_counts,
+        PrimerDirection::Forward,
+        &params.min_coverage,
+    );
     forward_primer_kmers = filter_primer_kmers(forward_primer_kmers, verbosity);
 
     println!("  Searching kmers that contain the reverse primer variants");
-    let mut reverse_primer_kmers =
-        get_kmers_from_primers(&reverse_variants, &kmer_counts, PrimerDirection::Reverse, &params.min_coverage);
+    let mut reverse_primer_kmers = get_kmers_from_primers(
+        &reverse_variants,
+        kmer_counts,
+        PrimerDirection::Reverse,
+        &params.min_coverage,
+    );
     reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers, verbosity);
 
     (forward_primer_kmers, reverse_primer_kmers)
 }
 
-fn create_seed_graph(forward_primer_kmers: &KmerCounts, reverse_primer_kmers: &KmerCounts, kmer_counts: &KmerCounts) -> StableDiGraph<DBNode, DBEdge> {
+fn create_seed_graph(
+    forward_primer_kmers: &KmerCounts,
+    reverse_primer_kmers: &KmerCounts,
+    kmer_counts: &KmerCounts,
+) -> StableDiGraph<DBNode, DBEdge> {
     let mut seed_graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
 
     // Create a suffix mask with 1 in the (2 * (k - 1)) least significant bits
-    let suffix_mask: u64 = get_suffix_mask( &kmer_counts.get_k() );
+    let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
 
     // Add the forward primer matches to the graph
     for kmer in forward_primer_kmers.kmers() {
@@ -1046,7 +1083,6 @@ fn create_seed_graph(forward_primer_kmers: &KmerCounts, reverse_primer_kmers: &K
     seed_graph
 }
 
-
 // Extend graph by adding edges and new nodes to non-terminal nodes.
 // Terminal nodes have any of the following properties:
 // - is_end = true
@@ -1065,9 +1101,14 @@ fn create_seed_graph(forward_primer_kmers: &KmerCounts, reverse_primer_kmers: &K
 // - The prefix of the kmer of the node is the sub_kmer of the parent node in the graph
 // - The suffix of the kmer of the node is the sub_kmer of the new node in the graph
 // - If a node with the sub_kmer already exists, add a new edge to the existing node
-fn extend_graph(seed_graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCounts, min_count: &u64, params: &PCRParams, verbosity: &usize) -> StableDiGraph<DBNode, DBEdge> {
-
-    let suffix_mask: u64 = get_suffix_mask( &kmer_counts.get_k() );
+fn extend_graph(
+    seed_graph: &StableDiGraph<DBNode, DBEdge>,
+    kmer_counts: &KmerCounts,
+    min_count: &u64,
+    params: &PCRParams,
+    verbosity: &usize,
+) -> StableDiGraph<DBNode, DBEdge> {
+    let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
 
     let mut graph = seed_graph.clone();
 
@@ -1125,13 +1166,11 @@ fn extend_graph(seed_graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCo
                 for base in 0..4 {
                     let kmer = (sub_kmer << 2) | base;
 
-                    // If the kmer is in the kmer_counts hash and has count >= min_count, 
+                    // If the kmer is in the kmer_counts hash and has count >= min_count,
                     // add it to the candidate kmers
-                    if kmer_counts.contains(&kmer) {
-                        if kmer_counts.get_count(&kmer) >= *min_count {
-                            candidate_kmers.insert(kmer);
-                        }
-                    } 
+                    if kmer_counts.contains(&kmer) && kmer_counts.get_count(&kmer) >= *min_count {
+                        candidate_kmers.insert(kmer);
+                    }
                 }
 
                 if *verbosity > 1 {
@@ -1158,18 +1197,18 @@ fn extend_graph(seed_graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCo
                 let node_degrees_slice = &node_degrees[1..];
 
                 // If the node is in a rapidly ballooning region of the graph, don't add it
-                if candidate_kmers.len() > 2 {
-                    if node_degrees_slice.len() >= 2 {
-                        if (node_degrees_slice[0] > 2) && (node_degrees_slice[1] > 2) {
-                            if *verbosity > 1 {
-                                println!("Marking node as terminal because it and immediate ancestors have high degree. ");
-                                std::io::stdout().flush().unwrap();
-                            }
-                            graph[node].is_terminal = true;
-                            graph[node].visited = true;
-                            continue;
-                        }
+                if candidate_kmers.len() > 2
+                    && node_degrees_slice.len() >= 2
+                    && (node_degrees_slice[0] > 2)
+                    && (node_degrees_slice[1] > 2)
+                {
+                    if *verbosity > 1 {
+                        println!("Marking node as terminal because it and immediate ancestors have high degree. ");
+                        std::io::stdout().flush().unwrap();
                     }
+                    graph[node].is_terminal = true;
+                    graph[node].visited = true;
+                    continue;
                 }
 
                 // Check for a lower growth rate over a longer path, and terminate if found
@@ -1212,7 +1251,7 @@ fn extend_graph(seed_graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCo
                     for existing_node in graph.node_indices() {
                         if graph[existing_node].sub_kmer == suffix {
                             if !would_form_cycle(&graph, node, existing_node) {
-                                let edge = get_dbedge(kmer, &kmer_counts);
+                                let edge = get_dbedge(kmer, kmer_counts);
                                 graph.add_edge(node, existing_node, edge);
                                 if graph[existing_node].is_end {
                                     println!("  End node incorporated into graph, complete PCR product found.");
@@ -1242,7 +1281,7 @@ fn extend_graph(seed_graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCo
                     }
 
                     if !node_exists {
-                        let edge = get_dbedge(kmer, &kmer_counts);
+                        let edge = get_dbedge(kmer, kmer_counts);
                         let edge_count = edge.count;
 
                         // Don't add node and edge if the edge count is very high
@@ -1333,7 +1372,6 @@ fn extend_graph(seed_graph: &StableDiGraph<DBNode, DBEdge>, kmer_counts: &KmerCo
     }
 
     graph
-
 }
 
 #[derive(Clone)]
@@ -1398,15 +1436,11 @@ pub fn validate_pcr_params(params: &PCRParams) -> Result<(), String> {
     }
 
     if params.max_length == 0 {
-        return Err(format!(
-            "max-length must be specified and be greater than 0",
-        ));
+        return Err("max-length must be specified and be greater than 0".to_string());
     }
 
     if params.gene_name.is_empty() {
-        return Err(format!(
-            "Gene name must be specified and not be empty",
-        ));
+        return Err("Gene name must be specified and not be empty".to_string());
     }
     Ok(())
 }
@@ -1440,8 +1474,9 @@ pub fn do_pcr(
     );
 
     println!("Preprocessing primers");
-    let (forward_primer_kmers, reverse_primer_kmers) = get_primer_kmers(params, kmer_counts, &verbosity);
-    
+    let (forward_primer_kmers, reverse_primer_kmers) =
+        get_primer_kmers(params, kmer_counts, &verbosity);
+
     if forward_primer_kmers.is_empty() {
         println!(
             "{}",
@@ -1498,9 +1533,13 @@ pub fn do_pcr(
 
         // Construct the graph
         println!("Creating graph, seeding with nodes that contain primer matches...");
-        let seed_graph = create_seed_graph(&forward_primer_kmer, &reverse_primer_kmers, &kmer_counts);
+        let seed_graph =
+            create_seed_graph(&forward_primer_kmer, &reverse_primer_kmers, kmer_counts);
 
-        println!("There are {} start nodes", get_start_nodes(&seed_graph).len());
+        println!(
+            "There are {} start nodes",
+            get_start_nodes(&seed_graph).len()
+        );
         println!("There are {} end nodes", get_end_nodes(&seed_graph).len());
 
         if verbosity > 1 {
@@ -1509,7 +1548,10 @@ pub fn do_pcr(
                 println!("Node {}:", node.index());
                 println!(
                     "  sub_kmer: {}",
-                    crate::kmer::kmer_to_seq(&seed_graph[node].sub_kmer, &(kmer_counts.get_k() - 1))
+                    crate::kmer::kmer_to_seq(
+                        &seed_graph[node].sub_kmer,
+                        &(kmer_counts.get_k() - 1)
+                    )
                 );
                 println!("  is_start: {}", seed_graph[node].is_start);
                 println!("  is_end: {}", seed_graph[node].is_end);
@@ -1532,27 +1574,30 @@ pub fn do_pcr(
         if max_forward_count < max_reverse_count {
             primer_count = max_forward_count;
         }
-        
-        println!("Observed primer coverage is {}, user specified min-coverage is {}", primer_count, params.min_coverage);
+
+        println!(
+            "Observed primer coverage is {}, user specified min-coverage is {}",
+            primer_count, params.min_coverage
+        );
 
         // Creates a vector of coverage thresholds, starting with coverage_high_threshold and decreasing to params.min_coverage
         // in COVERAGE_STEPS steps
         let coverage_high_threshold = primer_count / COVERAGE_MULTIPLIER;
         let mut coverage_thresholds: Vec<u64> = Vec::new();
-        let step_size = (coverage_high_threshold - params.min_coverage) / (COVERAGE_STEPS-1);
+        let step_size = (coverage_high_threshold - params.min_coverage) / (COVERAGE_STEPS - 1);
 
         for i in 0..COVERAGE_STEPS {
             coverage_thresholds.push(coverage_high_threshold - (i * step_size));
         }
 
         // Make sure the last element is params.min_coverage, even if there are rounding errors
-        coverage_thresholds[COVERAGE_STEPS as usize -1] = params.min_coverage;
+        coverage_thresholds[COVERAGE_STEPS as usize - 1] = params.min_coverage;
 
         println!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
         for min_count in coverage_thresholds.iter() {
             println!("Extending graph with minimum kmer count {}", min_count);
-            let mut graph = extend_graph(&seed_graph, &kmer_counts, &min_count, &params, &verbosity);
+            let mut graph = extend_graph(&seed_graph, kmer_counts, min_count, params, &verbosity);
 
             if verbosity > 0 {
                 // Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
@@ -1580,7 +1625,10 @@ pub fn do_pcr(
                     println!(
                         "  Start node {} with subkmer {} has {} edges",
                         node.index(),
-                        crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(kmer_counts.get_k() - 1)),
+                        crate::kmer::kmer_to_seq(
+                            &graph[*node].sub_kmer,
+                            &(kmer_counts.get_k() - 1)
+                        ),
                         edge_count
                     );
                 }
@@ -1591,7 +1639,10 @@ pub fn do_pcr(
                     println!(
                         "  End node {} with subkmer {} has {} edges",
                         node.index(),
-                        crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(kmer_counts.get_k() - 1)),
+                        crate::kmer::kmer_to_seq(
+                            &graph[*node].sub_kmer,
+                            &(kmer_counts.get_k() - 1)
+                        ),
                         edge_count
                     );
                 }
@@ -1603,7 +1654,10 @@ pub fn do_pcr(
                 "  There are {} start nodes with edges",
                 get_start_nodes(&graph).len()
             );
-            println!("  There are {} end nodes with edges", get_end_nodes(&graph).len());
+            println!(
+                "  There are {} end nodes with edges",
+                get_end_nodes(&graph).len()
+            );
 
             if verbosity > 5 {
                 let dot_format = format!("{:?}", Dot::with_config(&graph, &[Config::EdgeNoLabel]));
@@ -1627,21 +1681,25 @@ pub fn do_pcr(
 
             remove_side_branches(&mut graph);
             remove_orphan_nodes(&mut graph);
-            
 
             println!("    There are {} nodes in the graph", graph.node_count());
             println!("    There are {} edges in the graph", graph.edge_count());
 
-            println!("    There are {} start nodes", get_start_nodes(&graph).len());
+            println!(
+                "    There are {} start nodes",
+                get_start_nodes(&graph).len()
+            );
             println!("    There are {} end nodes", get_end_nodes(&graph).len());
 
             println!("  done. Time to prune graph: {:?}", start.elapsed());
 
             // Get all paths from start nodes to terminal nodes
             let start = std::time::Instant::now();
-            println!("  Traversing the assembly graph to find paths from forward to reverse primers...");
+            println!(
+                "  Traversing the assembly graph to find paths from forward to reverse primers..."
+            );
 
-            let all_paths = get_assembly_paths(&graph, &kmer_counts, &params);
+            let all_paths = get_assembly_paths(&graph, kmer_counts, params);
 
             println!(
                 "    There are {} paths from forward to reverse primers in the graph",
@@ -1657,15 +1715,15 @@ pub fn do_pcr(
             println!("Generating sequences from paths...");
 
             // For each path, get the sequence of the path
-            for (_i, path) in all_paths.into_iter().enumerate() {
-
+            for path in all_paths.into_iter() {
                 let mut sequence = String::new();
                 let mut edge_counts: Vec<u64> = Vec::new();
                 let mut parent_node: NodeIndex = NodeIndex::new(0);
                 // The first time through the loop add the whole sequence, after that just add the last base
                 for node in path.iter() {
                     let node_data = graph.node_weight(*node).unwrap();
-                    let subread = crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(kmer_counts.get_k() - 1));
+                    let subread =
+                        crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(kmer_counts.get_k() - 1));
                     if sequence.is_empty() {
                         sequence = subread;
                         parent_node = *node;
@@ -1681,7 +1739,11 @@ pub fn do_pcr(
                 }
 
                 if sequence.len() < params.min_length {
-                    println!("  Path is {}, which is shorter than min-length {}. Skipping.", sequence.len(), params.min_length);
+                    println!(
+                        "  Path is {}, which is shorter than min-length {}. Skipping.",
+                        sequence.len(),
+                        params.min_length
+                    );
                     continue;
                 }
 
@@ -1724,11 +1786,11 @@ pub fn do_pcr(
         }
 
         // Count stats
-        println!("{}", format!("      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large \n        differences in value can indicate non-specific binding of one of the primers.", max_forward_count, max_reverse_count));
+        println!("      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large \n        differences in value can indicate non-specific binding of one of the primers.", max_forward_count, max_reverse_count);
 
         let count_threshold = 5;
         if (max_forward_count < count_threshold) | (max_reverse_count < count_threshold) {
-            println!("{}", format!(". Primer kmer counts are low, in this case less than {}. Consider increasing the number of reads.", count_threshold));
+            println!(". Primer kmer counts are low, in this case less than {}. Consider increasing the number of reads.", count_threshold);
         }
 
         // Add the assembly records to the all records vector
@@ -1738,16 +1800,13 @@ pub fn do_pcr(
 
     if assembly_records_all.is_empty() {
         println!("{}", format!("For gene {}, no path was found from a forward primer binding site to a reverse binding \nsite. Abandoning PCR.", params.gene_name).color(COLOR_FAIL));
-        println!("{}", format!("  Suggested actions:").color(COLOR_FAIL));
+        println!("{}", "  Suggested actions:".to_string().color(COLOR_FAIL));
         println!("{}", format!("    - The max-length for the PCR product of {} my be too short. Consider increasing it.", params.max_length).color(COLOR_FAIL));
-        println!("{}", format!("    - The primers may have non-specific binding and are not close enough to generate a \n      product. Consider increasing the primer TRIM length from the default to \n      create a more specific primer.").color(COLOR_FAIL));
-
-
+        println!("{}", "    - The primers may have non-specific binding and are not close enough to generate a \n      product. Consider increasing the primer TRIM length from the default to \n      create a more specific primer.".to_string().color(COLOR_FAIL));
 
         let records: Vec<fasta::Record> = Vec::new();
         return records;
     }
-
 
     // Order the records by descending kmer_min_count
     assembly_records_all.sort_by(|a, b| b.kmer_min_count.cmp(&a.kmer_min_count));
@@ -1766,7 +1825,7 @@ pub fn do_pcr(
     // Get the first column of the matrix
     let first_column: Vec<Option<u32>> = distances
         .iter()
-        .filter_map(|row| row.get(0).cloned())
+        .filter_map(|row| row.first().cloned())
         .collect();
 
     // Loop through the indices and values of first_column in reverse order. If the value is Some, drop the corresponding
@@ -1790,7 +1849,7 @@ pub fn do_pcr(
         println!("{}", format!("For gene {}, {} PCR products were generated and {} were retained (the others were minor variants of the first).", params.gene_name, num_records_all, records.len()).color(COLOR_SUCCESS));
     }
 
-    if records.len() > MAX_NUM_AMPLICONS{
+    if records.len() > MAX_NUM_AMPLICONS {
         println!(
             "{}",
             format!(
@@ -2097,7 +2156,6 @@ mod tests {
                 result.iter().cloned().collect::<Vec<_>>().join(", ")
             );
             assert_eq!(result, expected);
-
         }
 
         // Check sequence length 3 and r=3
@@ -2180,8 +2238,6 @@ mod tests {
 
             // Check for inclusion of "GGCAGGTTCACCTAC"
             assert!(result.contains("GGCAGGTTCACCTAC"));
-
-            
         }
     }
 
@@ -2212,11 +2268,13 @@ mod tests {
     }
 
     #[test]
-    fn test_get_suffix_mask(){
-        
-        // If k is 21, then suffix should be 20 nucleotides long, and there are two bits per nucleotide 
+    fn test_get_suffix_mask() {
+        // If k is 21, then suffix should be 20 nucleotides long, and there are two bits per nucleotide
         let k: usize = 21;
-        assert_eq!(get_suffix_mask(&k), 0b11111111_11111111_11111111_11111111_11111111);
+        assert_eq!(
+            get_suffix_mask(&k),
+            0b11111111_11111111_11111111_11111111_11111111
+        );
 
         let k: usize = 3;
         assert_eq!(get_suffix_mask(&k), 0b1111);
@@ -2227,7 +2285,7 @@ mod tests {
         // Padded with C's at the ends
         let read_string = "CCCCCCCCCCCCGTTGATCCTGCCAGTATCATATGCTTGTCTCAAAGATTAAGCCATGCATGTCTAAGTATAAGCACTTGTACTGTGAAACTGCGAATGGCTCATTAAATCAGTTATCGTTTATTTGATTGTACTCTCTTACTACTTGGATAACCGTAGTAATTCTAGAGCTAATACATGCGAAAAGTCCCGACTCTCGTGGAAGGGATGTATTTATTAGATTAAAAACCAATGCGGCTTAACGGCCGCTTACAAACTTGGTGATTCATAGTAACTGTTCGAATCGCATGGCCTTCTCTGTTCGTGCCGGCGATGTTTCATTCAAATTTCTGCCCTATCAACTGTCGATGGTAAGATAGTGGCTTACCATGGTCGCAACGGGTGACGGAGAATTAGGGTTCGATTCCGGAGAGGGAGCCTGAGAAACGGCTACCACATCCAAGGAAGGCAGCAGGCGCGCAAATTACCCAATCCTGACGTGGGGAGGTAGTGACAAAAAATAACAATACAGGGCTTTTTTGTAGTCTTGTAATTGGAATGAGTACAATTTAAATCTCTTAACGAGGACCAATTGGAGGGCAAGTCTGGTGCCAGCAGCCGCGGTAATTCCAGCTCCAATAGCGTATTGTAAAGTTGTTGCAGTTAAAAAGCTCGTAGTTGGATTTCGGGCTCGACGGCGACGGTCAGCCGCAAGGTATGTCACTGTCGACGTTGGCCTTCTTCGCGCAGACTTCGCGTGCTCTTAACTGAGTGTGCGTTGGATACGCGACGTTTACTTTGAAAAAATTAGAGTGTTCAAAGCAGGCTTGTGCTTGGATACATAAGCATGGAATAATGGAATAGGACTTTGGTTCTATTTTCCGTTGGTTTCTGGAACCGAAGTAATGATTAATAGGGACAGTTGGGGGCATTCGTATTTCGTTGTCAGAGGTGAAATTCTTGGATTTACGAAAGACGAACTAATGCGAAAGCATTTGCCAAGAATGTTTTCATTAATCAAGAACGAAAGTTAGAGGATCGAAGACGATCAGATACCGTCCTAGTTCTAACCATAAACGATGCCGACTAGGGATCAGCGAGTGTTATTTGATGACCTCGTTGGCACCTTATGGGAAACCAAAGTTTTTGGGTTCCGGGGGAAGTATGGTTGCAAAGCTGAAACTTAAAGGAATTGACGGAAGGGCACCACCAGGAGTGGAGCCTGCGGCTTAATTTGACTCAACACGGGAAAACTCACCAGGTCCAGACATAGTAAGGATTGACAGATTGAGAGCTCTTTCTTGATTCTATGGGTGGTGGTGCATGGCCGTTCTTAGTTGGTGGAGTGATTTGTCTGGTTAATTCCGTTAACGAACGAGACCTTGACCTGCTAAATAGTCAGACGATTCTCGAATCGCTCTCGACTTCTTAGAGGGACTGTTGCGTGTTTAACCAAAGTCAGGAAGGCAATAACAGGTCTGTGATGCCCTTAGATGTCCTGGGCCGCACGCGCGCTACACTGACGATGGCAACGAGTCGCTCCTTCACCGAAAGGTGTGGGTAATCTTGTGAATCATCGTCGTGCTGGGGATAGATCATTGTAATTCTTGATCTTGAACGAGGAATTCCTAGTAAGCGCGAGTCATCAGCTCGCGTTGATTACGTCCCTGCCCTTTGTACACACCGCCCGTCGCTACTACCGATTGAATGGTTTAGTGAGGCCTCCGGATTGGCACTGTCAGATGGGCTTCGGTCCATCCGACGGACGTCAAAAAGTTGGTCAAACTTGATCATTTAGAGGAAGTAAAAGTCGTAACAAGGTTTCCGTAGGTGAACCTGCGCCCCCCCCCCCC".to_string();
 
-        let k:usize = 21;
+        let k: usize = 21;
         let replicates: usize = 10;
         let mut kmer_counts = KmerCounts::new(&k);
         for _i in 0..replicates {
@@ -2242,7 +2300,6 @@ mod tests {
 
             // AGTAAAAGTCGTAACAAGGTTTCCGTAGGTGAACCTGCG 3' end of 18S above
             // CGCAGGTTCACCTACGGAAACCTTGTTACGACTTTTACT revcomp of above
-
             reverse_seq: "TGATCCTTCTGCAGGTTCACCTAC".to_string(),
             min_length: 0,
             max_length: 2500,
@@ -2260,7 +2317,7 @@ mod tests {
     #[test]
     fn test_primer_preprocessing_steps() {
         let (_, _, _, kmer_counts, params) = build_test_case();
-        
+
         let verbosity: usize = 0;
         let reverse_variants = preprocess_primer(
             &params,
@@ -2282,12 +2339,16 @@ mod tests {
         let member = "GTAGGTGAACCTGCC".to_string();
         assert!(reverse_variants.contains(&member));
 
-        let mut reverse_primer_kmers =
-        get_kmers_from_primers(&reverse_variants, &kmer_counts, PrimerDirection::Reverse, &params.min_coverage);
-        
+        let mut reverse_primer_kmers = get_kmers_from_primers(
+            &reverse_variants,
+            &kmer_counts,
+            PrimerDirection::Reverse,
+            &params.min_coverage,
+        );
+
         // Check for kmer
         assert_eq!(reverse_primer_kmers.len(), 1);
-        
+
         reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers, &verbosity);
 
         // Check for kmer after filtering
@@ -2299,32 +2360,34 @@ mod tests {
         let (_read_string, _k, _replicates, kmer_counts, _params) = build_test_case();
 
         let seq = "TGATCCTGCCAGTATCATATG".to_string();
-        let kmer:u64 = seq_to_kmer(&seq);
+        let kmer: u64 = seq_to_kmer(&seq);
         assert!(kmer_counts.contains(&kmer));
-        
-
     }
 
     #[test]
     fn test_integration() {
-
         let (read_string, k, replicates, kmer_counts, params) = build_test_case();
         let min_count = 5;
         let verbosity = 3;
 
         // Check the number of kmers
         // Times 2 on right since reverse complements are added
-        assert_eq!(kmer_counts.len(), (read_string.len() - k + 1)*2);
+        assert_eq!(kmer_counts.len(), (read_string.len() - k + 1) * 2);
 
         // Check the total count of kmers
-        assert_eq!(kmer_counts.get_n_kmers(), ((read_string.len() - k + 1) * replicates * 2) as u64);
+        assert_eq!(
+            kmer_counts.get_n_kmers(),
+            ((read_string.len() - k + 1) * replicates * 2) as u64
+        );
 
-        let (forward_primer_kmers, reverse_primer_kmers) = get_primer_kmers(&params, &kmer_counts, &verbosity);
+        let (forward_primer_kmers, reverse_primer_kmers) =
+            get_primer_kmers(&params, &kmer_counts, &verbosity);
 
         assert_eq!(forward_primer_kmers.len(), 1);
         assert_eq!(reverse_primer_kmers.len(), 1);
 
-        let seed_graph = create_seed_graph(&forward_primer_kmers, &reverse_primer_kmers, &kmer_counts);
+        let seed_graph =
+            create_seed_graph(&forward_primer_kmers, &reverse_primer_kmers, &kmer_counts);
 
         // Check the number of nodes in the seed graph
         assert_eq!(seed_graph.node_count(), 2);
@@ -2336,7 +2399,6 @@ mod tests {
         println!("There are {} nodes in the graph", graph.node_count());
         println!("There are {} edges in the graph", graph.edge_count());
 
-
         let all_paths = get_assembly_paths(&graph, &kmer_counts, &params);
         assert_eq!(all_paths.len(), 1);
 
@@ -2345,11 +2407,5 @@ mod tests {
 
         let all_paths = get_assembly_paths(&graph, &kmer_counts, &params);
         assert_eq!(all_paths.len(), 1);
-
-
-
-
-
-
     }
 }

@@ -48,32 +48,28 @@ fn is_valid_nucleotide(c: char) -> bool {
 }
 
 pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String> {
-
-    if pcr_string.len() == 0 {
-        return Err(format!("Invalid empty pcr string"));
+    if pcr_string.is_empty() {
+        return Err("Invalid empty pcr string".to_string());
     }
-    
+
     // Split the string on commas
     let split: Vec<&str> = pcr_string.split(',').collect();
 
-    
     // If the string is a single element, check if it is a preconfigured panel
     if split.len() == 1 {
         // If OK, validate and return the panel
         // If not OK, return an error
 
         match preconfigured::get_panel(pcr_string) {
-            Ok(params) => {
-                return Ok(params)
-            }
-            Err(_) => return Err(format!("Invalid preconfigured PCR panel: {}", pcr_string))
+            Ok(params) => return Ok(params),
+            Err(_) => return Err(format!("Invalid preconfigured PCR panel: {}", pcr_string)),
         }
     }
 
     let mut forward_seq = "".to_string();
     let mut reverse_seq = "".to_string();
     let mut gene_name = "".to_string();
-    let mut max_length= 10000;
+    let mut max_length = 10000;
     let mut min_length = 0;
     let mut min_coverage = 2;
     let mut mismatches = 2;
@@ -85,7 +81,10 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
     for item in split.iter() {
         let key_value: Vec<&str> = item.split('=').collect();
         if key_value.len() != 2 {
-            return Err(format!("Invalid parameter, should be in format key=value: {}", item));
+            return Err(format!(
+                "Invalid parameter, should be in format key=value: {}",
+                item
+            ));
         }
 
         let key = key_value[0].to_lowercase();
@@ -138,10 +137,8 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
                     return Err(format!("Invalid --pcr arguments, if a panel is specified it should the the only argument: {}", pcr_string));
                 }
                 match preconfigured::get_panel(value) {
-                    Ok(params) => {
-                        return Ok(params)
-                    }
-                    Err(_) => return Err(format!("Invalid preconfigured PCR panel: {}", value))
+                    Ok(params) => return Ok(params),
+                    Err(_) => return Err(format!("Invalid preconfigured PCR panel: {}", value)),
                 }
             }
             _ => {
@@ -163,9 +160,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
         notes,
     };
 
-    if let Err(err) = pcr::validate_pcr_params(&pcr_params) {
-        return Err(err);
-    }
+    pcr::validate_pcr_params(&pcr_params)?;
 
     Ok(vec![pcr_params])
 }
@@ -194,7 +189,7 @@ struct Args {
     #[arg(short = 't', long, default_value_t = 1)]
     threads: usize,
 
-    /// Name of the sample, could be species and sample ID eg Nanomia-bijuga-YPMIZ035039. 
+    /// Name of the sample, could be species and sample ID eg Nanomia-bijuga-YPMIZ035039.
     /// Will be used as the prefix for output files
     #[arg(short, long, default_value_t = String::from("sample") )]
     sample: String,
@@ -209,56 +204,56 @@ struct Args {
     #[arg()]
     input: Option<Vec<String>>,
 
-    /// Optional primer pairs and parameters for in silico PCR (sPCR). 
-    /// 
+    /// Optional primer pairs and parameters for in silico PCR (sPCR).
+    ///
     /// To see a list of available preconfigured panels and exit, use:
-    /// 
+    ///
     ///    --pcr panels
-    /// 
+    ///
     /// To use a specific preconfigured panel, specify it by name with panel= . For example:
-    /// 
+    ///
     ///    --pcr panel=cnidaria
-    /// 
+    ///
     /// To manually specify a single primer pair, use the format:
-    /// 
+    ///
     ///    --pcr "key1=value1,key2=value2,key3=value3,..."
-    /// 
+    ///
     /// For example:
-    /// 
+    ///
     ///    --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500"
-    /// 
+    ///
     /// Where required keys are:
-    /// 
+    ///
     ///   forward is the forward primer sequence in 5' to 3' orientation
-    /// 
+    ///
     ///   reverse is the reverse primer sequence in 5' to 3' orientation
     ///     along the opposite strand as the forward primer, so that the
     ///     primers are in the same orientation that you would use in an
     ///     actual in vitro PCR reaction (3' ends facing each other).
-    /// 
+    ///
     ///   name is a unique name for the primer pair or amplified gene
     ///     region. This will be used to specify amplified regions in
     ///     the output fasta file.
-    /// 
-    /// The following keys are optional: 
-    /// 
+    ///
+    /// The following keys are optional:
+    ///
     ///    min-length is the minimum length of the PCR product, including
     ///     the primers. Default is 0.
-    /// 
+    ///
     ///    max-length is the maximum length of the PCR product, including
     ///     the primers. Default is 10000.
-    /// 
+    ///
     ///    min-coverage: minimum coverage for a kmer to be included in the
     ///      amplified region. Default is 2.
-    /// 
+    ///
     ///    mismatches: maximum number of mismatches allowed between the
     ///      primer and the kmer. Default is 2.
-    /// 
+    ///
     ///    trim: number of bases to keep at the 3' end of each primer.
     ///      Default is 15.
-    /// 
+    ///
     /// More than one primer pair can be specified, for example:
-    /// 
+    ///
     ///    --pcr "..." --pcr "..."
     #[arg(short = 'p', long)]
     pcr: Vec<String>,
@@ -378,7 +373,7 @@ fn main() {
                         n_reads_read += 1;
 
                         // If we have read enough reads, ingest them into current chunk
-                        if n_reads_read % N_READS_PER_BATCH == 0 {
+                        if n_reads_read.is_multiple_of(N_READS_PER_BATCH) {
                             chunks[chunk_index].ingest_reads(&reads);
                             chunk_index += 1;
                             if chunk_index == args.n {
@@ -413,7 +408,7 @@ fn main() {
                     n_reads_read += 1;
 
                     // If we have read enough reads, ingest them into current chunk
-                    if n_reads_read % N_READS_PER_BATCH == 0 {
+                    if n_reads_read.is_multiple_of(N_READS_PER_BATCH) {
                         chunks[chunk_index].ingest_reads(&reads);
                         chunk_index += 1;
                         if chunk_index == args.n {
@@ -510,12 +505,13 @@ fn main() {
 
     let mut file =
         std::fs::File::create(format!("{}{}.final.histo", directory, args.sample)).unwrap();
-    for i in 1..args.histo_max as usize + 2 {
-        let mut line = format!("{}", i);
-
-        line = format!("{}\t{}", line, last_histo_vec[i]);
-
-        line = format!("{}\n", line);
+    for (i, value) in last_histo_vec
+        .iter()
+        .enumerate()
+        .skip(1)
+        .take(args.histo_max as usize + 1)
+    {
+        let line = format!("{}\t{}\n", i, value);
         file.write_all(line.as_bytes()).unwrap();
     }
 
@@ -568,7 +564,7 @@ fn main() {
     if !pcr_runs.is_empty() {
         println!("Running in silico PCR...");
 
-        // Prep kmer counts for in silico PCR. Remove singleton kmers (to reduce size) and 
+        // Prep kmer counts for in silico PCR. Remove singleton kmers (to reduce size) and
         // add reverse complements
         let min_count: u64 = 2;
         let kmer_counts_pcr = kmer_counts.get_pcr_kmers(&min_count);

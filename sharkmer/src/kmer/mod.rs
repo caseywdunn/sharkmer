@@ -8,18 +8,16 @@ use std::collections::HashMap;
 use std::hash::{BuildHasherDefault, Hasher};
 
 #[cfg(feature = "intmap")]
-use intmap::{IntMap, Entry};
+use intmap::{Entry, IntMap};
 
 #[cfg(feature = "fxhashmap")]
 use rustc_hash::FxHashMap;
-
-
-
 
 #[cfg(feature = "nohashmap")]
 type NoHashHashMap<K, V> = HashMap<K, V, BuildHasherDefault<NoHashHasher>>;
 
 #[cfg(feature = "nohashmap")]
+#[derive(Default)]
 struct NoHashHasher(u64); // Add a field to store the hash
 
 #[cfg(feature = "nohashmap")]
@@ -34,13 +32,6 @@ impl Hasher for NoHashHasher {
 
     fn write_u64(&mut self, i: u64) {
         self.0 = i; // Store the key as the hash
-    }
-}
-
-#[cfg(feature = "nohashmap")]
-impl Default for NoHashHasher {
-    fn default() -> Self {
-        NoHashHasher(0) // Initialize the hash with 0
     }
 }
 
@@ -90,7 +81,7 @@ impl Read {
             };
 
             frame = (frame << 2) | base;
-            if (length) % 4 == 0 {
+            if (length).is_multiple_of(4) {
                 ints.push(frame);
                 frame = 0; // Reset frame after pushing to the vector
             }
@@ -110,14 +101,12 @@ impl Read {
 
     pub fn validate(&self) -> bool {
         let mut valid = true;
-        if self.length % 4 == 0 {
+        if self.length.is_multiple_of(4) {
             if self.sequence.len() != self.length / 4 {
                 valid = false;
             }
-        } else {
-            if self.sequence.len() != (self.length / 4 + 1) {
-                valid = false;
-            }
+        } else if self.sequence.len() != (self.length / 4 + 1) {
+            valid = false;
         }
 
         valid
@@ -167,7 +156,7 @@ impl Read {
         }
 
         // Iterate over the bases
-        for (_i, &int) in ints.iter().enumerate() {
+        for &int in ints.iter() {
             // Iterate over the bases in the integer
             for j in 0..4 {
                 // Get the base from the left side of the integer,
@@ -284,6 +273,10 @@ impl KmerCounts {
         *self.kmers.get(canonical).unwrap_or(&0)
     }
 
+    pub fn get_count(&self, kmer: &u64) -> u64 {
+        *self.kmers.get(*kmer).unwrap_or(&0)
+    }
+
     pub fn contains(&self, kmer: &u64) -> bool {
         self.kmers.contains_key(*kmer)
     }
@@ -334,6 +327,10 @@ impl KmerCounts {
         let revcomp = revcomp_kmer(kmer, &self.k);
         let canonical = if *kmer < revcomp { *kmer } else { revcomp };
         *self.kmers.get(&canonical).unwrap_or(&0)
+    }
+
+    pub fn get_count(&self, kmer: &u64) -> u64 {
+        *self.kmers.get(kmer).unwrap_or(&0)
     }
 
     pub fn contains(&self, kmer: &u64) -> bool {
@@ -390,6 +387,10 @@ impl KmerCounts {
         *self.kmers.get(&canonical).unwrap_or(&0)
     }
 
+    pub fn get_count(&self, kmer: &u64) -> u64 {
+        *self.kmers.get(kmer).unwrap_or(&0)
+    }
+
     pub fn contains(&self, kmer: &u64) -> bool {
         self.kmers.contains_key(kmer)
     }
@@ -418,7 +419,7 @@ impl KmerCounts {
     }
 
     pub fn get_n_kmers(&self) -> u64 {
-        self.kmers.iter().map(|(_, count)| count).sum()
+        self.kmers.values().sum()
     }
 
     pub fn get_n_unique_kmers(&self) -> u64 {
@@ -426,15 +427,11 @@ impl KmerCounts {
     }
 
     pub fn counts(&self) -> Vec<u64> {
-        self.kmers.values().map(|&count| count).collect()
-    }
-
-    pub fn get_count(&self, kmer: &u64) -> u64 {
-        *self.kmers.get(kmer).unwrap_or(&0)
+        self.kmers.values().copied().collect()
     }
 
     pub fn kmers(&self) -> Vec<u64> {
-        self.kmers.keys().map(|&kmer| kmer).collect()
+        self.kmers.keys().copied().collect()
     }
 
     pub fn get_max_count(&self) -> u64 {
@@ -445,7 +442,7 @@ impl KmerCounts {
         self.kmers.is_empty()
     }
 
-    // Create a new KmerCounts object that has kmers with at least min_count and 
+    // Create a new KmerCounts object that has kmers with at least min_count and
     // includes the reverse complements of all the kmers, not just canonical kmers
     pub fn get_pcr_kmers(&self, min_count: &u64) -> KmerCounts {
         let mut pcr_kmers = KmerCounts::new(&self.k);
@@ -686,7 +683,7 @@ pub fn kmer_to_seq(kmer: &u64, k: &usize) -> String {
 #[allow(dead_code)]
 pub fn seq_to_kmer(seq: &str) -> u64 {
     let mut kmer = 0;
-    for (_i, c) in seq.chars().enumerate() {
+    for c in seq.chars() {
         let base = match c {
             'A' => 0,
             'C' => 1,
