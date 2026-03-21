@@ -11,7 +11,7 @@ for detailed specifications.
 
 Build testing and benchmarking infrastructure before any functional changes.
 
-- [ ] #18 Add CLAUDE.md (do first — provides context for all subsequent work)
+- [x] #18 Add CLAUDE.md (do first — provides context for all subsequent work)
 - [ ] #50 Build benchmark workflow and capture v1.0.1 baseline (NO code changes yet)
 - [ ] #17 Fix broken test compilation
 - [ ] #20 Add workspace Cargo.toml at repo root
