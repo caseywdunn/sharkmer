@@ -36,7 +36,8 @@ sharkmer/                  # Repo root
 │       │   └── mod.rs     # 2-bit encoding, kmer extraction, counting, histograms
 │       └── pcr/
 │           ├── mod.rs     # De Bruijn graph construction, extension, path finding
-│           └── preconfigured.rs  # Primer panel definitions (to be replaced with YAML)
+│           └── preconfigured.rs  # YAML panel loading (built-in via include_str!, user via --pcr-file)
+│       └── panels/        # Built-in primer panel YAML files (7 panels)
 ├── sharkmer_viewer/       # Python tool for histogram visualization
 ├── docker/                # Dockerfile for development
 ├── tests/                 # Snakemake workflow for testing against SRA datasets
@@ -80,7 +81,7 @@ cargo build --features intmap --no-default-features
 - `Read::get_kmers()`: Sliding window extracts canonical kmers (min of
   forward/revcomp) as u64
 - `KmerCounts`: Hash map wrapper (polymorphic via feature flags) storing
-  kmer→count. Three nearly identical impl blocks — #26 will deduplicate.
+  kmer→count. Uses `KmerMap` trait to abstract over map implementations.
 - `Chunk`: Groups reads for incremental processing
 - `Histogram`: Kmer count frequency distribution
 
@@ -102,20 +103,24 @@ Key constants (may need tuning):
 - `MAX_NUM_NODES = 50_000`: Graph size limit
 - `MAX_NUM_PATHS_PER_PAIR = 20`: Path enumeration limit
 - `MAX_NUM_AMPLICONS = 20`: Output sequence limit
-- `DISTANCE_EDIT_THRESHOLD = 10`: Levenshtein threshold for deduplication
+- `DEFAULT_DEDUP_EDIT_THRESHOLD = 10`: Levenshtein threshold for deduplication (configurable per primer pair)
 - `BALLOONING_COUNT_THRESHOLD_MULTIPLIER = 10.0`: Spurious edge detection
 
-### pcr/preconfigured.rs (~1100 lines)
+### pcr/preconfigured.rs (~100 lines)
 
-Hardcoded primer panels (cnidaria, human, teleostei, angiospermae, insecta,
-bacteria, metazoa). Issue #33 will replace with YAML files via
-`include_str!()`.
+Loads primer panels from YAML files via `include_str!()` (built-in panels)
+or from user-supplied files via `--pcr-file`. Seven built-in panels:
+cnidaria, human, teleostei, angiospermae, insecta, bacteria, metazoa.
+
+### panels/ directory
+
+YAML files defining built-in primer panels. Each file specifies panel name,
+description, and a list of primers with PCRParams fields. Embedded at
+compile time via `include_str!()`.
 
 ## Current known issues
 
-- **Unsigned underflow risks**: Several `usize` subtractions can wrap. See #55.
-- **Deduplication may drop real variants**: Edit distance threshold is hardcoded
-  and comparison is only against the first record. See #56.
+None currently tracked.
 
 ## Branching model
 
@@ -160,8 +165,10 @@ after each phase.
 - **Output**: YAML for stats (`.stats.yaml`), FASTA headers with key=value
   metadata, histogram files get header rows. Logs to stderr, data to stdout.
 - **Logging**: `log` + `env_logger`, `-v`/`-vv`/`-vvv` replaces `--verbosity N`
+  (implemented in Phase 3)
 - **Primer panels**: YAML files in `panels/` embedded via `include_str!()`.
-  Shared parser for built-in and user-sideloaded panels.
+  Shared parser for built-in and user-sideloaded panels via `--pcr-file`.
+  (implemented in Phase 3)
 - **Error handling**: `anyhow` for error propagation (chosen over `thiserror`
   since sharkmer is a binary, not a library), all panics removed from library
   code, meaningful exit codes.

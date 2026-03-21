@@ -45,17 +45,17 @@ kmer module → pcr module → main.rs.
 Depends on #21 (error handling). Order within phase by dependency, bug
 fixes first.
 
-- [ ] #57 FASTQ parser validation
-- [ ] #56 Deduplication bug (make threshold configurable)
-- [ ] #22 Adopt log + env_logger, separate stdout/stderr
-- [ ] #23 Native gzip input support
-- [ ] #33 Refactor primer panels to YAML (do together with #25)
-- [ ] #25 Add --pcr-file for sideloading YAML panels (do together with #33)
-- [ ] #41 Validate input early
-- [ ] #45 Error when stdin is terminal
-- [ ] #52 Remove hardcoded singleton filtering
-- [ ] #26 Deduplicate code (do together with #58)
-- [ ] #58 Rename misleading get_canonical
+- [x] #57 FASTQ parser validation
+- [x] #56 Deduplication bug (make threshold configurable)
+- [x] #22 Adopt log + env_logger, separate stdout/stderr
+- [x] #23 Native gzip input support
+- [x] #33 Refactor primer panels to YAML (do together with #25)
+- [x] #25 Add --pcr-file for sideloading YAML panels (do together with #33)
+- [x] #41 Validate input early
+- [x] #45 Error when stdin is terminal
+- [x] #52 Remove hardcoded singleton filtering
+- [x] #26 Deduplicate code (do together with #58)
+- [x] #58 Rename misleading get_canonical
 - [ ] Run benchmark, commit result
 
 ## Phase 4 — CLI, output format, performance
