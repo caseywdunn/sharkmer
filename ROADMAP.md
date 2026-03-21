@@ -71,6 +71,9 @@ patterns that will soon change.
 - Refactor panels from Rust code to YAML files via `include_str!()` (#33)
 - YAML format with panel-level metadata and nested primers (#33)
 - Shared parser for built-in and user-sideloaded panels (#25, #33)
+- Include a `mode` field per primer (default `paired-primer`) to prepare for
+  v5.0 targeting modes. Only `paired-primer` accepted in v2.0; unknown modes
+  produce a clear error. (#33)
 
 ### Performance
 
@@ -141,3 +144,40 @@ Target improvements:
   artifacts
 - Configurable limits for number of amplicons per gene
 - Validation against known metabarcoding datasets
+
+## v5.0 — New targeting paradigms
+
+The goal of v5.0 is to generalize beyond the PCR metaphor. The paired-primer
+sPCR workflow remains a primary feature, but v5.0 adds additional targeting
+modes built on the underlying seeded assembly engine.
+
+### Oligo-based extensions
+
+- Single-primer (forward-only) seeded assembly — relax the requirement for a
+  reverse primer, extending outward from a single seed until coverage drops or
+  a length limit is reached
+- Synthetic ddRADseq — seed with restriction enzyme recognition sites to
+  produce in silico RAD-like fragments
+- Synthetic targeted enrichment — seed with UCE (ultraconserved element) oligo
+  probe sequences to recover UCE loci and their flanking regions from genome
+  skimming data
+
+### Exotic targeting
+
+Novel approaches to isolating homologous genome regions across samples that
+have no parallel in benchtop methods but are natural extensions of seeded
+assembly:
+
+- Seed generation from reference sequences, alignments, or gene models
+  (may require helper scripts or a companion tool)
+- Cross-sample kmer comparison to identify conserved seeds without a reference
+- Iterative seeding where products from one round seed the next
+
+### Architecture considerations
+
+- The targeting mode (paired-primer, single-oligo, restriction site, UCE probe)
+  should be a parameter of the panel/primer YAML format introduced in v2.0,
+  not a separate code path — the seeded assembly engine is shared
+- v3.0 graph traversal improvements and v4.0 multi-product support are
+  prerequisites — single-primer extension and UCE enrichment both produce
+  variable-length products that need robust graph handling
