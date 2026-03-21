@@ -211,6 +211,79 @@ impl PartialEq for Read {
     }
 }
 
+/// Trait abstracting over the different hash map implementations (IntMap, FxHashMap, NoHashHashMap).
+/// This avoids duplicating the KmerCounts impl block for each feature flag.
+trait KmerMap {
+    fn new_map() -> Self;
+    fn insert_or_add(&mut self, key: u64, count: u64);
+    fn get_count(&self, key: u64) -> u64;
+    fn contains(&self, key: u64) -> bool;
+    fn retain_above(&mut self, min_count: u64);
+}
+
+#[cfg(feature = "intmap")]
+impl KmerMap for IntMap<u64> {
+    fn new_map() -> Self {
+        IntMap::new()
+    }
+    fn insert_or_add(&mut self, key: u64, count: u64) {
+        let counter = match self.entry(key) {
+            Entry::Occupied(entry) => entry.into_mut(),
+            Entry::Vacant(entry) => entry.insert(0),
+        };
+        *counter += count;
+    }
+    fn get_count(&self, key: u64) -> u64 {
+        *self.get(key).unwrap_or(&0)
+    }
+    fn contains(&self, key: u64) -> bool {
+        self.contains_key(key)
+    }
+    fn retain_above(&mut self, min_count: u64) {
+        self.retain(|_, count| *count >= min_count);
+    }
+}
+
+#[cfg(feature = "fxhashmap")]
+impl KmerMap for rustc_hash::FxHashMap<u64, u64> {
+    fn new_map() -> Self {
+        FxHashMap::default()
+    }
+    fn insert_or_add(&mut self, key: u64, count: u64) {
+        let c = self.entry(key).or_insert(0);
+        *c += count;
+    }
+    fn get_count(&self, key: u64) -> u64 {
+        *self.get(&key).unwrap_or(&0)
+    }
+    fn contains(&self, key: u64) -> bool {
+        self.contains_key(&key)
+    }
+    fn retain_above(&mut self, min_count: u64) {
+        self.retain(|_, count| *count >= min_count);
+    }
+}
+
+#[cfg(feature = "nohashmap")]
+impl KmerMap for NoHashHashMap<u64, u64> {
+    fn new_map() -> Self {
+        NoHashHashMap::<u64, u64>::default()
+    }
+    fn insert_or_add(&mut self, key: u64, count: u64) {
+        let c = self.entry(key).or_insert(0);
+        *c += count;
+    }
+    fn get_count(&self, key: u64) -> u64 {
+        *self.get(&key).unwrap_or(&0)
+    }
+    fn contains(&self, key: u64) -> bool {
+        self.contains_key(&key)
+    }
+    fn retain_above(&mut self, min_count: u64) {
+        self.retain(|_, count| *count >= min_count);
+    }
+}
+
 #[cfg(feature = "intmap")]
 type MapType = IntMap<u64>;
 
@@ -225,11 +298,10 @@ pub struct KmerCounts {
     k: usize,
 }
 
-#[cfg(feature = "intmap")]
 impl KmerCounts {
     pub fn new(k: &usize) -> KmerCounts {
         KmerCounts {
-            kmers: IntMap::new(),
+            kmers: MapType::new_map(),
             k: *k,
         }
     }
@@ -237,11 +309,7 @@ impl KmerCounts {
     pub fn ingest_reads(&mut self, reads: &[Read]) -> Result<()> {
         for read in reads {
             for kmer in read.get_kmers(&self.k)? {
-                let counter = match self.kmers.entry(kmer) {
-                    Entry::Occupied(entry) => entry.into_mut(),
-                    Entry::Vacant(entry) => entry.insert(0),
-                };
-                *counter += 1;
+                self.kmers.insert_or_add(kmer, 1);
             }
         }
         Ok(())
@@ -249,11 +317,7 @@ impl KmerCounts {
 
     /// Adds a kmer and its count to the KmerCounts object.
     pub fn insert(&mut self, kmer: &u64, count: &u64) {
-        let counter = match self.kmers.entry(*kmer) {
-            Entry::Occupied(entry) => entry.into_mut(),
-            Entry::Vacant(entry) => entry.insert(0),
-        };
-        *counter += count;
+        self.kmers.insert_or_add(*kmer, *count);
     }
 
     /// Adds the counts from another KmerCounts object to this one.
@@ -263,157 +327,31 @@ impl KmerCounts {
         }
 
         for (kmer, count) in other.iter() {
-            let counter = match self.kmers.entry(*kmer) {
-                Entry::Occupied(entry) => entry.into_mut(),
-                Entry::Vacant(entry) => entry.insert(0),
-            };
-            *counter += count;
+            self.kmers.insert_or_add(*kmer, *count);
         }
         Ok(())
     }
 
-    pub fn get_canonical(&self, kmer: &u64) -> u64 {
+    /// Get the count of the canonical form of a kmer (min of forward and revcomp).
+    pub fn get_canonical_count(&self, kmer: &u64) -> u64 {
         let revcomp = revcomp_kmer(kmer, &self.k);
         let canonical = if *kmer < revcomp { *kmer } else { revcomp };
-        *self.kmers.get(canonical).unwrap_or(&0)
+        self.kmers.get_count(canonical)
     }
 
     pub fn get_count(&self, kmer: &u64) -> u64 {
-        *self.kmers.get(*kmer).unwrap_or(&0)
+        self.kmers.get_count(*kmer)
     }
 
     pub fn contains(&self, kmer: &u64) -> bool {
-        self.kmers.contains_key(*kmer)
+        self.kmers.contains(*kmer)
     }
 
     #[allow(dead_code)]
     pub fn remove_low_count_kmers(&mut self, min_count: &u64) {
-        self.kmers.retain(|_, count| count >= min_count);
-    }
-}
-
-#[cfg(feature = "fxhashmap")]
-impl KmerCounts {
-    pub fn new(k: &usize) -> KmerCounts {
-        KmerCounts {
-            kmers: FxHashMap::default(),
-            k: *k,
-        }
+        self.kmers.retain_above(*min_count);
     }
 
-    pub fn ingest_reads(&mut self, reads: &[Read]) -> Result<()> {
-        for read in reads {
-            for kmer in read.get_kmers(&self.k)? {
-                let count = self.kmers.entry(kmer).or_insert(0);
-                *count += 1;
-            }
-        }
-        Ok(())
-    }
-
-    /// Adds a kmer and its count to the KmerCounts object.
-    pub fn insert(&mut self, kmer: &u64, count: &u64) {
-        let old_count = self.kmers.entry(*kmer).or_insert(0);
-        *old_count += count;
-    }
-
-    /// Adds the counts from another KmerCounts object to this one.
-    pub fn extend(&mut self, other: &KmerCounts) -> Result<()> {
-        if self.k != other.k {
-            bail!("Cannot extend KmerCounts with different k");
-        }
-
-        for (kmer, other_count) in other.iter() {
-            let count = self.kmers.entry(*kmer).or_insert(0);
-            *count += other_count;
-        }
-        Ok(())
-    }
-
-    pub fn get_canonical(&self, kmer: &u64) -> u64 {
-        let revcomp = revcomp_kmer(kmer, &self.k);
-        let canonical = if *kmer < revcomp { *kmer } else { revcomp };
-        *self.kmers.get(&canonical).unwrap_or(&0)
-    }
-
-    pub fn get_count(&self, kmer: &u64) -> u64 {
-        *self.kmers.get(kmer).unwrap_or(&0)
-    }
-
-    pub fn contains(&self, kmer: &u64) -> bool {
-        self.kmers.contains_key(kmer)
-    }
-
-    #[allow(dead_code)]
-    pub fn remove_low_count_kmers(&mut self, min_count: &u64) {
-        let mut min = *min_count;
-        let min_ref = &mut min;
-        self.kmers.retain(|_, count| count >= min_ref);
-    }
-}
-
-#[cfg(feature = "nohashmap")]
-impl KmerCounts {
-    pub fn new(k: &usize) -> KmerCounts {
-        KmerCounts {
-            kmers: NoHashHashMap::<u64, u64>::default(),
-            k: *k,
-        }
-    }
-
-    pub fn ingest_reads(&mut self, reads: &[Read]) -> Result<()> {
-        for read in reads {
-            for kmer in read.get_kmers(&self.k)? {
-                let count = self.kmers.entry(kmer).or_insert(0);
-                *count += 1;
-            }
-        }
-        Ok(())
-    }
-
-    /// Adds a kmer and its count to the KmerCounts object.
-    pub fn insert(&mut self, kmer: &u64, count: &u64) {
-        let old_count = self.kmers.entry(*kmer).or_insert(0);
-        *old_count += count;
-    }
-
-    /// Adds the counts from another KmerCounts object to this one.
-    pub fn extend(&mut self, other: &KmerCounts) -> Result<()> {
-        if self.k != other.k {
-            bail!("Cannot extend KmerCounts with different k");
-        }
-
-        for (kmer, other_count) in other.iter() {
-            let count = self.kmers.entry(*kmer).or_insert(0);
-            *count += other_count;
-        }
-        Ok(())
-    }
-
-    pub fn get_canonical(&self, kmer: &u64) -> u64 {
-        let revcomp = revcomp_kmer(kmer, &self.k);
-        let canonical = if *kmer < revcomp { *kmer } else { revcomp };
-        *self.kmers.get(&canonical).unwrap_or(&0)
-    }
-
-    pub fn get_count(&self, kmer: &u64) -> u64 {
-        *self.kmers.get(kmer).unwrap_or(&0)
-    }
-
-    pub fn contains(&self, kmer: &u64) -> bool {
-        self.kmers.contains_key(kmer)
-    }
-
-    #[allow(dead_code)]
-    pub fn remove_low_count_kmers(&mut self, min_count: &u64) {
-        let mut min = *min_count;
-        let min_ref = &mut min;
-        self.kmers.retain(|_, count| count >= min_ref);
-    }
-}
-
-// Generic methods that don't depend on the hash map implementation
-impl KmerCounts {
     pub fn iter(&self) -> impl Iterator<Item = (&u64, &u64)> {
         self.kmers.iter()
     }

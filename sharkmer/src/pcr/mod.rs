@@ -577,7 +577,7 @@ pub fn get_path_length(
 pub fn get_dbedge(kmer: &u64, kmer_counts: &kmer::KmerCounts) -> DBEdge {
     DBEdge {
         _kmer: *kmer,
-        count: kmer_counts.get_canonical(kmer),
+        count: kmer_counts.get_canonical_count(kmer),
     }
 }
 
