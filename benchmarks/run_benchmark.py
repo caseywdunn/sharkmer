@@ -29,7 +29,7 @@ import yaml
 # --- Configuration ---
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-CONFIG_PATH = REPO_ROOT / "tests" / "config.yaml"
+CONFIG_PATH = REPO_ROOT / "benchmarks" / "config.yaml"
 SHARKMER_BIN = REPO_ROOT / "sharkmer" / "target" / "release" / "sharkmer"
 DATA_DIR = REPO_ROOT / "benchmarks" / "data"
 OUTPUT_DIR = REPO_ROOT / "benchmarks" / "output"
