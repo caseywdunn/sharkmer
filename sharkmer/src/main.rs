@@ -267,6 +267,22 @@ struct Args {
     cite: bool,
 }
 
+const FASTA_LINE_WIDTH: usize = 80;
+
+/// Write a FASTA record with sequence lines wrapped at FASTA_LINE_WIDTH characters.
+fn write_fasta_record(writer: &mut impl Write, record: &fasta::Record) -> std::io::Result<()> {
+    write!(writer, ">{}", record.id())?;
+    if let Some(desc) = record.desc() {
+        write!(writer, " {}", desc)?;
+    }
+    writeln!(writer)?;
+    for chunk in record.seq().chunks(FASTA_LINE_WIDTH) {
+        writer.write_all(chunk)?;
+        writeln!(writer)?;
+    }
+    Ok(())
+}
+
 fn main() {
     let start_run = std::time::Instant::now();
 
@@ -599,10 +615,9 @@ fn main() {
                     "{}{}_{}.fasta",
                     directory, args.sample, pcr_params.gene_name
                 );
-                let mut fasta_writer =
-                    fasta::Writer::new(std::fs::File::create(fasta_path).unwrap());
+                let mut file = std::fs::File::create(fasta_path).unwrap();
                 for record in fasta {
-                    fasta_writer.write_record(&record).unwrap();
+                    write_fasta_record(&mut file, &record).unwrap();
                 }
             }
         }
