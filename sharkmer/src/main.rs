@@ -256,6 +256,10 @@ struct Args {
     #[arg(short = 'p', long)]
     pcr: Vec<String>,
 
+    /// Validate FASTQ format every N records (0 = first record only)
+    #[arg(long, default_value_t = 0)]
+    validate_every: u64,
+
     /// Verbosity
     #[arg(long, default_value_t = 0)]
     verbosity: usize,
@@ -279,6 +283,138 @@ fn write_fasta_record(writer: &mut impl Write, record: &fasta::Record) -> std::i
         writeln!(writer)?;
     }
     Ok(())
+}
+
+/// Validate a FASTQ record (4 lines). Returns an error if the record is malformed.
+fn validate_fastq_record(
+    header: &str,
+    _sequence: &str,
+    separator: &str,
+    quality: &str,
+    sequence_len: usize,
+    record_num: u64,
+) -> Result<()> {
+    ensure!(
+        header.starts_with('@'),
+        "FASTQ record {} has invalid header (expected '@', got '{}'): {}",
+        record_num + 1,
+        header.chars().next().unwrap_or(' '),
+        header,
+    );
+    ensure!(
+        separator.starts_with('+'),
+        "FASTQ record {} has invalid separator line (expected '+', got '{}'): {}",
+        record_num + 1,
+        separator.chars().next().unwrap_or(' '),
+        separator,
+    );
+    ensure!(
+        quality.len() == sequence_len,
+        "FASTQ record {} has mismatched sequence ({}) and quality ({}) lengths",
+        record_num + 1,
+        sequence_len,
+        quality.len(),
+    );
+    Ok(())
+}
+
+/// Mutable state for FASTQ reading, shared across multiple input sources.
+struct FastqReadState {
+    chunks: Vec<kmer::Chunk>,
+    chunk_index: usize,
+    reads: Vec<kmer::Read>,
+    n_reads_read: u64,
+    n_bases_read: u64,
+}
+
+/// Read FASTQ records from a buffered reader, ingesting sequences into chunks.
+///
+/// Reads 4 lines at a time (header, sequence, separator, quality) and validates
+/// the format. Returns true if max_reads was reached.
+fn read_fastq<R: BufRead>(
+    reader: R,
+    state: &mut FastqReadState,
+    max_reads: u64,
+    validate_every: u64,
+    source_name: &str,
+) -> Result<bool> {
+    let mut lines = reader.lines();
+    let n_chunks = state.chunks.len();
+
+    while let Some(header_result) = lines.next() {
+        // Read 4 lines for one FASTQ record
+        let header =
+            header_result.with_context(|| format!("Failed to read header from {}", source_name))?;
+
+        let sequence = match lines.next() {
+            Some(line) => {
+                line.with_context(|| format!("Failed to read sequence from {}", source_name))?
+            }
+            None => bail!(
+                "Truncated FASTQ record at record {} in {}: missing sequence line",
+                state.n_reads_read + 1,
+                source_name,
+            ),
+        };
+
+        let separator = match lines.next() {
+            Some(line) => {
+                line.with_context(|| format!("Failed to read separator from {}", source_name))?
+            }
+            None => bail!(
+                "Truncated FASTQ record at record {} in {}: missing separator line",
+                state.n_reads_read + 1,
+                source_name,
+            ),
+        };
+
+        let quality = match lines.next() {
+            Some(line) => {
+                line.with_context(|| format!("Failed to read quality from {}", source_name))?
+            }
+            None => bail!(
+                "Truncated FASTQ record at record {} in {}: missing quality line",
+                state.n_reads_read + 1,
+                source_name,
+            ),
+        };
+
+        // Validate the record
+        let should_validate = state.n_reads_read == 0
+            || (validate_every > 0 && state.n_reads_read.is_multiple_of(validate_every));
+        if should_validate {
+            validate_fastq_record(
+                &header,
+                &sequence,
+                &separator,
+                &quality,
+                sequence.len(),
+                state.n_reads_read,
+            )?;
+        }
+
+        // Process the sequence
+        state.n_bases_read += sequence.len() as u64;
+        let new_reads = kmer::seq_to_reads(&sequence)?;
+        state.reads.extend(new_reads);
+        state.n_reads_read += 1;
+
+        // If we have read enough reads, ingest them into current chunk
+        if state.n_reads_read.is_multiple_of(N_READS_PER_BATCH) {
+            state.chunks[state.chunk_index].ingest_reads(&state.reads)?;
+            state.chunk_index += 1;
+            if state.chunk_index == n_chunks {
+                state.chunk_index = 0;
+            }
+            state.reads.clear();
+        }
+
+        if max_reads > 0 && state.n_reads_read >= max_reads {
+            return Ok(true); // reached max reads
+        }
+    }
+
+    Ok(false) // did not reach max reads (EOF)
 }
 
 fn main() -> Result<()> {
@@ -380,17 +516,19 @@ fn main() -> Result<()> {
     for _ in 0..args.n {
         chunks.push(Chunk::new(&k));
     }
-    let mut chunk_index: usize = 0;
 
-    let mut reads: Vec<kmer::Read> = Vec::new();
-    let mut n_reads_read: u64 = 0;
-    let mut n_bases_read: u64 = 0;
+    let mut state = FastqReadState {
+        chunks,
+        chunk_index: 0,
+        reads: Vec::new(),
+        n_reads_read: 0,
+        n_bases_read: 0,
+    };
 
     match &args.input {
         Some(input_files) => {
             // read from one or more files
-            'processing_files: for file_name in input_files.iter() {
-                let mut line_n: u64 = 0;
+            for file_name in input_files.iter() {
                 // Open the file for buffered reading
                 let file_path = Path::new(&file_name);
 
@@ -401,87 +539,51 @@ fn main() -> Result<()> {
                     .with_context(|| format!("Failed to open file: {}", file_name))?;
 
                 let reader = std::io::BufReader::new(file);
-                // Iterate over the lines of the file
-                for line in reader.lines() {
-                    line_n += 1;
-                    if line_n % 4 == 2 {
-                        // This is a sequence line
-                        let line = line.context("Failed to read line from FASTQ file")?;
-                        n_bases_read += line.len() as u64;
-                        let new_reads = kmer::seq_to_reads(&line)?;
-                        reads.extend(new_reads);
-                        n_reads_read += 1;
-
-                        // If we have read enough reads, ingest them into current chunk
-                        if n_reads_read.is_multiple_of(N_READS_PER_BATCH) {
-                            chunks[chunk_index].ingest_reads(&reads)?;
-                            chunk_index += 1;
-                            if chunk_index == args.n {
-                                chunk_index = 0;
-                            }
-                            reads.clear();
-                        }
-                    }
-                    if args.max_reads > 0 && n_reads_read >= args.max_reads {
-                        break 'processing_files;
-                    }
+                let reached_max = read_fastq(
+                    reader,
+                    &mut state,
+                    args.max_reads,
+                    args.validate_every,
+                    file_name,
+                )?;
+                if reached_max {
+                    break;
                 }
             }
         }
         None => {
             // read from stdin
             let stdin = std::io::stdin();
-            // Lock stdin for exclusive access
             let handle = stdin.lock();
 
-            let mut line_n: u64 = 0;
-
-            // Create a buffer for reading lines
-            for line in handle.lines() {
-                line_n += 1;
-                if line_n % 4 == 2 {
-                    // This is a sequence line
-                    let line = line.context("Failed to read line from stdin")?;
-                    n_bases_read += line.len() as u64;
-                    let new_reads = kmer::seq_to_reads(&line)?;
-                    reads.extend(new_reads);
-                    n_reads_read += 1;
-
-                    // If we have read enough reads, ingest them into current chunk
-                    if n_reads_read.is_multiple_of(N_READS_PER_BATCH) {
-                        chunks[chunk_index].ingest_reads(&reads)?;
-                        chunk_index += 1;
-                        if chunk_index == args.n {
-                            chunk_index = 0;
-                        }
-                        reads.clear();
-                    }
-                }
-                if args.max_reads > 0 && n_reads_read >= args.max_reads {
-                    break;
-                }
-            }
+            read_fastq(
+                handle,
+                &mut state,
+                args.max_reads,
+                args.validate_every,
+                "stdin",
+            )?;
         }
     }
 
     // Ingest any remaining reads
-    chunks[chunk_index].ingest_reads(&reads)?;
-    reads.clear();
+    state.chunks[state.chunk_index].ingest_reads(&state.reads)?;
+    state.reads.clear();
 
     println!(" done");
 
     let mut n_reads_ingested: u64 = 0;
     let mut n_bases_ingested: u64 = 0;
     let mut n_kmers_ingested: u64 = 0;
-    for chunk in chunks.iter() {
+    for chunk in state.chunks.iter() {
         n_reads_ingested += chunk.get_n_reads();
         n_bases_ingested += chunk.get_n_bases();
         n_kmers_ingested += chunk.get_n_kmers();
     }
 
     // Print some stats
-    println!("  Read {} reads", n_reads_read);
-    println!("  Read {} bases", n_bases_read);
+    println!("  Read {} reads", state.n_reads_read);
+    println!("  Read {} bases", state.n_bases_read);
     println!("  Ingested {} subreads", n_reads_ingested);
     println!("  Ingested {} bases", n_bases_ingested);
     println!("  Ingested {} kmers", n_kmers_ingested);
@@ -500,7 +602,7 @@ fn main() -> Result<()> {
     let mut histos: Vec<kmer::Histogram> = Vec::with_capacity(args.n);
 
     // Drain the chunks so each chunk's hash table is freed after merging
-    for chunk in chunks.drain(..) {
+    for chunk in state.chunks.drain(..) {
         kmer_counts.extend(chunk.get_kmer_counts())?;
         drop(chunk);
 
@@ -592,8 +694,8 @@ fn main() -> Result<()> {
         .context("Failed to create stats file")?;
     let mut line = format!("arguments\t{:?}\n", args);
     line = format!("{}kmer_length\t{}\n", line, args.k);
-    line = format!("{}n_reads_read\t{}\n", line, n_reads_read);
-    line = format!("{}n_bases_read\t{}\n", line, n_bases_read);
+    line = format!("{}n_reads_read\t{}\n", line, state.n_reads_read);
+    line = format!("{}n_bases_read\t{}\n", line, state.n_bases_read);
     line = format!("{}n_subreads_ingested\t{}\n", line, n_reads_ingested);
     line = format!("{}n_bases_ingested\t{}\n", line, n_bases_ingested);
     line = format!("{}n_kmers\t{}\n", line, n_kmers_ingested);
