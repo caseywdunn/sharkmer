@@ -59,4 +59,4 @@ jobs:
             target
           key: ${{ runner.os }}-test-${{ matrix.features }}-${{ hashFiles('**/Cargo.lock') }}
           restore-keys: ${{ runner.os }}-test-${{ matrix.features }}-
-      - run: cargo test --no-default-features --features ${{ matrix.features }}
+      - run: cargo test --release --no-default-features --features ${{ matrix.features }}

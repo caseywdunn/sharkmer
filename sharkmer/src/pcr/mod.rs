@@ -1584,7 +1584,8 @@ pub fn do_pcr(
         // in COVERAGE_STEPS steps
         let coverage_high_threshold = primer_count / COVERAGE_MULTIPLIER;
         let mut coverage_thresholds: Vec<u64> = Vec::new();
-        let step_size = (coverage_high_threshold - params.min_coverage) / (COVERAGE_STEPS - 1);
+        let step_size =
+            coverage_high_threshold.saturating_sub(params.min_coverage) / (COVERAGE_STEPS - 1);
 
         for i in 0..COVERAGE_STEPS {
             coverage_thresholds.push(coverage_high_threshold - (i * step_size));
