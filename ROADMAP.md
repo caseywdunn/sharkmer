@@ -1,67 +1,90 @@
 # Roadmap
 
 This document describes the planned development of sharkmer across upcoming
-major releases.
+major releases. See the [issue tracker](https://github.com/caseywdunn/sharkmer/issues)
+for detailed specifications.
 
 ## v2.0 — Cleanup and polish
 
 The goal of v2.0 is to improve code quality, usability, and developer
 infrastructure without changing core algorithms or results. This release
-may change CLI flags, output format, and error behavior, so it should ship
+changes CLI flags, output format, and error behavior, so it should ship
 quickly after the v1.0 manuscript to avoid workflows being built against
 patterns that will soon change.
 
 ### Developer infrastructure
 
-- Fix existing test compilation errors
-- Add CI via GitHub Actions (fmt, clippy, test across platforms and hash backends)
-- Add CLAUDE.md for AI-assisted development context
-- Add a workspace Cargo.toml at the repo root so `cargo test` works from the
-  top level
-- Add test fixtures derived from synthetic data used in the manuscript
-- Expand integration test coverage
+- Fix existing test compilation errors (#17)
+- Add CI via GitHub Actions (#19)
+- Add CLAUDE.md (#18)
+- Add workspace Cargo.toml at repo root (#20)
+- Add test fixtures from ERR571460 (#30)
+- Expand integration test coverage (#31)
+- Regression benchmarking suite with real-world SRA datasets (#50)
+- CHANGELOG.md
+
+### Bug fixes
+
+- Fix unsigned integer underflow risks (#55)
+- Fix edge cases: empty inputs, degenerate primers, division by zero (#60)
+- Ensure deterministic output across runs (#38)
+- FASTQ parser does not validate format (#57)
+- Deduplication may silently discard real variants (#56)
+- Ensure FASTA output uses standard 80-char line wrapping (#42)
 
 ### Error handling
 
-- Replace panics and `.unwrap()` in library code with `Result` types
-- Consolidate all exit-with-error logic in `main()`
-- Use `anyhow` or `thiserror` for error context
-- Return meaningful exit codes
+- Replace panics and unwraps with proper Result types (#21)
+- Remove hardcoded singleton filtering before sPCR (#52)
+- Rename misleading `get_canonical` method (#58)
 
 ### Logging and output
 
-- Adopt `log` + `env_logger`, replacing ad-hoc `println!` and the
-  `--verbosity` integer
-- Separate data output (stdout) from logs/progress (stderr)
-- Support `-v`/`-vv`/`-vvv` and `--quiet` flags
-- Produce structured (JSON or clean TSV) stats output
+- Adopt `log` + `env_logger`, separate stdout/stderr (#22)
+- Structured YAML stats output with PCR results (#32)
+- Improved FASTA header format with key=value metadata (#34)
+- Print concise summary line at completion (#43)
+- Progress indicators for long-running steps (#37)
+- Polished CLI output formatting (#49)
+- Add `--color auto|always|never` and respect `NO_COLOR` (#44)
+- Report peak memory usage (#47)
 
 ### CLI improvements
 
-- Native gzip input support via `flate2` (replaces `zcat | sharkmer` pattern)
-- Rename `-n` to `--chunks`
-- Replace `--pcr panels` with `--list-panels`
-- Replace `--verbosity N` with `-v` stacking
-- Add `--pcr-file` flag to load primer panels from a TSV file, enabling users
-  to share and reuse primer definitions without code changes
+- Split `--pcr` into `--pcr-panel`, `--pcr-file`, `--pcr-primers` (#24)
+- Native gzip input support with auto-detection (#23)
+- Default to no incremental kmer counting (`--chunks 0`) (#35)
+- Add `--pcr-file` for sideloading YAML primer panels (#25)
+- Add `--list-panels`, `--export-panel`, `--help-pcr` (#24)
+- Make `--sample` required, `--max-reads` optional (#24)
+- Organize `--help` with grouped headings (#24)
+- Add `--cite` flag (#40)
+- Add `--dry-run` mode (#46)
+- Generate shell completions (#39)
+- Error when stdin is a terminal with no input files (#45)
+- Warn when overwriting existing output files (#48)
+- User-facing warnings for common mistakes (#59)
+- Validate input early before ingestion (#41)
 
-### Performance (low-hanging fruit)
+### Primer panels
 
-- Use a `HashMap<u64, NodeIndex>` for node lookup during graph construction
-  instead of linear scan
-- Avoid storing reverse complements in the PCR kmer hash table; look up both
-  orientations at query time
-- Pre-size hash maps based on expected data size
-- Evaluate `ahash` as a drop-in replacement for `FxHash`
+- Refactor panels from Rust code to YAML files via `include_str!()` (#33)
+- YAML format with panel-level metadata and nested primers (#33)
+- Shared parser for built-in and user-sideloaded panels (#25, #33)
+
+### Performance
+
+- HashMap for node lookup in graph construction (#27)
+- Avoid storing reverse complements in PCR kmer table (#28)
+- Eliminate double hash lookups in graph extension (#54)
+- Free chunk hash tables after merging (#53)
+- Pre-size hash maps, evaluate ahash (#29)
+- Parallelize sPCR across genes with rayon (#36)
 
 ### Code cleanup
 
-- Deduplicate `is_valid_nucleotide` (defined in both `main.rs` and
-  `pcr/mod.rs`)
-- Deduplicate `KmerCounts` impl blocks across hash backends using a trait
-  or macro
-- Remove dead code (`ParameterValue` enum, unused functions)
-- Fix `bp_length_to_kmer_length` comparison of `usize <= 0`
+- Deduplicate code: `is_valid_nucleotide`, `KmerCounts` impls, dead code (#26)
+- Update sharkmer_viewer for new histogram/stats format (#61)
 
 ## v3.0 — Graph traversal
 
@@ -81,6 +104,29 @@ Target improvements:
 - Better path scoring beyond `kmer_min_count` ordering
 - Paired-end read awareness
 - Preparation for v4.0 metagenomics support
+
+### Graph construction efficiency
+
+- Build a single graph seeded with all forward primer kmers simultaneously,
+  instead of building a separate graph per forward primer kmer. Currently
+  10 forward primer kmers means 10 nearly-identical graphs built from
+  scratch — the largest performance waste in the tool.
+- Extend graphs incrementally across coverage threshold steps instead of
+  rebuilding from scratch at each threshold. The lower-threshold graph is a
+  strict superset of the higher-threshold one.
+- Incremental histogram updates after each chunk merge, instead of
+  reiterating the full consolidated kmer table each time.
+
+### Kmer pipeline optimizations (deferred from v2.0)
+
+- Extract kmers directly from ASCII sequence in a single pass, eliminating
+  the Read struct encoding/decoding round-trip. The 2-bit `Read` encoding was
+  designed for storing reads in memory, but reads are not stored — kmers are
+  extracted and the read is discarded. A direct ASCII-to-kmer sliding window
+  avoids the intermediate encoding step entirely.
+- Use `u32` for kmer counts instead of `u64` — counts rarely exceed 4 billion,
+  and this saves ~33% memory in the hash table. Important for low-coverage
+  work where every byte of hash table capacity matters.
 
 ## v4.0 — Metagenomics
 
