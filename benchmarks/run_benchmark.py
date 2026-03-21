@@ -97,54 +97,67 @@ def get_machine_info():
 
 
 def download_sample(sample_name, sample_config):
-    """Download SRA data using fasterq-dump if not already cached."""
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    """Download SRA data by streaming from ENA, keeping only MAX_READS reads.
 
-    fastq_path = DATA_DIR / f"{sample_name}.fastq"
-    if fastq_path.exists():
-        print(f"  Using cached data: {fastq_path}")
-        return fastq_path
+    Uses benchmarks/sra_download.sh which streams ENA-hosted FASTQ files
+    and stops as soon as N reads have been written, avoiding downloading
+    the full run. Returns a list of FASTQ file paths (one per mate for
+    paired-end, one for single-end).
+    """
+    DATA_DIR.mkdir(parents=True, exist_ok=True)
 
     accessions = sample_config.get("reads", [])
     if not accessions:
         print(f"  WARNING: No reads defined for {sample_name}, skipping")
         return None
 
-    temp_dir = DATA_DIR / f"{sample_name}_temp"
-    temp_dir.mkdir(parents=True, exist_ok=True)
+    download_script = REPO_ROOT / "benchmarks" / "sra_download.sh"
 
+    all_fastq_paths = []
     for accession in accessions:
-        print(f"  Downloading {accession}...")
+        # Check if already downloaded
+        existing = sorted(DATA_DIR.glob(f"{accession}_*_{MAX_READS}.fastq"))
+        if existing:
+            print(f"  Using cached data for {accession}: {[p.name for p in existing]}")
+            all_fastq_paths.extend(existing)
+            continue
+
+        print(f"  Downloading {accession} ({MAX_READS} reads per mate from ENA)...")
         result = subprocess.run(
-            ["fasterq-dump", accession, "-O", str(temp_dir), "-e", "4"],
-            capture_output=True, text=True
+            [str(download_script), accession, str(MAX_READS)],
+            capture_output=True, text=True,
+            cwd=str(DATA_DIR),
         )
         if result.returncode != 0:
-            print(f"  ERROR downloading {accession}: {result.stderr}")
+            print(f"  ERROR downloading {accession}:")
+            print(f"    {result.stderr.strip()}")
             return None
 
-    # Concatenate all fastq files
-    print(f"  Concatenating FASTQ files...")
-    with open(fastq_path, "w") as outfile:
-        for fq in sorted(temp_dir.glob("*.fastq")):
-            with open(fq) as infile:
-                for line in infile:
-                    outfile.write(line)
+        # Print download log
+        for line in result.stderr.strip().split("\n"):
+            print(f"    {line}")
 
-    # Clean up temp files
-    for fq in temp_dir.glob("*.fastq"):
-        fq.unlink()
-    temp_dir.rmdir()
+        # Find the downloaded files
+        downloaded = sorted(DATA_DIR.glob(f"{accession}_*_{MAX_READS}.fastq"))
+        if not downloaded:
+            print(f"  ERROR: no FASTQ files found after download for {accession}")
+            return None
 
-    return fastq_path
+        all_fastq_paths.extend(downloaded)
+
+    return all_fastq_paths
 
 
-def run_sharkmer(sample_name, fastq_path, arguments, threads=THREADS):
-    """Run sharkmer and return wall time in seconds."""
+def run_sharkmer(sample_name, fastq_paths, arguments, threads=THREADS):
+    """Run sharkmer and return wall time in seconds.
+
+    fastq_paths is a list of FASTQ files (e.g. [R1.fastq, R2.fastq] for
+    paired-end, or [reads.fastq] for single-end). All are passed as
+    positional arguments to sharkmer.
+    """
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     sample_prefix = f"{sample_name}_1000k"
-    output_prefix = OUTPUT_DIR / sample_prefix
 
     cmd = [
         str(SHARKMER_BIN),
@@ -159,8 +172,9 @@ def run_sharkmer(sample_name, fastq_path, arguments, threads=THREADS):
     if arguments:
         cmd.extend(arguments.split())
 
-    # Add input file
-    cmd.append(str(fastq_path))
+    # Add input files
+    for fq in fastq_paths:
+        cmd.append(str(fq))
 
     print(f"  Running: {' '.join(cmd)}")
 
@@ -306,14 +320,14 @@ def run_benchmark(samples_to_run=None, threads=THREADS):
         print(f"=== {sample_name} ===")
 
         # Download
-        fastq_path = download_sample(sample_name, sample_config)
-        if fastq_path is None:
+        fastq_paths = download_sample(sample_name, sample_config)
+        if fastq_paths is None:
             continue
 
         # Run sharkmer
         arguments = sample_config.get("arguments", "")
         sample_prefix, wall_time = run_sharkmer(
-            sample_name, fastq_path, arguments, threads=threads
+            sample_name, fastq_paths, arguments, threads=threads
         )
         if sample_prefix is None:
             print(f"  FAILED, skipping result collection")
