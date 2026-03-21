@@ -19,21 +19,9 @@ fn test_18s_recovery_from_err571460() {
     let outdir = tempfile::tempdir().expect("failed to create temp dir");
     let sample = "ERR571460_test";
 
-    // Decompress and pipe into sharkmer
-    let zcat = Command::new("gzcat")
-        .arg(&fixture)
-        .stdout(std::process::Stdio::piped())
-        .spawn()
-        .or_else(|_| {
-            Command::new("zcat")
-                .arg(&fixture)
-                .stdout(std::process::Stdio::piped())
-                .spawn()
-        })
-        .expect("failed to start gzcat or zcat");
-
     let sharkmer_bin = env!("CARGO_BIN_EXE_sharkmer");
 
+    // Pass the .gz file directly — sharkmer handles gzip natively
     let output = Command::new(sharkmer_bin)
         .args([
             "-k",
@@ -48,8 +36,9 @@ fn test_18s_recovery_from_err571460() {
             "100000",
             "-n",
             "1",
+            "-v",
+            fixture.to_str().unwrap(),
         ])
-        .stdin(zcat.stdout.unwrap())
         .output()
         .expect("failed to run sharkmer");
 

@@ -544,7 +544,11 @@ fn main() -> Result<()> {
                 let file = std::fs::File::open(file_path)
                     .with_context(|| format!("Failed to open file: {}", file_name))?;
 
-                let reader = std::io::BufReader::new(file);
+                let reader: Box<dyn BufRead> = if file_name.ends_with(".gz") {
+                    Box::new(std::io::BufReader::new(flate2::read::GzDecoder::new(file)))
+                } else {
+                    Box::new(std::io::BufReader::new(file))
+                };
                 let reached_max = read_fastq(
                     reader,
                     &mut state,
