@@ -123,7 +123,13 @@ bacteria, metazoa). Issue #33 will replace with YAML files via
 
 ## Branching model
 
-- Issue branches → `dev` (only when passing) → `master` (releases only)
+- `master` — tagged releases only
+- `dev` — active development for the next unreleased version
+- `vN` (e.g. `v2`, `v3`) — release maintenance branches, created from the
+  release tag when a major version ships. Used for patches only.
+- Issue branches → `dev` (for new features) or `vN` (for patches)
+- To patch a released version while working on the next: branch from `vN`,
+  fix, merge to `vN`, tag, merge to `master`, cherry-pick into `dev`
 - Quality gates: `cargo test` passes, `cargo clippy` no warnings,
   `cargo fmt --check` clean
 

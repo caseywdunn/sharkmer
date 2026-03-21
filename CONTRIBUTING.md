@@ -22,10 +22,36 @@ After cloning the repo, gunzip the `data` in the data dir:
 
 ## Branching model
 
-All work is done on issue branches that correspond to entries in the
-[issue tracker](https://github.com/caseywdunn/sharkmer/issues). Issue branches
-are merged into `dev` only when passing. `dev` is merged into `master` only for
-releases.
+### Branches
+
+- `master` — tagged releases only. Never commit directly to master.
+- `dev` — active development for the next unreleased version. All feature
+  work targets this branch.
+- `vN` (e.g. `v2`, `v3`) — release maintenance branches, created from the
+  release tag when a major version ships. Used only for patches to released
+  versions.
+- Issue branches — created from `dev` (or from `vN` for patches), named after
+  the issue they address.
+
+### Normal workflow
+
+1. Create an issue branch from `dev`
+2. Do the work, ensure it passes quality gates
+3. Merge to `dev`
+4. When ready to release: merge `dev` to `master`, tag the release, create
+   a `vN` branch from the tag
+
+### Patching a released version
+
+If a bug is found in v2.0 while v3.0 is in development on `dev`:
+
+1. Create an issue branch from `v2`
+2. Fix the bug
+3. Merge to `v2`, tag `v2.0.1`
+4. Merge `v2` to `master`
+5. Cherry-pick the fix into `dev` so the next version gets it too
+
+### Quality gates
 
 A branch is considered passing when:
 
