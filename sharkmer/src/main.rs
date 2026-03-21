@@ -1,6 +1,7 @@
 use anyhow::{bail, ensure, Context, Result};
 use bio::io::fasta;
 use clap::Parser;
+use log::{debug, info, warn};
 use pcr::preconfigured;
 use std::io::BufRead;
 use std::io::Write;
@@ -14,17 +15,6 @@ mod kmer;
 mod pcr;
 
 const N_READS_PER_BATCH: u64 = 1000;
-
-pub const COLOR_NOTE: &str = "blue";
-pub const COLOR_SUCCESS: &str = "green";
-pub const COLOR_FAIL: &str = "magenta";
-pub const COLOR_WARNING: &str = "yellow";
-
-pub enum ParameterValue {
-    Int(u32),
-    Str(String),
-    Float(f64),
-}
 
 #[allow(dead_code)]
 fn is_valid_nucleotide(c: char) -> bool {
@@ -267,9 +257,9 @@ struct Args {
     #[arg(long, default_value_t = 0)]
     validate_every: u64,
 
-    /// Verbosity
-    #[arg(long, default_value_t = 0)]
-    verbosity: usize,
+    /// Increase verbosity (-v info, -vv debug, -vvv trace)
+    #[arg(short = 'v', long, action = clap::ArgAction::Count)]
+    verbose: u8,
 
     /// Print citation information and exit
     #[arg(long)]
@@ -430,6 +420,18 @@ fn main() -> Result<()> {
     // Ingest command line arguments
     let args = Args::parse();
 
+    // Initialize logging based on verbosity level
+    let log_level = match args.verbose {
+        0 => log::LevelFilter::Warn,
+        1 => log::LevelFilter::Info,
+        2 => log::LevelFilter::Debug,
+        _ => log::LevelFilter::Trace,
+    };
+    env_logger::Builder::new()
+        .filter_level(log_level)
+        .format_timestamp(None)
+        .init();
+
     // Print citation information and exit if --cite is specified
     if args.cite {
         println!("{} {}\n", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
@@ -448,10 +450,8 @@ fn main() -> Result<()> {
         std::process::exit(0);
     }
 
-    // Print the program name and version
-    println!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
-    // Print the arguments
-    println!("{:?}", args);
+    info!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
+    debug!("{:?}", args);
 
     // Parse the outdir path and sample, create directories if necessary
     let path = PathBuf::from(&args.outdir);
@@ -516,8 +516,7 @@ fn main() -> Result<()> {
 
     // Ingest the fastq data
     let start = std::time::Instant::now();
-    print!("Ingesting reads...");
-    std::io::stdout().flush()?;
+    info!("Ingesting reads...");
 
     let mut chunks: Vec<kmer::Chunk> = Vec::new();
     for _ in 0..args.n {
@@ -577,8 +576,6 @@ fn main() -> Result<()> {
     state.chunks[state.chunk_index].ingest_reads(&state.reads)?;
     state.reads.clear();
 
-    println!(" done");
-
     let mut n_reads_ingested: u64 = 0;
     let mut n_bases_ingested: u64 = 0;
     let mut n_kmers_ingested: u64 = 0;
@@ -588,22 +585,23 @@ fn main() -> Result<()> {
         n_kmers_ingested += chunk.get_n_kmers();
     }
 
-    // Print some stats
-    println!("  Read {} reads", state.n_reads_read);
-    println!("  Read {} bases", state.n_bases_read);
-    println!("  Ingested {} subreads", n_reads_ingested);
-    println!("  Ingested {} bases", n_bases_ingested);
-    println!("  Ingested {} kmers", n_kmers_ingested);
-    println!("  Time to ingest reads: {:?}", start.elapsed());
+    info!(
+        "Read {} reads, {} bases",
+        state.n_reads_read, state.n_bases_read
+    );
+    info!(
+        "Ingested {} subreads, {} bases, {} kmers",
+        n_reads_ingested, n_bases_ingested, n_kmers_ingested
+    );
+    info!("Time to ingest reads: {:?}", start.elapsed());
 
     if n_reads_ingested == 0 {
-        eprintln!("Warning: No reads were ingested. All output will be empty.");
+        warn!("No reads were ingested. All output will be empty.");
     }
 
     // Create the histograms
-    print!("Consolidating chunks and creating histograms...");
+    info!("Consolidating chunks and creating histograms...");
     let start = std::time::Instant::now();
-    std::io::stdout().flush()?;
 
     let mut kmer_counts: KmerCounts = KmerCounts::new(&k);
     let mut histos: Vec<kmer::Histogram> = Vec::with_capacity(args.n);
@@ -617,11 +615,11 @@ fn main() -> Result<()> {
 
         histos.push(histo);
     }
-    println!(" done, time: {:?}", start.elapsed());
+    info!("Chunks consolidated, time: {:?}", start.elapsed());
 
     let n_hashed_kmers: u64 = kmer_counts.get_n_kmers();
-    println!(
-        "  {} unique kmers with a total count of {} were found",
+    info!(
+        "{} unique kmers with a total count of {} were found",
         kmer_counts.get_n_unique_kmers(),
         n_hashed_kmers
     );
@@ -635,8 +633,7 @@ fn main() -> Result<()> {
 
     // Write the histograms to a tab delimited file, with the first column being the count
     // Skip the first row, which is the count of 0. Do not include a header
-    print!("Writing histograms to file...");
-    std::io::stdout().flush()?;
+    info!("Writing histograms to file...");
     let mut file = std::fs::File::create(format!("{}{}.histo", directory, args.sample))
         .context("Failed to create histogram file")?;
     for i in 1..args.histo_max as usize + 2 {
@@ -650,11 +647,8 @@ fn main() -> Result<()> {
             .context("Failed to write histogram data")?;
     }
 
-    println!(" done");
-
     // Write the final histogram to a file, ready for GenomeScope2 etc...
-    print!("Writing final histogram to file...");
-    std::io::stdout().flush()?;
+    info!("Writing final histogram to file...");
 
     let last_histo = &histos[histos.len() - 1];
     let last_histo_vec = kmer::Histogram::get_vector(last_histo)?;
@@ -672,14 +666,12 @@ fn main() -> Result<()> {
             .context("Failed to write final histogram data")?;
     }
 
-    println!(" done");
-
     let n_singleton_kmers = last_histo_vec[1];
     let n_unique_kmers_histo: u64 = last_histo.get_n_unique_kmers();
     let n_kmers_histo: u64 = last_histo.get_n_kmers();
 
-    println!("  {} unique kmers in histogram", n_unique_kmers_histo);
-    println!("  {} kmers in histogram", n_kmers_histo);
+    debug!("{} unique kmers in histogram", n_unique_kmers_histo);
+    debug!("{} kmers in histogram", n_kmers_histo);
 
     ensure!(
         n_kmers_histo == n_kmers_ingested,
@@ -695,8 +687,7 @@ fn main() -> Result<()> {
         kmer_counts.get_n_unique_kmers(),
     );
 
-    print!("Writing stats to file...");
-    std::io::stdout().flush()?;
+    info!("Writing stats to file...");
     let mut file_stats = std::fs::File::create(format!("{}{}.stats", directory, args.sample))
         .context("Failed to create stats file")?;
     let mut line = format!("arguments\t{:?}\n", args);
@@ -716,10 +707,8 @@ fn main() -> Result<()> {
     file_stats
         .write_all(line.as_bytes())
         .context("Failed to write stats file")?;
-    println!(" done");
-
     if !pcr_runs.is_empty() {
-        println!("Running in silico PCR...");
+        info!("Running in silico PCR...");
 
         // Prep kmer counts for in silico PCR. Remove singleton kmers (to reduce size) and
         // add reverse complements
@@ -727,7 +716,7 @@ fn main() -> Result<()> {
         let kmer_counts_pcr = kmer_counts.get_pcr_kmers(&min_count);
 
         for pcr_params in pcr_runs.iter() {
-            let fasta = pcr::do_pcr(&kmer_counts_pcr, &args.sample, args.verbosity, pcr_params)?;
+            let fasta = pcr::do_pcr(&kmer_counts_pcr, &args.sample, pcr_params)?;
 
             if !fasta.is_empty() {
                 let fasta_path = format!(
@@ -743,10 +732,10 @@ fn main() -> Result<()> {
             }
         }
 
-        println!("Done running in silico PCR");
+        info!("Done running in silico PCR");
     }
 
-    println!("Total run time: {:?}", start_run.elapsed());
+    info!("Total run time: {:?}", start_run.elapsed());
     Ok(())
 }
 
