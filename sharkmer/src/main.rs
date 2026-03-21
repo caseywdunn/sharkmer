@@ -4,6 +4,7 @@ use clap::Parser;
 use log::{debug, info, warn};
 use pcr::preconfigured;
 use std::io::BufRead;
+use std::io::IsTerminal;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -597,6 +598,14 @@ fn main() -> Result<()> {
         None => {
             // read from stdin
             let stdin = std::io::stdin();
+            ensure!(
+                !stdin.is_terminal(),
+                "No input files specified and stdin is a terminal.\n\
+                 Provide FASTQ files as arguments or pipe data via stdin.\n\
+                 Example: sharkmer -k 21 reads.fastq\n\
+                 Example: sharkmer -k 21 reads.fastq.gz\n\
+                 Example: zcat reads.fastq.gz | sharkmer -k 21"
+            );
             let handle = stdin.lock();
 
             read_fastq(
