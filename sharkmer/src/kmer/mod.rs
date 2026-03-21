@@ -1,7 +1,7 @@
 // kmer/mod.rs
 //! This module provides kmer functions.
 
-use anyhow::{bail, Context, Result};
+use anyhow::{bail, ensure, Context, Result};
 
 #[cfg(feature = "nohashmap")]
 use std::collections::HashMap;
@@ -146,6 +146,7 @@ impl Read {
     /// let canonical_kmers = get_kmers(&encoded_sequence, &kmer_length);
     /// ```
     pub fn get_kmers(&self, k: &usize) -> Result<Vec<u64>> {
+        ensure!(*k > 0 && *k < 32, "k must be between 1 and 31, got {}", k);
         let ints = &self.sequence;
         let mut kmers: Vec<u64> = Vec::with_capacity((ints.len() * 4 / k) + 1);
         let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
@@ -187,7 +188,7 @@ impl Read {
         let modulo = self.length % 4;
         if modulo != 0 {
             let n_extra_bases = 4 - modulo;
-            kmers.truncate(kmers.len() - n_extra_bases);
+            kmers.truncate(kmers.len().saturating_sub(n_extra_bases));
         }
 
         let expected = self.length - *k + 1;

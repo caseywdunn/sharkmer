@@ -1358,7 +1358,7 @@ fn extend_graph(
                                 let _ = std::io::stdout().flush();
                             }
 
-                            if path_length > params.max_length - (kmer_counts.get_k()) {
+                            if path_length + kmer_counts.get_k() > params.max_length {
                                 graph[new_node].is_terminal = true;
                                 graph[new_node].visited = true;
                                 if *verbosity > 1 {
@@ -1607,15 +1607,22 @@ pub fn do_pcr(
         // in COVERAGE_STEPS steps
         let coverage_high_threshold = primer_count / COVERAGE_MULTIPLIER;
         let mut coverage_thresholds: Vec<u64> = Vec::new();
-        let step_size =
-            coverage_high_threshold.saturating_sub(params.min_coverage) / (COVERAGE_STEPS - 1);
 
-        for i in 0..COVERAGE_STEPS {
-            coverage_thresholds.push(coverage_high_threshold - (i * step_size));
+        if coverage_high_threshold <= params.min_coverage {
+            // Coverage is too low to step down, just use min_coverage
+            coverage_thresholds.push(params.min_coverage);
+        } else {
+            let step_size = (coverage_high_threshold - params.min_coverage) / (COVERAGE_STEPS - 1);
+
+            for i in 0..COVERAGE_STEPS {
+                coverage_thresholds.push(coverage_high_threshold.saturating_sub(i * step_size));
+            }
+
+            // Make sure the last element is params.min_coverage, even if there are rounding errors
+            *coverage_thresholds
+                .last_mut()
+                .expect("coverage_thresholds is non-empty") = params.min_coverage;
         }
-
-        // Make sure the last element is params.min_coverage, even if there are rounding errors
-        coverage_thresholds[COVERAGE_STEPS as usize - 1] = params.min_coverage;
 
         println!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
@@ -1915,18 +1922,18 @@ mod tests {
     use super::*;
 
     // These functions are used in the tests
-    fn factorial(n: usize) -> usize {
-        let mut result = 1;
-        for i in 2..=n {
-            result *= i;
+    fn n_combinations(n: usize, r: usize) -> usize {
+        // Compute n choose r iteratively to avoid factorial overflow.
+        // n*(n-1)*...*(n-r+1) / r!
+        if r > n {
+            return 0;
+        }
+        let r = r.min(n - r); // take advantage of symmetry
+        let mut result: usize = 1;
+        for i in 0..r {
+            result = result * (n - i) / (i + 1);
         }
         result
-    }
-
-    fn n_combinations(n: usize, r: usize) -> usize {
-        // Given a sequence of length n and r sites that can be permuted,
-        // there are (n! / (r!(n-r)!)) combinations of r sites in the sequence.
-        factorial(n) / (factorial(r) * factorial(n - r))
     }
 
     fn expected_permutations(n: usize, r: usize) -> usize {
@@ -2091,14 +2098,6 @@ mod tests {
             [0, 2, 1, 1]
         );
         assert_eq!(get_backward_node_degrees(&graph, nodes["d"], 3), [0, 2, 1]);
-    }
-
-    #[test]
-    fn test_factorial() {
-        assert_eq!(factorial(1), 1);
-        assert_eq!(factorial(2), 2);
-        assert_eq!(factorial(3), 6);
-        assert_eq!(factorial(8), 40320);
     }
 
     #[test]

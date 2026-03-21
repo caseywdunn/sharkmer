@@ -591,7 +591,7 @@ fn main() -> Result<()> {
     line = format!(
         "{}n_multi_kmers\t{}\n",
         line,
-        n_kmers_ingested - n_singleton_kmers
+        n_kmers_ingested.saturating_sub(n_singleton_kmers)
     );
     line = format!("{}n_singleton_kmers\t{}\n", line, n_singleton_kmers);
 
