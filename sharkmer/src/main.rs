@@ -519,6 +519,33 @@ fn main() -> Result<()> {
         gene_names.push(pcr_params.gene_name.clone());
     }
 
+    // Validate input files exist before starting processing
+    if let Some(input_files) = &args.input {
+        for file_name in input_files.iter() {
+            let file_path = Path::new(file_name);
+            ensure!(
+                file_path.exists(),
+                "Input file does not exist: {}",
+                file_name
+            );
+            ensure!(
+                file_path.is_file(),
+                "Input path is not a file: {}",
+                file_name
+            );
+        }
+    }
+
+    // Validate pcr-file paths exist
+    for pcr_file in args.pcr_file.iter() {
+        let file_path = Path::new(pcr_file);
+        ensure!(
+            file_path.exists(),
+            "PCR panel file does not exist: {}",
+            pcr_file
+        );
+    }
+
     // Set the number of threads for Rayon to use
     rayon::ThreadPoolBuilder::new()
         .num_threads(args.threads)
@@ -546,12 +573,7 @@ fn main() -> Result<()> {
         Some(input_files) => {
             // read from one or more files
             for file_name in input_files.iter() {
-                // Open the file for buffered reading
                 let file_path = Path::new(&file_name);
-
-                // Check if the file exists
-                ensure!(file_path.exists(), "File {} does not exist", file_name);
-
                 let file = std::fs::File::open(file_path)
                     .with_context(|| format!("Failed to open file: {}", file_name))?;
 
