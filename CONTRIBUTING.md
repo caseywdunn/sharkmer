@@ -43,11 +43,16 @@ After cloning the repo, gunzip the `data` in the data dir:
 
 ### Normal workflow
 
-1. Create an issue branch from `dev`
+1. Create an issue branch from `dev` (`git checkout -b issue-NNN dev`)
 2. Do the work, ensure it passes quality gates
-3. Merge to `dev`
-4. When ready to release: merge `dev` to `master`, tag the release, create
+3. Merge to `dev` and push (`git checkout dev && git merge issue-NNN && git push`)
+4. Delete the issue branch
+5. When ready to release: merge `dev` to `master`, tag the release, create
    a `vN` branch from the tag
+
+Always merge and push completed issue branches to `dev` before starting the
+next issue. This keeps `dev` up to date and avoids dependency tangles when
+later issue branches need earlier work.
 
 ### Patching a released version
 
