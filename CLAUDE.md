@@ -138,18 +138,21 @@ after each phase.
 
 ## Issue workflow
 
-When working on an issue, complete a wrap-up phase before committing:
-
-1. **Summarize changes**: List what was modified and why, including any
+1. **Create branch**: `git checkout -b issue-NNN dev`
+2. **Do the work**, ensure it passes quality gates.
+3. **Update documentation**: Update readme, CLAUDE.md (e.g. remove resolved
+   known issues), CONTRIBUTING.md, and any other docs affected by the changes.
+4. **Summarize changes**: List what was modified and why, including any
    non-obvious decisions made during implementation.
-2. **Flag concerns**: Note anything that came up during the work that may need
+5. **Flag concerns**: Note anything that came up during the work that may need
    to be addressed in other issues — e.g. related code that looks fragile,
    assumptions that may not hold, or scope that was intentionally deferred.
    Open or reference issues for these as appropriate.
-3. **User review**: Present the summary and concerns to the user for review
+6. **User review**: Present the summary and concerns to the user for review
    before committing. Do not commit or close the issue until the user confirms.
-4. **Close out**: After user sign-off, check off the issue in PLAN.md, commit
-   the changes, then close the issue on GitHub.
+7. **Commit**: After user sign-off, check off the issue in PLAN.md and commit.
+8. **Merge to dev and push**: `git checkout dev && git merge issue-NNN && git push`
+9. **Clean up**: Delete the issue branch, close the issue on GitHub.
 
 ## Key design decisions for v2.0
 
