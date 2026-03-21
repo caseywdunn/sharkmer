@@ -1,5 +1,6 @@
 use super::pcrparams_string;
 use super::PCRParams;
+use super::DEFAULT_DEDUP_EDIT_THRESHOLD;
 
 #[allow(dead_code)]
 struct PCRPanel {
@@ -80,6 +81,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Modified from Cunningham and Buss 1993 https://doi.org/10.1016/0305-1978(93)90009-G ".to_string(),
             notes: "Amplifies portions of domains IV and V. Product is about 580bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -93,6 +95,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Modified from Folmer et al. 1994".to_string(),
             notes: "Product is about 700bp long".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -106,6 +109,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Medlin et al. 1988 https://doi.org/10.1016/0378-1119(88)90066-2".to_string(),
             notes: "Product is about 1790bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -119,6 +123,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Evans et al. 2008. https://doi.org/10.1186/1471-2148-8-139".to_string(),
             notes: "Forward primer is F97, reverse is R3238. Product is about 3230bp.".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -132,6 +137,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x".to_string(),
             notes: "Forward primer is CAS18SF1, position 1843, from Ji et al 2003. The reverse primer is the reverse complement of the 28S forward primer. Product is about 770-880bp.".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -145,6 +151,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x".to_string(),
             notes: "Forward primer is reverse complement of 18S reverse primer. The reverse primer is the reverse complement of the 28S forward primer. Product is about 620-730bp.".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -161,6 +168,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "".to_string(),
             notes: "".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -174,6 +182,7 @@ fn get_cnidaria() -> Vec<PCRParams> {
             trim: 15,
             citation: "McCartin et al 2024. https://doi.org/10.7717/peerj.18607".to_string(),
             notes: "Anth-28S-eDNA; Product is about 540bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
     ]
@@ -193,6 +202,7 @@ fn get_human() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "mt3734-6739".to_string(),
@@ -205,6 +215,7 @@ fn get_human() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "mt6511-9220".to_string(),
@@ -217,6 +228,7 @@ fn get_human() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "mt8910-10648".to_string(),
@@ -229,6 +241,7 @@ fn get_human() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "mt10360-12226".to_string(),
@@ -241,6 +254,7 @@ fn get_human() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "mt11977-13830".to_string(),
@@ -253,6 +267,7 @@ fn get_human() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "mt13477-15349".to_string(),
@@ -265,6 +280,7 @@ fn get_human() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "mt14898-151".to_string(),
@@ -277,6 +293,7 @@ fn get_human() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "mt16488-1677".to_string(),
@@ -289,6 +306,7 @@ fn get_human() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ramos et al 2009. doi: 10.1002/elps.200800601".to_string(),
             notes: "mt region".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
     ]
 }
@@ -307,6 +325,7 @@ fn get_teleostei() -> Vec<PCRParams> {
             trim: 15,
             citation: "Karabanov et al 2014. https://doi.org/10.3390/w14030437".to_string(),
             notes: "if18S1".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S".to_string(),
@@ -319,6 +338,7 @@ fn get_teleostei() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ivanova et al 2007. doi: 10.1111/j.1471-8286.2007.01748.x".to_string(),
             notes: "16Sar".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "CO1".to_string(),
@@ -331,6 +351,7 @@ fn get_teleostei() -> Vec<PCRParams> {
             trim: 15,
             citation: "Naz et al 2023. doi: 10.2478/aoas-2022-0073".to_string(),
             notes: "Fish-R1".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "CytB".to_string(),
@@ -344,6 +365,7 @@ fn get_teleostei() -> Vec<PCRParams> {
             citation: "Nugroho et al 2007. https://www.bioflux.com.ro/docs/2019.1074-1079.pdf"
                 .to_string(),
             notes: "L14841; H15149".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "12S".to_string(),
@@ -356,6 +378,7 @@ fn get_teleostei() -> Vec<PCRParams> {
             trim: 15,
             citation: "Zhang et al 2020. doi: 10.1111/2041-210X.13485 ".to_string(),
             notes: "Ac12S".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
     ]
 }
@@ -374,6 +397,7 @@ fn get_angiospermae() -> Vec<PCRParams> {
             trim: 15,
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "psbA3'f; trnHf".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "rpl36-infA-rps8".to_string(),
@@ -386,6 +410,7 @@ fn get_angiospermae() -> Vec<PCRParams> {
             trim: 15,
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "rpl36f; rps8r".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "trnK-rps16".to_string(),
@@ -398,6 +423,7 @@ fn get_angiospermae() -> Vec<PCRParams> {
             trim: 15,
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "trnK5'r; rps16-4546mod".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "trnV-atpE".to_string(),
@@ -410,6 +436,7 @@ fn get_angiospermae() -> Vec<PCRParams> {
             trim: 15,
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "trnV5f; S1022".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "trnC-ycf6".to_string(),
@@ -422,6 +449,7 @@ fn get_angiospermae() -> Vec<PCRParams> {
             trim: 15,
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "trnC; petN1r".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "ycf6-psbM".to_string(),
@@ -434,6 +462,7 @@ fn get_angiospermae() -> Vec<PCRParams> {
             trim: 15,
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "petN1; psbM2r".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "psbM-trnD".to_string(),
@@ -446,6 +475,7 @@ fn get_angiospermae() -> Vec<PCRParams> {
             trim: 15,
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "psbMA1; trnD".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "atpB-rbcL".to_string(),
@@ -458,6 +488,7 @@ fn get_angiospermae() -> Vec<PCRParams> {
             trim: 15,
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "S2r; RBCL1".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "trnL-F".to_string(),
@@ -470,6 +501,7 @@ fn get_angiospermae() -> Vec<PCRParams> {
             trim: 15,
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "e; f".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "ITS".to_string(),
@@ -482,6 +514,7 @@ fn get_angiospermae() -> Vec<PCRParams> {
             trim: 15,
             citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310".to_string(),
             notes: "ITS5a; ITS4".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
     ]
 }
@@ -501,6 +534,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Marquina et al doi: 10.1111/1755-0998.12942".to_string(),
             notes: "Hex12SF2–Hex12SR2. Product is about 391bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -514,6 +548,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Marquina et al doi: 10.1111/1755-0998.12942".to_string(),
             notes: "Chiar16SF–Chiar16SR. Product is about 348bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -527,6 +562,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Modified from Marquina et al doi: 10.1111/1755-0998.12942".to_string(),
             notes: "HexCOIF4–HexCOIR4. Product is about 322bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -540,6 +576,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Marquina et al doi: 10.1111/1755-0998.12942".to_string(),
             notes: "	HexCOX2F3–HexCOX2R3. Product is about 260".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -553,6 +590,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Marquina et al doi: 10.1111/1755-0998.12942".to_string(),
             notes: "HexCytBF3–HexCytBR3. Product is about 373".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -566,6 +604,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Marquina et al doi: 10.1111/1755-0998.12942".to_string(),
             notes: "HexND1F4–HexND1R4. Product is about 210bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -579,6 +618,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Marquina et al doi: 10.1111/1755-0998.12942".to_string(),
             notes: "HexND4F4–HexND4R4. Product is about 211bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -592,6 +632,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Marquina et al doi: 10.1111/1755-0998.12942".to_string(),
             notes: "HexND5F3–HexND5R3. Product is about 271bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
     //
 
@@ -609,6 +650,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "O'Grady et al https://doi.org/10.1016/j.ympev.2010.11.022 ".to_string(),
             notes: "HexND5F3–HexND5R3. Product is about 515bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -622,6 +664,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "O'Grady et al https://doi.org/10.1016/j.ympev.2010.11.022 ".to_string(),
             notes: "Product is about 830bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -635,6 +678,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "O'Grady et al https://doi.org/10.1016/j.ympev.2010.11.022 ".to_string(),
             notes: "Product is about 765bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -648,6 +692,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "O'Grady et al https://doi.org/10.1016/j.ympev.2010.11.022 ".to_string(),
             notes: "Product is about 520bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
     //
 
@@ -663,6 +708,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014".to_string(),
             notes: "Product is about 856bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -676,6 +722,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014".to_string(),
             notes: "Product is about 943bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -689,6 +736,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014".to_string(),
             notes: "Product is about 1071bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -702,6 +750,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014".to_string(),
             notes: "Product is about 633bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -715,6 +764,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014".to_string(),
             notes: "Product is about 757bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
     //
 
@@ -730,6 +780,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Machida et al https://doi.org/10.1371/journal.pone.0134314".to_string(),
             notes: "Product is about 757bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -743,6 +794,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Machida et al https://doi.org/10.1371/journal.pone.0134314".to_string(),
             notes: "Product is about 757bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -756,6 +808,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Machida et al https://doi.org/10.1016/j.ympev.2015.06.014".to_string(),
             notes: "Forward primer is reverse complement of 18S reverse primer. The reverse primer is the reverse complement of the 28S forward primer. Product is about 4800bp.".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
     //
 
@@ -771,6 +824,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Medlin et al. 1988 https://doi.org/10.1016/0378-1119(88)90066-2".to_string(),
             notes: "Product is about 1790bp".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -784,6 +838,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Evans et al. 2008. https://doi.org/10.1186/1471-2148-8-139".to_string(),
             notes: "Forward primer is F97, reverse is R3238. Product is about 3230bp.".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -797,6 +852,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x".to_string(),
             notes: "Forward primer is CAS18SF1, position 1843, from Ji et al 2003. The reverse primer is the reverse complement of the 28S forward primer. Product is about 770-880bp.".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
 
         PCRParams {
@@ -810,6 +866,7 @@ fn get_insecta() -> Vec<PCRParams> {
             trim: 15,
             citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x".to_string(),
             notes: "Forward primer is reverse complement of 18S reverse primer. The reverse primer is the reverse complement of the 28S forward primer. Product is about 620-730bp.".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
     ]
 }
@@ -829,6 +886,7 @@ fn get_metazoa() -> Vec<PCRParams> {
             citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
                 .to_string(),
             notes: "Within V3".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "18S-V5-V7S".to_string(),
@@ -842,6 +900,7 @@ fn get_metazoa() -> Vec<PCRParams> {
             citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
                 .to_string(),
             notes: "Between V5 and beginning of V7 (short amplicon)".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "18S-V5-V7L".to_string(),
@@ -855,6 +914,7 @@ fn get_metazoa() -> Vec<PCRParams> {
             citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
                 .to_string(),
             notes: "Between V5 and beginning of V7 (long amplicon)".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "18S-V7".to_string(),
@@ -868,6 +928,7 @@ fn get_metazoa() -> Vec<PCRParams> {
             citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
                 .to_string(),
             notes: "Within V7".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "18S-V7p-V8".to_string(),
@@ -881,6 +942,7 @@ fn get_metazoa() -> Vec<PCRParams> {
             citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
                 .to_string(),
             notes: "Part of V7 and most of V8".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "18S-V9".to_string(),
@@ -894,6 +956,7 @@ fn get_metazoa() -> Vec<PCRParams> {
             citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
                 .to_string(),
             notes: "Within V9".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "18S-V9-v2".to_string(),
@@ -907,6 +970,7 @@ fn get_metazoa() -> Vec<PCRParams> {
             citation: "From Amaral-Zettler 2009, https://doi.org/10.1371/journal.pone.0006372"
                 .to_string(),
             notes: "1380F;1510R".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
     ]
 }
@@ -925,6 +989,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V1-V2".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S-V2f-V3r".to_string(),
@@ -937,6 +1002,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V2-V3".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S-341F-785R".to_string(),
@@ -949,6 +1015,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V3-V4".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S-PRK341F-PRK806R".to_string(),
@@ -961,6 +1028,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V3-V4-v2".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S-515F-806R".to_string(),
@@ -973,6 +1041,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V4".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S-515F-806RB".to_string(),
@@ -985,6 +1054,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V4".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S-515F-Y-926R".to_string(),
@@ -997,6 +1067,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V4-V5".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S-B969F-BA1406R".to_string(),
@@ -1009,6 +1080,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             trim: 15,
             citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116".to_string(),
             notes: "V6-V8".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S-799F-1391R".to_string(),
@@ -1022,6 +1094,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "Chelius and Triplett, 2001, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
                 .to_string(),
             notes: "V5-V6-V7".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S-967F-1391R".to_string(),
@@ -1035,6 +1108,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "Sogin et al., 2006, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
                 .to_string(),
             notes: "V6-V7".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S-799F-1193R".to_string(),
@@ -1048,6 +1122,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "Bodenhausen et al., 2013, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
                 .to_string(),
             notes: "V5-V6-V7".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S-68F-783Rabc".to_string(),
@@ -1061,6 +1136,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "McAllister et al., 2011, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
                 .to_string(),
             notes: "V1-V4".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S-68F-518R".to_string(),
@@ -1074,6 +1150,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "Lee et al., 2010, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
                 .to_string(),
             notes: "V1-V3".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
         PCRParams {
             gene_name: "16S-341F-783Rabc".to_string(),
@@ -1087,6 +1164,7 @@ fn get_bacteria() -> Vec<PCRParams> {
             citation: "Sakai et al., 2004, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
                 .to_string(),
             notes: "V3-V4".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         },
     ]
 }

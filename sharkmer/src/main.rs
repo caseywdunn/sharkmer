@@ -77,6 +77,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>> {
     let mut trim = 15;
     let mut citation = "".to_string();
     let mut notes = "".to_string();
+    let mut dedup_edit_threshold = pcr::DEFAULT_DEDUP_EDIT_THRESHOLD;
 
     // Loop over additional parameters, which are of the form key=value and are separated by commas
     for item in split.iter() {
@@ -130,6 +131,11 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>> {
             "notes" => {
                 notes = value.to_string();
             }
+            "dedup-edit-threshold" => {
+                dedup_edit_threshold = value
+                    .parse()
+                    .with_context(|| format!("Invalid value for {}: {}", key, value))?;
+            }
             "panel" => {
                 if split.len() > 1 {
                     bail!("Invalid --pcr arguments, if a panel is specified it should the the only argument: {}", pcr_string);
@@ -156,6 +162,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>> {
         trim,
         citation,
         notes,
+        dedup_edit_threshold,
     };
 
     pcr::validate_pcr_params(&pcr_params)?;

@@ -47,8 +47,8 @@ const EXTENSION_EVALUATION_DEPTH: usize = 4;
 /// 4^(EXTENSION_EVALUATION_DEPTH-EXTENSION_EVALUATION_DIFF)
 const EXTENSION_EVALUATION_DIFF: usize = 1;
 
-/// Edit threshold for https://docs.rs/bio/latest/bio/alignment/distance/simd/fn.bounded_levenshtein.html
-const DISTANCE_EDIT_THRESHOLD: u32 = 10;
+/// Default edit distance threshold for deduplication of sPCR products
+pub const DEFAULT_DEDUP_EDIT_THRESHOLD: u32 = 10;
 
 /// If an edges count has more than BALLOONING_COUNT_THRESHOLD_MULTIPLIER * median_edge_count, it is
 /// likely going to balloon and is not added to the graph
@@ -831,7 +831,7 @@ pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     );
 }
 
-fn pairwise_sequence_distances(records: &[fasta::Record]) -> Vec<Vec<Option<u32>>> {
+fn pairwise_sequence_distances(records: &[fasta::Record], threshold: u32) -> Vec<Vec<Option<u32>>> {
     // https://docs.rs/bio/latest/bio/alignment/distance/simd/fn.bounded_levenshtein.html
 
     let n = records.len();
@@ -839,8 +839,7 @@ fn pairwise_sequence_distances(records: &[fasta::Record]) -> Vec<Vec<Option<u32>
 
     for i in 0..n {
         for j in i + 1..n {
-            let dist =
-                bounded_levenshtein(records[i].seq(), records[j].seq(), DISTANCE_EDIT_THRESHOLD);
+            let dist = bounded_levenshtein(records[i].seq(), records[j].seq(), threshold);
             matrix[i][j] = dist;
             matrix[j][i] = dist; // Symmetric matrix
         }
@@ -1428,6 +1427,7 @@ pub struct PCRParams {
     pub trim: usize,
     pub citation: String,
     pub notes: String,
+    pub dedup_edit_threshold: u32,
 }
 
 pub fn validate_pcr_params(params: &PCRParams) -> Result<()> {
@@ -1890,23 +1890,33 @@ pub fn do_pcr(
 
     let num_records_all = records.len();
 
-    // Thin the records to remove nearly-duplicate sequences that are highly similar. These can be abundant when coverage is high.
-    // Calculate pairwise distances between all sequences
-    let distances = pairwise_sequence_distances(&records);
-
-    // Get the first column of the matrix
-    let first_column: Vec<Option<u32>> = distances
-        .iter()
-        .filter_map(|row| row.first().cloned())
-        .collect();
-
-    // Loop through the indices and values of first_column in reverse order. If the value is Some, drop the corresponding
-    // element of records because it is so similar to the first.
-    for (index, &value) in first_column.iter().enumerate().rev() {
-        if index > 0 && value.is_some() {
-            records.remove(index);
+    // Thin the records to remove nearly-duplicate sequences that are highly similar.
+    // These can be abundant when coverage is high. Uses greedy clustering: iterate
+    // through records (sorted by kmer_min_count), keeping each record only if it is
+    // not within dedup_edit_threshold edits of any previously kept record.
+    let distances = pairwise_sequence_distances(&records, params.dedup_edit_threshold);
+    let n = records.len();
+    let mut keep = vec![true; n];
+    for i in 0..n {
+        if !keep[i] {
+            continue;
+        }
+        for j in (i + 1)..n {
+            if !keep[j] {
+                continue;
+            }
+            // distances[i][j] is Some(d) if d <= threshold, None if d > threshold
+            if distances[i][j].is_some() {
+                keep[j] = false;
+            }
         }
     }
+    let mut idx = 0;
+    records.retain(|_| {
+        let k = keep[idx];
+        idx += 1;
+        k
+    });
 
     if num_records_all == records.len() {
         println!(
@@ -1918,7 +1928,7 @@ pub fn do_pcr(
             .color(COLOR_SUCCESS)
         );
     } else {
-        println!("{}", format!("For gene {}, {} PCR products were generated and {} were retained (the others were minor variants of the first).", params.gene_name, num_records_all, records.len()).color(COLOR_SUCCESS));
+        println!("{}", format!("For gene {}, {} PCR products were generated and {} were retained ({} removed as near-duplicates within {} edits).", params.gene_name, num_records_all, records.len(), num_records_all - records.len(), params.dedup_edit_threshold).color(COLOR_SUCCESS));
     }
 
     if records.len() > MAX_NUM_AMPLICONS {
@@ -2373,6 +2383,7 @@ mod tests {
             trim: 15,
             citation: "".to_string(),
             notes: "".to_string(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
         };
 
         (read_string, k, replicates, kmer_counts, params)
