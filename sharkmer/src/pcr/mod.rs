@@ -1346,19 +1346,43 @@ fn extend_graph(
     Ok(graph)
 }
 
-#[derive(Clone)]
+#[derive(Clone, serde::Deserialize)]
 pub struct PCRParams {
     pub forward_seq: String,
     pub reverse_seq: String,
+    #[serde(default)]
     pub min_length: usize,
+    #[serde(default = "default_max_length")]
     pub max_length: usize,
     pub gene_name: String,
+    #[serde(default = "default_min_coverage")]
     pub min_coverage: u64,
+    #[serde(default = "default_mismatches")]
     pub mismatches: usize,
+    #[serde(default = "default_trim")]
     pub trim: usize,
+    #[serde(default)]
     pub citation: String,
+    #[serde(default)]
     pub notes: String,
+    #[serde(default = "default_dedup_edit_threshold")]
     pub dedup_edit_threshold: u32,
+}
+
+fn default_max_length() -> usize {
+    10000
+}
+fn default_min_coverage() -> u64 {
+    2
+}
+fn default_mismatches() -> usize {
+    2
+}
+fn default_trim() -> usize {
+    15
+}
+fn default_dedup_edit_threshold() -> u32 {
+    DEFAULT_DEDUP_EDIT_THRESHOLD
 }
 
 pub fn validate_pcr_params(params: &PCRParams) -> Result<()> {

@@ -253,6 +253,10 @@ struct Args {
     #[arg(short = 'p', long)]
     pcr: Vec<String>,
 
+    /// Load primer panel(s) from YAML file(s). Can be specified multiple times.
+    #[arg(long)]
+    pcr_file: Vec<String>,
+
     /// Validate FASTQ format every N records (0 = first record only)
     #[arg(long, default_value_t = 0)]
     validate_every: u64,
@@ -494,6 +498,13 @@ fn main() -> Result<()> {
         }
         let pcr_params = parse_pcr_string(pcr_string)
             .with_context(|| format!("Error parsing pcr string: {}", pcr_string))?;
+        pcr_runs.extend(pcr_params);
+    }
+
+    // Load primer panels from YAML files
+    for pcr_file in args.pcr_file.iter() {
+        let pcr_params = preconfigured::load_panel_file(pcr_file)
+            .with_context(|| format!("Error loading panel file: {}", pcr_file))?;
         pcr_runs.extend(pcr_params);
     }
 

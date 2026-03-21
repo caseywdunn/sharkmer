@@ -1,0 +1,266 @@
+name: insecta
+description: "Multiple primer sets, including universal and Drosophila specific, as well as for broad metazoan markers"
+primers:
+  - gene_name: "12S"
+    forward_seq: "ACTWTGTTACGACTTDTY"
+    reverse_seq: "AGGATTAGATACCCTDBT"
+    min_length: 300
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+    notes: "Hex12SF2–Hex12SR2. Product is about 391bp"
+
+  - gene_name: "16S"
+    forward_seq: "TARTYCAACATCGRGGTC"
+    reverse_seq: "CYGTRCDAAGGTAGCATA"
+    min_length: 300
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+    notes: "Chiar16SF–Chiar16SR. Product is about 348bp"
+
+  - gene_name: "CO1"
+    forward_seq: "HCCHGAYATRGCHTTYCC"
+    reverse_seq: "TATDGTRATDGCHCCNGC"
+    min_length: 300
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Modified from Marquina et al doi: 10.1111/1755-0998.12942"
+    notes: "HexCOIF4–HexCOIR4. Product is about 322bp"
+
+  - gene_name: "CO2"
+    forward_seq: "GGNCRHCARTGRTAYTGA"
+    reverse_seq: "RATYTCDGARCAYTGNCC"
+    min_length: 200
+    max_length: 400
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+    notes: "\tHexCOX2F3–HexCOX2R3. Product is about 260"
+
+  - gene_name: "CytB"
+    forward_seq: "NCAAATRTCNTTHTGRGG"
+    reverse_seq: "YCAYTCDGGYTKRATRTG"
+    min_length: 300
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+    notes: "HexCytBF3–HexCytBR3. Product is about 373"
+
+  - gene_name: "ND1"
+    forward_seq: "ATHARYTTATCRTANCGR"
+    reverse_seq: "NTTYGAYTTTKCDGARGG"
+    min_length: 150
+    max_length: 300
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+    notes: "HexND1F4–HexND1R4. Product is about 210bp"
+
+  - gene_name: "ND4"
+    forward_seq: "HGGDGCYTCNACATGDGC"
+    reverse_seq: "RGGNTAYCARCCDGARCG"
+    min_length: 150
+    max_length: 300
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+    notes: "HexND4F4–HexND4R4. Product is about 211bp"
+
+  - gene_name: "ND5"
+    forward_seq: "RTCYYTNGARTAAAAHCC"
+    reverse_seq: "NGCHAAYTWTGARTWTGA"
+    min_length: 200
+    max_length: 400
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+    notes: "HexND5F3–HexND5R3. Product is about 271bp"
+
+  - gene_name: "16S-v2"
+    forward_seq: "CCGGTTTGAACTCAGATCACGT"
+    reverse_seq: "CGCCTGTTTAACAAAAACAT"
+    min_length: 400
+    max_length: 600
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "O'Grady et al https://doi.org/10.1016/j.ympev.2010.11.022 "
+    notes: "HexND5F3–HexND5R3. Product is about 515bp"
+
+  - gene_name: "CO1-v2"
+    forward_seq: "CAACATTTATTTTGATTTTTTGG"
+    reverse_seq: "TYCATTGCACTAATCTGCCATATTAG"
+    min_length: 700
+    max_length: 950
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "O'Grady et al https://doi.org/10.1016/j.ympev.2010.11.022 "
+    notes: "Product is about 830bp"
+
+  - gene_name: "CO2-v2"
+    forward_seq: "ATGGCAGATTAGTGCAATGG"
+    reverse_seq: "GTTTAAGAGACCAGTACTTG"
+    min_length: 600
+    max_length: 850
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "O'Grady et al https://doi.org/10.1016/j.ympev.2010.11.022 "
+    notes: "Product is about 765bp"
+
+  - gene_name: "NADH"
+    forward_seq: "AGCTATTGGGTTCAGACCCC"
+    reverse_seq: "GAAGTTTGGTTTAAACCTCC"
+    min_length: 400
+    max_length: 600
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "O'Grady et al https://doi.org/10.1016/j.ympev.2010.11.022 "
+    notes: "Product is about 520bp"
+
+  - gene_name: "EF1g"
+    forward_seq: "GCTTWTGAGACCGCTGATGG"
+    reverse_seq: "ATCTTRTCGAGACGCTGGAA"
+    min_length: 700
+    max_length: 1000
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014"
+    notes: "Product is about 856bp"
+
+  - gene_name: "Fz4"
+    forward_seq: "GCGTCTTTCTATTGCGCTACTAT"
+    reverse_seq: "GCTTGTACGGACTGCTGATTATT"
+    min_length: 800
+    max_length: 1100
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014"
+    notes: "Product is about 943bp"
+
+  - gene_name: "Gpdh"
+    forward_seq: "CCCGACCTGGTTGAGGCTGCCAAGAATGC"
+    reverse_seq: "ACATATGCTCAGGGTGATTGCGTATGCA"
+    min_length: 900
+    max_length: 1200
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014"
+    notes: "Product is about 1071bp"
+
+  - gene_name: "Pgi"
+    forward_seq: "GCCATGTTCTSYGGMCAGCAYAT"
+    reverse_seq: "TAACGACCTCCNACCCARTCCCA"
+    min_length: 500
+    max_length: 800
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014"
+    notes: "Product is about 633bp"
+
+  - gene_name: "Yp2"
+    forward_seq: "CAGCAGCGTTACAATCTCCAGCC"
+    reverse_seq: "CCGAAGGGGCTCTTGGAGTTCAC"
+    min_length: 600
+    max_length: 900
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014"
+    notes: "Product is about 757bp"
+
+  - gene_name: "18S"
+    forward_seq: "CTGGTGCCAGCAGCCGCGGYAA"
+    reverse_seq: "TCCGTCAATTYCTTTAAGTT"
+    min_length: 600
+    max_length: 900
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Machida et al https://doi.org/10.1371/journal.pone.0134314"
+    notes: "Product is about 757bp"
+
+  - gene_name: "28S"
+    forward_seq: "GGGAAAGAAGACCCTGTTGAG"
+    reverse_seq: "GCTTGGCBGCCACAAGCCAGTTA"
+    min_length: 600
+    max_length: 900
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Machida et al https://doi.org/10.1371/journal.pone.0134314"
+    notes: "Product is about 757bp"
+
+  - gene_name: "ITS"
+    forward_seq: "AACTTAAAGRAATTGACGGA"
+    reverse_seq: "CTCAACAGGGTCTTCTTTCCC"
+    min_length: 3500
+    max_length: 5500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Machida et al https://doi.org/10.1016/j.ympev.2015.06.014"
+    notes: "Forward primer is reverse complement of 18S reverse primer. The reverse primer is the reverse complement of the 28S forward primer. Product is about 4800bp."
+
+  - gene_name: "18S-v2"
+    forward_seq: "AACCTGGTTGATCCTGCCAGT"
+    reverse_seq: "TGATCCTTCTGCAGGTTCACCTAC"
+    min_length: 1600
+    max_length: 2000
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Medlin et al. 1988 https://doi.org/10.1016/0378-1119(88)90066-2"
+    notes: "Product is about 1790bp"
+
+  - gene_name: "28S-v2"
+    forward_seq: "CCYYAGTAACGGCGAGT"
+    reverse_seq: "SWACAGATGGTAGCTTCG"
+    min_length: 2900
+    max_length: 3500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Evans et al. 2008. https://doi.org/10.1186/1471-2148-8-139"
+    notes: "Forward primer is F97, reverse is R3238. Product is about 3230bp."
+
+  - gene_name: "ITS-v2"
+    forward_seq: "TACACACCGCCCGTCGCTACTA"
+    reverse_seq: "ACTCGCCGTTACTRRGG"
+    min_length: 600
+    max_length: 1000
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x"
+    notes: "Forward primer is CAS18SF1, position 1843, from Ji et al 2003. The reverse primer is the reverse complement of the 28S forward primer. Product is about 770-880bp."
+
+  - gene_name: "ITS_v3"
+    forward_seq: "GTAGGTGAACCTGCAGAAGGATCA"
+    reverse_seq: "ACTCGCCGTTACTRRGG"
+    min_length: 600
+    max_length: 1000
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x"
+    notes: "Forward primer is reverse complement of 18S reverse primer. The reverse primer is the reverse complement of the 28S forward primer. Product is about 620-730bp."

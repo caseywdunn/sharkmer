@@ -1,0 +1,112 @@
+name: angiospermae
+description: "Universal plant primers for chloroplast and ITS products"
+primers:
+  - gene_name: "psbA-trnH"
+    forward_seq: "GTTATGCATGAACGTAATGCTC"
+    reverse_seq: "CGCGCATGGTGGATTCACAATCC"
+    min_length: 100
+    max_length: 700
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+    notes: "psbA3'f; trnHf"
+
+  - gene_name: "rpl36-infA-rps8"
+    forward_seq: "CACAAATTTTACGAACGAAG"
+    reverse_seq: "TAATGACAGAYCGAGARGCTCGAC"
+    min_length: 400
+    max_length: 600
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+    notes: "rpl36f; rps8r"
+
+  - gene_name: "trnK-rps16"
+    forward_seq: "TACTCTACCRTTGAGTTAGCAAC"
+    reverse_seq: "AAAGGKGCTCAACCTACARGAAC"
+    min_length: 500
+    max_length: 900
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+    notes: "trnK5'r; rps16-4546mod"
+
+  - gene_name: "trnV-atpE"
+    forward_seq: "GTGTAAACGAGTTGCTCTACCA"
+    reverse_seq: "CGACATTTGCACATTTAGATGCTAC"
+    min_length: 400
+    max_length: 1000
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+    notes: "trnV5f; S1022"
+
+  - gene_name: "trnC-ycf6"
+    forward_seq: "CCAGTTCAAATCTGGGTGTC"
+    reverse_seq: "CCCAAGCAAGACTTACTATATCC"
+    min_length: 100
+    max_length: 1200
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+    notes: "trnC; petN1r"
+
+  - gene_name: "ycf6-psbM"
+    forward_seq: "GGATATAGTAAGTCTTGCTTGGG"
+    reverse_seq: "TTCTTGCATTTATTGCTACTGC"
+    min_length: 300
+    max_length: 1600
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+    notes: "petN1; psbM2r"
+
+  - gene_name: "psbM-trnD"
+    forward_seq: "GCGGTAGGAACTAGAATAAATAG"
+    reverse_seq: "GGGATTGTAGTTCAATTGGT"
+    min_length: 500
+    max_length: 1400
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+    notes: "psbMA1; trnD"
+
+  - gene_name: "atpB-rbcL"
+    forward_seq: "AGAAGTAGTAGGATTGATTCTCATA"
+    reverse_seq: "GAATCCAACACTTGCTTTAGTCTCT"
+    min_length: 500
+    max_length: 1000
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+    notes: "S2r; RBCL1"
+
+  - gene_name: "trnL-F"
+    forward_seq: "GGTTCAAGTCCCTCTATCCC"
+    reverse_seq: "ATTTGAACTGGTGACACGAG"
+    min_length: 200
+    max_length: 600
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+    notes: "e; f"
+
+  - gene_name: "ITS"
+    forward_seq: "CCTTATCATTTAGAGGAAGGAG"
+    reverse_seq: "TCCTCCGCTTATTGATATGC"
+    min_length: 400
+    max_length: 900
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+    notes: "ITS5a; ITS4"

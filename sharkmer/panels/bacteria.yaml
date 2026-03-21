@@ -1,0 +1,156 @@
+name: bacteria
+description: "Bacterial 16S metabarcoding primers"
+primers:
+  - gene_name: "16S-27F-338R"
+    forward_seq: "AGAGTTTGATCCTGGCTCAG"
+    reverse_seq: "TGCTGCCTCCCGTAGGAGT"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
+    notes: "V1-V2"
+
+  - gene_name: "16S-V2f-V3r"
+    forward_seq: "AGTGGCGGACGGGTGAGTAA"
+    reverse_seq: "CCGCGGCTGCTGGCAC"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
+    notes: "V2-V3"
+
+  - gene_name: "16S-341F-785R"
+    forward_seq: "CCTACGGGNGGCWGCAG"
+    reverse_seq: "GACTACHVGGGTATCTAATCC"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
+    notes: "V3-V4"
+
+  - gene_name: "16S-PRK341F-PRK806R"
+    forward_seq: "CCTACGGGRBGCASCAG"
+    reverse_seq: "GGACTACYVGGGTATCTAAT"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
+    notes: "V3-V4-v2"
+
+  - gene_name: "16S-515F-806R"
+    forward_seq: "GTGCCAGCMGCCGCGGTAA"
+    reverse_seq: "GGACTACHVGGGTWTCTAAT"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
+    notes: "V4"
+
+  - gene_name: "16S-515F-806RB"
+    forward_seq: "GTGCCAGCMGCCGCGGTAA"
+    reverse_seq: "GGACTACNVGGGTWTCTAAT"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
+    notes: "V4"
+
+  - gene_name: "16S-515F-Y-926R"
+    forward_seq: "GTGYCAGCMGCCGCGGTAA"
+    reverse_seq: "CCGYCAATTYMTTTRAGTTT"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
+    notes: "V4-V5"
+
+  - gene_name: "16S-B969F-BA1406R"
+    forward_seq: "ACGCGHNRAACCTTACC"
+    reverse_seq: "ACGGGCRGTGWGTRCAA"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
+    notes: "V6-V8"
+
+  - gene_name: "16S-799F-1391R"
+    forward_seq: "AACMGGATTAGATACCCKG"
+    reverse_seq: "GACGGGCGGTGWGTRCA"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Chelius and Triplett, 2001, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+    notes: "V5-V6-V7"
+
+  - gene_name: "16S-967F-1391R"
+    forward_seq: "CAACGCGAAGAACCTTACC"
+    reverse_seq: "GACGGGCGGTGWGTRCA"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Sogin et al., 2006, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+    notes: "V6-V7"
+
+  - gene_name: "16S-799F-1193R"
+    forward_seq: "AACMGGATTAGATACCCKG"
+    reverse_seq: "ACGTCATCCCCACCTTCC"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Bodenhausen et al., 2013, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+    notes: "V5-V6-V7"
+
+  - gene_name: "16S-68F-783Rabc"
+    forward_seq: "TNANACATGCAAGTCGRRCG"
+    reverse_seq: "CTACCAGGGTATCTAATCCTG"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "McAllister et al., 2011, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+    notes: "V1-V4"
+
+  - gene_name: "16S-68F-518R"
+    forward_seq: "TNANACATGCAAGTCGRRCG"
+    reverse_seq: "WTTACCGCGGCTGCTGG"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Lee et al., 2010, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+    notes: "V1-V3"
+
+  - gene_name: "16S-341F-783Rabc"
+    forward_seq: "CCTACGGGNGGCWGCAG"
+    reverse_seq: "CTACCAGGGTATCTAATCCTG"
+    min_length: 200
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Sakai et al., 2004, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+    notes: "V3-V4"

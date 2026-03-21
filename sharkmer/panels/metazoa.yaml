@@ -1,0 +1,79 @@
+name: metazoa
+description: "Metazoa 18S metabarcoding primers"
+primers:
+  - gene_name: "18S-V3"
+    forward_seq: "AACGGCTACCACATCCAAGG"
+    reverse_seq: "CACCAGACTTGCCCTCCAAT"
+    min_length: 50
+    max_length: 300
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
+    notes: "Within V3"
+
+  - gene_name: "18S-V5-V7S"
+    forward_seq: "TGACGGAAGGGCACCACCAG"
+    reverse_seq: "TCCACCAACTAAGAACGGCC"
+    min_length: 50
+    max_length: 300
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
+    notes: "Between V5 and beginning of V7 (short amplicon)"
+
+  - gene_name: "18S-V5-V7L"
+    forward_seq: "AAACGATGCCGACTAGCGAT"
+    reverse_seq: "TCCACCAACTAAGAACGGCC"
+    min_length: 50
+    max_length: 300
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
+    notes: "Between V5 and beginning of V7 (long amplicon)"
+
+  - gene_name: "18S-V7"
+    forward_seq: "GGCCGTTCTTAGTTGGTGGA"
+    reverse_seq: "TGCGGCCCAGAACATCTAAG"
+    min_length: 50
+    max_length: 300
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
+    notes: "Within V7"
+
+  - gene_name: "18S-V7p-V8"
+    forward_seq: "AACAGGTCTGTGATGCCCTT"
+    reverse_seq: "TGTGTACAAAGGGCAGGGAC"
+    min_length: 50
+    max_length: 300
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
+    notes: "Part of V7 and most of V8"
+
+  - gene_name: "18S-V9"
+    forward_seq: "CTTTGTACACACCGCCCGTC"
+    reverse_seq: "CCTTGTTACGACTTTTACTTCCTCT"
+    min_length: 50
+    max_length: 300
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
+    notes: "Within V9"
+
+  - gene_name: "18S-V9-v2"
+    forward_seq: "CCCTGCCHTTTGTACACAC"
+    reverse_seq: "CCTTCYGCAGGTTCACCTAC"
+    min_length: 1
+    max_length: 300
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+    citation: "From Amaral-Zettler 2009, https://doi.org/10.1371/journal.pone.0006372"
+    notes: "1380F;1510R"
