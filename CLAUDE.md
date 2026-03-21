@@ -113,7 +113,6 @@ bacteria, metazoa). Issue #33 will replace with YAML files via
 
 - **Panics in library code**: ~30 `.unwrap()` calls and ~10 `panic!()` in
   library code. See #21.
-- **No CI**: No `.github/workflows/`. See #19.
 - **Unsigned underflow risks**: Several `usize` subtractions can wrap. See #55.
 - **Deduplication may drop real variants**: Edit distance threshold is hardcoded
   and comparison is only against the first record. See #56.
