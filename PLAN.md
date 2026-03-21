@@ -1,0 +1,113 @@
+# v2.0 Development Plan
+
+Execution order for v2.0 issues. Check off as completed. Run regression
+benchmarks (#50) after each phase.
+
+See ROADMAP.md for the full scope and rationale. See individual issues in the
+[issue tracker](https://github.com/caseywdunn/sharkmer/issues?q=label%3Av2.0)
+for detailed specifications.
+
+## Phase 0 — Baseline and test infrastructure
+
+Build testing and benchmarking infrastructure before any functional changes.
+
+- [ ] #18 Add CLAUDE.md (do first — provides context for all subsequent work)
+- [ ] #50 Build benchmark workflow and capture v1.0.1 baseline (NO code changes yet)
+- [ ] #17 Fix broken test compilation
+- [ ] #20 Add workspace Cargo.toml at repo root
+- [ ] #19 Add GitHub Actions CI (depends on #17)
+- [ ] #30 Add test fixtures from ERR571460 (depends on #17, #19)
+- [ ] #31 Expand integration test coverage (depends on #30)
+- [ ] Run benchmark, commit result
+
+## Phase 1 — Quick independent fixes
+
+Small, independent changes. Each should have its own branch from dev.
+
+- [ ] #38 Ensure deterministic output
+- [ ] #40 Add --cite flag
+- [ ] #42 Ensure FASTA line wrapping
+- [ ] #53 Free chunk hash tables after merging
+- [ ] Run benchmark, commit result
+
+## Phase 2 — Error handling
+
+The biggest single item. Consider splitting into sub-PRs:
+kmer module → pcr module → main.rs.
+
+- [ ] #21 Replace panics/unwraps with proper error handling
+- [ ] #55 Fix unsigned integer underflow risks (depends on #21)
+- [ ] #60 Edge cases: empty inputs, degenerate primers (depends on #21)
+- [ ] Run benchmark, commit result
+
+## Phase 3 — Core infrastructure
+
+Depends on #21 (error handling). Order within phase by dependency, bug
+fixes first.
+
+- [ ] #57 FASTQ parser validation
+- [ ] #56 Deduplication bug (make threshold configurable)
+- [ ] #22 Adopt log + env_logger, separate stdout/stderr
+- [ ] #23 Native gzip input support
+- [ ] #33 Refactor primer panels to YAML (do together with #25)
+- [ ] #25 Add --pcr-file for sideloading YAML panels (do together with #33)
+- [ ] #41 Validate input early
+- [ ] #45 Error when stdin is terminal
+- [ ] #52 Remove hardcoded singleton filtering
+- [ ] #26 Deduplicate code (do together with #58)
+- [ ] #58 Rename misleading get_canonical
+- [ ] Run benchmark, commit result
+
+## Phase 4 — CLI, output format, performance
+
+Depends on #22 (logging). Performance items (#27, #28, #29, #54) are
+independent and can be interleaved.
+
+- [ ] #24 CLI flag improvements (do together with #35)
+- [ ] #35 Default to --chunks 0
+- [ ] #32 Structured YAML stats output
+- [ ] #34 Improve FASTA header format
+- [ ] #44 --color flag and NO_COLOR
+- [ ] #36 Parallelize sPCR across genes
+- [ ] #37 Progress indicators
+- [ ] #48 Warn on overwriting
+- [ ] #27 HashMap for node lookup in graph construction
+- [ ] #28 Avoid storing RC in hash table (do together with #54, #52)
+- [ ] #54 Eliminate double hash lookups
+- [ ] #29 Pre-size hash maps, evaluate ahash
+- [ ] Run benchmark, commit result
+
+## Phase 5 — Polish
+
+Depends on Phase 4.
+
+- [ ] #43 Summary line at completion (depends on #22, #32)
+- [ ] #47 Peak memory reporting (depends on #43, #32)
+- [ ] #39 Shell completions (depends on #24)
+- [ ] #46 --dry-run mode (depends on #41, #24)
+- [ ] #59 User warnings for common mistakes (depends on #22, #41, #23)
+- [ ] #49 Polished CLI formatting (depends on #22, #43, #44)
+- [ ] #61 Update sharkmer_viewer (depends on #32)
+- [ ] Run benchmark, commit result
+
+## Phase 6 — Final validation
+
+- [ ] #31 Update integration tests for final v2.0 CLI/output
+- [ ] #50 Run full regression benchmark, compare to v1.0.1 baseline
+- [ ] #51 Optimize benchmark downloads (optional, can defer)
+- [ ] Update README.md for v2.0
+- [ ] Update CHANGELOG.md with all v2.0 changes
+- [ ] Update bioconda recipe for new dependencies
+- [ ] Tag v2.0.0-rc1, test bioconda build
+- [ ] Tag v2.0.0 release
+
+## Notes
+
+- All work is on issue branches merged to dev. dev merges to master only
+  for releases.
+- Quality gates before merge: `cargo test`, `cargo clippy` (no warnings),
+  `cargo fmt --check`.
+- #31 appears in both Phase 0 (initial test coverage) and Phase 6 (update
+  for final v2.0 behavior).
+- #50 benchmark runs after every phase. Commit results to `benchmarks/`.
+- Issues marked "do together" share code and should be in the same PR.
