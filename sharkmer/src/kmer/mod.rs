@@ -1,6 +1,8 @@
 // kmer/mod.rs
 //! This module provides kmer functions.
 
+use anyhow::{bail, Context, Result};
+
 #[cfg(feature = "nohashmap")]
 use std::collections::HashMap;
 
@@ -63,7 +65,7 @@ impl Read {
     /// * `T` -> `11`
     ///
     /// Any other character will cause the function to panic.
-    pub fn from_str(seq: &str) -> Read {
+    pub fn from_str(seq: &str) -> Result<Read> {
         let mut ints: Vec<u8> = Vec::with_capacity(seq.len() / 4 + 1);
         let mut frame: u8 = 0; // The current 8-bit integer being constructed
         let mut length: usize = 0; // length of the current subread
@@ -74,9 +76,10 @@ impl Read {
                 'C' => 1, // 01
                 'G' => 2, // 10
                 'T' => 3, // 11
-                _ => panic!(
+                _ => bail!(
                     "Invalid character {} in sequence {}. Only ACGT allowed.",
-                    c, seq
+                    c,
+                    seq
                 ),
             };
 
@@ -96,7 +99,7 @@ impl Read {
         }
 
         // Create and return the read
-        Read::new(ints, length)
+        Ok(Read::new(ints, length))
     }
 
     pub fn validate(&self) -> bool {
@@ -142,7 +145,7 @@ impl Read {
     /// let kmer_length: usize = /* desired kmer length */;
     /// let canonical_kmers = get_kmers(&encoded_sequence, &kmer_length);
     /// ```
-    pub fn get_kmers(&self, k: &usize) -> Vec<u64> {
+    pub fn get_kmers(&self, k: &usize) -> Result<Vec<u64>> {
         let ints = &self.sequence;
         let mut kmers: Vec<u64> = Vec::with_capacity((ints.len() * 4 / k) + 1);
         let mut frame: u64 = 0; // read the bits for each base into the least significant end of this integer
@@ -152,7 +155,7 @@ impl Read {
 
         // No kmers if the read is shorter than k
         if self.length < *k {
-            return kmers;
+            return Ok(kmers);
         }
 
         // Iterate over the bases
@@ -169,8 +172,6 @@ impl Read {
                 if n_valid >= *k {
                     let forward = frame & mask;
                     let reverse = revframe & mask;
-
-                    // assert_eq!(forward, revcomp_kmer(reverse, k));
 
                     if forward < reverse {
                         kmers.push(forward);
@@ -189,16 +190,17 @@ impl Read {
             kmers.truncate(kmers.len() - n_extra_bases);
         }
 
-        if kmers.len() != self.length - *k + 1 {
-            panic!(
+        let expected = self.length - *k + 1;
+        if kmers.len() != expected {
+            bail!(
                 "Number of kmers ({}) does not match expected ({}) for read of length {}",
                 kmers.len(),
-                self.length - *k + 1,
+                expected,
                 self.length
             );
         }
 
-        kmers
+        Ok(kmers)
     }
 }
 
@@ -231,9 +233,9 @@ impl KmerCounts {
         }
     }
 
-    pub fn ingest_reads(&mut self, reads: &[Read]) {
+    pub fn ingest_reads(&mut self, reads: &[Read]) -> Result<()> {
         for read in reads {
-            for kmer in read.get_kmers(&self.k) {
+            for kmer in read.get_kmers(&self.k)? {
                 let counter = match self.kmers.entry(kmer) {
                     Entry::Occupied(entry) => entry.into_mut(),
                     Entry::Vacant(entry) => entry.insert(0),
@@ -241,6 +243,7 @@ impl KmerCounts {
                 *counter += 1;
             }
         }
+        Ok(())
     }
 
     /// Adds a kmer and its count to the KmerCounts object.
@@ -253,9 +256,9 @@ impl KmerCounts {
     }
 
     /// Adds the counts from another KmerCounts object to this one.
-    pub fn extend(&mut self, other: &KmerCounts) {
+    pub fn extend(&mut self, other: &KmerCounts) -> Result<()> {
         if self.k != other.k {
-            panic!("Cannot extend KmerCounts with different k");
+            bail!("Cannot extend KmerCounts with different k");
         }
 
         for (kmer, count) in other.iter() {
@@ -265,6 +268,7 @@ impl KmerCounts {
             };
             *counter += count;
         }
+        Ok(())
     }
 
     pub fn get_canonical(&self, kmer: &u64) -> u64 {
@@ -296,13 +300,14 @@ impl KmerCounts {
         }
     }
 
-    pub fn ingest_reads(&mut self, reads: &[Read]) {
+    pub fn ingest_reads(&mut self, reads: &[Read]) -> Result<()> {
         for read in reads {
-            for kmer in read.get_kmers(&self.k) {
+            for kmer in read.get_kmers(&self.k)? {
                 let count = self.kmers.entry(kmer).or_insert(0);
                 *count += 1;
             }
         }
+        Ok(())
     }
 
     /// Adds a kmer and its count to the KmerCounts object.
@@ -312,15 +317,16 @@ impl KmerCounts {
     }
 
     /// Adds the counts from another KmerCounts object to this one.
-    pub fn extend(&mut self, other: &KmerCounts) {
+    pub fn extend(&mut self, other: &KmerCounts) -> Result<()> {
         if self.k != other.k {
-            panic!("Cannot extend KmerCounts with different k");
+            bail!("Cannot extend KmerCounts with different k");
         }
 
         for (kmer, other_count) in other.iter() {
             let count = self.kmers.entry(*kmer).or_insert(0);
             *count += other_count;
         }
+        Ok(())
     }
 
     pub fn get_canonical(&self, kmer: &u64) -> u64 {
@@ -354,13 +360,14 @@ impl KmerCounts {
         }
     }
 
-    pub fn ingest_reads(&mut self, reads: &[Read]) {
+    pub fn ingest_reads(&mut self, reads: &[Read]) -> Result<()> {
         for read in reads {
-            for kmer in read.get_kmers(&self.k) {
+            for kmer in read.get_kmers(&self.k)? {
                 let count = self.kmers.entry(kmer).or_insert(0);
                 *count += 1;
             }
         }
+        Ok(())
     }
 
     /// Adds a kmer and its count to the KmerCounts object.
@@ -370,15 +377,16 @@ impl KmerCounts {
     }
 
     /// Adds the counts from another KmerCounts object to this one.
-    pub fn extend(&mut self, other: &KmerCounts) {
+    pub fn extend(&mut self, other: &KmerCounts) -> Result<()> {
         if self.k != other.k {
-            panic!("Cannot extend KmerCounts with different k");
+            bail!("Cannot extend KmerCounts with different k");
         }
 
         for (kmer, other_count) in other.iter() {
             let count = self.kmers.entry(*kmer).or_insert(0);
             *count += other_count;
         }
+        Ok(())
     }
 
     pub fn get_canonical(&self, kmer: &u64) -> u64 {
@@ -480,10 +488,11 @@ impl Chunk {
         }
     }
 
-    pub fn ingest_reads(&mut self, reads: &[Read]) {
-        self.kmer_counts.ingest_reads(reads);
+    pub fn ingest_reads(&mut self, reads: &[Read]) -> Result<()> {
+        self.kmer_counts.ingest_reads(reads)?;
         self.n_reads += reads.len() as u64;
         self.n_bases += reads.iter().map(|read| read.length as u64).sum::<u64>();
+        Ok(())
     }
 
     pub fn get_kmer_counts(&self) -> &KmerCounts {
@@ -575,15 +584,15 @@ impl Histogram {
         sum
     }
 
-    pub fn get_vector(&self) -> Vec<u64> {
+    pub fn get_vector(&self) -> Result<Vec<u64>> {
         let mut histo_vec = self.histo.clone();
-        let last = histo_vec.last_mut().unwrap();
+        let last = histo_vec.last_mut().context("Histogram vector is empty")?;
 
         for (_, n_kmers) in self.histo_large.iter() {
             *last += n_kmers;
         }
 
-        histo_vec
+        Ok(histo_vec)
     }
 }
 
@@ -648,20 +657,20 @@ pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
 /// let sequence = "ACGTNAGCT";
 /// let reads = seq_to_reads(&sequence);
 /// ```
-pub fn seq_to_reads(seq: &str) -> Vec<Read> {
+pub fn seq_to_reads(seq: &str) -> Result<Vec<Read>> {
     let mut reads: Vec<Read> = Vec::new();
 
     // Split seq on N
     for subseq in seq.split('N') {
         if !subseq.is_empty() {
-            let read = Read::from_str(subseq);
+            let read = Read::from_str(subseq)?;
             if !read.validate() {
-                panic!("Invalid read: {:?} from subsequence {}", read, subseq);
+                bail!("Invalid read: {:?} from subsequence {}", read, subseq);
             }
             reads.push(read);
         }
     }
-    reads
+    Ok(reads)
 }
 
 pub fn kmer_to_seq(kmer: &u64, k: &usize) -> String {
@@ -673,7 +682,7 @@ pub fn kmer_to_seq(kmer: &u64, k: &usize) -> String {
             1 => 'C',
             2 => 'G',
             3 => 'T',
-            _ => panic!("Invalid base"),
+            _ => unreachable!("2-bit encoding only produces values 0-3"),
         };
         seq.push(base);
     }
@@ -681,19 +690,19 @@ pub fn kmer_to_seq(kmer: &u64, k: &usize) -> String {
 }
 
 #[allow(dead_code)]
-pub fn seq_to_kmer(seq: &str) -> u64 {
+pub fn seq_to_kmer(seq: &str) -> Result<u64> {
     let mut kmer = 0;
     for c in seq.chars() {
-        let base = match c {
+        let base: u64 = match c {
             'A' => 0,
             'C' => 1,
             'G' => 2,
             'T' => 3,
-            _ => panic!("Invalid base"),
+            _ => bail!("Invalid base '{}' in sequence '{}'", c, seq),
         };
         kmer = (kmer << 2) | base;
     }
-    kmer
+    Ok(kmer)
 }
 
 #[cfg(test)]
@@ -720,19 +729,19 @@ mod tests {
     #[test]
     fn test_read_parsing() {
         let seq = "TANCACN";
-        let reads = seq_to_reads(seq);
+        let reads = seq_to_reads(seq).unwrap();
         for read in reads {
             assert!(read.validate());
         }
 
         let seq = "NTANCACNAGAAAATC";
-        let reads = seq_to_reads(seq);
+        let reads = seq_to_reads(seq).unwrap();
         for read in reads {
             assert!(read.validate());
         }
 
         let seq = "TATTAGCTCATCTANAACAATGAAAAATTGCATTGGCTNTAACTATGGATTTNTTAGAAATTAGTATTNATTTATCATTTTTAATTGGCATTATTNAACTCTTAAGAATAGATNGGAGTTCNCAATTAATTGAAGNTANCACNAGAAAATC";
-        let reads = seq_to_reads(seq);
+        let reads = seq_to_reads(seq).unwrap();
         for read in reads {
             assert!(read.validate());
         }
@@ -749,17 +758,17 @@ mod tests {
             vec![0b01101100, 0b00111001, 0b10100110, 0b00000000],
             13,
         )];
-        let actual = seq_to_reads(seq);
+        let actual = seq_to_reads(seq).unwrap();
         assert_eq!(actual, expected);
 
         let seq = "C";
         let expected = vec![Read::new(vec![0b01000000], 1)];
-        let actual = seq_to_reads(seq);
+        let actual = seq_to_reads(seq).unwrap();
         assert_eq!(actual, expected);
 
         let seq = "CGTAATGCGGCG";
         let expected = vec![Read::new(vec![0b01101100, 0b00111001, 0b10100110], 12)];
-        let actual = seq_to_reads(seq);
+        let actual = seq_to_reads(seq).unwrap();
         assert_eq!(actual, expected);
     }
 
@@ -771,22 +780,22 @@ mod tests {
         // 'T' => 3, // 11
         let seq = "CGTAATGCGGCGA";
         let expected = Read::new(vec![0b01101100, 0b00111001, 0b10100110, 0b00000000], 13);
-        let actual = Read::from_str(seq);
+        let actual = Read::from_str(seq).unwrap();
         assert_eq!(actual, expected);
 
         let seq = "C";
         let expected = Read::new(vec![0b01000000], 1);
-        let actual = Read::from_str(seq);
+        let actual = Read::from_str(seq).unwrap();
         assert_eq!(actual, expected);
 
         let seq = "CGTAATGCGGCG";
         let expected = Read::new(vec![0b01101100, 0b00111001, 0b10100110], 12);
-        let actual = Read::from_str(seq);
+        let actual = Read::from_str(seq).unwrap();
         assert_eq!(actual, expected);
 
         let seq = "";
         let expected = Read::new(vec![], 0);
-        let actual = Read::from_str(seq);
+        let actual = Read::from_str(seq).unwrap();
         assert_eq!(actual, expected);
     }
 
@@ -799,7 +808,7 @@ mod tests {
 
         let seq = "NCGTAATGCGGCG";
         let expected = vec![Read::new(vec![0b01101100, 0b00111001, 0b10100110], 12)];
-        let actual = seq_to_reads(seq);
+        let actual = seq_to_reads(seq).unwrap();
         assert_eq!(actual, expected);
 
         let seq = "CGTANATGCGGCGA";
@@ -807,7 +816,7 @@ mod tests {
             Read::new(vec![0b01101100], 4),
             Read::new(vec![0b00111001, 0b10100110, 0b00000000], 9),
         ];
-        let actual = seq_to_reads(seq);
+        let actual = seq_to_reads(seq).unwrap();
         assert_eq!(actual, expected);
 
         let seq = "NCGTANATGCGGCGA";
@@ -815,7 +824,7 @@ mod tests {
             Read::new(vec![0b01101100], 4),
             Read::new(vec![0b00111001, 0b10100110, 0b00000000], 9),
         ];
-        let actual = seq_to_reads(seq);
+        let actual = seq_to_reads(seq).unwrap();
         assert_eq!(actual, expected);
 
         let seq = "NCGTANATGCGGCGANN";
@@ -823,7 +832,7 @@ mod tests {
             Read::new(vec![0b01101100], 4),
             Read::new(vec![0b00111001, 0b10100110, 0b00000000], 9),
         ];
-        let actual = seq_to_reads(seq);
+        let actual = seq_to_reads(seq).unwrap();
         assert_eq!(actual, expected);
 
         let seq = "NNCGTANATGCGGCGA";
@@ -831,7 +840,7 @@ mod tests {
             Read::new(vec![0b01101100], 4),
             Read::new(vec![0b00111001, 0b10100110, 0b00000000], 9),
         ];
-        let actual = seq_to_reads(seq);
+        let actual = seq_to_reads(seq).unwrap();
         assert_eq!(actual, expected);
     }
 
@@ -872,7 +881,7 @@ mod tests {
             0b10_0101_1001_0011_1100,
             0b00_0011_1001_1010_0110,
         ];
-        let actual = read.get_kmers(&9usize);
+        let actual = read.get_kmers(&9usize).unwrap();
         assert_eq!(actual, expected);
 
         // Test cases where read length not divisible by 4
@@ -882,26 +891,26 @@ mod tests {
             0b01_0110_0100_1111_0001,
             0b10_0101_1001_0011_1100,
         ];
-        let actual = read.get_kmers(&9usize);
+        let actual = read.get_kmers(&9usize).unwrap();
         assert_eq!(actual, expected);
 
         // Test cases where read length not divisible by 4
         let read = Read::new(ints.clone(), 10);
         let expected = vec![0b01_1001_0011_1100_0110, 0b01_0110_0100_1111_0001];
-        let actual = read.get_kmers(&9usize);
+        let actual = read.get_kmers(&9usize).unwrap();
         assert_eq!(actual, expected);
 
         // Test cases where read length is k
         let read = Read::new(ints.clone(), 9);
         let expected = vec![0b01_1001_0011_1100_0110];
-        let actual = read.get_kmers(&9usize);
+        let actual = read.get_kmers(&9usize).unwrap();
         assert_eq!(actual, expected);
 
         // Test cases where read length is < k
         let ints_short = vec![0b01101100, 0b00111001];
         let read = Read::new(ints_short, 8);
         let expected = vec![];
-        let actual = read.get_kmers(&9usize);
+        let actual = read.get_kmers(&9usize).unwrap();
         assert_eq!(actual, expected);
     }
 
@@ -928,7 +937,7 @@ mod tests {
         let histo_max = 10;
         let histo = Histogram::from_kmer_counts(&kmers, &histo_max);
 
-        let histo_vec = histo.get_vector();
+        let histo_vec = histo.get_vector().unwrap();
 
         assert_eq!(histo_vec.len(), histo_max as usize + 2);
         let expected_histo: Vec<u64> = vec![0, 0, 0, 0, 0, 2, 0, 1, 0, 0, 0, 2];

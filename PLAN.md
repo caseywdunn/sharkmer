@@ -35,7 +35,7 @@ Small, independent changes. Each should have its own branch from dev.
 The biggest single item. Consider splitting into sub-branches:
 kmer module → pcr module → main.rs.
 
-- [ ] #21 Replace panics/unwraps with proper error handling
+- [x] #21 Replace panics/unwraps with proper error handling
 - [ ] #55 Fix unsigned integer underflow risks (depends on #21)
 - [ ] #60 Edge cases: empty inputs, degenerate primers (depends on #21)
 - [ ] Run benchmark, commit result

@@ -927,6 +927,7 @@ dependencies = [
 name = "sharkmer"
 version = "2.0.0-alpha"
 dependencies = [
+ "anyhow",
  "bio",
  "clap",
  "colored",

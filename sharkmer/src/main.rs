@@ -1,3 +1,4 @@
+use anyhow::{bail, ensure, Context, Result};
 use bio::io::fasta;
 use clap::Parser;
 use pcr::preconfigured;
@@ -47,9 +48,9 @@ fn is_valid_nucleotide(c: char) -> bool {
     }
 }
 
-pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String> {
+pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>> {
     if pcr_string.is_empty() {
-        return Err("Invalid empty pcr string".to_string());
+        bail!("Invalid empty pcr string");
     }
 
     // Split the string on commas
@@ -62,7 +63,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
 
         match preconfigured::get_panel(pcr_string) {
             Ok(params) => return Ok(params),
-            Err(_) => return Err(format!("Invalid preconfigured PCR panel: {}", pcr_string)),
+            Err(_) => bail!("Invalid preconfigured PCR panel: {}", pcr_string),
         }
     }
 
@@ -81,10 +82,7 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
     for item in split.iter() {
         let key_value: Vec<&str> = item.split('=').collect();
         if key_value.len() != 2 {
-            return Err(format!(
-                "Invalid parameter, should be in format key=value: {}",
-                item
-            ));
+            bail!("Invalid parameter, should be in format key=value: {}", item);
         }
 
         let key = key_value[0].to_lowercase();
@@ -104,27 +102,27 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
             "max-length" => {
                 max_length = value
                     .parse()
-                    .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
+                    .with_context(|| format!("Invalid value for {}: {}", key, value))?;
             }
             "min-length" => {
                 min_length = value
                     .parse()
-                    .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
+                    .with_context(|| format!("Invalid value for {}: {}", key, value))?;
             }
             "min-coverage" => {
                 min_coverage = value
                     .parse()
-                    .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
+                    .with_context(|| format!("Invalid value for {}: {}", key, value))?;
             }
             "mismatches" => {
                 mismatches = value
                     .parse()
-                    .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
+                    .with_context(|| format!("Invalid value for {}: {}", key, value))?;
             }
             "trim" => {
                 trim = value
                     .parse()
-                    .map_err(|_| format!("Invalid value for {}: {}", key, value))?;
+                    .with_context(|| format!("Invalid value for {}: {}", key, value))?;
             }
             "citation" => {
                 citation = value.to_string();
@@ -134,15 +132,15 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>, String>
             }
             "panel" => {
                 if split.len() > 1 {
-                    return Err(format!("Invalid --pcr arguments, if a panel is specified it should the the only argument: {}", pcr_string));
+                    bail!("Invalid --pcr arguments, if a panel is specified it should the the only argument: {}", pcr_string);
                 }
                 match preconfigured::get_panel(value) {
                     Ok(params) => return Ok(params),
-                    Err(_) => return Err(format!("Invalid preconfigured PCR panel: {}", value)),
+                    Err(_) => bail!("Invalid preconfigured PCR panel: {}", value),
                 }
             }
             _ => {
-                return Err(format!("Unexpected parameter: {}", key));
+                bail!("Unexpected parameter: {}", key);
             }
         }
     }
@@ -283,7 +281,7 @@ fn write_fasta_record(writer: &mut impl Write, record: &fasta::Record) -> std::i
     Ok(())
 }
 
-fn main() {
+fn main() -> Result<()> {
     let start_run = std::time::Instant::now();
 
     // Ingest command line arguments
@@ -316,20 +314,25 @@ fn main() {
     let path = PathBuf::from(&args.outdir);
 
     // Create the output directory if it does not exist
-    let directory = format!("{}/", path.to_str().unwrap());
-    std::fs::create_dir_all(&directory).unwrap();
+    let directory = format!(
+        "{}/",
+        path.to_str()
+            .context("Output directory path contains invalid UTF-8")?
+    );
+    std::fs::create_dir_all(&directory)
+        .with_context(|| format!("Failed to create output directory: {}", directory))?;
 
     let k = args.k;
 
     // Check that the arguments are valid
-    assert!(
+    ensure!(
         k < 32,
         "k must be less than 32 due to use of 64 bit integers to encode kmers"
     );
-    assert!(k > 0, "k must be greater than 0");
-    assert!(k % 2 == 1, "k must be odd");
-    assert!(args.histo_max > 0, "histo_max must be greater than 0");
-    assert!(args.n > 0, "n must be greater than 0");
+    ensure!(k > 0, "k must be greater than 0");
+    ensure!(k % 2 == 1, "k must be odd");
+    ensure!(args.histo_max > 0, "histo_max must be greater than 0");
+    ensure!(args.n > 0, "n must be greater than 0");
 
     // Create an empty data frame for pcr runs
     let mut pcr_runs: Vec<pcr::PCRParams> = Vec::new();
@@ -341,37 +344,32 @@ fn main() {
             preconfigured::print_pcr_panels();
             std::process::exit(0);
         }
-        let parsed_pcr = parse_pcr_string(pcr_string);
-        match parsed_pcr {
-            Ok(pcr_params) => {
-                pcr_runs.extend(pcr_params);
-            }
-            Err(err) => {
-                panic!("Error parsing pcr string: {}", err);
-            }
-        }
+        let pcr_params = parse_pcr_string(pcr_string)
+            .with_context(|| format!("Error parsing pcr string: {}", pcr_string))?;
+        pcr_runs.extend(pcr_params);
     }
 
     // Check that there are no duplicate gene names
     let mut gene_names: Vec<String> = Vec::new();
     for pcr_params in pcr_runs.iter() {
-        if gene_names.contains(&pcr_params.gene_name) {
-            panic!("Duplicate gene name: {}", pcr_params.gene_name);
-        } else {
-            gene_names.push(pcr_params.gene_name.clone());
-        }
+        ensure!(
+            !gene_names.contains(&pcr_params.gene_name),
+            "Duplicate gene name: {}",
+            pcr_params.gene_name
+        );
+        gene_names.push(pcr_params.gene_name.clone());
     }
 
     // Set the number of threads for Rayon to use
     rayon::ThreadPoolBuilder::new()
         .num_threads(args.threads)
         .build_global()
-        .unwrap();
+        .context("Failed to initialize thread pool")?;
 
     // Ingest the fastq data
     let start = std::time::Instant::now();
     print!("Ingesting reads...");
-    std::io::stdout().flush().unwrap();
+    std::io::stdout().flush()?;
 
     let mut chunks: Vec<kmer::Chunk> = Vec::new();
     for _ in 0..args.n {
@@ -392,11 +390,10 @@ fn main() {
                 let file_path = Path::new(&file_name);
 
                 // Check if the file exists
-                if !file_path.exists() {
-                    panic!("File {} does not exist", file_name);
-                }
+                ensure!(file_path.exists(), "File {} does not exist", file_name);
 
-                let file = std::fs::File::open(file_path).unwrap();
+                let file = std::fs::File::open(file_path)
+                    .with_context(|| format!("Failed to open file: {}", file_name))?;
 
                 let reader = std::io::BufReader::new(file);
                 // Iterate over the lines of the file
@@ -404,15 +401,15 @@ fn main() {
                     line_n += 1;
                     if line_n % 4 == 2 {
                         // This is a sequence line
-                        let line = line.unwrap();
+                        let line = line.context("Failed to read line from FASTQ file")?;
                         n_bases_read += line.len() as u64;
-                        let new_reads = kmer::seq_to_reads(&line);
+                        let new_reads = kmer::seq_to_reads(&line)?;
                         reads.extend(new_reads);
                         n_reads_read += 1;
 
                         // If we have read enough reads, ingest them into current chunk
                         if n_reads_read.is_multiple_of(N_READS_PER_BATCH) {
-                            chunks[chunk_index].ingest_reads(&reads);
+                            chunks[chunk_index].ingest_reads(&reads)?;
                             chunk_index += 1;
                             if chunk_index == args.n {
                                 chunk_index = 0;
@@ -439,15 +436,15 @@ fn main() {
                 line_n += 1;
                 if line_n % 4 == 2 {
                     // This is a sequence line
-                    let line = line.unwrap();
+                    let line = line.context("Failed to read line from stdin")?;
                     n_bases_read += line.len() as u64;
-                    let new_reads = kmer::seq_to_reads(&line);
+                    let new_reads = kmer::seq_to_reads(&line)?;
                     reads.extend(new_reads);
                     n_reads_read += 1;
 
                     // If we have read enough reads, ingest them into current chunk
                     if n_reads_read.is_multiple_of(N_READS_PER_BATCH) {
-                        chunks[chunk_index].ingest_reads(&reads);
+                        chunks[chunk_index].ingest_reads(&reads)?;
                         chunk_index += 1;
                         if chunk_index == args.n {
                             chunk_index = 0;
@@ -463,7 +460,7 @@ fn main() {
     }
 
     // Ingest any remaining reads
-    chunks[chunk_index].ingest_reads(&reads);
+    chunks[chunk_index].ingest_reads(&reads)?;
     reads.clear();
 
     println!(" done");
@@ -488,14 +485,14 @@ fn main() {
     // Create the histograms
     print!("Consolidating chunks and creating histograms...");
     let start = std::time::Instant::now();
-    std::io::stdout().flush().unwrap();
+    std::io::stdout().flush()?;
 
     let mut kmer_counts: KmerCounts = KmerCounts::new(&k);
     let mut histos: Vec<kmer::Histogram> = Vec::with_capacity(args.n);
 
     // Drain the chunks so each chunk's hash table is freed after merging
     for chunk in chunks.drain(..) {
-        kmer_counts.extend(chunk.get_kmer_counts());
+        kmer_counts.extend(chunk.get_kmer_counts())?;
         drop(chunk);
 
         let histo = kmer::Histogram::from_kmer_counts(&kmer_counts, &args.histo_max);
@@ -511,39 +508,41 @@ fn main() {
         n_hashed_kmers
     );
 
-    if n_hashed_kmers != n_kmers_ingested {
-        panic!(
-            "The total count of hashed kmers ({}) does not equal the number of ingested kmers ({})",
-            n_hashed_kmers, n_kmers_ingested,
-        );
-    }
+    ensure!(
+        n_hashed_kmers == n_kmers_ingested,
+        "The total count of hashed kmers ({}) does not equal the number of ingested kmers ({})",
+        n_hashed_kmers,
+        n_kmers_ingested,
+    );
 
     // Write the histograms to a tab delimited file, with the first column being the count
     // Skip the first row, which is the count of 0. Do not include a header
     print!("Writing histograms to file...");
-    std::io::stdout().flush().unwrap();
-    let mut file = std::fs::File::create(format!("{}{}.histo", directory, args.sample)).unwrap();
+    std::io::stdout().flush()?;
+    let mut file = std::fs::File::create(format!("{}{}.histo", directory, args.sample))
+        .context("Failed to create histogram file")?;
     for i in 1..args.histo_max as usize + 2 {
         let mut line = format!("{}", i);
         for histo in histos.iter() {
-            let histo_vec = kmer::Histogram::get_vector(histo);
+            let histo_vec = kmer::Histogram::get_vector(histo)?;
             line = format!("{}\t{}", line, histo_vec[i]);
         }
         line = format!("{}\n", line);
-        file.write_all(line.as_bytes()).unwrap();
+        file.write_all(line.as_bytes())
+            .context("Failed to write histogram data")?;
     }
 
     println!(" done");
 
     // Write the final histogram to a file, ready for GenomeScope2 etc...
     print!("Writing final histogram to file...");
-    std::io::stdout().flush().unwrap();
+    std::io::stdout().flush()?;
 
     let last_histo = &histos[histos.len() - 1];
-    let last_histo_vec = kmer::Histogram::get_vector(last_histo);
+    let last_histo_vec = kmer::Histogram::get_vector(last_histo)?;
 
-    let mut file =
-        std::fs::File::create(format!("{}{}.final.histo", directory, args.sample)).unwrap();
+    let mut file = std::fs::File::create(format!("{}{}.final.histo", directory, args.sample))
+        .context("Failed to create final histogram file")?;
     for (i, value) in last_histo_vec
         .iter()
         .enumerate()
@@ -551,7 +550,8 @@ fn main() {
         .take(args.histo_max as usize + 1)
     {
         let line = format!("{}\t{}\n", i, value);
-        file.write_all(line.as_bytes()).unwrap();
+        file.write_all(line.as_bytes())
+            .context("Failed to write final histogram data")?;
     }
 
     println!(" done");
@@ -563,26 +563,24 @@ fn main() {
     println!("  {} unique kmers in histogram", n_unique_kmers_histo);
     println!("  {} kmers in histogram", n_kmers_histo);
 
-    if n_kmers_histo != n_kmers_ingested {
-        panic!(
-            "The total count of kmers in the histogram ({}) does not equal the total expected count of kmers ({})",
-            n_kmers_histo,
-            n_kmers_ingested,
-        );
-    }
+    ensure!(
+        n_kmers_histo == n_kmers_ingested,
+        "The total count of kmers in the histogram ({}) does not equal the total expected count of kmers ({})",
+        n_kmers_histo,
+        n_kmers_ingested,
+    );
 
-    if n_unique_kmers_histo != kmer_counts.get_n_unique_kmers() {
-        panic!(
-            "The total count of unique kmers in the histogram ({}) does not equal the total count of hashed kmers ({})",
-            n_unique_kmers_histo,
-            kmer_counts.get_n_unique_kmers(),
-        );
-    }
+    ensure!(
+        n_unique_kmers_histo == kmer_counts.get_n_unique_kmers(),
+        "The total count of unique kmers in the histogram ({}) does not equal the total count of hashed kmers ({})",
+        n_unique_kmers_histo,
+        kmer_counts.get_n_unique_kmers(),
+    );
 
     print!("Writing stats to file...");
-    std::io::stdout().flush().unwrap();
-    let mut file_stats =
-        std::fs::File::create(format!("{}{}.stats", directory, args.sample)).unwrap();
+    std::io::stdout().flush()?;
+    let mut file_stats = std::fs::File::create(format!("{}{}.stats", directory, args.sample))
+        .context("Failed to create stats file")?;
     let mut line = format!("arguments\t{:?}\n", args);
     line = format!("{}kmer_length\t{}\n", line, args.k);
     line = format!("{}n_reads_read\t{}\n", line, n_reads_read);
@@ -597,7 +595,9 @@ fn main() {
     );
     line = format!("{}n_singleton_kmers\t{}\n", line, n_singleton_kmers);
 
-    file_stats.write_all(line.as_bytes()).unwrap();
+    file_stats
+        .write_all(line.as_bytes())
+        .context("Failed to write stats file")?;
     println!(" done");
 
     if !pcr_runs.is_empty() {
@@ -609,16 +609,18 @@ fn main() {
         let kmer_counts_pcr = kmer_counts.get_pcr_kmers(&min_count);
 
         for pcr_params in pcr_runs.iter() {
-            let fasta = pcr::do_pcr(&kmer_counts_pcr, &args.sample, args.verbosity, pcr_params);
+            let fasta = pcr::do_pcr(&kmer_counts_pcr, &args.sample, args.verbosity, pcr_params)?;
 
             if !fasta.is_empty() {
                 let fasta_path = format!(
                     "{}{}_{}.fasta",
                     directory, args.sample, pcr_params.gene_name
                 );
-                let mut file = std::fs::File::create(fasta_path).unwrap();
+                let mut file = std::fs::File::create(&fasta_path)
+                    .with_context(|| format!("Failed to create FASTA file: {}", fasta_path))?;
                 for record in fasta {
-                    write_fasta_record(&mut file, &record).unwrap();
+                    write_fasta_record(&mut file, &record)
+                        .context("Failed to write FASTA record")?;
                 }
             }
         }
@@ -627,6 +629,7 @@ fn main() {
     }
 
     println!("Total run time: {:?}", start_run.elapsed());
+    Ok(())
 }
 
 #[cfg(test)]
