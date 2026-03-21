@@ -13,8 +13,8 @@ Build testing and benchmarking infrastructure before any functional changes.
 
 - [x] #18 Add CLAUDE.md (do first — provides context for all subsequent work)
 - [x] #50 Build benchmark workflow and capture v1.0.1 baseline (Porites_lutea done; full suite across all samples pending — run on HPC)
-- [ ] #17 Fix broken test compilation
-- [ ] #20 Add workspace Cargo.toml at repo root
+- [x] #17 Fix broken test compilation
+- [x] #20 Add workspace Cargo.toml at repo root
 - [ ] #19 Add GitHub Actions CI (depends on #17)
 - [ ] #30 Add test fixtures from ERR571460 (depends on #17, #19)
 - [ ] #31 Expand integration test coverage (depends on #30)

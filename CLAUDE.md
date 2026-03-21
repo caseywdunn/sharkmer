@@ -148,6 +148,8 @@ When working on an issue, complete a wrap-up phase before committing:
    Open or reference issues for these as appropriate.
 3. **User review**: Present the summary and concerns to the user for review
    before committing. Do not commit or close the issue until the user confirms.
+4. **Close out**: After user sign-off, check off the issue in PLAN.md, commit
+   the changes, then close the issue on GitHub.
 
 ## Key design decisions for v2.0
 
