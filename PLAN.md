@@ -32,7 +32,7 @@ Small, independent changes. Each should have its own branch from dev.
 
 ## Phase 2 — Error handling
 
-The biggest single item. Consider splitting into sub-PRs:
+The biggest single item. Consider splitting into sub-branches:
 kmer module → pcr module → main.rs.
 
 - [ ] #21 Replace panics/unwraps with proper error handling
