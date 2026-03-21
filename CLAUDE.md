@@ -27,6 +27,9 @@ sharkmer/                  # Repo root
 │   ├── meta.yaml          # Bioconda recipe
 │   ├── build.sh           # Bioconda build script
 │   ├── data/              # Test data (SRR5324768, gunzip before use)
+│   ├── tests/
+│   │   ├── fixtures/      # ERR571460 100k reads (gzipped) for integration tests
+│   │   └── spcr_18s.rs    # Integration test: 18S recovery from ERR571460
 │   └── src/
 │       ├── main.rs        # CLI entry point, FASTQ ingestion, orchestration
 │       ├── test.rs         # Integration test placeholder (mostly empty)
@@ -48,15 +51,15 @@ sharkmer/                  # Repo root
 ## Build and test
 
 ```bash
-cd sharkmer           # The Rust crate subdirectory
-cargo test            # Run tests (currently broken — #17)
-cargo clippy          # Lint
-cargo fmt --check     # Format check
-cargo build --release # Release build
+cd sharkmer              # The Rust crate subdirectory
+cargo test --release     # Run tests (release mode for integration test speed)
+cargo clippy             # Lint
+cargo fmt --check        # Format check
+cargo build --release    # Release build
 ```
 
-Note: `Cargo.toml` is in `sharkmer/` not the repo root. Issue #20 will add a
-workspace Cargo.toml at the root.
+Note: `Cargo.toml` is in `sharkmer/` not the repo root. The workspace
+Cargo.toml at the root delegates to `sharkmer/`.
 
 ## Feature flags
 

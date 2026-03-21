@@ -16,7 +16,7 @@ Build testing and benchmarking infrastructure before any functional changes.
 - [x] #17 Fix broken test compilation
 - [x] #20 Add workspace Cargo.toml at repo root
 - [x] #19 Add GitHub Actions CI (depends on #17)
-- [ ] #30 Add test fixtures from ERR571460 (depends on #17, #19)
+- [x] #30 Add test fixtures from ERR571460 (depends on #17, #19)
 - [ ] #31 Expand integration test coverage (depends on #30)
 - [ ] Run benchmark, commit result
 
