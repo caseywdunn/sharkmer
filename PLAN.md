@@ -71,6 +71,7 @@ independent and can be interleaved.
 - [ ] #36 Parallelize sPCR across genes
 - [ ] #37 Progress indicators
 - [ ] #48 Warn on overwriting
+- [ ] #65 Add --sra flag for direct ENA download (depends on #24)
 - [ ] #27 HashMap for node lookup in graph construction
 - [ ] #28 Avoid storing RC in hash table (do together with #54, #52)
 - [ ] #54 Eliminate double hash lookups
@@ -95,6 +96,7 @@ Depends on Phase 4.
 - [ ] #31 Update integration tests for final v2.0 CLI/output
 - [ ] #50 Run full regression benchmark, compare to v1.0.1 baseline
 - [ ] #51 Optimize benchmark downloads (optional, can defer)
+- [ ] #64 sra_download.sh: default to R1 only
 - [ ] Update README.md for v2.0
 - [ ] Update CHANGELOG.md with all v2.0 changes
 - [ ] Update bioconda recipe for new dependencies
