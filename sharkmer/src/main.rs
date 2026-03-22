@@ -249,9 +249,21 @@ struct Args {
     #[arg(short = 'v', long, action = clap::ArgAction::Count, help_heading = "General")]
     verbose: u8,
 
+    /// Control color output: auto (default), always, never
+    #[arg(long, default_value = "auto", help_heading = "General")]
+    color: ColorMode,
+
     /// Print citation information and exit
     #[arg(long, help_heading = "General")]
     cite: bool,
+}
+
+/// Color output mode for log messages.
+#[derive(Debug, Clone, clap::ValueEnum)]
+enum ColorMode {
+    Auto,
+    Always,
+    Never,
 }
 
 const FASTA_LINE_WIDTH: usize = 80;
@@ -408,15 +420,21 @@ fn main() -> Result<()> {
     // Ingest command line arguments
     let args = Args::parse();
 
-    // Initialize logging based on verbosity level
+    // Initialize logging based on verbosity level and color mode
     let log_level = match args.verbose {
         0 => log::LevelFilter::Warn,
         1 => log::LevelFilter::Info,
         2 => log::LevelFilter::Debug,
         _ => log::LevelFilter::Trace,
     };
+    let write_style = match args.color {
+        ColorMode::Auto => env_logger::WriteStyle::Auto,
+        ColorMode::Always => env_logger::WriteStyle::Always,
+        ColorMode::Never => env_logger::WriteStyle::Never,
+    };
     env_logger::Builder::new()
         .filter_level(log_level)
+        .write_style(write_style)
         .format_timestamp(None)
         .init();
 
