@@ -187,6 +187,10 @@ struct Args {
     #[arg(help_heading = "Input")]
     input: Option<Vec<PathBuf>>,
 
+    /// Stream reads directly from ENA by SRA/ENA accession (e.g. SRR5324768)
+    #[arg(long, help_heading = "Input")]
+    sra: Option<String>,
+
     /// Sample name (used as output file prefix, required for processing)
     #[arg(short, long, help_heading = "Output")]
     sample: Option<String>,
@@ -269,6 +273,62 @@ enum ColorMode {
 }
 
 const FASTA_LINE_WIDTH: usize = 80;
+
+/// Query ENA filereport API to get FASTQ URLs for an SRA/ENA accession.
+/// Returns URLs ordered by mate number (R1 first, then R2 if paired-end).
+fn get_ena_fastq_urls(accession: &str) -> Result<Vec<String>> {
+    let url = format!(
+        "https://www.ebi.ac.uk/ena/portal/api/filereport?accession={}&result=read_run&fields=run_accession,fastq_ftp",
+        accession
+    );
+
+    info!("Querying ENA for accession {}...", accession);
+    let response = ureq::get(&url)
+        .call()
+        .with_context(|| format!("Failed to query ENA API for accession {}", accession))?;
+
+    let body = response
+        .into_string()
+        .context("Failed to read ENA API response")?;
+
+    // Response is TSV: header row, then data rows
+    // Fields: run_accession\tfastq_ftp
+    let lines: Vec<&str> = body.lines().collect();
+    ensure!(
+        lines.len() >= 2,
+        "ENA returned no results for accession '{}'. Check that the accession is valid.",
+        accession
+    );
+
+    // Parse the fastq_ftp field (semicolon-separated URLs)
+    let data_line = lines[1];
+    let fields: Vec<&str> = data_line.split('\t').collect();
+    ensure!(
+        fields.len() >= 2 && !fields[1].is_empty(),
+        "ENA returned no FASTQ URLs for accession '{}'. The run may not have public FASTQ files.",
+        accession
+    );
+
+    let urls: Vec<String> = fields[1]
+        .split(';')
+        .map(|u| {
+            if u.starts_with("ftp://") || u.starts_with("http") {
+                u.to_string()
+            } else {
+                format!("http://{}", u)
+            }
+        })
+        .collect();
+
+    info!(
+        "Found {} FASTQ file(s) for {}: {}",
+        urls.len(),
+        accession,
+        urls.join(", ")
+    );
+
+    Ok(urls)
+}
 
 /// Warn if an output file already exists (it will be overwritten).
 fn warn_if_exists(path: &str) {
@@ -591,6 +651,11 @@ fn main() -> Result<()> {
         warn!("No --pcr-panel/--pcr-file/--pcr-primers and --chunks is 0: only a stats file will be produced");
     }
 
+    // Validate that --sra is not combined with input files
+    if args.sra.is_some() && args.input.is_some() {
+        bail!("--sra cannot be combined with input files. Use one or the other.");
+    }
+
     // Validate input files exist before starting processing
     if let Some(input_files) = &args.input {
         for file_path in input_files.iter() {
@@ -666,55 +731,74 @@ fn main() -> Result<()> {
         ProgressBar::hidden()
     };
 
-    match &args.input {
-        Some(input_files) => {
-            // read from one or more files
-            for file_path in input_files.iter() {
-                let file = std::fs::File::open(file_path)
-                    .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
-
-                let file_name = file_path.to_string_lossy();
-                let reader: Box<dyn BufRead> =
-                    if file_name.ends_with(".gz") || file_name.ends_with(".gzip") {
-                        Box::new(std::io::BufReader::new(flate2::read::GzDecoder::new(file)))
-                    } else {
-                        Box::new(std::io::BufReader::new(file))
-                    };
-                let reached_max = read_fastq(
-                    reader,
-                    &mut state,
-                    max_reads,
-                    args.validate_every,
-                    &file_name,
-                    &progress,
-                )?;
-                if reached_max {
-                    break;
-                }
-            }
-        }
-        None => {
-            // read from stdin
-            let stdin = std::io::stdin();
-            ensure!(
-                !stdin.is_terminal(),
-                "No input files specified and stdin is a terminal.\n\
-                 Provide FASTQ files as arguments or pipe data via stdin.\n\
-                 Example: sharkmer -s sample -k 21 reads.fastq\n\
-                 Example: sharkmer -s sample -k 21 reads.fastq.gz\n\
-                 Example: zcat reads.fastq.gz | sharkmer -s sample -k 21"
-            );
-            let handle = stdin.lock();
-
-            read_fastq(
-                handle,
+    if let Some(accession) = &args.sra {
+        // Stream reads from ENA
+        let urls = get_ena_fastq_urls(accession)?;
+        for url in &urls {
+            info!("Streaming from {}...", url);
+            let response = ureq::get(url)
+                .call()
+                .with_context(|| format!("Failed to download {}", url))?;
+            let reader =
+                std::io::BufReader::new(flate2::read::GzDecoder::new(response.into_reader()));
+            let reached_max = read_fastq(
+                reader,
                 &mut state,
                 max_reads,
                 args.validate_every,
-                "stdin",
+                url,
                 &progress,
             )?;
+            if reached_max {
+                break;
+            }
         }
+    } else if let Some(input_files) = &args.input {
+        // Read from one or more files
+        for file_path in input_files.iter() {
+            let file = std::fs::File::open(file_path)
+                .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
+
+            let file_name = file_path.to_string_lossy();
+            let reader: Box<dyn BufRead> =
+                if file_name.ends_with(".gz") || file_name.ends_with(".gzip") {
+                    Box::new(std::io::BufReader::new(flate2::read::GzDecoder::new(file)))
+                } else {
+                    Box::new(std::io::BufReader::new(file))
+                };
+            let reached_max = read_fastq(
+                reader,
+                &mut state,
+                max_reads,
+                args.validate_every,
+                &file_name,
+                &progress,
+            )?;
+            if reached_max {
+                break;
+            }
+        }
+    } else {
+        // Read from stdin
+        let stdin = std::io::stdin();
+        ensure!(
+            !stdin.is_terminal(),
+            "No input files specified and stdin is a terminal.\n\
+             Provide FASTQ files as arguments, use --sra, or pipe data via stdin.\n\
+             Example: sharkmer -s sample -k 21 reads.fastq\n\
+             Example: sharkmer -s sample --sra SRR5324768\n\
+             Example: zcat reads.fastq.gz | sharkmer -s sample -k 21"
+        );
+        let handle = stdin.lock();
+
+        read_fastq(
+            handle,
+            &mut state,
+            max_reads,
+            args.validate_every,
+            "stdin",
+            &progress,
+        )?;
     }
 
     progress.finish_and_clear();
