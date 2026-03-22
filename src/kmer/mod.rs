@@ -3,42 +3,11 @@
 
 use anyhow::{bail, ensure, Context, Result};
 
-#[cfg(feature = "nohashmap")]
-use std::collections::HashMap;
-
-#[cfg(feature = "nohashmap")]
-use std::hash::{BuildHasherDefault, Hasher};
-
-#[cfg(feature = "intmap")]
-use intmap::{Entry, IntMap};
-
 #[cfg(feature = "fxhashmap")]
 use rustc_hash::FxHashMap;
 
 #[cfg(feature = "ahashmap")]
 use std::collections::HashMap as StdHashMap;
-
-#[cfg(feature = "nohashmap")]
-type NoHashHashMap<K, V> = HashMap<K, V, BuildHasherDefault<NoHashHasher>>;
-
-#[cfg(feature = "nohashmap")]
-#[derive(Default)]
-struct NoHashHasher(u64); // Add a field to store the hash
-
-#[cfg(feature = "nohashmap")]
-impl Hasher for NoHashHasher {
-    fn finish(&self) -> u64 {
-        self.0 // Return the stored hash
-    }
-
-    fn write(&mut self, _: &[u8]) {
-        // This method is required but won't be used
-    }
-
-    fn write_u64(&mut self, i: u64) {
-        self.0 = i; // Store the key as the hash
-    }
-}
 
 /// A structure to hold a read in two bit encoding of bases
 /// * `00` represents `A`
@@ -214,8 +183,7 @@ impl PartialEq for Read {
     }
 }
 
-/// Trait abstracting over the different hash map implementations (IntMap, FxHashMap, NoHashHashMap).
-/// This avoids duplicating the KmerCounts impl block for each feature flag.
+/// Trait abstracting over hash map implementations for kmer counting.
 #[allow(dead_code)]
 trait KmerMap {
     fn new_map() -> Self;
@@ -227,35 +195,6 @@ trait KmerMap {
     fn retain_above(&mut self, min_count: u64);
 }
 
-#[cfg(feature = "intmap")]
-impl KmerMap for IntMap<u64> {
-    fn new_map() -> Self {
-        IntMap::new()
-    }
-    fn new_map_with_capacity(capacity: usize) -> Self {
-        IntMap::with_capacity(capacity)
-    }
-    fn insert_or_add(&mut self, key: u64, count: u64) {
-        let counter = match self.entry(key) {
-            Entry::Occupied(entry) => entry.into_mut(),
-            Entry::Vacant(entry) => entry.insert(0),
-        };
-        *counter += count;
-    }
-    fn get_value(&self, key: u64) -> Option<&u64> {
-        self.get(key)
-    }
-    fn get_count(&self, key: u64) -> u64 {
-        *self.get(key).unwrap_or(&0)
-    }
-    fn contains(&self, key: u64) -> bool {
-        self.contains_key(key)
-    }
-    fn retain_above(&mut self, min_count: u64) {
-        self.retain(|_, count| *count >= min_count);
-    }
-}
-
 #[cfg(feature = "fxhashmap")]
 impl KmerMap for rustc_hash::FxHashMap<u64, u64> {
     fn new_map() -> Self {
@@ -263,32 +202,6 @@ impl KmerMap for rustc_hash::FxHashMap<u64, u64> {
     }
     fn new_map_with_capacity(capacity: usize) -> Self {
         FxHashMap::with_capacity_and_hasher(capacity, Default::default())
-    }
-    fn insert_or_add(&mut self, key: u64, count: u64) {
-        let c = self.entry(key).or_insert(0);
-        *c += count;
-    }
-    fn get_value(&self, key: u64) -> Option<&u64> {
-        self.get(&key)
-    }
-    fn get_count(&self, key: u64) -> u64 {
-        *self.get(&key).unwrap_or(&0)
-    }
-    fn contains(&self, key: u64) -> bool {
-        self.contains_key(&key)
-    }
-    fn retain_above(&mut self, min_count: u64) {
-        self.retain(|_, count| *count >= min_count);
-    }
-}
-
-#[cfg(feature = "nohashmap")]
-impl KmerMap for NoHashHashMap<u64, u64> {
-    fn new_map() -> Self {
-        NoHashHashMap::<u64, u64>::default()
-    }
-    fn new_map_with_capacity(capacity: usize) -> Self {
-        NoHashHashMap::<u64, u64>::with_capacity_and_hasher(capacity, Default::default())
     }
     fn insert_or_add(&mut self, key: u64, count: u64) {
         let c = self.entry(key).or_insert(0);
@@ -337,14 +250,8 @@ impl KmerMap for AHashMap<u64, u64> {
     }
 }
 
-#[cfg(feature = "intmap")]
-type MapType = IntMap<u64>;
-
 #[cfg(feature = "fxhashmap")]
 type MapType = rustc_hash::FxHashMap<u64, u64>;
-
-#[cfg(feature = "nohashmap")]
-type MapType = NoHashHashMap<u64, u64>;
 
 #[cfg(feature = "ahashmap")]
 type MapType = AHashMap<u64, u64>;

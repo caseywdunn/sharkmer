@@ -53,12 +53,10 @@ All commands run from the repo root.
 
 ## Feature flags
 
-Four hash map backends, selected at compile time:
+Two hash map backends, selected at compile time:
 
-- `fxhashmap` (default): `rustc_hash::FxHashMap` — fast non-cryptographic hash
-- `ahashmap`: `ahash` — fast hash with AES-NI hardware support
-- `intmap`: `intmap::IntMap` — optimized for integer keys
-- `nohashmap`: Identity hash via std `HashMap` — for benchmarking
+- `ahashmap` (default): `ahash` — fast hash with AES-NI hardware acceleration
+- `fxhashmap`: `rustc_hash::FxHashMap` — fast non-cryptographic hash
 
 ```bash
 cargo build --features intmap --no-default-features

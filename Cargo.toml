@@ -6,11 +6,10 @@ description = "A collection of kmer counting and analysis tools."
 edition = "2021"
 repository = "https://github.com/caseywdunn/sharkmer"
 
-# To switch between different implementations of the kmer counting data structure, set the default below.
+# Hash map backend for kmer counting. ahashmap (default) uses AES-NI hardware
+# acceleration and is significantly faster than fxhashmap on modern CPUs.
 [features]
-default = ["fxhashmap"]
-intmap = []
-nohashmap = []
+default = ["ahashmap"]
 fxhashmap = []
 ahashmap = ["dep:ahash"]
 
@@ -23,7 +22,6 @@ rand = { version = "0.8.5"}
 rayon = { version = "1.7.0"}
 petgraph = { version = "0.6.4"}
 bio = { version = "1.4.0"}
-intmap =  { version = "2.0.0" }
 rustc-hash = { version = "1.1" }
 ahash = { version = "0.8", optional = true }
 textwrap = { version = "0.13.2" }
