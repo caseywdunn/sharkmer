@@ -181,7 +181,13 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
 
 /// A tool for kmer counting and in silico PCR (sPCR)
 #[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None, arg_required_else_help = true)]
+#[command(
+    author,
+    version = concat!(env!("CARGO_PKG_VERSION"), " (", env!("CARGO_PKG_REPOSITORY"), ")"),
+    about,
+    long_about = None,
+    arg_required_else_help = true
+)]
 #[command(after_help = "\
 Output files:\n  \
   {outdir}/{sample}.stats.yaml             Run statistics (always produced)\n\
