@@ -82,14 +82,14 @@ independent and can be interleaved.
 
 Depends on Phase 4.
 
-- [ ] #43 Summary line at completion (depends on #22, #32)
-- [ ] #47 Peak memory reporting (depends on #43, #32)
-- [ ] #39 Shell completions (depends on #24)
-- [ ] #46 --dry-run mode (depends on #41, #24)
-- [ ] #59 User warnings for common mistakes (depends on #22, #41, #23)
-- [ ] #49 Polished CLI formatting (depends on #22, #43, #44)
-- [ ] #67 Derive sample name from ENA metadata when --sra used without --sample
-- [ ] #61 Update sharkmer_viewer (depends on #32)
+- [x] #43 Summary line at completion (depends on #22, #32)
+- [x] #47 Peak memory reporting (depends on #43, #32)
+- [x] #39 Shell completions (depends on #24)
+- [x] #46 --dry-run mode (depends on #41, #24)
+- [x] #59 User warnings for common mistakes (depends on #22, #41, #23)
+- [x] #49 Polished CLI formatting (depends on #22, #43, #44)
+- [x] #67 Derive sample name from ENA metadata when --sra used without --sample
+- [x] #61 Update sharkmer_viewer (depends on #32)
 - [ ] Run benchmark, commit result
 
 ## Phase 6 — Final validation
