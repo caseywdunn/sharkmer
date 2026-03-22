@@ -25,7 +25,7 @@ about:
   home: https://github.com/caseywdunn/sharkmer
   summary: "Kmer counter and seeded de Bruijn graph assembler for in silico PCR and genome size estimation"
   license: MIT
-  license_file: sharkmer/LICENSE
+  license_file: LICENSE
 
 extra:
   additional-platforms:

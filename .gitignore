@@ -3,8 +3,15 @@
 *.output
 *.tmp
 *.0
+*.histo
+*.stats
+*.fasta
+*.pdb
+**/*.rs.bk
 
 SRR23143278*
 
+data/
 tmp/
 target/
+debug/

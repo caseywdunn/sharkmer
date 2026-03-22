@@ -43,10 +43,10 @@ If you don't have them already, [install the rust build tools](https://www.rust-
 Then clone this repository and build sharkmer:
 
     git clone https://github.com/caseywdunn/sharkmer.git   # Or download and expand the zip file
-    cd sharkmer/sharkmer
+    cd sharkmer
     cargo build --release
 
-Note that the `sharkmer` rust code is in the `sharkmer/sharkmer` folder, not the top level `sharkmer` folder. The compiled executable will be in `sharkmer/sharkmer/target/release/sharkmer`. Move it to a location in your path.
+The compiled executable will be in `target/release/sharkmer`. Move it to a location in your path.
 
 If you would like to follow along with the examples below, also install the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit) so that you can download raw reads from 
 [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra) with `fasterq-dump`.

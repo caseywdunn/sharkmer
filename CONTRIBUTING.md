@@ -25,7 +25,7 @@ This repository includes a test [dataset from Thermus thermophilus](https://trac
 
 After cloning the repo, gunzip the `data` in the data dir:
 
-    cd sharkmer/data/ # Note that this is the sharkmer folder within the sharkmer repository
+    cd data/
     gunzip -c SRR5324768_pass_1.fastq.gz > SRR5324768_pass_1.fastq
 
 ## Branching model
@@ -76,7 +76,7 @@ A branch is considered passing when:
 
 Bioconda release follows their [contribution workflow](https://bioconda.github.io/contributor/index.html).
 
-The bioconda recipe files are in `sharkmer/` (`meta.yaml` and `build.sh`). These are the source of truth and are copied to the [bioconda-recipes](https://github.com/bioconda/bioconda-recipes) repository for releases.
+The bioconda recipe files are at the repo root (`meta.yaml` and `build.sh`). These are the source of truth and are copied to the [bioconda-recipes](https://github.com/bioconda/bioconda-recipes) repository for releases.
 
 Before submitting a pull request, test the recipe locally with:
 

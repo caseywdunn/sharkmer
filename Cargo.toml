@@ -1,3 +1,40 @@
-[workspace]
-members = ["sharkmer"]
-resolver = "2"
+[package]
+name = "sharkmer"
+version = "2.0.0-alpha"
+authors = ["Casey Dunn <casey.dunn@yale.edu>"]
+description = "A collection of kmer counting and analysis tools."
+edition = "2021"
+repository = "https://github.com/caseywdunn/sharkmer"
+
+# To switch between different implementations of the kmer counting data structure, set the default below.
+[features]
+default = ["fxhashmap"]
+intmap = []
+nohashmap = []
+fxhashmap = []
+ahashmap = ["dep:ahash"]
+
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+clap = { version = "4.2.7", features = ["derive"]}
+rand = { version = "0.8.5"}
+rayon = { version = "1.7.0"}
+petgraph = { version = "0.6.4"}
+bio = { version = "1.4.0"}
+intmap =  { version = "2.0.0" }
+rustc-hash = { version = "1.1" }
+ahash = { version = "0.8", optional = true }
+textwrap = { version = "0.13.2" }
+anyhow = { version = "1" }
+serde = { version = "1", features = ["derive"] }
+serde_yaml = { version = "0.9" }
+flate2 = { version = "1" }
+log = { version = "0.4" }
+env_logger = { version = "0.11" }
+indicatif = { version = "0.17" }
+ureq = { version = "2" }
+
+[dev-dependencies]
+tempfile = "3"

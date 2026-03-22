@@ -16,56 +16,55 @@ shotgun FASTQ reads, it can:
 
 ```
 sharkmer/                  # Repo root
+├── Cargo.toml             # Dependencies, feature flags, version
 ├── CLAUDE.md              # This file
 ├── PLAN.md                # v2.0 phased execution order with checkboxes
 ├── ROADMAP.md             # Multi-version release plan with issue references
 ├── CHANGELOG.md           # Release history
 ├── CONTRIBUTING.md        # Branching model, quality gates, bioconda recipe
 ├── readme.md              # User documentation
-├── sharkmer/              # Rust crate (binary lives here)
-│   ├── Cargo.toml         # Dependencies, feature flags, version
-│   ├── meta.yaml          # Bioconda recipe
-│   ├── build.sh           # Bioconda build script
-│   ├── data/              # Test data (SRR5324768, gunzip before use)
-│   ├── tests/
-│   │   ├── fixtures/      # ERR571460 100k reads (gzipped) for integration tests
-│   │   └── spcr_18s.rs    # Integration test: 18S recovery from ERR571460
-│   └── src/
-│       ├── main.rs        # CLI entry point, FASTQ ingestion, orchestration
-│       ├── kmer/
-│       │   └── mod.rs     # 2-bit encoding, kmer extraction, counting, histograms
-│       └── pcr/
-│           ├── mod.rs     # De Bruijn graph construction, extension, path finding
-│           └── preconfigured.rs  # YAML panel loading (built-in via include_str!, user via --pcr-file)
-│       └── panels/        # Built-in primer panel YAML files (7 panels)
+├── meta.yaml              # Bioconda recipe
+├── build.sh               # Bioconda build script
+├── src/
+│   ├── main.rs            # CLI entry point, FASTQ ingestion, orchestration
+│   ├── kmer/
+│   │   └── mod.rs         # 2-bit encoding, kmer extraction, counting, histograms
+│   └── pcr/
+│       ├── mod.rs         # De Bruijn graph construction, extension, path finding
+│       └── preconfigured.rs  # YAML panel loading (built-in via include_str!, user via --pcr-file)
+├── panels/                # Built-in primer panel YAML files (7 panels)
+├── tests/
+│   ├── fixtures/          # ERR571460 100k reads (gzipped) for integration tests
+│   └── spcr_18s.rs        # Integration test: 18S recovery from ERR571460
+├── data/                  # Test data (SRR5324768, gunzip before use)
 ├── sharkmer_viewer/       # Python tool for histogram visualization
 ├── docker/                # Dockerfile for development
-├── tests/                 # Snakemake workflow for testing against SRA datasets
+├── workflow/              # Snakemake workflow for testing against SRA datasets
 │   ├── Snakefile
 │   ├── config.yaml        # 30+ test samples with SRA accessions
 │   ├── sra.py             # SRA download utilities
 │   └── aggregate_stats.py
+├── benchmarks/            # Regression benchmark suite
 └── genomescopemovie.sh    # Shell script for incremental visualization
 ```
 
 ## Build and test
 
 ```bash
-cd sharkmer              # The Rust crate subdirectory
 cargo test --release     # Run tests (release mode for integration test speed)
 cargo clippy             # Lint
 cargo fmt --check        # Format check
 cargo build --release    # Release build
 ```
 
-Note: `Cargo.toml` is in `sharkmer/` not the repo root. The workspace
-Cargo.toml at the root delegates to `sharkmer/`.
+All commands run from the repo root.
 
 ## Feature flags
 
-Three hash map backends, selected at compile time:
+Four hash map backends, selected at compile time:
 
 - `fxhashmap` (default): `rustc_hash::FxHashMap` — fast non-cryptographic hash
+- `ahashmap`: `ahash` — fast hash with AES-NI hardware support
 - `intmap`: `intmap::IntMap` — optimized for integer keys
 - `nohashmap`: Identity hash via std `HashMap` — for benchmarking
 
