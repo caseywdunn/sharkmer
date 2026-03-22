@@ -101,8 +101,8 @@ Depends on Phase 4.
 - [x] #66 Update README examples for v2.0 CLI and test data
 - [ ] #68 Document QIIME2/SILVA workflow and consider convenience flags
 - [x] #69 Auto-prefix gene names with panel name
-- [ ] Update CHANGELOG.md with all v2.0 changes
-- [ ] Update bioconda recipe for new dependencies
+- [x] Update CHANGELOG.md with all v2.0 changes
+- [x] Update bioconda recipe for new dependencies
 - [ ] Tag v2.0.0-rc1, test bioconda build
 - [ ] Tag v2.0.0 release
 

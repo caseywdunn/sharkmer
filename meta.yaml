@@ -1,4 +1,4 @@
-{% set version = "1.0.1" %}
+{% set version = "2.0.0" %}
 
 package:
   name: sharkmer
@@ -6,10 +6,11 @@ package:
 
 source:
   url: https://github.com/caseywdunn/sharkmer/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: 7fd9ffdcea8dc7a85ed3759eb51bf9330a1d809a8e2d8a38bbc0bea7667e8b18
+  # sha256 will be set when v2.0.0 is tagged and the tarball is available
+  sha256: PLACEHOLDER
 
 build:
-  number: 1
+  number: 0
   run_exports:
     - {{ pin_subpackage('sharkmer', max_pin='x') }}
 
@@ -20,6 +21,9 @@ requirements:
 test:
   commands:
     - sharkmer --help
+    - sharkmer --version
+    - sharkmer --list-panels
+    - sharkmer --cite
 
 about:
   home: https://github.com/caseywdunn/sharkmer
