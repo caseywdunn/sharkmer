@@ -1,4 +1,4 @@
-use anyhow::{Context, Result};
+use anyhow::{bail, Context, Result};
 
 use super::pcrparams_string;
 use super::PCRParams;
@@ -30,20 +30,28 @@ pub fn load_panel_file(path: &str) -> Result<Vec<PCRParams>> {
     Ok(panel.primers)
 }
 
-fn get_builtin_panels() -> Vec<PanelFile> {
-    let yaml_sources: &[&str] = &[
-        include_str!("../../panels/angiospermae.yaml"),
-        include_str!("../../panels/bacteria.yaml"),
-        include_str!("../../panels/cnidaria.yaml"),
-        include_str!("../../panels/human.yaml"),
-        include_str!("../../panels/insecta.yaml"),
-        include_str!("../../panels/metazoa.yaml"),
-        include_str!("../../panels/teleostei.yaml"),
-    ];
+/// Returns (name, raw_yaml) pairs for all built-in panels.
+fn get_builtin_panel_sources() -> Vec<(&'static str, &'static str)> {
+    vec![
+        (
+            "angiospermae",
+            include_str!("../../panels/angiospermae.yaml"),
+        ),
+        ("bacteria", include_str!("../../panels/bacteria.yaml")),
+        ("cnidaria", include_str!("../../panels/cnidaria.yaml")),
+        ("human", include_str!("../../panels/human.yaml")),
+        ("insecta", include_str!("../../panels/insecta.yaml")),
+        ("metazoa", include_str!("../../panels/metazoa.yaml")),
+        ("teleostei", include_str!("../../panels/teleostei.yaml")),
+    ]
+}
 
-    yaml_sources
+fn get_builtin_panels() -> Vec<PanelFile> {
+    get_builtin_panel_sources()
         .iter()
-        .map(|yaml| parse_panel_yaml(yaml).expect("Built-in panel YAML should always be valid"))
+        .map(|(_, yaml)| {
+            parse_panel_yaml(yaml).expect("Built-in panel YAML should always be valid")
+        })
         .collect()
 }
 
@@ -69,7 +77,33 @@ pub fn get_panel(panel_name: &str) -> Result<Vec<PCRParams>, String> {
         .iter()
         .find(|panel| panel.name == panel_name)
         .map(|panel| panel.primers.clone())
-        .ok_or_else(|| format!("Invalid preconfigured PCR panel name '{}'", panel_name))
+        .ok_or_else(|| {
+            let available: Vec<&str> = panels.iter().map(|p| p.name.as_str()).collect();
+            format!(
+                "Unknown panel '{}'. Available panels: {}",
+                panel_name,
+                available.join(", ")
+            )
+        })
+}
+
+/// Export a built-in panel as raw YAML to stdout.
+pub fn export_panel_yaml(panel_name: &str) -> Result<String> {
+    for (name, yaml) in get_builtin_panel_sources() {
+        if name == panel_name {
+            return Ok(yaml.to_string());
+        }
+    }
+
+    let available: Vec<&str> = get_builtin_panel_sources()
+        .iter()
+        .map(|(name, _)| *name)
+        .collect();
+    bail!(
+        "Unknown panel '{}'. Available panels: {}",
+        panel_name,
+        available.join(", ")
+    )
 }
 
 pub fn print_pcr_panels() {
@@ -87,7 +121,10 @@ pub fn print_pcr_panels() {
             println!("    trim: {}", param.trim);
             println!("    citation: {}", param.citation);
             println!("    notes: {}", param.notes);
-            println!("    arguments: --pcr \"{}\"", pcrparams_string(&param));
+            println!(
+                "    arguments: --pcr-primers \"{}\"",
+                pcrparams_string(&param)
+            );
             println!();
         }
     }

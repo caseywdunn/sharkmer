@@ -6,7 +6,6 @@ use pcr::preconfigured;
 use std::io::BufRead;
 use std::io::IsTerminal;
 use std::io::Write;
-use std::path::Path;
 use std::path::PathBuf;
 
 use crate::kmer::Chunk;
@@ -39,24 +38,11 @@ fn is_valid_nucleotide(c: char) -> bool {
     }
 }
 
-pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>> {
-    if pcr_string.is_empty() {
-        bail!("Invalid empty pcr string");
-    }
+/// Parse an inline primer specification string (key=value,key=value,...) into PCRParams.
+pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
+    ensure!(!pcr_string.is_empty(), "Invalid empty primer specification");
 
-    // Split the string on commas
     let split: Vec<&str> = pcr_string.split(',').collect();
-
-    // If the string is a single element, check if it is a preconfigured panel
-    if split.len() == 1 {
-        // If OK, validate and return the panel
-        // If not OK, return an error
-
-        match preconfigured::get_panel(pcr_string) {
-            Ok(params) => return Ok(params),
-            Err(_) => bail!("Invalid preconfigured PCR panel: {}", pcr_string),
-        }
-    }
 
     let mut forward_seq = "".to_string();
     let mut reverse_seq = "".to_string();
@@ -70,7 +56,6 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>> {
     let mut notes = "".to_string();
     let mut dedup_edit_threshold = pcr::DEFAULT_DEDUP_EDIT_THRESHOLD;
 
-    // Loop over additional parameters, which are of the form key=value and are separated by commas
     for item in split.iter() {
         let key_value: Vec<&str> = item.split('=').collect();
         if key_value.len() != 2 {
@@ -127,15 +112,6 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>> {
                     .parse()
                     .with_context(|| format!("Invalid value for {}: {}", key, value))?;
             }
-            "panel" => {
-                if split.len() > 1 {
-                    bail!("Invalid --pcr arguments, if a panel is specified it should the the only argument: {}", pcr_string);
-                }
-                match preconfigured::get_panel(value) {
-                    Ok(params) => return Ok(params),
-                    Err(_) => bail!("Invalid preconfigured PCR panel: {}", value),
-                }
-            }
             _ => {
                 bail!("Unexpected parameter: {}", key);
             }
@@ -158,120 +134,89 @@ pub fn parse_pcr_string(pcr_string: &str) -> Result<Vec<pcr::PCRParams>> {
 
     pcr::validate_pcr_params(&pcr_params)?;
 
-    Ok(vec![pcr_params])
+    Ok(pcr_params)
 }
 
-/// A collection of kmer counting and analysis tools
+/// A tool for kmer counting and in silico PCR (sPCR)
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
+#[command(after_help = "\
+Output files:\n  \
+  {outdir}/{sample}_{panel}_{gene}.fasta  sPCR products per gene\n  \
+  {outdir}/{sample}.histo                 Incremental histograms (--chunks > 0)\n  \
+  {outdir}/{sample}.final.histo           Final histogram (--chunks > 0)\n  \
+  {outdir}/{sample}.stats                 Run statistics")]
 struct Args {
-    /// k-mer length
-    #[arg(short, default_value_t = 21)]
+    /// FASTQ input files (.fastq or .fastq.gz). If omitted, reads from stdin.
+    #[arg(help_heading = "Input")]
+    input: Option<Vec<PathBuf>>,
+
+    /// Sample name (used as output file prefix, required for processing)
+    #[arg(short, long, help_heading = "Output")]
+    sample: Option<String>,
+
+    /// Output directory
+    #[arg(short, long, default_value = "./", help_heading = "Output")]
+    outdir: PathBuf,
+
+    /// Use a preconfigured primer panel (repeatable)
+    #[arg(long, help_heading = "PCR")]
+    pcr_panel: Vec<String>,
+
+    /// Load primers from a YAML file (repeatable)
+    #[arg(long, help_heading = "PCR")]
+    pcr_file: Vec<PathBuf>,
+
+    /// Specify a primer pair inline (repeatable, see --help-pcr)
+    #[arg(long, help_heading = "PCR")]
+    pcr_primers: Vec<String>,
+
+    /// List available primer panels and exit
+    #[arg(long, help_heading = "PCR")]
+    list_panels: bool,
+
+    /// Export a built-in panel as YAML to stdout and exit
+    #[arg(long, help_heading = "PCR")]
+    export_panel: Option<String>,
+
+    /// Show detailed help for --pcr-primers format
+    #[arg(long, help_heading = "PCR")]
+    help_pcr: bool,
+
+    /// Kmer length
+    #[arg(short, default_value_t = 21, help_heading = "Kmer counting")]
     k: usize,
 
-    /// Maximum value for histogram
-    #[arg(long, default_value_t = 10000)]
+    /// Number of incremental chunks (0 = skip histograms)
+    #[arg(long, default_value_t = 0, help_heading = "Kmer counting")]
+    chunks: usize,
+
+    /// Maximum histogram count value
+    #[arg(long, default_value_t = 10000, help_heading = "Kmer counting")]
     histo_max: u64,
 
-    /// Number of chunks to divide the data into
-    #[arg(short, default_value_t = 100)]
-    n: usize,
-
-    /// Maximum number of reads to process
-    #[arg(short = 'm', long, default_value_t = 0)]
-    max_reads: u64,
-
-    /// Number of threads to use
-    #[arg(short = 't', long, default_value_t = 1)]
+    /// Number of threads
+    #[arg(short = 't', long, default_value_t = 1, help_heading = "General")]
     threads: usize,
 
-    /// Name of the sample, could be species and sample ID eg Nanomia-bijuga-YPMIZ035039.
-    /// Will be used as the prefix for output files
-    #[arg(short, long, default_value_t = String::from("sample") )]
-    sample: String,
-
-    /// Directory for output files, defaults to current directory
-    #[arg(short, long, default_value_t = String::from("./") )]
-    outdir: String,
-
-    /// Input files, fastq. If no files are specified, data will be read
-    /// from stdin. This can be used to uncompress a gz file and send them
-    /// to sharkmer.
-    #[arg()]
-    input: Option<Vec<String>>,
-
-    /// Optional primer pairs and parameters for in silico PCR (sPCR).
-    ///
-    /// To see a list of available preconfigured panels and exit, use:
-    ///
-    ///    --pcr panels
-    ///
-    /// To use a specific preconfigured panel, specify it by name with panel= . For example:
-    ///
-    ///    --pcr panel=cnidaria
-    ///
-    /// To manually specify a single primer pair, use the format:
-    ///
-    ///    --pcr "key1=value1,key2=value2,key3=value3,..."
-    ///
-    /// For example:
-    ///
-    ///    --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500"
-    ///
-    /// Where required keys are:
-    ///
-    ///   forward is the forward primer sequence in 5' to 3' orientation
-    ///
-    ///   reverse is the reverse primer sequence in 5' to 3' orientation
-    ///     along the opposite strand as the forward primer, so that the
-    ///     primers are in the same orientation that you would use in an
-    ///     actual in vitro PCR reaction (3' ends facing each other).
-    ///
-    ///   name is a unique name for the primer pair or amplified gene
-    ///     region. This will be used to specify amplified regions in
-    ///     the output fasta file.
-    ///
-    /// The following keys are optional:
-    ///
-    ///    min-length is the minimum length of the PCR product, including
-    ///     the primers. Default is 0.
-    ///
-    ///    max-length is the maximum length of the PCR product, including
-    ///     the primers. Default is 10000.
-    ///
-    ///    min-coverage: minimum coverage for a kmer to be included in the
-    ///      amplified region. Default is 2.
-    ///
-    ///    mismatches: maximum number of mismatches allowed between the
-    ///      primer and the kmer. Default is 2.
-    ///
-    ///    trim: number of bases to keep at the 3' end of each primer.
-    ///      Default is 15.
-    ///
-    /// More than one primer pair can be specified, for example:
-    ///
-    ///    --pcr "..." --pcr "..."
-    #[arg(short = 'p', long)]
-    pcr: Vec<String>,
-
-    /// Load primer panel(s) from YAML file(s). Can be specified multiple times.
-    #[arg(long)]
-    pcr_file: Vec<String>,
-
-    /// Validate FASTQ format every N records (0 = first record only)
-    #[arg(long, default_value_t = 0)]
-    validate_every: u64,
+    /// Maximum number of reads to process (default: all)
+    #[arg(short = 'm', long, help_heading = "General")]
+    max_reads: Option<u64>,
 
     /// Minimum kmer count for sPCR (filters low-count kmers before PCR)
-    #[arg(long, default_value_t = 2)]
+    #[arg(long, default_value_t = 2, help_heading = "General")]
     min_kmer_count: u64,
 
+    /// Validate FASTQ format every N records (0 = first record only)
+    #[arg(long, default_value_t = 0, help_heading = "General")]
+    validate_every: u64,
+
     /// Increase verbosity (-v info, -vv debug, -vvv trace)
-    #[arg(short = 'v', long, action = clap::ArgAction::Count)]
+    #[arg(short = 'v', long, action = clap::ArgAction::Count, help_heading = "General")]
     verbose: u8,
 
     /// Print citation information and exit
-    #[arg(long)]
+    #[arg(long, help_heading = "General")]
     cite: bool,
 }
 
@@ -441,6 +386,8 @@ fn main() -> Result<()> {
         .format_timestamp(None)
         .init();
 
+    // Handle early-exit flags before any processing
+
     // Print citation information and exit if --cite is specified
     if args.cite {
         println!("{} {}\n", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
@@ -459,16 +406,58 @@ fn main() -> Result<()> {
         std::process::exit(0);
     }
 
+    // List available panels and exit
+    if args.list_panels {
+        println!("Available preconfigured PCR panels:");
+        preconfigured::print_pcr_panels();
+        std::process::exit(0);
+    }
+
+    // Export a built-in panel as YAML and exit
+    if let Some(panel_name) = &args.export_panel {
+        let yaml = preconfigured::export_panel_yaml(panel_name)
+            .with_context(|| format!("Failed to export panel: {}", panel_name))?;
+        print!("{}", yaml);
+        std::process::exit(0);
+    }
+
+    // Show detailed help for --pcr-primers format
+    if args.help_pcr {
+        println!("Inline primer specification format for --pcr-primers:\n");
+        println!("  --pcr-primers \"key1=value1,key2=value2,...\"\n");
+        println!("Example:");
+        println!("  --pcr-primers \"forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500\"\n");
+        println!("Required keys:");
+        println!("  forward       Forward primer sequence (5' to 3')");
+        println!("  reverse       Reverse primer sequence (5' to 3' on opposite strand)");
+        println!("  name          Unique name for the primer pair or gene region\n");
+        println!("Optional keys:");
+        println!("  min-length              Minimum product length including primers [0]");
+        println!("  max-length              Maximum product length including primers [10000]");
+        println!("  min-coverage            Minimum kmer coverage [2]");
+        println!("  mismatches              Maximum primer-kmer mismatches [2]");
+        println!("  trim                    Bases to keep at 3' end of each primer [15]");
+        println!("  dedup-edit-threshold    Levenshtein distance for deduplication [10]\n");
+        println!("Multiple primer pairs can be specified by repeating the flag:");
+        println!("  --pcr-primers \"...\" --pcr-primers \"...\"");
+        std::process::exit(0);
+    }
+
+    // Validate that --sample is provided for processing (not needed for early-exit flags above)
+    let sample = args
+        .sample
+        .as_ref()
+        .context("--sample is required. Provide a sample name as output file prefix.")?
+        .clone();
+
     info!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
     debug!("{:?}", args);
-
-    // Parse the outdir path and sample, create directories if necessary
-    let path = PathBuf::from(&args.outdir);
 
     // Create the output directory if it does not exist
     let directory = format!(
         "{}/",
-        path.to_str()
+        args.outdir
+            .to_str()
             .context("Output directory path contains invalid UTF-8")?
     );
     std::fs::create_dir_all(&directory)
@@ -476,7 +465,7 @@ fn main() -> Result<()> {
 
     let k = args.k;
 
-    // Check that the arguments are valid
+    // Validate arguments
     ensure!(
         k < 32,
         "k must be less than 32 due to use of 64 bit integers to encode kmers"
@@ -489,32 +478,37 @@ fn main() -> Result<()> {
         "histo_max must not exceed 1000000, got {}",
         args.histo_max
     );
-    ensure!(args.n > 0, "n must be greater than 0");
     ensure!(
         args.min_kmer_count >= 1,
         "min-kmer-count must be at least 1"
     );
 
-    // Create an empty data frame for pcr runs
+    // Collect PCR primer specifications from all sources
     let mut pcr_runs: Vec<pcr::PCRParams> = Vec::new();
 
-    // Loop over the pcr strings, check that they are valid, and add each to the pcr_runs vector
-    for pcr_string in args.pcr.iter() {
-        if pcr_string == "panels" {
-            println!("Available preconfigured PCR panels:");
-            preconfigured::print_pcr_panels();
-            std::process::exit(0);
-        }
-        let pcr_params = parse_pcr_string(pcr_string)
-            .with_context(|| format!("Error parsing pcr string: {}", pcr_string))?;
+    // Load preconfigured panels by name
+    for panel_name in args.pcr_panel.iter() {
+        let pcr_params = preconfigured::get_panel(panel_name)
+            .map_err(|e| anyhow::anyhow!(e))
+            .with_context(|| format!("Error loading panel: {}", panel_name))?;
         pcr_runs.extend(pcr_params);
     }
 
     // Load primer panels from YAML files
     for pcr_file in args.pcr_file.iter() {
-        let pcr_params = preconfigured::load_panel_file(pcr_file)
-            .with_context(|| format!("Error loading panel file: {}", pcr_file))?;
+        let path_str = pcr_file
+            .to_str()
+            .context("PCR panel file path contains invalid UTF-8")?;
+        let pcr_params = preconfigured::load_panel_file(path_str)
+            .with_context(|| format!("Error loading panel file: {}", path_str))?;
         pcr_runs.extend(pcr_params);
+    }
+
+    // Parse inline primer specifications
+    for pcr_string in args.pcr_primers.iter() {
+        let pcr_params = parse_pcr_primers_string(pcr_string)
+            .with_context(|| format!("Error parsing primer specification: {}", pcr_string))?;
+        pcr_runs.push(pcr_params);
     }
 
     // Check that there are no duplicate gene names
@@ -528,30 +522,33 @@ fn main() -> Result<()> {
         gene_names.push(pcr_params.gene_name.clone());
     }
 
+    // Warn if no output will be produced
+    if args.chunks == 0 && pcr_runs.is_empty() {
+        warn!("No --pcr-panel/--pcr-file/--pcr-primers and --chunks is 0: only a stats file will be produced");
+    }
+
     // Validate input files exist before starting processing
     if let Some(input_files) = &args.input {
-        for file_name in input_files.iter() {
-            let file_path = Path::new(file_name);
+        for file_path in input_files.iter() {
             ensure!(
                 file_path.exists(),
                 "Input file does not exist: {}",
-                file_name
+                file_path.display()
             );
             ensure!(
                 file_path.is_file(),
                 "Input path is not a file: {}",
-                file_name
+                file_path.display()
             );
         }
     }
 
     // Validate pcr-file paths exist
     for pcr_file in args.pcr_file.iter() {
-        let file_path = Path::new(pcr_file);
         ensure!(
-            file_path.exists(),
+            pcr_file.exists(),
             "PCR panel file does not exist: {}",
-            pcr_file
+            pcr_file.display()
         );
     }
 
@@ -565,8 +562,10 @@ fn main() -> Result<()> {
     let start = std::time::Instant::now();
     info!("Ingesting reads...");
 
+    // When chunks == 0, allocate 1 internal chunk for kmer storage (needed for sPCR)
+    let n_chunks = if args.chunks == 0 { 1 } else { args.chunks };
     let mut chunks: Vec<kmer::Chunk> = Vec::new();
-    for _ in 0..args.n {
+    for _ in 0..n_chunks {
         chunks.push(Chunk::new(&k));
     }
 
@@ -578,25 +577,28 @@ fn main() -> Result<()> {
         n_bases_read: 0,
     };
 
+    let max_reads = args.max_reads.unwrap_or(0);
+
     match &args.input {
         Some(input_files) => {
             // read from one or more files
-            for file_name in input_files.iter() {
-                let file_path = Path::new(&file_name);
+            for file_path in input_files.iter() {
                 let file = std::fs::File::open(file_path)
-                    .with_context(|| format!("Failed to open file: {}", file_name))?;
+                    .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
 
-                let reader: Box<dyn BufRead> = if file_name.ends_with(".gz") {
-                    Box::new(std::io::BufReader::new(flate2::read::GzDecoder::new(file)))
-                } else {
-                    Box::new(std::io::BufReader::new(file))
-                };
+                let file_name = file_path.to_string_lossy();
+                let reader: Box<dyn BufRead> =
+                    if file_name.ends_with(".gz") || file_name.ends_with(".gzip") {
+                        Box::new(std::io::BufReader::new(flate2::read::GzDecoder::new(file)))
+                    } else {
+                        Box::new(std::io::BufReader::new(file))
+                    };
                 let reached_max = read_fastq(
                     reader,
                     &mut state,
-                    args.max_reads,
+                    max_reads,
                     args.validate_every,
-                    file_name,
+                    &file_name,
                 )?;
                 if reached_max {
                     break;
@@ -610,19 +612,13 @@ fn main() -> Result<()> {
                 !stdin.is_terminal(),
                 "No input files specified and stdin is a terminal.\n\
                  Provide FASTQ files as arguments or pipe data via stdin.\n\
-                 Example: sharkmer -k 21 reads.fastq\n\
-                 Example: sharkmer -k 21 reads.fastq.gz\n\
-                 Example: zcat reads.fastq.gz | sharkmer -k 21"
+                 Example: sharkmer -s sample -k 21 reads.fastq\n\
+                 Example: sharkmer -s sample -k 21 reads.fastq.gz\n\
+                 Example: zcat reads.fastq.gz | sharkmer -s sample -k 21"
             );
             let handle = stdin.lock();
 
-            read_fastq(
-                handle,
-                &mut state,
-                args.max_reads,
-                args.validate_every,
-                "stdin",
-            )?;
+            read_fastq(handle, &mut state, max_reads, args.validate_every, "stdin")?;
         }
     }
 
@@ -653,114 +649,152 @@ fn main() -> Result<()> {
         warn!("No reads were ingested. All output will be empty.");
     }
 
-    // Create the histograms
-    info!("Consolidating chunks and creating histograms...");
+    // Consolidate chunks and create histograms
+    info!("Consolidating chunks...");
     let start = std::time::Instant::now();
 
     let mut kmer_counts: KmerCounts = KmerCounts::new(&k);
-    let mut histos: Vec<kmer::Histogram> = Vec::with_capacity(args.n);
 
-    // Drain the chunks so each chunk's hash table is freed after merging
-    for chunk in state.chunks.drain(..) {
-        kmer_counts.extend(chunk.get_kmer_counts())?;
-        drop(chunk);
+    if args.chunks > 0 {
+        // Incremental histogram mode: build histograms as chunks are merged
+        let mut histos: Vec<kmer::Histogram> = Vec::with_capacity(args.chunks);
 
-        let histo = kmer::Histogram::from_kmer_counts(&kmer_counts, &args.histo_max);
+        for chunk in state.chunks.drain(..) {
+            kmer_counts.extend(chunk.get_kmer_counts())?;
+            drop(chunk);
 
-        histos.push(histo);
-    }
-    info!("Chunks consolidated, time: {:?}", start.elapsed());
-
-    let n_hashed_kmers: u64 = kmer_counts.get_n_kmers();
-    info!(
-        "{} unique kmers with a total count of {} were found",
-        kmer_counts.get_n_unique_kmers(),
-        n_hashed_kmers
-    );
-
-    ensure!(
-        n_hashed_kmers == n_kmers_ingested,
-        "The total count of hashed kmers ({}) does not equal the number of ingested kmers ({})",
-        n_hashed_kmers,
-        n_kmers_ingested,
-    );
-
-    // Write the histograms to a tab delimited file, with the first column being the count
-    // Skip the first row, which is the count of 0. Do not include a header
-    info!("Writing histograms to file...");
-    let mut file = std::fs::File::create(format!("{}{}.histo", directory, args.sample))
-        .context("Failed to create histogram file")?;
-    for i in 1..args.histo_max as usize + 2 {
-        let mut line = format!("{}", i);
-        for histo in histos.iter() {
-            let histo_vec = kmer::Histogram::get_vector(histo)?;
-            line = format!("{}\t{}", line, histo_vec[i]);
+            let histo = kmer::Histogram::from_kmer_counts(&kmer_counts, &args.histo_max);
+            histos.push(histo);
         }
-        line = format!("{}\n", line);
-        file.write_all(line.as_bytes())
-            .context("Failed to write histogram data")?;
+        info!("Chunks consolidated, time: {:?}", start.elapsed());
+
+        let n_hashed_kmers: u64 = kmer_counts.get_n_kmers();
+        info!(
+            "{} unique kmers with a total count of {} were found",
+            kmer_counts.get_n_unique_kmers(),
+            n_hashed_kmers
+        );
+
+        ensure!(
+            n_hashed_kmers == n_kmers_ingested,
+            "The total count of hashed kmers ({}) does not equal the number of ingested kmers ({})",
+            n_hashed_kmers,
+            n_kmers_ingested,
+        );
+
+        // Write incremental histograms
+        info!("Writing histograms to file...");
+        let mut file = std::fs::File::create(format!("{}{}.histo", directory, sample))
+            .context("Failed to create histogram file")?;
+        for i in 1..args.histo_max as usize + 2 {
+            let mut line = format!("{}", i);
+            for histo in histos.iter() {
+                let histo_vec = kmer::Histogram::get_vector(histo)?;
+                line = format!("{}\t{}", line, histo_vec[i]);
+            }
+            line = format!("{}\n", line);
+            file.write_all(line.as_bytes())
+                .context("Failed to write histogram data")?;
+        }
+
+        // Write the final histogram
+        info!("Writing final histogram to file...");
+        let last_histo = &histos[histos.len() - 1];
+        let last_histo_vec = kmer::Histogram::get_vector(last_histo)?;
+
+        let mut file = std::fs::File::create(format!("{}{}.final.histo", directory, sample))
+            .context("Failed to create final histogram file")?;
+        for (i, value) in last_histo_vec
+            .iter()
+            .enumerate()
+            .skip(1)
+            .take(args.histo_max as usize + 1)
+        {
+            let line = format!("{}\t{}\n", i, value);
+            file.write_all(line.as_bytes())
+                .context("Failed to write final histogram data")?;
+        }
+
+        let n_singleton_kmers = last_histo_vec[1];
+        let n_unique_kmers_histo: u64 = last_histo.get_n_unique_kmers();
+        let n_kmers_histo: u64 = last_histo.get_n_kmers();
+
+        debug!("{} unique kmers in histogram", n_unique_kmers_histo);
+        debug!("{} kmers in histogram", n_kmers_histo);
+
+        ensure!(
+            n_kmers_histo == n_kmers_ingested,
+            "The total count of kmers in the histogram ({}) does not equal the total expected count of kmers ({})",
+            n_kmers_histo,
+            n_kmers_ingested,
+        );
+
+        ensure!(
+            n_unique_kmers_histo == kmer_counts.get_n_unique_kmers(),
+            "The total count of unique kmers in the histogram ({}) does not equal the total count of hashed kmers ({})",
+            n_unique_kmers_histo,
+            kmer_counts.get_n_unique_kmers(),
+        );
+
+        // Write stats with histogram-derived fields
+        info!("Writing stats to file...");
+        let mut file_stats = std::fs::File::create(format!("{}{}.stats", directory, sample))
+            .context("Failed to create stats file")?;
+        let mut line = format!("arguments\t{:?}\n", args);
+        line = format!("{}kmer_length\t{}\n", line, args.k);
+        line = format!("{}n_reads_read\t{}\n", line, state.n_reads_read);
+        line = format!("{}n_bases_read\t{}\n", line, state.n_bases_read);
+        line = format!("{}n_subreads_ingested\t{}\n", line, n_reads_ingested);
+        line = format!("{}n_bases_ingested\t{}\n", line, n_bases_ingested);
+        line = format!("{}n_kmers\t{}\n", line, n_kmers_ingested);
+        line = format!(
+            "{}n_multi_kmers\t{}\n",
+            line,
+            n_kmers_ingested.saturating_sub(n_singleton_kmers)
+        );
+        line = format!("{}n_singleton_kmers\t{}\n", line, n_singleton_kmers);
+
+        file_stats
+            .write_all(line.as_bytes())
+            .context("Failed to write stats file")?;
+    } else {
+        // No histogram mode: merge all chunks into a single kmer count table
+        for chunk in state.chunks.drain(..) {
+            kmer_counts.extend(chunk.get_kmer_counts())?;
+            drop(chunk);
+        }
+        info!("Chunks consolidated, time: {:?}", start.elapsed());
+
+        let n_hashed_kmers: u64 = kmer_counts.get_n_kmers();
+        info!(
+            "{} unique kmers with a total count of {} were found",
+            kmer_counts.get_n_unique_kmers(),
+            n_hashed_kmers
+        );
+
+        ensure!(
+            n_hashed_kmers == n_kmers_ingested,
+            "The total count of hashed kmers ({}) does not equal the number of ingested kmers ({})",
+            n_hashed_kmers,
+            n_kmers_ingested,
+        );
+
+        // Write stats without histogram-derived fields
+        info!("Writing stats to file...");
+        let mut file_stats = std::fs::File::create(format!("{}{}.stats", directory, sample))
+            .context("Failed to create stats file")?;
+        let mut line = format!("arguments\t{:?}\n", args);
+        line = format!("{}kmer_length\t{}\n", line, args.k);
+        line = format!("{}n_reads_read\t{}\n", line, state.n_reads_read);
+        line = format!("{}n_bases_read\t{}\n", line, state.n_bases_read);
+        line = format!("{}n_subreads_ingested\t{}\n", line, n_reads_ingested);
+        line = format!("{}n_bases_ingested\t{}\n", line, n_bases_ingested);
+        line = format!("{}n_kmers\t{}\n", line, n_kmers_ingested);
+
+        file_stats
+            .write_all(line.as_bytes())
+            .context("Failed to write stats file")?;
     }
-
-    // Write the final histogram to a file, ready for GenomeScope2 etc...
-    info!("Writing final histogram to file...");
-
-    let last_histo = &histos[histos.len() - 1];
-    let last_histo_vec = kmer::Histogram::get_vector(last_histo)?;
-
-    let mut file = std::fs::File::create(format!("{}{}.final.histo", directory, args.sample))
-        .context("Failed to create final histogram file")?;
-    for (i, value) in last_histo_vec
-        .iter()
-        .enumerate()
-        .skip(1)
-        .take(args.histo_max as usize + 1)
-    {
-        let line = format!("{}\t{}\n", i, value);
-        file.write_all(line.as_bytes())
-            .context("Failed to write final histogram data")?;
-    }
-
-    let n_singleton_kmers = last_histo_vec[1];
-    let n_unique_kmers_histo: u64 = last_histo.get_n_unique_kmers();
-    let n_kmers_histo: u64 = last_histo.get_n_kmers();
-
-    debug!("{} unique kmers in histogram", n_unique_kmers_histo);
-    debug!("{} kmers in histogram", n_kmers_histo);
-
-    ensure!(
-        n_kmers_histo == n_kmers_ingested,
-        "The total count of kmers in the histogram ({}) does not equal the total expected count of kmers ({})",
-        n_kmers_histo,
-        n_kmers_ingested,
-    );
-
-    ensure!(
-        n_unique_kmers_histo == kmer_counts.get_n_unique_kmers(),
-        "The total count of unique kmers in the histogram ({}) does not equal the total count of hashed kmers ({})",
-        n_unique_kmers_histo,
-        kmer_counts.get_n_unique_kmers(),
-    );
-
-    info!("Writing stats to file...");
-    let mut file_stats = std::fs::File::create(format!("{}{}.stats", directory, args.sample))
-        .context("Failed to create stats file")?;
-    let mut line = format!("arguments\t{:?}\n", args);
-    line = format!("{}kmer_length\t{}\n", line, args.k);
-    line = format!("{}n_reads_read\t{}\n", line, state.n_reads_read);
-    line = format!("{}n_bases_read\t{}\n", line, state.n_bases_read);
-    line = format!("{}n_subreads_ingested\t{}\n", line, n_reads_ingested);
-    line = format!("{}n_bases_ingested\t{}\n", line, n_bases_ingested);
-    line = format!("{}n_kmers\t{}\n", line, n_kmers_ingested);
-    line = format!(
-        "{}n_multi_kmers\t{}\n",
-        line,
-        n_kmers_ingested.saturating_sub(n_singleton_kmers)
-    );
-    line = format!("{}n_singleton_kmers\t{}\n", line, n_singleton_kmers);
-
-    file_stats
-        .write_all(line.as_bytes())
-        .context("Failed to write stats file")?;
     if !pcr_runs.is_empty() {
         info!("Running in silico PCR...");
 
@@ -772,13 +806,10 @@ fn main() -> Result<()> {
         let kmer_counts_pcr = kmer_counts.get_pcr_kmers(&args.min_kmer_count);
 
         for pcr_params in pcr_runs.iter() {
-            let fasta = pcr::do_pcr(&kmer_counts_pcr, &args.sample, pcr_params)?;
+            let fasta = pcr::do_pcr(&kmer_counts_pcr, &sample, pcr_params)?;
 
             if !fasta.is_empty() {
-                let fasta_path = format!(
-                    "{}{}_{}.fasta",
-                    directory, args.sample, pcr_params.gene_name
-                );
+                let fasta_path = format!("{}{}_{}.fasta", directory, sample, pcr_params.gene_name);
                 let mut file = std::fs::File::create(&fasta_path)
                     .with_context(|| format!("Failed to create FASTA file: {}", fasta_path))?;
                 for record in fasta {

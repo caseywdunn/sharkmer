@@ -26,7 +26,7 @@ fn test_18s_recovery_from_err571460() {
         .args([
             "-k",
             "31",
-            "--pcr",
+            "--pcr-panel",
             "cnidaria",
             "-s",
             sample,
@@ -34,7 +34,7 @@ fn test_18s_recovery_from_err571460() {
             outdir.path().to_str().unwrap(),
             "--max-reads",
             "100000",
-            "-n",
+            "--chunks",
             "1",
             "-v",
             fixture.to_str().unwrap(),
