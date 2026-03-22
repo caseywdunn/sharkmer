@@ -1144,7 +1144,7 @@ fn create_seed_graph(
     // If so, print a warning
     for node in seed_graph.node_indices() {
         if seed_graph[node].is_start && seed_graph[node].is_end {
-            warn!("node {} is both a start and end node", node.index());
+            debug!("node {} is both a start and end node", node.index());
         }
     }
 
@@ -1186,7 +1186,7 @@ fn extend_graph(
         let n_nodes = graph.node_count();
 
         if n_nodes > MAX_NUM_NODES {
-            gene_warn!(params.gene_name, "There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.", n_nodes, MAX_NUM_NODES);
+            gene_info!(params.gene_name, "There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.", n_nodes, MAX_NUM_NODES);
             break;
         }
 
