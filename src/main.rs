@@ -330,6 +330,19 @@ fn get_ena_fastq_urls(accession: &str) -> Result<Vec<String>> {
     Ok(urls)
 }
 
+/// Format a count with comma-separated thousands (e.g. 1,234,567).
+fn format_count(n: u64) -> String {
+    let s = n.to_string();
+    let mut result = String::with_capacity(s.len() + s.len() / 3);
+    for (i, c) in s.chars().enumerate() {
+        if i > 0 && (s.len() - i).is_multiple_of(3) {
+            result.push(',');
+        }
+        result.push(c);
+    }
+    result
+}
+
 /// Warn if an output file already exists (it will be overwritten).
 fn warn_if_exists(path: &str) {
     if std::path::Path::new(path).exists() {
@@ -1049,7 +1062,54 @@ fn main() -> Result<()> {
     let file_stats = std::fs::File::create(&stats_path).context("Failed to create stats file")?;
     serde_yaml::to_writer(file_stats, &run_stats).context("Failed to write stats YAML")?;
 
-    info!("Total run time: {:?}", start_run.elapsed());
+    // Print summary line (warn level = always visible unless --quiet)
+    let elapsed = start_run.elapsed();
+    let elapsed_secs = elapsed.as_secs_f64();
+    let elapsed_str = if elapsed_secs < 60.0 {
+        format!("{:.1}s", elapsed_secs)
+    } else if elapsed_secs < 3600.0 {
+        let mins = (elapsed_secs / 60.0).floor() as u64;
+        let secs = elapsed_secs - (mins as f64 * 60.0);
+        format!("{}m {:.0}s", mins, secs)
+    } else {
+        let hours = (elapsed_secs / 3600.0).floor() as u64;
+        let remaining = elapsed_secs - (hours as f64 * 3600.0);
+        let mins = (remaining / 60.0).floor() as u64;
+        format!("{}h {}m", hours, mins)
+    };
+
+    let reads_str = format_count(run_stats.n_reads_read);
+
+    if !run_stats.pcr_results.is_empty() {
+        let n_success = run_stats
+            .pcr_results
+            .iter()
+            .filter(|r| r.status == "success")
+            .count();
+        let n_total = run_stats.pcr_results.len();
+        let gene_names: Vec<&str> = run_stats
+            .pcr_results
+            .iter()
+            .filter(|r| r.status == "success")
+            .map(|r| r.gene_name.as_str())
+            .collect();
+        let genes_detail = if gene_names.is_empty() {
+            String::new()
+        } else {
+            format!(" ({})", gene_names.join(", "))
+        };
+        warn!(
+            "sharkmer complete: {} reads, {}/{} genes amplified{}, {}",
+            reads_str, n_success, n_total, genes_detail, elapsed_str
+        );
+    } else {
+        let kmers_str = format_count(run_stats.n_kmers);
+        warn!(
+            "sharkmer complete: {} reads, {} kmers, {} chunks, {}",
+            reads_str, kmers_str, run_stats.chunks, elapsed_str
+        );
+    }
+
     Ok(())
 }
 
