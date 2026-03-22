@@ -88,6 +88,7 @@ Depends on Phase 4.
 - [ ] #46 --dry-run mode (depends on #41, #24)
 - [ ] #59 User warnings for common mistakes (depends on #22, #41, #23)
 - [ ] #49 Polished CLI formatting (depends on #22, #43, #44)
+- [ ] #67 Derive sample name from ENA metadata when --sra used without --sample
 - [ ] #61 Update sharkmer_viewer (depends on #32)
 - [ ] Run benchmark, commit result
 
@@ -97,7 +98,7 @@ Depends on Phase 4.
 - [ ] #50 Run full regression benchmark, compare to v1.0.1 baseline
 - [ ] #51 Optimize benchmark downloads (optional, can defer)
 - [ ] #64 sra_download.sh: default to R1 only
-- [ ] Update README.md for v2.0
+- [ ] #66 Update README examples for v2.0 CLI and test data
 - [ ] Update CHANGELOG.md with all v2.0 changes
 - [ ] Update bioconda recipe for new dependencies
 - [ ] Tag v2.0.0-rc1, test bioconda build
