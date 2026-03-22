@@ -75,7 +75,7 @@ independent and can be interleaved.
 - [x] #27 HashMap for node lookup in graph construction
 - [x] #28 Avoid storing RC in hash table (do together with #54, #52)
 - [x] #54 Eliminate double hash lookups
-- [ ] #29 Pre-size hash maps, evaluate ahash
+- [x] #29 Pre-size hash maps, evaluate ahash
 - [ ] Run benchmark, commit result
 
 ## Phase 5 — Polish
