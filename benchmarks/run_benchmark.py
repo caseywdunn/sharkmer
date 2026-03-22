@@ -13,6 +13,7 @@ Run from the repo root directory.
 """
 
 import argparse
+import concurrent.futures
 import glob
 import os
 import platform
@@ -290,12 +291,46 @@ def collect_sample_result(sample_name, sample_config, sample_prefix, wall_time):
     return result
 
 
+def pre_download_all(config, samples_to_run, max_reads_list, max_parallel=4):
+    """Download all sample data in parallel before running benchmarks."""
+    tasks = []
+    for max_reads in max_reads_list:
+        for sample_name in samples_to_run:
+            if sample_name not in config:
+                continue
+            tasks.append((sample_name, config[sample_name], max_reads))
+
+    if not tasks:
+        return
+
+    print(f"Pre-downloading {len(tasks)} sample(s) with up to {max_parallel} parallel downloads...")
+
+    def _download(task):
+        sample_name, sample_config, max_reads = task
+        return sample_name, max_reads, download_sample(sample_name, sample_config, max_reads)
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel) as executor:
+        futures = {executor.submit(_download, t): t for t in tasks}
+        for future in concurrent.futures.as_completed(futures):
+            sample_name, max_reads, paths = future.result()
+            k_reads = max_reads // 1000
+            if paths:
+                print(f"  Ready: {sample_name} ({k_reads}k reads)")
+            else:
+                print(f"  FAILED: {sample_name} ({k_reads}k reads)")
+
+    print()
+
+
 def run_benchmark(samples_to_run=None, threads=THREADS):
     """Run the full benchmark suite."""
     config, max_reads_list = load_config()
 
     if samples_to_run is None:
         samples_to_run = list(config.keys())
+
+    # Pre-download all sample data in parallel
+    pre_download_all(config, samples_to_run, max_reads_list)
 
     # Build sharkmer if needed
     print("Building sharkmer (release)...")
@@ -405,9 +440,17 @@ def main():
         "--threads", type=int, default=THREADS,
         help=f"Number of threads (default: {THREADS})"
     )
+    parser.add_argument(
+        "--download-only", action="store_true",
+        help="Download sample data only, do not run benchmarks"
+    )
     args = parser.parse_args()
 
-    if args.samples:
+    if args.download_only:
+        config, max_reads_list = load_config()
+        samples = args.samples if args.samples else list(config.keys())
+        pre_download_all(config, samples, max_reads_list)
+    elif args.samples:
         run_benchmark(args.samples, threads=args.threads)
     else:
         run_benchmark(threads=args.threads)
