@@ -3,6 +3,7 @@ use bio::io::fasta;
 use clap::Parser;
 use log::{debug, info, warn};
 use pcr::preconfigured;
+use rayon::prelude::*;
 use serde::Serialize;
 use std::io::BufRead;
 use std::io::IsTerminal;
@@ -830,7 +831,7 @@ fn main() -> Result<()> {
         );
     }
 
-    // Run sPCR and collect results
+    // Run sPCR and collect results (parallelized across genes)
     let mut pcr_results: Vec<PcrGeneResult> = Vec::new();
 
     if !pcr_runs.is_empty() {
@@ -843,8 +844,18 @@ fn main() -> Result<()> {
         );
         let kmer_counts_pcr = kmer_counts.get_pcr_kmers(&args.min_kmer_count);
 
-        for pcr_params in pcr_runs.iter() {
-            let fasta = pcr::do_pcr(&kmer_counts_pcr, &sample, pcr_params)?;
+        // Run PCR for each gene in parallel; kmer_counts_pcr is read-only and shared
+        let pcr_fasta_results: Vec<_> = pcr_runs
+            .par_iter()
+            .map(|pcr_params| {
+                let fasta = pcr::do_pcr(&kmer_counts_pcr, &sample, pcr_params);
+                (pcr_params, fasta)
+            })
+            .collect();
+
+        // Write output files sequentially to maintain deterministic order
+        for (pcr_params, fasta_result) in pcr_fasta_results {
+            let fasta = fasta_result?;
 
             if !fasta.is_empty() {
                 let fasta_path = format!("{}{}_{}.fasta", directory, sample, pcr_params.gene_name);
