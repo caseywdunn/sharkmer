@@ -4,6 +4,7 @@ use clap::Parser;
 use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, info, warn};
 use pcr::preconfigured;
+use peak_alloc::PeakAlloc;
 use rayon::prelude::*;
 use serde::Serialize;
 use std::io::BufRead;
@@ -16,6 +17,9 @@ use crate::kmer::KmerCounts;
 
 mod kmer;
 mod pcr;
+
+#[global_allocator]
+static PEAK_ALLOC: PeakAlloc = PeakAlloc;
 
 const N_READS_PER_BATCH: u64 = 1000;
 
@@ -48,6 +52,7 @@ struct RunStats {
     n_multi_kmers: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     n_singleton_kmers: Option<u64>,
+    peak_memory_bytes: u64,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pcr_results: Vec<PcrGeneResult>,
 }
@@ -341,6 +346,23 @@ fn format_count(n: u64) -> String {
         result.push(c);
     }
     result
+}
+
+/// Format bytes as a human-readable string (e.g. "1.2 GB").
+fn format_bytes(bytes: u64) -> String {
+    const KB: f64 = 1024.0;
+    const MB: f64 = KB * 1024.0;
+    const GB: f64 = MB * 1024.0;
+    let b = bytes as f64;
+    if b < KB {
+        format!("{} B", bytes)
+    } else if b < MB {
+        format!("{:.1} KB", b / KB)
+    } else if b < GB {
+        format!("{:.1} MB", b / MB)
+    } else {
+        format!("{:.1} GB", b / GB)
+    }
 }
 
 /// Warn if an output file already exists (it will be overwritten).
@@ -1054,6 +1076,7 @@ fn main() -> Result<()> {
         n_kmers: n_kmers_ingested,
         n_multi_kmers: n_singleton_kmers.map(|s| n_kmers_ingested.saturating_sub(s)),
         n_singleton_kmers,
+        peak_memory_bytes: PEAK_ALLOC.peak_usage() as u64,
         pcr_results,
     };
 
@@ -1099,14 +1122,23 @@ fn main() -> Result<()> {
             format!(" ({})", gene_names.join(", "))
         };
         warn!(
-            "sharkmer complete: {} reads, {}/{} genes amplified{}, {}",
-            reads_str, n_success, n_total, genes_detail, elapsed_str
+            "sharkmer complete: {} reads, {}/{} genes amplified{}, peak mem {}, {}",
+            reads_str,
+            n_success,
+            n_total,
+            genes_detail,
+            format_bytes(run_stats.peak_memory_bytes),
+            elapsed_str
         );
     } else {
         let kmers_str = format_count(run_stats.n_kmers);
         warn!(
-            "sharkmer complete: {} reads, {} kmers, {} chunks, {}",
-            reads_str, kmers_str, run_stats.chunks, elapsed_str
+            "sharkmer complete: {} reads, {} kmers, {} chunks, peak mem {}, {}",
+            reads_str,
+            kmers_str,
+            run_stats.chunks,
+            format_bytes(run_stats.peak_memory_bytes),
+            elapsed_str
         );
     }
 
