@@ -1749,8 +1749,9 @@ pub fn do_pcr(
                     .max()
                     .context("No edge counts found for path")?;
 
-                let id = format!(
-                    "{} {} product {} length {} kmer count stats mean {:.2} median {} min {} max {}",
+                let id = format!("{}_{}_{}", sample_name, params.gene_name, amplicon_index);
+                let desc = format!(
+                    "sample={} gene={} product={} length={} kmer_count_mean={:.2} kmer_count_median={} kmer_count_min={} kmer_count_max={}",
                     sample_name,
                     params.gene_name,
                     amplicon_index,
@@ -1763,9 +1764,8 @@ pub fn do_pcr(
 
                 amplicon_index += 1;
 
-                println!(">{}", id);
-                println!("{}", sequence);
-                let record = fasta::Record::with_attrs(&id, None, sequence.as_bytes());
+                debug!(">{} {}", id, desc);
+                let record = fasta::Record::with_attrs(&id, Some(&desc), sequence.as_bytes());
                 // Create fasta record and add to vector
                 let assembly_record: AssemblyRecord = AssemblyRecord {
                     fasta_record: record,
