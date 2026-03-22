@@ -1,6 +1,7 @@
 use anyhow::{bail, ensure, Context, Result};
 use bio::io::fasta;
 use clap::Parser;
+use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, info, warn};
 use pcr::preconfigured;
 use rayon::prelude::*;
@@ -335,6 +336,7 @@ fn read_fastq<R: BufRead>(
     max_reads: u64,
     validate_every: u64,
     source_name: &str,
+    progress: &ProgressBar,
 ) -> Result<bool> {
     let mut lines = reader.lines();
     let n_chunks = state.chunks.len();
@@ -405,9 +407,11 @@ fn read_fastq<R: BufRead>(
                 state.chunk_index = 0;
             }
             state.reads.clear();
+            progress.set_position(state.n_reads_read);
         }
 
         if max_reads > 0 && state.n_reads_read >= max_reads {
+            progress.set_position(state.n_reads_read);
             return Ok(true); // reached max reads
         }
     }
@@ -632,6 +636,29 @@ fn main() -> Result<()> {
 
     let max_reads = args.max_reads.unwrap_or(0);
 
+    // Create progress indicator: bar with ETA if max_reads is known, spinner otherwise.
+    // Only show at info verbosity or higher.
+    let show_progress = args.verbose >= 1 && std::io::stderr().is_terminal();
+    let progress = if show_progress && max_reads > 0 {
+        let pb = ProgressBar::new(max_reads);
+        pb.set_style(
+            ProgressStyle::with_template(
+                "Ingesting reads {bar:30} {human_pos}/{human_len} [{per_sec}] [ETA {eta}]",
+            )
+            .expect("valid progress template"),
+        );
+        pb
+    } else if show_progress {
+        let pb = ProgressBar::new_spinner();
+        pb.set_style(
+            ProgressStyle::with_template("Ingesting reads {spinner} {human_pos} [{per_sec}]")
+                .expect("valid progress template"),
+        );
+        pb
+    } else {
+        ProgressBar::hidden()
+    };
+
     match &args.input {
         Some(input_files) => {
             // read from one or more files
@@ -652,6 +679,7 @@ fn main() -> Result<()> {
                     max_reads,
                     args.validate_every,
                     &file_name,
+                    &progress,
                 )?;
                 if reached_max {
                     break;
@@ -671,9 +699,18 @@ fn main() -> Result<()> {
             );
             let handle = stdin.lock();
 
-            read_fastq(handle, &mut state, max_reads, args.validate_every, "stdin")?;
+            read_fastq(
+                handle,
+                &mut state,
+                max_reads,
+                args.validate_every,
+                "stdin",
+                &progress,
+            )?;
         }
     }
+
+    progress.finish_and_clear();
 
     // Ingest any remaining reads
     state.chunks[state.chunk_index].ingest_reads(&state.reads)?;
