@@ -1,9 +1,0 @@
-fastqc/
-*.csv
-output/
-data/
-benchmarks/
-logs/
-.snakemake/
-*.dot
-snake.txt
