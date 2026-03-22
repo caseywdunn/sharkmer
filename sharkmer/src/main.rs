@@ -270,6 +270,13 @@ enum ColorMode {
 
 const FASTA_LINE_WIDTH: usize = 80;
 
+/// Warn if an output file already exists (it will be overwritten).
+fn warn_if_exists(path: &str) {
+    if std::path::Path::new(path).exists() {
+        warn!("Overwriting existing file {}", path);
+    }
+}
+
 /// Write a FASTA record with sequence lines wrapped at FASTA_LINE_WIDTH characters.
 fn write_fasta_record(writer: &mut impl Write, record: &fasta::Record) -> std::io::Result<()> {
     write!(writer, ">{}", record.id())?;
@@ -782,8 +789,10 @@ fn main() -> Result<()> {
 
         // Write incremental histograms with header
         info!("Writing histograms to file...");
-        let mut file = std::fs::File::create(format!("{}{}.histo", directory, sample))
-            .context("Failed to create histogram file")?;
+        let histo_path = format!("{}{}.histo", directory, sample);
+        warn_if_exists(&histo_path);
+        let mut file =
+            std::fs::File::create(&histo_path).context("Failed to create histogram file")?;
 
         // Comment line with version and parameters
         writeln!(file, "{}", histo_comment).context("Failed to write histogram comment")?;
@@ -810,7 +819,9 @@ fn main() -> Result<()> {
         let last_histo = &histos[histos.len() - 1];
         let last_histo_vec = kmer::Histogram::get_vector(last_histo)?;
 
-        let mut file = std::fs::File::create(format!("{}{}.final.histo", directory, sample))
+        let final_histo_path = format!("{}{}.final.histo", directory, sample);
+        warn_if_exists(&final_histo_path);
+        let mut file = std::fs::File::create(&final_histo_path)
             .context("Failed to create final histogram file")?;
 
         writeln!(file, "{}", histo_comment).context("Failed to write final histogram comment")?;
@@ -896,6 +907,7 @@ fn main() -> Result<()> {
 
             if !fasta.is_empty() {
                 let fasta_path = format!("{}{}_{}.fasta", directory, sample, pcr_params.gene_name);
+                warn_if_exists(&fasta_path);
                 let mut file = std::fs::File::create(&fasta_path)
                     .with_context(|| format!("Failed to create FASTA file: {}", fasta_path))?;
 
@@ -949,6 +961,7 @@ fn main() -> Result<()> {
     };
 
     let stats_path = format!("{}{}.stats.yaml", directory, sample);
+    warn_if_exists(&stats_path);
     let file_stats = std::fs::File::create(&stats_path).context("Failed to create stats file")?;
     serde_yaml::to_writer(file_stats, &run_stats).context("Failed to write stats YAML")?;
 
