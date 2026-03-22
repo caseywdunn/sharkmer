@@ -162,8 +162,12 @@ after each phase.
 
 - **CLI**: Split `--pcr` into `--pcr-panel`, `--pcr-file`, `--pcr-primers`.
   Make `--sample` required. Default `--chunks 0` (skip histograms).
-- **Output**: YAML for stats (`.stats.yaml`), FASTA headers with key=value
-  metadata, histogram files get header rows. Logs to stderr, data to stdout.
+  Add `--list-panels`, `--export-panel`, `--help-pcr`.
+  (implemented in Phase 4)
+- **Output**: YAML for stats (`.stats.yaml`) with PCR results, histogram
+  files get header rows and comment lines with version/params. Logs to
+  stderr, data to stdout. (stats YAML and histogram headers implemented
+  in Phase 4; FASTA header format pending #34)
 - **Logging**: `log` + `env_logger`, `-v`/`-vv`/`-vvv` replaces `--verbosity N`
   (implemented in Phase 3)
 - **Primer panels**: YAML files in `panels/` embedded via `include_str!()`.

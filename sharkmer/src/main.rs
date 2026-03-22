@@ -3,6 +3,7 @@ use bio::io::fasta;
 use clap::Parser;
 use log::{debug, info, warn};
 use pcr::preconfigured;
+use serde::Serialize;
 use std::io::BufRead;
 use std::io::IsTerminal;
 use std::io::Write;
@@ -15,6 +16,39 @@ mod kmer;
 mod pcr;
 
 const N_READS_PER_BATCH: u64 = 1000;
+
+/// Stats for a single PCR gene result, included in the YAML stats output.
+#[derive(Serialize)]
+struct PcrGeneResult {
+    gene_name: String,
+    status: String,
+    n_products: usize,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    product_lengths: Vec<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    output_file: Option<String>,
+}
+
+/// Structured run statistics, serialized as YAML.
+#[derive(Serialize)]
+struct RunStats {
+    sharkmer_version: String,
+    command: String,
+    sample: String,
+    kmer_length: usize,
+    chunks: usize,
+    n_reads_read: u64,
+    n_bases_read: u64,
+    n_subreads_ingested: u64,
+    n_bases_ingested: u64,
+    n_kmers: u64,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    n_multi_kmers: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    n_singleton_kmers: Option<u64>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pcr_results: Vec<PcrGeneResult>,
+}
 
 #[allow(dead_code)]
 fn is_valid_nucleotide(c: char) -> bool {
@@ -145,7 +179,7 @@ Output files:\n  \
   {outdir}/{sample}_{panel}_{gene}.fasta  sPCR products per gene\n  \
   {outdir}/{sample}.histo                 Incremental histograms (--chunks > 0)\n  \
   {outdir}/{sample}.final.histo           Final histogram (--chunks > 0)\n  \
-  {outdir}/{sample}.stats                 Run statistics")]
+  {outdir}/{sample}.stats.yaml             Run statistics (YAML)")]
 struct Args {
     /// FASTQ input files (.fastq or .fastq.gz). If omitted, reads from stdin.
     #[arg(help_heading = "Input")]
@@ -654,6 +688,14 @@ fn main() -> Result<()> {
     let start = std::time::Instant::now();
 
     let mut kmer_counts: KmerCounts = KmerCounts::new(&k);
+    let mut n_singleton_kmers: Option<u64> = None;
+
+    let histo_comment = format!(
+        "# sharkmer {} k={} chunks={}",
+        env!("CARGO_PKG_VERSION"),
+        args.k,
+        args.chunks
+    );
 
     if args.chunks > 0 {
         // Incremental histogram mode: build histograms as chunks are merged
@@ -682,40 +724,52 @@ fn main() -> Result<()> {
             n_kmers_ingested,
         );
 
-        // Write incremental histograms
+        // Write incremental histograms with header
         info!("Writing histograms to file...");
         let mut file = std::fs::File::create(format!("{}{}.histo", directory, sample))
             .context("Failed to create histogram file")?;
+
+        // Comment line with version and parameters
+        writeln!(file, "{}", histo_comment).context("Failed to write histogram comment")?;
+
+        // Header row
+        let mut header = "count".to_string();
+        for i in 1..=histos.len() {
+            header = format!("{}\tchunk_{}", header, i);
+        }
+        writeln!(file, "{}", header).context("Failed to write histogram header")?;
+
+        // Data rows
         for i in 1..args.histo_max as usize + 2 {
             let mut line = format!("{}", i);
             for histo in histos.iter() {
                 let histo_vec = kmer::Histogram::get_vector(histo)?;
                 line = format!("{}\t{}", line, histo_vec[i]);
             }
-            line = format!("{}\n", line);
-            file.write_all(line.as_bytes())
-                .context("Failed to write histogram data")?;
+            writeln!(file, "{}", line).context("Failed to write histogram data")?;
         }
 
-        // Write the final histogram
+        // Write the final histogram with header
         info!("Writing final histogram to file...");
         let last_histo = &histos[histos.len() - 1];
         let last_histo_vec = kmer::Histogram::get_vector(last_histo)?;
 
         let mut file = std::fs::File::create(format!("{}{}.final.histo", directory, sample))
             .context("Failed to create final histogram file")?;
+
+        writeln!(file, "{}", histo_comment).context("Failed to write final histogram comment")?;
+        writeln!(file, "count\tfrequency").context("Failed to write final histogram header")?;
+
         for (i, value) in last_histo_vec
             .iter()
             .enumerate()
             .skip(1)
             .take(args.histo_max as usize + 1)
         {
-            let line = format!("{}\t{}\n", i, value);
-            file.write_all(line.as_bytes())
-                .context("Failed to write final histogram data")?;
+            writeln!(file, "{}\t{}", i, value).context("Failed to write final histogram data")?;
         }
 
-        let n_singleton_kmers = last_histo_vec[1];
+        n_singleton_kmers = Some(last_histo_vec[1]);
         let n_unique_kmers_histo: u64 = last_histo.get_n_unique_kmers();
         let n_kmers_histo: u64 = last_histo.get_n_kmers();
 
@@ -735,28 +789,6 @@ fn main() -> Result<()> {
             n_unique_kmers_histo,
             kmer_counts.get_n_unique_kmers(),
         );
-
-        // Write stats with histogram-derived fields
-        info!("Writing stats to file...");
-        let mut file_stats = std::fs::File::create(format!("{}{}.stats", directory, sample))
-            .context("Failed to create stats file")?;
-        let mut line = format!("arguments\t{:?}\n", args);
-        line = format!("{}kmer_length\t{}\n", line, args.k);
-        line = format!("{}n_reads_read\t{}\n", line, state.n_reads_read);
-        line = format!("{}n_bases_read\t{}\n", line, state.n_bases_read);
-        line = format!("{}n_subreads_ingested\t{}\n", line, n_reads_ingested);
-        line = format!("{}n_bases_ingested\t{}\n", line, n_bases_ingested);
-        line = format!("{}n_kmers\t{}\n", line, n_kmers_ingested);
-        line = format!(
-            "{}n_multi_kmers\t{}\n",
-            line,
-            n_kmers_ingested.saturating_sub(n_singleton_kmers)
-        );
-        line = format!("{}n_singleton_kmers\t{}\n", line, n_singleton_kmers);
-
-        file_stats
-            .write_all(line.as_bytes())
-            .context("Failed to write stats file")?;
     } else {
         // No histogram mode: merge all chunks into a single kmer count table
         for chunk in state.chunks.drain(..) {
@@ -778,23 +810,11 @@ fn main() -> Result<()> {
             n_hashed_kmers,
             n_kmers_ingested,
         );
-
-        // Write stats without histogram-derived fields
-        info!("Writing stats to file...");
-        let mut file_stats = std::fs::File::create(format!("{}{}.stats", directory, sample))
-            .context("Failed to create stats file")?;
-        let mut line = format!("arguments\t{:?}\n", args);
-        line = format!("{}kmer_length\t{}\n", line, args.k);
-        line = format!("{}n_reads_read\t{}\n", line, state.n_reads_read);
-        line = format!("{}n_bases_read\t{}\n", line, state.n_bases_read);
-        line = format!("{}n_subreads_ingested\t{}\n", line, n_reads_ingested);
-        line = format!("{}n_bases_ingested\t{}\n", line, n_bases_ingested);
-        line = format!("{}n_kmers\t{}\n", line, n_kmers_ingested);
-
-        file_stats
-            .write_all(line.as_bytes())
-            .context("Failed to write stats file")?;
     }
+
+    // Run sPCR and collect results
+    let mut pcr_results: Vec<PcrGeneResult> = Vec::new();
+
     if !pcr_runs.is_empty() {
         info!("Running in silico PCR...");
 
@@ -812,15 +832,59 @@ fn main() -> Result<()> {
                 let fasta_path = format!("{}{}_{}.fasta", directory, sample, pcr_params.gene_name);
                 let mut file = std::fs::File::create(&fasta_path)
                     .with_context(|| format!("Failed to create FASTA file: {}", fasta_path))?;
-                for record in fasta {
-                    write_fasta_record(&mut file, &record)
+
+                let product_lengths: Vec<usize> = fasta.iter().map(|r| r.seq().len()).collect();
+
+                for record in fasta.iter() {
+                    write_fasta_record(&mut file, record)
                         .context("Failed to write FASTA record")?;
                 }
+
+                pcr_results.push(PcrGeneResult {
+                    gene_name: pcr_params.gene_name.clone(),
+                    status: "success".to_string(),
+                    n_products: product_lengths.len(),
+                    product_lengths,
+                    output_file: Some(fasta_path),
+                });
+            } else {
+                pcr_results.push(PcrGeneResult {
+                    gene_name: pcr_params.gene_name.clone(),
+                    status: "fail".to_string(),
+                    n_products: 0,
+                    product_lengths: Vec::new(),
+                    output_file: None,
+                });
             }
         }
 
         info!("Done running in silico PCR");
     }
+
+    // Reconstruct command line string
+    let command = std::env::args().collect::<Vec<String>>().join(" ");
+
+    // Write stats as YAML
+    info!("Writing stats to file...");
+    let run_stats = RunStats {
+        sharkmer_version: env!("CARGO_PKG_VERSION").to_string(),
+        command,
+        sample: sample.clone(),
+        kmer_length: args.k,
+        chunks: args.chunks,
+        n_reads_read: state.n_reads_read,
+        n_bases_read: state.n_bases_read,
+        n_subreads_ingested: n_reads_ingested,
+        n_bases_ingested,
+        n_kmers: n_kmers_ingested,
+        n_multi_kmers: n_singleton_kmers.map(|s| n_kmers_ingested.saturating_sub(s)),
+        n_singleton_kmers,
+        pcr_results,
+    };
+
+    let stats_path = format!("{}{}.stats.yaml", directory, sample);
+    let file_stats = std::fs::File::create(&stats_path).context("Failed to create stats file")?;
+    serde_yaml::to_writer(file_stats, &run_stats).context("Failed to write stats YAML")?;
 
     info!("Total run time: {:?}", start_run.elapsed());
     Ok(())
