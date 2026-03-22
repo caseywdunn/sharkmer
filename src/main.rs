@@ -374,6 +374,23 @@ fn format_bytes(bytes: u64) -> String {
     }
 }
 
+/// Format a duration as a human-readable string (e.g. "1m 23s").
+fn format_duration(d: std::time::Duration) -> String {
+    let secs = d.as_secs_f64();
+    if secs < 60.0 {
+        format!("{:.1}s", secs)
+    } else if secs < 3600.0 {
+        let mins = (secs / 60.0).floor() as u64;
+        let remaining = secs - (mins as f64 * 60.0);
+        format!("{}m {:.0}s", mins, remaining)
+    } else {
+        let hours = (secs / 3600.0).floor() as u64;
+        let remaining = secs - (hours as f64 * 3600.0);
+        let mins = (remaining / 60.0).floor() as u64;
+        format!("{}h {}m", hours, mins)
+    }
+}
+
 /// Warn if an output file already exists (it will be overwritten).
 fn warn_if_exists(path: &str) {
     if std::path::Path::new(path).exists() {
@@ -559,6 +576,38 @@ fn main() -> Result<()> {
         .filter_level(log_level)
         .write_style(write_style)
         .format_timestamp(None)
+        .format(|buf, record| {
+            use env_logger::fmt::style::{AnsiColor, Style};
+            use std::io::Write as _;
+            let level = record.level();
+            let style = match level {
+                log::Level::Error => Style::new().fg_color(Some(AnsiColor::Red.into())).bold(),
+                log::Level::Warn => Style::new().fg_color(Some(AnsiColor::Green.into())).bold(),
+                log::Level::Info => Style::new().fg_color(Some(AnsiColor::Cyan.into())).bold(),
+                log::Level::Debug => Style::new().dimmed(),
+                log::Level::Trace => Style::new().dimmed(),
+            };
+            let label = match level {
+                log::Level::Error => "error",
+                log::Level::Warn => "",
+                log::Level::Info => "info",
+                log::Level::Debug => "debug",
+                log::Level::Trace => "trace",
+            };
+            if label.is_empty() {
+                // Warn-level: no prefix, just the message (for status output)
+                writeln!(buf, "{}", record.args())
+            } else {
+                writeln!(
+                    buf,
+                    "{}{}{} {}",
+                    style.render(),
+                    label,
+                    style.render_reset(),
+                    record.args()
+                )
+            }
+        })
         .init();
 
     // Handle early-exit flags before any processing
@@ -986,11 +1035,14 @@ fn main() -> Result<()> {
 
     info!(
         "Read {} reads, {} bases",
-        state.n_reads_read, state.n_bases_read
+        format_count(state.n_reads_read),
+        format_bytes(state.n_bases_read)
     );
     info!(
         "Ingested {} subreads, {} bases, {} kmers",
-        n_reads_ingested, n_bases_ingested, n_kmers_ingested
+        format_count(n_reads_ingested),
+        format_bytes(n_bases_ingested),
+        format_count(n_kmers_ingested)
     );
 
     // Warn if very few reads for sPCR
@@ -1000,7 +1052,7 @@ fn main() -> Result<()> {
             state.n_reads_read
         );
     }
-    info!("Time to ingest reads: {:?}", start.elapsed());
+    info!("Time to ingest reads: {}", format_duration(start.elapsed()));
 
     if n_reads_ingested == 0 {
         warn!("No reads were ingested. All output will be empty.");
@@ -1031,7 +1083,10 @@ fn main() -> Result<()> {
             let histo = kmer::Histogram::from_kmer_counts(&kmer_counts, &args.histo_max);
             histos.push(histo);
         }
-        info!("Chunks consolidated, time: {:?}", start.elapsed());
+        info!(
+            "Chunks consolidated, time: {}",
+            format_duration(start.elapsed())
+        );
 
         let n_hashed_kmers: u64 = kmer_counts.get_n_kmers();
         info!(
@@ -1136,7 +1191,10 @@ fn main() -> Result<()> {
             kmer_counts.extend(chunk.get_kmer_counts())?;
             drop(chunk);
         }
-        info!("Chunks consolidated, time: {:?}", start.elapsed());
+        info!(
+            "Chunks consolidated, time: {}",
+            format_duration(start.elapsed())
+        );
 
         let n_hashed_kmers: u64 = kmer_counts.get_n_kmers();
         info!(
@@ -1210,6 +1268,26 @@ fn main() -> Result<()> {
             }
         }
 
+        // Print gene result table
+        for result in &pcr_results {
+            if result.status == "success" {
+                let lengths: Vec<String> = result
+                    .product_lengths
+                    .iter()
+                    .map(|l| l.to_string())
+                    .collect();
+                warn!(
+                    "  \u{2714} {} ({} product{}, {} bp)",
+                    result.gene_name,
+                    result.n_products,
+                    if result.n_products == 1 { "" } else { "s" },
+                    lengths.join(", ")
+                );
+            } else {
+                warn!("  \u{2718} {} (no products)", result.gene_name);
+            }
+        }
+
         info!("Done running in silico PCR");
     }
 
@@ -1241,20 +1319,7 @@ fn main() -> Result<()> {
     serde_yaml::to_writer(file_stats, &run_stats).context("Failed to write stats YAML")?;
 
     // Print summary line (warn level = always visible unless --quiet)
-    let elapsed = start_run.elapsed();
-    let elapsed_secs = elapsed.as_secs_f64();
-    let elapsed_str = if elapsed_secs < 60.0 {
-        format!("{:.1}s", elapsed_secs)
-    } else if elapsed_secs < 3600.0 {
-        let mins = (elapsed_secs / 60.0).floor() as u64;
-        let secs = elapsed_secs - (mins as f64 * 60.0);
-        format!("{}m {:.0}s", mins, secs)
-    } else {
-        let hours = (elapsed_secs / 3600.0).floor() as u64;
-        let remaining = elapsed_secs - (hours as f64 * 3600.0);
-        let mins = (remaining / 60.0).floor() as u64;
-        format!("{}h {}m", hours, mins)
-    };
+    let elapsed_str = format_duration(start_run.elapsed());
 
     let reads_str = format_count(run_stats.n_reads_read);
 
