@@ -189,6 +189,10 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
     arg_required_else_help = true
 )]
 #[command(after_help = "\
+Example:\n  \
+  Extract cnidarian genes from SRA reads (downloads automatically):\n  \
+  sharkmer --sra SRR23143286 --pcr-panel cnidaria -m 1000000 -o output\n\
+\n\
 Output files:\n  \
   {outdir}/{sample}.stats.yaml             Run statistics (always produced)\n\
 \n  \
