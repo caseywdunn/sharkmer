@@ -76,7 +76,7 @@ independent and can be interleaved.
 - [x] #28 Avoid storing RC in hash table (do together with #54, #52)
 - [x] #54 Eliminate double hash lookups
 - [x] #29 Pre-size hash maps, evaluate ahash
-- [ ] Run benchmark, commit result
+- [x] Run benchmark, commit result
 
 ## Phase 5 — Polish
 
