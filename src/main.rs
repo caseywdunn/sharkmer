@@ -404,6 +404,13 @@ fn validate_fastq_record(
     sequence_len: usize,
     record_num: u64,
 ) -> Result<()> {
+    if header.starts_with('>') {
+        bail!(
+            "Input appears to be FASTA format, not FASTQ (record {} starts with '>'). \
+             sharkmer requires FASTQ input with quality scores.",
+            record_num + 1,
+        );
+    }
     ensure!(
         header.starts_with('@'),
         "FASTQ record {} has invalid header (expected '@', got '{}'): {}",
@@ -625,6 +632,16 @@ fn main() -> Result<()> {
         .context("--sample is required. Provide a sample name as output file prefix.")?
         .clone();
 
+    // Validate sample name for safe use in filenames
+    ensure!(
+        sample
+            .chars()
+            .all(|c| c.is_alphanumeric() || c == '_' || c == '-' || c == '.'),
+        "Sample name '{}' contains characters that are unsafe for filenames. \
+         Use only alphanumeric characters, hyphens, underscores, and periods.",
+        sample
+    );
+
     info!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
     debug!("{:?}", args);
 
@@ -720,6 +737,21 @@ fn main() -> Result<()> {
                 "Input path is not a file: {}",
                 file_path.display()
             );
+        }
+
+        // Check for duplicate input files (after canonicalization)
+        let mut canonical_paths: Vec<PathBuf> = Vec::new();
+        for file_path in input_files.iter() {
+            let canonical = file_path
+                .canonicalize()
+                .with_context(|| format!("Failed to resolve path: {}", file_path.display()))?;
+            if canonical_paths.contains(&canonical) {
+                warn!(
+                    "Duplicate input file: {} (same as previous entry after path resolution)",
+                    file_path.display()
+                );
+            }
+            canonical_paths.push(canonical);
         }
     }
 
@@ -875,12 +907,33 @@ fn main() -> Result<()> {
                 .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
 
             let file_name = file_path.to_string_lossy();
-            let reader: Box<dyn BufRead> =
-                if file_name.ends_with(".gz") || file_name.ends_with(".gzip") {
-                    Box::new(std::io::BufReader::new(flate2::read::GzDecoder::new(file)))
-                } else {
-                    Box::new(std::io::BufReader::new(file))
-                };
+            let has_gz_ext = file_name.ends_with(".gz") || file_name.ends_with(".gzip");
+
+            // Detect gzip magic bytes for files without .gz extension
+            let use_gzip = if has_gz_ext {
+                true
+            } else {
+                let mut buf_reader = std::io::BufReader::new(file);
+                let magic = buf_reader.fill_buf().context("Failed to peek at file")?;
+                let is_gzip = magic.len() >= 2 && magic[0] == 0x1f && magic[1] == 0x8b;
+                if is_gzip {
+                    warn!(
+                        "File '{}' appears to be gzipped (magic bytes detected) but lacks a .gz extension. Reading as gzipped.",
+                        file_path.display()
+                    );
+                }
+                // We need to re-open the file since BufReader consumed ownership
+                drop(buf_reader);
+                is_gzip
+            };
+
+            let file = std::fs::File::open(file_path)
+                .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
+            let reader: Box<dyn BufRead> = if use_gzip {
+                Box::new(std::io::BufReader::new(flate2::read::GzDecoder::new(file)))
+            } else {
+                Box::new(std::io::BufReader::new(file))
+            };
             let reached_max = read_fastq(
                 reader,
                 &mut state,
@@ -939,6 +992,14 @@ fn main() -> Result<()> {
         "Ingested {} subreads, {} bases, {} kmers",
         n_reads_ingested, n_bases_ingested, n_kmers_ingested
     );
+
+    // Warn if very few reads for sPCR
+    if !pcr_runs.is_empty() && state.n_reads_read < 10_000 {
+        warn!(
+            "Only {} reads ingested. sPCR typically needs many more reads to produce results.",
+            state.n_reads_read
+        );
+    }
     info!("Time to ingest reads: {:?}", start.elapsed());
 
     if n_reads_ingested == 0 {
@@ -1036,6 +1097,20 @@ fn main() -> Result<()> {
         }
 
         n_singleton_kmers = Some(last_histo_vec[1]);
+
+        // Warn if singleton rate is very high (>95% of unique kmers)
+        let n_unique = last_histo.get_n_unique_kmers();
+        if n_unique > 0 {
+            let singleton_rate = last_histo_vec[1] as f64 / n_unique as f64;
+            if singleton_rate > 0.95 {
+                warn!(
+                    "Very high singleton rate ({:.1}%). This may indicate very low coverage \
+                     or contamination. sPCR results may be unreliable.",
+                    singleton_rate * 100.0
+                );
+            }
+        }
+
         let n_unique_kmers_histo: u64 = last_histo.get_n_unique_kmers();
         let n_kmers_histo: u64 = last_histo.get_n_kmers();
 

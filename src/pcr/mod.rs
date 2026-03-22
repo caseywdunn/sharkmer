@@ -892,9 +892,12 @@ fn preprocess_primer(
     }
 
     let mut trim = params.trim;
-    if trim > (k - 1) {
-        info!("  Primer must not be longer than k-1. Trim length is {}, k is {}, so adjusting trim length to {}", trim, k, k-1);
-        trim = k - 1;
+    if trim > *k {
+        warn!(
+            "  Trim length ({}) exceeds k ({}), adjusting trim to {}",
+            trim, k, k
+        );
+        trim = *k;
     }
 
     // Check if either is longer than trim, if so retain only the last trim nucleotides
@@ -1467,6 +1470,15 @@ pub fn validate_pcr_params(params: &PCRParams) -> Result<()> {
     if params.gene_name.is_empty() {
         bail!("Gene name must be specified and not be empty");
     }
+
+    if params.forward_seq == params.reverse_seq {
+        bail!(
+            "Forward and reverse primers are identical for gene '{}': {}",
+            params.gene_name,
+            params.forward_seq
+        );
+    }
+
     Ok(())
 }
 
