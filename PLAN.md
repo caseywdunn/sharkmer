@@ -56,7 +56,7 @@ fixes first.
 - [x] #52 Remove hardcoded singleton filtering
 - [x] #26 Deduplicate code (do together with #58)
 - [x] #58 Rename misleading get_canonical
-- [ ] Run benchmark, commit result
+- [x] Run benchmark, commit result
 
 ## Phase 4 — CLI, output format, performance
 
