@@ -51,10 +51,10 @@ patterns that will soon change.
 
 ### CLI improvements
 
-- Split `--pcr` into `--pcr-panel`, `--pcr-file`, `--pcr-primers` (#24)
+- Split `--pcr` into `--pcr-panel`, `--pcr-panel-file`, `--pcr-primers` (#24)
 - Native gzip input support with auto-detection (#23)
 - Default to no incremental kmer counting (`--chunks 0`) (#35)
-- Add `--pcr-file` for sideloading YAML primer panels (#25)
+- Add `--pcr-panel-file` for sideloading YAML primer panels (#25)
 - Add `--list-panels`, `--export-panel`, `--help-pcr` (#24)
 - Make `--sample` required, `--max-reads` optional (#24)
 - Organize `--help` with grouped headings (#24)

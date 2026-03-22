@@ -114,7 +114,7 @@ You can see all the available built-in PCR panels with:
 
     sharkmer --list-panels
 
-To export a built-in panel as YAML (for customization or sideloading with `--pcr-file`):
+To export a built-in panel as YAML (for customization or sideloading with `--pcr-panel-file`):
 
     sharkmer --export-panel cnidaria
 

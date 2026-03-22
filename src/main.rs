@@ -181,7 +181,7 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
 
 /// A tool for kmer counting and in silico PCR (sPCR)
 #[derive(Parser, Debug)]
-#[command(author, version, about, long_about = None)]
+#[command(author, version, about, long_about = None, arg_required_else_help = true)]
 #[command(after_help = "\
 Output files:\n  \
   {outdir}/{sample}_{panel}_{gene}.fasta  sPCR products per gene\n  \
@@ -189,15 +189,15 @@ Output files:\n  \
   {outdir}/{sample}.final.histo           Final histogram (--chunks > 0)\n  \
   {outdir}/{sample}.stats.yaml             Run statistics (YAML)")]
 struct Args {
-    /// FASTQ input files (.fastq or .fastq.gz). If omitted, reads from stdin.
-    #[arg(help_heading = "Input")]
+    /// FASTQ input files (.fastq or .fastq.gz). Reads from stdin if omitted
+    #[arg(help_heading = "Input", display_order = 0)]
     input: Option<Vec<PathBuf>>,
 
     /// Stream reads directly from ENA by SRA/ENA accession (e.g. SRR5324768)
-    #[arg(long, help_heading = "Input")]
+    #[arg(long, help_heading = "Input", display_order = 1)]
     sra: Option<String>,
 
-    /// Sample name (used as output file prefix, required for processing)
+    /// Sample name (output file prefix; required unless --sra derives it)
     #[arg(short, long, help_heading = "Output")]
     sample: Option<String>,
 
@@ -209,9 +209,9 @@ struct Args {
     #[arg(long, help_heading = "PCR")]
     pcr_panel: Vec<String>,
 
-    /// Load primers from a YAML file (repeatable)
+    /// Load a primer panel from a YAML file (repeatable)
     #[arg(long, help_heading = "PCR")]
-    pcr_file: Vec<PathBuf>,
+    pcr_panel_file: Vec<PathBuf>,
 
     /// Specify a primer pair inline (repeatable, see --help-pcr)
     #[arg(long, help_heading = "PCR")]
@@ -781,8 +781,8 @@ fn main() -> Result<()> {
     }
 
     // Load primer panels from YAML files
-    for pcr_file in args.pcr_file.iter() {
-        let path_str = pcr_file
+    for panel_file in args.pcr_panel_file.iter() {
+        let path_str = panel_file
             .to_str()
             .context("PCR panel file path contains invalid UTF-8")?;
         let pcr_params = preconfigured::load_panel_file(path_str)
@@ -810,7 +810,7 @@ fn main() -> Result<()> {
 
     // Warn if no output will be produced
     if args.chunks == 0 && pcr_runs.is_empty() {
-        warn!("No --pcr-panel/--pcr-file/--pcr-primers and --chunks is 0: only a stats file will be produced");
+        warn!("No --pcr-panel/--pcr-panel-file/--pcr-primers and --chunks is 0: only a stats file will be produced");
     }
 
     // Validate that --sra is not combined with input files
@@ -849,12 +849,12 @@ fn main() -> Result<()> {
         }
     }
 
-    // Validate pcr-file paths exist
-    for pcr_file in args.pcr_file.iter() {
+    // Validate pcr-panel-file paths exist
+    for panel_file in args.pcr_panel_file.iter() {
         ensure!(
-            pcr_file.exists(),
+            panel_file.exists(),
             "PCR panel file does not exist: {}",
-            pcr_file.display()
+            panel_file.display()
         );
     }
 

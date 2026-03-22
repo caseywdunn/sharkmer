@@ -16,7 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   automatically (#23).
 - **`--pcr-panel`**: Select built-in primer panels by name (replaces `--pcr`
   for panel selection). Repeatable for multiple panels (#24).
-- **`--pcr-file`**: Sideload primer panels from user-supplied YAML files (#25).
+- **`--pcr-panel-file`**: Sideload primer panels from user-supplied YAML files (#25).
 - **`--pcr-primers`**: Specify primer pairs inline with key=value format
   (replaces `--pcr` for manual primers) (#24).
 - **`--list-panels`**: List available built-in panels and exit (#24).
@@ -52,7 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- **CLI restructured**: `--pcr` split into `--pcr-panel`, `--pcr-file`,
+- **CLI restructured**: `--pcr` split into `--pcr-panel`, `--pcr-panel-file`,
   `--pcr-primers`. `--sample` is required. `--verbosity N` replaced with
   `-v`/`-vv`/`-vvv`. `--chunks` defaults to 0 (skip histograms) (#24, #35).
 - **Logging**: Adopted `log` + `env_logger`. Logs go to stderr, data to
@@ -97,7 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
-- `--pcr` flag (replaced by `--pcr-panel`, `--pcr-file`, `--pcr-primers`)
+- `--pcr` flag (replaced by `--pcr-panel`, `--pcr-panel-file`, `--pcr-primers`)
 - `--verbosity N` flag (replaced by `-v`/`-vv`/`-vvv`)
 - `intmap` and `nohashmap` hash backend feature flags
 - Hardcoded singleton kmer filtering before sPCR (#52)

@@ -50,7 +50,7 @@ fixes first.
 - [x] #22 Adopt log + env_logger, separate stdout/stderr
 - [x] #23 Native gzip input support
 - [x] #33 Refactor primer panels to YAML (do together with #25)
-- [x] #25 Add --pcr-file for sideloading YAML panels (do together with #33)
+- [x] #25 Add --pcr-panel-file for sideloading YAML panels (do together with #33)
 - [x] #41 Validate input early
 - [x] #45 Error when stdin is terminal
 - [x] #52 Remove hardcoded singleton filtering

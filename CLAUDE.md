@@ -31,7 +31,7 @@ sharkmer/                  # Repo root
 │   │   └── mod.rs         # 2-bit encoding, kmer extraction, counting, histograms
 │   └── pcr/
 │       ├── mod.rs         # De Bruijn graph construction, extension, path finding
-│       └── preconfigured.rs  # YAML panel loading (built-in via include_str!, user via --pcr-file)
+│       └── preconfigured.rs  # YAML panel loading (built-in via include_str!, user via --pcr-panel-file)
 ├── panels/                # Built-in primer panel YAML files (7 panels)
 ├── tests/
 │   ├── fixtures/          # ERR571460 100k reads (gzipped) for integration tests
@@ -98,7 +98,7 @@ Key constants (may need tuning):
 ### pcr/preconfigured.rs (~100 lines)
 
 Loads primer panels from YAML files via `include_str!()` (built-in panels)
-or from user-supplied files via `--pcr-file`. Seven built-in panels:
+or from user-supplied files via `--pcr-panel-file`. Seven built-in panels:
 cnidaria, human, teleostei, angiospermae, insecta, bacteria, metazoa.
 
 ### panels/ directory
@@ -131,7 +131,7 @@ after each phase.
 
 ## Key design decisions for v2.0
 
-- **CLI**: Split `--pcr` into `--pcr-panel`, `--pcr-file`, `--pcr-primers`.
+- **CLI**: Split `--pcr` into `--pcr-panel`, `--pcr-panel-file`, `--pcr-primers`.
   Make `--sample` required. Default `--chunks 0` (skip histograms).
   Add `--list-panels`, `--export-panel`, `--help-pcr`.
   (implemented in Phase 4)
@@ -142,7 +142,7 @@ after each phase.
 - **Logging**: `log` + `env_logger`, `-v`/`-vv`/`-vvv` replaces `--verbosity N`
   (implemented in Phase 3)
 - **Primer panels**: YAML files in `panels/` embedded via `include_str!()`.
-  Shared parser for built-in and user-sideloaded panels via `--pcr-file`.
+  Shared parser for built-in and user-sideloaded panels via `--pcr-panel-file`.
   (implemented in Phase 3)
 - **Error handling**: `anyhow` for error propagation (chosen over `thiserror`
   since sharkmer is a binary, not a library), all panics removed from library
