@@ -1,36 +1,39 @@
 #!/usr/bin/env zsh
 set -euo pipefail
 
-# Download the first N reads from each ENA FASTQ file for a run accession.
+# Download the first N reads from ENA FASTQ files for a run accession.
 #
 # Usage:
-#   ./sra_download.sh ERR571460 1000
+#   ./sra_download.sh ERR571460 1000          # R1 only (default)
+#   ./sra_download.sh ERR571460 1000 both     # R1 and R2
 #
-# Output for paired-end runs:
+# Output (R1 only, default):
+#   ERR571460_1_1000.fastq
+#
+# Output (both mates):
 #   ERR571460_1_1000.fastq
 #   ERR571460_2_1000.fastq
-#
-# Output for single-end runs:
-#   ERR571460_1_1000.fastq
 #
 # Notes:
 # - This streams ENA-hosted FASTQ files and stops as soon as N reads have
 #   been written, so it does not intentionally download the full run.
 # - If N is larger than the number of reads available, all reads are written.
 # - FASTQ records are 4 lines per read.
+# - Benchmarks only use R1, so defaulting to R1 saves bandwidth and time.
 
 usage() {
   cat >&2 <<'EOF'
 Usage:
-  sra_download.sh ACCESSION NREADS
+  sra_download.sh ACCESSION NREADS [both]
 
 Arguments:
   ACCESSION   ENA/SRA run accession, e.g. ERR571460
   NREADS      Number of reads to keep from the start of each FASTQ file
+  both        Optional: download both R1 and R2 (default: R1 only)
 
 Examples:
-  sra_download.sh ERR571460 1000
-  sra_download.sh SRR12345678 50000
+  sra_download.sh ERR571460 1000          # R1 only
+  sra_download.sh ERR571460 1000 both     # both mates
 EOF
   exit 1
 }
@@ -38,6 +41,7 @@ EOF
 ena_first_reads() {
   local acc="$1"
   local n="$2"
+  local mode="${3:-r1}"
   local report
   local fastq_field
 
@@ -70,6 +74,12 @@ ena_first_reads() {
     | awk 'NF' \
     | nl -v 1 -w 1 -s $'\t' \
     | while IFS=$'\t' read -r mate url; do
+        # Skip R2 unless 'both' was requested
+        if [[ "$mode" != "both" && "$mate" -gt 1 ]]; then
+          echo "Skipping mate ${mate} (pass 'both' to download all mates)" >&2
+          continue
+        fi
+
         local outfile="${acc}_${mate}_${n}.fastq"
 
         echo "Downloading mate ${mate} from https://${url}" >&2
@@ -96,4 +106,4 @@ ena_first_reads() {
       done
 }
 
-ena_first_reads "${1:-}" "${2:-}"
+ena_first_reads "${1:-}" "${2:-}" "${3:-r1}"
