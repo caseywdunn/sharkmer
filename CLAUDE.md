@@ -39,11 +39,6 @@ sharkmer/                  # Repo root
 ├── data/                  # Test data (SRR5324768, gunzip before use)
 ├── sharkmer_viewer/       # Python tool for histogram visualization
 ├── docker/                # Dockerfile for development
-├── workflow/              # Snakemake workflow for testing against SRA datasets
-│   ├── Snakefile
-│   ├── config.yaml        # 30+ test samples with SRA accessions
-│   ├── sra.py             # SRA download utilities
-│   └── aggregate_stats.py
 ├── benchmarks/            # Regression benchmark suite
 └── genomescopemovie.sh    # Shell script for incremental visualization
 ```

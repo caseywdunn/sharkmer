@@ -30,20 +30,21 @@ import yaml
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = REPO_ROOT / "benchmarks" / "config.yaml"
-SHARKMER_BIN = REPO_ROOT / "sharkmer" / "target" / "release" / "sharkmer"
+SHARKMER_BIN = REPO_ROOT / "target" / "release" / "sharkmer"
 DATA_DIR = REPO_ROOT / "benchmarks" / "data"
 OUTPUT_DIR = REPO_ROOT / "benchmarks" / "output"
 RESULTS_DIR = REPO_ROOT / "benchmarks" / "results"
 
-MAX_READS = 1_000_000
 K = 31
 THREADS = 8
+DEFAULT_MAX_READS = [1_000_000]
 
 
 def load_config():
     with open(CONFIG_PATH) as f:
         config = yaml.safe_load(f)
-    return config["sample"]
+    max_reads = config.get("max_reads", DEFAULT_MAX_READS)
+    return config["sample"], max_reads
 
 
 def get_sharkmer_version():
@@ -96,8 +97,8 @@ def get_machine_info():
     return info
 
 
-def download_sample(sample_name, sample_config):
-    """Download SRA data by streaming from ENA, keeping only MAX_READS reads.
+def download_sample(sample_name, sample_config, max_reads):
+    """Download SRA data by streaming from ENA, keeping only max_reads reads.
 
     Uses benchmarks/sra_download.sh which streams ENA-hosted FASTQ files
     and stops as soon as N reads have been written, avoiding downloading
@@ -116,15 +117,15 @@ def download_sample(sample_name, sample_config):
     all_fastq_paths = []
     for accession in accessions:
         # Check if already downloaded
-        existing = sorted(DATA_DIR.glob(f"{accession}_*_{MAX_READS}.fastq"))
+        existing = sorted(DATA_DIR.glob(f"{accession}_*_{max_reads}.fastq"))
         if existing:
             print(f"  Using cached data for {accession}: {[p.name for p in existing]}")
             all_fastq_paths.extend(existing)
             continue
 
-        print(f"  Downloading {accession} ({MAX_READS} reads per mate from ENA)...")
+        print(f"  Downloading {accession} ({max_reads} reads per mate from ENA)...")
         result = subprocess.run(
-            [str(download_script), accession, str(MAX_READS)],
+            [str(download_script), accession, str(max_reads)],
             capture_output=True, text=True,
             cwd=str(DATA_DIR),
         )
@@ -138,7 +139,7 @@ def download_sample(sample_name, sample_config):
             print(f"    {line}")
 
         # Find the downloaded files
-        downloaded = sorted(DATA_DIR.glob(f"{accession}_*_{MAX_READS}.fastq"))
+        downloaded = sorted(DATA_DIR.glob(f"{accession}_*_{max_reads}.fastq"))
         if not downloaded:
             print(f"  ERROR: no FASTQ files found after download for {accession}")
             return None
@@ -148,7 +149,7 @@ def download_sample(sample_name, sample_config):
     return all_fastq_paths
 
 
-def run_sharkmer(sample_name, fastq_paths, arguments, threads=THREADS):
+def run_sharkmer(sample_name, fastq_paths, arguments, max_reads, threads=THREADS):
     """Run sharkmer and return wall time in seconds.
 
     fastq_paths is a list of FASTQ files (e.g. [R1.fastq, R2.fastq] for
@@ -157,13 +158,14 @@ def run_sharkmer(sample_name, fastq_paths, arguments, threads=THREADS):
     """
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    sample_prefix = f"{sample_name}_1000k"
+    k_reads = max_reads // 1000
+    sample_prefix = f"{sample_name}_{k_reads}k"
 
     cmd = [
         str(SHARKMER_BIN),
         "-k", str(K),
         "-t", str(threads),
-        "--max-reads", str(MAX_READS),
+        "--max-reads", str(max_reads),
         "-o", str(OUTPUT_DIR) + "/",
         "-s", sample_prefix,
     ]
@@ -261,7 +263,7 @@ def collect_sample_result(sample_name, sample_config, sample_prefix, wall_time):
 
     # Determine panel from arguments
     arguments = sample_config.get("arguments", "")
-    panels = re.findall(r"--pcr\s+(\S+)", arguments)
+    panels = re.findall(r"--pcr-panel\s+(\S+)", arguments)
     panel = ", ".join(panels) if panels else "none"
 
     genes_amplified = len(products)
@@ -284,7 +286,7 @@ def collect_sample_result(sample_name, sample_config, sample_prefix, wall_time):
 
 def run_benchmark(samples_to_run=None, threads=THREADS):
     """Run the full benchmark suite."""
-    config = load_config()
+    config, max_reads_list = load_config()
 
     if samples_to_run is None:
         samples_to_run = list(config.keys())
@@ -293,7 +295,7 @@ def run_benchmark(samples_to_run=None, threads=THREADS):
     print("Building sharkmer (release)...")
     result = subprocess.run(
         ["cargo", "build", "--release"],
-        cwd=str(REPO_ROOT / "sharkmer"),
+        cwd=str(REPO_ROOT),
         capture_output=True, text=True
     )
     if result.returncode != 0:
@@ -308,44 +310,49 @@ def run_benchmark(samples_to_run=None, threads=THREADS):
     print(f"git commit: {git_commit}")
     print(f"machine: {machine_info}")
     print(f"samples: {len(samples_to_run)}")
+    print(f"max_reads values: {max_reads_list}")
     print()
 
     results = []
-    for sample_name in samples_to_run:
-        if sample_name not in config:
-            print(f"WARNING: {sample_name} not found in config, skipping")
-            continue
+    for max_reads in max_reads_list:
+        for sample_name in samples_to_run:
+            if sample_name not in config:
+                print(f"WARNING: {sample_name} not found in config, skipping")
+                continue
 
-        sample_config = config[sample_name]
-        print(f"=== {sample_name} ===")
+            sample_config = config[sample_name]
+            k_reads = max_reads // 1000
+            print(f"=== {sample_name} ({k_reads}k reads) ===")
 
-        # Download
-        fastq_paths = download_sample(sample_name, sample_config)
-        if fastq_paths is None:
-            continue
+            # Download
+            fastq_paths = download_sample(sample_name, sample_config, max_reads)
+            if fastq_paths is None:
+                continue
 
-        # Run sharkmer
-        arguments = sample_config.get("arguments", "")
-        sample_prefix, wall_time = run_sharkmer(
-            sample_name, fastq_paths, arguments, threads=threads
-        )
-        if sample_prefix is None:
-            print(f"  FAILED, skipping result collection")
-            results.append({
-                "sample": sample_name,
-                "status": "failed",
-                "wall_time_s": round(wall_time, 1),
-            })
-            continue
+            # Run sharkmer
+            arguments = sample_config.get("arguments", "")
+            sample_prefix, wall_time = run_sharkmer(
+                sample_name, fastq_paths, arguments, max_reads, threads=threads
+            )
+            if sample_prefix is None:
+                print(f"  FAILED, skipping result collection")
+                results.append({
+                    "sample": sample_name,
+                    "max_reads": max_reads,
+                    "status": "failed",
+                    "wall_time_s": round(wall_time, 1),
+                })
+                continue
 
-        # Collect results
-        sample_result = collect_sample_result(
-            sample_name, sample_config, sample_prefix, wall_time
-        )
-        results.append(sample_result)
+            # Collect results
+            sample_result = collect_sample_result(
+                sample_name, sample_config, sample_prefix, wall_time
+            )
+            sample_result["max_reads"] = max_reads
+            results.append(sample_result)
 
-        print(f"  Completed in {wall_time:.1f}s, {sample_result['genes_amplified']} genes amplified")
-        print()
+            print(f"  Completed in {wall_time:.1f}s, {sample_result['genes_amplified']} genes amplified")
+            print()
 
     # Assemble the benchmark result
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
@@ -362,7 +369,7 @@ def run_benchmark(samples_to_run=None, threads=THREADS):
         "hash_backend": "fxhashmap",  # default feature flag
         "build_profile": "release",
         "parameters": {
-            "max_reads": MAX_READS,
+            "max_reads": max_reads_list,
             "k": K,
             "threads": threads,
         },
