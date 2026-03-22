@@ -18,6 +18,7 @@ ahashmap = ["dep:ahash"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 [dependencies]
 clap = { version = "4.2.7", features = ["derive"]}
+clap_complete = { version = "4" }
 rand = { version = "0.8.5"}
 rayon = { version = "1.7.0"}
 petgraph = { version = "0.6.4"}

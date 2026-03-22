@@ -1,6 +1,7 @@
 use anyhow::{bail, ensure, Context, Result};
 use bio::io::fasta;
-use clap::Parser;
+use clap::{CommandFactory, Parser};
+use clap_complete::Shell;
 use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, info, warn};
 use pcr::preconfigured;
@@ -267,6 +268,10 @@ struct Args {
     /// Print citation information and exit
     #[arg(long, help_heading = "General")]
     cite: bool,
+
+    /// Generate shell completions and exit (bash, zsh, fish, elvish, powershell)
+    #[arg(long, help_heading = "General", value_name = "SHELL")]
+    generate_completions: Option<Shell>,
 }
 
 /// Color output mode for log messages.
@@ -546,6 +551,13 @@ fn main() -> Result<()> {
         .init();
 
     // Handle early-exit flags before any processing
+
+    // Generate shell completions and exit
+    if let Some(shell) = args.generate_completions {
+        let mut cmd = Args::command();
+        clap_complete::generate(shell, &mut cmd, "sharkmer", &mut std::io::stdout());
+        std::process::exit(0);
+    }
 
     // Print citation information and exit if --cite is specified
     if args.cite {
