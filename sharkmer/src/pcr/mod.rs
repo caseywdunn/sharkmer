@@ -1017,12 +1017,21 @@ fn get_primer_kmers(
     Ok((forward_primer_kmers, reverse_primer_kmers))
 }
 
+/// Build a HashMap from sub_kmer to NodeIndex for O(1) node lookup.
+fn build_node_lookup(graph: &StableDiGraph<DBNode, DBEdge>) -> HashMap<u64, NodeIndex> {
+    graph
+        .node_indices()
+        .map(|node| (graph[node].sub_kmer, node))
+        .collect()
+}
+
 fn create_seed_graph(
     forward_primer_kmers: &KmerCounts,
     reverse_primer_kmers: &KmerCounts,
     kmer_counts: &KmerCounts,
-) -> StableDiGraph<DBNode, DBEdge> {
+) -> (StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>) {
     let mut seed_graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+    let mut node_lookup: HashMap<u64, NodeIndex> = HashMap::new();
 
     // Create a suffix mask with 1 in the (2 * (k - 1)) least significant bits
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
@@ -1034,26 +1043,17 @@ fn create_seed_graph(
     for kmer in sorted_forward_kmers {
         let prefix = kmer >> 2;
 
-        // If the node with sub_kmer == suffix already exists, update the node so that is_start = true
-        // Otherwise, create a new node
-
-        let mut node_exists = false;
-        for node in seed_graph.node_indices() {
-            if seed_graph[node].sub_kmer == prefix {
-                seed_graph[node].is_start = true;
-                node_exists = true;
-                break;
-            }
-        }
-
-        if !node_exists {
-            seed_graph.add_node(DBNode {
+        if let Some(&existing) = node_lookup.get(&prefix) {
+            seed_graph[existing].is_start = true;
+        } else {
+            let node = seed_graph.add_node(DBNode {
                 sub_kmer: prefix,
                 is_start: true,
                 is_end: false,
                 is_terminal: false,
-                visited: false, // Will not be extended
+                visited: false,
             });
+            node_lookup.insert(prefix, node);
         }
     }
 
@@ -1064,27 +1064,18 @@ fn create_seed_graph(
     for kmer in sorted_reverse_kmers {
         let suffix = kmer & suffix_mask;
 
-        // If the node with sub_kmer == suffix already exists, update the node so that is_end = true
-        // Otherwise, create a new node
-
-        let mut node_exists = false;
-        for node in seed_graph.node_indices() {
-            if seed_graph[node].sub_kmer == suffix {
-                seed_graph[node].is_end = true;
-                seed_graph[node].is_terminal = true;
-                node_exists = true;
-                break;
-            }
-        }
-
-        if !node_exists {
-            seed_graph.add_node(DBNode {
+        if let Some(&existing) = node_lookup.get(&suffix) {
+            seed_graph[existing].is_end = true;
+            seed_graph[existing].is_terminal = true;
+        } else {
+            let node = seed_graph.add_node(DBNode {
                 sub_kmer: suffix,
                 is_start: false,
                 is_end: true,
                 is_terminal: true,
                 visited: true,
             });
+            node_lookup.insert(suffix, node);
         }
     }
 
@@ -1096,7 +1087,7 @@ fn create_seed_graph(
         }
     }
 
-    seed_graph
+    (seed_graph, node_lookup)
 }
 
 // Extend graph by adding edges and new nodes to non-terminal nodes.
@@ -1119,6 +1110,7 @@ fn create_seed_graph(
 // - If a node with the sub_kmer already exists, add a new edge to the existing node
 fn extend_graph(
     seed_graph: &StableDiGraph<DBNode, DBEdge>,
+    seed_node_lookup: &HashMap<u64, NodeIndex>,
     kmer_counts: &KmerCounts,
     min_count: &u64,
     params: &PCRParams,
@@ -1126,6 +1118,7 @@ fn extend_graph(
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
 
     let mut graph = seed_graph.clone();
+    let mut node_lookup = seed_node_lookup.clone();
 
     let mut last_check: usize = 0;
     while n_unvisited_nodes_in_graph(&graph) > 0 {
@@ -1155,6 +1148,8 @@ fn extend_graph(
             // adapter becoming integrated into the graph, for example. So periodically check for a region
             // of high degree and prune it if found
             pop_balloons(&mut graph, &kmer_counts.get_k());
+            // Rebuild lookup after pop_balloons may have removed nodes
+            node_lookup = build_node_lookup(&graph);
         }
 
         // Iterate over the nodes
@@ -1241,35 +1236,29 @@ fn extend_graph(
                     // If the node with sub_kmer == suffix already exists, add an edge to the existing node
                     // Otherwise, create a new node with sub_kmer == suffix, and add an edge to the new node
 
-                    let mut node_exists = false;
-                    for existing_node in graph.node_indices() {
-                        if graph[existing_node].sub_kmer == suffix {
-                            if !would_form_cycle(&graph, node, existing_node) {
-                                let edge = get_dbedge(kmer, kmer_counts);
-                                graph.add_edge(node, existing_node, edge);
-                                if graph[existing_node].is_end {
-                                    info!("  End node incorporated into graph, complete PCR product found.");
-                                }
-                                let outgoing =
-                                    graph.neighbors_directed(node, Direction::Outgoing).count();
-                                if outgoing > 4 {
-                                    warn!("Node {} has {} outgoing edges. This exceed the maximum of 4 that is expected", node.index(), outgoing);
-                                }
-                            } else {
-                                graph[node].is_terminal = true;
-
-                                trace!(
-                                    "Adding edge to node {} would form cycle. Not adding edge, and marking current node as terminal.",
-                                    node.index()
+                    if let Some(&existing_node) = node_lookup.get(&suffix) {
+                        if !would_form_cycle(&graph, node, existing_node) {
+                            let edge = get_dbedge(kmer, kmer_counts);
+                            graph.add_edge(node, existing_node, edge);
+                            if graph[existing_node].is_end {
+                                info!(
+                                    "  End node incorporated into graph, complete PCR product found."
                                 );
                             }
+                            let outgoing =
+                                graph.neighbors_directed(node, Direction::Outgoing).count();
+                            if outgoing > 4 {
+                                warn!("Node {} has {} outgoing edges. This exceed the maximum of 4 that is expected", node.index(), outgoing);
+                            }
+                        } else {
+                            graph[node].is_terminal = true;
 
-                            node_exists = true;
-                            break;
+                            trace!(
+                                "Adding edge to node {} would form cycle. Not adding edge, and marking current node as terminal.",
+                                node.index()
+                            );
                         }
-                    }
-
-                    if !node_exists {
+                    } else {
                         let edge = get_dbedge(kmer, kmer_counts);
                         let edge_count = edge.count;
 
@@ -1295,6 +1284,7 @@ fn extend_graph(
                             is_terminal: false,
                             visited: false,
                         });
+                        node_lookup.insert(suffix, new_node);
 
                         graph.add_edge(node, new_node, edge);
                         let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
@@ -1512,7 +1502,7 @@ pub fn do_pcr(
 
         // Construct the graph
         info!("Creating graph, seeding with nodes that contain primer matches...");
-        let seed_graph =
+        let (seed_graph, node_lookup) =
             create_seed_graph(&forward_primer_kmer, &reverse_primer_kmers, kmer_counts);
 
         debug!(
@@ -1579,7 +1569,8 @@ pub fn do_pcr(
 
         for min_count in coverage_thresholds.iter() {
             info!("Extending graph with minimum kmer count {}", min_count);
-            let mut graph = extend_graph(&seed_graph, kmer_counts, min_count, params)?;
+            let mut graph =
+                extend_graph(&seed_graph, &node_lookup, kmer_counts, min_count, params)?;
 
             {
                 // Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
@@ -2375,7 +2366,7 @@ mod tests {
         assert_eq!(forward_primer_kmers.len(), 1);
         assert_eq!(reverse_primer_kmers.len(), 1);
 
-        let seed_graph =
+        let (seed_graph, node_lookup) =
             create_seed_graph(&forward_primer_kmers, &reverse_primer_kmers, &kmer_counts);
 
         // Check the number of nodes in the seed graph
@@ -2383,7 +2374,8 @@ mod tests {
         assert_eq!(get_start_nodes(&seed_graph).len(), 1);
         assert_eq!(get_end_nodes(&seed_graph).len(), 1);
 
-        let mut graph = extend_graph(&seed_graph, &kmer_counts, &min_count, &params).unwrap();
+        let mut graph =
+            extend_graph(&seed_graph, &node_lookup, &kmer_counts, &min_count, &params).unwrap();
         // Print the number of nodes and edges in the graph
         println!("There are {} nodes in the graph", graph.node_count());
         println!("There are {} edges in the graph", graph.edge_count());
