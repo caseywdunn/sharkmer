@@ -230,15 +230,15 @@ struct Args {
     help_pcr: bool,
 
     /// Kmer length
-    #[arg(short, default_value_t = 21, help_heading = "Kmer counting")]
+    #[arg(short, default_value_t = 21, help_heading = "Kmer")]
     k: usize,
 
     /// Number of incremental chunks (0 = skip histograms)
-    #[arg(long, default_value_t = 0, help_heading = "Kmer counting")]
+    #[arg(long, default_value_t = 0, help_heading = "Incremental counting")]
     chunks: usize,
 
     /// Maximum histogram count value
-    #[arg(long, default_value_t = 10000, help_heading = "Kmer counting")]
+    #[arg(long, default_value_t = 10000, help_heading = "Incremental counting")]
     histo_max: u64,
 
     /// Number of threads
