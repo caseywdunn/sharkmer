@@ -105,8 +105,39 @@ Target improvements:
 - Coverage-weighted best-path algorithm to replace `all_simple_paths`
   enumeration
 - Better path scoring beyond `kmer_min_count` ordering
-- Paired-end read awareness
 - Preparation for v4.0 metagenomics support
+
+### Read-based graph refinement
+
+Use reads (not just kmers) to improve the assembly graph. Currently reads
+are discarded after kmer extraction — only the kmer count table is used for
+graph construction. Threading reads back through the graph enables:
+
+- **Graph pruning**: Edges and nodes not supported by any full read path are
+  likely artifacts. Read support can distinguish real low-frequency paths
+  from chimeric joins, improving results at shallow coverage.
+- **Bubble resolution**: When two paths diverge and reconverge (heterozygous
+  sites, sequencing errors), reads that span the bubble can resolve which
+  path(s) are real.
+- **Coverage estimation per path**: Read threading gives per-edge coverage
+  that reflects actual read support, not just kmer frequency. This is more
+  informative for path scoring than raw kmer counts.
+- **Paired-end constraints**: When mate pairs are available, the insert size
+  distribution constrains which paths are physically plausible. A read pair
+  where R1 maps to one branch and R2 maps to another implies those branches
+  are linked within the insert distance.
+
+Implementation approach: two-pass over input data. Pass 1 counts kmers and
+builds the graph (as now). Pass 2 re-reads the FASTQ and threads each read
+through the graph, annotating edges with read support. For `--sra` input,
+the second pass re-streams from ENA. For file input, seeks back to the
+start. For stdin, either buffer reads in memory or require file input when
+read threading is enabled.
+
+Paired-end awareness requires knowing which files are R1 vs R2. The v2.0
+convention (positional files in R1, R2 order; `--sra` downloads in order)
+is sufficient — v3.0 can infer pairing from file order, with a `--paired`
+flag to explicitly enable pair-aware refinement.
 
 ### Graph construction efficiency
 
