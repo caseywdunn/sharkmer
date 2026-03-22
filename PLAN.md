@@ -63,16 +63,16 @@ fixes first.
 Depends on #22 (logging). Performance items (#27, #28, #29, #54) are
 independent and can be interleaved.
 
-- [ ] #24 CLI flag improvements (do together with #35)
-- [ ] #35 Default to --chunks 0
-- [ ] #32 Structured YAML stats output
-- [ ] #34 Improve FASTA header format
-- [ ] #44 --color flag and NO_COLOR
-- [ ] #36 Parallelize sPCR across genes
-- [ ] #37 Progress indicators
-- [ ] #48 Warn on overwriting
-- [ ] #65 Add --sra flag for direct ENA download (depends on #24)
-- [ ] #27 HashMap for node lookup in graph construction
+- [x] #24 CLI flag improvements (do together with #35)
+- [x] #35 Default to --chunks 0
+- [x] #32 Structured YAML stats output
+- [x] #34 Improve FASTA header format
+- [x] #44 --color flag and NO_COLOR
+- [x] #36 Parallelize sPCR across genes
+- [x] #37 Progress indicators
+- [x] #48 Warn on overwriting
+- [x] #65 Add --sra flag for direct ENA download (depends on #24)
+- [x] #27 HashMap for node lookup in graph construction
 - [ ] #28 Avoid storing RC in hash table (do together with #54, #52)
 - [ ] #54 Eliminate double hash lookups
 - [ ] #29 Pre-size hash maps, evaluate ahash
