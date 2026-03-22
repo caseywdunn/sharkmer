@@ -114,8 +114,16 @@ def reindex(df):
 def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size):
     duration = 50 # milliseconds
     
-    # Read in the histogram data
-    df_histo = pd.read_csv(in_histo_name, sep="\t", header=None)
+    # Read in the histogram data (supports both old headerless format and new format
+    # with comment lines starting with '#' and a header row)
+    with open(in_histo_name, "r") as f:
+        first_line = f.readline().strip()
+    if first_line.startswith("#"):
+        # New format: comment lines + header row
+        df_histo = pd.read_csv(in_histo_name, sep="\t", comment="#")
+    else:
+        # Old format: no comment lines, no header
+        df_histo = pd.read_csv(in_histo_name, sep="\t", header=None)
 
     # Get the counts, then remove the column
     x = df_histo.iloc[:, 0]
@@ -125,13 +133,19 @@ def create_report(in_histo_name, in_stats_name, out_name, run_name, genome_size)
     # Truncate the data
     df_histo = df_histo.iloc[:100]
 
-    # Parse the stats file from sharkmer
+    # Parse the stats file from sharkmer (supports both old TSV format and new YAML format)
     stats_dict = {}
-    with open(in_stats_name, "r") as f:
-        for line in f:
-            line = line.strip()
-            line = line.split("\t")
-            stats_dict[line[0]] = line[1]
+    if in_stats_name.endswith(".yaml") or in_stats_name.endswith(".yml"):
+        import yaml
+        with open(in_stats_name, "r") as f:
+            stats_dict = yaml.safe_load(f)
+    else:
+        with open(in_stats_name, "r") as f:
+            for line in f:
+                line = line.strip()
+                line = line.split("\t")
+                if len(line) >= 2:
+                    stats_dict[line[0]] = line[1]
 
     # Create a vector with the cumulative bases read for each sample
     n_samples = len(df_histo.columns)
