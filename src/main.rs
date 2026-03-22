@@ -216,28 +216,29 @@ struct Args {
     outdir: PathBuf,
 
     /// Use a preconfigured primer panel (repeatable)
-    #[arg(long, help_heading = "PCR")]
+    #[arg(long, help_heading = "PCR (requires at least one)")]
     pcr_panel: Vec<String>,
 
     /// Load a primer panel from a YAML file (repeatable)
-    #[arg(long, help_heading = "PCR")]
+    #[arg(long, help_heading = "PCR (requires at least one)")]
     pcr_panel_file: Vec<PathBuf>,
 
     /// Specify a primer pair inline (repeatable, see --help-pcr)
-    #[arg(long, help_heading = "PCR")]
+    #[arg(long, help_heading = "PCR (requires at least one)")]
     pcr_primers: Vec<String>,
 
     /// List available primer panels and exit
-    #[arg(long, help_heading = "PCR")]
+    #[arg(long, help_heading = "PCR (requires at least one)")]
     list_panels: bool,
 
     /// Export a built-in panel as YAML to stdout and exit
-    #[arg(long, help_heading = "PCR")]
+    #[arg(long, help_heading = "PCR (requires at least one)")]
     export_panel: Option<String>,
 
     /// Show detailed help for --pcr-primers format
-    #[arg(long, help_heading = "PCR")]
+    #[arg(long, help_heading = "PCR (requires at least one)")]
     help_pcr: bool,
+
 
     /// Kmer length
     #[arg(short, default_value_t = 21, help_heading = "Kmer")]
