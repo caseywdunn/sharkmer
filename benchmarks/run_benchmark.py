@@ -257,8 +257,14 @@ def parse_fasta_products(sample_prefix):
 
 def collect_sample_result(sample_name, sample_config, sample_prefix, wall_time):
     """Collect all results for a single sample."""
+    # Try YAML stats first (v2.0+), fall back to old TSV format
+    stats_yaml_path = OUTPUT_DIR / f"{sample_prefix}.stats.yaml"
     stats_path = OUTPUT_DIR / f"{sample_prefix}.stats"
-    stats = parse_stats_file(stats_path)
+    if stats_yaml_path.exists():
+        with open(stats_yaml_path) as f:
+            stats = yaml.safe_load(f) or {}
+    else:
+        stats = parse_stats_file(stats_path)
     products = parse_fasta_products(sample_prefix)
 
     # Determine panel from arguments
@@ -366,7 +372,7 @@ def run_benchmark(samples_to_run=None, threads=THREADS):
         "date": date_str,
         "machine": machine_info,
         "rustc_version": get_rustc_version(),
-        "hash_backend": "fxhashmap",  # default feature flag
+        "hash_backend": "ahashmap",  # default feature flag
         "build_profile": "release",
         "parameters": {
             "max_reads": max_reads_list,
