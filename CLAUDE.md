@@ -38,8 +38,7 @@ sharkmer/                  # Repo root
 │   └── spcr_18s.rs        # Integration test: 18S recovery from ERR571460
 ├── data/                  # Test data (SRR5324768, gunzip before use)
 ├── sharkmer_viewer/       # Python tool for histogram visualization
-├── benchmarks/            # Regression benchmark suite
-└── genomescopemovie.sh    # Shell script for incremental visualization
+└── benchmarks/            # Regression benchmark suite
 ```
 
 ## Build and test
