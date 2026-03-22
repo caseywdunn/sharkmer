@@ -27,7 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`--cite`**: Print citation information and exit (#40).
 - **`--color auto|always|never`**: Control colored output; respects `NO_COLOR`
   environment variable (#44).
-- **Shell completions**: `--generate-completions` for bash, zsh, fish,
+- **Shell completions**: `--completions` for bash, zsh, fish,
   elvish, powershell (#39).
 - **Structured YAML stats**: `.stats.yaml` output with version, parameters,
   read/kmer counts, peak memory, and per-gene PCR results (#32).

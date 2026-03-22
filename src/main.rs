@@ -269,9 +269,9 @@ struct Args {
     #[arg(long, help_heading = "General")]
     cite: bool,
 
-    /// Generate shell completions and exit (bash, zsh, fish, elvish, powershell)
+    /// Print shell tab-completion script and exit
     #[arg(long, help_heading = "General", value_name = "SHELL")]
-    generate_completions: Option<Shell>,
+    completions: Option<Shell>,
 
     /// Validate inputs and print what would happen, then exit
     #[arg(long, help_heading = "General")]
@@ -639,7 +639,7 @@ fn main() -> Result<()> {
     // Handle early-exit flags before any processing
 
     // Generate shell completions and exit
-    if let Some(shell) = args.generate_completions {
+    if let Some(shell) = args.completions {
         let mut cmd = Args::command();
         clap_complete::generate(shell, &mut cmd, "sharkmer", &mut std::io::stdout());
         std::process::exit(0);
