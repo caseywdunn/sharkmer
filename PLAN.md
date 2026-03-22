@@ -90,7 +90,7 @@ Depends on Phase 4.
 - [x] #49 Polished CLI formatting (depends on #22, #43, #44)
 - [x] #67 Derive sample name from ENA metadata when --sra used without --sample
 - [x] #61 Update sharkmer_viewer (depends on #32)
-- [ ] Run benchmark, commit result
+- [x] Run benchmark, commit result
 
 ## Phase 6 — Final validation
 
