@@ -73,8 +73,8 @@ independent and can be interleaved.
 - [x] #48 Warn on overwriting
 - [x] #65 Add --sra flag for direct ENA download (depends on #24)
 - [x] #27 HashMap for node lookup in graph construction
-- [ ] #28 Avoid storing RC in hash table (do together with #54, #52)
-- [ ] #54 Eliminate double hash lookups
+- [x] #28 Avoid storing RC in hash table (do together with #54, #52)
+- [x] #54 Eliminate double hash lookups
 - [ ] #29 Pre-size hash maps, evaluate ahash
 - [ ] Run benchmark, commit result
 
