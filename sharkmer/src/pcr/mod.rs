@@ -499,9 +499,42 @@ fn find_oligos_in_kmers(
 
     let mut kmers_match: KmerCounts = KmerCounts::new(&kmers.get_k());
 
+    // Build the reverse complement mask by mirroring the mask bits
+    let rc_mask = {
+        let shift = 2 * kmers.get_k() - 2 * oligo_length;
+        match dir {
+            // Forward mask covers high bits; RC of a forward-matching kmer has primer in low bits
+            PrimerDirection::Forward => (1u64 << (2 * oligo_length)) - 1,
+            // Reverse mask covers low bits; RC of a reverse-matching kmer has primer in high bits
+            PrimerDirection::Reverse => ((1u64 << (2 * oligo_length)) - 1) << shift,
+        }
+    };
+
+    // Build the set of RC oligos (reverse complement of each oligo, shifted to match rc_mask)
+    let rc_oligo_set: HashSet<u64> = oligos
+        .iter()
+        .map(|oligo| {
+            let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &oligo_length);
+            match dir {
+                PrimerDirection::Forward => rc,
+                PrimerDirection::Reverse => {
+                    let shift = 2 * kmers.get_k() - 2 * oligo_length;
+                    rc << shift
+                }
+            }
+        })
+        .collect();
+
     for (kmer, count) in kmers.iter() {
-        if oligo_set.contains(&(kmer & mask)) && count >= min_count {
-            kmers_match.insert(kmer, count);
+        if count >= min_count {
+            if oligo_set.contains(&(kmer & mask)) {
+                kmers_match.insert(kmer, count);
+            } else if rc_oligo_set.contains(&(kmer & rc_mask)) {
+                // The primer matches the reverse complement orientation of this kmer,
+                // so insert the revcomp form for correct graph construction
+                let rc_kmer = crate::kmer::revcomp_kmer(kmer, &kmers.get_k());
+                kmers_match.insert(&rc_kmer, count);
+            }
         }
     }
 
@@ -1171,10 +1204,12 @@ fn extend_graph(
                 for base in 0..4 {
                     let kmer = (sub_kmer << 2) | base;
 
-                    // If the kmer is in the kmer_counts hash and has count >= min_count,
-                    // add it to the candidate kmers
-                    if kmer_counts.contains(&kmer) && kmer_counts.get_count(&kmer) >= *min_count {
-                        candidate_kmers.insert(kmer);
+                    // If the kmer is in the kmer_counts hash (either orientation)
+                    // and has count >= min_count, add it to the candidate kmers
+                    if let Some(&count) = kmer_counts.get_canonical(&kmer) {
+                        if count >= *min_count {
+                            candidate_kmers.insert(kmer);
+                        }
                     }
                 }
 
@@ -2342,7 +2377,7 @@ mod tests {
 
         let seq = "TGATCCTGCCAGTATCATATG".to_string();
         let kmer: u64 = seq_to_kmer(&seq).unwrap();
-        assert!(kmer_counts.contains(&kmer));
+        assert!(kmer_counts.get_canonical(&kmer).is_some());
     }
 
     #[test]
@@ -2350,14 +2385,13 @@ mod tests {
         let (read_string, k, replicates, kmer_counts, params) = build_test_case();
         let min_count = 5;
 
-        // Check the number of kmers
-        // Times 2 on right since reverse complements are added
-        assert_eq!(kmer_counts.len(), (read_string.len() - k + 1) * 2);
+        // Check the number of kmers (canonical only, no reverse complements stored)
+        assert_eq!(kmer_counts.len(), read_string.len() - k + 1);
 
         // Check the total count of kmers
         assert_eq!(
             kmer_counts.get_n_kmers(),
-            ((read_string.len() - k + 1) * replicates * 2) as u64
+            ((read_string.len() - k + 1) * replicates) as u64
         );
 
         let (forward_primer_kmers, reverse_primer_kmers) =

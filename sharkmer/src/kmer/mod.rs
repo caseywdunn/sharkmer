@@ -213,9 +213,11 @@ impl PartialEq for Read {
 
 /// Trait abstracting over the different hash map implementations (IntMap, FxHashMap, NoHashHashMap).
 /// This avoids duplicating the KmerCounts impl block for each feature flag.
+#[allow(dead_code)]
 trait KmerMap {
     fn new_map() -> Self;
     fn insert_or_add(&mut self, key: u64, count: u64);
+    fn get_value(&self, key: u64) -> Option<&u64>;
     fn get_count(&self, key: u64) -> u64;
     fn contains(&self, key: u64) -> bool;
     fn retain_above(&mut self, min_count: u64);
@@ -232,6 +234,9 @@ impl KmerMap for IntMap<u64> {
             Entry::Vacant(entry) => entry.insert(0),
         };
         *counter += count;
+    }
+    fn get_value(&self, key: u64) -> Option<&u64> {
+        self.get(key)
     }
     fn get_count(&self, key: u64) -> u64 {
         *self.get(key).unwrap_or(&0)
@@ -253,6 +258,9 @@ impl KmerMap for rustc_hash::FxHashMap<u64, u64> {
         let c = self.entry(key).or_insert(0);
         *c += count;
     }
+    fn get_value(&self, key: u64) -> Option<&u64> {
+        self.get(&key)
+    }
     fn get_count(&self, key: u64) -> u64 {
         *self.get(&key).unwrap_or(&0)
     }
@@ -272,6 +280,9 @@ impl KmerMap for NoHashHashMap<u64, u64> {
     fn insert_or_add(&mut self, key: u64, count: u64) {
         let c = self.entry(key).or_insert(0);
         *c += count;
+    }
+    fn get_value(&self, key: u64) -> Option<&u64> {
+        self.get(&key)
     }
     fn get_count(&self, key: u64) -> u64 {
         *self.get(&key).unwrap_or(&0)
@@ -339,10 +350,25 @@ impl KmerCounts {
         self.kmers.get_count(canonical)
     }
 
+    #[allow(dead_code)]
+    pub fn get(&self, kmer: &u64) -> Option<&u64> {
+        self.kmers.get_value(*kmer)
+    }
+
+    /// Look up a kmer by checking both orientations (forward and reverse complement).
+    /// Returns the count if found in either orientation, None if absent.
+    pub fn get_canonical(&self, kmer: &u64) -> Option<&u64> {
+        self.kmers
+            .get_value(*kmer)
+            .or_else(|| self.kmers.get_value(revcomp_kmer(kmer, &self.k)))
+    }
+
+    #[allow(dead_code)]
     pub fn get_count(&self, kmer: &u64) -> u64 {
         self.kmers.get_count(*kmer)
     }
 
+    #[allow(dead_code)]
     pub fn contains(&self, kmer: &u64) -> bool {
         self.kmers.contains(*kmer)
     }
@@ -389,14 +415,13 @@ impl KmerCounts {
         self.kmers.is_empty()
     }
 
-    // Create a new KmerCounts object that has kmers with at least min_count and
-    // includes the reverse complements of all the kmers, not just canonical kmers
+    /// Create a new KmerCounts object that has only canonical kmers with at least min_count.
+    /// Callers should use `get_canonical()` to look up kmers in either orientation.
     pub fn get_pcr_kmers(&self, min_count: &u64) -> KmerCounts {
         let mut pcr_kmers = KmerCounts::new(&self.k);
         for (kmer, count) in self.iter() {
             if count >= min_count {
                 pcr_kmers.insert(kmer, count);
-                pcr_kmers.insert(&crate::kmer::revcomp_kmer(kmer, &self.k), count);
             }
         }
         pcr_kmers
