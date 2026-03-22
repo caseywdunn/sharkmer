@@ -288,11 +288,18 @@ enum ColorMode {
 
 const FASTA_LINE_WIDTH: usize = 80;
 
-/// Query ENA filereport API to get FASTQ URLs for an SRA/ENA accession.
-/// Returns URLs ordered by mate number (R1 first, then R2 if paired-end).
-fn get_ena_fastq_urls(accession: &str) -> Result<Vec<String>> {
+/// Result of querying ENA for an accession.
+struct EnaResult {
+    urls: Vec<String>,
+    scientific_name: Option<String>,
+}
+
+/// Query ENA filereport API to get FASTQ URLs and metadata for an SRA/ENA accession.
+/// Returns URLs ordered by mate number (R1 first, then R2 if paired-end),
+/// plus the scientific_name if available.
+fn get_ena_fastq_urls(accession: &str) -> Result<EnaResult> {
     let url = format!(
-        "https://www.ebi.ac.uk/ena/portal/api/filereport?accession={}&result=read_run&fields=run_accession,fastq_ftp",
+        "https://www.ebi.ac.uk/ena/portal/api/filereport?accession={}&result=read_run&fields=run_accession,fastq_ftp,scientific_name",
         accession
     );
 
@@ -306,7 +313,7 @@ fn get_ena_fastq_urls(accession: &str) -> Result<Vec<String>> {
         .context("Failed to read ENA API response")?;
 
     // Response is TSV: header row, then data rows
-    // Fields: run_accession\tfastq_ftp
+    // Fields: run_accession\tfastq_ftp\tscientific_name
     let lines: Vec<&str> = body.lines().collect();
     ensure!(
         lines.len() >= 2,
@@ -314,16 +321,23 @@ fn get_ena_fastq_urls(accession: &str) -> Result<Vec<String>> {
         accession
     );
 
-    // Parse the fastq_ftp field (semicolon-separated URLs)
+    // Parse header to find column indices
+    let headers: Vec<&str> = lines[0].split('\t').collect();
+    let ftp_idx = headers
+        .iter()
+        .position(|h| *h == "fastq_ftp")
+        .context("ENA response missing fastq_ftp column")?;
+    let sci_name_idx = headers.iter().position(|h| *h == "scientific_name");
+
     let data_line = lines[1];
     let fields: Vec<&str> = data_line.split('\t').collect();
     ensure!(
-        fields.len() >= 2 && !fields[1].is_empty(),
+        fields.len() > ftp_idx && !fields[ftp_idx].is_empty(),
         "ENA returned no FASTQ URLs for accession '{}'. The run may not have public FASTQ files.",
         accession
     );
 
-    let urls: Vec<String> = fields[1]
+    let urls: Vec<String> = fields[ftp_idx]
         .split(';')
         .map(|u| {
             if u.starts_with("ftp://") || u.starts_with("http") {
@@ -334,14 +348,26 @@ fn get_ena_fastq_urls(accession: &str) -> Result<Vec<String>> {
         })
         .collect();
 
+    let scientific_name = sci_name_idx
+        .and_then(|idx| fields.get(idx))
+        .map(|s| s.trim())
+        .filter(|s| !s.is_empty())
+        .map(|s| s.to_string());
+
     info!(
         "Found {} FASTQ file(s) for {}: {}",
         urls.len(),
         accession,
         urls.join(", ")
     );
+    if let Some(ref name) = scientific_name {
+        info!("Scientific name: {}", name);
+    }
 
-    Ok(urls)
+    Ok(EnaResult {
+        urls,
+        scientific_name,
+    })
 }
 
 /// Format a count with comma-separated thousands (e.g. 1,234,567).
@@ -674,12 +700,31 @@ fn main() -> Result<()> {
         std::process::exit(0);
     }
 
-    // Validate that --sample is provided for processing (not needed for early-exit flags above)
-    let sample = args
-        .sample
-        .as_ref()
-        .context("--sample is required. Provide a sample name as output file prefix.")?
-        .clone();
+    // Derive sample name: use --sample if provided, otherwise derive from ENA metadata for --sra.
+    // Cache ENA result to avoid querying twice.
+    let mut cached_ena_result: Option<EnaResult> = None;
+    let sample = if let Some(ref s) = args.sample {
+        s.clone()
+    } else if let Some(ref accession) = args.sra {
+        let ena_result = get_ena_fastq_urls(accession)?;
+        let derived = if let Some(ref sci_name) = ena_result.scientific_name {
+            let genus_species = sci_name.replace(' ', "_");
+            format!("{}_{}", genus_species, accession)
+        } else {
+            accession.clone()
+        };
+        warn!(
+            "No --sample provided, using '{}' derived from ENA metadata",
+            derived
+        );
+        cached_ena_result = Some(ena_result);
+        derived
+    } else {
+        anyhow::bail!(
+            "--sample is required. Provide a sample name as output file prefix.\n\
+             When using --sra, the sample name can be derived automatically from ENA metadata."
+        );
+    };
 
     // Validate sample name for safe use in filenames
     ensure!(
@@ -928,9 +973,12 @@ fn main() -> Result<()> {
     };
 
     if let Some(accession) = &args.sra {
-        // Stream reads from ENA
-        let urls = get_ena_fastq_urls(accession)?;
-        for url in &urls {
+        // Stream reads from ENA (use cached result if available)
+        let ena_result = match cached_ena_result.take() {
+            Some(r) => r,
+            None => get_ena_fastq_urls(accession)?,
+        };
+        for url in &ena_result.urls {
             info!("Streaming from {}...", url);
             let response = ureq::get(url)
                 .call()
