@@ -19,6 +19,20 @@ use std::io::Write;
 use crate::kmer;
 use crate::kmer::KmerCounts;
 
+/// Log at info level with a [gene_name] prefix for attribution in parallel runs.
+macro_rules! gene_info {
+    ($gene:expr, $($arg:tt)*) => {
+        info!("[{}] {}", $gene, format!($($arg)*))
+    };
+}
+
+/// Log at warn level with a [gene_name] prefix for attribution in parallel runs.
+macro_rules! gene_warn {
+    ($gene:expr, $($arg:tt)*) => {
+        warn!("[{}] {}", $gene, format!($($arg)*))
+    };
+}
+
 pub mod preconfigured;
 
 // Constants that may require tuning
@@ -893,9 +907,12 @@ fn preprocess_primer(
 
     let mut trim = params.trim;
     if trim > *k {
-        warn!(
-            "  Trim length ({}) exceeds k ({}), adjusting trim to {}",
-            trim, k, k
+        gene_warn!(
+            params.gene_name,
+            "Trim length ({}) exceeds k ({}), adjusting trim to {}",
+            trim,
+            k,
+            k
         );
         trim = *k;
     }
@@ -903,9 +920,11 @@ fn preprocess_primer(
     // Check if either is longer than trim, if so retain only the last trim nucleotides
     if primer.len() > trim {
         primer = primer[primer.len() - trim..].to_string();
-        info!(
-            "  Trimming the primer to {} so that it is within the trim length of {}.",
-            primer, trim
+        gene_info!(
+            params.gene_name,
+            "Trimming the primer to {} so that it is within the trim length of {}.",
+            primer,
+            trim
         );
     }
 
@@ -1032,7 +1051,10 @@ fn get_primer_kmers(
         preprocess_primer(params, PrimerDirection::Reverse, &kmer_counts.get_k())?;
 
     // Get the kmers that contain the primers
-    info!("  Searching kmers that contain the forward primer variants");
+    gene_info!(
+        params.gene_name,
+        "Searching kmers that contain the forward primer variants"
+    );
     let mut forward_primer_kmers = get_kmers_from_primers(
         &forward_variants,
         kmer_counts,
@@ -1041,7 +1063,10 @@ fn get_primer_kmers(
     )?;
     forward_primer_kmers = filter_primer_kmers(forward_primer_kmers);
 
-    info!("  Searching kmers that contain the reverse primer variants");
+    gene_info!(
+        params.gene_name,
+        "Searching kmers that contain the reverse primer variants"
+    );
     let mut reverse_primer_kmers = get_kmers_from_primers(
         &reverse_variants,
         kmer_counts,
@@ -1161,7 +1186,7 @@ fn extend_graph(
         let n_nodes = graph.node_count();
 
         if n_nodes > MAX_NUM_NODES {
-            warn!("There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.", n_nodes, MAX_NUM_NODES);
+            gene_warn!(params.gene_name, "There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.", n_nodes, MAX_NUM_NODES);
             break;
         }
 
@@ -1176,7 +1201,7 @@ fn extend_graph(
         if (n_nodes > last_check) && ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
             last_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
 
-            info!("  Evaluating extension:");
+            gene_info!(params.gene_name, "Evaluating extension:");
             summarize_extension(&graph, "    ");
 
             // Some graphs balloon in size and get to hundreds of thousands of nodes while extension gets
@@ -1279,14 +1304,15 @@ fn extend_graph(
                             let edge = get_dbedge(kmer, kmer_counts);
                             graph.add_edge(node, existing_node, edge);
                             if graph[existing_node].is_end {
-                                info!(
-                                    "  End node incorporated into graph, complete PCR product found."
+                                gene_info!(
+                                    params.gene_name,
+                                    "End node incorporated into graph, complete PCR product found."
                                 );
                             }
                             let outgoing =
                                 graph.neighbors_directed(node, Direction::Outgoing).count();
                             if outgoing > 4 {
-                                warn!("Node {} has {} outgoing edges. This exceed the maximum of 4 that is expected", node.index(), outgoing);
+                                gene_warn!(params.gene_name, "Node {} has {} outgoing edges. This exceed the maximum of 4 that is expected", node.index(), outgoing);
                             }
                         } else {
                             graph[node].is_terminal = true;
@@ -1327,7 +1353,7 @@ fn extend_graph(
                         graph.add_edge(node, new_node, edge);
                         let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
                         if outgoing > 4 {
-                            warn!("Node {} has {} outgoing edges when adding new node. This exceed the maximum of 4 that is expected", node.index(), outgoing);
+                            gene_warn!(params.gene_name, "Node {} has {} outgoing edges when adding new node. This exceed the maximum of 4 that is expected", node.index(), outgoing);
                         }
 
                         trace!(
@@ -1504,26 +1530,32 @@ pub fn do_pcr(
     sample_name: &str,
     params: &PCRParams,
 ) -> Result<Vec<bio::io::fasta::Record>> {
-    info!("Running PCR on gene {}", params.gene_name);
+    gene_info!(params.gene_name, "Running PCR");
 
-    info!("Preprocessing primers");
+    gene_info!(params.gene_name, "Preprocessing primers");
     let (forward_primer_kmers, reverse_primer_kmers) = get_primer_kmers(params, kmer_counts)?;
 
     if forward_primer_kmers.is_empty() {
-        info!(
-            "For gene {}, binding sites were not found for the forward primer. Abandoning PCR.",
-            params.gene_name
+        gene_info!(
+            params.gene_name,
+            "Binding sites were not found for the forward primer. Abandoning PCR."
         );
-        info!("  Suggested action: optimize primer sequence.");
+        gene_info!(
+            params.gene_name,
+            "Suggested action: optimize primer sequence."
+        );
         return Ok(Vec::new());
     }
 
     if reverse_primer_kmers.is_empty() {
-        info!(
-            "For gene {}, binding sites were not found for the reverse primer. Abandoning PCR.",
-            params.gene_name
+        gene_info!(
+            params.gene_name,
+            "Binding sites were not found for the reverse primer. Abandoning PCR."
         );
-        info!("  Suggested action: optimize primer sequence.");
+        gene_info!(
+            params.gene_name,
+            "Suggested action: optimize primer sequence."
+        );
         return Ok(Vec::new());
     }
 
@@ -1538,7 +1570,8 @@ pub fn do_pcr(
         forward_primer_kmers.iter().map(|(&k, &v)| (k, v)).collect();
     sorted_forward.sort();
     for (kmer, count) in sorted_forward.iter() {
-        info!(
+        gene_info!(
+            params.gene_name,
             "Attempting assembly with forward primer kmer {} with count {}",
             crate::kmer::kmer_to_seq(kmer, &kmer_counts.get_k()),
             count
@@ -1548,7 +1581,10 @@ pub fn do_pcr(
         forward_primer_kmer.insert(kmer, count);
 
         // Construct the graph
-        info!("Creating graph, seeding with nodes that contain primer matches...");
+        gene_info!(
+            params.gene_name,
+            "Creating graph, seeding with nodes that contain primer matches..."
+        );
         let (seed_graph, node_lookup) =
             create_seed_graph(&forward_primer_kmer, &reverse_primer_kmers, kmer_counts);
 
@@ -1571,7 +1607,7 @@ pub fn do_pcr(
         }
 
         let start = std::time::Instant::now();
-        info!("Extending the assembly graph...");
+        gene_info!(params.gene_name, "Extending the assembly graph...");
 
         // Create a vector to hold the fasta records
         let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
@@ -1586,9 +1622,11 @@ pub fn do_pcr(
             primer_count = max_forward_count;
         }
 
-        info!(
+        gene_info!(
+            params.gene_name,
             "Observed primer coverage is {}, user specified min-coverage is {}",
-            primer_count, params.min_coverage
+            primer_count,
+            params.min_coverage
         );
 
         // Creates a vector of coverage thresholds, starting with coverage_high_threshold and decreasing to params.min_coverage
@@ -1615,7 +1653,11 @@ pub fn do_pcr(
         debug!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
         for min_count in coverage_thresholds.iter() {
-            info!("Extending graph with minimum kmer count {}", min_count);
+            gene_info!(
+                params.gene_name,
+                "Extending graph with minimum kmer count {}",
+                min_count
+            );
             let mut graph =
                 extend_graph(&seed_graph, &node_lookup, kmer_counts, min_count, params)?;
 
@@ -1690,14 +1732,18 @@ pub fn do_pcr(
                     .context("Unable to write dot file")?;
             }
 
-            info!("  Done. Time to extend graph: {:?}", start.elapsed());
+            gene_info!(
+                params.gene_name,
+                "Done. Time to extend graph: {:?}",
+                start.elapsed()
+            );
 
             // Simplify the graph
             // all_simple_paths() hangs if the input graph is too complex
             // Also want to regularize some graph features
 
             let start = std::time::Instant::now();
-            info!("  Pruning the assembly graph...");
+            gene_info!(params.gene_name, "Pruning the assembly graph...");
 
             remove_side_branches(&mut graph);
             remove_orphan_nodes(&mut graph);
@@ -1711,12 +1757,17 @@ pub fn do_pcr(
             );
             debug!("    There are {} end nodes", get_end_nodes(&graph).len());
 
-            info!("  done. Time to prune graph: {:?}", start.elapsed());
+            gene_info!(
+                params.gene_name,
+                "Done. Time to prune graph: {:?}",
+                start.elapsed()
+            );
 
             // Get all paths from start nodes to terminal nodes
             let start = std::time::Instant::now();
-            info!(
-                "  Traversing the assembly graph to find paths from forward to reverse primers..."
+            gene_info!(
+                params.gene_name,
+                "Traversing the assembly graph to find paths from forward to reverse primers..."
             );
 
             let all_paths = get_assembly_paths(&graph, kmer_counts, params);
@@ -1725,14 +1776,22 @@ pub fn do_pcr(
                 "    There are {} paths from forward to reverse primers in the graph",
                 all_paths.len()
             );
-            info!("  Done. Time to traverse graph: {:?}", start.elapsed());
+            gene_info!(
+                params.gene_name,
+                "Done. Time to traverse graph: {:?}",
+                start.elapsed()
+            );
 
             if all_paths.is_empty() {
-                info!("  Extending graph with minimum kmer count {} failed to generate a PCR product.", min_count);
+                gene_info!(
+                    params.gene_name,
+                    "Extending graph with minimum kmer count {} failed to generate a PCR product.",
+                    min_count
+                );
                 continue;
             }
 
-            info!("Generating sequences from paths...");
+            gene_info!(params.gene_name, "Generating sequences from paths...");
 
             // For each path, get the sequence of the path
             for path in all_paths.into_iter() {
@@ -1812,9 +1871,9 @@ pub fn do_pcr(
                 assembly_records.push(assembly_record);
             }
             if assembly_records.is_empty() {
-                info!("  Did not obtain PCR product.");
+                gene_info!(params.gene_name, "Did not obtain PCR product.");
             } else {
-                info!("  Obtained PCR product.");
+                gene_info!(params.gene_name, "Obtained PCR product.");
                 break;
             }
         }
@@ -1824,19 +1883,19 @@ pub fn do_pcr(
 
         let count_threshold = 5;
         if (max_forward_count < count_threshold) | (max_reverse_count < count_threshold) {
-            info!("Primer kmer counts are low, in this case less than {}. Consider increasing the number of reads.", count_threshold);
+            gene_info!(params.gene_name, "Primer kmer counts are low, in this case less than {}. Consider increasing the number of reads.", count_threshold);
         }
 
         // Add the assembly records to the all records vector
         assembly_records_all.extend(assembly_records);
     }
-    info!("done.");
+    gene_info!(params.gene_name, "Done.");
 
     if assembly_records_all.is_empty() {
-        info!("For gene {}, no path was found from a forward primer binding site to a reverse binding site. Abandoning PCR.", params.gene_name);
-        info!("  Suggested actions:");
-        info!("    - The max-length for the PCR product of {} my be too short. Consider increasing it.", params.max_length);
-        info!("    - The primers may have non-specific binding and are not close enough to generate a product. Consider increasing the primer TRIM length from the default to create a more specific primer.");
+        gene_info!(params.gene_name, "No path was found from a forward primer binding site to a reverse binding site. Abandoning PCR.");
+        gene_info!(params.gene_name, "Suggested actions:");
+        gene_info!(params.gene_name, "  - The max-length for the PCR product of {} may be too short. Consider increasing it.", params.max_length);
+        gene_info!(params.gene_name, "  - The primers may have non-specific binding and are not close enough to generate a product. Consider increasing the primer TRIM length from the default to create a more specific primer.");
 
         return Ok(Vec::new());
     }
@@ -1884,16 +1943,18 @@ pub fn do_pcr(
     });
 
     if num_records_all == records.len() {
-        info!(
-            "For gene {}, {} PCR products were generated and retained.",
-            params.gene_name, num_records_all
+        gene_info!(
+            params.gene_name,
+            "{} PCR products were generated and retained.",
+            num_records_all
         );
     } else {
-        info!("For gene {}, {} PCR products were generated and {} were retained ({} removed as near-duplicates within {} edits).", params.gene_name, num_records_all, records.len(), num_records_all - records.len(), params.dedup_edit_threshold);
+        gene_info!(params.gene_name, "{} PCR products were generated and {} were retained ({} removed as near-duplicates within {} edits).", num_records_all, records.len(), num_records_all - records.len(), params.dedup_edit_threshold);
     }
 
     if records.len() > MAX_NUM_AMPLICONS {
-        warn!(
+        gene_warn!(
+            params.gene_name,
             "There are {} PCR products. This exceeds the maximum of {}. Retaining only the first {} records.",
             records.len(),
             MAX_NUM_AMPLICONS,
