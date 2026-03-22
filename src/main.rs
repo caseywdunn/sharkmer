@@ -261,7 +261,7 @@ struct Args {
     #[arg(short = 'v', long, action = clap::ArgAction::Count, help_heading = "General")]
     verbose: u8,
 
-    /// Control color output: auto (default), always, never
+    /// Color output
     #[arg(long, default_value = "auto", help_heading = "General")]
     color: ColorMode,
 
