@@ -99,6 +99,7 @@ Depends on Phase 4.
 - [ ] #51 Optimize benchmark downloads (optional, can defer)
 - [ ] #64 sra_download.sh: default to R1 only
 - [ ] #66 Update README examples for v2.0 CLI and test data
+- [ ] #68 Document QIIME2/SILVA workflow and consider convenience flags
 - [ ] Update CHANGELOG.md with all v2.0 changes
 - [ ] Update bioconda recipe for new dependencies
 - [ ] Tag v2.0.0-rc1, test bioconda build
