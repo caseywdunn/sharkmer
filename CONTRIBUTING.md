@@ -21,12 +21,9 @@ Some common rust tasks in development:
 
 ### Test data
 
-This repository includes a test [dataset from Thermus thermophilus](https://trace.ncbi.nlm.nih.gov/Traces/?view=run_browser&acc=SRR5324768&display=metadata) for simple tests and to develop against.
-
-After cloning the repo, gunzip the `data` in the data dir:
-
-    cd data/
-    gunzip -c SRR5324768_pass_1.fastq.gz > SRR5324768_pass_1.fastq
+Integration tests use a 100k-read fixture from ERR571460 (Porites lutea),
+stored gzipped at `tests/fixtures/ERR571460_100k_R1.fastq.gz`. No manual
+setup is needed — `cargo test` handles it automatically.
 
 ## Branching model
 
