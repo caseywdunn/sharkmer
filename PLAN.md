@@ -94,7 +94,7 @@ Depends on Phase 4.
 
 ## Phase 6 — Final validation
 
-- [ ] #31 Update integration tests for final v2.0 CLI/output
+- [x] #31 Update integration tests for final v2.0 CLI/output
 - [ ] #50 Run full regression benchmark, compare to v1.0.1 baseline
 - [ ] #51 Optimize benchmark downloads (optional, can defer)
 - [x] #64 sra_download.sh: default to R1 only
