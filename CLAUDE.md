@@ -36,7 +36,6 @@ sharkmer/                  # Repo root
 ├── tests/
 │   ├── fixtures/          # ERR571460 100k reads (gzipped) for integration tests
 │   └── spcr_18s.rs        # Integration test: 18S recovery from ERR571460
-├── data/                  # Test data (SRR5324768, gunzip before use)
 ├── sharkmer_viewer/       # Python tool for histogram visualization
 └── benchmarks/            # Regression benchmark suite
 ```
