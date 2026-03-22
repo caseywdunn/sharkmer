@@ -15,6 +15,9 @@ use intmap::{Entry, IntMap};
 #[cfg(feature = "fxhashmap")]
 use rustc_hash::FxHashMap;
 
+#[cfg(feature = "ahashmap")]
+use std::collections::HashMap as StdHashMap;
+
 #[cfg(feature = "nohashmap")]
 type NoHashHashMap<K, V> = HashMap<K, V, BuildHasherDefault<NoHashHasher>>;
 
@@ -216,6 +219,7 @@ impl PartialEq for Read {
 #[allow(dead_code)]
 trait KmerMap {
     fn new_map() -> Self;
+    fn new_map_with_capacity(capacity: usize) -> Self;
     fn insert_or_add(&mut self, key: u64, count: u64);
     fn get_value(&self, key: u64) -> Option<&u64>;
     fn get_count(&self, key: u64) -> u64;
@@ -227,6 +231,9 @@ trait KmerMap {
 impl KmerMap for IntMap<u64> {
     fn new_map() -> Self {
         IntMap::new()
+    }
+    fn new_map_with_capacity(capacity: usize) -> Self {
+        IntMap::with_capacity(capacity)
     }
     fn insert_or_add(&mut self, key: u64, count: u64) {
         let counter = match self.entry(key) {
@@ -254,6 +261,9 @@ impl KmerMap for rustc_hash::FxHashMap<u64, u64> {
     fn new_map() -> Self {
         FxHashMap::default()
     }
+    fn new_map_with_capacity(capacity: usize) -> Self {
+        FxHashMap::with_capacity_and_hasher(capacity, Default::default())
+    }
     fn insert_or_add(&mut self, key: u64, count: u64) {
         let c = self.entry(key).or_insert(0);
         *c += count;
@@ -276,6 +286,38 @@ impl KmerMap for rustc_hash::FxHashMap<u64, u64> {
 impl KmerMap for NoHashHashMap<u64, u64> {
     fn new_map() -> Self {
         NoHashHashMap::<u64, u64>::default()
+    }
+    fn new_map_with_capacity(capacity: usize) -> Self {
+        NoHashHashMap::<u64, u64>::with_capacity_and_hasher(capacity, Default::default())
+    }
+    fn insert_or_add(&mut self, key: u64, count: u64) {
+        let c = self.entry(key).or_insert(0);
+        *c += count;
+    }
+    fn get_value(&self, key: u64) -> Option<&u64> {
+        self.get(&key)
+    }
+    fn get_count(&self, key: u64) -> u64 {
+        *self.get(&key).unwrap_or(&0)
+    }
+    fn contains(&self, key: u64) -> bool {
+        self.contains_key(&key)
+    }
+    fn retain_above(&mut self, min_count: u64) {
+        self.retain(|_, count| *count >= min_count);
+    }
+}
+
+#[cfg(feature = "ahashmap")]
+type AHashMap<K, V> = StdHashMap<K, V, ahash::RandomState>;
+
+#[cfg(feature = "ahashmap")]
+impl KmerMap for AHashMap<u64, u64> {
+    fn new_map() -> Self {
+        AHashMap::with_hasher(ahash::RandomState::new())
+    }
+    fn new_map_with_capacity(capacity: usize) -> Self {
+        AHashMap::with_capacity_and_hasher(capacity, ahash::RandomState::new())
     }
     fn insert_or_add(&mut self, key: u64, count: u64) {
         let c = self.entry(key).or_insert(0);
@@ -304,6 +346,9 @@ type MapType = rustc_hash::FxHashMap<u64, u64>;
 #[cfg(feature = "nohashmap")]
 type MapType = NoHashHashMap<u64, u64>;
 
+#[cfg(feature = "ahashmap")]
+type MapType = AHashMap<u64, u64>;
+
 pub struct KmerCounts {
     kmers: MapType,
     k: usize,
@@ -313,6 +358,13 @@ impl KmerCounts {
     pub fn new(k: &usize) -> KmerCounts {
         KmerCounts {
             kmers: MapType::new_map(),
+            k: *k,
+        }
+    }
+
+    pub fn new_with_capacity(k: &usize, capacity: usize) -> KmerCounts {
+        KmerCounts {
+            kmers: MapType::new_map_with_capacity(capacity),
             k: *k,
         }
     }
@@ -418,7 +470,7 @@ impl KmerCounts {
     /// Create a new KmerCounts object that has only canonical kmers with at least min_count.
     /// Callers should use `get_canonical()` to look up kmers in either orientation.
     pub fn get_pcr_kmers(&self, min_count: &u64) -> KmerCounts {
-        let mut pcr_kmers = KmerCounts::new(&self.k);
+        let mut pcr_kmers = KmerCounts::new_with_capacity(&self.k, self.kmers.len());
         for (kmer, count) in self.iter() {
             if count >= min_count {
                 pcr_kmers.insert(kmer, count);
