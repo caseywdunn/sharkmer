@@ -272,6 +272,10 @@ struct Args {
     /// Generate shell completions and exit (bash, zsh, fish, elvish, powershell)
     #[arg(long, help_heading = "General", value_name = "SHELL")]
     generate_completions: Option<Shell>,
+
+    /// Validate inputs and print what would happen, then exit
+    #[arg(long, help_heading = "General")]
+    dry_run: bool,
 }
 
 /// Color output mode for log messages.
@@ -726,6 +730,70 @@ fn main() -> Result<()> {
             "PCR panel file does not exist: {}",
             pcr_file.display()
         );
+    }
+
+    // Dry-run: print what would happen and exit
+    if args.dry_run {
+        eprintln!("sharkmer {} (dry run)", env!("CARGO_PKG_VERSION"));
+        eprintln!();
+
+        // Input sources
+        eprintln!("Input:");
+        if let Some(accession) = &args.sra {
+            eprintln!("  SRA accession: {}", accession);
+        } else if let Some(input_files) = &args.input {
+            for f in input_files {
+                eprintln!("  {}", f.display());
+            }
+        } else {
+            eprintln!("  stdin");
+        }
+
+        eprintln!();
+        eprintln!("Configuration:");
+        eprintln!("  Sample:         {}", sample);
+        eprintln!("  Output dir:     {}", directory);
+        eprintln!("  Kmer length:    {}", k);
+        eprintln!("  Chunks:         {}", args.chunks);
+        eprintln!("  Threads:        {}", args.threads);
+        eprintln!("  Min kmer count: {}", args.min_kmer_count);
+        if let Some(max) = args.max_reads {
+            eprintln!("  Max reads:      {}", max);
+        }
+
+        eprintln!();
+        eprintln!("Output files:");
+        eprintln!("  {}{}.stats.yaml", directory, sample);
+        if args.chunks > 0 {
+            eprintln!("  {}{}.histo", directory, sample);
+            eprintln!("  {}{}.final.histo", directory, sample);
+        }
+        for pcr_params in &pcr_runs {
+            eprintln!("  {}{}_{}.fasta", directory, sample, pcr_params.gene_name);
+        }
+
+        if !pcr_runs.is_empty() {
+            eprintln!();
+            eprintln!(
+                "PCR primers ({} gene{}):",
+                pcr_runs.len(),
+                if pcr_runs.len() == 1 { "" } else { "s" }
+            );
+            for pcr_params in &pcr_runs {
+                eprintln!(
+                    "  {} (fwd: {}...{}, rev: {}...{}, len: {}-{})",
+                    pcr_params.gene_name,
+                    &pcr_params.forward_seq[..pcr_params.forward_seq.len().min(8)],
+                    &pcr_params.forward_seq[pcr_params.forward_seq.len().saturating_sub(4)..],
+                    &pcr_params.reverse_seq[..pcr_params.reverse_seq.len().min(8)],
+                    &pcr_params.reverse_seq[pcr_params.reverse_seq.len().saturating_sub(4)..],
+                    pcr_params.min_length,
+                    pcr_params.max_length,
+                );
+            }
+        }
+
+        std::process::exit(0);
     }
 
     // Set the number of threads for Rayon to use
