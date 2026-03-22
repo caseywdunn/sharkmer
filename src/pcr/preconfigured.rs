@@ -108,24 +108,15 @@ pub fn export_panel_yaml(panel_name: &str) -> Result<String> {
 
 pub fn print_pcr_panels() {
     let panels = get_preconfigured_panels();
+    println!("Available preconfigured PCR panels:\n");
     for panel in panels {
-        println!("{}: {}", panel.name, panel.description);
-        for param in panel.primers {
-            println!("  {}", param.gene_name);
-            println!("    forward: {}", param.forward_seq);
-            println!("    reverse: {}", param.reverse_seq);
-            println!("    min-length: {}", param.min_length);
-            println!("    max-length: {}", param.max_length);
-            println!("    min-coverage: {}", param.min_coverage);
-            println!("    mismatches: {}", param.mismatches);
-            println!("    trim: {}", param.trim);
-            println!("    citation: {}", param.citation);
-            println!("    notes: {}", param.notes);
-            println!(
-                "    arguments: --pcr-primers \"{}\"",
-                pcrparams_string(&param)
-            );
-            println!();
-        }
+        let prefix = format!("{}_", panel.name);
+        let gene_names: Vec<&str> = panel
+            .primers
+            .iter()
+            .map(|p| p.gene_name.strip_prefix(&prefix).unwrap_or(&p.gene_name))
+            .collect();
+        println!("  {:<16} {} [{}]", panel.name, panel.description, gene_names.join(", "));
     }
+    println!("\nUse --export-panel <name> to see full details for a panel.");
 }

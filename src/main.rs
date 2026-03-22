@@ -184,10 +184,14 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
 #[command(author, version, about, long_about = None, arg_required_else_help = true)]
 #[command(after_help = "\
 Output files:\n  \
-  {outdir}/{sample}_{panel}_{gene}.fasta  sPCR products per gene\n  \
-  {outdir}/{sample}.histo                 Incremental histograms (--chunks > 0)\n  \
-  {outdir}/{sample}.final.histo           Final histogram (--chunks > 0)\n  \
-  {outdir}/{sample}.stats.yaml             Run statistics (YAML)")]
+  {outdir}/{sample}.stats.yaml             Run statistics (always produced)\n\
+\n  \
+  PCR:\n  \
+  {outdir}/{sample}_{panel}_{gene}.fasta   sPCR products per gene\n\
+\n  \
+  Incremental counting (--chunks > 0):\n  \
+  {outdir}/{sample}.histo                  All incremental histograms\n  \
+  {outdir}/{sample}.final.histo            Final histogram")]
 struct Args {
     /// FASTQ input files (.fastq or .fastq.gz). Reads from stdin if omitted
     #[arg(help_heading = "Input", display_order = 0)]
@@ -665,7 +669,6 @@ fn main() -> Result<()> {
 
     // List available panels and exit
     if args.list_panels {
-        println!("Available preconfigured PCR panels:");
         preconfigured::print_pcr_panels();
         std::process::exit(0);
     }
