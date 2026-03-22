@@ -108,15 +108,10 @@ pub fn export_panel_yaml(panel_name: &str) -> Result<String> {
 
 pub fn print_pcr_panels() {
     let panels = get_preconfigured_panels();
-    println!("Available preconfigured PCR panels:\n");
-    for panel in panels {
-        let prefix = format!("{}_", panel.name);
-        let gene_names: Vec<&str> = panel
-            .primers
-            .iter()
-            .map(|p| p.gene_name.strip_prefix(&prefix).unwrap_or(&p.gene_name))
-            .collect();
-        println!("  {:<16} {} [{}]", panel.name, panel.description, gene_names.join(", "));
+    println!("Available PCR panels (use --export-panel <name> for details):\n");
+    for panel in &panels {
+        let n = panel.primers.len();
+        let noun = if n == 1 { "primer" } else { "primers" };
+        println!("  {:<16} {} ({} {})", panel.name, panel.description, n, noun);
     }
-    println!("\nUse --export-panel <name> to see full details for a panel.");
 }
