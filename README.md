@@ -48,22 +48,23 @@ Then clone this repository and build sharkmer:
 
 The compiled executable will be in `target/release/sharkmer`. Move it to a location in your path.
 
-If you would like to follow along with the examples below, also install the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit) so that you can download raw reads from 
-[NCBI SRA](https://www.ncbi.nlm.nih.gov/sra) with `fasterq-dump`.
-
 ## Usage
 
 To get full usage information, run
 
     sharkmer --help
 
-The sequence read data must be uncompressed before analysis. `sharkmer` doesn't directly ingest `.fastq.gz` files, just `.fastq`.
-But `sharkmer` can read uncompressed data from `stdin`. So you can `gunzip` files and pipe them to `sharkmer`:
+`sharkmer` reads FASTQ input from files (`.fastq` or `.fastq.gz`) or from stdin. Gzip-compressed files are detected and decompressed automatically.
 
-    zcat agalma_*.fastq.gz | sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr cnidaria 
+    sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr-panel cnidaria agalma_*.fastq.gz
 
-Decompressing files takes quite a bit of compute (perhaps even more than the kmer analyses in some cases). Handling decompression outside of `sharkmer` allows you to
-use whichever approach you prefer on your system, for example parallel tools such as `pigz`.
+You can also stream reads directly from [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra) by accession using `--sra`, which downloads from ENA without requiring any additional tools:
+
+    sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr-panel cnidaria --sra SRR25099394
+
+Uncompressed data can be piped via stdin:
+
+    zcat agalma_*.fastq.gz | sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr-panel cnidaria
 
 ## *in silico* PCR (sPCR)
 
@@ -83,38 +84,39 @@ sPCR is useful when you want specific genes from skimming datasets you have coll
 
 sPCR of nuclear ribosomal RNA genes (eg animal 28s, 18s, ITS) and mitochondrial genes does not take much sequence data, given the relatively high copy number of these genes. For Illumina raw reads, 0.25x average sequencing depth of the genome is often sufficient.
 
-We will download a small dataset from the coral *Stenogorgia casta*:
+We will use the coral *Stenogorgia casta* as an example. With `--sra`, sharkmer downloads the reads directly from ENA — no extra tools needed:
 
-    cd data
-    prefetch SRR26955578
-    fasterq-dump --split-files SRR26955578
-    cd ..
+    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr-panel cnidaria --sra SRR26955578
 
-Run sPCR on the downloaded reads by specifying that we want to use the built-in panel of cnidarian primers:
+Alternatively, if you have local FASTQ files (gzipped or uncompressed):
 
-    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr cnidaria data/SRR26955578_1.fastq data/SRR26955578_2.fastq
+    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr-panel cnidaria data/SRR26955578_1.fastq.gz data/SRR26955578_2.fastq.gz
 
-This is equivalent to specifying the primer pairs manually, also with the `--pcr` argument:
+This is equivalent to specifying the primer pairs manually with `--pcr-primers`:
 
     sharkmer \
       --max-reads 1000000 \
       -s Stenogorgia_casta -o output/ \
-      --pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500" \
-      --pcr "forward=TCATAARGATATHGG,reverse=RTGNCCAAAAAACCA,max-length=800,name=co1,min-length=600" \
-      --pcr "forward=AACCTGGTTGATCCTGCCAGT,reverse=TGATCCTTCTGCAGGTTCACCTAC,max-length=2000,name=18s,min-length=1600" \
-      --pcr "forward=CCYYAGTAACGGCGAGT,reverse=SWACAGATGGTAGCTTCG,max-length=3500,name=28s,min-length=2900"  \
-      --pcr "forward=TACACACCGCCCGTCGCTACTA,reverse=ACTCGCCGTTACTRRGG,max-length=1000,name=ITSfull,min-length=600" \
-      data/SRR26955578_1.fastq data/SRR26955578_2.fastq
+      --pcr-primers "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500" \
+      --pcr-primers "forward=TCATAARGATATHGG,reverse=RTGNCCAAAAAACCA,max-length=800,name=co1,min-length=600" \
+      --pcr-primers "forward=AACCTGGTTGATCCTGCCAGT,reverse=TGATCCTTCTGCAGGTTCACCTAC,max-length=2000,name=18s,min-length=1600" \
+      --pcr-primers "forward=CCYYAGTAACGGCGAGT,reverse=SWACAGATGGTAGCTTCG,max-length=3500,name=28s,min-length=2900"  \
+      --pcr-primers "forward=TACACACCGCCCGTCGCTACTA,reverse=ACTCGCCGTTACTRRGG,max-length=1000,name=ITSfull,min-length=600" \
+      --sra SRR26955578
 
-The `--pcr` argument passes the name of a preconfigured primer panel or a manually specified PCR string with the format `key1=value1,key2=value2,key3=value3,...`, where the required keys are `forward`, `reverse`, and `name`. Note that commas delimit fields.
+The `--pcr-primers` argument takes a string with the format `key1=value1,key2=value2,...`, where the required keys are `forward`, `reverse`, and `name`. Run `sharkmer --help-pcr` for details on all available keys.
 
-The `--max-reads 1000000` arguments indicates that the first million reads should be used. This is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since it occurs in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes require more data.
+The `--max-reads 1000000` argument indicates that the first million reads should be used. This is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since they occur in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes require more data.
 
-This analysis will generate one fasta file for each primer pair. These fasta files are named with the `name` argument passed to `--pcr`. If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found.
+This analysis will generate one fasta file for each primer pair, named `{sample}_{panel}_{gene}.fasta` (e.g., `Stenogorgia_casta_cnidaria_18S.fasta`). If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found. A YAML stats file (`{sample}.stats.yaml`) is also produced with run statistics and per-gene PCR results.
 
-You can see all the available built in PCR panels with the command:
+You can see all the available built-in PCR panels with:
 
-    sharkmer --pcr panels
+    sharkmer --list-panels
+
+To export a built-in panel as YAML (for customization or sideloading with `--pcr-file`):
+
+    sharkmer --export-panel cnidaria
 
 If you have other primers that you would like to have added to the tool, please submit them to the [issue tracker](https://github.com/caseywdunn/sharkmer/issues).
 
@@ -124,23 +126,23 @@ There are a few different strategies to take if you are not getting a sPCR produ
 
 The things you should try first are:
 
-- Specify a reasonable value for the `--pcr` parameter `max-length`, based on what is known about the gene. It does not need to be exact. It does need to be longer than the amplified product, but if it is much too long it may result in amplification of spurious products or runs that take too long without finding anything. Keep in mind that if there are introns, the amplified product can be much longer than the coding sequence.
+- Specify a reasonable value for the `--pcr-primers` parameter `max-length`, based on what is known about the gene. It does not need to be exact. It does need to be longer than the amplified product, but if it is much too long it may result in amplification of spurious products or runs that take too long without finding anything. Keep in mind that if there are introns, the amplified product can be much longer than the coding sequence.
 
 - Optimize your primer sequences. Make some multiple sequence alignments of the desired sequence region from several closely related species, and refine the primer sequences to be more specific to the target region. You can use [degenerate nucleotide symbols](https://en.wikipedia.org/wiki/Nucleic_acid_notation), such as R for A or G, a variable sites in the site where you would like the sequence to bind. Remember that, just as in real PCR, the reverse primer should be reverse complemented.
 
 - Pick new primers that shorten the region you are trying to amplify. Shorter amplification fragments tend to require fewer reads to assemble.
 
-- Adjust the `--pcr` parameter `trim`. The default is 15. This is the max number of bases to keep at the 3' end of each primer. Primers used for real PCR tend to be longer than what is required for them to be unique within the genome. This is because they are lengthened to increase melting temperature. If you don't get a product, try reducing `trim` to reduce the specificity of the primer. If you are getting too many spurious products, try increasing this value. Modifying `trim` rather than adjusting the primer sequence makes subsequent adjustments easier (since you don't have to look up the primer sequence again) and also makes the provenance of primer sequences clearer.
+- Adjust the `--pcr-primers` parameter `trim`. The default is 15. This is the max number of bases to keep at the 3' end of each primer. Primers used for real PCR tend to be longer than what is required for them to be unique within the genome. This is because they are lengthened to increase melting temperature. If you don't get a product, try reducing `trim` to reduce the specificity of the primer. If you are getting too many spurious products, try increasing this value. Modifying `trim` rather than adjusting the primer sequence makes subsequent adjustments easier (since you don't have to look up the primer sequence again) and also makes the provenance of primer sequences clearer.
 
 - Adjust the number of reads. If you are not getting a product, try increasing the number of reads. You can do this with the `--max-reads` argument. Likewise, if you are getting products and want to speed things up, or you are getting many products for a gene, reduce the number of reads.
 
 If these do not work, then you can try adjusting other parameters.
 
-- Specify a reasonable `--pcr` parameter `min-length`. This value defaults to 0, but raising it can get rid of small spurious products.
+- Specify a reasonable `--pcr-primers` parameter `min-length`. This value defaults to 0, but raising it can get rid of small spurious products.
 
-- Adjust the `--pcr` parameter `min-coverage`. This is the depth of kmer coverage required to extend a sPCR product. It defaults to 2, and must be at least 2 to avoid once-off sequencing errors. You can try raising it to 3 or 4 to get only the best supported products, but this requires more data. For example, `--pcr "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500,min-coverage=4"`
+- Adjust the `--pcr-primers` parameter `min-coverage`. This is the depth of kmer coverage required to extend a sPCR product. It defaults to 2, and must be at least 2 to avoid once-off sequencing errors. You can try raising it to 3 or 4 to get only the best supported products, but this requires more data. For example, `--pcr-primers "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500,min-coverage=4"`
 
-- Adjust the `--pcr` parameter `mismatches`. This defaults to 2. You can try raising it to 3 or 4 if you aren't getting the desired product. This reduces specificity, but this may increase the number of spurious paths that need to be traversed and bog down the run.
+- Adjust the `--pcr-primers` parameter `mismatches`. This defaults to 2. You can try raising it to 3 or 4 if you aren't getting the desired product. This reduces specificity, but this may increase the number of spurious paths that need to be traversed and bog down the run.
 
 Keep in mind that there is no way to assemble a sPCR product without coverage along its full length that meets or exceeds the `coverage` parameter. The tool cannot output assembled sequences in the fasta file that are not in the input raw reads from the fastq file. If you are trying to amplify a single copy nuclear gene, that means your sequencing depth (average coverage) of the genome will need to be quite a bit higher than the `coverage` parameter, since there will be fluctuations in coverage along the length of the target region. If coverage at each site is independently distributed, then to have a 95% chance of coverage $\geq 2$ at each site in a region of length $n$, you would need a sequencing depth of 13x for a 1000bp region. That is on the order of 26 million 150 bp reads for a 300Mb genome. This may place single copy nuclear genes out of reach for some organisms with larger genomes, especially if computer RAM limits the number of reads that can be processed.
 
@@ -156,18 +158,15 @@ Incremental k-mer counting, as implemented in `sharkmer`, allows investigators t
 
 Genome size estimation takes a lot of data (about 50x coverage of the genome), and a large amount of RAM. So this example isn't practical on most laptops, given their disk and RAM limitations, and will require a workstation or cluster.
 
-Download this *Cordagalma ordinatum* dataset from [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra/SRX10340700) using the [sra toolkit](https://github.com/ncbi/sra-tools/wiki/02.-Installing-SRA-Toolkit):
+We will use a *Cordagalma ordinatum* dataset from [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra/SRX10340700). With `--sra`, sharkmer downloads the reads directly:
 
-    cd data
-    prefetch SRR23143278
-    fasterq-dump --split-files SRR23143278
-    cd ..
+    sharkmer --chunks 10 -o output/ -s Cordagalma-ordinatum --sra SRR23143278
 
-Now perform incremental kmer counting on the downloaded reads:
+The `--chunks 10` argument specifies breaking the reads into 10 incremental subsets (histograms are only produced when `--chunks` is greater than 0). The `-o` argument specifies the output directory. The `-s` argument specifies a prefix for the output files.
 
-    sharkmer -o output/ -s Cordagalma-ordinatum data/SRR23143278_1.fastq data/SRR23143278_2.fastq
+Alternatively, with local files (gzipped or uncompressed):
 
-Notice that you can specify multiple fastq files, in this case the R1 and R2 reads. The `-o` argument specifies the output directory. The `-s` argument specifies a prefix for the output files.
+    sharkmer --chunks 10 -o output/ -s Cordagalma-ordinatum data/SRR23143278_1.fastq.gz data/SRR23143278_2.fastq.gz
 
 The incremental histogram files in this case will be:
 
