@@ -961,7 +961,7 @@ fn main() -> Result<()> {
 
     // Create progress indicator: bar with ETA if max_reads is known, spinner otherwise.
     // Only show at info verbosity or higher.
-    let show_progress = args.verbose >= 1 && std::io::stderr().is_terminal();
+    let show_progress = std::io::stderr().is_terminal();
     let progress = if show_progress && max_reads > 0 {
         let pb = ProgressBar::new(max_reads);
         pb.set_style(
