@@ -239,7 +239,6 @@ struct Args {
     #[arg(long, help_heading = "PCR (requires at least one)")]
     help_pcr: bool,
 
-
     /// Kmer length
     #[arg(short, default_value_t = 21, help_heading = "Kmer")]
     k: usize,
@@ -1118,6 +1117,17 @@ fn main() -> Result<()> {
 
     // Consolidate chunks and create histograms
     info!("Consolidating chunks...");
+    let spinner_style =
+        ProgressStyle::with_template("{spinner:.cyan} {msg}").expect("valid spinner template");
+    let consolidate_spinner = if show_progress {
+        let sp = ProgressBar::new_spinner();
+        sp.set_style(spinner_style.clone());
+        sp.set_message("Consolidating kmer counts...");
+        sp.enable_steady_tick(std::time::Duration::from_millis(80));
+        sp
+    } else {
+        ProgressBar::hidden()
+    };
     let start = std::time::Instant::now();
 
     let mut kmer_counts: KmerCounts = KmerCounts::new(&k);
@@ -1141,6 +1151,7 @@ fn main() -> Result<()> {
             let histo = kmer::Histogram::from_kmer_counts(&kmer_counts, &args.histo_max);
             histos.push(histo);
         }
+        consolidate_spinner.finish_and_clear();
         info!(
             "Chunks consolidated, time: {}",
             format_duration(start.elapsed())
@@ -1249,6 +1260,7 @@ fn main() -> Result<()> {
             kmer_counts.extend(chunk.get_kmer_counts())?;
             drop(chunk);
         }
+        consolidate_spinner.finish_and_clear();
         info!(
             "Chunks consolidated, time: {}",
             format_duration(start.elapsed())
@@ -1274,6 +1286,15 @@ fn main() -> Result<()> {
 
     if !pcr_runs.is_empty() {
         info!("Running in silico PCR...");
+        let pcr_spinner = if show_progress {
+            let sp = ProgressBar::new_spinner();
+            sp.set_style(spinner_style.clone());
+            sp.set_message("Running in silico PCR...");
+            sp.enable_steady_tick(std::time::Duration::from_millis(80));
+            sp
+        } else {
+            ProgressBar::hidden()
+        };
 
         // Prep kmer counts for in silico PCR. Filter low-count kmers and add reverse complements
         info!(
@@ -1290,6 +1311,7 @@ fn main() -> Result<()> {
                 (pcr_params, fasta)
             })
             .collect();
+        pcr_spinner.finish_and_clear();
 
         // Write output files sequentially to maintain deterministic order
         for (pcr_params, fasta_result) in pcr_fasta_results {

@@ -112,6 +112,9 @@ pub fn print_pcr_panels() {
     for panel in &panels {
         let n = panel.primers.len();
         let noun = if n == 1 { "primer" } else { "primers" };
-        println!("  {:<16} {} ({} {})", panel.name, panel.description, n, noun);
+        println!(
+            "  {:<16} {} ({} {})",
+            panel.name, panel.description, n, noun
+        );
     }
 }
