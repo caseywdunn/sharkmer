@@ -69,6 +69,32 @@ A branch is considered passing when:
 - `cargo clippy` reports no warnings
 - `cargo fmt --check` reports no changes needed
 
+## Regression benchmarks
+
+A benchmark suite in `benchmarks/` runs sharkmer against 14 real-world SRA
+datasets across multiple primer panels. Run after each development phase or
+before a release to check for regressions.
+
+Requires Python 3 with `pyyaml` installed.
+
+    # Run the full benchmark (builds sharkmer, downloads data if needed, runs all samples)
+    python benchmarks/run_benchmark.py
+
+    # Run specific samples only
+    python benchmarks/run_benchmark.py --samples Porites_lutea Agalma_elegans
+
+    # Pre-download all sample data without running benchmarks
+    python benchmarks/run_benchmark.py --download-only
+
+Results are written as YAML to `benchmarks/results/` with the date, version,
+and git commit in the filename. Use `benchmarks/compare.py` to diff results
+across versions.
+
+Sample data (~1M reads each) is cached in `benchmarks/data/` and downloaded
+from ENA on first run. The download streams and truncates early, so it does
+not fetch full runs. Configuration (samples, panels, read counts) is in
+`benchmarks/config.yaml`.
+
 ## Bioconda recipe
 
 Bioconda release follows their [contribution workflow](https://bioconda.github.io/contributor/index.html).
