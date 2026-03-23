@@ -263,7 +263,10 @@ sharkmer --completions fish > ~/.config/fish/completions/sharkmer.fish
 ```
 
 After installing, open a new terminal session (or run `source ~/.zshrc` etc.)
-for completions to take effect.
+for completions to take effect. Completion scripts are a static snapshot of the
+available flags, so if you upgrade sharkmer you should regenerate them by
+re-running the same command above. Bioconda users don't need to worry about
+this — completions are updated automatically with each package upgrade.
 
 ## Development
 
