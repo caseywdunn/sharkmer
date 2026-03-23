@@ -58,27 +58,6 @@ struct RunStats {
     pcr_results: Vec<PcrGeneResult>,
 }
 
-#[allow(dead_code)]
-fn is_valid_nucleotide(c: char) -> bool {
-    match c {
-        'A' => true,
-        'C' => true,
-        'G' => true,
-        'T' => true,
-        'R' => true, // A or G
-        'Y' => true, // C or T
-        'S' => true, // C or G
-        'W' => true, // A or T
-        'K' => true, // G or T
-        'M' => true, // A or C
-        'B' => true, // C or G or T
-        'D' => true, // A or G or T
-        'H' => true, // A or C or T
-        'V' => true, // A or C or G
-        'N' => true, // A or C or G or T
-        _ => false,
-    }
-}
 
 /// Parse an inline primer specification string (key=value,key=value,...) into PCRParams.
 pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
@@ -286,6 +265,10 @@ struct Args {
     /// Print shell tab-completion script and exit
     #[arg(long, help_heading = "General", value_name = "SHELL")]
     completions: Option<Shell>,
+
+    /// Validate primer panels/primers and exit
+    #[arg(long, help_heading = "PCR (requires at least one)")]
+    validate_panels: bool,
 
     /// Validate inputs and print what would happen, then exit
     #[arg(long, help_heading = "General")]
@@ -713,6 +696,77 @@ fn main() -> Result<()> {
         std::process::exit(0);
     }
 
+    // Collect PCR primer specifications from all sources
+    let mut pcr_runs: Vec<pcr::PCRParams> = Vec::new();
+
+    // Load preconfigured panels by name
+    for panel_name in args.pcr_panel.iter() {
+        let pcr_params = preconfigured::get_panel(panel_name)
+            .map_err(|e| anyhow::anyhow!(e))
+            .with_context(|| format!("Error loading panel: {}", panel_name))?;
+        pcr_runs.extend(pcr_params);
+    }
+
+    // Load primer panels from YAML files
+    for panel_file in args.pcr_panel_file.iter() {
+        let path_str = panel_file
+            .to_str()
+            .context("PCR panel file path contains invalid UTF-8")?;
+        let pcr_params = preconfigured::load_panel_file(path_str)
+            .with_context(|| format!("Error loading panel file: {}", path_str))?;
+        pcr_runs.extend(pcr_params);
+    }
+
+    // Parse inline primer specifications
+    for pcr_string in args.pcr_primers.iter() {
+        let pcr_params = parse_pcr_primers_string(pcr_string)
+            .with_context(|| format!("Error parsing primer specification: {}", pcr_string))?;
+        pcr_runs.push(pcr_params);
+    }
+
+    // Validate all primer parameters
+    for pcr_params in pcr_runs.iter() {
+        pcr::validate_pcr_params(pcr_params)
+            .with_context(|| format!("Invalid primer: {}", pcr_params.gene_name))?;
+    }
+
+    // Check that there are no duplicate gene names
+    let mut gene_names: Vec<String> = Vec::new();
+    for pcr_params in pcr_runs.iter() {
+        ensure!(
+            !gene_names.contains(&pcr_params.gene_name),
+            "Duplicate gene name: {}",
+            pcr_params.gene_name
+        );
+        gene_names.push(pcr_params.gene_name.clone());
+    }
+
+    // Validate panels and exit if --validate-panels is specified
+    if args.validate_panels {
+        if pcr_runs.is_empty() {
+            bail!(
+                "--validate-panels requires at least one of --pcr-panel, --pcr-panel-file, or --pcr-primers"
+            );
+        }
+        println!("Validated {} primer pairs:\n", pcr_runs.len());
+        for p in &pcr_runs {
+            println!("  {}", p.gene_name);
+            println!("    forward:  {} ({} bp)", p.forward_seq, p.forward_seq.len());
+            println!("    reverse:  {} ({} bp)", p.reverse_seq, p.reverse_seq.len());
+            println!(
+                "    length:   {}-{} bp",
+                p.min_length, p.max_length
+            );
+            println!("    coverage: >= {}", p.min_coverage);
+            println!(
+                "    mismatches: {}, trim: {}, dedup-edit-threshold: {}",
+                p.mismatches, p.trim, p.dedup_edit_threshold
+            );
+        }
+        println!("\nAll primers valid.");
+        std::process::exit(0);
+    }
+
     // Derive sample name: use --sample if provided, otherwise derive from ENA metadata for --sra.
     // Cache ENA result to avoid querying twice.
     let mut cached_ena_result: Option<EnaResult> = None;
@@ -781,45 +835,6 @@ fn main() -> Result<()> {
         args.min_kmer_count >= 1,
         "min-kmer-count must be at least 1"
     );
-
-    // Collect PCR primer specifications from all sources
-    let mut pcr_runs: Vec<pcr::PCRParams> = Vec::new();
-
-    // Load preconfigured panels by name
-    for panel_name in args.pcr_panel.iter() {
-        let pcr_params = preconfigured::get_panel(panel_name)
-            .map_err(|e| anyhow::anyhow!(e))
-            .with_context(|| format!("Error loading panel: {}", panel_name))?;
-        pcr_runs.extend(pcr_params);
-    }
-
-    // Load primer panels from YAML files
-    for panel_file in args.pcr_panel_file.iter() {
-        let path_str = panel_file
-            .to_str()
-            .context("PCR panel file path contains invalid UTF-8")?;
-        let pcr_params = preconfigured::load_panel_file(path_str)
-            .with_context(|| format!("Error loading panel file: {}", path_str))?;
-        pcr_runs.extend(pcr_params);
-    }
-
-    // Parse inline primer specifications
-    for pcr_string in args.pcr_primers.iter() {
-        let pcr_params = parse_pcr_primers_string(pcr_string)
-            .with_context(|| format!("Error parsing primer specification: {}", pcr_string))?;
-        pcr_runs.push(pcr_params);
-    }
-
-    // Check that there are no duplicate gene names
-    let mut gene_names: Vec<String> = Vec::new();
-    for pcr_params in pcr_runs.iter() {
-        ensure!(
-            !gene_names.contains(&pcr_params.gene_name),
-            "Duplicate gene name: {}",
-            pcr_params.gene_name
-        );
-        gene_names.push(pcr_params.gene_name.clone());
-    }
 
     // Warn if no output will be produced
     if args.chunks == 0 && pcr_runs.is_empty() {

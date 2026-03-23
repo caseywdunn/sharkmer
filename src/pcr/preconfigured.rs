@@ -1,6 +1,5 @@
 use anyhow::{bail, Context, Result};
 
-use super::pcrparams_string;
 use super::PCRParams;
 
 #[derive(serde::Deserialize)]

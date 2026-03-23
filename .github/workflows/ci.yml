@@ -21,11 +21,8 @@ jobs:
       - run: cargo fmt --all --check
 
   clippy:
-    name: Clippy (${{ matrix.features }})
+    name: Clippy
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        features: [fxhashmap, intmap, nohashmap]
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -37,17 +34,16 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: ${{ runner.os }}-clippy-${{ matrix.features }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-clippy-${{ matrix.features }}-
-      - run: cargo clippy --no-default-features --features ${{ matrix.features }} -- -D warnings
+          key: ${{ runner.os }}-clippy-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-clippy-
+      - run: cargo clippy -- -D warnings
 
   test:
-    name: Test (${{ matrix.os }}, ${{ matrix.features }})
+    name: Test (${{ matrix.os }})
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
-        features: [fxhashmap, intmap, nohashmap]
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
@@ -57,6 +53,6 @@ jobs:
             ~/.cargo/registry
             ~/.cargo/git
             target
-          key: ${{ runner.os }}-test-${{ matrix.features }}-${{ hashFiles('**/Cargo.lock') }}
-          restore-keys: ${{ runner.os }}-test-${{ matrix.features }}-
-      - run: cargo test --release --no-default-features --features ${{ matrix.features }}
+          key: ${{ runner.os }}-test-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: ${{ runner.os }}-test-
+      - run: cargo test --release
