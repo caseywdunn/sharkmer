@@ -112,14 +112,6 @@ impl Read {
     ///
     /// A vector of 64-bit integers, where each integer represents a canonical kmer extracted
     /// from the encoded sequence.
-    ///
-    /// # Example
-    ///
-    /// ```rust
-    /// let encoded_sequence: Vec<u8> = /* some encoded sequence */;
-    /// let kmer_length: usize = /* desired kmer length */;
-    /// let canonical_kmers = get_kmers(&encoded_sequence, &kmer_length);
-    /// ```
     pub fn get_kmers(&self, k: &usize) -> Result<Vec<u64>> {
         ensure!(*k > 0 && *k < 32, "k must be between 1 and 31, got {}", k);
         let ints = &self.sequence;
@@ -540,14 +532,6 @@ impl Histogram {
 /// # Returns
 ///
 /// A 64-bit unsigned integer representing the reverse complement of the given kmer.
-///
-/// # Example
-///
-/// ```rust
-/// let kmer: u64 = /* some kmer encoding */;
-/// let k: usize = /* kmer length */;
-/// let reverse_complement = revcomp_kmer(&kmer, &k);
-/// ```
 pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
     let mut revcomp = 0;
     for i in 0..*k {
@@ -576,13 +560,6 @@ pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
 /// # Panics
 ///
 /// The function will exit prematurely if it encounters a base other than `A`, `C`, `G`, `T`, or `N`.
-///
-/// # Example
-///
-/// ```rust
-/// let sequence = "ACGTNAGCT";
-/// let reads = seq_to_reads(&sequence);
-/// ```
 pub fn seq_to_reads(seq: &str) -> Result<Vec<Read>> {
     let mut reads: Vec<Read> = Vec::new();
 
