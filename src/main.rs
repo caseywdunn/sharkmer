@@ -202,27 +202,27 @@ struct Args {
     outdir: PathBuf,
 
     /// Use a preconfigured primer panel (repeatable)
-    #[arg(long, help_heading = "PCR (requires at least one)")]
+    #[arg(long, help_heading = "PCR")]
     pcr_panel: Vec<String>,
 
     /// Load a primer panel from a YAML file (repeatable)
-    #[arg(long, help_heading = "PCR (requires at least one)")]
+    #[arg(long, help_heading = "PCR")]
     pcr_panel_file: Vec<PathBuf>,
 
     /// Specify a primer pair inline (repeatable, see --help-pcr)
-    #[arg(long, help_heading = "PCR (requires at least one)")]
+    #[arg(long, help_heading = "PCR")]
     pcr_primers: Vec<String>,
 
     /// List available primer panels and exit
-    #[arg(long, help_heading = "PCR (requires at least one)")]
+    #[arg(long, help_heading = "PCR info")]
     list_panels: bool,
 
     /// Export a built-in panel as YAML to stdout and exit
-    #[arg(long, help_heading = "PCR (requires at least one)")]
+    #[arg(long, help_heading = "PCR info")]
     export_panel: Option<String>,
 
     /// Show detailed help for --pcr-primers format
-    #[arg(long, help_heading = "PCR (requires at least one)")]
+    #[arg(long, help_heading = "PCR info")]
     help_pcr: bool,
 
     /// Kmer length
@@ -270,7 +270,7 @@ struct Args {
     completions: Option<Shell>,
 
     /// Validate primer panels/primers and exit
-    #[arg(long, help_heading = "PCR (requires at least one)")]
+    #[arg(long, help_heading = "PCR info")]
     validate_panels: bool,
 
     /// Validate inputs and print what would happen, then exit
