@@ -1,6 +1,9 @@
 // kmer/mod.rs
 //! This module provides kmer functions.
 
+#[cfg(all(feature = "ahashmap", feature = "fxhashmap"))]
+compile_error!("Features 'ahashmap' and 'fxhashmap' are mutually exclusive. Enable only one.");
+
 use anyhow::{bail, ensure, Context, Result};
 
 #[cfg(feature = "fxhashmap")]
