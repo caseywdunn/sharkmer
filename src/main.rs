@@ -853,7 +853,7 @@ fn main() -> Result<()> {
     info!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
     debug!("{:?}", args);
 
-    // Create the output directory if it does not exist
+    // Resolve the output directory path (creation deferred until after dry-run check)
     let outdir_str = args
         .outdir
         .to_str()
@@ -863,8 +863,6 @@ fn main() -> Result<()> {
     } else {
         format!("{}/", outdir_str)
     };
-    std::fs::create_dir_all(&directory)
-        .with_context(|| format!("Failed to create output directory: {}", directory))?;
 
     let k = args.k;
 
@@ -999,6 +997,10 @@ fn main() -> Result<()> {
 
         std::process::exit(0);
     }
+
+    // Create the output directory now that we know this is not a dry run
+    std::fs::create_dir_all(&directory)
+        .with_context(|| format!("Failed to create output directory: {}", directory))?;
 
     // Set the number of threads for Rayon to use
     rayon::ThreadPoolBuilder::new()
