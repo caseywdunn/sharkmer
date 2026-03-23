@@ -1399,7 +1399,7 @@ fn extend_graph(
     Ok(graph)
 }
 
-#[derive(Clone, serde::Deserialize)]
+#[derive(Clone, Debug, serde::Deserialize)]
 pub struct PCRParams {
     pub forward_seq: String,
     pub reverse_seq: String,

@@ -14,8 +14,13 @@ fn parse_panel_yaml(yaml_str: &str) -> Result<PanelFile> {
     serde_yaml::from_str(yaml_str).context("Failed to parse panel YAML")
 }
 
+/// Check whether a string looks like a URL.
+pub fn is_url(source: &str) -> bool {
+    source.starts_with("http://") || source.starts_with("https://")
+}
+
 /// Load a panel from a user-supplied YAML file path.
-pub fn load_panel_file(path: &str) -> Result<Vec<PCRParams>> {
+fn load_panel_file(path: &str) -> Result<Vec<PCRParams>> {
     let yaml_str = std::fs::read_to_string(path)
         .with_context(|| format!("Failed to read panel file: {}", path))?;
     let mut panel = parse_panel_yaml(&yaml_str)
@@ -27,6 +32,37 @@ pub fn load_panel_file(path: &str) -> Result<Vec<PCRParams>> {
     }
 
     Ok(panel.primers)
+}
+
+/// Load a panel from a URL.
+fn load_panel_url(url: &str) -> Result<Vec<PCRParams>> {
+    log::info!("Downloading primer panel from {}", url);
+    let response = ureq::get(url)
+        .call()
+        .with_context(|| format!("Failed to download panel from URL: {}", url))?;
+
+    let yaml_str = response
+        .into_string()
+        .with_context(|| format!("Failed to read panel response from URL: {}", url))?;
+
+    let mut panel = parse_panel_yaml(&yaml_str)
+        .with_context(|| format!("Failed to parse panel YAML from URL: {}", url))?;
+
+    // Prepend panel name to gene names
+    for param in panel.primers.iter_mut() {
+        param.gene_name = format!("{}_{}", panel.name, param.gene_name);
+    }
+
+    Ok(panel.primers)
+}
+
+/// Load a panel from a file path or URL.
+pub fn load_panel_source(source: &str) -> Result<Vec<PCRParams>> {
+    if is_url(source) {
+        load_panel_url(source)
+    } else {
+        load_panel_file(source)
+    }
 }
 
 /// Returns (name, raw_yaml) pairs for all built-in panels.
@@ -103,6 +139,42 @@ pub fn export_panel_yaml(panel_name: &str) -> Result<String> {
         panel_name,
         available.join(", ")
     )
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_is_url() {
+        assert!(is_url("https://example.com/panel.yaml"));
+        assert!(is_url("http://example.com/panel.yaml"));
+        assert!(!is_url("/path/to/panel.yaml"));
+        assert!(!is_url("relative/panel.yaml"));
+        assert!(!is_url("panel.yaml"));
+    }
+
+    #[test]
+    fn test_load_panel_file_from_fixture() {
+        let params = load_panel_file("tests/fixtures/test_panel.yaml").unwrap();
+        assert_eq!(params.len(), 1);
+        assert_eq!(params[0].gene_name, "test_panel_18S");
+    }
+
+    #[test]
+    fn test_load_panel_source_local_file() {
+        let params = load_panel_source("tests/fixtures/test_panel.yaml").unwrap();
+        assert_eq!(params.len(), 1);
+        assert_eq!(params[0].gene_name, "test_panel_18S");
+    }
+
+    #[test]
+    fn test_load_panel_source_bad_url() {
+        let result = load_panel_source("https://localhost:1/nonexistent_panel.yaml");
+        assert!(result.is_err());
+        let err_msg = format!("{}", result.unwrap_err());
+        assert!(err_msg.contains("Failed to download panel from URL"));
+    }
 }
 
 pub fn print_pcr_panels() {

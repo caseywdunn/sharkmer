@@ -205,9 +205,9 @@ struct Args {
     #[arg(long, help_heading = "PCR")]
     pcr_panel: Vec<String>,
 
-    /// Load a primer panel from a YAML file (repeatable)
+    /// Load a primer panel from a YAML file or URL (repeatable)
     #[arg(long, help_heading = "PCR")]
-    pcr_panel_file: Vec<PathBuf>,
+    pcr_panel_file: Vec<String>,
 
     /// Specify a primer pair inline (repeatable, see --help-pcr)
     #[arg(long, help_heading = "PCR")]
@@ -713,15 +713,17 @@ fn main() -> Result<()> {
         pcr_runs.extend(pcr_params);
     }
 
-    // Load primer panels from YAML files
-    for panel_file in args.pcr_panel_file.iter() {
-        let path_str = panel_file
-            .to_str()
-            .context("PCR panel file path contains invalid UTF-8")?;
-        let mut pcr_params = preconfigured::load_panel_file(path_str)
-            .with_context(|| format!("Error loading panel file: {}", path_str))?;
+    // Load primer panels from YAML files or URLs
+    for panel_source in args.pcr_panel_file.iter() {
+        let mut pcr_params = preconfigured::load_panel_source(panel_source)
+            .with_context(|| format!("Error loading panel: {}", panel_source))?;
+        let source_label = if preconfigured::is_url(panel_source) {
+            format!("panel URL '{}'", panel_source)
+        } else {
+            format!("panel file '{}'", panel_source)
+        };
         for p in pcr_params.iter_mut() {
-            p.source = format!("panel file '{}'", path_str);
+            p.source = source_label.clone();
         }
         pcr_runs.extend(pcr_params);
     }
@@ -930,13 +932,16 @@ fn main() -> Result<()> {
         }
     }
 
-    // Validate pcr-panel-file paths exist
-    for panel_file in args.pcr_panel_file.iter() {
-        ensure!(
-            panel_file.exists(),
-            "PCR panel file does not exist: {}",
-            panel_file.display()
-        );
+    // Validate pcr-panel-file paths exist (skip URL sources — validated at download time)
+    for panel_source in args.pcr_panel_file.iter() {
+        if !preconfigured::is_url(panel_source) {
+            let path = std::path::Path::new(panel_source);
+            ensure!(
+                path.exists(),
+                "PCR panel file does not exist: {}",
+                panel_source
+            );
+        }
     }
 
     // Dry-run: print what would happen and exit
