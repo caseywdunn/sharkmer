@@ -1,4 +1,5 @@
 use std::fs;
+use std::io::Write;
 use std::path::PathBuf;
 use std::process::Command;
 
@@ -568,5 +569,233 @@ fn test_export_panel() {
     assert!(
         stdout.contains("forward_seq:"),
         "Should contain primer sequences"
+    );
+}
+
+// --- Malformed FASTQ tests ---
+
+/// Helper to write a temporary FASTQ file and run sharkmer on it,
+/// returning the Command output.
+fn run_with_fastq_content(content: &str) -> std::process::Output {
+    let tmpdir = tempfile::tempdir().expect("failed to create temp dir");
+    let fastq_path = tmpdir.path().join("test.fastq");
+    let mut f = fs::File::create(&fastq_path).expect("failed to create temp fastq");
+    f.write_all(content.as_bytes())
+        .expect("failed to write temp fastq");
+
+    let outdir = tempfile::tempdir().expect("failed to create temp dir");
+
+    Command::new(sharkmer_bin())
+        .args([
+            "-k",
+            "21",
+            "-s",
+            "malformed_test",
+            "-o",
+            outdir.path().to_str().unwrap(),
+            "--chunks",
+            "0",
+            fastq_path.to_str().unwrap(),
+        ])
+        .output()
+        .expect("failed to run sharkmer")
+}
+
+/// Verify sharkmer rejects FASTA input with a clear error message.
+/// Uses 4 lines so the reader doesn't hit truncation before validation.
+#[test]
+fn test_error_fasta_input() {
+    let content = ">seq1\nACGTACGTACGTACGTACGTACGT\n>seq2\nACGTACGTACGTACGTACGTACGT\n";
+    let output = run_with_fastq_content(content);
+
+    assert!(
+        !output.status.success(),
+        "sharkmer should fail on FASTA input"
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("FASTA") || stderr.contains("fasta"),
+        "Error should mention FASTA format, got: {}",
+        stderr
+    );
+}
+
+/// Verify sharkmer rejects FASTQ with mismatched sequence/quality lengths.
+#[test]
+fn test_error_mismatched_quality_length() {
+    let content = "@read1\nACGTACGTACGTACGTACGTACGT\n+\nIIII\n";
+    let output = run_with_fastq_content(content);
+
+    assert!(
+        !output.status.success(),
+        "sharkmer should fail on mismatched seq/qual lengths"
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("mismatched") || stderr.contains("length"),
+        "Error should mention length mismatch, got: {}",
+        stderr
+    );
+}
+
+/// Verify sharkmer rejects FASTQ with invalid header (no @ prefix).
+#[test]
+fn test_error_invalid_fastq_header() {
+    let content = "BAD_HEADER\nACGTACGTACGTACGTACGTACGT\n+\nIIIIIIIIIIIIIIIIIIIIIIII\n";
+    let output = run_with_fastq_content(content);
+
+    assert!(
+        !output.status.success(),
+        "sharkmer should fail on invalid FASTQ header"
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("header") || stderr.contains("'@'"),
+        "Error should mention invalid header, got: {}",
+        stderr
+    );
+}
+
+/// Verify sharkmer rejects an empty input file.
+#[test]
+fn test_error_empty_input() {
+    let output = run_with_fastq_content("");
+
+    assert!(
+        !output.status.success(),
+        "sharkmer should fail on empty input"
+    );
+}
+
+// --- Panel validation tests ---
+
+/// Helper to write a temporary YAML panel file and run --validate-panels on it.
+fn run_validate_panel(yaml: &str) -> std::process::Output {
+    let tmpdir = tempfile::tempdir().expect("failed to create temp dir");
+    let panel_path = tmpdir.path().join("test_panel.yaml");
+    let mut f = fs::File::create(&panel_path).expect("failed to create temp panel");
+    f.write_all(yaml.as_bytes())
+        .expect("failed to write temp panel");
+
+    Command::new(sharkmer_bin())
+        .args([
+            "--validate-panels",
+            "--pcr-panel-file",
+            panel_path.to_str().unwrap(),
+        ])
+        .output()
+        .expect("failed to run sharkmer")
+}
+
+/// Verify --validate-panels accepts a well-formed user panel.
+#[test]
+fn test_validate_panel_valid() {
+    let yaml = "\
+name: test_panel
+description: A test panel
+primers:
+  - gene_name: test_gene
+    forward_seq: ACGTACGTACGT
+    reverse_seq: TGCATGCATGCA
+    min_length: 100
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+";
+    let output = run_validate_panel(yaml);
+
+    assert!(
+        output.status.success(),
+        "Valid panel should pass validation: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    assert!(stdout.contains("All primers valid"));
+}
+
+/// Verify --validate-panels rejects a primer with invalid nucleotide characters.
+#[test]
+fn test_validate_panel_invalid_nucleotide() {
+    let yaml = "\
+name: bad_panel
+description: Panel with invalid bases
+primers:
+  - gene_name: bad_gene
+    forward_seq: ACGTXZQP
+    reverse_seq: TGCATGCA
+    min_length: 100
+    max_length: 500
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+";
+    let output = run_validate_panel(yaml);
+
+    assert!(
+        !output.status.success(),
+        "Panel with invalid nucleotides should fail"
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("Invalid nucleotide"),
+        "Error should mention invalid nucleotide, got: {}",
+        stderr
+    );
+}
+
+/// Verify --validate-panels rejects min_length > max_length.
+#[test]
+fn test_validate_panel_min_exceeds_max() {
+    let yaml = "\
+name: bad_panel
+description: Panel with inverted lengths
+primers:
+  - gene_name: bad_gene
+    forward_seq: ACGTACGTACGT
+    reverse_seq: TGCATGCATGCA
+    min_length: 1000
+    max_length: 100
+    min_coverage: 2
+    mismatches: 2
+    trim: 15
+";
+    let output = run_validate_panel(yaml);
+
+    assert!(
+        !output.status.success(),
+        "Panel with min > max length should fail"
+    );
+    let stderr = String::from_utf8_lossy(&output.stderr);
+    assert!(
+        stderr.contains("min-length") || stderr.contains("greater than max"),
+        "Error should mention length constraint, got: {}",
+        stderr
+    );
+}
+
+/// Verify --pcr-panel-file rejects malformed YAML.
+#[test]
+fn test_validate_panel_malformed_yaml() {
+    let yaml = "this is not: valid: yaml: [[[";
+    let output = run_validate_panel(yaml);
+
+    assert!(!output.status.success(), "Malformed YAML should fail");
+}
+
+/// Verify --pcr-panel-file rejects YAML missing required fields.
+#[test]
+fn test_validate_panel_missing_fields() {
+    let yaml = "\
+name: incomplete_panel
+description: Missing primer fields
+primers:
+  - gene_name: no_seqs
+";
+    let output = run_validate_panel(yaml);
+
+    assert!(
+        !output.status.success(),
+        "Panel missing required fields should fail"
     );
 }
