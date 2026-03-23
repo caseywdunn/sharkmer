@@ -1421,6 +1421,9 @@ pub struct PCRParams {
     pub notes: String,
     #[serde(default = "default_dedup_edit_threshold")]
     pub dedup_edit_threshold: u32,
+    /// Where this primer was loaded from (display only, not serialized)
+    #[serde(skip)]
+    pub source: String,
 }
 
 fn default_max_length() -> usize {
@@ -1439,73 +1442,115 @@ fn default_dedup_edit_threshold() -> u32 {
     DEFAULT_DEDUP_EDIT_THRESHOLD
 }
 
-pub fn validate_pcr_params(params: &PCRParams) -> Result<()> {
+/// Validate a primer pair and return a list of (error, suggestion) pairs.
+/// An empty list means the primer is valid.
+pub fn validate_pcr_params(params: &PCRParams) -> Vec<(String, String)> {
+    let mut errors: Vec<(String, String)> = Vec::new();
+
     if params.forward_seq.len() < 2 {
-        bail!(
-            "Forward primer sequence is too short: {}",
-            params.forward_seq
-        );
+        errors.push((
+            format!(
+                "Forward primer sequence is too short: '{}'",
+                params.forward_seq
+            ),
+            "Primer sequences must be at least 2 bases".to_string(),
+        ));
     }
 
     if params.reverse_seq.len() < 2 {
-        bail!(
-            "Reverse primer sequence is too short: {}",
-            params.reverse_seq
-        );
+        errors.push((
+            format!(
+                "Reverse primer sequence is too short: '{}'",
+                params.reverse_seq
+            ),
+            "Primer sequences must be at least 2 bases".to_string(),
+        ));
     }
 
-    for c in params.forward_seq.chars() {
-        if !is_valid_nucleotide(c) {
-            bail!(
-                "Invalid nucleotide {} in forward primer {}",
-                c,
-                params.forward_seq
-            );
+    // Only check nucleotide validity if sequences are long enough to be meaningful
+    if params.forward_seq.len() >= 2 {
+        let invalid: Vec<char> = params
+            .forward_seq
+            .chars()
+            .filter(|c| !is_valid_nucleotide(*c))
+            .collect();
+        if !invalid.is_empty() {
+            let chars: Vec<String> = invalid.iter().map(|c| c.to_string()).collect();
+            errors.push((
+                format!(
+                    "Invalid nucleotide(s) {} in forward primer {}",
+                    chars.join(", "),
+                    params.forward_seq
+                ),
+                "Valid characters: A C G T R Y W S M K B D H V N".to_string(),
+            ));
         }
     }
 
-    for c in params.reverse_seq.chars() {
-        if !is_valid_nucleotide(c) {
-            bail!(
-                "Invalid nucleotide {} in reverse primer {}",
-                c,
-                params.reverse_seq
-            );
+    if params.reverse_seq.len() >= 2 {
+        let invalid: Vec<char> = params
+            .reverse_seq
+            .chars()
+            .filter(|c| !is_valid_nucleotide(*c))
+            .collect();
+        if !invalid.is_empty() {
+            let chars: Vec<String> = invalid.iter().map(|c| c.to_string()).collect();
+            errors.push((
+                format!(
+                    "Invalid nucleotide(s) {} in reverse primer {}",
+                    chars.join(", "),
+                    params.reverse_seq
+                ),
+                "Valid characters: A C G T R Y W S M K B D H V N".to_string(),
+            ));
         }
     }
 
     if params.min_length > params.max_length {
-        bail!(
-            "min-length is greater than max-length: {} > {}",
-            params.min_length,
-            params.max_length
-        );
+        errors.push((
+            format!(
+                "min-length ({}) is greater than max-length ({})",
+                params.min_length, params.max_length
+            ),
+            "Swap the values or adjust the range".to_string(),
+        ));
     }
 
     if params.min_coverage < 2 {
-        bail!(
-            "min-coverage is {}, must be greater than 1",
-            params.min_coverage
-        );
+        errors.push((
+            format!(
+                "min-coverage is {}, must be at least 2",
+                params.min_coverage
+            ),
+            "Set min-coverage to at least 2".to_string(),
+        ));
     }
 
     if params.max_length == 0 {
-        bail!("max-length must be specified and be greater than 0");
+        errors.push((
+            "max-length is 0".to_string(),
+            "Set max-length to a positive value".to_string(),
+        ));
     }
 
     if params.gene_name.is_empty() {
-        bail!("Gene name must be specified and not be empty");
+        errors.push((
+            "Gene name is empty".to_string(),
+            "Provide a unique name for the primer pair via the 'name' field".to_string(),
+        ));
     }
 
-    if params.forward_seq == params.reverse_seq {
-        bail!(
-            "Forward and reverse primers are identical for gene '{}': {}",
-            params.gene_name,
-            params.forward_seq
-        );
+    if params.forward_seq == params.reverse_seq && params.forward_seq.len() >= 2 {
+        errors.push((
+            format!(
+                "Forward and reverse primers are identical: {}",
+                params.forward_seq
+            ),
+            "Check that forward and reverse sequences are not swapped".to_string(),
+        ));
     }
 
-    Ok(())
+    errors
 }
 
 // The primary function for PCR
@@ -2386,6 +2431,7 @@ mod tests {
             citation: "".to_string(),
             notes: "".to_string(),
             dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
+            source: "test".to_string(),
         };
 
         (read_string, k, replicates, kmer_counts, params)

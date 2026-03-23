@@ -150,9 +150,8 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
         citation,
         notes,
         dedup_edit_threshold,
+        source: format!("--pcr-primers \"{}\"", pcr_string),
     };
-
-    pcr::validate_pcr_params(&pcr_params)?;
 
     Ok(pcr_params)
 }
@@ -700,9 +699,12 @@ fn main() -> Result<()> {
 
     // Load preconfigured panels by name
     for panel_name in args.pcr_panel.iter() {
-        let pcr_params = preconfigured::get_panel(panel_name)
+        let mut pcr_params = preconfigured::get_panel(panel_name)
             .map_err(|e| anyhow::anyhow!(e))
             .with_context(|| format!("Error loading panel: {}", panel_name))?;
+        for p in pcr_params.iter_mut() {
+            p.source = format!("built-in panel '{}'", panel_name);
+        }
         pcr_runs.extend(pcr_params);
     }
 
@@ -711,8 +713,11 @@ fn main() -> Result<()> {
         let path_str = panel_file
             .to_str()
             .context("PCR panel file path contains invalid UTF-8")?;
-        let pcr_params = preconfigured::load_panel_file(path_str)
+        let mut pcr_params = preconfigured::load_panel_file(path_str)
             .with_context(|| format!("Error loading panel file: {}", path_str))?;
+        for p in pcr_params.iter_mut() {
+            p.source = format!("panel file '{}'", path_str);
+        }
         pcr_runs.extend(pcr_params);
     }
 
@@ -723,10 +728,32 @@ fn main() -> Result<()> {
         pcr_runs.push(pcr_params);
     }
 
-    // Validate all primer parameters
+    // Validate all primer parameters, collecting all errors
+    let mut total_errors = 0usize;
+    let mut error_report = String::new();
     for pcr_params in pcr_runs.iter() {
-        pcr::validate_pcr_params(pcr_params)
-            .with_context(|| format!("Invalid primer: {}", pcr_params.gene_name))?;
+        let errors = pcr::validate_pcr_params(pcr_params);
+        if !errors.is_empty() {
+            total_errors += errors.len();
+            error_report.push_str(&format!(
+                "\n  {} ({}):\n",
+                pcr_params.gene_name, pcr_params.source
+            ));
+            for (err, suggestion) in &errors {
+                error_report.push_str(&format!(
+                    "    - {}\n      Suggestion: {}\n",
+                    err, suggestion
+                ));
+            }
+        }
+    }
+    if total_errors > 0 {
+        bail!(
+            "Primer validation failed ({} error{}):\n{}",
+            total_errors,
+            if total_errors == 1 { "" } else { "s" },
+            error_report
+        );
     }
 
     // Check that there are no duplicate gene names
@@ -811,12 +838,15 @@ fn main() -> Result<()> {
     debug!("{:?}", args);
 
     // Create the output directory if it does not exist
-    let directory = format!(
-        "{}/",
-        args.outdir
-            .to_str()
-            .context("Output directory path contains invalid UTF-8")?
-    );
+    let outdir_str = args
+        .outdir
+        .to_str()
+        .context("Output directory path contains invalid UTF-8")?;
+    let directory = if outdir_str.ends_with('/') {
+        outdir_str.to_string()
+    } else {
+        format!("{}/", outdir_str)
+    };
     std::fs::create_dir_all(&directory)
         .with_context(|| format!("Failed to create output directory: {}", directory))?;
 
@@ -1375,6 +1405,11 @@ fn main() -> Result<()> {
         }
 
         // Print gene result table
+        let (sym_pass, sym_fail) = if show_progress {
+            ("\u{2714}", "\u{2718}") // ✔ ✘
+        } else {
+            ("+", "-")
+        };
         for result in &pcr_results {
             if result.status == "success" {
                 let lengths: Vec<String> = result
@@ -1383,14 +1418,15 @@ fn main() -> Result<()> {
                     .map(|l| l.to_string())
                     .collect();
                 warn!(
-                    "  \u{2714} {} ({} product{}, {} bp)",
+                    "  {} {} ({} product{}, {} bp)",
+                    sym_pass,
                     result.gene_name,
                     result.n_products,
                     if result.n_products == 1 { "" } else { "s" },
                     lengths.join(", ")
                 );
             } else {
-                warn!("  \u{2718} {} (no products)", result.gene_name);
+                warn!("  {} {} (no products)", sym_fail, result.gene_name);
             }
         }
 
