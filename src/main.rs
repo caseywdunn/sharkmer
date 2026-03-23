@@ -79,7 +79,12 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
     for item in split.iter() {
         let key_value: Vec<&str> = item.split('=').collect();
         if key_value.len() != 2 {
-            bail!("Invalid parameter, should be in format key=value: {}", item);
+            bail!(
+                "Invalid parameter (should be key=value): '{}'\n\
+                 Commas are not allowed in field values. \
+                 Use --pcr-panel-file with a YAML panel for complex metadata.",
+                item
+            );
         }
 
         let key = key_value[0].to_lowercase();
