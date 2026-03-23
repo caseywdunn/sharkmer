@@ -375,6 +375,170 @@ fn test_gene_name_panel_prefix() {
     );
 }
 
+/// Verify kmer histogram correctness against jellyfish-verified reference values.
+/// Reference values were validated by running both sharkmer and jellyfish on the
+/// fixture file and confirming identical output (see scripts/compare_jellyfish.sh).
+#[test]
+fn test_histogram_correctness() {
+    let fixture = fixture_path();
+    let outdir = tempfile::tempdir().expect("failed to create temp dir");
+    let sample = "histo_correct";
+
+    let output = Command::new(sharkmer_bin())
+        .args([
+            "-k",
+            "21",
+            "-s",
+            sample,
+            "-o",
+            outdir.path().to_str().unwrap(),
+            "--chunks",
+            "1",
+            "--histo-max",
+            "10000",
+            fixture.to_str().unwrap(),
+        ])
+        .output()
+        .expect("failed to run sharkmer");
+
+    assert!(
+        output.status.success(),
+        "sharkmer failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+
+    // Parse the final histogram into a count -> frequency map
+    let final_histo_path = outdir.path().join(format!("{}.final.histo", sample));
+    assert!(final_histo_path.exists(), "Final histogram not found");
+    let content = fs::read_to_string(&final_histo_path).expect("failed to read final histogram");
+
+    let mut histo: std::collections::HashMap<u64, u64> = std::collections::HashMap::new();
+    for line in content.lines() {
+        if line.starts_with('#') || line.starts_with("count") {
+            continue;
+        }
+        let parts: Vec<&str> = line.split('\t').collect();
+        if parts.len() == 2 {
+            let count: u64 = parts[0].parse().expect("invalid count");
+            let freq: u64 = parts[1].parse().expect("invalid frequency");
+            histo.insert(count, freq);
+        }
+    }
+
+    // Spot-check values verified against jellyfish output
+    assert_eq!(histo[&1], 10146199, "singleton count mismatch");
+    assert_eq!(histo[&2], 389066, "count-2 frequency mismatch");
+    assert_eq!(histo[&10], 4010, "count-10 frequency mismatch");
+    assert_eq!(histo[&100], 7, "count-100 frequency mismatch");
+    assert_eq!(histo[&1000], 0, "count-1000 frequency mismatch");
+    assert_eq!(histo[&10001], 13, "overflow bucket mismatch");
+
+    // Verify stats match
+    let stats_path = outdir.path().join(format!("{}.stats.yaml", sample));
+    let stats = fs::read_to_string(&stats_path).expect("failed to read stats.yaml");
+    assert!(stats.contains("n_kmers: 12997261"), "total kmer count mismatch");
+    assert!(
+        stats.contains("n_singleton_kmers: 10146199"),
+        "singleton kmer count mismatch"
+    );
+}
+
+/// Verify incremental counting produces the same final histogram regardless
+/// of chunk count. Runs with 20 chunks and checks that the final histogram
+/// matches the single-chunk reference.
+#[test]
+fn test_incremental_histogram_consistency() {
+    let fixture = fixture_path();
+    let outdir_1 = tempfile::tempdir().expect("failed to create temp dir");
+    let outdir_20 = tempfile::tempdir().expect("failed to create temp dir");
+
+    // Run with 1 chunk
+    let output_1 = Command::new(sharkmer_bin())
+        .args([
+            "-k",
+            "21",
+            "-s",
+            "chunk1",
+            "-o",
+            outdir_1.path().to_str().unwrap(),
+            "--chunks",
+            "1",
+            "--histo-max",
+            "10000",
+            fixture.to_str().unwrap(),
+        ])
+        .output()
+        .expect("failed to run sharkmer");
+
+    assert!(
+        output_1.status.success(),
+        "sharkmer (1 chunk) failed: {}",
+        String::from_utf8_lossy(&output_1.stderr)
+    );
+
+    // Run with 20 chunks
+    let output_20 = Command::new(sharkmer_bin())
+        .args([
+            "-k",
+            "21",
+            "-s",
+            "chunk20",
+            "-o",
+            outdir_20.path().to_str().unwrap(),
+            "--chunks",
+            "20",
+            "--histo-max",
+            "10000",
+            fixture.to_str().unwrap(),
+        ])
+        .output()
+        .expect("failed to run sharkmer");
+
+    assert!(
+        output_20.status.success(),
+        "sharkmer (20 chunks) failed: {}",
+        String::from_utf8_lossy(&output_20.stderr)
+    );
+
+    // Parse both final histograms and compare
+    let parse_histo = |path: std::path::PathBuf| -> Vec<(u64, u64)> {
+        let content = fs::read_to_string(&path)
+            .unwrap_or_else(|_| panic!("failed to read {}", path.display()));
+        let mut entries = Vec::new();
+        for line in content.lines() {
+            if line.starts_with('#') || line.starts_with("count") {
+                continue;
+            }
+            let parts: Vec<&str> = line.split('\t').collect();
+            if parts.len() == 2 {
+                let count: u64 = parts[0].parse().expect("invalid count");
+                let freq: u64 = parts[1].parse().expect("invalid frequency");
+                entries.push((count, freq));
+            }
+        }
+        entries
+    };
+
+    let histo_1 = parse_histo(outdir_1.path().join("chunk1.final.histo"));
+    let histo_20 = parse_histo(outdir_20.path().join("chunk20.final.histo"));
+
+    assert_eq!(
+        histo_1.len(),
+        histo_20.len(),
+        "Histogram row counts differ: 1-chunk={} vs 20-chunk={}",
+        histo_1.len(),
+        histo_20.len()
+    );
+
+    for (a, b) in histo_1.iter().zip(histo_20.iter()) {
+        assert_eq!(
+            a, b,
+            "Histogram mismatch at count {}: 1-chunk freq={} vs 20-chunk freq={}",
+            a.0, a.1, b.1
+        );
+    }
+}
+
 /// Verify --export-panel outputs valid YAML for a known panel.
 #[test]
 fn test_export_panel() {
