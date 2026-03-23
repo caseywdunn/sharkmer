@@ -38,7 +38,7 @@ pub mod preconfigured;
 // Constants that may require tuning
 
 /// The multiplier for establishing when a kmer is considered to have high coverage,
-/// relative to the min_coverage threshold. It is then used to also adjust the threshold.
+/// relative to the min_count threshold. It is then used to also adjust the threshold.
 const COVERAGE_MULTIPLIER: u64 = 2;
 
 /// A multiplier for adjusting the threshold as it is applied.
@@ -1059,7 +1059,7 @@ fn get_primer_kmers(
         &forward_variants,
         kmer_counts,
         PrimerDirection::Forward,
-        &params.min_coverage,
+        &params.min_count,
     )?;
     forward_primer_kmers = filter_primer_kmers(forward_primer_kmers);
 
@@ -1071,7 +1071,7 @@ fn get_primer_kmers(
         &reverse_variants,
         kmer_counts,
         PrimerDirection::Reverse,
-        &params.min_coverage,
+        &params.min_count,
     )?;
     reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers);
 
@@ -1409,8 +1409,8 @@ pub struct PCRParams {
     #[serde(default = "default_max_length")]
     pub max_length: usize,
     pub gene_name: String,
-    #[serde(default = "default_min_coverage")]
-    pub min_coverage: u64,
+    #[serde(default = "default_min_count")]
+    pub min_count: u64,
     #[serde(default = "default_mismatches")]
     pub mismatches: usize,
     #[serde(default = "default_trim")]
@@ -1429,7 +1429,7 @@ pub struct PCRParams {
 fn default_max_length() -> usize {
     10000
 }
-fn default_min_coverage() -> u64 {
+fn default_min_count() -> u64 {
     2
 }
 fn default_mismatches() -> usize {
@@ -1516,13 +1516,10 @@ pub fn validate_pcr_params(params: &PCRParams) -> Vec<(String, String)> {
         ));
     }
 
-    if params.min_coverage < 2 {
+    if params.min_count < 2 {
         errors.push((
-            format!(
-                "min-coverage is {}, must be at least 2",
-                params.min_coverage
-            ),
-            "Set min-coverage to at least 2".to_string(),
+            format!("min-count is {}, must be at least 2", params.min_count),
+            "Set min-count to at least 2".to_string(),
         ));
     }
 
@@ -1653,30 +1650,30 @@ pub fn do_pcr(
 
         gene_info!(
             params.gene_name,
-            "Observed primer coverage is {}, user specified min-coverage is {}",
+            "Observed primer coverage is {}, user specified min-count is {}",
             primer_count,
-            params.min_coverage
+            params.min_count
         );
 
-        // Creates a vector of coverage thresholds, starting with coverage_high_threshold and decreasing to params.min_coverage
+        // Creates a vector of coverage thresholds, starting with coverage_high_threshold and decreasing to params.min_count
         // in COVERAGE_STEPS steps
         let coverage_high_threshold = primer_count / COVERAGE_MULTIPLIER;
         let mut coverage_thresholds: Vec<u64> = Vec::new();
 
-        if coverage_high_threshold <= params.min_coverage {
-            // Coverage is too low to step down, just use min_coverage
-            coverage_thresholds.push(params.min_coverage);
+        if coverage_high_threshold <= params.min_count {
+            // Coverage is too low to step down, just use min_count
+            coverage_thresholds.push(params.min_count);
         } else {
-            let step_size = (coverage_high_threshold - params.min_coverage) / (COVERAGE_STEPS - 1);
+            let step_size = (coverage_high_threshold - params.min_count) / (COVERAGE_STEPS - 1);
 
             for i in 0..COVERAGE_STEPS {
                 coverage_thresholds.push(coverage_high_threshold.saturating_sub(i * step_size));
             }
 
-            // Make sure the last element is params.min_coverage, even if there are rounding errors
+            // Make sure the last element is params.min_count, even if there are rounding errors
             *coverage_thresholds
                 .last_mut()
-                .expect("coverage_thresholds is non-empty") = params.min_coverage;
+                .expect("coverage_thresholds is non-empty") = params.min_count;
         }
 
         debug!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
@@ -2425,7 +2422,7 @@ mod tests {
             min_length: 0,
             max_length: 2500,
             gene_name: "18s".to_string(),
-            min_coverage: 3,
+            min_count: 3,
             mismatches: 2,
             trim: 15,
             citation: "".to_string(),
@@ -2461,7 +2458,7 @@ mod tests {
             &reverse_variants,
             &kmer_counts,
             PrimerDirection::Reverse,
-            &params.min_coverage,
+            &params.min_count,
         )
         .unwrap();
 

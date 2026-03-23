@@ -6,7 +6,7 @@ primers:
     reverse_seq: "TGCTGCCTCCCGTAGGAGT"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
@@ -17,7 +17,7 @@ primers:
     reverse_seq: "CCGCGGCTGCTGGCAC"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
@@ -28,7 +28,7 @@ primers:
     reverse_seq: "GACTACHVGGGTATCTAATCC"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
@@ -39,7 +39,7 @@ primers:
     reverse_seq: "GGACTACYVGGGTATCTAAT"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
@@ -50,7 +50,7 @@ primers:
     reverse_seq: "GGACTACHVGGGTWTCTAAT"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
@@ -61,7 +61,7 @@ primers:
     reverse_seq: "GGACTACNVGGGTWTCTAAT"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
@@ -72,7 +72,7 @@ primers:
     reverse_seq: "CCGYCAATTYMTTTRAGTTT"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
@@ -83,7 +83,7 @@ primers:
     reverse_seq: "ACGGGCRGTGWGTRCAA"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
@@ -94,7 +94,7 @@ primers:
     reverse_seq: "GACGGGCGGTGWGTRCA"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Chelius and Triplett, 2001, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
@@ -105,7 +105,7 @@ primers:
     reverse_seq: "GACGGGCGGTGWGTRCA"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Sogin et al., 2006, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
@@ -116,7 +116,7 @@ primers:
     reverse_seq: "ACGTCATCCCCACCTTCC"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Bodenhausen et al., 2013, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
@@ -127,7 +127,7 @@ primers:
     reverse_seq: "CTACCAGGGTATCTAATCCTG"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "McAllister et al., 2011, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
@@ -138,7 +138,7 @@ primers:
     reverse_seq: "WTTACCGCGGCTGCTGG"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Lee et al., 2010, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
@@ -149,7 +149,7 @@ primers:
     reverse_seq: "CTACCAGGGTATCTAATCCTG"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Sakai et al., 2004, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"

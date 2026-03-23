@@ -6,7 +6,7 @@ primers:
     reverse_seq: "CCTGTATTGTTATTTTTCGTCAC"
     min_length: 300
     max_length: 700
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Karabanov et al 2014. https://doi.org/10.3390/w14030437"
@@ -17,7 +17,7 @@ primers:
     reverse_seq: "CCGGTCTGAACTCAGATCACGT"
     min_length: 400
     max_length: 700
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Ivanova et al 2007. doi: 10.1111/j.1471-8286.2007.01748.x"
@@ -28,7 +28,7 @@ primers:
     reverse_seq: "TAGACTTCTGGGTGGCCAAAGAATCA"
     min_length: 500
     max_length: 800
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Naz et al 2023. doi: 10.2478/aoas-2022-0073"
@@ -39,7 +39,7 @@ primers:
     reverse_seq: "AAACTGCAGCCCCTCAGAATGATATTTGTCCTCA"
     min_length: 300
     max_length: 600
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Nugroho et al 2007. https://www.bioflux.com.ro/docs/2019.1074-1079.pdf"
@@ -50,7 +50,7 @@ primers:
     reverse_seq: "GAGAGTGACGGGCGGTGT"
     min_length: 200
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Zhang et al 2020. doi: 10.1111/2041-210X.13485 "

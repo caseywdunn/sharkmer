@@ -699,7 +699,7 @@ primers:
     reverse_seq: TGCATGCATGCA
     min_length: 100
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
 ";
@@ -726,7 +726,7 @@ primers:
     reverse_seq: TGCATGCA
     min_length: 100
     max_length: 500
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
 ";
@@ -756,7 +756,7 @@ primers:
     reverse_seq: TGCATGCATGCA
     min_length: 1000
     max_length: 100
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
 ";

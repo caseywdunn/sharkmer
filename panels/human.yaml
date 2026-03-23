@@ -6,7 +6,7 @@ primers:
     reverse_seq: "TCGATGTTGAAGCCTGAGACTA"
     min_length: 2400
     max_length: 2600
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
@@ -17,7 +17,7 @@ primers:
     reverse_seq: "GATATCATAGCTCAGACCATACC"
     min_length: 2800
     max_length: 3200
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
@@ -28,7 +28,7 @@ primers:
     reverse_seq: "GATTGGTGGGTCATTATGTGTTG"
     min_length: 2500
     max_length: 2900
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
@@ -39,7 +39,7 @@ primers:
     reverse_seq: "GGCACAATATTGGCTAAGAGGG"
     min_length: 1600
     max_length: 1900
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
@@ -50,7 +50,7 @@ primers:
     reverse_seq: "CAGTTCTTGTGAGCTTTCTCGG"
     min_length: 1700
     max_length: 2000
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
@@ -61,7 +61,7 @@ primers:
     reverse_seq: "AAGTCCTAGGAAAGTGACAGCGA"
     min_length: 1700
     max_length: 2000
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
@@ -72,7 +72,7 @@ primers:
     reverse_seq: "GTGCAAGAATAGGAGGTGGAGT"
     min_length: 1600
     max_length: 2000
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
@@ -83,7 +83,7 @@ primers:
     reverse_seq: "GGATGAGGCAGGAATCAAAGAC"
     min_length: 1700
     max_length: 2000
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
@@ -94,7 +94,7 @@ primers:
     reverse_seq: "GTTTAGCTCAGAGCGGTCAAGT"
     min_length: 1600
     max_length: 1900
-    min_coverage: 2
+    min_count: 2
     mismatches: 2
     trim: 15
     citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"

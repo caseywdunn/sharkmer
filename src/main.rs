@@ -69,7 +69,7 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
     let mut gene_name = "".to_string();
     let mut max_length = 10000;
     let mut min_length = 0;
-    let mut min_coverage = 2;
+    let mut min_count = 2;
     let mut mismatches = 2;
     let mut trim = 15;
     let mut citation = "".to_string();
@@ -106,8 +106,8 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
                     .parse()
                     .with_context(|| format!("Invalid value for {}: {}", key, value))?;
             }
-            "min-coverage" => {
-                min_coverage = value
+            "min-count" => {
+                min_count = value
                     .parse()
                     .with_context(|| format!("Invalid value for {}: {}", key, value))?;
             }
@@ -144,7 +144,7 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
         min_length,
         max_length,
         gene_name,
-        min_coverage,
+        min_count,
         mismatches,
         trim,
         citation,
@@ -685,7 +685,7 @@ fn main() -> Result<()> {
         println!("Optional keys:");
         println!("  min-length              Minimum product length including primers [0]");
         println!("  max-length              Maximum product length including primers [10000]");
-        println!("  min-coverage            Minimum kmer coverage [2]");
+        println!("  min-count               Minimum kmer count for graph extension [2]");
         println!("  mismatches              Maximum primer-kmer mismatches [2]");
         println!("  trim                    Bases to keep at 3' end of each primer [15]");
         println!("  dedup-edit-threshold    Levenshtein distance for deduplication [10]\n");
@@ -756,6 +756,22 @@ fn main() -> Result<()> {
         );
     }
 
+    // Warn and clamp if any primer's min-count < --min-kmer-count
+    for pcr_params in pcr_runs.iter_mut() {
+        if pcr_params.min_count < args.min_kmer_count {
+            warn!(
+                "{}: min-count ({}) is less than --min-kmer-count ({}). \
+                 Kmers below {} have already been filtered. Using {} as effective min-count.",
+                pcr_params.gene_name,
+                pcr_params.min_count,
+                args.min_kmer_count,
+                args.min_kmer_count,
+                args.min_kmer_count
+            );
+            pcr_params.min_count = args.min_kmer_count;
+        }
+    }
+
     // Check that there are no duplicate gene names
     let mut gene_names: Vec<String> = Vec::new();
     for pcr_params in pcr_runs.iter() {
@@ -788,7 +804,7 @@ fn main() -> Result<()> {
                 p.reverse_seq.len()
             );
             println!("    length:   {}-{} bp", p.min_length, p.max_length);
-            println!("    coverage: >= {}", p.min_coverage);
+            println!("    min-count: >= {}", p.min_count);
             println!(
                 "    mismatches: {}, trim: {}, dedup-edit-threshold: {}",
                 p.mismatches, p.trim, p.dedup_edit_threshold
