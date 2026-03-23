@@ -107,11 +107,8 @@ Depends on Phase 4.
 
 ## Notes
 
-- All work is on issue branches merged to dev. dev merges to master only
-  for releases.
-- Quality gates before merge: `cargo test`, `cargo clippy` (no warnings),
-  `cargo fmt --check`.
 - #31 appears in both Phase 0 (initial test coverage) and Phase 6 (update
   for final v2.0 behavior).
 - #50 benchmark runs after every phase. Commit results to `benchmarks/`.
 - Issues marked "do together" share code and should be in the same PR.
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for branching model and quality gates.
