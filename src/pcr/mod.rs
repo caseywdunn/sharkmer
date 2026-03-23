@@ -1508,7 +1508,6 @@ pub fn validate_pcr_params(params: &PCRParams) -> Result<()> {
     Ok(())
 }
 
-
 // The primary function for PCR
 pub fn do_pcr(
     kmer_counts: &KmerCounts,

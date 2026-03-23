@@ -58,7 +58,6 @@ struct RunStats {
     pcr_results: Vec<PcrGeneResult>,
 }
 
-
 /// Parse an inline primer specification string (key=value,key=value,...) into PCRParams.
 pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
     ensure!(!pcr_string.is_empty(), "Invalid empty primer specification");
@@ -751,12 +750,17 @@ fn main() -> Result<()> {
         println!("Validated {} primer pairs:\n", pcr_runs.len());
         for p in &pcr_runs {
             println!("  {}", p.gene_name);
-            println!("    forward:  {} ({} bp)", p.forward_seq, p.forward_seq.len());
-            println!("    reverse:  {} ({} bp)", p.reverse_seq, p.reverse_seq.len());
             println!(
-                "    length:   {}-{} bp",
-                p.min_length, p.max_length
+                "    forward:  {} ({} bp)",
+                p.forward_seq,
+                p.forward_seq.len()
             );
+            println!(
+                "    reverse:  {} ({} bp)",
+                p.reverse_seq,
+                p.reverse_seq.len()
+            );
+            println!("    length:   {}-{} bp", p.min_length, p.max_length);
             println!("    coverage: >= {}", p.min_coverage);
             println!(
                 "    mismatches: {}, trim: {}, dedup-edit-threshold: {}",
