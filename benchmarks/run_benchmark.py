@@ -398,7 +398,8 @@ def run_benchmark(samples_to_run=None, threads=THREADS):
     # Assemble the benchmark result
     RESULTS_DIR.mkdir(parents=True, exist_ok=True)
     date_str = datetime.now().strftime("%Y-%m-%d")
-    filename = f"{date_str}_{sharkmer_version.replace(' ', '_')}_{git_commit}.yaml"
+    safe_version = sharkmer_version.split("(")[0].strip().replace(" ", "_")
+    filename = f"{date_str}_{safe_version}_{git_commit}.yaml"
     result_path = RESULTS_DIR / filename
 
     benchmark_result = {
