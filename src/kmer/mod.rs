@@ -298,6 +298,26 @@ impl KmerCounts {
         Ok(())
     }
 
+    /// Adds the counts from another KmerCounts object to this one,
+    /// incrementally updating a histogram to reflect the new counts.
+    /// This avoids a full table scan to rebuild the histogram after each merge.
+    pub fn extend_with_histogram(
+        &mut self,
+        other: &KmerCounts,
+        histo: &mut Histogram,
+    ) -> Result<()> {
+        if self.k != other.k {
+            bail!("Cannot extend KmerCounts with different k");
+        }
+
+        for (kmer, new_count) in other.iter() {
+            let old_count = self.kmers.get_count(*kmer);
+            self.kmers.insert_or_add(*kmer, *new_count);
+            histo.move_count(old_count, old_count + *new_count);
+        }
+        Ok(())
+    }
+
     /// Get the count of the canonical form of a kmer (min of forward and revcomp).
     pub fn get_canonical_count(&self, kmer: &u64) -> u64 {
         let revcomp = revcomp_kmer(kmer, &self.k);
@@ -472,7 +492,7 @@ impl Chunk {
 
 /// A structure to hold a histogram of kmer counts.
 /// For each count, the histogram stores the number of kmers (n_kmers) with that count.
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Histogram {
     histo: Vec<u64>, // for 0 through histo_max, the number of kmers with that count. 0 isn't actually expected to have a value.
     histo_large: rustc_hash::FxHashMap<u64, u64>, // for counts larger than histo_max, the number of kmers with that count
@@ -491,6 +511,7 @@ impl Histogram {
         }
     }
 
+    #[allow(dead_code)]
     pub fn ingest_kmer_counts(&mut self, kmer_counts: &KmerCounts) {
         for (_, count) in kmer_counts.iter() {
             if *count <= self.histo_max {
@@ -502,6 +523,29 @@ impl Histogram {
         }
     }
 
+    /// Move a kmer from one count bin to another.
+    /// Decrements the bin for `old_count` and increments the bin for `new_count`.
+    fn move_count(&mut self, old_count: u64, new_count: u64) {
+        // Decrement old bin
+        if old_count > 0 {
+            if old_count <= self.histo_max {
+                self.histo[old_count as usize] -= 1;
+            } else if let Some(n) = self.histo_large.get_mut(&old_count) {
+                *n -= 1;
+                if *n == 0 {
+                    self.histo_large.remove(&old_count);
+                }
+            }
+        }
+        // Increment new bin
+        if new_count <= self.histo_max {
+            self.histo[new_count as usize] += 1;
+        } else {
+            *self.histo_large.entry(new_count).or_insert(0) += 1;
+        }
+    }
+
+    #[allow(dead_code)]
     pub fn from_kmer_counts(kmer_counts: &KmerCounts, histo_max: &u64) -> Histogram {
         let mut histo = Histogram::new(histo_max);
         histo.ingest_kmer_counts(kmer_counts);

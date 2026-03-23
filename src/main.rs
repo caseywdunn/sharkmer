@@ -1222,15 +1222,15 @@ fn main() -> Result<()> {
     );
 
     if args.chunks > 0 {
-        // Incremental histogram mode: build histograms as chunks are merged
+        // Incremental histogram mode: update histogram as chunks are merged
         let mut histos: Vec<kmer::Histogram> = Vec::with_capacity(args.chunks);
+        let mut running_histo = kmer::Histogram::new(&args.histo_max);
 
         for chunk in state.chunks.drain(..) {
-            kmer_counts.extend(chunk.get_kmer_counts())?;
+            kmer_counts.extend_with_histogram(chunk.get_kmer_counts(), &mut running_histo)?;
             drop(chunk);
 
-            let histo = kmer::Histogram::from_kmer_counts(&kmer_counts, &args.histo_max);
-            histos.push(histo);
+            histos.push(running_histo.clone());
         }
         consolidate_spinner.finish_and_clear();
         info!(
