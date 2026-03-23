@@ -1131,7 +1131,7 @@ fn main() -> Result<()> {
     info!("Time to ingest reads: {}", format_duration(start.elapsed()));
 
     if n_reads_ingested == 0 {
-        warn!("No reads were ingested. All output will be empty.");
+        bail!("No reads were ingested. Check that input files contain valid FASTQ records.");
     }
 
     // Consolidate chunks and create histograms
@@ -1219,7 +1219,7 @@ fn main() -> Result<()> {
 
         // Write the final histogram with header
         info!("Writing final histogram to file...");
-        let last_histo = &histos[histos.len() - 1];
+        let last_histo = histos.last().context("No histograms were produced")?;
         let last_histo_vec = kmer::Histogram::get_vector(last_histo)?;
 
         let final_histo_path = format!("{}{}.final.histo", directory, sample);
@@ -1239,12 +1239,15 @@ fn main() -> Result<()> {
             writeln!(file, "{}\t{}", i, value).context("Failed to write final histogram data")?;
         }
 
-        n_singleton_kmers = Some(last_histo_vec[1]);
+        let singleton_count = *last_histo_vec
+            .get(1)
+            .context("Histogram vector too short to contain singleton count")?;
+        n_singleton_kmers = Some(singleton_count);
 
         // Warn if singleton rate is very high (>95% of unique kmers)
         let n_unique = last_histo.get_n_unique_kmers();
         if n_unique > 0 {
-            let singleton_rate = last_histo_vec[1] as f64 / n_unique as f64;
+            let singleton_rate = singleton_count as f64 / n_unique as f64;
             if singleton_rate > 0.95 {
                 warn!(
                     "Very high singleton rate ({:.1}%). This may indicate very low coverage \
