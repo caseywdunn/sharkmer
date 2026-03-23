@@ -5,6 +5,7 @@
 *.0
 *.histo
 *.stats
+*.stats.yaml
 *.fasta
 *.pdb
 **/*.rs.bk
