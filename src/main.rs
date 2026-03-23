@@ -1375,12 +1375,12 @@ fn main() -> Result<()> {
             ProgressBar::hidden()
         };
 
-        // Prep kmer counts for in silico PCR. Filter low-count kmers and add reverse complements
+        // Create a filtered view of kmer counts for PCR (no data copied)
         info!(
             "Filtering kmers with count < {} before PCR",
             args.min_kmer_count
         );
-        let kmer_counts_pcr = kmer_counts.get_pcr_kmers(&args.min_kmer_count);
+        let kmer_counts_pcr = kmer_counts.filtered_view(args.min_kmer_count);
 
         // Run PCR for each gene in parallel; kmer_counts_pcr is read-only and shared
         let pcr_fasta_results: Vec<_> = pcr_runs

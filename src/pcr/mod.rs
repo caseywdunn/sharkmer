@@ -16,8 +16,7 @@ use std::collections::VecDeque;
 use std::fs::File;
 use std::io::Write;
 
-use crate::kmer;
-use crate::kmer::KmerCounts;
+use crate::kmer::{FilteredKmerCounts, KmerCounts};
 
 /// Log at info level with a [gene_name] prefix for attribution in parallel runs.
 macro_rules! gene_info {
@@ -192,7 +191,7 @@ fn bp_length_to_kmer_length(bp_length: usize, k: usize) -> usize {
 
 pub fn get_assembly_paths(
     graph: &StableDiGraph<DBNode, DBEdge>,
-    kmer_counts: &KmerCounts,
+    kmer_counts: &FilteredKmerCounts,
     params: &PCRParams,
 ) -> Vec<Vec<NodeIndex>> {
     let mut all_paths = Vec::new();
@@ -471,7 +470,7 @@ fn reverse_complement(seq: &str) -> Result<String> {
 // If direction is reverse, match the oligo at the end of the kmer.
 fn find_oligos_in_kmers(
     oligos: &[Oligo],
-    kmers: &KmerCounts,
+    kmers: &FilteredKmerCounts,
     dir: &PrimerDirection,
     min_count: &u64,
 ) -> KmerCounts {
@@ -621,7 +620,7 @@ pub fn get_path_length(
     Ok(Some(path_length))
 }
 
-pub fn get_dbedge(kmer: &u64, kmer_counts: &kmer::KmerCounts) -> DBEdge {
+pub fn get_dbedge(kmer: &u64, kmer_counts: &FilteredKmerCounts) -> DBEdge {
     DBEdge {
         _kmer: *kmer,
         count: kmer_counts.get_canonical_count(kmer),
@@ -968,7 +967,7 @@ fn preprocess_primer(
 /// Given a set of primer variants, return a set of kmers from the data that contain the primers
 fn get_kmers_from_primers(
     primer_variants: &HashSet<String>,
-    kmer_counts: &KmerCounts,
+    kmer_counts: &FilteredKmerCounts,
     dir: PrimerDirection,
     min_count: &u64,
 ) -> Result<KmerCounts> {
@@ -1042,7 +1041,7 @@ fn get_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64> {
 
 fn get_primer_kmers(
     params: &PCRParams,
-    kmer_counts: &KmerCounts,
+    kmer_counts: &FilteredKmerCounts,
 ) -> Result<(KmerCounts, KmerCounts)> {
     // Preprocess the primers to get all variants to be considered
     let forward_variants =
@@ -1089,7 +1088,7 @@ fn build_node_lookup(graph: &StableDiGraph<DBNode, DBEdge>) -> HashMap<u64, Node
 fn create_seed_graph(
     forward_primer_kmers: &KmerCounts,
     reverse_primer_kmers: &KmerCounts,
-    kmer_counts: &KmerCounts,
+    kmer_counts: &FilteredKmerCounts,
 ) -> (StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>) {
     let mut seed_graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
     let mut node_lookup: HashMap<u64, NodeIndex> = HashMap::new();
@@ -1172,7 +1171,7 @@ fn create_seed_graph(
 fn extend_graph(
     seed_graph: &StableDiGraph<DBNode, DBEdge>,
     seed_node_lookup: &HashMap<u64, NodeIndex>,
-    kmer_counts: &KmerCounts,
+    kmer_counts: &FilteredKmerCounts,
     min_count: &u64,
     params: &PCRParams,
 ) -> Result<StableDiGraph<DBNode, DBEdge>> {
@@ -1234,7 +1233,7 @@ fn extend_graph(
 
                     // If the kmer is in the kmer_counts hash (either orientation)
                     // and has count >= min_count, add it to the candidate kmers
-                    if let Some(&count) = kmer_counts.get_canonical(&kmer) {
+                    if let Some(count) = kmer_counts.get_canonical(&kmer) {
                         if count >= *min_count {
                             candidate_kmers.insert(kmer);
                         }
@@ -1552,7 +1551,7 @@ pub fn validate_pcr_params(params: &PCRParams) -> Vec<(String, String)> {
 
 // The primary function for PCR
 pub fn do_pcr(
-    kmer_counts: &KmerCounts,
+    kmer_counts: &FilteredKmerCounts,
     sample_name: &str,
     params: &PCRParams,
 ) -> Result<Vec<bio::io::fasta::Record>> {
@@ -2407,11 +2406,9 @@ mod tests {
         let replicates: usize = 10;
         let mut kmer_counts = KmerCounts::new(&k);
         for _i in 0..replicates {
-            let reads = kmer::seq_to_reads(&read_string).unwrap();
+            let reads = crate::kmer::seq_to_reads(&read_string).unwrap();
             kmer_counts.ingest_reads(&reads).unwrap();
         }
-
-        let kmer_counts = kmer_counts.get_pcr_kmers(&1);
 
         let params = PCRParams {
             forward_seq: "AACCTGGTTGATCCTGCCAGT".to_string(),
@@ -2437,6 +2434,7 @@ mod tests {
     #[test]
     fn test_primer_preprocessing_steps() {
         let (_, _, _, kmer_counts, params) = build_test_case();
+        let kmer_counts = kmer_counts.filtered_view(1);
 
         let reverse_variants =
             preprocess_primer(&params, PrimerDirection::Reverse, &kmer_counts.get_k()).unwrap();
@@ -2474,6 +2472,7 @@ mod tests {
     #[test]
     fn test_extension_steps() {
         let (_read_string, _k, _replicates, kmer_counts, _params) = build_test_case();
+        let kmer_counts = kmer_counts.filtered_view(1);
 
         let seq = "TGATCCTGCCAGTATCATATG".to_string();
         let kmer: u64 = seq_to_kmer(&seq).unwrap();
@@ -2494,14 +2493,16 @@ mod tests {
             ((read_string.len() - k + 1) * replicates) as u64
         );
 
+        let filtered = kmer_counts.filtered_view(1);
+
         let (forward_primer_kmers, reverse_primer_kmers) =
-            get_primer_kmers(&params, &kmer_counts).unwrap();
+            get_primer_kmers(&params, &filtered).unwrap();
 
         assert_eq!(forward_primer_kmers.len(), 1);
         assert_eq!(reverse_primer_kmers.len(), 1);
 
         let (seed_graph, node_lookup) =
-            create_seed_graph(&forward_primer_kmers, &reverse_primer_kmers, &kmer_counts);
+            create_seed_graph(&forward_primer_kmers, &reverse_primer_kmers, &filtered);
 
         // Check the number of nodes in the seed graph
         assert_eq!(seed_graph.node_count(), 2);
@@ -2509,18 +2510,18 @@ mod tests {
         assert_eq!(get_end_nodes(&seed_graph).len(), 1);
 
         let mut graph =
-            extend_graph(&seed_graph, &node_lookup, &kmer_counts, &min_count, &params).unwrap();
+            extend_graph(&seed_graph, &node_lookup, &filtered, &min_count, &params).unwrap();
         // Print the number of nodes and edges in the graph
         println!("There are {} nodes in the graph", graph.node_count());
         println!("There are {} edges in the graph", graph.edge_count());
 
-        let all_paths = get_assembly_paths(&graph, &kmer_counts, &params);
+        let all_paths = get_assembly_paths(&graph, &filtered, &params);
         assert_eq!(all_paths.len(), 1);
 
         remove_side_branches(&mut graph);
         remove_orphan_nodes(&mut graph);
 
-        let all_paths = get_assembly_paths(&graph, &kmer_counts, &params);
+        let all_paths = get_assembly_paths(&graph, &filtered, &params);
         assert_eq!(all_paths.len(), 1);
     }
 }

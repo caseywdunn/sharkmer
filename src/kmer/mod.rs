@@ -264,6 +264,7 @@ impl KmerCounts {
         }
     }
 
+    #[allow(dead_code)]
     pub fn new_with_capacity(k: &usize, capacity: usize) -> KmerCounts {
         KmerCounts {
             kmers: MapType::new_map_with_capacity(capacity),
@@ -369,16 +370,55 @@ impl KmerCounts {
         self.kmers.is_empty()
     }
 
-    /// Create a new KmerCounts object that has only canonical kmers with at least min_count.
-    /// Callers should use `get_canonical()` to look up kmers in either orientation.
-    pub fn get_pcr_kmers(&self, min_count: &u64) -> KmerCounts {
-        let mut pcr_kmers = KmerCounts::new_with_capacity(&self.k, self.kmers.len());
-        for (kmer, count) in self.iter() {
-            if count >= min_count {
-                pcr_kmers.insert(kmer, count);
-            }
+    /// Create a filtered view of this KmerCounts that lazily excludes entries
+    /// below `min_count`. No data is copied — lookups check the threshold on the fly.
+    pub fn filtered_view(&self, min_count: u64) -> FilteredKmerCounts<'_> {
+        FilteredKmerCounts {
+            inner: self,
+            min_count,
         }
-        pcr_kmers
+    }
+}
+
+/// A read-only view of a `KmerCounts` that filters out entries below a minimum count.
+/// No data is copied — the threshold is checked at lookup time.
+pub struct FilteredKmerCounts<'a> {
+    inner: &'a KmerCounts,
+    min_count: u64,
+}
+
+impl<'a> FilteredKmerCounts<'a> {
+    pub fn get_k(&self) -> usize {
+        self.inner.k
+    }
+
+    /// Look up a kmer by checking both orientations, returning the count
+    /// only if it meets the minimum threshold.
+    pub fn get_canonical(&self, kmer: &u64) -> Option<u64> {
+        self.inner.get_canonical(kmer).and_then(|&count| {
+            if count >= self.min_count {
+                Some(count)
+            } else {
+                None
+            }
+        })
+    }
+
+    /// Get the count of the canonical form of a kmer, returning 0 if below threshold.
+    pub fn get_canonical_count(&self, kmer: &u64) -> u64 {
+        let count = self.inner.get_canonical_count(kmer);
+        if count >= self.min_count {
+            count
+        } else {
+            0
+        }
+    }
+
+    /// Iterate over all entries, including those below threshold.
+    /// Callers that need filtering should check counts themselves
+    /// (as find_oligos_in_kmers already does).
+    pub fn iter(&self) -> impl Iterator<Item = (&u64, &u64)> {
+        self.inner.iter()
     }
 }
 
