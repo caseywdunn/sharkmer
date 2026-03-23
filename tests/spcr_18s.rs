@@ -436,7 +436,10 @@ fn test_histogram_correctness() {
     // Verify stats match
     let stats_path = outdir.path().join(format!("{}.stats.yaml", sample));
     let stats = fs::read_to_string(&stats_path).expect("failed to read stats.yaml");
-    assert!(stats.contains("n_kmers: 12997261"), "total kmer count mismatch");
+    assert!(
+        stats.contains("n_kmers: 12997261"),
+        "total kmer count mismatch"
+    );
     assert!(
         stats.contains("n_singleton_kmers: 10146199"),
         "singleton kmer count mismatch"
