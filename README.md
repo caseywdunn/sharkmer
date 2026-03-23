@@ -212,6 +212,59 @@ Here is an overview of how kmer counting works in `sharkmer`:
 
 Incremental kmer counting is used when ingesting reads for other features, including *in silico* PCR.
 
+## Tab completion
+
+`sharkmer` can generate tab-completion scripts for your shell so that flag
+names, panel names, and other arguments are completed when you press Tab.
+
+If you installed via **bioconda** (`conda install sharkmer`), completions are
+installed automatically — no extra steps needed.
+
+For other installation methods (cargo install, manual build), you need to
+generate and install the completion script yourself. First, check which shell
+you are using:
+
+```bash
+echo $SHELL
+```
+
+Then follow the instructions for your shell:
+
+**zsh** (default on macOS, common on Linux):
+
+```bash
+# Create the completions directory if it doesn't exist
+mkdir -p ~/.zfunc
+
+# Generate the completion script
+sharkmer --completions zsh > ~/.zfunc/_sharkmer
+
+# Add to your ~/.zshrc (only needed once):
+#   fpath=(~/.zfunc $fpath)
+#   autoload -Uz compinit && compinit
+```
+
+**bash:**
+
+```bash
+# System-wide (may require sudo):
+sharkmer --completions bash > /etc/bash_completion.d/sharkmer
+
+# Or per-user:
+mkdir -p ~/.local/share/bash-completion/completions
+sharkmer --completions bash > ~/.local/share/bash-completion/completions/sharkmer
+```
+
+**fish:**
+
+```bash
+mkdir -p ~/.config/fish/completions
+sharkmer --completions fish > ~/.config/fish/completions/sharkmer.fish
+```
+
+After installing, open a new terminal session (or run `source ~/.zshrc` etc.)
+for completions to take effect.
+
 ## Development
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development and testing information.
