@@ -16,3 +16,4 @@ data/
 tmp/
 target/
 debug/
+.claude/settings.local.json
