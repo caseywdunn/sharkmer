@@ -402,7 +402,7 @@ pub(crate) fn collect_pcr_params(args: &Args) -> Result<Vec<pcr::PCRParams>> {
     for panel_name in args.pcr_panel.iter() {
         let mut pcr_params = preconfigured::get_panel(panel_name)
             .map_err(|e| anyhow::anyhow!(e))
-            .with_context(|| format!("Error loading panel: {}", panel_name))?;
+            .with_context(|| format!("Failed to load panel: {}", panel_name))?;
         for p in pcr_params.iter_mut() {
             p.source = format!("built-in panel '{}'", panel_name);
         }
@@ -412,7 +412,7 @@ pub(crate) fn collect_pcr_params(args: &Args) -> Result<Vec<pcr::PCRParams>> {
     // Load primer panels from YAML files or URLs
     for panel_source in args.pcr_panel_file.iter() {
         let mut pcr_params = preconfigured::load_panel_source(panel_source)
-            .with_context(|| format!("Error loading panel: {}", panel_source))?;
+            .with_context(|| format!("Failed to load panel: {}", panel_source))?;
         let source_label = if preconfigured::is_url(panel_source) {
             format!("panel URL '{}'", panel_source)
         } else {
@@ -427,7 +427,7 @@ pub(crate) fn collect_pcr_params(args: &Args) -> Result<Vec<pcr::PCRParams>> {
     // Parse inline primer specifications
     for pcr_string in args.pcr_primers.iter() {
         let pcr_params = parse_pcr_primers_string(pcr_string)
-            .with_context(|| format!("Error parsing primer specification: \"{}\"", pcr_string))?;
+            .with_context(|| format!("Could not parse primer specification: \"{}\"", pcr_string))?;
         pcr_runs.push(pcr_params);
     }
 
