@@ -1549,6 +1549,228 @@ pub fn validate_pcr_params(params: &PCRParams) -> Vec<(String, String)> {
     errors
 }
 
+/// Compute a sequence of coverage thresholds for graph extension, stepping down
+/// from a high threshold (derived from observed primer coverage) to `min_count`.
+fn compute_coverage_thresholds(primer_count: u64, min_count: u64) -> Vec<u64> {
+    let coverage_high_threshold = primer_count / COVERAGE_MULTIPLIER;
+    let mut thresholds: Vec<u64> = Vec::new();
+
+    if coverage_high_threshold <= min_count {
+        thresholds.push(min_count);
+    } else {
+        let step_size = (coverage_high_threshold - min_count) / (COVERAGE_STEPS - 1);
+
+        for i in 0..COVERAGE_STEPS {
+            thresholds.push(coverage_high_threshold.saturating_sub(i * step_size));
+        }
+
+        // Make sure the last element is min_count, even if there are rounding errors
+        *thresholds
+            .last_mut()
+            .expect("coverage_thresholds is non-empty") = min_count;
+    }
+
+    thresholds
+}
+
+/// Log debug diagnostics about start/end nodes in the extended graph.
+fn log_extended_graph_diagnostics(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    kmer_counts: &FilteredKmerCounts,
+) {
+    let mut start_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
+    let mut end_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
+
+    for node in graph.node_indices() {
+        if graph[node].is_start {
+            start_nodes_map.insert(
+                node,
+                graph.neighbors_directed(node, Direction::Outgoing).count(),
+            );
+        }
+        if graph[node].is_end {
+            end_nodes_map.insert(
+                node,
+                graph.neighbors_directed(node, Direction::Incoming).count(),
+            );
+        }
+    }
+
+    for (node, edge_count) in &start_nodes_map {
+        debug!(
+            "  Start node {} with subkmer {} has {} edges",
+            node.index(),
+            crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(kmer_counts.get_k() - 1)),
+            edge_count
+        );
+    }
+
+    for (node, edge_count) in &end_nodes_map {
+        debug!(
+            "  End node {} with subkmer {} has {} edges",
+            node.index(),
+            crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(kmer_counts.get_k() - 1)),
+            edge_count
+        );
+    }
+}
+
+/// Extract sequences from graph paths, producing FASTA assembly records.
+/// Returns the generated records and the updated amplicon index.
+fn generate_sequences_from_paths(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    all_paths: Vec<Vec<NodeIndex>>,
+    kmer_counts: &FilteredKmerCounts,
+    sample_name: &str,
+    params: &PCRParams,
+    mut amplicon_index: usize,
+) -> Result<(Vec<AssemblyRecord>, usize)> {
+    let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
+
+    for path in all_paths.into_iter() {
+        let mut sequence = String::new();
+        let mut edge_counts: Vec<u64> = Vec::new();
+        let mut parent_node: NodeIndex = NodeIndex::new(0);
+        for node in path.iter() {
+            let node_data = graph
+                .node_weight(*node)
+                .context("Node not found in graph during sequence generation")?;
+            let subread =
+                crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(kmer_counts.get_k() - 1));
+            if sequence.is_empty() {
+                sequence = subread;
+                parent_node = *node;
+            } else {
+                let last_char = subread
+                    .chars()
+                    .last()
+                    .context("Empty subread during sequence generation")?;
+                sequence = format!("{}{}", sequence, last_char);
+
+                let edge = graph
+                    .find_edge(parent_node, *node)
+                    .context("Edge not found between path nodes")?;
+                let edge_data = graph.edge_weight(edge).context("Edge weight not found")?;
+                edge_counts.push(edge_data.count);
+                parent_node = *node;
+            }
+        }
+
+        if sequence.len() < params.min_length {
+            debug!(
+                "  Path is {}, which is shorter than min-length {}. Skipping.",
+                sequence.len(),
+                params.min_length
+            );
+            continue;
+        }
+
+        let count_mean = compute_mean(&edge_counts);
+        let count_median = compute_median(&edge_counts);
+        let count_min = edge_counts
+            .iter()
+            .min()
+            .context("No edge counts found for path")?;
+        let count_max = edge_counts
+            .iter()
+            .max()
+            .context("No edge counts found for path")?;
+
+        let id = format!("{}_{}_{}", sample_name, params.gene_name, amplicon_index);
+        let desc = format!(
+            "sample={} gene={} product={} length={} kmer_count_mean={:.2} kmer_count_median={} kmer_count_min={} kmer_count_max={}",
+            sample_name,
+            params.gene_name,
+            amplicon_index,
+            sequence.len(),
+            count_mean,
+            count_median,
+            count_min,
+            count_max
+        );
+
+        amplicon_index += 1;
+
+        debug!(">{} {}", id, desc);
+        let record = fasta::Record::with_attrs(&id, Some(&desc), sequence.as_bytes());
+        assembly_records.push(AssemblyRecord {
+            fasta_record: record,
+            kmer_min_count: *count_min,
+        });
+    }
+
+    Ok((assembly_records, amplicon_index))
+}
+
+/// Sort assembly records by descending kmer_min_count, deduplicate near-identical
+/// sequences, and truncate to the maximum number of amplicons.
+fn sort_and_deduplicate(
+    assembly_records: Vec<AssemblyRecord>,
+    params: &PCRParams,
+) -> Vec<fasta::Record> {
+    let mut sorted = assembly_records;
+    sorted.sort_by(|a, b| {
+        b.kmer_min_count
+            .cmp(&a.kmer_min_count)
+            .then_with(|| a.fasta_record.seq().cmp(b.fasta_record.seq()))
+    });
+
+    let mut records: Vec<fasta::Record> = sorted
+        .into_iter()
+        .map(|ar| ar.fasta_record)
+        .collect();
+
+    let num_records_all = records.len();
+
+    // Greedy clustering: keep each record only if it is not within
+    // dedup_edit_threshold edits of any previously kept record.
+    let distances = pairwise_sequence_distances(&records, params.dedup_edit_threshold);
+    let n = records.len();
+    let mut keep = vec![true; n];
+    for i in 0..n {
+        if !keep[i] {
+            continue;
+        }
+        for j in (i + 1)..n {
+            if !keep[j] {
+                continue;
+            }
+            if distances[i][j].is_some() {
+                keep[j] = false;
+            }
+        }
+    }
+    let mut idx = 0;
+    records.retain(|_| {
+        let k = keep[idx];
+        idx += 1;
+        k
+    });
+
+    if num_records_all == records.len() {
+        gene_info!(
+            params.gene_name,
+            "{} PCR products were generated and retained.",
+            num_records_all
+        );
+    } else {
+        gene_info!(params.gene_name, "{} PCR products were generated and {} were retained ({} removed as near-duplicates within {} edits).", num_records_all, records.len(), num_records_all - records.len(), params.dedup_edit_threshold);
+    }
+
+    if records.len() > MAX_NUM_AMPLICONS {
+        gene_warn!(
+            params.gene_name,
+            "There are {} PCR products. This exceeds the maximum of {}. Retaining only the first {} records.",
+            records.len(),
+            MAX_NUM_AMPLICONS,
+            MAX_NUM_AMPLICONS
+        );
+        records.truncate(MAX_NUM_AMPLICONS);
+    }
+
+    records
+}
+
 // The primary function for PCR
 pub fn do_pcr(
     kmer_counts: &FilteredKmerCounts,
@@ -1584,12 +1806,9 @@ pub fn do_pcr(
         return Ok(Vec::new());
     }
 
-    // Create a vector to hold the fasta records
     let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
-
     let mut amplicon_index: usize = 0;
 
-    // Loop over the forward_primer_kmers
     // Sort by kmer value for deterministic output
     let mut sorted_forward: Vec<(u64, u64)> =
         forward_primer_kmers.iter().map(|(&k, &v)| (k, v)).collect();
@@ -1605,7 +1824,6 @@ pub fn do_pcr(
         let mut forward_primer_kmer = KmerCounts::new(&kmer_counts.get_k());
         forward_primer_kmer.insert(kmer, count);
 
-        // Construct the graph
         gene_info!(
             params.gene_name,
             "Creating graph, seeding with nodes that contain primer matches..."
@@ -1619,7 +1837,6 @@ pub fn do_pcr(
         );
         debug!("There are {} end nodes", get_end_nodes(&seed_graph).len());
 
-        // Print the information for each node
         for node in seed_graph.node_indices() {
             trace!("Node {}:", node.index());
             trace!(
@@ -1634,18 +1851,9 @@ pub fn do_pcr(
         let start = std::time::Instant::now();
         gene_info!(params.gene_name, "Extending the assembly graph...");
 
-        // Create a vector to hold the fasta records
-        let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
-
-        // Get the minimum of (max_forward_count, max_reverse_count), consider this as the observed count of the primers
-        // and a preliminary expectation for the coverage of the PCR product
         let max_forward_count = forward_primer_kmers.get_max_count();
         let max_reverse_count = reverse_primer_kmers.get_max_count();
-
-        let mut primer_count = max_reverse_count;
-        if max_forward_count < max_reverse_count {
-            primer_count = max_forward_count;
-        }
+        let primer_count = max_forward_count.min(max_reverse_count);
 
         gene_info!(
             params.gene_name,
@@ -1654,28 +1862,10 @@ pub fn do_pcr(
             params.min_count
         );
 
-        // Creates a vector of coverage thresholds, starting with coverage_high_threshold and decreasing to params.min_count
-        // in COVERAGE_STEPS steps
-        let coverage_high_threshold = primer_count / COVERAGE_MULTIPLIER;
-        let mut coverage_thresholds: Vec<u64> = Vec::new();
-
-        if coverage_high_threshold <= params.min_count {
-            // Coverage is too low to step down, just use min_count
-            coverage_thresholds.push(params.min_count);
-        } else {
-            let step_size = (coverage_high_threshold - params.min_count) / (COVERAGE_STEPS - 1);
-
-            for i in 0..COVERAGE_STEPS {
-                coverage_thresholds.push(coverage_high_threshold.saturating_sub(i * step_size));
-            }
-
-            // Make sure the last element is params.min_count, even if there are rounding errors
-            *coverage_thresholds
-                .last_mut()
-                .expect("coverage_thresholds is non-empty") = params.min_count;
-        }
-
+        let coverage_thresholds = compute_coverage_thresholds(primer_count, params.min_count);
         debug!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
+
+        let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
 
         for min_count in coverage_thresholds.iter() {
             gene_info!(
@@ -1686,54 +1876,7 @@ pub fn do_pcr(
             let mut graph =
                 extend_graph(&seed_graph, &node_lookup, kmer_counts, min_count, params)?;
 
-            {
-                // Make hashmaps of the start and end nodes, where the key is the node index and the value is the number of edges
-                let mut start_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
-                let mut end_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
-
-                for node in graph.node_indices() {
-                    if graph[node].is_start {
-                        start_nodes_map.insert(
-                            node,
-                            graph.neighbors_directed(node, Direction::Outgoing).count(),
-                        );
-                    }
-                    if graph[node].is_end {
-                        end_nodes_map.insert(
-                            node,
-                            graph.neighbors_directed(node, Direction::Incoming).count(),
-                        );
-                    }
-                }
-
-                // Print the number of edges for each start node
-                for (node, edge_count) in &start_nodes_map {
-                    // Print the node subkmer and number of edges
-                    debug!(
-                        "  Start node {} with subkmer {} has {} edges",
-                        node.index(),
-                        crate::kmer::kmer_to_seq(
-                            &graph[*node].sub_kmer,
-                            &(kmer_counts.get_k() - 1)
-                        ),
-                        edge_count
-                    );
-                }
-
-                // Print the number of edges for each end node
-                for (node, edge_count) in &end_nodes_map {
-                    // Print the node subkmer and number of edges
-                    debug!(
-                        "  End node {} with subkmer {} has {} edges",
-                        node.index(),
-                        crate::kmer::kmer_to_seq(
-                            &graph[*node].sub_kmer,
-                            &(kmer_counts.get_k() - 1)
-                        ),
-                        edge_count
-                    );
-                }
-            }
+            log_extended_graph_diagnostics(&graph, kmer_counts);
 
             debug!("  Final extension statistics:");
             summarize_extension(&graph, "    ");
@@ -1749,7 +1892,6 @@ pub fn do_pcr(
             if log::log_enabled!(log::Level::Trace) {
                 let dot_format = format!("{:?}", Dot::with_config(&graph, &[Config::EdgeNoLabel]));
 
-                // Write the DOT format to a file
                 let file_name = format!("{}_{}_{}.dot", sample_name, params.gene_name, min_count);
                 trace!("Writing dot file {}", file_name);
                 let mut file = File::create(&file_name).context("Unable to create dot file")?;
@@ -1763,10 +1905,6 @@ pub fn do_pcr(
                 start.elapsed()
             );
 
-            // Simplify the graph
-            // all_simple_paths() hangs if the input graph is too complex
-            // Also want to regularize some graph features
-
             let start = std::time::Instant::now();
             gene_info!(params.gene_name, "Pruning the assembly graph...");
 
@@ -1775,7 +1913,6 @@ pub fn do_pcr(
 
             debug!("    There are {} nodes in the graph", graph.node_count());
             debug!("    There are {} edges in the graph", graph.edge_count());
-
             debug!(
                 "    There are {} start nodes",
                 get_start_nodes(&graph).len()
@@ -1788,7 +1925,6 @@ pub fn do_pcr(
                 start.elapsed()
             );
 
-            // Get all paths from start nodes to terminal nodes
             let start = std::time::Instant::now();
             gene_info!(
                 params.gene_name,
@@ -1818,83 +1954,17 @@ pub fn do_pcr(
 
             gene_info!(params.gene_name, "Generating sequences from paths...");
 
-            // For each path, get the sequence of the path
-            for path in all_paths.into_iter() {
-                let mut sequence = String::new();
-                let mut edge_counts: Vec<u64> = Vec::new();
-                let mut parent_node: NodeIndex = NodeIndex::new(0);
-                // The first time through the loop add the whole sequence, after that just add the last base
-                for node in path.iter() {
-                    let node_data = graph
-                        .node_weight(*node)
-                        .context("Node not found in graph during sequence generation")?;
-                    let subread =
-                        crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(kmer_counts.get_k() - 1));
-                    if sequence.is_empty() {
-                        sequence = subread;
-                        parent_node = *node;
-                    } else {
-                        let last_char = subread
-                            .chars()
-                            .last()
-                            .context("Empty subread during sequence generation")?;
-                        sequence = format!("{}{}", sequence, last_char);
+            let (records, new_index) = generate_sequences_from_paths(
+                &graph,
+                all_paths,
+                kmer_counts,
+                sample_name,
+                params,
+                amplicon_index,
+            )?;
+            amplicon_index = new_index;
+            assembly_records = records;
 
-                        // Get the edge count for the edge from the parent node to this node
-                        let edge = graph
-                            .find_edge(parent_node, *node)
-                            .context("Edge not found between path nodes")?;
-                        let edge_data = graph.edge_weight(edge).context("Edge weight not found")?;
-                        edge_counts.push(edge_data.count);
-                        parent_node = *node;
-                    }
-                }
-
-                if sequence.len() < params.min_length {
-                    debug!(
-                        "  Path is {}, which is shorter than min-length {}. Skipping.",
-                        sequence.len(),
-                        params.min_length
-                    );
-                    continue;
-                }
-
-                // Get some stats on the path counts
-                let count_mean = compute_mean(&edge_counts);
-                let count_median = compute_median(&edge_counts);
-                let count_min = edge_counts
-                    .iter()
-                    .min()
-                    .context("No edge counts found for path")?;
-                let count_max = edge_counts
-                    .iter()
-                    .max()
-                    .context("No edge counts found for path")?;
-
-                let id = format!("{}_{}_{}", sample_name, params.gene_name, amplicon_index);
-                let desc = format!(
-                    "sample={} gene={} product={} length={} kmer_count_mean={:.2} kmer_count_median={} kmer_count_min={} kmer_count_max={}",
-                    sample_name,
-                    params.gene_name,
-                    amplicon_index,
-                    sequence.len(),
-                    count_mean,
-                    count_median,
-                    count_min,
-                    count_max
-                );
-
-                amplicon_index += 1;
-
-                debug!(">{} {}", id, desc);
-                let record = fasta::Record::with_attrs(&id, Some(&desc), sequence.as_bytes());
-                // Create fasta record and add to vector
-                let assembly_record: AssemblyRecord = AssemblyRecord {
-                    fasta_record: record,
-                    kmer_min_count: *count_min,
-                };
-                assembly_records.push(assembly_record);
-            }
             if assembly_records.is_empty() {
                 gene_info!(params.gene_name, "Did not obtain PCR product.");
             } else {
@@ -1903,7 +1973,6 @@ pub fn do_pcr(
             }
         }
 
-        // Count stats
         debug!("      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large differences in value can indicate non-specific binding of one of the primers.", max_forward_count, max_reverse_count);
 
         let count_threshold = 5;
@@ -1911,7 +1980,6 @@ pub fn do_pcr(
             gene_info!(params.gene_name, "Primer kmer counts are low, in this case less than {}. Consider increasing the number of reads.", count_threshold);
         }
 
-        // Add the assembly records to the all records vector
         assembly_records_all.extend(assembly_records);
     }
     gene_info!(params.gene_name, "Done.");
@@ -1925,71 +1993,7 @@ pub fn do_pcr(
         return Ok(Vec::new());
     }
 
-    // Order the records by descending kmer_min_count, with sequence as tiebreaker for determinism
-    assembly_records_all.sort_by(|a, b| {
-        b.kmer_min_count
-            .cmp(&a.kmer_min_count)
-            .then_with(|| a.fasta_record.seq().cmp(b.fasta_record.seq()))
-    });
-
-    let mut records: Vec<fasta::Record> = Vec::new();
-    for fasta_record in assembly_records_all {
-        records.push(fasta_record.fasta_record);
-    }
-
-    let num_records_all = records.len();
-
-    // Thin the records to remove nearly-duplicate sequences that are highly similar.
-    // These can be abundant when coverage is high. Uses greedy clustering: iterate
-    // through records (sorted by kmer_min_count), keeping each record only if it is
-    // not within dedup_edit_threshold edits of any previously kept record.
-    let distances = pairwise_sequence_distances(&records, params.dedup_edit_threshold);
-    let n = records.len();
-    let mut keep = vec![true; n];
-    for i in 0..n {
-        if !keep[i] {
-            continue;
-        }
-        for j in (i + 1)..n {
-            if !keep[j] {
-                continue;
-            }
-            // distances[i][j] is Some(d) if d <= threshold, None if d > threshold
-            if distances[i][j].is_some() {
-                keep[j] = false;
-            }
-        }
-    }
-    let mut idx = 0;
-    records.retain(|_| {
-        let k = keep[idx];
-        idx += 1;
-        k
-    });
-
-    if num_records_all == records.len() {
-        gene_info!(
-            params.gene_name,
-            "{} PCR products were generated and retained.",
-            num_records_all
-        );
-    } else {
-        gene_info!(params.gene_name, "{} PCR products were generated and {} were retained ({} removed as near-duplicates within {} edits).", num_records_all, records.len(), num_records_all - records.len(), params.dedup_edit_threshold);
-    }
-
-    if records.len() > MAX_NUM_AMPLICONS {
-        gene_warn!(
-            params.gene_name,
-            "There are {} PCR products. This exceeds the maximum of {}. Retaining only the first {} records.",
-            records.len(),
-            MAX_NUM_AMPLICONS,
-            MAX_NUM_AMPLICONS
-        );
-        records.truncate(MAX_NUM_AMPLICONS);
-    }
-
-    // Return the records
-    Ok(records)
+    Ok(sort_and_deduplicate(assembly_records_all, params))
 }
 
 #[cfg(test)]
