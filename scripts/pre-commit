@@ -1,0 +1,18 @@
+#!/bin/sh
+# Pre-commit hook: runs the same quality gates as CI (.github/workflows/ci.yml)
+#
+# Install: cp scripts/pre-commit .git/hooks/pre-commit && chmod +x .git/hooks/pre-commit
+# Or:      ln -sf ../../scripts/pre-commit .git/hooks/pre-commit
+
+set -e
+
+echo "pre-commit: cargo fmt --all --check"
+cargo fmt --all --check
+
+echo "pre-commit: cargo clippy -- -D warnings"
+cargo clippy -- -D warnings
+
+echo "pre-commit: cargo test --release"
+cargo test --release
+
+echo "pre-commit: all checks passed"

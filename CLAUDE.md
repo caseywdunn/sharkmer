@@ -26,12 +26,24 @@ sharkmer/                  # Repo root
 ├── meta.yaml              # Bioconda recipe
 ├── build.sh               # Bioconda build script
 ├── src/
-│   ├── main.rs            # CLI entry point, FASTQ ingestion, orchestration
+│   ├── main.rs            # Entry point, main() orchestration (~115 lines)
+│   ├── cli.rs             # Args struct, CLI parsing, validation, early exits
+│   ├── io.rs              # FASTQ reading, ENA streaming, FASTA writing
+│   ├── format.rs          # Number/byte/duration formatting utilities
+│   ├── stats.rs           # RunStats, PCR execution, YAML stats output
 │   ├── kmer/
-│   │   └── mod.rs         # 2-bit encoding, kmer extraction, counting, histograms
+│   │   ├── mod.rs         # Re-exports and tests
+│   │   ├── encoding.rs    # 2-bit encoding, Read struct, kmer extraction
+│   │   ├── counting.rs    # KmerMap trait, KmerCounts, FilteredKmerCounts
+│   │   ├── histogram.rs   # Histogram struct
+│   │   └── chunk.rs       # Chunk struct
 │   └── pcr/
-│       ├── mod.rs         # De Bruijn graph construction, extension, path finding
-│       └── preconfigured.rs  # YAML panel loading (built-in via include_str!, user via --pcr-panel-file)
+│       ├── mod.rs         # do_pcr() orchestration, PCRParams, validation
+│       ├── primers.rs     # Primer preprocessing, ambiguity, mismatch permutation
+│       ├── graph.rs       # De Bruijn graph construction, extension, diagnostics
+│       ├── pruning.rs     # Graph pruning (balloons, side branches, orphans)
+│       ├── paths.rs       # Path finding, sequence extraction, deduplication
+│       └── preconfigured.rs  # YAML panel loading (built-in + sideloaded)
 ├── panels/                # Built-in primer panel YAML files (7 panels)
 ├── tests/
 │   ├── fixtures/          # ERR571460 100k reads (gzipped) for integration tests
@@ -42,14 +54,32 @@ sharkmer/                  # Repo root
 
 ## Build and test
 
+These commands match the CI quality gates exactly. All must pass before
+committing:
+
 ```bash
-cargo test --release     # Run tests (release mode for integration test speed)
-cargo clippy             # Lint
-cargo fmt --check        # Format check
-cargo build --release    # Release build
+cargo fmt --all --check        # Format check (CI-exact)
+cargo clippy -- -D warnings    # Lint — warnings are errors (CI-exact)
+cargo test --release           # Run tests (release mode for integration test speed)
+cargo build --release          # Release build
 ```
 
+**Important:** Use `cargo clippy -- -D warnings` (not bare `cargo clippy`).
+CI treats warnings as errors. If clippy passes locally without `-D warnings`
+but fails in CI, you have a warning that needs fixing.
+
 All commands run from the repo root.
+
+### Pre-commit hook
+
+A git pre-commit hook enforces these same CI gates locally. Install it:
+
+```bash
+ln -sf ../../scripts/pre-commit .git/hooks/pre-commit
+```
+
+This prevents commits that would fail CI. The hook runs fmt, clippy
+(`-D warnings`), and tests before every commit.
 
 ## Feature flags
 
@@ -64,26 +94,55 @@ cargo build --features intmap --no-default-features
 
 ## Module architecture
 
-### kmer/mod.rs (~940 lines)
+### main.rs (~115 lines)
 
-- `Read`: 2-bit encoded DNA sequence (A=00, C=01, G=10, T=11)
-- `Read::get_kmers()`: Sliding window extracts canonical kmers (min of
-  forward/revcomp) as u64
-- `KmerCounts`: Hash map wrapper (polymorphic via feature flags) storing
-  kmer→count. Uses `KmerMap` trait to abstract over map implementations.
-- `Chunk`: Groups reads for incremental processing
-- `Histogram`: Kmer count frequency distribution
+Entry point. Parses CLI, delegates to helper modules, orchestrates the
+pipeline: init logging → collect primers → validate → ingest reads →
+consolidate → run PCR → write stats → print summary.
 
-### pcr/mod.rs (~2300 lines)
+### cli.rs (~480 lines)
 
-Pipeline: preprocess primers → find primer kmers in data → seed graph →
+`Args` struct (clap), `ColorMode`, `parse_pcr_primers_string()`,
+`init_logging()`, early exits, validation, `--dry-run`.
+
+### io.rs (~470 lines)
+
+`read_fastq()`, `validate_fastq_record()`, `get_ena_fastq_urls()`,
+`write_fasta_record()`, `ingest_reads()`, `consolidate_and_histogram()`.
+
+### format.rs (~45 lines)
+
+`format_count()`, `format_bytes()`, `format_duration()`.
+
+### stats.rs (~170 lines)
+
+`RunStats`, `PcrGeneResult`, `run_pcr()`, `write_stats()`, `print_summary()`.
+
+### kmer/ (4 submodules)
+
+- `encoding.rs`: `Read` struct, 2-bit encoding (A=00, C=01, G=10, T=11),
+  `get_kmers()`, `revcomp_kmer()`, `seq_to_reads()`, `kmer_to_seq()`
+- `counting.rs`: `KmerMap` trait, feature-gated impls, `KmerCounts`,
+  `FilteredKmerCounts`
+- `histogram.rs`: `Histogram` struct
+- `chunk.rs`: `Chunk` struct
+- `mod.rs`: re-exports and tests
+
+### pcr/ (5 submodules)
+
+Pipeline: preprocess primers → find primer kmers → seed graph →
 extend graph → prune → find paths → generate sequences → deduplicate
 
-Key data structures:
-- `DBNode`: (k-1)-mer graph node with start/end/terminal flags
-- `DBEdge`: Kmer edge with observed count
-- `PCRParams`: Primer pair configuration
-- Graph: `petgraph::StableDiGraph<DBNode, DBEdge>`
+- `primers.rs`: Primer preprocessing, ambiguity resolution, mismatch
+  permutation, kmer extraction
+- `graph.rs`: `DBNode`, `DBEdge`, seed graph, `extend_graph()`,
+  diagnostics. Graph: `petgraph::StableDiGraph<DBNode, DBEdge>`
+- `pruning.rs`: `pop_balloons()`, `remove_side_branches()`,
+  `remove_orphan_nodes()`
+- `paths.rs`: `get_assembly_paths()`, sequence extraction, deduplication
+- `mod.rs`: `do_pcr()` orchestration, `PCRParams`, validation, constants
+- `preconfigured.rs`: YAML panel loading (built-in via `include_str!()`,
+  user via `--pcr-panel-file`)
 
 Key constants (may need tuning):
 - `COVERAGE_MULTIPLIER = 2`: High coverage definition
@@ -92,19 +151,12 @@ Key constants (may need tuning):
 - `MAX_NUM_NODES = 50_000`: Graph size limit
 - `MAX_NUM_PATHS_PER_PAIR = 20`: Path enumeration limit
 - `MAX_NUM_AMPLICONS = 20`: Output sequence limit
-- `DEFAULT_DEDUP_EDIT_THRESHOLD = 10`: Levenshtein threshold for deduplication (configurable per primer pair)
+- `DEFAULT_DEDUP_EDIT_THRESHOLD = 10`: Levenshtein threshold for dedup
 - `BALLOONING_COUNT_THRESHOLD_MULTIPLIER = 10.0`: Spurious edge detection
-
-### pcr/preconfigured.rs (~100 lines)
-
-Loads primer panels from YAML files via `include_str!()` (built-in panels)
-or from user-supplied files via `--pcr-panel-file`. Seven built-in panels:
-cnidaria, human, teleostei, angiospermae, insecta, bacteria, metazoa.
 
 ### panels/ directory
 
-YAML files defining built-in primer panels. Each file specifies panel name,
-description, and a list of primers with PCRParams fields. Embedded at
+YAML files defining built-in primer panels (7 panels). Embedded at
 compile time via `include_str!()`.
 
 ## Current known issues
@@ -118,8 +170,9 @@ gates, and patching workflow. Key points:
 
 - Work on issue branches from `dev`, merge back to `dev` before starting
   the next issue.
-- Quality gates before merge: `cargo test`, `cargo clippy` (no warnings),
-  `cargo fmt --check`.
+- Quality gates before merge: `cargo fmt --all --check`,
+  `cargo clippy -- -D warnings`, `cargo test --release`.
+- The pre-commit hook (`scripts/pre-commit`) enforces these automatically.
 - Present a summary and any concerns to the user for review before committing.
   Check off the issue in PLAN.md when done.
 
