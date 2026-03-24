@@ -302,7 +302,7 @@ pub fn do_pcr(
     for (kmer, count) in sorted_forward.iter() {
         gene_info!(
             params.gene_name,
-            "Attempting assembly with forward primer kmer {} with count {}",
+            "Attempting assembly with forward primer kmer {} (count {})",
             crate::kmer::kmer_to_seq(kmer, &kmer_counts.get_k()),
             count
         );

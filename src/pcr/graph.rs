@@ -89,7 +89,7 @@ pub fn get_path_length(
         {
             current_node = next_node;
         } else {
-            bail!("No path to the start node from the given node.");
+            bail!("Node has no incoming edge; cannot trace path back to start node.");
         }
     }
     Ok(Some(path_length))
