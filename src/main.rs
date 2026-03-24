@@ -580,20 +580,15 @@ fn read_fastq<R: BufRead>(
     Ok(false) // did not reach max reads (EOF)
 }
 
-fn main() -> Result<()> {
-    let start_run = std::time::Instant::now();
-
-    // Ingest command line arguments
-    let args = Args::parse();
-
-    // Initialize logging based on verbosity level and color mode
-    let log_level = match args.verbose {
+/// Initialize env_logger with the given verbosity level and color mode.
+fn init_logging(verbose: u8, color: &ColorMode) {
+    let log_level = match verbose {
         0 => log::LevelFilter::Warn,
         1 => log::LevelFilter::Info,
         2 => log::LevelFilter::Debug,
         _ => log::LevelFilter::Trace,
     };
-    let write_style = match args.color {
+    let write_style = match color {
         ColorMode::Auto => env_logger::WriteStyle::Auto,
         ColorMode::Always => env_logger::WriteStyle::Always,
         ColorMode::Never => env_logger::WriteStyle::Never,
@@ -635,9 +630,11 @@ fn main() -> Result<()> {
             }
         })
         .init();
+}
 
-    // Handle early-exit flags before any processing
-
+/// Handle early-exit flags (--completions, --cite, --list-panels, --export-panel, --help-pcr).
+/// Each prints output and calls process::exit(0).
+fn handle_early_exits(args: &Args) -> Result<()> {
     // Generate shell completions and exit
     if let Some(shell) = args.completions {
         let mut cmd = Args::command();
@@ -699,7 +696,12 @@ fn main() -> Result<()> {
         std::process::exit(0);
     }
 
-    // Collect PCR primer specifications from all sources
+    Ok(())
+}
+
+/// Collect PCR primer specifications from all sources (--pcr-panel, --pcr-panel-file,
+/// --pcr-primers), validate them, check for duplicates, and clamp min-count.
+fn collect_pcr_params(args: &Args) -> Result<Vec<pcr::PCRParams>> {
     let mut pcr_runs: Vec<pcr::PCRParams> = Vec::new();
 
     // Load preconfigured panels by name
@@ -790,39 +792,43 @@ fn main() -> Result<()> {
         gene_names.push(pcr_params.gene_name.clone());
     }
 
-    // Validate panels and exit if --validate-panels is specified
-    if args.validate_panels {
-        if pcr_runs.is_empty() {
-            bail!(
-                "--validate-panels requires at least one of --pcr-panel, --pcr-panel-file, or --pcr-primers"
-            );
-        }
-        println!("Validated {} primer pairs:\n", pcr_runs.len());
-        for p in &pcr_runs {
-            println!("  {}", p.gene_name);
-            println!(
-                "    forward:  {} ({} bp)",
-                p.forward_seq,
-                p.forward_seq.len()
-            );
-            println!(
-                "    reverse:  {} ({} bp)",
-                p.reverse_seq,
-                p.reverse_seq.len()
-            );
-            println!("    length:   {}-{} bp", p.min_length, p.max_length);
-            println!("    min-count: >= {}", p.min_count);
-            println!(
-                "    mismatches: {}, trim: {}, dedup-edit-threshold: {}",
-                p.mismatches, p.trim, p.dedup_edit_threshold
-            );
-        }
-        println!("\nAll primers valid.");
-        std::process::exit(0);
-    }
+    Ok(pcr_runs)
+}
 
-    // Derive sample name: use --sample if provided, otherwise derive from ENA metadata for --sra.
-    // Cache ENA result to avoid querying twice.
+/// Print validation output for all collected primer pairs and exit.
+fn handle_validate_panels(pcr_runs: &[pcr::PCRParams]) -> Result<()> {
+    if pcr_runs.is_empty() {
+        bail!(
+            "--validate-panels requires at least one of --pcr-panel, --pcr-panel-file, or --pcr-primers"
+        );
+    }
+    println!("Validated {} primer pairs:\n", pcr_runs.len());
+    for p in pcr_runs {
+        println!("  {}", p.gene_name);
+        println!(
+            "    forward:  {} ({} bp)",
+            p.forward_seq,
+            p.forward_seq.len()
+        );
+        println!(
+            "    reverse:  {} ({} bp)",
+            p.reverse_seq,
+            p.reverse_seq.len()
+        );
+        println!("    length:   {}-{} bp", p.min_length, p.max_length);
+        println!("    min-count: >= {}", p.min_count);
+        println!(
+            "    mismatches: {}, trim: {}, dedup-edit-threshold: {}",
+            p.mismatches, p.trim, p.dedup_edit_threshold
+        );
+    }
+    println!("\nAll primers valid.");
+    std::process::exit(0);
+}
+
+/// Derive the sample name from --sample or --sra ENA metadata.
+/// Returns (sample_name, optional_cached_ena_result).
+fn resolve_sample_name(args: &Args) -> Result<(String, Option<EnaResult>)> {
     let mut cached_ena_result: Option<EnaResult> = None;
     let sample = if let Some(ref s) = args.sample {
         s.clone()
@@ -857,23 +863,14 @@ fn main() -> Result<()> {
         sample
     );
 
-    info!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
-    debug!("{:?}", args);
+    Ok((sample, cached_ena_result))
+}
 
-    // Resolve the output directory path (creation deferred until after dry-run check)
-    let outdir_str = args
-        .outdir
-        .to_str()
-        .context("Output directory path contains invalid UTF-8")?;
-    let directory = if outdir_str.ends_with('/') {
-        outdir_str.to_string()
-    } else {
-        format!("{}/", outdir_str)
-    };
-
+/// Validate CLI arguments: k, histo_max, min_kmer_count, input file existence,
+/// --sra vs input conflicts, and panel file paths.
+fn validate_args(args: &Args, pcr_runs: &[pcr::PCRParams]) -> Result<()> {
     let k = args.k;
 
-    // Validate arguments
     ensure!(
         k < 32,
         "k must be less than 32 due to use of 64 bit integers to encode kmers"
@@ -944,81 +941,83 @@ fn main() -> Result<()> {
         }
     }
 
-    // Dry-run: print what would happen and exit
-    if args.dry_run {
-        eprintln!("sharkmer {} (dry run)", env!("CARGO_PKG_VERSION"));
-        eprintln!();
+    Ok(())
+}
 
-        // Input sources
-        eprintln!("Input:");
-        if let Some(accession) = &args.sra {
-            eprintln!("  SRA accession: {}", accession);
-        } else if let Some(input_files) = &args.input {
-            for f in input_files {
-                eprintln!("  {}", f.display());
-            }
-        } else {
-            eprintln!("  stdin");
-        }
+/// Print dry-run information (what would happen) and exit.
+fn handle_dry_run(args: &Args, sample: &str, directory: &str, pcr_runs: &[pcr::PCRParams]) {
+    let k = args.k;
 
-        eprintln!();
-        eprintln!("Configuration:");
-        eprintln!("  Sample:         {}", sample);
-        eprintln!("  Output dir:     {}", directory);
-        eprintln!("  Kmer length:    {}", k);
-        eprintln!("  Chunks:         {}", args.chunks);
-        eprintln!("  Threads:        {}", args.threads);
-        eprintln!("  Min kmer count: {}", args.min_kmer_count);
-        if let Some(max) = args.max_reads {
-            eprintln!("  Max reads:      {}", max);
-        }
+    eprintln!("sharkmer {} (dry run)", env!("CARGO_PKG_VERSION"));
+    eprintln!();
 
-        eprintln!();
-        eprintln!("Output files:");
-        eprintln!("  {}{}.stats.yaml", directory, sample);
-        if args.chunks > 0 {
-            eprintln!("  {}{}.histo", directory, sample);
-            eprintln!("  {}{}.final.histo", directory, sample);
+    // Input sources
+    eprintln!("Input:");
+    if let Some(accession) = &args.sra {
+        eprintln!("  SRA accession: {}", accession);
+    } else if let Some(input_files) = &args.input {
+        for f in input_files {
+            eprintln!("  {}", f.display());
         }
-        for pcr_params in &pcr_runs {
-            eprintln!("  {}{}_{}.fasta", directory, sample, pcr_params.gene_name);
-        }
-
-        if !pcr_runs.is_empty() {
-            eprintln!();
-            eprintln!(
-                "PCR primers ({} gene{}):",
-                pcr_runs.len(),
-                if pcr_runs.len() == 1 { "" } else { "s" }
-            );
-            for pcr_params in &pcr_runs {
-                eprintln!(
-                    "  {} (fwd: {}...{}, rev: {}...{}, len: {}-{})",
-                    pcr_params.gene_name,
-                    &pcr_params.forward_seq[..pcr_params.forward_seq.len().min(8)],
-                    &pcr_params.forward_seq[pcr_params.forward_seq.len().saturating_sub(4)..],
-                    &pcr_params.reverse_seq[..pcr_params.reverse_seq.len().min(8)],
-                    &pcr_params.reverse_seq[pcr_params.reverse_seq.len().saturating_sub(4)..],
-                    pcr_params.min_length,
-                    pcr_params.max_length,
-                );
-            }
-        }
-
-        std::process::exit(0);
+    } else {
+        eprintln!("  stdin");
     }
 
-    // Create the output directory now that we know this is not a dry run
-    std::fs::create_dir_all(&directory)
-        .with_context(|| format!("Failed to create output directory: {}", directory))?;
+    eprintln!();
+    eprintln!("Configuration:");
+    eprintln!("  Sample:         {}", sample);
+    eprintln!("  Output dir:     {}", directory);
+    eprintln!("  Kmer length:    {}", k);
+    eprintln!("  Chunks:         {}", args.chunks);
+    eprintln!("  Threads:        {}", args.threads);
+    eprintln!("  Min kmer count: {}", args.min_kmer_count);
+    if let Some(max) = args.max_reads {
+        eprintln!("  Max reads:      {}", max);
+    }
 
-    // Set the number of threads for Rayon to use
-    rayon::ThreadPoolBuilder::new()
-        .num_threads(args.threads)
-        .build_global()
-        .context("Failed to initialize thread pool")?;
+    eprintln!();
+    eprintln!("Output files:");
+    eprintln!("  {}{}.stats.yaml", directory, sample);
+    if args.chunks > 0 {
+        eprintln!("  {}{}.histo", directory, sample);
+        eprintln!("  {}{}.final.histo", directory, sample);
+    }
+    for pcr_params in pcr_runs {
+        eprintln!("  {}{}_{}.fasta", directory, sample, pcr_params.gene_name);
+    }
 
-    // Ingest the fastq data
+    if !pcr_runs.is_empty() {
+        eprintln!();
+        eprintln!(
+            "PCR primers ({} gene{}):",
+            pcr_runs.len(),
+            if pcr_runs.len() == 1 { "" } else { "s" }
+        );
+        for pcr_params in pcr_runs {
+            eprintln!(
+                "  {} (fwd: {}...{}, rev: {}...{}, len: {}-{})",
+                pcr_params.gene_name,
+                &pcr_params.forward_seq[..pcr_params.forward_seq.len().min(8)],
+                &pcr_params.forward_seq[pcr_params.forward_seq.len().saturating_sub(4)..],
+                &pcr_params.reverse_seq[..pcr_params.reverse_seq.len().min(8)],
+                &pcr_params.reverse_seq[pcr_params.reverse_seq.len().saturating_sub(4)..],
+                pcr_params.min_length,
+                pcr_params.max_length,
+            );
+        }
+    }
+
+    std::process::exit(0);
+}
+
+/// Ingest FASTQ reads from all input sources (SRA, files, or stdin).
+/// Returns the read state with populated chunks, and summary statistics.
+fn ingest_reads(
+    args: &Args,
+    k: usize,
+    mut cached_ena_result: Option<EnaResult>,
+    show_progress: bool,
+) -> Result<(FastqReadState, u64, u64, u64)> {
     let start = std::time::Instant::now();
     info!("Ingesting reads...");
 
@@ -1040,8 +1039,6 @@ fn main() -> Result<()> {
     let max_reads = args.max_reads.unwrap_or(0);
 
     // Create progress indicator: bar with ETA if max_reads is known, spinner otherwise.
-    // Only show at info verbosity or higher.
-    let show_progress = std::io::stderr().is_terminal();
     let progress = if show_progress && max_reads > 0 {
         let pb = ProgressBar::new(max_reads);
         pb.set_style(
@@ -1184,7 +1181,10 @@ fn main() -> Result<()> {
     );
 
     // Warn if very few reads for sPCR
-    if !pcr_runs.is_empty() && state.n_reads_read < 10_000 {
+    let has_pcr = !args.pcr_panel.is_empty()
+        || !args.pcr_panel_file.is_empty()
+        || !args.pcr_primers.is_empty();
+    if has_pcr && state.n_reads_read < 10_000 {
         warn!(
             "Only {} reads ingested. sPCR typically needs many more reads to produce results.",
             state.n_reads_read
@@ -1196,13 +1196,26 @@ fn main() -> Result<()> {
         bail!("No reads were ingested. Check that input files contain valid FASTQ records.");
     }
 
-    // Consolidate chunks and create histograms
+    Ok((state, n_reads_ingested, n_bases_ingested, n_kmers_ingested))
+}
+
+/// Consolidate chunks into a single KmerCounts table, optionally writing histograms.
+/// Returns (kmer_counts, n_singleton_kmers).
+fn consolidate_and_histogram(
+    state: &mut FastqReadState,
+    args: &Args,
+    k: usize,
+    sample: &str,
+    directory: &str,
+    n_kmers_ingested: u64,
+    show_progress: bool,
+) -> Result<(KmerCounts, Option<u64>)> {
     info!("Consolidating chunks...");
     let spinner_style =
         ProgressStyle::with_template("{spinner:.cyan} {msg}").expect("valid spinner template");
     let consolidate_spinner = if show_progress {
         let sp = ProgressBar::new_spinner();
-        sp.set_style(spinner_style.clone());
+        sp.set_style(spinner_style);
         sp.set_message("Consolidating kmer counts...");
         sp.enable_steady_tick(std::time::Duration::from_millis(80));
         sp
@@ -1365,132 +1378,129 @@ fn main() -> Result<()> {
         );
     }
 
-    // Run sPCR and collect results (parallelized across genes)
+    Ok((kmer_counts, n_singleton_kmers))
+}
+
+/// Run in silico PCR for all primer pairs, write FASTA output files, and print results.
+fn run_pcr(
+    kmer_counts: &KmerCounts,
+    pcr_runs: &[pcr::PCRParams],
+    sample: &str,
+    directory: &str,
+    min_kmer_count: u64,
+    show_progress: bool,
+) -> Result<Vec<PcrGeneResult>> {
     let mut pcr_results: Vec<PcrGeneResult> = Vec::new();
 
-    if !pcr_runs.is_empty() {
-        info!("Running in silico PCR...");
-        let pcr_spinner = if show_progress {
-            let sp = ProgressBar::new_spinner();
-            sp.set_style(spinner_style.clone());
-            sp.set_message("Running in silico PCR...");
-            sp.enable_steady_tick(std::time::Duration::from_millis(80));
-            sp
-        } else {
-            ProgressBar::hidden()
-        };
-
-        // Create a filtered view of kmer counts for PCR (no data copied)
-        info!(
-            "Filtering kmers with count < {} before PCR",
-            args.min_kmer_count
-        );
-        let kmer_counts_pcr = kmer_counts.filtered_view(args.min_kmer_count);
-
-        // Run PCR for each gene in parallel; kmer_counts_pcr is read-only and shared
-        let pcr_fasta_results: Vec<_> = pcr_runs
-            .par_iter()
-            .map(|pcr_params| {
-                let fasta = pcr::do_pcr(&kmer_counts_pcr, &sample, pcr_params);
-                (pcr_params, fasta)
-            })
-            .collect();
-        pcr_spinner.finish_and_clear();
-
-        // Write output files sequentially to maintain deterministic order
-        for (pcr_params, fasta_result) in pcr_fasta_results {
-            let fasta = fasta_result?;
-
-            if !fasta.is_empty() {
-                let fasta_path = format!("{}{}_{}.fasta", directory, sample, pcr_params.gene_name);
-                warn_if_exists(&fasta_path);
-                let mut file = std::fs::File::create(&fasta_path)
-                    .with_context(|| format!("Failed to create FASTA file: {}", fasta_path))?;
-
-                let product_lengths: Vec<usize> = fasta.iter().map(|r| r.seq().len()).collect();
-
-                for record in fasta.iter() {
-                    write_fasta_record(&mut file, record)
-                        .context("Failed to write FASTA record")?;
-                }
-
-                pcr_results.push(PcrGeneResult {
-                    gene_name: pcr_params.gene_name.clone(),
-                    status: "success".to_string(),
-                    n_products: product_lengths.len(),
-                    product_lengths,
-                    output_file: Some(fasta_path),
-                });
-            } else {
-                pcr_results.push(PcrGeneResult {
-                    gene_name: pcr_params.gene_name.clone(),
-                    status: "fail".to_string(),
-                    n_products: 0,
-                    product_lengths: Vec::new(),
-                    output_file: None,
-                });
-            }
-        }
-
-        // Print gene result table
-        let (sym_pass, sym_fail) = if show_progress {
-            ("\u{2714}", "\u{2718}") // ✔ ✘
-        } else {
-            ("+", "-")
-        };
-        for result in &pcr_results {
-            if result.status == "success" {
-                let lengths: Vec<String> = result
-                    .product_lengths
-                    .iter()
-                    .map(|l| l.to_string())
-                    .collect();
-                warn!(
-                    "  {} {} ({} product{}, {} bp)",
-                    sym_pass,
-                    result.gene_name,
-                    result.n_products,
-                    if result.n_products == 1 { "" } else { "s" },
-                    lengths.join(", ")
-                );
-            } else {
-                warn!("  {} {} (no products)", sym_fail, result.gene_name);
-            }
-        }
-
-        info!("Done running in silico PCR");
+    if pcr_runs.is_empty() {
+        return Ok(pcr_results);
     }
 
-    // Reconstruct command line string
-    let command = std::env::args().collect::<Vec<String>>().join(" ");
-
-    // Write stats as YAML
-    info!("Writing stats to file...");
-    let run_stats = RunStats {
-        sharkmer_version: env!("CARGO_PKG_VERSION").to_string(),
-        command,
-        sample: sample.clone(),
-        kmer_length: args.k,
-        chunks: args.chunks,
-        n_reads_read: state.n_reads_read,
-        n_bases_read: state.n_bases_read,
-        n_subreads_ingested: n_reads_ingested,
-        n_bases_ingested,
-        n_kmers: n_kmers_ingested,
-        n_multi_kmers: n_singleton_kmers.map(|s| n_kmers_ingested.saturating_sub(s)),
-        n_singleton_kmers,
-        peak_memory_bytes: PEAK_ALLOC.peak_usage() as u64,
-        pcr_results,
+    info!("Running in silico PCR...");
+    let spinner_style =
+        ProgressStyle::with_template("{spinner:.cyan} {msg}").expect("valid spinner template");
+    let pcr_spinner = if show_progress {
+        let sp = ProgressBar::new_spinner();
+        sp.set_style(spinner_style);
+        sp.set_message("Running in silico PCR...");
+        sp.enable_steady_tick(std::time::Duration::from_millis(80));
+        sp
+    } else {
+        ProgressBar::hidden()
     };
 
+    // Create a filtered view of kmer counts for PCR (no data copied)
+    info!("Filtering kmers with count < {} before PCR", min_kmer_count);
+    let kmer_counts_pcr = kmer_counts.filtered_view(min_kmer_count);
+
+    // Run PCR for each gene in parallel; kmer_counts_pcr is read-only and shared
+    let pcr_fasta_results: Vec<_> = pcr_runs
+        .par_iter()
+        .map(|pcr_params| {
+            let fasta = pcr::do_pcr(&kmer_counts_pcr, sample, pcr_params);
+            (pcr_params, fasta)
+        })
+        .collect();
+    pcr_spinner.finish_and_clear();
+
+    // Write output files sequentially to maintain deterministic order
+    for (pcr_params, fasta_result) in pcr_fasta_results {
+        let fasta = fasta_result?;
+
+        if !fasta.is_empty() {
+            let fasta_path = format!("{}{}_{}.fasta", directory, sample, pcr_params.gene_name);
+            warn_if_exists(&fasta_path);
+            let mut file = std::fs::File::create(&fasta_path)
+                .with_context(|| format!("Failed to create FASTA file: {}", fasta_path))?;
+
+            let product_lengths: Vec<usize> = fasta.iter().map(|r| r.seq().len()).collect();
+
+            for record in fasta.iter() {
+                write_fasta_record(&mut file, record).context("Failed to write FASTA record")?;
+            }
+
+            pcr_results.push(PcrGeneResult {
+                gene_name: pcr_params.gene_name.clone(),
+                status: "success".to_string(),
+                n_products: product_lengths.len(),
+                product_lengths,
+                output_file: Some(fasta_path),
+            });
+        } else {
+            pcr_results.push(PcrGeneResult {
+                gene_name: pcr_params.gene_name.clone(),
+                status: "fail".to_string(),
+                n_products: 0,
+                product_lengths: Vec::new(),
+                output_file: None,
+            });
+        }
+    }
+
+    // Print gene result table
+    let (sym_pass, sym_fail) = if show_progress {
+        ("\u{2714}", "\u{2718}") // checkmark, x-mark
+    } else {
+        ("+", "-")
+    };
+    for result in &pcr_results {
+        if result.status == "success" {
+            let lengths: Vec<String> = result
+                .product_lengths
+                .iter()
+                .map(|l| l.to_string())
+                .collect();
+            warn!(
+                "  {} {} ({} product{}, {} bp)",
+                sym_pass,
+                result.gene_name,
+                result.n_products,
+                if result.n_products == 1 { "" } else { "s" },
+                lengths.join(", ")
+            );
+        } else {
+            warn!("  {} {} (no products)", sym_fail, result.gene_name);
+        }
+    }
+
+    info!("Done running in silico PCR");
+
+    Ok(pcr_results)
+}
+
+/// Write run statistics as a YAML file.
+fn write_stats(run_stats: &RunStats, directory: &str, sample: &str) -> Result<()> {
+    info!("Writing stats to file...");
     let stats_path = format!("{}{}.stats.yaml", directory, sample);
     warn_if_exists(&stats_path);
     let file_stats = std::fs::File::create(&stats_path).context("Failed to create stats file")?;
-    serde_yaml::to_writer(file_stats, &run_stats).context("Failed to write stats YAML")?;
+    serde_yaml::to_writer(file_stats, run_stats).context("Failed to write stats YAML")?;
+    Ok(())
+}
 
-    // Print summary line (warn level = always visible unless --quiet)
-    let elapsed_str = format_duration(start_run.elapsed());
-
+/// Print the final summary line to stderr.
+fn print_summary(run_stats: &RunStats, elapsed: std::time::Duration) {
+    let elapsed_str = format_duration(elapsed);
     let reads_str = format_count(run_stats.n_reads_read);
 
     if !run_stats.pcr_results.is_empty() {
@@ -1531,6 +1541,116 @@ fn main() -> Result<()> {
             elapsed_str
         );
     }
+}
+
+fn main() -> Result<()> {
+    let start_run = std::time::Instant::now();
+
+    // Parse CLI arguments
+    let args = Args::parse();
+
+    // Initialize logging
+    init_logging(args.verbose, &args.color);
+
+    // Handle early-exit flags (--completions, --cite, --list-panels, --export-panel, --help-pcr)
+    handle_early_exits(&args)?;
+
+    // Collect and validate PCR primer specifications from all sources
+    let pcr_runs = collect_pcr_params(&args)?;
+
+    // Handle --validate-panels (prints and exits)
+    if args.validate_panels {
+        handle_validate_panels(&pcr_runs)?;
+    }
+
+    // Derive sample name from --sample or --sra ENA metadata
+    let (sample, cached_ena_result) = resolve_sample_name(&args)?;
+
+    info!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
+    debug!("{:?}", args);
+
+    // Resolve the output directory path (creation deferred until after dry-run check)
+    let outdir_str = args
+        .outdir
+        .to_str()
+        .context("Output directory path contains invalid UTF-8")?;
+    let directory = if outdir_str.ends_with('/') {
+        outdir_str.to_string()
+    } else {
+        format!("{}/", outdir_str)
+    };
+
+    let k = args.k;
+
+    // Validate arguments
+    validate_args(&args, &pcr_runs)?;
+
+    // Handle --dry-run (prints and exits)
+    if args.dry_run {
+        handle_dry_run(&args, &sample, &directory, &pcr_runs);
+    }
+
+    // Create the output directory now that we know this is not a dry run
+    std::fs::create_dir_all(&directory)
+        .with_context(|| format!("Failed to create output directory: {}", directory))?;
+
+    // Set the number of threads for Rayon to use
+    rayon::ThreadPoolBuilder::new()
+        .num_threads(args.threads)
+        .build_global()
+        .context("Failed to initialize thread pool")?;
+
+    let show_progress = std::io::stderr().is_terminal();
+
+    // Ingest FASTQ reads from all input sources
+    let (state, n_reads_ingested, n_bases_ingested, n_kmers_ingested) =
+        ingest_reads(&args, k, cached_ena_result, show_progress)?;
+
+    // Consolidate chunks and optionally write histograms
+    let mut state = state;
+    let (kmer_counts, n_singleton_kmers) = consolidate_and_histogram(
+        &mut state,
+        &args,
+        k,
+        &sample,
+        &directory,
+        n_kmers_ingested,
+        show_progress,
+    )?;
+
+    // Run in silico PCR
+    let pcr_results = run_pcr(
+        &kmer_counts,
+        &pcr_runs,
+        &sample,
+        &directory,
+        args.min_kmer_count,
+        show_progress,
+    )?;
+
+    // Build and write run statistics
+    let command = std::env::args().collect::<Vec<String>>().join(" ");
+    let run_stats = RunStats {
+        sharkmer_version: env!("CARGO_PKG_VERSION").to_string(),
+        command,
+        sample: sample.clone(),
+        kmer_length: args.k,
+        chunks: args.chunks,
+        n_reads_read: state.n_reads_read,
+        n_bases_read: state.n_bases_read,
+        n_subreads_ingested: n_reads_ingested,
+        n_bases_ingested,
+        n_kmers: n_kmers_ingested,
+        n_multi_kmers: n_singleton_kmers.map(|s| n_kmers_ingested.saturating_sub(s)),
+        n_singleton_kmers,
+        peak_memory_bytes: PEAK_ALLOC.peak_usage() as u64,
+        pcr_results,
+    };
+
+    write_stats(&run_stats, &directory, &sample)?;
+
+    // Print final summary
+    print_summary(&run_stats, start_run.elapsed());
 
     Ok(())
 }
