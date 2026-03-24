@@ -96,8 +96,10 @@ pub struct PCRParams {
     #[serde(default = "default_trim")]
     pub trim: usize,
     #[serde(default)]
+    #[allow(dead_code)] // Deserialized from YAML panels and re-exported; not read by Rust code
     pub citation: String,
     #[serde(default)]
+    #[allow(dead_code)] // Deserialized from YAML panels and re-exported; not read by Rust code
     pub notes: String,
     #[serde(default = "default_dedup_edit_threshold")]
     pub dedup_edit_threshold: u32,
@@ -518,11 +520,7 @@ pub fn do_pcr(
             } else {
                 None
             };
-            fasta::Record::with_attrs(
-                &id,
-                desc.as_deref(),
-                record.seq(),
-            )
+            fasta::Record::with_attrs(&id, desc.as_deref(), record.seq())
         })
         .collect();
 
