@@ -461,13 +461,18 @@ pub(crate) fn consolidate_and_histogram(
     n_kmers_ingested: u64,
     show_progress: bool,
 ) -> Result<(KmerCounts, Option<u64>)> {
-    info!("Consolidating chunks...");
+    let spinner_msg = if args.chunks > 0 {
+        "Consolidating kmer counts..."
+    } else {
+        "Merging kmer counts..."
+    };
+    info!("{}", spinner_msg);
     let spinner_style =
         ProgressStyle::with_template("{spinner:.cyan} {msg}").expect("valid spinner template");
     let consolidate_spinner = if show_progress {
         let sp = ProgressBar::new_spinner();
         sp.set_style(spinner_style);
-        sp.set_message("Consolidating kmer counts...");
+        sp.set_message(spinner_msg.to_string());
         sp.enable_steady_tick(std::time::Duration::from_millis(80));
         sp
     } else {
@@ -610,7 +615,7 @@ pub(crate) fn consolidate_and_histogram(
         }
         consolidate_spinner.finish_and_clear();
         info!(
-            "Chunks consolidated, time: {}",
+            "Kmer counts merged, time: {}",
             format_duration(start.elapsed())
         );
 
