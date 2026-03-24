@@ -2,7 +2,7 @@
 name = "sharkmer"
 version = "2.0.0-alpha"
 authors = ["Casey Dunn <casey.dunn@yale.edu>"]
-description = "A collection of kmer counting and analysis tools."
+description = "In silico PCR (sPCR) and incremental kmer counting from whole-genome shotgun reads"
 edition = "2021"
 repository = "https://github.com/caseywdunn/sharkmer"
 

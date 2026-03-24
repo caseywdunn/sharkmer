@@ -24,7 +24,7 @@ fn main() -> Result<()> {
     let args = Args::parse();
 
     // Initialize logging
-    cli::init_logging(args.verbose, &args.color);
+    cli::init_logging(args.verbose, args.quiet, &args.color);
 
     // Handle early-exit flags (--completions, --cite, --list-panels, --export-panel, --help-pcr)
     cli::handle_early_exits(&args)?;

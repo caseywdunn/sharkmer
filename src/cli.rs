@@ -207,6 +207,10 @@ pub(crate) struct Args {
     #[arg(short = 'v', long, action = clap::ArgAction::Count, help_heading = "General")]
     pub(crate) verbose: u8,
 
+    /// Suppress all output except errors
+    #[arg(short = 'q', long, help_heading = "General")]
+    pub(crate) quiet: bool,
+
     /// Color output
     #[arg(long, default_value = "auto", help_heading = "General")]
     pub(crate) color: ColorMode,
@@ -236,13 +240,17 @@ pub(crate) enum ColorMode {
     Never,
 }
 
-/// Initialize env_logger with the given verbosity level and color mode.
-pub(crate) fn init_logging(verbose: u8, color: &ColorMode) {
-    let log_level = match verbose {
-        0 => log::LevelFilter::Warn,
-        1 => log::LevelFilter::Info,
-        2 => log::LevelFilter::Debug,
-        _ => log::LevelFilter::Trace,
+/// Initialize env_logger with the given verbosity level, quiet flag, and color mode.
+pub(crate) fn init_logging(verbose: u8, quiet: bool, color: &ColorMode) {
+    let log_level = if quiet {
+        log::LevelFilter::Error
+    } else {
+        match verbose {
+            0 => log::LevelFilter::Warn,
+            1 => log::LevelFilter::Info,
+            2 => log::LevelFilter::Debug,
+            _ => log::LevelFilter::Trace,
+        }
     };
     let write_style = match color {
         ColorMode::Auto => env_logger::WriteStyle::Auto,
@@ -347,8 +355,14 @@ pub(crate) fn handle_early_exits(args: &Args) -> Result<()> {
         println!("  mismatches              Maximum primer-kmer mismatches [2]");
         println!("  trim                    Bases to keep at 3' end of each primer [15]");
         println!("  dedup-edit-threshold    Levenshtein distance for deduplication [10]\n");
+        println!("Primer sequences support IUPAC ambiguity codes:");
+        println!("  R (A/G)  Y (C/T)  S (G/C)  W (A/T)  K (G/T)  M (A/C)");
+        println!("  B (C/G/T)  D (A/G/T)  H (A/C/T)  V (A/C/G)  N (A/C/G/T)\n");
         println!("Multiple primer pairs can be specified by repeating the flag:");
-        println!("  --pcr-primers \"...\" --pcr-primers \"...\"");
+        println!("  --pcr-primers \"...\" --pcr-primers \"...\"\n");
+        println!("Note: when using --pcr-panel or --pcr-panel-file, gene names in output");
+        println!("files are prefixed with the panel name (e.g., cnidaria_18S).");
+        println!("Inline --pcr-primers gene names are used as-is.");
         std::process::exit(0);
     }
 
@@ -389,7 +403,7 @@ pub(crate) fn collect_pcr_params(args: &Args) -> Result<Vec<pcr::PCRParams>> {
     // Parse inline primer specifications
     for pcr_string in args.pcr_primers.iter() {
         let pcr_params = parse_pcr_primers_string(pcr_string)
-            .with_context(|| format!("Error parsing primer specification: {}", pcr_string))?;
+            .with_context(|| format!("Error parsing primer specification: \"{}\"", pcr_string))?;
         pcr_runs.push(pcr_params);
     }
 
@@ -442,8 +456,9 @@ pub(crate) fn collect_pcr_params(args: &Args) -> Result<Vec<pcr::PCRParams>> {
     for pcr_params in pcr_runs.iter() {
         ensure!(
             !gene_names.contains(&pcr_params.gene_name),
-            "Duplicate gene name: {}",
-            pcr_params.gene_name
+            "Duplicate gene name '{}' (from {})",
+            pcr_params.gene_name,
+            pcr_params.source
         );
         gene_names.push(pcr_params.gene_name.clone());
     }
@@ -544,11 +559,6 @@ pub(crate) fn validate_args(args: &Args, pcr_runs: &[pcr::PCRParams]) -> Result<
         "min-kmer-count must be at least 1"
     );
 
-    // Warn if no output will be produced
-    if args.chunks == 0 && pcr_runs.is_empty() {
-        warn!("No --pcr-panel/--pcr-panel-file/--pcr-primers and --chunks is 0: only a stats file will be produced");
-    }
-
     // Validate that --sra is not combined with input files
     if args.sra.is_some() && args.input.is_some() {
         bail!("--sra cannot be combined with input files. Use one or the other.");
@@ -595,6 +605,11 @@ pub(crate) fn validate_args(args: &Args, pcr_runs: &[pcr::PCRParams]) -> Result<
                 panel_source
             );
         }
+    }
+
+    // Warn if no output will be produced (after all validation passes)
+    if args.chunks == 0 && pcr_runs.is_empty() {
+        warn!("No --pcr-panel/--pcr-panel-file/--pcr-primers and --chunks is 0: only a stats file will be produced");
     }
 
     Ok(())
