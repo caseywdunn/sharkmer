@@ -492,7 +492,41 @@ pub fn do_pcr(
         return Ok(Vec::new());
     }
 
-    Ok(paths::sort_and_deduplicate(assembly_records_all, params))
+    let records = paths::sort_and_deduplicate(assembly_records_all, params);
+
+    // Re-number products sequentially (0, 1, 2, ...) after dedup so IDs are
+    // deterministic regardless of thread count or path enumeration order.
+    let records = records
+        .into_iter()
+        .enumerate()
+        .map(|(i, record)| {
+            let id = format!("{}_{}_{}", sample_name, params.gene_name, i);
+            let desc = if let Some(d) = record.desc() {
+                // Update the product=N field in the description
+                let updated = d
+                    .split_whitespace()
+                    .map(|field| {
+                        if field.starts_with("product=") {
+                            format!("product={}", i)
+                        } else {
+                            field.to_string()
+                        }
+                    })
+                    .collect::<Vec<_>>()
+                    .join(" ");
+                Some(updated)
+            } else {
+                None
+            };
+            fasta::Record::with_attrs(
+                &id,
+                desc.as_deref(),
+                record.seq(),
+            )
+        })
+        .collect();
+
+    Ok(records)
 }
 
 #[cfg(test)]
