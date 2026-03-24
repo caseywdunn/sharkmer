@@ -18,7 +18,7 @@ pub(super) fn pop_balloons(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize)
         // The maximum number of descendants would be 4^EXTENSION_EVALUATION_DEPTH
         if n > 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32) {
             let seq = crate::kmer::kmer_to_seq(&graph[node].sub_kmer, &(*k - 1));
-            warn!("Node {} with sequence {} has {} descendants at a depth of {}. This exceed the maximum of 4^{}={} that is expected", node.index(), seq, n, EXTENSION_EVALUATION_DEPTH, EXTENSION_EVALUATION_DEPTH, 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32));
+            warn!("Node {} with sequence {} has {} descendants at a depth of {}. This exceeds the maximum of 4^{}={} that is expected", node.index(), seq, n, EXTENSION_EVALUATION_DEPTH, EXTENSION_EVALUATION_DEPTH, 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32));
 
             // Get a vector of sequences of the descendants
             let mut seqs: Vec<String> = Vec::new();

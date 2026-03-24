@@ -518,7 +518,7 @@ pub(super) fn extend_graph(
                             let outgoing =
                                 graph.neighbors_directed(node, Direction::Outgoing).count();
                             if outgoing > 4 {
-                                gene_warn!(params.gene_name, "Node {} has {} outgoing edges. This exceed the maximum of 4 that is expected", node.index(), outgoing);
+                                gene_warn!(params.gene_name, "Node {} has {} outgoing edges. This exceeds the maximum of 4 that is expected", node.index(), outgoing);
                             }
                         } else {
                             graph[node].is_terminal = true;
@@ -559,7 +559,7 @@ pub(super) fn extend_graph(
                         graph.add_edge(node, new_node, edge);
                         let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
                         if outgoing > 4 {
-                            gene_warn!(params.gene_name, "Node {} has {} outgoing edges when adding new node. This exceed the maximum of 4 that is expected", node.index(), outgoing);
+                            gene_warn!(params.gene_name, "Node {} has {} outgoing edges when adding new node. This exceeds the maximum of 4 that is expected", node.index(), outgoing);
                         }
 
                         trace!(

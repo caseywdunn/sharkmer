@@ -193,13 +193,23 @@ pub(crate) fn print_summary(run_stats: &RunStats, elapsed: std::time::Duration) 
         );
     } else {
         let kmers_str = format_count(run_stats.n_kmers);
-        warn!(
-            "sharkmer complete: {} reads, {} kmers, {} chunks, peak mem {}, {}",
-            reads_str,
-            kmers_str,
-            run_stats.chunks,
-            format_bytes(run_stats.peak_memory_bytes),
-            elapsed_str
-        );
+        if run_stats.chunks > 0 {
+            warn!(
+                "sharkmer complete: {} reads, {} kmers, {} chunks, peak mem {}, {}",
+                reads_str,
+                kmers_str,
+                run_stats.chunks,
+                format_bytes(run_stats.peak_memory_bytes),
+                elapsed_str
+            );
+        } else {
+            warn!(
+                "sharkmer complete: {} reads, {} kmers, peak mem {}, {}",
+                reads_str,
+                kmers_str,
+                format_bytes(run_stats.peak_memory_bytes),
+                elapsed_str
+            );
+        }
     }
 }
