@@ -309,17 +309,35 @@ pub(crate) fn handle_early_exits(args: &Args) -> Result<()> {
     // Print citation information and exit if --cite is specified
     if args.cite {
         println!("{} {}\n", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
-        println!("If you use sharkmer, please cite:\n");
-        println!("  Dunn et al. (2026) sharkmer: a kmer counter and seeded de Bruijn graph");
-        println!("  assembler for in silico PCR and incremental kmer counting.");
-        println!("  doi: 10.xxxx/xxxxx\n");
-        println!("BibTeX:");
-        println!("  @article{{dunn2026sharkmer,");
-        println!("    title={{sharkmer: a kmer counter and seeded de Bruijn graph assembler");
-        println!("           for in silico PCR and incremental kmer counting}},");
-        println!("    author={{Dunn, Casey W.}},");
-        println!("    year={{2026}},");
-        println!("    doi={{10.xxxx/xxxxx}}");
+        println!("A paper describing sharkmer is in preparation. In the meantime,");
+        println!("please cite the following papers:\n");
+        println!("For in silico PCR:\n");
+        println!("  Church et al. (2024) Global genomics of the man-o'-war (Physalia)");
+        println!("  reveals biodiversity at the ocean surface.");
+        println!("  doi: 10.1101/2024.07.10.602499\n");
+        println!("  @article{{church2024physalia,");
+        println!("    title={{Global genomics of the man-o'-war (Physalia) reveals");
+        println!("           biodiversity at the ocean surface}},");
+        println!("    author={{Church, Samuel H. and others}},");
+        println!("    year={{2024}},");
+        println!("    doi={{10.1101/2024.07.10.602499}}");
+        println!("  }}\n");
+        println!("For incremental kmer counting:\n");
+        println!("  Ahuja et al. (2024) Giants among Cnidaria: Large Nuclear Genomes and");
+        println!("  Rearranged Mitochondrial Genomes in Siphonophores.");
+        println!("  Genome Biology and Evolution, 16(3).");
+        println!("  doi: 10.1093/gbe/evae048\n");
+        println!("  @article{{ahuja2024siphonophore,");
+        println!("    title={{Giants among Cnidaria: Large Nuclear Genomes and Rearranged");
+        println!("           Mitochondrial Genomes in Siphonophores}},");
+        println!("    author={{Ahuja, N. and Cao, X. and Schultz, D. T. and Picciani, N. and");
+        println!("            Lord, A. and Shao, S. and Jia, K. and Burdick, D. R. and");
+        println!("            Haddock, S. H. D. and Li, Y. and Dunn, C. W.}},");
+        println!("    journal={{Genome Biology and Evolution}},");
+        println!("    volume={{16}},");
+        println!("    number={{3}},");
+        println!("    year={{2024}},");
+        println!("    doi={{10.1093/gbe/evae048}}");
         println!("  }}");
         std::process::exit(0);
     }
