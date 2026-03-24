@@ -105,6 +105,18 @@ Depends on Phase 4.
 - [ ] Tag v2.0.0-rc1, test bioconda build
 - [ ] Tag v2.0.0 release
 
+## Phase 7 — Code structure refactor
+
+Pure refactors — no functional changes. Thin large functions first, then
+split files into modules. Order matters: PCR before main (main calls PCR),
+function extraction before file splits.
+
+- [ ] #80 Extract phases from `do_pcr()` into named helper functions
+- [ ] #81 Split `pcr/mod.rs` into submodules (depends on #80)
+- [ ] #82 Extract phases from `main()` into named helper functions (depends on #81)
+- [ ] #83 Split `main.rs` into modules (depends on #82)
+- [ ] #84 Split `kmer/mod.rs` into submodules (lower priority, independent)
+
 ## Notes
 
 - #31 appears in both Phase 0 (initial test coverage) and Phase 6 (update
