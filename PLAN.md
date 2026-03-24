@@ -111,11 +111,11 @@ Pure refactors — no functional changes. Thin large functions first, then
 split files into modules. Order matters: PCR before main (main calls PCR),
 function extraction before file splits.
 
-- [ ] #80 Extract phases from `do_pcr()` into named helper functions
-- [ ] #81 Split `pcr/mod.rs` into submodules (depends on #80)
-- [ ] #82 Extract phases from `main()` into named helper functions (depends on #81)
-- [ ] #83 Split `main.rs` into modules (depends on #82)
-- [ ] #84 Split `kmer/mod.rs` into submodules (lower priority, independent)
+- [x] #80 Extract phases from `do_pcr()` into named helper functions
+- [x] #81 Split `pcr/mod.rs` into submodules (depends on #80)
+- [x] #82 Extract phases from `main()` into named helper functions (depends on #81)
+- [x] #83 Split `main.rs` into modules (depends on #82)
+- [x] #84 Split `kmer/mod.rs` into submodules (lower priority, independent)
 
 ## Notes
 
