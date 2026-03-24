@@ -16,7 +16,7 @@ We are working on a paper that describes sharkmer. In the meantime, please cite 
 
 For *in silico* PCR:
 
-> Church et al. (2024) Global genomics of the man-o’-war (Physalia) reveals biodiversity at the ocean surface. [doi:10.1101/2024.07.10.602499](https://doi.org/10.1101/2024.07.10.602499)
+> Church et al. (2025) Population genomics of a sailing siphonophore reveals genetic structure in the open ocean. Current Biology, 35(15), 3556-3569.e6. [doi:10.1016/j.cub.2025.05.066](https://doi.org/10.1016/j.cub.2025.05.066)
 
 For incremental kmer counting:
 
