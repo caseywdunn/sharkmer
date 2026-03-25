@@ -10,7 +10,7 @@ pub mod histogram;
 pub use chunk::Chunk;
 pub use counting::{FilteredKmerCounts, KmerCounts};
 #[allow(unused_imports)]
-pub use encoding::{kmer_to_seq, revcomp_kmer, seq_to_kmer, seq_to_reads, Read};
+pub use encoding::{Read, kmer_to_seq, revcomp_kmer, seq_to_kmer, seq_to_reads};
 pub use histogram::Histogram;
 
 #[cfg(test)]

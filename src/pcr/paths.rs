@@ -220,7 +220,14 @@ pub(super) fn sort_and_deduplicate(
             num_records_all
         );
     } else {
-        gene_info!(params.gene_name, "{} PCR products were generated and {} were retained ({} removed as near-duplicates within edit distance {}).", num_records_all, records.len(), num_records_all - records.len(), params.dedup_edit_threshold);
+        gene_info!(
+            params.gene_name,
+            "{} PCR products were generated and {} were retained ({} removed as near-duplicates within edit distance {}).",
+            num_records_all,
+            records.len(),
+            num_records_all - records.len(),
+            params.dedup_edit_threshold
+        );
     }
 
     if records.len() > MAX_NUM_AMPLICONS {

@@ -1,12 +1,12 @@
 // pcr/primers.rs — primer preprocessing functions
 
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 use log::debug;
 use std::collections::HashSet;
 
 use crate::kmer::{FilteredKmerCounts, KmerCounts};
 
-use super::{Oligo, PCRParams, PrimerDirection, MAX_NUM_PRIMER_KMERS};
+use super::{MAX_NUM_PRIMER_KMERS, Oligo, PCRParams, PrimerDirection};
 
 pub(super) fn is_valid_nucleotide(c: char) -> bool {
     match c {

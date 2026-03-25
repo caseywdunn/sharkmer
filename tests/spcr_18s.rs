@@ -585,7 +585,7 @@ fn run_with_fastq_content(content: &str) -> std::process::Output {
 
     let outdir = tempfile::tempdir().expect("failed to create temp dir");
 
-    Command::new(sharkmer_bin())
+    let output = Command::new(sharkmer_bin())
         .args([
             "-k",
             "21",
@@ -598,7 +598,8 @@ fn run_with_fastq_content(content: &str) -> std::process::Output {
             fastq_path.to_str().unwrap(),
         ])
         .output()
-        .expect("failed to run sharkmer")
+        .expect("failed to run sharkmer");
+    output
 }
 
 /// Verify sharkmer rejects FASTA input with a clear error message.
@@ -677,14 +678,15 @@ fn run_validate_panel(yaml: &str) -> std::process::Output {
     f.write_all(yaml.as_bytes())
         .expect("failed to write temp panel");
 
-    Command::new(sharkmer_bin())
+    let output = Command::new(sharkmer_bin())
         .args([
             "--validate-panels",
             "--pcr-panel-file",
             panel_path.to_str().unwrap(),
         ])
         .output()
-        .expect("failed to run sharkmer")
+        .expect("failed to run sharkmer");
+    output
 }
 
 /// Verify --validate-panels accepts a well-formed user panel.

@@ -3,7 +3,7 @@ name = "sharkmer"
 version = "2.0.0-rc1"
 authors = ["Casey Dunn <casey.dunn@yale.edu>"]
 description = "In silico PCR (sPCR) and incremental kmer counting from whole-genome shotgun reads"
-edition = "2021"
+edition = "2024"
 repository = "https://github.com/caseywdunn/sharkmer"
 
 # Hash map backend for kmer counting. ahashmap (default) uses AES-NI hardware

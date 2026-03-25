@@ -1,7 +1,7 @@
 // kmer/encoding.rs
 //! 2-bit DNA encoding, kmer extraction, and sequence conversion utilities.
 
-use anyhow::{bail, ensure, Result};
+use anyhow::{Result, bail, ensure};
 
 /// A structure to hold a read in two bit encoding of bases
 /// * `00` represents `A`

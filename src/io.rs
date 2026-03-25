@@ -1,4 +1,4 @@
-use anyhow::{bail, ensure, Context, Result};
+use anyhow::{Context, Result, bail, ensure};
 use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, info, warn};
 use std::io::BufRead;

@@ -1,11 +1,11 @@
 // pcr/pruning.rs — graph pruning
 
 use log::{debug, info, trace, warn};
+use petgraph::Direction;
 use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
-use petgraph::Direction;
 
-use super::graph::{descendants, get_descendants, EXTENSION_EVALUATION_DEPTH};
+use super::graph::{EXTENSION_EVALUATION_DEPTH, descendants, get_descendants};
 use super::{DBEdge, DBNode};
 
 const EXTENSION_EVALUATION_DIFF: usize = 1;
@@ -18,7 +18,15 @@ pub(super) fn pop_balloons(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize)
         // The maximum number of descendants would be 4^EXTENSION_EVALUATION_DEPTH
         if n > 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32) {
             let seq = crate::kmer::kmer_to_seq(&graph[node].sub_kmer, &(*k - 1));
-            warn!("Node {} with sequence {} has {} descendants at a depth of {}. This exceeds the maximum of 4^{}={} that is expected", node.index(), seq, n, EXTENSION_EVALUATION_DEPTH, EXTENSION_EVALUATION_DEPTH, 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32));
+            warn!(
+                "Node {} with sequence {} has {} descendants at a depth of {}. This exceeds the maximum of 4^{}={} that is expected",
+                node.index(),
+                seq,
+                n,
+                EXTENSION_EVALUATION_DEPTH,
+                EXTENSION_EVALUATION_DEPTH,
+                4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)
+            );
 
             // Get a vector of sequences of the descendants
             let mut seqs: Vec<String> = Vec::new();

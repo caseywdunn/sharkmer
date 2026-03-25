@@ -4,7 +4,7 @@
 #[cfg(all(feature = "ahashmap", feature = "fxhashmap"))]
 compile_error!("Features 'ahashmap' and 'fxhashmap' are mutually exclusive. Enable only one.");
 
-use anyhow::{bail, Result};
+use anyhow::{Result, bail};
 
 #[cfg(feature = "fxhashmap")]
 use rustc_hash::FxHashMap;
@@ -12,7 +12,7 @@ use rustc_hash::FxHashMap;
 #[cfg(feature = "ahashmap")]
 use std::collections::HashMap as StdHashMap;
 
-use super::encoding::{revcomp_kmer, Read};
+use super::encoding::{Read, revcomp_kmer};
 use super::histogram::Histogram;
 
 /// Trait abstracting over hash map implementations for kmer counting.
@@ -264,11 +264,7 @@ impl<'a> FilteredKmerCounts<'a> {
     /// Get the count of the canonical form of a kmer, returning 0 if below threshold.
     pub fn get_canonical_count(&self, kmer: &u64) -> u64 {
         let count = self.inner.get_canonical_count(kmer);
-        if count >= self.min_count {
-            count
-        } else {
-            0
-        }
+        if count >= self.min_count { count } else { 0 }
     }
 
     /// Iterate over all entries, including those below threshold.

@@ -1,4 +1,4 @@
-use anyhow::{bail, ensure, Context, Result};
+use anyhow::{Context, Result, bail, ensure};
 use clap::{CommandFactory, Parser};
 use clap_complete::Shell;
 use log::warn;
@@ -367,7 +367,9 @@ pub(crate) fn handle_early_exits(args: &Args) -> Result<()> {
         println!("Inline primer specification format for --pcr-primers:\n");
         println!("  --pcr-primers \"key1=value1,key2=value2,...\"\n");
         println!("Example:");
-        println!("  --pcr-primers \"forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500\"\n");
+        println!(
+            "  --pcr-primers \"forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500\"\n"
+        );
         println!("Required keys:");
         println!("  forward       Forward primer sequence (5' to 3')");
         println!("  reverse       Reverse primer sequence (5' to 3' on opposite strand)");
@@ -633,7 +635,9 @@ pub(crate) fn validate_args(args: &Args, pcr_runs: &[pcr::PCRParams]) -> Result<
 
     // Warn if no output will be produced (after all validation passes)
     if args.chunks == 0 && pcr_runs.is_empty() {
-        warn!("No --pcr-panel/--pcr-panel-file/--pcr-primers and --chunks is 0: only a stats file will be produced");
+        warn!(
+            "No --pcr-panel/--pcr-panel-file/--pcr-primers and --chunks is 0: only a stats file will be produced"
+        );
     }
 
     Ok(())

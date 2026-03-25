@@ -11,14 +11,14 @@ use crate::kmer::{FilteredKmerCounts, KmerCounts};
 
 /// Log at info level with a [gene_name] prefix for attribution in parallel runs.
 macro_rules! gene_info {
-    ($gene:expr, $($arg:tt)*) => {
+    ($gene:expr_2021, $($arg:tt)*) => {
         log::info!("[{}] {}", $gene, format!($($arg)*))
     };
 }
 
 /// Log at warn level with a [gene_name] prefix for attribution in parallel runs.
 macro_rules! gene_warn {
-    ($gene:expr, $($arg:tt)*) => {
+    ($gene:expr_2021, $($arg:tt)*) => {
         log::warn!("[{}] {}", $gene, format!($($arg)*))
     };
 }
@@ -474,11 +474,18 @@ pub fn do_pcr(
             }
         }
 
-        debug!("      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large differences in value can indicate non-specific binding of one of the primers.", max_forward_count, max_reverse_count);
+        debug!(
+            "      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large differences in value can indicate non-specific binding of one of the primers.",
+            max_forward_count, max_reverse_count
+        );
 
         let count_threshold = 5;
         if (max_forward_count < count_threshold) | (max_reverse_count < count_threshold) {
-            gene_info!(params.gene_name, "Primer kmer counts are low, in this case less than {}. Consider increasing the number of reads.", count_threshold);
+            gene_info!(
+                params.gene_name,
+                "Primer kmer counts are low, in this case less than {}. Consider increasing the number of reads.",
+                count_threshold
+            );
         }
 
         assembly_records_all.extend(assembly_records);
@@ -486,10 +493,20 @@ pub fn do_pcr(
     gene_info!(params.gene_name, "Done.");
 
     if assembly_records_all.is_empty() {
-        gene_info!(params.gene_name, "No path was found from a forward primer binding site to a reverse binding site. Abandoning PCR.");
+        gene_info!(
+            params.gene_name,
+            "No path was found from a forward primer binding site to a reverse binding site. Abandoning PCR."
+        );
         gene_info!(params.gene_name, "Suggested actions:");
-        gene_info!(params.gene_name, "  - The max-length for the PCR product of {} may be too short. Consider increasing it.", params.max_length);
-        gene_info!(params.gene_name, "  - The primers may have non-specific binding and are not close enough to generate a product. Consider increasing the primer TRIM length from the default to create a more specific primer.");
+        gene_info!(
+            params.gene_name,
+            "  - The max-length for the PCR product of {} may be too short. Consider increasing it.",
+            params.max_length
+        );
+        gene_info!(
+            params.gene_name,
+            "  - The primers may have non-specific binding and are not close enough to generate a product. Consider increasing the primer TRIM length from the default to create a more specific primer."
+        );
 
         return Ok(Vec::new());
     }

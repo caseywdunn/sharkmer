@@ -1,12 +1,12 @@
 // pcr/graph.rs — graph data structures and construction
 
-use anyhow::{bail, Context, Result};
+use anyhow::{Context, Result, bail};
 use log::{debug, trace};
+use petgraph::Direction;
 use petgraph::algo::is_cyclic_directed;
 use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::visit::{Bfs, EdgeRef};
-use petgraph::Direction;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
@@ -392,7 +392,12 @@ pub(super) fn extend_graph(
         let n_nodes = graph.node_count();
 
         if n_nodes > MAX_NUM_NODES {
-            gene_info!(params.gene_name, "There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.", n_nodes, MAX_NUM_NODES);
+            gene_info!(
+                params.gene_name,
+                "There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.",
+                n_nodes,
+                MAX_NUM_NODES
+            );
             break;
         }
 
@@ -440,10 +445,10 @@ pub(super) fn extend_graph(
 
                     // If the kmer is in the kmer_counts hash (either orientation)
                     // and has count >= min_count, add it to the candidate kmers
-                    if let Some(count) = kmer_counts.get_canonical(&kmer) {
-                        if count >= *min_count {
-                            candidate_kmers.insert(kmer);
-                        }
+                    if let Some(count) = kmer_counts.get_canonical(&kmer)
+                        && count >= *min_count
+                    {
+                        candidate_kmers.insert(kmer);
                     }
                 }
 
@@ -472,7 +477,9 @@ pub(super) fn extend_graph(
                     && (node_degrees_slice[0] > 2)
                     && (node_degrees_slice[1] > 2)
                 {
-                    trace!("Marking node as terminal because it and immediate ancestors have high degree.");
+                    trace!(
+                        "Marking node as terminal because it and immediate ancestors have high degree."
+                    );
                     graph[node].is_terminal = true;
                     graph[node].visited = true;
                     continue;
@@ -483,7 +490,9 @@ pub(super) fn extend_graph(
                     // Get the number of elements of node_degrees_slice that are greater than 1
                     let n_high_degree = node_degrees_slice.iter().filter(|&x| *x > 1).count();
                     if n_high_degree >= 3 {
-                        trace!("Marking node as terminal because its recent ancestors have moderately elevated degree.");
+                        trace!(
+                            "Marking node as terminal because its recent ancestors have moderately elevated degree."
+                        );
                         graph[node].is_terminal = true;
                         graph[node].visited = true;
                         continue;
@@ -518,7 +527,12 @@ pub(super) fn extend_graph(
                             let outgoing =
                                 graph.neighbors_directed(node, Direction::Outgoing).count();
                             if outgoing > 4 {
-                                gene_warn!(params.gene_name, "Node {} has {} outgoing edges. This exceeds the maximum of 4 that is expected", node.index(), outgoing);
+                                gene_warn!(
+                                    params.gene_name,
+                                    "Node {} has {} outgoing edges. This exceeds the maximum of 4 that is expected",
+                                    node.index(),
+                                    outgoing
+                                );
                             }
                         } else {
                             graph[node].is_terminal = true;
@@ -559,7 +573,12 @@ pub(super) fn extend_graph(
                         graph.add_edge(node, new_node, edge);
                         let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
                         if outgoing > 4 {
-                            gene_warn!(params.gene_name, "Node {} has {} outgoing edges when adding new node. This exceeds the maximum of 4 that is expected", node.index(), outgoing);
+                            gene_warn!(
+                                params.gene_name,
+                                "Node {} has {} outgoing edges when adding new node. This exceeds the maximum of 4 that is expected",
+                                node.index(),
+                                outgoing
+                            );
                         }
 
                         trace!(
@@ -581,7 +600,10 @@ pub(super) fn extend_graph(
                             if path_length + kmer_counts.get_k() > params.max_length {
                                 graph[new_node].is_terminal = true;
                                 graph[new_node].visited = true;
-                                trace!("Marking new node {} as terminal because it exceeds max-length from start.", new_node.index());
+                                trace!(
+                                    "Marking new node {} as terminal because it exceeds max-length from start.",
+                                    new_node.index()
+                                );
                             }
                         } else {
                             graph[new_node].is_terminal = true;
