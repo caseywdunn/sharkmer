@@ -11,7 +11,7 @@ struct PanelFile {
 
 /// Parse a YAML string into a PanelFile.
 fn parse_panel_yaml(yaml_str: &str) -> Result<PanelFile> {
-    serde_yaml::from_str(yaml_str).context("Failed to parse panel YAML")
+    serde_yml::from_str(yaml_str).context("Failed to parse panel YAML")
 }
 
 /// Check whether a string looks like a URL.

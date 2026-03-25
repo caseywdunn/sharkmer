@@ -155,7 +155,7 @@ pub(crate) fn write_stats(run_stats: &RunStats, directory: &str, sample: &str) -
     let stats_path = format!("{}{}.stats.yaml", directory, sample);
     warn_if_exists(&stats_path);
     let file_stats = std::fs::File::create(&stats_path).context("Failed to create stats file")?;
-    serde_yaml::to_writer(file_stats, run_stats).context("Failed to write stats YAML")?;
+    serde_yml::to_writer(file_stats, run_stats).context("Failed to write stats YAML")?;
     Ok(())
 }
 
