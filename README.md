@@ -69,9 +69,9 @@ Raw reads, including [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra) reads, can be 
 
     sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr-panel cnidaria --ena SRR25099394
 
-Uncompressed data can be piped via stdin:
+Uncompressed FASTQ data can also be piped via stdin. For example, to trim adapters and low quality regions with [fastp](https://github.com/OpenGene/fastp) before counting kmers:
 
-    zcat agalma_*.fastq.gz | sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr-panel cnidaria
+    fastp -i agalma_1.fastq.gz -I agalma_2.fastq.gz --stdout | sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr-panel cnidaria
 
 ## *in silico* PCR (sPCR)
 
@@ -81,7 +81,7 @@ Investigators often want to extract small genome regions from genome skimming da
 
 - sPCR directly leverages the decades of work to optimize PCR primers that work well across species and span informative gene regions. These primers tend to bind conserved regions that flank variable informative regions and have minimal off-target binding.
 - Because sPCR is primer based, you can use it to obtain the exact same gene regions (co1, 16s, 18s, 28s, etc...) that have been PCR amplified for decades and still remain the most broadly sampled across species in public databases.
-- sPCR often doesn't take much data. For small genomes or high copy sequences (such as rRNA), you can analyze small (eg one million read) subsets of your data.
+- sPCR often doesn't take much data. For small genomes or high copy regions (such as rRNA or mitochondrial genes), you can analyze small (eg one million read) subsets of your data.
 - sPCR is fast and has minimum computational requirements. It can be run on a laptop in a couple minutes on a million reads.
 - sPCR requires a single tool (sharkmer), not complex workflows with multiple tools.
 
@@ -91,7 +91,7 @@ sPCR is useful when you want specific genes from skimming datasets you have coll
 
 sPCR of nuclear ribosomal RNA genes (eg animal 28s, 18s, ITS) and mitochondrial genes does not take much sequence data, given the relatively high copy number of these genes. For Illumina raw reads, 0.25x average sequencing depth of the genome is often sufficient.
 
-We will use the coral *Stenogorgia casta* as an example. With `--ena`, sharkmer downloads the reads directly from ENA — no extra tools needed:
+We will use the coral *Stenogorgia casta* as an example. With `--ena`, sharkmer downloads the SRA reads directly from ENA — no extra tools needed:
 
     sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr-panel cnidaria --ena SRR26955578
 
@@ -104,11 +104,14 @@ This is equivalent to specifying the primer pairs manually with `--pcr-primers`:
     sharkmer \
       --max-reads 1000000 \
       -s Stenogorgia_casta -o output/ \
-      --pcr-primers "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500" \
-      --pcr-primers "forward=TCATAARGATATHGG,reverse=RTGNCCAAAAAACCA,max-length=800,name=co1,min-length=600" \
-      --pcr-primers "forward=AACCTGGTTGATCCTGCCAGT,reverse=TGATCCTTCTGCAGGTTCACCTAC,max-length=2000,name=18s,min-length=1600" \
-      --pcr-primers "forward=CCYYAGTAACGGCGAGT,reverse=SWACAGATGGTAGCTTCG,max-length=3500,name=28s,min-length=2900"  \
-      --pcr-primers "forward=TACACACCGCCCGTCGCTACTA,reverse=ACTCGCCGTTACTRRGG,max-length=1000,name=ITSfull,min-length=600" \
+      --pcr-primers "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16S,min-length=500" \
+      --pcr-primers "forward=TCATAARGATATHGG,reverse=RTGNCCAAAAAACCA,max-length=800,name=CO1,min-length=600" \
+      --pcr-primers "forward=AACCTGGTTGATCCTGCCAGT,reverse=TGATCCTTCTGCAGGTTCACCTAC,max-length=2000,name=18S,min-length=1600" \
+      --pcr-primers "forward=CCYYAGTAACGGCGAGT,reverse=SWACAGATGGTAGCTTCG,max-length=3500,name=28S,min-length=2900" \
+      --pcr-primers "forward=TACACACCGCCCGTCGCTACTA,reverse=ACTCGCCGTTACTRRGG,max-length=1000,name=ITS,min-length=600" \
+      --pcr-primers "forward=GTAGGTGAACCTGCAGAAGGATCA,reverse=ACTCGCCGTTACTRRGG,max-length=1000,name=ITS-v2,min-length=600" \
+      --pcr-primers "forward=AMGWGGHATGGTDGCTGGTG,reverse=YTTRATNAYDCCAACAGCWAC,max-length=3000,name=EF1A,min-length=200" \
+      --pcr-primers "forward=CGTGAAACCGYTRRAAGGG,reverse=TTGGTCCGTGTTTCAAGACG,max-length=700,name=28S-v2,min-length=300" \
       --ena SRR26955578
 
 The `--pcr-primers` argument takes a string with the format `key1=value1,key2=value2,...`, where the required keys are `forward`, `reverse`, and `name`. Run `sharkmer --help-pcr` for details on all available keys.
@@ -123,9 +126,13 @@ You can see all the available built-in PCR panels with:
 
 To export a built-in panel as YAML (for customization or sideloading with `--pcr-panel-file`):
 
-    sharkmer --export-panel cnidaria
+    sharkmer --export-panel cnidaria > octocorallia.yaml
 
-If you have other primers that you would like to have added to the tool, please submit them to the [issue tracker](https://github.com/caseywdunn/sharkmer/issues).
+You can then edit the exported YAML to add genes, remove genes, or optimize primer sequences for your study. To run sharkmer with your custom panel, use `--pcr-panel-file`:
+
+    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr-panel-file octocorallia.yaml --ena SRR26955578
+
+If you have other primers that you would like to have added to the built-in panels, please submit them to the [issue tracker](https://github.com/caseywdunn/sharkmer/issues).
 
 ### Optimizing *in silico* PCR (sPCR)
 
@@ -133,11 +140,11 @@ There are a few different strategies to take if you are not getting a sPCR produ
 
 The things you should try first are:
 
-- Specify a reasonable value for the `--pcr-primers` parameter `max-length`, based on what is known about the gene. It does not need to be exact. It does need to be longer than the amplified product, but if it is much too long it may result in amplification of spurious products or runs that take too long without finding anything. Keep in mind that if there are introns, the amplified product can be much longer than the coding sequence.
+- Specify a reasonable value for the `--pcr-primers` parameter `max-length`, which is the maximum expected length of the amplified product, based on what is known about the gene. It does not need to be exact. It does need to be longer than the amplified product, but if it is much too long it may result in amplification of spurious products or runs that take too long without finding anything. Keep in mind that if there are introns, the amplified product can be much longer than the coding sequence.
 
-- Optimize your primer sequences. Make some multiple sequence alignments of the desired sequence region from several closely related species, and refine the primer sequences to be more specific to the target region. You can use [degenerate nucleotide symbols](https://en.wikipedia.org/wiki/Nucleic_acid_notation), such as R for A or G, a variable sites in the site where you would like the sequence to bind. Remember that, just as in real PCR, the reverse primer should be reverse complemented.
+- Optimize your primer sequences. Make some multiple sequence alignments of the desired sequence region from several closely related species, and refine the primer sequences to be more specific to the target region. You can use [degenerate nucleotide symbols](https://en.wikipedia.org/wiki/Nucleic_acid_notation), such as R for A or G, a variable sites in the site where you would like the sequence to bind. Remember that, just as in real PCR, the forward and reverse primers bind opposite strands with their 3' ends pointing toward each other. The reverse primer sequence should be reverse complemented relative to the reference strand.
 
-- Pick new primers that shorten the region you are trying to amplify. Shorter amplification fragments tend to require fewer reads to assemble.
+- Pick new primers that shorten the region you are trying to amplify, i.e. primers that are closer together in the genome sequence. Shorter amplification fragments tend to require fewer reads to assemble.
 
 - Adjust the `--pcr-primers` parameter `trim`. The default is 15. This is the max number of bases to keep at the 3' end of each primer. Primers used for real PCR tend to be longer than what is required for them to be unique within the genome. This is because they are lengthened to increase melting temperature. If you don't get a product, try reducing `trim` to reduce the specificity of the primer. If you are getting too many spurious products, try increasing this value. Modifying `trim` rather than adjusting the primer sequence makes subsequent adjustments easier (since you don't have to look up the primer sequence again) and also makes the provenance of primer sequences clearer.
 
@@ -147,7 +154,9 @@ If these do not work, then you can try adjusting other parameters.
 
 - Specify a reasonable `--pcr-primers` parameter `min-length`. This value defaults to 0, but raising it can get rid of small spurious products.
 
-- Adjust the `--pcr-primers` parameter `min-count`. This is the minimum kmer count required to extend a sPCR product. It defaults to 2, and must be at least 2 to avoid once-off sequencing errors. You can try raising it to 3 or 4 to get only the best supported products, but this requires more data. For example, `--pcr-primers "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16s,min-length=500,min-count=4"`
+- Adjust `--min-kmer-count`. This globally filters the kmer table before sPCR, removing all kmers with counts below this value. It defaults to 2, and must be at least 2 to avoid one-off sequencing errors. Raising it to 3 or 4 reduces noise but requires more sequencing data.
+
+- Adjust the per-primer `min-count` parameter in `--pcr-primers`. This sets the minimum kmer count required to extend the de Bruijn graph during sPCR for a specific primer pair. It must be at least as high as `--min-kmer-count` (since lower-count kmers have already been filtered). Raising it for a particular gene can help when that gene tends to produce spurious products. For example, `--pcr-primers "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16S,min-length=500,min-count=4"`
 
 - Adjust the `--pcr-primers` parameter `mismatches`. This defaults to 2. You can try raising it to 3 or 4 if you aren't getting the desired product. This reduces specificity, but this may increase the number of spurious paths that need to be traversed and bog down the run.
 
@@ -159,7 +168,7 @@ Kmer analyses have become an essential component of many routine genomic analyse
 
 Kmer spectra analyses typically focus on a single snapshot of data - the complete set of kmers at the time the analysis is performed. Many questions that motivate kmer spectrum analyses are about what happens as data are added. Rather than performing a single analysis on all the data, one can rarefy the data and look at progressively larger nested subsets of reads. This provides more insight into the data in hand, builds better intuition for what changes as data are added, and allows the investigator to better understand what would happen if more data were added. But reanalyzing nested this is computationally expensive, since all the data shared across nested subsets are reanalyzed.
 
-Incremental k-mer counting, as implemented in `sharkmer`, allows investigators to efficiently investigate the effects of adding data without needing to re-analyze nested subsets. Instead, the data are broken into exclusive subsets. kmer spectra are calculated once for each, and then incrementally combined. 
+Incremental kmer counting, as implemented in `sharkmer`, allows investigators to efficiently investigate the effects of adding data without needing to re-analyze nested subsets. Instead, the data are broken into exclusive subsets. kmer spectra are calculated once for each, and then incrementally combined. 
 
 ### Incremental kmer counting example - genome size estimation
 
@@ -210,9 +219,7 @@ The included `genomemovie.sh` script will generate a movie of the incremental Ge
 
 Here is an overview of how kmer counting works in `sharkmer`:
 
-1. Fastq data are ingested one read at a time and recoded as 8 bit integers, with 2 bits per base. Reads
-   are broken into subreads at any instances of `N`, since 2 bit encoding only covers the 4 unambiguous
-   bases and kmers can't span N anyway. The subreads are distributed across `n` chunks of subreads as they are read.
+1. Fastq reads are ingested, split at any `N` bases, and distributed across `n` chunks.
 2. Within each chunk, kmers are counted in a hashmap.
 3. The hashmaps for the `n` chunks are summed one by one, and a histogram is generated after each chunk of
    counts is added in. This produces `n` histograms, each summarizing more reads than the last.
