@@ -481,7 +481,7 @@ pub fn do_pcr(
         );
 
         let count_threshold = 5;
-        if (max_forward_count < count_threshold) | (max_reverse_count < count_threshold) {
+        if (max_forward_count < count_threshold) || (max_reverse_count < count_threshold) {
             gene_info!(
                 params.gene_name,
                 "Primer kmer counts are low, in this case less than {}. Consider increasing the number of reads.",
@@ -506,7 +506,7 @@ pub fn do_pcr(
         );
         gene_info!(
             params.gene_name,
-            "  - The primers may have non-specific binding and are not close enough to generate a product. Consider increasing the primer TRIM length from the default to create a more specific primer."
+            "  - The primers may have non-specific binding and are not close enough to generate a product. Consider increasing the primer trim length from the default to create a more specific primer."
         );
 
         return Ok(Vec::new());

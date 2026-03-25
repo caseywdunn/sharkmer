@@ -4,6 +4,7 @@ version = "2.0.0"
 authors = ["Casey Dunn <casey.dunn@yale.edu>"]
 description = "In silico PCR (sPCR) and incremental kmer counting from whole-genome shotgun reads"
 edition = "2024"
+rust-version = "1.85"
 license = "MIT"
 repository = "https://github.com/caseywdunn/sharkmer"
 
@@ -26,7 +27,6 @@ petgraph = { version = "0.6.4"}
 bio = { version = "1.4.0"}
 rustc-hash = { version = "1.1" }
 ahash = { version = "0.8", optional = true }
-textwrap = { version = "0.13.2" }
 anyhow = { version = "1" }
 serde = { version = "1", features = ["derive"] }
 serde_yml = { version = "0.0.12" }

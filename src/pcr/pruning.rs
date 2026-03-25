@@ -43,7 +43,7 @@ pub(super) fn pop_balloons(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize)
         if n > 4_usize.pow((EXTENSION_EVALUATION_DEPTH - EXTENSION_EVALUATION_DIFF) as u32) {
             to_clip.push(node);
             trace!(
-                "  Node {} with sequence {} has {} descendants at a depth of {}, descendents will be clipped",
+                "  Node {} with sequence {} has {} descendants at a depth of {}, descendants will be clipped",
                 node.index(),
                 crate::kmer::kmer_to_seq(&graph[node].sub_kmer, &(*k - 1)),
                 n,
@@ -76,8 +76,8 @@ pub(super) fn pop_balloons(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize)
         );
     }
 
-    // Sort in descending order. This is because node indices following pruned node are decremented,
-    // so the highest ones need to be pruned first or the remaining indices are no longer valid
+    // StableDiGraph preserves indices on removal, so order doesn't matter,
+    // but sorting for deterministic behavior
     to_prune.sort_by(|a, b| b.cmp(a));
 
     // Remove the nodes in to_prune
@@ -93,7 +93,7 @@ pub fn remove_side_branches(graph: &mut StableDiGraph<DBNode, DBEdge>) {
     while removed_nodes > 0 {
         removed_nodes = 0;
 
-        let mut nodes_to_remove: Vec<_> = graph
+        let nodes_to_remove: Vec<_> = graph
             .node_indices()
             .filter(|&node| {
                 if graph[node].is_end {
@@ -104,8 +104,6 @@ pub fn remove_side_branches(graph: &mut StableDiGraph<DBNode, DBEdge>) {
             })
             .collect();
 
-        nodes_to_remove.sort_by(|a, b| b.cmp(a));
-
         for node in nodes_to_remove {
             graph.remove_node(node);
             removed_nodes += 1;
@@ -114,9 +112,8 @@ pub fn remove_side_branches(graph: &mut StableDiGraph<DBNode, DBEdge>) {
 }
 
 // remove end nodes that have no incoming edges
-// TODO: Should maybe remove all orphan nodes?
 pub fn remove_orphan_nodes(graph: &mut StableDiGraph<DBNode, DBEdge>) {
-    let mut nodes_to_remove: Vec<NodeIndex> = graph
+    let nodes_to_remove: Vec<NodeIndex> = graph
         .node_indices()
         .filter(|&node| {
             if graph[node].is_end {
@@ -126,8 +123,6 @@ pub fn remove_orphan_nodes(graph: &mut StableDiGraph<DBNode, DBEdge>) {
             }
         })
         .collect();
-
-    nodes_to_remove.sort_by(|a, b| b.cmp(a));
 
     for node in nodes_to_remove {
         graph.remove_node(node);

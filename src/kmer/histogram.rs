@@ -67,7 +67,8 @@ impl Histogram {
         histo
     }
 
-    pub fn _get(&self, count: &u64) -> u64 {
+    #[allow(dead_code)]
+    pub fn get(&self, count: &u64) -> u64 {
         if *count <= self.histo_max {
             self.histo[*count as usize]
         } else {

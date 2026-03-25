@@ -21,7 +21,7 @@ const MAX_NUM_AMPLICONS: usize = 20;
 
 // Given the length of a sequence in bp, return the number of kmers needed to cover it
 // If the length is 0, return 0
-// If the length is greater than 0 and than or equal to k, return 1
+// If the length is greater than 0 and less than or equal to k, return 1
 fn bp_length_to_kmer_length(bp_length: usize, k: usize) -> usize {
     if bp_length == 0 {
         0
@@ -94,7 +94,7 @@ pub(super) fn generate_sequences_from_paths(
                     .chars()
                     .last()
                     .context("Empty subread during sequence generation")?;
-                sequence = format!("{}{}", sequence, last_char);
+                sequence.push(last_char);
 
                 let edge = graph
                     .find_edge(parent_node, *node)
