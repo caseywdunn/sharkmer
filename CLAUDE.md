@@ -178,7 +178,7 @@ gates, and patching workflow. Key points:
 
 ## Current development
 
-Version is `2.0.0-alpha` on `dev` branch. See PLAN.md for the phased
+Version is `2.0.0-rc1` on `dev` branch. See PLAN.md for the phased
 execution order. 45 issues across 7 phases. Run regression benchmarks
 after each phase.
 
