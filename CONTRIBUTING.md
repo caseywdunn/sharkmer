@@ -89,7 +89,21 @@ A branch is considered passing when:
 These steps assume all work is complete on `dev`, quality gates pass, and
 regression benchmarks have been run.
 
-### 1. Prepare the release
+### 1. Run and commit benchmarks
+
+Before preparing the release, run the full regression benchmark suite on `dev`
+and commit the results:
+
+    python benchmarks/run_benchmark.py
+
+Review the results in `benchmarks/results/` and compare against prior versions
+with `benchmarks/compare.py`. If there are regressions, fix them before
+proceeding. Commit the benchmark results to `dev`:
+
+    git add benchmarks/results/
+    git commit -m "Add benchmark results for vX.Y.Z release"
+
+### 2. Prepare the release
 
 - Verify `version` in `Cargo.toml` matches the intended release (e.g. `2.0.0`).
 - Verify `CHANGELOG.md` has an entry for this version with the correct date.
@@ -97,18 +111,18 @@ regression benchmarks have been run.
   finalized after the GitHub release tarball exists — use `PLACEHOLDER` until
   then).
 
-### 2. Merge to master and push
+### 3. Merge to master and push
 
     git checkout master
     git merge dev
     git push origin master
 
-### 3. Tag the release
+### 4. Tag the release
 
     git tag -a v2.0.0 -m "v2.0.0"
     git push origin v2.0.0
 
-### 4. Create the GitHub release
+### 5. Create the GitHub release
 
 Go to <https://github.com/caseywdunn/sharkmer/releases/new>, select the tag
 you just pushed, and create a release. Use the CHANGELOG entry as the release
@@ -118,7 +132,7 @@ Alternatively, use the CLI:
 
     gh release create v2.0.0 --title "v2.0.0" --notes-file - <<< "$(sed -n '/^## \[2\.0\.0\]/,/^## \[/{ /^## \[2\.0\.0\]/d; /^## \[/d; p; }' CHANGELOG.md)"
 
-### 5. Create the release maintenance branch
+### 6. Create the release maintenance branch
 
     git checkout -b v2 v2.0.0
     git push origin v2
@@ -126,7 +140,7 @@ Alternatively, use the CLI:
 This branch is used for future patch releases (v2.0.1, etc.) without
 pulling in unreleased work from `dev`.
 
-### 6. Update the bioconda recipe
+### 7. Update the bioconda recipe
 
 After the GitHub release is created, get the sha256 of the source tarball:
 
@@ -135,7 +149,7 @@ After the GitHub release is created, get the sha256 of the source tarball:
 Update `meta.yaml` with the real sha256, then follow the bioconda submission
 steps in the Bioconda section below.
 
-### 7. Resume development
+### 8. Resume development
 
     git checkout dev
 
