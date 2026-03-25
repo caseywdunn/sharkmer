@@ -283,7 +283,7 @@ fn test_cite_flag() {
     assert!(!stdout.is_empty(), "Citation output should not be empty");
 }
 
-/// Verify sharkmer errors when --sample is missing and no --sra to derive from.
+/// Verify sharkmer errors when --sample is missing and no --ena to derive from.
 #[test]
 fn test_error_missing_sample() {
     let fixture = fixture_path();

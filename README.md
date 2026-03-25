@@ -12,7 +12,7 @@
 
 ## Citing
 
-We are working on a paper that describes sharkmer. In the meantime, please cite the two papers below. I wrote the tool for these projects, though we don't describe it in detail in these prior publications.
+We are working on a paper that describes sharkmer. In the meantime, please cite the two papers below. We wrote the tool for these projects, though we don't describe it in detail in these prior publications.
 
 For *in silico* PCR:
 
@@ -48,7 +48,12 @@ Then clone this repository and build sharkmer:
     cd sharkmer
     cargo build --release
 
-The compiled executable will be in `target/release/sharkmer`. Move it to a location in your path.
+You can then install the built binary into your Cargo bin directory (usually `~/.cargo/bin/`), and later uninstall it:
+
+    cargo install --path .
+    cargo uninstall sharkmer
+
+Alternatively, you can copy the compiled executable from `target/release/sharkmer` to a directory already in your `PATH`, or add `target/release/` to your `PATH`.
 
 ## Usage
 
@@ -60,9 +65,9 @@ To get full usage information, run
 
     sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr-panel cnidaria agalma_*.fastq.gz
 
-You can also stream reads directly from [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra) by accession using `--sra`, which downloads from ENA without requiring any additional tools:
+Raw reads, including [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra) reads, can be streamed directly from [ENA](https://www.ebi.ac.uk/ena/browser/home) by accession using `--ena`, without requiring any additional tools:
 
-    sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr-panel cnidaria --sra SRR25099394
+    sharkmer --max-reads 1000000 -s Agalma-elegans -o output/ --pcr-panel cnidaria --ena SRR25099394
 
 Uncompressed data can be piped via stdin:
 
@@ -86,9 +91,9 @@ sPCR is useful when you want specific genes from skimming datasets you have coll
 
 sPCR of nuclear ribosomal RNA genes (eg animal 28s, 18s, ITS) and mitochondrial genes does not take much sequence data, given the relatively high copy number of these genes. For Illumina raw reads, 0.25x average sequencing depth of the genome is often sufficient.
 
-We will use the coral *Stenogorgia casta* as an example. With `--sra`, sharkmer downloads the reads directly from ENA — no extra tools needed:
+We will use the coral *Stenogorgia casta* as an example. With `--ena`, sharkmer downloads the reads directly from ENA — no extra tools needed:
 
-    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr-panel cnidaria --sra SRR26955578
+    sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr-panel cnidaria --ena SRR26955578
 
 Alternatively, if you have local FASTQ files (gzipped or uncompressed):
 
@@ -104,7 +109,7 @@ This is equivalent to specifying the primer pairs manually with `--pcr-primers`:
       --pcr-primers "forward=AACCTGGTTGATCCTGCCAGT,reverse=TGATCCTTCTGCAGGTTCACCTAC,max-length=2000,name=18s,min-length=1600" \
       --pcr-primers "forward=CCYYAGTAACGGCGAGT,reverse=SWACAGATGGTAGCTTCG,max-length=3500,name=28s,min-length=2900"  \
       --pcr-primers "forward=TACACACCGCCCGTCGCTACTA,reverse=ACTCGCCGTTACTRRGG,max-length=1000,name=ITSfull,min-length=600" \
-      --sra SRR26955578
+      --ena SRR26955578
 
 The `--pcr-primers` argument takes a string with the format `key1=value1,key2=value2,...`, where the required keys are `forward`, `reverse`, and `name`. Run `sharkmer --help-pcr` for details on all available keys.
 
@@ -160,9 +165,9 @@ Incremental k-mer counting, as implemented in `sharkmer`, allows investigators t
 
 Genome size estimation takes a lot of data (about 50x coverage of the genome), and a large amount of RAM. So this example isn't practical on most laptops, given their disk and RAM limitations, and will require a workstation or cluster.
 
-We will use a *Cordagalma ordinatum* dataset from [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra/SRX10340700). With `--sra`, sharkmer downloads the reads directly:
+We will use a *Cordagalma ordinatum* dataset from [NCBI SRA](https://www.ncbi.nlm.nih.gov/sra/SRX10340700). With `--ena`, sharkmer downloads the reads directly:
 
-    sharkmer --chunks 10 -o output/ -s Cordagalma-ordinatum --sra SRR23143278
+    sharkmer --chunks 10 -o output/ -s Cordagalma-ordinatum --ena SRR23143278
 
 The `--chunks 10` argument specifies breaking the reads into 10 incremental subsets (histograms are only produced when `--chunks` is greater than 0). The `-o` argument specifies the output directory. The `-s` argument specifies a prefix for the output files.
 

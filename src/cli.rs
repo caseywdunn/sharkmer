@@ -122,8 +122,8 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
 )]
 #[command(after_help = "\
 Example:\n  \
-  Extract cnidarian genes from SRA reads (downloads automatically):\n  \
-  sharkmer --sra SRR23143286 --pcr-panel cnidaria -m 1000000 -o output\n\
+  Extract cnidarian genes from ENA reads (downloads automatically):\n  \
+  sharkmer --ena SRR23143286 --pcr-panel cnidaria -m 1000000 -o output\n\
 \n\
 Output files:\n  \
   {outdir}/{sample}.stats.yaml             Run statistics (always produced)\n\
@@ -139,11 +139,11 @@ pub(crate) struct Args {
     #[arg(help_heading = "Input", display_order = 0)]
     pub(crate) input: Option<Vec<PathBuf>>,
 
-    /// Stream reads directly from ENA by SRA/ENA accession (e.g. SRR5324768)
+    /// Stream reads directly from ENA by accession (e.g. SRR5324768)
     #[arg(long, help_heading = "Input", display_order = 1)]
-    pub(crate) sra: Option<String>,
+    pub(crate) ena: Option<String>,
 
-    /// Sample name (output file prefix; required unless --sra derives it)
+    /// Sample name (output file prefix; required unless --ena derives it)
     #[arg(short, long, help_heading = "Output")]
     pub(crate) sample: Option<String>,
 
@@ -521,13 +521,13 @@ pub(crate) fn handle_validate_panels(pcr_runs: &[pcr::PCRParams]) -> Result<()> 
     std::process::exit(0);
 }
 
-/// Derive the sample name from --sample or --sra ENA metadata.
+/// Derive the sample name from --sample or --ena ENA metadata.
 /// Returns (sample_name, optional_cached_ena_result).
 pub(crate) fn resolve_sample_name(args: &Args) -> Result<(String, Option<EnaResult>)> {
     let mut cached_ena_result: Option<EnaResult> = None;
     let sample = if let Some(ref s) = args.sample {
         s.clone()
-    } else if let Some(ref accession) = args.sra {
+    } else if let Some(ref accession) = args.ena {
         let ena_result = crate::io::get_ena_fastq_urls(accession)?;
         let derived = if let Some(ref sci_name) = ena_result.scientific_name {
             let genus_species = sci_name.replace(' ', "_");
@@ -544,7 +544,7 @@ pub(crate) fn resolve_sample_name(args: &Args) -> Result<(String, Option<EnaResu
     } else {
         anyhow::bail!(
             "--sample is required. Provide a sample name as output file prefix.\n\
-             When using --sra, the sample name can be derived automatically from ENA metadata."
+             When using --ena, the sample name can be derived automatically from ENA metadata."
         );
     };
 
@@ -562,7 +562,7 @@ pub(crate) fn resolve_sample_name(args: &Args) -> Result<(String, Option<EnaResu
 }
 
 /// Validate CLI arguments: k, histo_max, min_kmer_count, input file existence,
-/// --sra vs input conflicts, and panel file paths.
+/// --ena vs input conflicts, and panel file paths.
 pub(crate) fn validate_args(args: &Args, pcr_runs: &[pcr::PCRParams]) -> Result<()> {
     let k = args.k;
 
@@ -583,9 +583,9 @@ pub(crate) fn validate_args(args: &Args, pcr_runs: &[pcr::PCRParams]) -> Result<
         "min-kmer-count must be at least 1"
     );
 
-    // Validate that --sra is not combined with input files
-    if args.sra.is_some() && args.input.is_some() {
-        bail!("--sra cannot be combined with input files. Use one or the other.");
+    // Validate that --ena is not combined with input files
+    if args.ena.is_some() && args.input.is_some() {
+        bail!("--ena cannot be combined with input files. Use one or the other.");
     }
 
     // Validate input files exist before starting processing
@@ -653,8 +653,8 @@ pub(crate) fn handle_dry_run(
 
     // Input sources
     eprintln!("Input:");
-    if let Some(accession) = &args.sra {
-        eprintln!("  SRA accession: {}", accession);
+    if let Some(accession) = &args.ena {
+        eprintln!("  ENA accession: {}", accession);
     } else if let Some(input_files) = &args.input {
         for f in input_files {
             eprintln!("  {}", f.display());

@@ -19,7 +19,7 @@ pub(crate) struct EnaResult {
     pub(crate) scientific_name: Option<String>,
 }
 
-/// Query ENA filereport API to get FASTQ URLs and metadata for an SRA/ENA accession.
+/// Query ENA filereport API to get FASTQ URLs and metadata for an accession.
 /// Returns URLs ordered by mate number (R1 first, then R2 if paired-end),
 /// plus the scientific_name if available.
 pub(crate) fn get_ena_fastq_urls(accession: &str) -> Result<EnaResult> {
@@ -261,7 +261,7 @@ fn read_fastq<R: BufRead>(
     Ok(false) // did not reach max reads (EOF)
 }
 
-/// Ingest FASTQ reads from all input sources (SRA, files, or stdin).
+/// Ingest FASTQ reads from all input sources (ENA, files, or stdin).
 /// Returns the read state with populated chunks, and summary statistics.
 pub(crate) fn ingest_reads(
     args: &Args,
@@ -310,7 +310,7 @@ pub(crate) fn ingest_reads(
         ProgressBar::hidden()
     };
 
-    if let Some(accession) = &args.sra {
+    if let Some(accession) = &args.ena {
         // Stream reads from ENA (use cached result if available)
         let ena_result = match cached_ena_result.take() {
             Some(r) => r,
@@ -387,9 +387,9 @@ pub(crate) fn ingest_reads(
         ensure!(
             !stdin.is_terminal(),
             "No input files specified and stdin is a terminal.\n\
-             Provide FASTQ files as arguments, use --sra, or pipe data via stdin.\n\
+             Provide FASTQ files as arguments, use --ena, or pipe data via stdin.\n\
              Example: sharkmer -s sample -k 21 reads.fastq\n\
-             Example: sharkmer -s sample --sra SRR5324768\n\
+             Example: sharkmer -s sample --ena SRR5324768\n\
              Example: zcat reads.fastq.gz | sharkmer -s sample -k 21"
         );
         let handle = stdin.lock();

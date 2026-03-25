@@ -37,7 +37,7 @@ fn main() -> Result<()> {
         cli::handle_validate_panels(&pcr_runs)?;
     }
 
-    // Derive sample name from --sample or --sra ENA metadata
+    // Derive sample name from --sample or --ena ENA metadata
     let (sample, cached_ena_result) = cli::resolve_sample_name(&args)?;
 
     info!("{} {}", env!("CARGO_PKG_NAME"), env!("CARGO_PKG_VERSION"));
