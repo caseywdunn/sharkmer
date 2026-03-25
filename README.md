@@ -38,7 +38,7 @@ To create a new environment (here called `sharkmer_env`, but you can name it any
 
     conda create -n sharkmer_env -c bioconda -c conda-forge sharkmer
 
-### From the repository
+### From the cloned repository
 
 If you don't have them already, [install the rust build tools](https://www.rust-lang.org/tools/install).
 
@@ -54,6 +54,20 @@ You can then install the built binary into your Cargo bin directory (usually `~/
     cargo uninstall sharkmer
 
 Alternatively, you can copy the compiled executable from `target/release/sharkmer` to a directory already in your `PATH`, or add `target/release/` to your `PATH`.
+
+### Directly from a specific branch on the repository
+
+Install sharkmer from a specific branch on the repo:
+
+    cargo install --git https://github.com/caseywdunn/sharkmer.git --branch dev
+
+Re-run the install command to pull and build the latest changes:
+
+    cargo install --git https://github.com/caseywdunn/sharkmer.git --branch dev --force
+
+To remove sharkmer:
+
+    cargo uninstall sharkmer
 
 ## Usage
 
