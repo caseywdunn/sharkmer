@@ -190,30 +190,9 @@ The incremental histogram files in this case will be:
 
     output/Cordagalma-ordinatum.final.histo # Just the final histogram with all data. Suitable for analysis with genomescope and other tools.
 
-### Optional python components for incremental kmer counting
+### Optional Python visualization tools
 
-Optional python components for analyses of genome size with incremental kmer counting are available in the `sharkmer_viewer` folder. These are not required to run other features of `sharkmer`.
-
-To install these optional components, create a conda environment:
-
-    conda create -n shark -c conda-forge -c bioconda python==3.10 ffmpeg genomescope2
-    conda activate shark
-    cd sharkmer_viewer/
-    pip install .
-
-Then to analyze the incremental kmer counting output run:
-
-    conda activate shark
-    sharkmer_viewer Cordagalma-ordinatum.histo
-
-The final histogram on all the data is in a standard format and can be examined with a variety of tools, for example, [GenomeScope2](https://github.com/tbenavi1/genomescope2.0):
-
-    genomescope2 -i Cordagalma-ordinatum.final.histo -s Cordagalma-ordinatum -k 21
-
-The included `genomemovie.sh` script will generate a movie of the incremental GenomeScope2 histograms. For example, to create a movie of the `Cordagalma` test dataset:
-
-    conda activate shark
-    bash genomescopemovie.sh Cordagalma-ordinatum.histo Cordagalma-ordinatum.output
+Optional Python tools for visualizing incremental kmer counting results are available in the [`sharkmer_viewer`](sharkmer_viewer/) folder. See the [sharkmer_viewer readme](sharkmer_viewer/readme.md) for installation and usage instructions.
 
 ### Implementation of incremental kmer counting
 
