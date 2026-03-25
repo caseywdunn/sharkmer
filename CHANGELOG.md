@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [2.0.0] - 2026-03-22
 
+This is a breaking release. CLI arguments, output file formats, and default
+behaviors have changed to make the interface clearer, more consistent, and
+to prepare for new features. See the Changed and Removed sections below for
+details.
+
 ### Added
 
-- **`--sra` flag**: Stream reads directly from ENA by accession — no SRA
+- **`--ena` flag**: Stream reads directly from ENA by accession — no SRA
   toolkit required (#65). Sample name is auto-derived from ENA metadata when
   `--sample` is omitted (#67).
 - **Native gzip support**: `.fastq.gz` files are detected and decompressed
@@ -69,7 +74,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Deduplication**: Made edit distance threshold configurable per primer
   pair via `dedup-edit-threshold` parameter (#56).
 - Updated sharkmer_viewer for new histogram and stats formats (#61).
-- Updated README with v2.0 CLI examples, `--sra` usage, and gzip support (#66).
+- Updated README with v2.0 CLI examples, `--ena` usage, and gzip support (#66).
 
 ### Fixed
 
