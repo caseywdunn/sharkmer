@@ -1,3 +1,5 @@
+#![allow(clippy::manual_is_multiple_of)]
+
 use anyhow::{Context, Result};
 use clap::Parser;
 use log::{debug, info};

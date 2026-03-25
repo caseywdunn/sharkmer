@@ -223,7 +223,7 @@ fn read_fastq<R: BufRead>(
 
         // Validate the record
         let should_validate = state.n_reads_read == 0
-            || (validate_every > 0 && state.n_reads_read.is_multiple_of(validate_every));
+            || (validate_every > 0 && state.n_reads_read % validate_every == 0);
         if should_validate {
             validate_fastq_record(
                 &header,
@@ -242,7 +242,7 @@ fn read_fastq<R: BufRead>(
         state.n_reads_read += 1;
 
         // If we have read enough reads, ingest them into current chunk
-        if state.n_reads_read.is_multiple_of(N_READS_PER_BATCH) {
+        if state.n_reads_read % N_READS_PER_BATCH == 0 {
             state.chunks[state.chunk_index].ingest_reads(&state.reads)?;
             state.chunk_index += 1;
             if state.chunk_index == n_chunks {

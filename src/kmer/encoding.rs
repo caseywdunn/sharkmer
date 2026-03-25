@@ -50,7 +50,7 @@ impl Read {
             };
 
             frame = (frame << 2) | base;
-            if (length).is_multiple_of(4) {
+            if length % 4 == 0 {
                 ints.push(frame);
                 frame = 0; // Reset frame after pushing to the vector
             }
@@ -70,7 +70,7 @@ impl Read {
 
     pub fn validate(&self) -> bool {
         let mut valid = true;
-        if self.length.is_multiple_of(4) {
+        if self.length % 4 == 0 {
             if self.sequence.len() != self.length / 4 {
                 valid = false;
             }

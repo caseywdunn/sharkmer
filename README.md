@@ -116,7 +116,7 @@ This is equivalent to specifying the primer pairs manually with `--pcr-primers`:
 
 The `--pcr-primers` argument takes a string with the format `key1=value1,key2=value2,...`, where the required keys are `forward`, `reverse`, and `name`. Run `sharkmer --help-pcr` for details on all available keys.
 
-The `--max-reads 1000000` argument indicates that the first million reads should be used. This is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since they occur in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes require more data.
+The `--max-reads 1000000` argument indicates that the first million reads (individual reads, not read pairs) should be used. This is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since they occur in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes require more data.
 
 This analysis will generate one fasta file for each primer pair, named `{sample}_{panel}_{gene}.fasta` (e.g., `Stenogorgia_casta_cnidaria_18S.fasta`). If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found. A YAML stats file (`{sample}.stats.yaml`) is also produced with run statistics and per-gene PCR results.
 
