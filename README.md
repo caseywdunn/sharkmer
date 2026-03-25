@@ -1,6 +1,6 @@
 # sharkmer - a kmer analysis tool
 
-[![CI](https://github.com/caseywdunn/sharkmer/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/caseywdunn/sharkmer/actions/workflows/ci.yml?query=branch%3Adev)
+[![CI](https://github.com/caseywdunn/sharkmer/actions/workflows/ci.yml/badge.svg)](https://github.com/caseywdunn/sharkmer/actions/workflows/ci.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.19020708.svg)](https://doi.org/10.5281/zenodo.19020708)
 [![Bioconda version](https://img.shields.io/conda/vn/bioconda/sharkmer.svg?label=Bioconda)](https://anaconda.org/bioconda/sharkmer)
 [![Bioconda downloads](https://img.shields.io/conda/dn/bioconda/sharkmer.svg?label=downloads)](https://anaconda.org/bioconda/sharkmer)

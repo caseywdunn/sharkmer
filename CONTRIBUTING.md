@@ -84,6 +84,64 @@ A branch is considered passing when:
 - `cargo clippy -- -D warnings` reports no warnings
 - `cargo fmt --all --check` reports no changes needed
 
+## Releasing
+
+These steps assume all work is complete on `dev`, quality gates pass, and
+regression benchmarks have been run.
+
+### 1. Prepare the release
+
+- Verify `version` in `Cargo.toml` matches the intended release (e.g. `2.0.0`).
+- Verify `CHANGELOG.md` has an entry for this version with the correct date.
+- Verify `meta.yaml` version and sha256 are updated (sha256 can only be
+  finalized after the GitHub release tarball exists — use `PLACEHOLDER` until
+  then).
+
+### 2. Merge to master and push
+
+    git checkout master
+    git merge dev
+    git push origin master
+
+### 3. Tag the release
+
+    git tag -a v2.0.0 -m "v2.0.0"
+    git push origin v2.0.0
+
+### 4. Create the GitHub release
+
+Go to <https://github.com/caseywdunn/sharkmer/releases/new>, select the tag
+you just pushed, and create a release. Use the CHANGELOG entry as the release
+notes.
+
+Alternatively, use the CLI:
+
+    gh release create v2.0.0 --title "v2.0.0" --notes-file - <<< "$(sed -n '/^## \[2\.0\.0\]/,/^## \[/{ /^## \[2\.0\.0\]/d; /^## \[/d; p; }' CHANGELOG.md)"
+
+### 5. Create the release maintenance branch
+
+    git checkout -b v2 v2.0.0
+    git push origin v2
+
+This branch is used for future patch releases (v2.0.1, etc.) without
+pulling in unreleased work from `dev`.
+
+### 6. Update the bioconda recipe
+
+After the GitHub release is created, get the sha256 of the source tarball:
+
+    curl -sL https://github.com/caseywdunn/sharkmer/archive/refs/tags/v2.0.0.tar.gz | sha256sum
+
+Update `meta.yaml` with the real sha256, then follow the bioconda submission
+steps in the Bioconda section below.
+
+### 7. Resume development
+
+    git checkout dev
+
+Update `Cargo.toml` version to the next development version (e.g. `2.1.0-dev`)
+and add an `[Unreleased]` section to `CHANGELOG.md`.
+
 ## Regression benchmarks
 
 A benchmark suite in `benchmarks/` runs sharkmer against 14 real-world SRA
