@@ -22,7 +22,7 @@ sharkmer/                  # Repo root
 ├── ROADMAP.md             # Multi-version release plan with issue references
 ├── CHANGELOG.md           # Release history
 ├── CONTRIBUTING.md        # Branching model, quality gates, bioconda recipe
-├── readme.md              # User documentation
+├── README.md              # User documentation
 ├── meta.yaml              # Bioconda recipe
 ├── build.sh               # Bioconda build script
 ├── src/
@@ -89,23 +89,23 @@ Two hash map backends, selected at compile time:
 - `fxhashmap`: `rustc_hash::FxHashMap` — fast non-cryptographic hash
 
 ```bash
-cargo build --features intmap --no-default-features
+cargo build --features fxhashmap --no-default-features
 ```
 
 ## Module architecture
 
-### main.rs (~115 lines)
+### main.rs (~135 lines)
 
 Entry point. Parses CLI, delegates to helper modules, orchestrates the
 pipeline: init logging → collect primers → validate → ingest reads →
 consolidate → run PCR → write stats → print summary.
 
-### cli.rs (~480 lines)
+### cli.rs (~715 lines)
 
 `Args` struct (clap), `ColorMode`, `parse_pcr_primers_string()`,
 `init_logging()`, early exits, validation, `--dry-run`.
 
-### io.rs (~470 lines)
+### io.rs (~640 lines)
 
 `read_fastq()`, `validate_fastq_record()`, `get_ena_fastq_urls()`,
 `write_fasta_record()`, `ingest_reads()`, `consolidate_and_histogram()`.
@@ -114,7 +114,7 @@ consolidate → run PCR → write stats → print summary.
 
 `format_count()`, `format_bytes()`, `format_duration()`.
 
-### stats.rs (~170 lines)
+### stats.rs (~215 lines)
 
 `RunStats`, `PcrGeneResult`, `run_pcr()`, `write_stats()`, `print_summary()`.
 
@@ -178,7 +178,7 @@ gates, and patching workflow. Key points:
 
 ## Current development
 
-Version is `2.0.0-rc1` on `dev` branch. See PLAN.md for the phased
+Version is `2.0.0` on `dev` branch. See PLAN.md for the phased
 execution order. 45 issues across 7 phases. Run regression benchmarks
 after each phase.
 

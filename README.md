@@ -136,7 +136,7 @@ If you have other primers that you would like to have added to the built-in pane
 
 ### Optimizing *in silico* PCR (sPCR)
 
-There are a few different strategies to take if you are not getting a sPCR product, or it is working inconsistently. If you get things working, please let me know in in the [issue tracker](https://github.com/caseywdunn/sharkmer/issues) so I can improve the default primer sets and help other users. If you hit a wall, please also let me know in the issue tracker.
+There are a few different strategies to take if you are not getting a sPCR product, or it is working inconsistently. If you get things working, please let me know in the [issue tracker](https://github.com/caseywdunn/sharkmer/issues) so I can improve the default primer sets and help other users. If you hit a wall, please also let me know in the issue tracker.
 
 The things you should try first are:
 
@@ -154,7 +154,7 @@ If these do not work, then you can try adjusting other parameters.
 
 - Specify a reasonable `--pcr-primers` parameter `min-length`. This value defaults to 0, but raising it can get rid of small spurious products.
 
-- Adjust `--min-kmer-count`. This globally filters the kmer table before sPCR, removing all kmers with counts below this value. It defaults to 2, and must be at least 2 to avoid one-off sequencing errors. Raising it to 3 or 4 reduces noise but requires more sequencing data.
+- Adjust `--min-kmer-count`. This globally filters the kmer table before sPCR, removing all kmers with counts below this value. It defaults to 2, and should generally be at least 2 to avoid one-off sequencing errors. Raising it to 3 or 4 reduces noise but requires more sequencing data.
 
 - Adjust the per-primer `min-count` parameter in `--pcr-primers`. This sets the minimum kmer count required to extend the de Bruijn graph during sPCR for a specific primer pair. It must be at least as high as `--min-kmer-count` (since lower-count kmers have already been filtered). Raising it for a particular gene can help when that gene tends to produce spurious products. For example, `--pcr-primers "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16S,min-length=500,min-count=4"`
 
@@ -166,7 +166,7 @@ Keep in mind that there is no way to assemble a sPCR product without kmer counts
 
 Kmer analyses have become an essential component of many routine genomic analyses ([Manekar and Sathe, 2018](https://doi.org/10.1093/gigascience/giy125)). There are multiple excellent highly optimized stand-alone kmer counters, including [Jellyfish](https://github.com/gmarcais/Jellyfish) ([Marçais and Kingsford, 2011](https://doi.org/10.1093/bioinformatics/btr011)) and [KMC](https://github.com/refresh-bio/KMC) ([Kokot et al., 2017](https://doi.org/10.1093/bioinformatics/btx304)). These tools ingest sequence data, such as raw reads, and generate a variety of intermediate products, including count tables of all observed kmers and histograms of observed kmer counts. A variety of downstream tools are available for specific biological analyses. These include genome size estimation with GenomeScope2.0 ([Ranallo-Benavidez et al., 2020](https://doi.org/10.1038/s41467-020-14998-3)).
 
-Kmer spectra analyses typically focus on a single snapshot of data - the complete set of kmers at the time the analysis is performed. Many questions that motivate kmer spectrum analyses are about what happens as data are added. Rather than performing a single analysis on all the data, one can rarefy the data and look at progressively larger nested subsets of reads. This provides more insight into the data in hand, builds better intuition for what changes as data are added, and allows the investigator to better understand what would happen if more data were added. But reanalyzing nested this is computationally expensive, since all the data shared across nested subsets are reanalyzed.
+Kmer spectra analyses typically focus on a single snapshot of data - the complete set of kmers at the time the analysis is performed. Many questions that motivate kmer spectrum analyses are about what happens as data are added. Rather than performing a single analysis on all the data, one can rarefy the data and look at progressively larger nested subsets of reads. This provides more insight into the data in hand, builds better intuition for what changes as data are added, and allows the investigator to better understand what would happen if more data were added. But reanalyzing nested subsets is computationally expensive, since all the data shared across nested subsets are reanalyzed.
 
 Incremental kmer counting, as implemented in `sharkmer`, allows investigators to efficiently investigate the effects of adding data without needing to re-analyze nested subsets. Instead, the data are broken into exclusive subsets. kmer spectra are calculated once for each, and then incrementally combined. 
 

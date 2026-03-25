@@ -43,7 +43,7 @@ primers:
     mismatches: 2
     trim: 15
     citation: "Marquina et al doi: 10.1111/1755-0998.12942"
-    notes: "\tHexCOX2F3–HexCOX2R3. Product is about 260"
+    notes: "HexCOX2F3–HexCOX2R3. Product is about 260"
 
   - gene_name: "CytB"
     forward_seq: "NCAAATRTCNTTHTGRGG"
@@ -254,7 +254,7 @@ primers:
     citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x"
     notes: "Forward primer is CAS18SF1, position 1843, from Ji et al 2003. The reverse primer is the reverse complement of the 28S forward primer. Product is about 770-880bp."
 
-  - gene_name: "ITS_v3"
+  - gene_name: "ITS-v3"
     forward_seq: "GTAGGTGAACCTGCAGAAGGATCA"
     reverse_seq: "ACTCGCCGTTACTRRGG"
     min_length: 600

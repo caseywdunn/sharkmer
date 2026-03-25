@@ -7,6 +7,7 @@ use petgraph::dot::{Config, Dot};
 use std::fs::File;
 use std::io::Write;
 
+use crate::format::format_duration;
 use crate::kmer::{FilteredKmerCounts, KmerCounts};
 
 /// Log at info level with a [gene_name] prefix for attribution in parallel runs.
@@ -393,8 +394,8 @@ pub fn do_pcr(
 
             gene_info!(
                 params.gene_name,
-                "Done. Time to extend graph: {:?}",
-                start.elapsed()
+                "Done. Time to extend graph: {}",
+                format_duration(start.elapsed())
             );
 
             let start = std::time::Instant::now();
@@ -422,8 +423,8 @@ pub fn do_pcr(
 
             gene_info!(
                 params.gene_name,
-                "Done. Time to prune graph: {:?}",
-                start.elapsed()
+                "Done. Time to prune graph: {}",
+                format_duration(start.elapsed())
             );
 
             let start = std::time::Instant::now();
@@ -440,8 +441,8 @@ pub fn do_pcr(
             );
             gene_info!(
                 params.gene_name,
-                "Done. Time to traverse graph: {:?}",
-                start.elapsed()
+                "Done. Time to traverse graph: {}",
+                format_duration(start.elapsed())
             );
 
             if all_paths.is_empty() {
@@ -495,7 +496,7 @@ pub fn do_pcr(
     if assembly_records_all.is_empty() {
         gene_info!(
             params.gene_name,
-            "No path was found from a forward primer binding site to a reverse binding site. Abandoning PCR."
+            "No path was found from a forward primer binding site to a reverse primer binding site. Abandoning PCR."
         );
         gene_info!(params.gene_name, "Suggested actions:");
         gene_info!(

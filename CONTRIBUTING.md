@@ -18,13 +18,12 @@ To remove sharkmer:
 
 ## Development
 
-After cloning the repo, set up the git hooks:
+After cloning the repo, install the pre-commit hook:
 
-    git config core.hooksPath .githooks
+    ln -sf ../../scripts/pre-commit .git/hooks/pre-commit
 
-This enables:
-- **Pre-commit**: runs `cargo fmt --check` (instant)
-- **Pre-push**: runs `cargo clippy -- -D warnings` and `cargo test`
+This runs the same quality gates as CI before every commit: `cargo fmt --all --check`,
+`cargo clippy -- -D warnings`, and `cargo test --release`.
 
 Some common rust tasks in development:
 
@@ -81,9 +80,9 @@ If a bug is found in v2.0 while v3.0 is in development on `dev`:
 
 A branch is considered passing when:
 
-- `cargo test` passes
-- `cargo clippy` reports no warnings
-- `cargo fmt --check` reports no changes needed
+- `cargo test --release` passes
+- `cargo clippy -- -D warnings` reports no warnings
+- `cargo fmt --all --check` reports no changes needed
 
 ## Regression benchmarks
 
