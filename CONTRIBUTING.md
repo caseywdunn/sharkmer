@@ -1,5 +1,21 @@
 # Contributing
 
+### Installation from a specific branch on the repository
+
+This allows you to test pre-release features.
+
+Install sharkmer from a specific branch on the repo:
+
+    cargo install --git https://github.com/caseywdunn/sharkmer.git --branch dev
+
+Re-run the install command to pull and build the latest changes:
+
+    cargo install --git https://github.com/caseywdunn/sharkmer.git --branch dev --force
+
+To remove sharkmer:
+
+    cargo uninstall sharkmer
+
 ## Development
 
 After cloning the repo, set up the git hooks:
