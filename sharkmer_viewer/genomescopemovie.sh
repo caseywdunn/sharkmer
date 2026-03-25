@@ -34,8 +34,8 @@ fi
 
 mkdir -p $output_dir
 
-# Get the number of columns in the input file
-num_columns=$(awk -F'\t' '{print NF}' "$input_file" | head -n1)
+# Get the number of columns in the input file (skip comment/header lines)
+num_columns=$(awk -F'\t' '/^[0-9]/{print NF; exit}' "$input_file")
 num_y_values=$((num_columns - 1))
 
 echo "Number of y values: $num_y_values"
@@ -46,7 +46,7 @@ do
     # Pad the number with zeros if needed to get to three digits
     i_padded=$(printf "%04d" "$i")
     histo_file="$output_dir/sample_$i_padded.histo"
-    cut -f1,$((i + 1)) "$input_file" > "$histo_file"
+    grep '^[0-9]' "$input_file" | cut -f1,$((i + 1)) > "$histo_file"
     
     # Get run_name from the input filename by removing the extension
     run_name=$(basename "$histo_file" | sed 's/\.[^.]*$//')
