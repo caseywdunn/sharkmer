@@ -28,8 +28,12 @@ baseline at multiple coverage levels to measure the impact of later phases.
   from high to low (16M, 8M, 4M, 2M, 1M) so the largest download populates
   the cache first and all smaller runs are cache hits.
 - [ ] Ensure benchmark comparison detects changes in recovered amplicon
-  sequences across runs (regression testing against previous results).
-  BLAST-based validation against reference sequences deferred (#102).
+  sequences across runs (regression testing against previous results)
+- [ ] #102 (optional) BLAST validation: batch-submit all amplicons to NCBI
+  blastn against nt, parse per-amplicon e-value, identity, top hit
+  accession, gene name, and taxon into benchmark results. E-value threshold
+  1e-50. Uses `git config user.email` for NCBI API. Separate optional step
+  since it requires network and takes a few minutes.
 - [ ] Capture v2.0.0 baseline benchmarks at multiple coverage levels
 - [ ] Define measurable success targets for Phase 3 (e.g., recover 18S from
   ERR571460 with fewer reads than the current threshold)
