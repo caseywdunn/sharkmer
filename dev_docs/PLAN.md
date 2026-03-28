@@ -12,13 +12,14 @@ for detailed specifications.
 Enhance benchmark infrastructure before any code changes. Capture v2.0.0
 baseline at multiple coverage levels to measure the impact of later phases.
 
-- [ ] Add nuclear genome size estimates to `benchmarks/config.yaml` from
-  authoritative sources (e.g., Animal Genome Size Database, Plant DNA C-values
-  Database, published assemblies) so benchmark results can be interpreted in
-  terms of coverage, not just read count
 - [ ] Add multi-read-count sweep to benchmark suite (multiple subsampling
   levels per sample to measure coverage sensitivity — e.g., how many reads
-  are required to recover single-copy nuclear genes)
+  are required to recover single-copy nuclear genes). For insect and
+  cnidarian samples, sweep max reads at 1M, 2M, 4M, 8M, 16M — these
+  panels have single-copy nuclear genes (EF1A, EF1g, Fz4, Gpdh, Pgi, Yp2)
+  that are the key targets for coverage sensitivity analysis. Run sweeps
+  from high to low (16M, 8M, 4M, 2M, 1M) so the largest download populates
+  the cache first and all smaller runs are cache hits.
 - [ ] Add property-based integration tests that are algorithm-agnostic (e.g.,
   "recovered sequence aligns to reference with >99% identity") rather than
   golden-file tests that will break when algorithms change
@@ -62,6 +63,9 @@ additional archives later.
 - [ ] Log cache activity at info level: cache location, cache hit/miss per
   file, download vs reuse
 - [ ] Run benchmarks, confirm no result changes
+- [ ] Switch benchmark suite to use `--ena` with cached reads instead of
+  pre-downloaded reads in `data/` directory. Benchmarks benefit from
+  caching automatically — first run downloads, subsequent runs use cache.
 
 ## Phase 3 — Graph traversal
 

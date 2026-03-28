@@ -53,6 +53,10 @@ sample:
         reads:
             - SRR17535371
         arguments: "--pcr-panel human"
+        genome:
+            accession: "GCF_000001405.40"
+            size_mb: 3099
+            n50_mb: 67.8
 
 # Bony fishes - teleosts
     Nomeus_gronovii:
@@ -81,6 +85,10 @@ sample:
         reads:
             - SRR31887760
         arguments: "--pcr-panel insecta"
+        genome:
+            accession: "GCF_000001215.4"
+            size_mb: 143.7
+            n50_mb: 25.3
 
     Heliconius_pachinus:
         taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Lepidoptera; Nymphalidae; Heliconius"
@@ -93,6 +101,10 @@ sample:
         reads:
             - SRR27962769
         arguments: "--pcr-panel insecta"
+        genome:
+            accession: "GCA_054131365.1"
+            size_mb: 1668.9
+            n50_mb: 111.7
 
 # Metazoan metabarcoding - gut content datasets
     Bargmannia_gutmetagenome:
