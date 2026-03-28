@@ -308,3 +308,255 @@ edge to support any of these strategies. At minimum, track both total
 read support (Option A) and unambiguous read support (Option D) per edge.
 This avoids re-running Pass 2 if the counting strategy changes during
 Phase 6 development.
+
+## Read retention and threading mechanics (Phases 4-5)
+
+### Context
+
+Phase 4 (read backend) streams reads in a second pass and must decide which
+reads to retain and how to store them. Phase 5 (read threading) maps
+retained reads to graph edges. These decisions are tightly coupled — the
+storage format determines what's efficient in Phase 5.
+
+### Phase 4: identifying relevant reads
+
+During Pass 2, each read's kmers are extracted and checked against the
+kmer set present in any gene's graph. In the de Bruijn graph, edges *are*
+kmers (`DBEdge._kmer`), so "kmer is in the graph" means "kmer corresponds
+to an edge."
+
+**Pre-filter**: retain a read if it contains *any* kmer present in any
+graph. This is fast (hash lookup per kmer) and over-inclusive — some
+retained reads may not map to a contiguous path. That's fine; Phase 5
+does the precise mapping. The alternative (requiring a contiguous run of
+graph kmers) would need adjacency checks during the streaming pass, which
+is more complex for marginal benefit.
+
+At typical coverage for a 3 kb amplicon in a 3 Gb genome, ~210 reads per
+amplicon are relevant (see coverage analysis above). Even with 10
+amplicons and false positives, retained reads number in the low thousands
+— negligible memory.
+
+### Phase 4: storage format
+
+**Don't reuse the existing `Read` struct.** It stores 2-bit encoded
+sequence, which then needs to be decoded back to extract kmers in
+`get_kmers()`. Since Phase 1 eliminates this round-trip for kmer counting,
+the threading path should follow the same pattern.
+
+**Store retained reads as:**
+
+```rust
+struct ThreadableRead {
+    /// Ordered kmers extracted from this read, as u64 values.
+    /// These are the canonical kmers, same as stored in the graph.
+    kmers: Vec<u64>,
+    /// Index of the mate read in the retained read vector, if paired.
+    /// None for unpaired reads or if mate was not retained.
+    mate_index: Option<usize>,
+}
+```
+
+Why store kmers rather than raw sequence:
+- Kmers are already extracted during the pre-filter check (don't discard
+  work already done)
+- Phase 5 needs kmers, not sequence — storing sequence would require
+  re-extracting kmers
+- u64 per kmer is compact (8 bytes per kmer vs ~1 byte per base for
+  raw sequence, but a 150 bp read has ~130 kmers at k=21 = 1040 bytes
+  vs 150 bytes). The trade-off favors raw sequence on space, but kmers
+  on avoiding redundant computation.
+
+**Alternative: store raw ASCII sequence and re-extract during threading.**
+This uses less memory (~7x less per read) and is simpler. Given that
+retained read counts are in the low thousands, the memory difference is
+negligible either way (~1 MB vs ~7 MB for 10,000 reads). The re-extraction
+cost is also trivial for thousands of reads.
+
+**Decision: store raw ASCII sequence.** The memory savings don't matter at
+this scale, but the simplicity does — fewer data structures, easier
+debugging, and the kmer extraction code path (which Phase 1 optimizes)
+gets reused rather than duplicated.
+
+```rust
+struct RetainedRead {
+    /// Raw ASCII sequence (ACGT bytes)
+    sequence: Vec<u8>,
+    /// Index of the mate read in the retained read vector, if paired.
+    /// None for unpaired reads or if mate was not retained.
+    mate_index: Option<usize>,
+}
+```
+
+### Phase 4: pairing
+
+Pairing is tracked via `mate_index` in the retained read struct. When
+`--paired` is set and reads are ingested alternately from R1/R2, each
+pair of consecutive reads are mates. During retention:
+
+- If both mates are retained: set `mate_index` on each to point to
+  the other
+- If only one mate is retained: set `mate_index = None` on the
+  retained read (the mate didn't hit any graph kmer)
+- Pairing info is consumed in Phase 6 (#101) for insert-size
+  constraints
+
+No separate graph or structure needed — a flat `Vec<RetainedRead>` with
+cross-references via indices is sufficient for thousands of reads.
+
+### Phase 5: mapping reads to graph edges
+
+A read maps to a graph path by matching its kmers to graph edges in order.
+The graph edges are kmers; nodes are (k-1)-mers. Consecutive kmers in a
+read that both exist as graph edges and share a node (suffix of first =
+prefix of second) form a **contiguous run** through the graph.
+
+**Mapping algorithm:**
+
+1. Extract kmers from retained read in order
+2. Look up each kmer in the graph's edge set
+3. Identify maximal contiguous runs: consecutive kmers where each pair
+   shares a graph node (i.e., they are adjacent edges in the graph)
+4. Each contiguous run defines a path through the graph
+
+**Why require adjacency, not just presence:**
+
+- A read with kmers [A, B, C, D] where A and B are adjacent graph edges
+  and C and D are adjacent graph edges, but B and C are not, produces two
+  runs: [A, B] and [C, D]. This correctly handles reads that span a
+  sequencing error (the error breaks the kmer chain) or a region pruned
+  from the graph.
+- Simply checking presence without adjacency would incorrectly suggest
+  that disconnected graph regions are linked by the read.
+
+**Edge annotation:**
+
+For each contiguous run, annotate every edge in the run with +1 read
+support. A run of length 1 (single kmer in graph, neighbors not in graph)
+still counts — it confirms that edge exists in a real read.
+
+Track per edge:
+
+- `read_support_total: u32` — incremented for every read whose run
+  includes this edge (Option A from ambiguous mapping analysis)
+- `read_support_unambiguous: u32` — incremented only when the read's
+  full set of graph kmers maps to exactly one path (no branching)
+
+The unambiguous count is computed after all runs for a read are found:
+if all graph-matching kmers form a single contiguous run with no branch
+points, it's unambiguous.
+
+### Phasing annotations
+
+Per-edge read support counts answer "is this edge real?" but don't
+answer "which edges go together?" — i.e., they don't capture phasing.
+A read (or contiguous run) that spans a branch point links the specific
+incoming and outgoing edges, which is information not captured by per-edge
+counts alone.
+
+**Branch-point phasing:** When a contiguous run passes through a node
+with in-degree > 1 or out-degree > 1 (a branch point), record which
+specific incoming edge and outgoing edge the read connects. Store as
+a set of observed (edge_in, edge_out) pairs per branch-point node, with
+counts.
+
+```rust
+/// Observed read-supported links through a branch point.
+struct BranchPhasing {
+    node: NodeIndex,
+    /// (incoming_edge, outgoing_edge) -> count of reads supporting this link
+    links: HashMap<(EdgeIndex, EdgeIndex), u32>,
+}
+```
+
+This is distinct from paired-end constraints (#101), which operate at
+insert-size scale (hundreds of bases apart). Branch-point phasing
+operates at read scale (within a single read's contiguous run through
+the graph). Both are useful:
+
+- **Branch-point phasing** (read-scale): resolves which arm of a bubble
+  connects to which arm of an adjacent bubble — local haplotype structure
+- **Paired-end phasing** (insert-scale): links branches that are further
+  apart than a single read can span — longer-range haplotype structure
+
+## Graph annotation model: preserve structure, defer decisions
+
+### Context
+
+The current v2.0 approach destructively prunes the graph before path
+finding: `pop_balloons()`, `remove_side_branches()`, `remove_orphan_nodes()`
+all delete graph structure. Information lost during pruning cannot be
+recovered.
+
+### Decision
+
+**Annotation-only model.** Read threading (Phase 5) annotates the graph
+but never modifies its structure. All structural decisions — which paths
+to report, which bubbles represent real variants vs artifacts — are
+deferred to path finding and sequence emission. Bubbles and other
+variants are retained all the way until sequences are emitted.
+
+The pipeline becomes:
+
+1. **Build graph** from kmers (Phase 3 construction)
+2. **Light structural cleanup** — remove clearly spurious structure that
+   would make downstream processing intractable:
+   - Dead-end tips shorter than k with very low coverage (these are
+     almost certainly sequencing errors, not real variants)
+   - Disconnected components not reachable from any start node
+   - This is the only step that edits graph structure
+3. **Annotate with kmer coverage** (already available from construction)
+4. **Annotate with read support** (Phase 5 — optional, skipped with
+   `--no-read-threading`)
+5. **Annotate with phasing** (Phase 5 — branch-point links from read
+   runs; Phase 6 — paired-end links)
+6. **Score and select paths** using all available annotations (Phase 6).
+   Bubbles are resolved here by choosing the best-supported path(s),
+   not by deleting the alternatives from the graph. Multiple paths can
+   be emitted if they represent real variants (preparation for v4.0
+   metagenomics).
+7. **Emit sequences** from selected paths
+
+This means Phase 3 "pruning" (tip clipping, bubble popping) becomes
+Phase 3 "light cleanup + annotation" — the aggressive pruning is
+replaced by annotation-informed path selection. The pluggable scoring
+interface designed in #90 takes coverage, read support, and phasing as
+inputs and returns path scores.
+
+### Advantages
+
+- No information loss — all evidence is available at decision time
+- Same code path works with or without read threading (just fewer
+  annotations available)
+- Natural preparation for v4.0 metagenomics (multiple real variants
+  coexist in the graph, scored by coverage profile)
+- Easier to debug — the graph before and after annotation is the same
+  structure, so you can inspect what annotations led to which decisions
+
+### Concern: path-finding efficiency
+
+Preserving all bubbles increases the number of paths. Mitigations:
+
+- Light structural cleanup removes the worst offenders (low-coverage
+  tips and disconnected components)
+- Coverage-weighted path finding (Phase 3 #93) follows high-confidence
+  edges first, naturally avoiding low-coverage artifacts without
+  deleting them
+- `MAX_NUM_PATHS_PER_PAIR` and `MAX_NUM_AMPLICONS` limits still bound
+  output
+- If path enumeration is still too expensive, annotations can be used
+  to mask low-confidence edges during path finding (treat them as absent
+  without deleting them — reversible)
+
+### Phased implementation
+
+- **Phase 3**: replace destructive pruning with light structural cleanup.
+  Implement coverage-weighted path finding that uses kmer coverage
+  annotations to score paths. Bubbles and variants are preserved.
+- **Phase 4**: implement `RetainedRead`, pre-filtering, pairing. No
+  graph annotation yet. Verify retained read counts match expectations.
+- **Phase 5**: implement the mapping algorithm, edge annotation
+  (total/unambiguous counts + branch-point phasing). Benchmark.
+- **Phase 6**: add read-support and phasing signals to path scoring.
+  Paired-end constraints for longer-range phasing. Second scoring pass
+  with the richer annotation set.

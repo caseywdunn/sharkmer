@@ -7,6 +7,13 @@ See ROADMAP.md for the full scope and rationale. See individual issues in the
 [issue tracker](https://github.com/caseywdunn/sharkmer/issues?q=label%3Av3.0)
 for detailed specifications.
 
+## Session log
+
+Brief notes after each phase/session for cold-start context. Most recent
+first.
+
+(No sessions completed yet.)
+
 ## Phase 0 — Benchmarks
 
 Enhance benchmark infrastructure before any code changes. Capture v2.0.0
@@ -20,9 +27,9 @@ baseline at multiple coverage levels to measure the impact of later phases.
   that are the key targets for coverage sensitivity analysis. Run sweeps
   from high to low (16M, 8M, 4M, 2M, 1M) so the largest download populates
   the cache first and all smaller runs are cache hits.
-- [ ] Add property-based integration tests that are algorithm-agnostic (e.g.,
-  "recovered sequence aligns to reference with >99% identity") rather than
-  golden-file tests that will break when algorithms change
+- [ ] Ensure benchmark comparison detects changes in recovered amplicon
+  sequences across runs (regression testing against previous results).
+  BLAST-based validation against reference sequences deferred (#102).
 - [ ] Capture v2.0.0 baseline benchmarks at multiple coverage levels
 - [ ] Define measurable success targets for Phase 3 (e.g., recover 18S from
   ERR571460 with fewer reads than the current threshold)
@@ -70,33 +77,43 @@ additional archives later.
 ## Phase 3 — Graph traversal
 
 Replace ad-hoc graph heuristics with principled algorithms from the assembler
-literature. All work in this phase is independent of read threading. Tackle
-pruning improvements first (self-contained), then construction changes
-(larger architectural impact, benefits from better pruning as a safety net).
+literature. All work in this phase is independent of read threading.
 
-### Pruning and path finding
+Key design change: adopt annotation-only model (see
+[DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#graph-annotation-model-preserve-structure-defer-decisions)).
+Replace destructive pruning with light structural cleanup + annotation-informed
+path selection. Bubbles and variants are preserved until sequence emission.
 
-- [ ] Replace heuristic ballooning detection with coverage-aware tip clipping
-- [ ] Coverage-aware bubble popping (design scoring to be pluggable so
-  Phase 6 can add read-support signal without restructuring)
-- [ ] Replace backward-degree-based termination with principled traversal
-- [ ] Improved handling of repeats (current cycle avoidance is too aggressive)
-- [ ] Coverage-weighted best-path algorithm to replace `all_simple_paths`
-  enumeration
-- [ ] Better path scoring beyond `kmer_min_count` ordering
+### Light structural cleanup (replaces destructive pruning)
+
+- [ ] #89 Replace heuristic ballooning detection with light tip removal:
+  remove dead-end tips shorter than k with very low coverage (sequencing
+  errors). Preserve all bubbles and meaningful branching.
+- [ ] Remove disconnected components not reachable from any start node
+- [ ] #91 Replace backward-degree-based termination with principled traversal
+
+### Annotation-informed path finding
+
+- [ ] #90 Pluggable scoring interface for path selection. Takes kmer
+  coverage as input; Phase 6 adds read support and phasing signals
+  without restructuring. Bubbles resolved at path selection, not by
+  graph editing.
+- [ ] #92 Improved handling of repeats (current cycle avoidance is too aggressive)
+- [ ] #93 Coverage-weighted best-path algorithm to replace `all_simple_paths`
+  enumeration, better path scoring beyond `kmer_min_count` ordering
 - [ ] #76 Fix O(N^2) dedup memory (compute distances on the fly instead of
   pre-allocating pairwise matrix)
 - [ ] Evaluate #12 (duplicate product 0) — may be resolved by improved
-  graph traversal and pruning
+  graph traversal and path selection
 
 ### Graph construction efficiency
 
-- [ ] Build a single graph per gene seeded with all forward primer kmers
+- [ ] #94 Build a single graph per gene seeded with all forward primer kmers
   simultaneously, instead of one graph per forward primer kmer (see
   [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#single-graph-seeded-with-all-forward-primer-kmers))
-- [ ] Extend graphs incrementally across coverage threshold steps instead of
-  rebuilding from scratch at each threshold
-- [ ] Incremental histogram updates after each chunk merge
+- [ ] #95 Extend graphs incrementally across coverage threshold steps instead
+  of rebuilding from scratch at each threshold; incremental histogram updates
+  after each chunk merge
 
 ### Validation
 
@@ -124,47 +141,53 @@ Read threading behavior by input source:
 - **stdin**: implies `--no-read-threading`, log info message explaining why
 
 - [ ] Run benchmarks to snapshot state before backend changes
-- [ ] Two-pass architecture: Pass 1 counts kmers (as now), Pass 2 re-reads
-  FASTQ for threading
-- [ ] `--no-read-threading` flag: skip second pass, single-pass kmer
-  counting only. Automatically enabled for stdin input.
-- [ ] File input: seek back to start for second pass
-- [ ] Remote input: second pass reads from local cache (Phase 2). If
-  `--no-cache`, re-download with warning.
-- [ ] `--paired` flag: first file is R1, second is R2. Errors if not exactly
-  2 input files (local or remote). Errors if used with stdin. When set,
-  reads are ingested alternately from R1 and R2 so graph is built from the
-  same balanced read set that will later be threaded and analyzed as pairs.
-  `--max-reads` applies to the total (e.g., 1000 = 500 from each; if odd,
-  round up to next even). Not implicit for `--ena` since some accessions
-  are single-end. Without `--paired`, multiple files are read sequentially
-  as in v2.0 (no pairing assumed).
+- [ ] #96 Two-pass architecture: Pass 1 counts kmers (as now), Pass 2
+  re-reads FASTQ for threading. `--no-read-threading` flag to skip second
+  pass. File input seeks back; remote input reads from cache (Phase 2);
+  `--no-cache` re-downloads with warning; stdin implies `--no-read-threading`.
+- [ ] #97 `--paired` flag: first file is R1, second is R2. Errors if not
+  exactly 2 input files (local or remote). Errors if used with stdin. When
+  set, reads are ingested alternately from R1 and R2 so graph is built from
+  the same balanced read set that will later be threaded and analyzed as
+  pairs. `--max-reads` applies to the total (e.g., 1000 = 500 from each;
+  if odd, round up to next even). Not implicit for `--ena` since some
+  accessions are single-end. Without `--paired`, multiple files are read
+  sequentially as in v2.0 (no pairing assumed).
 - [ ] Run benchmarks, confirm no result changes from backend refactoring alone
 
 ## Phase 5 — Read threading
 
-Thread reads through the assembled graph, annotating edges with read support.
+Thread reads through the assembled graph. Annotation only — no graph
+structure changes. See
+[DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#read-retention-and-threading-mechanics-phases-4-5)
+for full mechanics and
+[DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#graph-annotation-model-preserve-structure-defer-decisions)
+for the annotation-only model.
 
-- [ ] Map reads to graph paths, annotate edges with read-support counts.
-  Store both total and unambiguous support per edge to allow strategy
-  changes without re-running Pass 2 (see
-  [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#ambiguous-read-mapping-during-read-threading))
-- [ ] Per-edge coverage from actual read support (distinct from kmer frequency)
-- [ ] Paired-end link annotation: when R1 maps to one branch and R2 to
-  another, record the linkage
+- [ ] #98 Map reads to graph edges via maximal contiguous runs of adjacent
+  graph kmers. Annotate per edge:
+  - `read_support_total` — every read whose run includes this edge
+  - `read_support_unambiguous` — only reads mapping to a single
+    unbranched path
+- [ ] Branch-point phasing: when a contiguous run passes through a branch
+  point (in-degree > 1 or out-degree > 1), record (incoming_edge,
+  outgoing_edge) link with count. This captures read-scale haplotype
+  structure.
 - [ ] Run benchmarks
 
-## Phase 6 — Threading-dependent traversal
+## Phase 6 — Threading-dependent path selection
 
-Use read-support signal to improve graph operations that were designed to be
-pluggable in Phase 3.
+Use read-support and phasing annotations to improve path scoring via the
+pluggable interface designed in Phase 3 (#90). No graph structure edits.
 
-- [ ] Read-supported pruning: remove edges/nodes not supported by any full
-  read path
-- [ ] Read-aware bubble resolution: use spanning reads to resolve bubbles
-  where coverage alone is ambiguous
-- [ ] Paired-end path constraints: use insert size distribution to constrain
-  physically plausible paths
+- [ ] #99 Add read-support signal to path scoring: penalize edges with
+  zero read support, prefer edges with high unambiguous support
+- [ ] #100 Read-aware bubble resolution: use branch-point phasing to
+  determine which bubble arms connect to which — resolves cases where
+  kmer coverage alone is ambiguous
+- [ ] #101 Paired-end path constraints: use insert size distribution to
+  link branches further apart than a single read can span (longer-range
+  phasing)
 - [ ] Run benchmarks, compare to Phase 3 and Phase 5 results
 
 ## Phase 7 — Cleanup and validation
@@ -177,6 +200,14 @@ pluggable in Phase 3.
 - [ ] Tag v3.0.0 release
 
 ## Open questions
+
+- **Read retention filtering**: During Pass 2, should all reads matching
+  any graph edge kmer be retained, or should highly abundant (repetitive/
+  low-complexity) kmers be excluded from the matching to avoid retaining
+  irrelevant reads? The graph itself filters out most repeat kmers, but
+  some may survive into the graph within amplicon regions. Assess with
+  real results — if retained read counts are reasonable without filtering,
+  no extra logic needed.
 
 - **Traversal/threading coupling**: How much will Phase 3 pruning and scoring
   designs need to change once read threading is available in Phase 6? The
