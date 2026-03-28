@@ -4,90 +4,9 @@ This document describes the planned development of sharkmer across upcoming
 major releases. See the [issue tracker](https://github.com/caseywdunn/sharkmer/issues)
 for detailed specifications.
 
-## v2.0 — Cleanup and polish
+## v2.0 — Cleanup and polish (released)
 
-The goal of v2.0 is to improve code quality, usability, and developer
-infrastructure without changing core algorithms or results. This release
-changes CLI flags, output format, and error behavior, so it should ship
-quickly after the v1.0 manuscript to avoid workflows being built against
-patterns that will soon change.
-
-### Developer infrastructure
-
-- Fix existing test compilation errors (#17)
-- Add CI via GitHub Actions (#19)
-- Add CLAUDE.md (#18)
-- Add workspace Cargo.toml at repo root (#20)
-- Add test fixtures from ERR571460 (#30)
-- Expand integration test coverage (#31)
-- Regression benchmarking suite with real-world SRA datasets (#50)
-- CHANGELOG.md
-
-### Bug fixes
-
-- Fix unsigned integer underflow risks (#55)
-- Fix edge cases: empty inputs, degenerate primers, division by zero (#60)
-- Ensure deterministic output across runs (#38)
-- FASTQ parser does not validate format (#57)
-- Deduplication may silently discard real variants (#56)
-- Ensure FASTA output uses standard 80-char line wrapping (#42)
-
-### Error handling
-
-- Replace panics and unwraps with proper Result types (#21)
-- Remove hardcoded singleton filtering before sPCR (#52)
-- Rename misleading `get_canonical` method (#58)
-
-### Logging and output
-
-- Adopt `log` + `env_logger`, separate stdout/stderr (#22)
-- Structured YAML stats output with PCR results (#32)
-- Improved FASTA header format with key=value metadata (#34)
-- Print concise summary line at completion (#43)
-- Progress indicators for long-running steps (#37)
-- Polished CLI output formatting (#49)
-- Add `--color auto|always|never` and respect `NO_COLOR` (#44)
-- Report peak memory usage (#47)
-
-### CLI improvements
-
-- Split `--pcr` into `--pcr-panel`, `--pcr-panel-file`, `--pcr-primers` (#24)
-- Native gzip input support with auto-detection (#23)
-- Default to no incremental kmer counting (`--chunks 0`) (#35)
-- Add `--pcr-panel-file` for sideloading YAML primer panels (#25)
-- Add `--list-panels`, `--export-panel`, `--help-pcr` (#24)
-- Make `--sample` required, `--max-reads` optional (#24)
-- Organize `--help` with grouped headings (#24)
-- Add `--cite` flag (#40)
-- Add `--dry-run` mode (#46)
-- Generate shell completions (#39)
-- Error when stdin is a terminal with no input files (#45)
-- Warn when overwriting existing output files (#48)
-- User-facing warnings for common mistakes (#59)
-- Validate input early before ingestion (#41)
-
-### Primer panels
-
-- Refactor panels from Rust code to YAML files via `include_str!()` (#33)
-- YAML format with panel-level metadata and nested primers (#33)
-- Shared parser for built-in and user-sideloaded panels (#25, #33)
-- Include a `mode` field per primer (default `paired-primer`) to prepare for
-  v5.0 targeting modes. Only `paired-primer` accepted in v2.0; unknown modes
-  produce a clear error. (#33)
-
-### Performance
-
-- HashMap for node lookup in graph construction (#27)
-- Avoid storing reverse complements in PCR kmer table (#28)
-- Eliminate double hash lookups in graph extension (#54)
-- Free chunk hash tables after merging (#53)
-- Pre-size hash maps, evaluate ahash (#29)
-- Parallelize sPCR across genes with rayon (#36)
-
-### Code cleanup
-
-- Deduplicate code: `is_valid_nucleotide`, `KmerCounts` impls, dead code (#26)
-- Update sharkmer_viewer for new histogram/stats format (#61)
+Released. See [CHANGELOG.md](CHANGELOG.md) for details.
 
 ## v3.0 — Graph traversal
 

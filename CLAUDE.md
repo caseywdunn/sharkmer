@@ -18,7 +18,7 @@ shotgun FASTQ reads, it can:
 sharkmer/                  # Repo root
 ├── Cargo.toml             # Dependencies, feature flags, version
 ├── CLAUDE.md              # This file
-├── PLAN.md                # v2.0 phased execution order with checkboxes
+├── PLAN.md                # v3.0 phased execution order with checkboxes
 ├── ROADMAP.md             # Multi-version release plan with issue references
 ├── CHANGELOG.md           # Release history
 ├── CONTRIBUTING.md        # Branching model, quality gates, bioconda recipe
@@ -178,28 +178,5 @@ gates, and patching workflow. Key points:
 
 ## Current development
 
-Version is `2.0.0` on `dev` branch. See PLAN.md for the phased
-execution order. 45 issues across 7 phases. Run regression benchmarks
-after each phase.
-
-## Key design decisions for v2.0
-
-- **CLI**: Split `--pcr` into `--pcr-panel`, `--pcr-panel-file`, `--pcr-primers`.
-  Make `--sample` required. Default `--chunks 0` (skip histograms).
-  Add `--list-panels`, `--export-panel`, `--help-pcr`.
-  (implemented in Phase 4)
-- **Output**: YAML for stats (`.stats.yaml`) with PCR results, histogram
-  files get header rows and comment lines with version/params. Logs to
-  stderr, data to stdout. (stats YAML and histogram headers implemented
-  in Phase 4; FASTA header format pending #34)
-- **Logging**: `log` + `env_logger`, `-v`/`-vv`/`-vvv` replaces `--verbosity N`
-  (implemented in Phase 3)
-- **Primer panels**: YAML files in `panels/` embedded via `include_str!()`.
-  Shared parser for built-in and user-sideloaded panels via `--pcr-panel-file`.
-  (implemented in Phase 3)
-- **Error handling**: `anyhow` for error propagation (chosen over `thiserror`
-  since sharkmer is a binary, not a library), all panics removed from library
-  code, meaningful exit codes.
-- **Performance**: Eliminate PCR hash table copy (#28, #52), HashMap for node
-  lookup (#27), parallelize sPCR across genes (#36), free chunks after
-  merge (#53).
+Version is `3.0.0-dev` on `dev` branch. See PLAN.md for the phased
+execution order and ROADMAP.md for scope and rationale.
