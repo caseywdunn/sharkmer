@@ -34,9 +34,19 @@ baseline at multiple coverage levels to measure the impact of later phases.
   accession, gene name, and taxon into benchmark results. E-value threshold
   1e-50. Uses `git config user.email` for NCBI API. Separate optional step
   since it requires network and takes a few minutes.
+- [ ] Implement `--dump-graph` flag: write per-gene annotated assembly graphs
+  as DOT files (Graphviz) with kmer coverage, start/end status, terminal
+  status per node/edge. Phase 5 adds read support and phasing annotations.
+- [ ] Enable `--dump-graph` in benchmark runs to capture baseline graphs
 - [ ] Capture v2.0.0 baseline benchmarks at multiple coverage levels
-- [ ] Define measurable success targets for Phase 3 (e.g., recover 18S from
-  ERR571460 with fewer reads than the current threshold)
+- [ ] Define measurable success targets for Phase 3:
+  - No regressions: all rRNA (18S, 28S) and mitochondrial genes (CO1, 16S,
+    CytB, etc.) recovered in v2.0.0 benchmarks must still be recovered at
+    the same or fewer reads
+  - Single-copy nuclear gene recovery: EF1A (cnidaria), EF1g/Fz4/Gpdh/Pgi/
+    Yp2 (insecta) should be recovered at higher read counts in the sweep
+    (determine minimum reads required per gene from Phase 0 baseline)
+  - Use the multi-read-count sweep to set specific thresholds per gene
 
 ## Phase 1 — Kmer pipeline optimizations
 
@@ -61,8 +71,10 @@ additional archives later.
   Default location: `dirs::cache_dir()/sharkmer/reads/` (e.g.,
   `~/.cache/sharkmer/reads/` on Linux, `~/Library/Caches/sharkmer/reads/`
   on macOS). Overridable with `--cache-dir`. Add `dirs` crate dependency.
-- [ ] Cache metadata per entry (sidecar file): read count and whether the
-  download was complete (unlimited) or partial (`--max-reads` limited).
+- [ ] Cache metadata per entry (sidecar file): read count, whether the
+  download was complete (unlimited) or partial (`--max-reads` limited),
+  and SHA-256 checksum of the cached file. Verify checksum on cache hit;
+  treat mismatch as cache miss and re-download. Add `sha2` crate.
   Cache hit logic:
   - Complete cached file: always a hit, regardless of `--max-reads` requested
     (there are no more reads to get)
@@ -219,17 +231,7 @@ pluggable interface designed in Phase 3 (#90). No graph structure edits.
   algorithm structure itself needs to change, Phase 6 scope could grow
   significantly.
 
-- **Success criteria**: What measurable targets define "done" for Phase 3?
-  E.g., recover 18S from ERR571460 at 50k reads? Recover specific nuclear
-  genes that currently fail? These should be defined in Phase 0 using the
-  multi-read-count benchmark sweep.
-
-- **Benchmark sweep dataset selection**: Which datasets to include in the
-  multi-read-count sweep? Should include at minimum all datasets for which
-  EF1 was recovered in published v2.0.0 benchmarks, possibly others.
-
 ## Notes
 
 - Run benchmarks after every phase. Commit results to `benchmarks/`.
-- Issues not yet created in the tracker — create as work begins on each phase.
 - See [CONTRIBUTING.md](../CONTRIBUTING.md) for branching model and quality gates.
