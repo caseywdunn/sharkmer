@@ -48,13 +48,13 @@ graph construction. Threading reads back through the graph enables:
 
 Implementation approach: two-pass over input data. Pass 1 counts kmers and
 builds the graph (as now). Pass 2 re-reads the FASTQ and threads each read
-through the graph, annotating edges with read support. For `--sra` input,
+through the graph, annotating edges with read support. For `--ena` input,
 the second pass re-streams from ENA. For file input, seeks back to the
 start. For stdin, either buffer reads in memory or require file input when
 read threading is enabled.
 
 Paired-end awareness requires knowing which files are R1 vs R2. The v2.0
-convention (positional files in R1, R2 order; `--sra` downloads in order)
+convention (positional files in R1, R2 order; `--ena` downloads in order)
 is sufficient — v3.0 can infer pairing from file order, with a `--paired`
 flag to explicitly enable pair-aware refinement.
 

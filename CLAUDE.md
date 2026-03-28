@@ -18,7 +18,9 @@ shotgun FASTQ reads, it can:
 sharkmer/                  # Repo root
 ├── Cargo.toml             # Dependencies, feature flags, version
 ├── CLAUDE.md              # This file
-├── PLAN.md                # v3.0 phased execution order with checkboxes
+├── dev_docs/              # Development planning documents
+│   ├── PLAN.md            # v3.0 phased execution order with checkboxes
+│   └── DESIGN_DECISIONS.md # Background analysis for design decisions
 ├── ROADMAP.md             # Multi-version release plan with issue references
 ├── CHANGELOG.md           # Release history
 ├── CONTRIBUTING.md        # Branching model, quality gates, bioconda recipe
@@ -174,9 +176,9 @@ gates, and patching workflow. Key points:
   `cargo clippy -- -D warnings`, `cargo test --release`.
 - The pre-commit hook (`scripts/pre-commit`) enforces these automatically.
 - Present a summary and any concerns to the user for review before committing.
-  Check off the issue in PLAN.md when done.
+  Check off the issue in dev_docs/PLAN.md when done.
 
 ## Current development
 
-Version is `3.0.0-dev` on `dev` branch. See PLAN.md for the phased
+Version is `3.0.0-dev` on `dev` branch. See dev_docs/PLAN.md for the phased
 execution order and ROADMAP.md for scope and rationale.
