@@ -80,11 +80,16 @@ pruning improvements first (self-contained), then construction changes
 - [ ] Coverage-weighted best-path algorithm to replace `all_simple_paths`
   enumeration
 - [ ] Better path scoring beyond `kmer_min_count` ordering
+- [ ] #76 Fix O(N^2) dedup memory (compute distances on the fly instead of
+  pre-allocating pairwise matrix)
+- [ ] Evaluate #12 (duplicate product 0) — may be resolved by improved
+  graph traversal and pruning
 
 ### Graph construction efficiency
 
-- [ ] Build a single graph seeded with all forward primer kmers simultaneously,
-  instead of one graph per forward primer kmer
+- [ ] Build a single graph per gene seeded with all forward primer kmers
+  simultaneously, instead of one graph per forward primer kmer (see
+  [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#single-graph-seeded-with-all-forward-primer-kmers))
 - [ ] Extend graphs incrementally across coverage threshold steps instead of
   rebuilding from scratch at each threshold
 - [ ] Incremental histogram updates after each chunk merge
@@ -136,7 +141,10 @@ Read threading behavior by input source:
 
 Thread reads through the assembled graph, annotating edges with read support.
 
-- [ ] Map reads to graph paths, annotate edges with read-support counts
+- [ ] Map reads to graph paths, annotate edges with read-support counts.
+  Store both total and unambiguous support per edge to allow strategy
+  changes without re-running Pass 2 (see
+  [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#ambiguous-read-mapping-during-read-threading))
 - [ ] Per-edge coverage from actual read support (distinct from kmer frequency)
 - [ ] Paired-end link annotation: when R1 maps to one branch and R2 to
   another, record the linkage
@@ -161,6 +169,7 @@ pluggable in Phase 3.
 - [ ] Update integration tests for v3.0 behavior
 - [ ] Update README and documentation
 - [ ] Update CHANGELOG.md
+- [ ] Update bioconda recipe for new dependencies (e.g., `dirs`)
 - [ ] Tag v3.0.0 release
 
 ## Open questions

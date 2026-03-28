@@ -94,6 +94,7 @@ Target improvements:
   artifacts
 - Configurable limits for number of amplicons per gene
 - Validation against known metabarcoding datasets
+- Document QIIME2/SILVA workflow and consider convenience flags (#68)
 
 ## v5.0 — New targeting paradigms
 
