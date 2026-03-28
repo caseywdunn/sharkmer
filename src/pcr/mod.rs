@@ -3,7 +3,6 @@
 use anyhow::{Context, Result};
 use bio::io::fasta;
 use log::{debug, trace};
-use petgraph::dot::{Config, Dot};
 use std::fs::File;
 use std::io::Write;
 
@@ -262,6 +261,8 @@ pub fn do_pcr(
     kmer_counts: &FilteredKmerCounts,
     sample_name: &str,
     params: &PCRParams,
+    dump_graph: bool,
+    output_directory: &str,
 ) -> Result<Vec<bio::io::fasta::Record>> {
     gene_info!(params.gene_name, "Running PCR");
 
@@ -379,16 +380,15 @@ pub fn do_pcr(
                 graph::get_end_nodes(&graph_result).len()
             );
 
-            if log::log_enabled!(log::Level::Trace) {
-                let dot_format = format!(
-                    "{:?}",
-                    Dot::with_config(&graph_result, &[Config::EdgeNoLabel])
+            if dump_graph || log::log_enabled!(log::Level::Trace) {
+                let dot_string = write_annotated_dot(&graph_result, kmer_counts);
+                let file_name = format!(
+                    "{}{}_{}_{}.dot",
+                    output_directory, sample_name, params.gene_name, min_count
                 );
-
-                let file_name = format!("{}_{}_{}.dot", sample_name, params.gene_name, min_count);
                 trace!("Writing dot file {}", file_name);
                 let mut file = File::create(&file_name).context("Unable to create dot file")?;
-                file.write_all(dot_format.as_bytes())
+                file.write_all(dot_string.as_bytes())
                     .context("Unable to write dot file")?;
             }
 
@@ -543,6 +543,64 @@ pub fn do_pcr(
         .collect();
 
     Ok(records)
+}
+
+/// Write an annotated DOT file with node and edge attributes for visualization.
+///
+/// Node attributes: sub_kmer sequence, is_start, is_end, is_terminal.
+/// Edge attributes: kmer sequence, kmer count from the graph.
+fn write_annotated_dot(
+    graph: &petgraph::stable_graph::StableDiGraph<DBNode, DBEdge>,
+    kmer_counts: &FilteredKmerCounts,
+) -> String {
+    use std::fmt::Write as FmtWrite;
+
+    let k = kmer_counts.get_k();
+    let sub_k = k - 1;
+    let mut dot = String::new();
+
+    writeln!(dot, "digraph {{").unwrap();
+    writeln!(dot, "  rankdir=LR;").unwrap();
+
+    for node_idx in graph.node_indices() {
+        let node = &graph[node_idx];
+        let seq = crate::kmer::kmer_to_seq(&node.sub_kmer, &sub_k);
+
+        let mut attrs = vec![format!("label=\"{}\"", seq)];
+
+        // Shape: start nodes are double-circle, end nodes are box, both are diamond
+        if node.is_start && node.is_end {
+            attrs.push("shape=diamond".to_string());
+        } else if node.is_start {
+            attrs.push("shape=doublecircle".to_string());
+        } else if node.is_end {
+            attrs.push("shape=box".to_string());
+        }
+
+        if node.is_terminal {
+            attrs.push("style=dashed".to_string());
+        }
+
+        writeln!(dot, "  {} [{}];", node_idx.index(), attrs.join(", ")).unwrap();
+    }
+
+    for edge_idx in graph.edge_indices() {
+        let (src, tgt) = graph.edge_endpoints(edge_idx).unwrap();
+        let edge = &graph[edge_idx];
+        let seq = crate::kmer::kmer_to_seq(&edge._kmer, &k);
+        writeln!(
+            dot,
+            "  {} -> {} [label=\"{} ({})\"];",
+            src.index(),
+            tgt.index(),
+            seq,
+            edge.count
+        )
+        .unwrap();
+    }
+
+    writeln!(dot, "}}").unwrap();
+    dot
 }
 
 #[cfg(test)]

@@ -12,14 +12,23 @@ for detailed specifications.
 Brief notes after each phase/session for cold-start context. Most recent
 first.
 
-(No sessions completed yet.)
+**2026-03-28 — Phase 0 implementation (code + infrastructure)**
+Implemented `--dump-graph` CLI flag with annotated DOT output (node shapes for
+start/end/terminal, edge labels with kmer sequence and count). Added per-sample
+multi-read-count sweeps to benchmark config (16M/8M/4M/2M/1M for insect and
+cnidarian samples, high-to-low ordering). Updated `run_benchmark.py` to support
+per-sample `max_reads` overrides and pass `--dump-graph` to all benchmark runs.
+Enhanced `compare.py` to handle (sample, max_reads) pairs and report per-product
+sequence fingerprint diffs. Added `blast_validate.py` for optional NCBI BLAST
+validation of amplicons. Remaining: run the actual baseline benchmarks and fill
+in quantitative success targets from the results.
 
 ## Phase 0 — Benchmarks
 
 Enhance benchmark infrastructure before any code changes. Capture v2.0.0
 baseline at multiple coverage levels to measure the impact of later phases.
 
-- [ ] Add multi-read-count sweep to benchmark suite (multiple subsampling
+- [x] Add multi-read-count sweep to benchmark suite (multiple subsampling
   levels per sample to measure coverage sensitivity — e.g., how many reads
   are required to recover single-copy nuclear genes). For insect and
   cnidarian samples, sweep max reads at 1M, 2M, 4M, 8M, 16M — these
@@ -27,17 +36,17 @@ baseline at multiple coverage levels to measure the impact of later phases.
   that are the key targets for coverage sensitivity analysis. Run sweeps
   from high to low (16M, 8M, 4M, 2M, 1M) so the largest download populates
   the cache first and all smaller runs are cache hits.
-- [ ] Ensure benchmark comparison detects changes in recovered amplicon
+- [x] Ensure benchmark comparison detects changes in recovered amplicon
   sequences across runs (regression testing against previous results)
-- [ ] #102 (optional) BLAST validation: batch-submit all amplicons to NCBI
+- [x] #102 (optional) BLAST validation: batch-submit all amplicons to NCBI
   blastn against nt, parse per-amplicon e-value, identity, top hit
   accession, gene name, and taxon into benchmark results. E-value threshold
   1e-50. Uses `git config user.email` for NCBI API. Separate optional step
   since it requires network and takes a few minutes.
-- [ ] Implement `--dump-graph` flag: write per-gene annotated assembly graphs
+- [x] Implement `--dump-graph` flag: write per-gene annotated assembly graphs
   as DOT files (Graphviz) with kmer coverage, start/end status, terminal
   status per node/edge. Phase 5 adds read support and phasing annotations.
-- [ ] Enable `--dump-graph` in benchmark runs to capture baseline graphs
+- [x] Enable `--dump-graph` in benchmark runs to capture baseline graphs
 - [ ] Capture v2.0.0 baseline benchmarks at multiple coverage levels
 - [ ] Define measurable success targets for Phase 3:
   - No regressions: all rRNA (18S, 28S) and mitochondrial genes (CO1, 16S,

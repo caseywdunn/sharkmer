@@ -223,6 +223,10 @@ pub(crate) struct Args {
     #[arg(long, help_heading = "General", value_name = "SHELL")]
     pub(crate) completions: Option<Shell>,
 
+    /// Write assembly graphs as annotated DOT (Graphviz) files
+    #[arg(long, help_heading = "PCR info")]
+    pub(crate) dump_graph: bool,
+
     /// Validate primer panels/primers and exit
     #[arg(long, help_heading = "PCR info")]
     pub(crate) validate_panels: bool,

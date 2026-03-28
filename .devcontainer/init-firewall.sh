@@ -81,7 +81,10 @@ for domain in \
     "crates.io" \
     "index.crates.io" \
     "static.crates.io" \
-    "static.rust-lang.org"; do
+    "static.rust-lang.org" \
+    "www.ebi.ac.uk" \
+    "ftp.sra.ebi.ac.uk" \
+    "blast.ncbi.nlm.nih.gov"; do
     echo "Resolving $domain..."
     ips=$(dig +noall +answer A "$domain" | awk '$4 == "A" {print $5}')
     if [ -z "$ips" ]; then

@@ -49,6 +49,7 @@ pub(crate) fn run_pcr(
     sample: &str,
     directory: &str,
     min_kmer_count: u64,
+    dump_graph: bool,
     show_progress: bool,
 ) -> Result<Vec<PcrGeneResult>> {
     let mut pcr_results: Vec<PcrGeneResult> = Vec::new();
@@ -78,7 +79,7 @@ pub(crate) fn run_pcr(
     let pcr_fasta_results: Vec<_> = pcr_runs
         .par_iter()
         .map(|pcr_params| {
-            let fasta = pcr::do_pcr(&kmer_counts_pcr, sample, pcr_params);
+            let fasta = pcr::do_pcr(&kmer_counts_pcr, sample, pcr_params, dump_graph, directory);
             (pcr_params, fasta)
         })
         .collect();

@@ -1,17 +1,20 @@
 # Benchmark configuration for sharkmer regression testing.
 #
-# max_reads: list of read counts to benchmark at.
+# max_reads: default list of read counts to benchmark at.
 # Each sample is run once per value, with results keyed by read count.
+# Samples can override this with a per-sample max_reads list.
+# Sweeps run high-to-low so the largest download populates the cache first.
 max_reads:
     - 1000000
-    # Uncomment for a full sweep (matches workflow/ coverage ladder):
-    # - 1000
-    # - 10000
-    # - 50000
-    # - 100000
-    # - 500000
-    # - 5000000
-    # - 10000000
+
+# Coverage sensitivity sweep for samples with single-copy nuclear genes.
+# Insect and cnidarian panels include EF1A, EF1g, Fz4, Gpdh, Pgi, Yp2.
+coverage_sweep_reads: &coverage_sweep
+    - 16000000
+    - 8000000
+    - 4000000
+    - 2000000
+    - 1000000
 
 sample:
 ### Public datasets of paired-end reads from NCBI SRA
@@ -23,6 +26,7 @@ sample:
             # - SRR2976390 # low quality at end of reads, small dataset. Alternate options - ERS514281
             - ERR571460
         arguments: "--pcr-panel cnidaria"
+        max_reads: *coverage_sweep
         genome:
             accession: "GCA_958299795.1"
             size_mb: 541.6
@@ -33,6 +37,7 @@ sample:
         reads:
             - SRR25099394
         arguments: "--pcr-panel cnidaria"
+        max_reads: *coverage_sweep
         # no public genome available March 2025
 
 # These samples are selected for cnidarian sequences as well as bacterial carryover sequences
@@ -41,6 +46,7 @@ sample:
         reads:
             - SRR8617500
         arguments: "--pcr-panel cnidaria --pcr-panel bacteria"
+        max_reads: *coverage_sweep
         genome:
             accession: "GCF_013076305.1"
             size_mb: 256.7
@@ -85,6 +91,7 @@ sample:
         reads:
             - SRR31887760
         arguments: "--pcr-panel insecta"
+        max_reads: *coverage_sweep
         genome:
             accession: "GCF_000001215.4"
             size_mb: 143.7
@@ -95,12 +102,14 @@ sample:
         reads:
             - SRR1057608
         arguments: "--pcr-panel insecta"
+        max_reads: *coverage_sweep
 
     Gryllus_bimaculatus:
         taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Orthoptera; Gryllidae; Gryllus"
         reads:
             - SRR27962769
         arguments: "--pcr-panel insecta"
+        max_reads: *coverage_sweep
         genome:
             accession: "GCA_054131365.1"
             size_mb: 1668.9

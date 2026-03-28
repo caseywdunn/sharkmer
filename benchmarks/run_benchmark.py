@@ -48,6 +48,16 @@ def load_config():
     return config["sample"], max_reads
 
 
+def get_max_reads_for_sample(sample_config, default_max_reads):
+    """Return the max_reads list for a sample (per-sample override or default).
+
+    Results are sorted descending so the largest download populates the cache
+    first and smaller runs are cache hits.
+    """
+    reads = sample_config.get("max_reads", default_max_reads)
+    return sorted(reads, reverse=True)
+
+
 def get_sharkmer_version():
     result = subprocess.run(
         [str(SHARKMER_BIN), "--version"],
@@ -167,6 +177,7 @@ def run_sharkmer(sample_name, fastq_paths, arguments, max_reads, threads=THREADS
         "-k", str(K),
         "-t", str(threads),
         "--max-reads", str(max_reads),
+        "--dump-graph",
         "-o", str(OUTPUT_DIR) + "/",
         "-s", sample_prefix,
     ]
@@ -291,13 +302,18 @@ def collect_sample_result(sample_name, sample_config, sample_prefix, wall_time):
     return result
 
 
-def pre_download_all(config, samples_to_run, max_reads_list, max_parallel=4):
-    """Download all sample data in parallel before running benchmarks."""
+def pre_download_all(config, samples_to_run, default_max_reads, max_parallel=4):
+    """Download all sample data in parallel before running benchmarks.
+
+    Each sample may have its own max_reads list (per-sample override).
+    Downloads run high-to-low so the largest download populates the cache first.
+    """
     tasks = []
-    for max_reads in max_reads_list:
-        for sample_name in samples_to_run:
-            if sample_name not in config:
-                continue
+    for sample_name in samples_to_run:
+        if sample_name not in config:
+            continue
+        sample_reads = get_max_reads_for_sample(config[sample_name], default_max_reads)
+        for max_reads in sample_reads:
             tasks.append((sample_name, config[sample_name], max_reads))
 
     if not tasks:
@@ -355,13 +371,15 @@ def run_benchmark(samples_to_run=None, threads=THREADS):
     print()
 
     results = []
-    for max_reads in max_reads_list:
-        for sample_name in samples_to_run:
-            if sample_name not in config:
-                print(f"WARNING: {sample_name} not found in config, skipping")
-                continue
+    for sample_name in samples_to_run:
+        if sample_name not in config:
+            print(f"WARNING: {sample_name} not found in config, skipping")
+            continue
 
-            sample_config = config[sample_name]
+        sample_config = config[sample_name]
+        sample_reads = get_max_reads_for_sample(sample_config, max_reads_list)
+
+        for max_reads in sample_reads:
             k_reads = max_reads // 1000
             print(f"=== {sample_name} ({k_reads}k reads) ===")
 
@@ -448,9 +466,9 @@ def main():
     args = parser.parse_args()
 
     if args.download_only:
-        config, max_reads_list = load_config()
+        config, default_max_reads = load_config()
         samples = args.samples if args.samples else list(config.keys())
-        pre_download_all(config, samples, max_reads_list)
+        pre_download_all(config, samples, default_max_reads)
     elif args.samples:
         run_benchmark(args.samples, threads=args.threads)
     else:

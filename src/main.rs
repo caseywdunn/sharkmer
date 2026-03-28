@@ -101,6 +101,7 @@ fn main() -> Result<()> {
         &sample,
         &directory,
         args.min_kmer_count,
+        args.dump_graph,
         show_progress,
     )?;
 
