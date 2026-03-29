@@ -179,7 +179,11 @@ def blast_sequence(sequence, email):
 
 
 def validate_results(result_path, dry_run=False):
-    """Add BLAST validation to all amplicons in a benchmark result file."""
+    """Add BLAST validation to amplicons in a benchmark result file.
+
+    Only BLASTs product 0 (the highest-scoring amplicon) per gene to keep
+    runtime practical. The primary purpose is confirming gene identity.
+    """
     with open(result_path) as f:
         benchmark = yaml.safe_load(f)
 
@@ -188,11 +192,11 @@ def validate_results(result_path, dry_run=False):
 
     results = benchmark.get("results", [])
     total_seqs = sum(
-        len(p.get("sequences", []))
-        for r in results
+        1 for r in results
         for p in r.get("products", [])
+        if p.get("sequences")
     )
-    print(f"Total sequences to validate: {total_seqs}")
+    print(f"Total genes to validate (product 0 each): {total_seqs}")
 
     if dry_run:
         print("Dry run — not submitting to BLAST.")
@@ -211,39 +215,30 @@ def validate_results(result_path, dry_run=False):
             if not sequences:
                 continue
 
-            blast_hits = []
-            for i, seq in enumerate(sequences):
-                seq_count += 1
-                print(f"  [{seq_count}/{total_seqs}] {sample} {gene} product {i} ({len(seq)} bp)")
+            # Only BLAST product 0 (best amplicon) per gene
+            seq = sequences[0]
+            seq_count += 1
+            print(f"  [{seq_count}/{total_seqs}] {sample} {gene} ({len(seq)} bp)")
 
-                try:
-                    hit = blast_sequence(seq, email)
-                    if hit:
-                        blast_hits.append({
-                            "product_index": i,
-                            **hit,
-                        })
-                        print(f"    Hit: {hit['accession']} {hit['pct_identity']}% {hit['hit_def'][:80]}")
-                    else:
-                        blast_hits.append({
-                            "product_index": i,
-                            "accession": None,
-                            "hit_def": "no significant hit",
-                            "evalue": None,
-                            "pct_identity": None,
-                        })
-                        print(f"    No significant hit")
-                except Exception as e:
-                    print(f"    BLAST error: {e}")
-                    blast_hits.append({
-                        "product_index": i,
-                        "error": str(e),
-                    })
+            try:
+                hit = blast_sequence(seq, email)
+                if hit:
+                    product["blast_hit"] = hit
+                    print(f"    Hit: {hit['accession']} {hit['pct_identity']}% {hit['hit_def'][:80]}")
+                else:
+                    product["blast_hit"] = {
+                        "accession": None,
+                        "hit_def": "no significant hit",
+                        "evalue": None,
+                        "pct_identity": None,
+                    }
+                    print(f"    No significant hit")
+            except Exception as e:
+                print(f"    BLAST error: {e}")
+                product["blast_hit"] = {"error": str(e)}
 
-                # NCBI rate limit: max 1 request per second (we already wait 30s in polling)
-                time.sleep(1)
-
-            product["blast_hits"] = blast_hits
+            # NCBI rate limit: max 1 request per second (we already wait 30s in polling)
+            time.sleep(1)
 
     # Write updated results back
     with open(result_path, "w") as f:

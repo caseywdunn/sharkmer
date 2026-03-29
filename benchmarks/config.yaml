@@ -1,32 +1,30 @@
 # Benchmark configuration for sharkmer regression testing.
 #
-# max_reads: default list of read counts to benchmark at.
-# Each sample is run once per value, with results keyed by read count.
-# Samples can override this with a per-sample max_reads list.
-# Sweeps run high-to-low so the largest download populates the cache first.
-max_reads:
-    - 1000000
-
-# Coverage sensitivity sweep for samples with single-copy nuclear genes.
-# Insect and cnidarian panels include EF1A, EF1g, Fz4, Gpdh, Pgi, Yp2.
-coverage_sweep_reads: &coverage_sweep
-    - 16000000
-    - 8000000
-    - 4000000
-    - 2000000
-    - 1000000
+# Each sample has a list of max_reads values to benchmark at.
+# Samples with single-copy nuclear gene panels (cnidaria, insecta) get
+# multi-level coverage sweeps to measure sensitivity. All others run at 1M.
+# Sweeps are always run largest-first (reverse sorted).
+#
+# Data files in benchmarks/data/ are named {accession}.fastq and contain
+# at least as many reads as the largest max_reads value. The --max-reads
+# flag in sharkmer controls how many reads are actually used per run.
 
 sample:
 ### Public datasets of paired-end reads from NCBI SRA
 
-# Selected cndiarian datasets
+# Selected cndiarian datasets — coverage sweep for nuclear gene sensitivity
     Porites_lutea:
         taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Fungiina; Poritidae; Porites"
         reads:
             # - SRR2976390 # low quality at end of reads, small dataset. Alternate options - ERS514281
             - ERR571460
         arguments: "--pcr-panel cnidaria"
-        max_reads: *coverage_sweep
+        max_reads:
+            - 16000000
+            - 8000000
+            - 4000000
+            - 2000000
+            - 1000000
         genome:
             accession: "GCA_958299795.1"
             size_mb: 541.6
@@ -37,7 +35,12 @@ sample:
         reads:
             - SRR25099394
         arguments: "--pcr-panel cnidaria"
-        max_reads: *coverage_sweep
+        max_reads:
+            - 16000000
+            - 8000000
+            - 4000000
+            - 2000000
+            - 1000000
         # no public genome available March 2025
 
 # These samples are selected for cnidarian sequences as well as bacterial carryover sequences
@@ -46,7 +49,12 @@ sample:
         reads:
             - SRR8617500
         arguments: "--pcr-panel cnidaria --pcr-panel bacteria"
-        max_reads: *coverage_sweep
+        max_reads:
+            - 16000000
+            - 8000000
+            - 4000000
+            - 2000000
+            - 1000000
         genome:
             accession: "GCF_013076305.1"
             size_mb: 256.7
@@ -59,6 +67,8 @@ sample:
         reads:
             - SRR17535371
         arguments: "--pcr-panel human"
+        max_reads:
+            - 1000000
         genome:
             accession: "GCF_000001405.40"
             size_mb: 3099
@@ -70,6 +80,8 @@ sample:
         reads:
             - SRR22396603
         arguments: "--pcr-panel teleostei"
+        max_reads:
+            - 1000000
 
 # Flowering plants - angiosperms
     Liriodendron_tulipifera:
@@ -77,21 +89,30 @@ sample:
         reads:
             - SRR25378184
         arguments: "--pcr-panel angiospermae"
+        max_reads:
+            - 1000000
 
     Acer_monspessulanum:
         taxonomy: Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; rosids; malvids; Sapindales; Sapindaceae; Hippocastanoideae; Acereae; Acer
         reads:
             - ERR14009273
         arguments: "--pcr-panel angiospermae"
+        max_reads:
+            - 1000000
 
 
-# Insects - insecta
+# Insects - insecta — coverage sweep for nuclear gene sensitivity
     Drosophila_melanogaster:
         taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
         reads:
             - SRR31887760
         arguments: "--pcr-panel insecta"
-        max_reads: *coverage_sweep
+        max_reads:
+            - 16000000
+            - 8000000
+            - 4000000
+            - 2000000
+            - 1000000
         genome:
             accession: "GCF_000001215.4"
             size_mb: 143.7
@@ -102,14 +123,24 @@ sample:
         reads:
             - SRR1057608
         arguments: "--pcr-panel insecta"
-        max_reads: *coverage_sweep
+        max_reads:
+            - 16000000
+            - 8000000
+            - 4000000
+            - 2000000
+            - 1000000
 
     Gryllus_bimaculatus:
         taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Orthoptera; Gryllidae; Gryllus"
         reads:
             - SRR27962769
         arguments: "--pcr-panel insecta"
-        max_reads: *coverage_sweep
+        max_reads:
+            - 16000000
+            - 8000000
+            - 4000000
+            - 2000000
+            - 1000000
         genome:
             accession: "GCA_054131365.1"
             size_mb: 1668.9
@@ -120,19 +151,27 @@ sample:
         reads:
             - SRR14670475
         arguments: "--pcr-panel metazoa"
+        max_reads:
+            - 1000000
 
 # Bacterial metagenomics
     Covercrop_rhizosphere:
         reads:
             - SRR19418213
         arguments: "--pcr-panel bacteria"
+        max_reads:
+            - 1000000
 
     Coral_metagenome:
         reads:
             - SRR24806237
         arguments: "--pcr-panel bacteria"
+        max_reads:
+            - 1000000
 
     Seawater_metagenome:
         reads:
             - ERR2596344
         arguments: "--pcr-panel bacteria"
+        max_reads:
+            - 1000000

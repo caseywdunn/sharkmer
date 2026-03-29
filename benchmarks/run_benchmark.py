@@ -2,8 +2,8 @@
 """
 Regression benchmark for sharkmer.
 
-Downloads SRA datasets (if not cached), runs sharkmer at fixed coverage,
-and collects results into a YAML file for comparison across versions.
+Downloads SRA datasets (if not cached), runs sharkmer at multiple coverage
+levels, and collects results into a YAML file for comparison across versions.
 
 Usage:
     python benchmarks/run_benchmark.py [--samples SAMPLE1 SAMPLE2 ...]
@@ -26,6 +26,9 @@ from pathlib import Path
 
 import yaml
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from blast_validate import validate_results
+
 
 # --- Configuration ---
 
@@ -44,17 +47,12 @@ DEFAULT_MAX_READS = [1_000_000]
 def load_config():
     with open(CONFIG_PATH) as f:
         config = yaml.safe_load(f)
-    max_reads = config.get("max_reads", DEFAULT_MAX_READS)
-    return config["sample"], max_reads
+    return config["sample"]
 
 
-def get_max_reads_for_sample(sample_config, default_max_reads):
-    """Return the max_reads list for a sample (per-sample override or default).
-
-    Results are sorted descending so the largest download populates the cache
-    first and smaller runs are cache hits.
-    """
-    reads = sample_config.get("max_reads", default_max_reads)
+def get_max_reads_for_sample(sample_config):
+    """Return the max_reads list for a sample, sorted descending."""
+    reads = sample_config.get("max_reads", DEFAULT_MAX_READS)
     return sorted(reads, reverse=True)
 
 
@@ -108,65 +106,33 @@ def get_machine_info():
     return info
 
 
-def download_sample(sample_name, sample_config, max_reads):
-    """Download SRA data by streaming from ENA, keeping only max_reads reads.
+def find_sample_data(sample_name, sample_config):
+    """Find local data files for a sample.
 
-    Uses benchmarks/sra_download.sh which streams ENA-hosted FASTQ files
-    and stops as soon as N reads have been written, avoiding downloading
-    the full run. Returns a list of FASTQ file paths (one per mate for
-    paired-end, one for single-end).
+    Data files are named {accession}.fastq in benchmarks/data/.
+    Returns a list of FASTQ file paths, or None if any are missing.
     """
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-
     accessions = sample_config.get("reads", [])
     if not accessions:
         print(f"  WARNING: No reads defined for {sample_name}, skipping")
         return None
 
-    download_script = REPO_ROOT / "benchmarks" / "sra_download.sh"
-
     all_fastq_paths = []
     for accession in accessions:
-        # Check if already downloaded
-        existing = sorted(DATA_DIR.glob(f"{accession}_*_{max_reads}.fastq"))
-        if existing:
-            print(f"  Using cached data for {accession}: {[p.name for p in existing]}")
-            all_fastq_paths.extend(existing)
-            continue
-
-        print(f"  Downloading {accession} ({max_reads} reads per mate from ENA)...")
-        result = subprocess.run(
-            [str(download_script), accession, str(max_reads)],
-            capture_output=True, text=True,
-            cwd=str(DATA_DIR),
-        )
-        if result.returncode != 0:
-            print(f"  ERROR downloading {accession}:")
-            print(f"    {result.stderr.strip()}")
+        fastq_path = DATA_DIR / f"{accession}.fastq"
+        if fastq_path.exists():
+            all_fastq_paths.append(fastq_path)
+        else:
+            print(f"  ERROR: data file not found: {fastq_path}")
+            print(f"    Download with: benchmarks/sra_download.sh {accession} <nreads>")
+            print(f"    Then rename to {fastq_path}")
             return None
-
-        # Print download log
-        for line in result.stderr.strip().split("\n"):
-            print(f"    {line}")
-
-        # Find the downloaded files
-        downloaded = sorted(DATA_DIR.glob(f"{accession}_*_{max_reads}.fastq"))
-        if not downloaded:
-            print(f"  ERROR: no FASTQ files found after download for {accession}")
-            return None
-
-        all_fastq_paths.extend(downloaded)
 
     return all_fastq_paths
 
 
 def run_sharkmer(sample_name, fastq_paths, arguments, max_reads, threads=THREADS):
-    """Run sharkmer and return wall time in seconds.
-
-    fastq_paths is a list of FASTQ files (e.g. [R1.fastq, R2.fastq] for
-    paired-end, or [reads.fastq] for single-end). All are passed as
-    positional arguments to sharkmer.
-    """
+    """Run sharkmer and return wall time in seconds."""
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
     k_reads = max_reads // 1000
@@ -182,7 +148,7 @@ def run_sharkmer(sample_name, fastq_paths, arguments, max_reads, threads=THREADS
         "-s", sample_prefix,
     ]
 
-    # Parse the arguments string (e.g., "--pcr cnidaria --pcr bacteria")
+    # Parse the arguments string (e.g., "--pcr-panel cnidaria --pcr-panel bacteria")
     if arguments:
         cmd.extend(arguments.split())
 
@@ -285,7 +251,6 @@ def collect_sample_result(sample_name, sample_config, sample_prefix, wall_time):
     panel = ", ".join(panels) if panels else "none"
 
     genes_amplified = len(products)
-    genes_failed = 0  # Can't easily determine from current output format
 
     result = {
         "sample": sample_name,
@@ -302,51 +267,13 @@ def collect_sample_result(sample_name, sample_config, sample_prefix, wall_time):
     return result
 
 
-def pre_download_all(config, samples_to_run, default_max_reads, max_parallel=4):
-    """Download all sample data in parallel before running benchmarks.
-
-    Each sample may have its own max_reads list (per-sample override).
-    Downloads run high-to-low so the largest download populates the cache first.
-    """
-    tasks = []
-    for sample_name in samples_to_run:
-        if sample_name not in config:
-            continue
-        sample_reads = get_max_reads_for_sample(config[sample_name], default_max_reads)
-        for max_reads in sample_reads:
-            tasks.append((sample_name, config[sample_name], max_reads))
-
-    if not tasks:
-        return
-
-    print(f"Pre-downloading {len(tasks)} sample(s) with up to {max_parallel} parallel downloads...")
-
-    def _download(task):
-        sample_name, sample_config, max_reads = task
-        return sample_name, max_reads, download_sample(sample_name, sample_config, max_reads)
-
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_parallel) as executor:
-        futures = {executor.submit(_download, t): t for t in tasks}
-        for future in concurrent.futures.as_completed(futures):
-            sample_name, max_reads, paths = future.result()
-            k_reads = max_reads // 1000
-            if paths:
-                print(f"  Ready: {sample_name} ({k_reads}k reads)")
-            else:
-                print(f"  FAILED: {sample_name} ({k_reads}k reads)")
-
-    print()
-
-
-def run_benchmark(samples_to_run=None, threads=THREADS):
+def run_benchmark(samples_to_run=None, threads=THREADS, max_reads_override=None,
+                  run_blast=True):
     """Run the full benchmark suite."""
-    config, max_reads_list = load_config()
+    config = load_config()
 
     if samples_to_run is None:
         samples_to_run = list(config.keys())
-
-    # Pre-download all sample data in parallel
-    pre_download_all(config, samples_to_run, max_reads_list)
 
     # Build sharkmer if needed
     print("Building sharkmer (release)...")
@@ -367,7 +294,6 @@ def run_benchmark(samples_to_run=None, threads=THREADS):
     print(f"git commit: {git_commit}")
     print(f"machine: {machine_info}")
     print(f"samples: {len(samples_to_run)}")
-    print(f"max_reads values: {max_reads_list}")
     print()
 
     results = []
@@ -377,16 +303,21 @@ def run_benchmark(samples_to_run=None, threads=THREADS):
             continue
 
         sample_config = config[sample_name]
-        sample_reads = get_max_reads_for_sample(sample_config, max_reads_list)
+
+        # Find data files (one per accession, reused across sweep levels)
+        fastq_paths = find_sample_data(sample_name, sample_config)
+        if fastq_paths is None:
+            continue
+
+        # Determine sweep levels
+        if max_reads_override is not None:
+            sample_reads = sorted(max_reads_override, reverse=True)
+        else:
+            sample_reads = get_max_reads_for_sample(sample_config)
 
         for max_reads in sample_reads:
             k_reads = max_reads // 1000
             print(f"=== {sample_name} ({k_reads}k reads) ===")
-
-            # Download
-            fastq_paths = download_sample(sample_name, sample_config, max_reads)
-            if fastq_paths is None:
-                continue
 
             # Run sharkmer
             arguments = sample_config.get("arguments", "")
@@ -429,7 +360,6 @@ def run_benchmark(samples_to_run=None, threads=THREADS):
         "hash_backend": "ahashmap",  # default feature flag
         "build_profile": "release",
         "parameters": {
-            "max_reads": max_reads_list,
             "k": K,
             "threads": threads,
         },
@@ -440,6 +370,21 @@ def run_benchmark(samples_to_run=None, threads=THREADS):
         yaml.dump(benchmark_result, f, default_flow_style=False, sort_keys=False)
 
     print(f"Benchmark results written to: {result_path}")
+
+    # BLAST validation
+    if run_blast:
+        print()
+        print("Running BLAST validation...")
+        try:
+            validate_results(result_path)
+        except Exception as e:
+            print(f"BLAST validation failed: {e}")
+            print("Results saved without BLAST annotations. Run manually with:")
+            print(f"  python benchmarks/blast_validate.py {result_path}")
+    else:
+        print("Skipping BLAST validation (--no-blast). Run manually with:")
+        print(f"  python benchmarks/blast_validate.py {result_path}")
+
     return result_path
 
 
@@ -460,19 +405,23 @@ def main():
         help=f"Number of threads (default: {THREADS})"
     )
     parser.add_argument(
-        "--download-only", action="store_true",
-        help="Download sample data only, do not run benchmarks"
+        "--max-reads", type=int, nargs="+",
+        help="Override max_reads for all samples (ignores per-sample config)"
+    )
+    parser.add_argument(
+        "--no-blast", action="store_true",
+        help="Skip BLAST validation of amplicons"
     )
     args = parser.parse_args()
 
-    if args.download_only:
-        config, default_max_reads = load_config()
-        samples = args.samples if args.samples else list(config.keys())
-        pre_download_all(config, samples, default_max_reads)
-    elif args.samples:
-        run_benchmark(args.samples, threads=args.threads)
+    if args.samples:
+        run_benchmark(args.samples, threads=args.threads,
+                      max_reads_override=args.max_reads,
+                      run_blast=not args.no_blast)
     else:
-        run_benchmark(threads=args.threads)
+        run_benchmark(threads=args.threads,
+                      max_reads_override=args.max_reads,
+                      run_blast=not args.no_blast)
 
 
 if __name__ == "__main__":

@@ -12,6 +12,18 @@ for detailed specifications.
 Brief notes after each phase/session for cold-start context. Most recent
 first.
 
+**2026-03-28 — Phase 0 completion**
+Ran 1M baseline benchmark for all 14 samples with BLAST validation (commit
+7944499). Results: `benchmarks/results/2026-03-28_sharkmer_3.0.0-dev_7944499.yaml`.
+Restructured benchmark infrastructure: sweep levels are now per-sample in
+config.yaml (cnidaria/insecta get 16M/8M/4M/2M/1M, others get 1M only). Data
+files renamed to `{accession}.fastq` — one file per accession, `--max-reads`
+controls coverage level. BLAST validation (product 0 per gene) is now a default
+step in `run_benchmark.py` (skip with `--no-blast`). Coverage sweep benchmarks
+(2M+) require >=16GB RAM — run on local machine with
+`python benchmarks/run_benchmark.py`. Defined Phase 3 success targets
+based on 1M baseline with sweep-dependent placeholders to fill after sweep.
+
 **2026-03-28 — Phase 0 implementation (code + infrastructure)**
 Implemented `--dump-graph` CLI flag with annotated DOT output (node shapes for
 start/end/terminal, edge labels with kmer sequence and count). Added per-sample
@@ -20,42 +32,52 @@ cnidarian samples, high-to-low ordering). Updated `run_benchmark.py` to support
 per-sample `max_reads` overrides and pass `--dump-graph` to all benchmark runs.
 Enhanced `compare.py` to handle (sample, max_reads) pairs and report per-product
 sequence fingerprint diffs. Added `blast_validate.py` for optional NCBI BLAST
-validation of amplicons. Remaining: run the actual baseline benchmarks and fill
-in quantitative success targets from the results.
+validation of amplicons.
 
 ## Phase 0 — Benchmarks
 
 Enhance benchmark infrastructure before any code changes. Capture v2.0.0
 baseline at multiple coverage levels to measure the impact of later phases.
 
-- [x] Add multi-read-count sweep to benchmark suite (multiple subsampling
-  levels per sample to measure coverage sensitivity — e.g., how many reads
-  are required to recover single-copy nuclear genes). For insect and
-  cnidarian samples, sweep max reads at 1M, 2M, 4M, 8M, 16M — these
-  panels have single-copy nuclear genes (EF1A, EF1g, Fz4, Gpdh, Pgi, Yp2)
-  that are the key targets for coverage sensitivity analysis. Run sweeps
-  from high to low (16M, 8M, 4M, 2M, 1M) so the largest download populates
-  the cache first and all smaller runs are cache hits.
+- [x] Add multi-read-count sweep to benchmark suite (per-sample `max_reads`
+  in config.yaml). Insect and cnidarian samples sweep at 16M, 8M, 4M, 2M,
+  1M — these panels have single-copy nuclear genes (EF1A, EF1g, Fz4,
+  Gpdh, Pgi, Yp2) that are the key targets for coverage sensitivity
+  analysis. All other samples run at 1M only. Sweeps run largest-first.
+  Data files are `{accession}.fastq`; `--max-reads` controls coverage.
 - [x] Ensure benchmark comparison detects changes in recovered amplicon
   sequences across runs (regression testing against previous results)
-- [x] #102 (optional) BLAST validation: batch-submit all amplicons to NCBI
-  blastn against nt, parse per-amplicon e-value, identity, top hit
-  accession, gene name, and taxon into benchmark results. E-value threshold
-  1e-50. Uses `git config user.email` for NCBI API. Separate optional step
-  since it requires network and takes a few minutes.
+- [x] #102 BLAST validation: batch-submit all amplicons to NCBI blastn
+  against nt, parse per-amplicon e-value, identity, top hit accession,
+  gene name, and taxon into benchmark results. E-value threshold 1e-50.
+  Uses `git config user.email` for NCBI API. Runs by default as the final
+  step of `run_benchmark.py`; skip with `--no-blast`.
 - [x] Implement `--dump-graph` flag: write per-gene annotated assembly graphs
   as DOT files (Graphviz) with kmer coverage, start/end status, terminal
   status per node/edge. Phase 5 adds read support and phasing annotations.
 - [x] Enable `--dump-graph` in benchmark runs to capture baseline graphs
-- [ ] Capture v2.0.0 baseline benchmarks at multiple coverage levels
-- [ ] Define measurable success targets for Phase 3:
-  - No regressions: all rRNA (18S, 28S) and mitochondrial genes (CO1, 16S,
-    CytB, etc.) recovered in v2.0.0 benchmarks must still be recovered at
-    the same or fewer reads
-  - Single-copy nuclear gene recovery: EF1A (cnidaria), EF1g/Fz4/Gpdh/Pgi/
-    Yp2 (insecta) should be recovered at higher read counts in the sweep
-    (determine minimum reads required per gene from Phase 0 baseline)
-  - Use the multi-read-count sweep to set specific thresholds per gene
+- [x] Capture baseline benchmarks at 1M reads for all 14 samples with BLAST
+  validation. Sweep data downloaded and ready; sweep benchmarks (2M+)
+  pending local run (requires >=16GB RAM). Run with:
+  `python benchmarks/run_benchmark.py`
+- [x] Define measurable success targets for Phase 3:
+  - **No regressions at 1M** (baseline: 2026-03-28 commit 7944499):
+    - Porites_lutea: 18S, 28S, 28S-v2, ITS, ITS-v2, EF1A (6 genes)
+    - Agalma_elegans: 18S, 28S, 28S-v2, CO1, ITS, ITS-v2 (6 genes)
+    - Rhopilema_esculentum: 16S, 18S, 28S, 28S-v2, CO1, ITS-v2 + 9 bacteria (15 genes)
+    - Drosophila_melanogaster: 12S, 18S, 18S-v2, CO1-v2, CO2-v2, CO2, ND1, ND5 (8 genes)
+    - Heliconius_pachinus: 12S, CO1-v2, CO1, CO2, CytB, ND1, ND5 (7 genes)
+    - Gryllus_bimaculatus: 12S, 16S, 16S-v2, 18S-v2, 28S, CO1-v2, CO1, CO2,
+      CytB, NADH, ND1, ND4, ND5 (13 genes)
+    - All other samples: gene counts and identities must match baseline
+  - **Single-copy nuclear gene recovery** (sweep-dependent — fill after sweep):
+    - cnidaria_EF1A: already recovered at 1M for Porites_lutea; determine
+      minimum reads for Agalma_elegans and Rhopilema_esculentum from sweep
+    - insecta nuclear genes (EF1g, Fz4, Gpdh, Pgi, Yp2): not recovered at
+      1M for any insect sample; determine minimum reads per gene from sweep
+    - Phase 3 target: recover these at the same or fewer reads than baseline
+  - **Sequence stability**: product sequences for rRNA and mitochondrial
+    genes should be identical (same MD5 fingerprints) after Phase 3 changes
 
 ## Phase 1 — Kmer pipeline optimizations
 
