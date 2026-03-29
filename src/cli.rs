@@ -197,7 +197,7 @@ pub(crate) struct Args {
 
     /// Minimum kmer count for sPCR (filters low-count kmers before PCR)
     #[arg(long, default_value_t = 2, help_heading = "General")]
-    pub(crate) min_kmer_count: u64,
+    pub(crate) min_kmer_count: u32,
 
     /// Validate FASTQ format every N records (0 = first record only)
     #[arg(long, default_value_t = 0, help_heading = "General")]

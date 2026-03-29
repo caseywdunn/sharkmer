@@ -12,7 +12,7 @@ use rustc_hash::FxHashMap;
 #[cfg(feature = "ahashmap")]
 use std::collections::HashMap as StdHashMap;
 
-use super::encoding::{Read, revcomp_kmer};
+use super::encoding::{Read, kmers_from_ascii, revcomp_kmer};
 use super::histogram::Histogram;
 
 /// Trait abstracting over hash map implementations for kmer counting.
@@ -20,35 +20,35 @@ use super::histogram::Histogram;
 trait KmerMap {
     fn new_map() -> Self;
     fn new_map_with_capacity(capacity: usize) -> Self;
-    fn insert_or_add(&mut self, key: u64, count: u64);
-    fn get_value(&self, key: u64) -> Option<&u64>;
-    fn get_count(&self, key: u64) -> u64;
+    fn insert_or_add(&mut self, key: u64, count: u32);
+    fn get_value(&self, key: u64) -> Option<&u32>;
+    fn get_count(&self, key: u64) -> u32;
     fn contains(&self, key: u64) -> bool;
-    fn retain_above(&mut self, min_count: u64);
+    fn retain_above(&mut self, min_count: u32);
 }
 
 #[cfg(feature = "fxhashmap")]
-impl KmerMap for rustc_hash::FxHashMap<u64, u64> {
+impl KmerMap for rustc_hash::FxHashMap<u64, u32> {
     fn new_map() -> Self {
         FxHashMap::default()
     }
     fn new_map_with_capacity(capacity: usize) -> Self {
         FxHashMap::with_capacity_and_hasher(capacity, Default::default())
     }
-    fn insert_or_add(&mut self, key: u64, count: u64) {
+    fn insert_or_add(&mut self, key: u64, count: u32) {
         let c = self.entry(key).or_insert(0);
-        *c += count;
+        *c = c.saturating_add(count);
     }
-    fn get_value(&self, key: u64) -> Option<&u64> {
+    fn get_value(&self, key: u64) -> Option<&u32> {
         self.get(&key)
     }
-    fn get_count(&self, key: u64) -> u64 {
+    fn get_count(&self, key: u64) -> u32 {
         *self.get(&key).unwrap_or(&0)
     }
     fn contains(&self, key: u64) -> bool {
         self.contains_key(&key)
     }
-    fn retain_above(&mut self, min_count: u64) {
+    fn retain_above(&mut self, min_count: u32) {
         self.retain(|_, count| *count >= min_count);
     }
 }
@@ -57,36 +57,36 @@ impl KmerMap for rustc_hash::FxHashMap<u64, u64> {
 type AHashMap<K, V> = StdHashMap<K, V, ahash::RandomState>;
 
 #[cfg(feature = "ahashmap")]
-impl KmerMap for AHashMap<u64, u64> {
+impl KmerMap for AHashMap<u64, u32> {
     fn new_map() -> Self {
         AHashMap::with_hasher(ahash::RandomState::new())
     }
     fn new_map_with_capacity(capacity: usize) -> Self {
         AHashMap::with_capacity_and_hasher(capacity, ahash::RandomState::new())
     }
-    fn insert_or_add(&mut self, key: u64, count: u64) {
+    fn insert_or_add(&mut self, key: u64, count: u32) {
         let c = self.entry(key).or_insert(0);
-        *c += count;
+        *c = c.saturating_add(count);
     }
-    fn get_value(&self, key: u64) -> Option<&u64> {
+    fn get_value(&self, key: u64) -> Option<&u32> {
         self.get(&key)
     }
-    fn get_count(&self, key: u64) -> u64 {
+    fn get_count(&self, key: u64) -> u32 {
         *self.get(&key).unwrap_or(&0)
     }
     fn contains(&self, key: u64) -> bool {
         self.contains_key(&key)
     }
-    fn retain_above(&mut self, min_count: u64) {
+    fn retain_above(&mut self, min_count: u32) {
         self.retain(|_, count| *count >= min_count);
     }
 }
 
 #[cfg(feature = "fxhashmap")]
-type MapType = rustc_hash::FxHashMap<u64, u64>;
+type MapType = rustc_hash::FxHashMap<u64, u32>;
 
 #[cfg(feature = "ahashmap")]
-type MapType = AHashMap<u64, u64>;
+type MapType = AHashMap<u64, u32>;
 
 pub struct KmerCounts {
     kmers: MapType,
@@ -109,6 +109,7 @@ impl KmerCounts {
         }
     }
 
+    #[allow(dead_code)]
     pub fn ingest_reads(&mut self, reads: &[Read]) -> Result<()> {
         for read in reads {
             for kmer in read.get_kmers(&self.k)? {
@@ -118,8 +119,16 @@ impl KmerCounts {
         Ok(())
     }
 
+    /// Ingest kmers directly from an ASCII sequence, bypassing Read struct encoding.
+    pub fn ingest_seq(&mut self, seq: &str) -> Result<()> {
+        for kmer in kmers_from_ascii(seq, self.k)? {
+            self.kmers.insert_or_add(kmer, 1);
+        }
+        Ok(())
+    }
+
     /// Adds a kmer and its count to the KmerCounts object.
-    pub fn insert(&mut self, kmer: &u64, count: &u64) {
+    pub fn insert(&mut self, kmer: &u64, count: &u32) {
         self.kmers.insert_or_add(*kmer, *count);
     }
 
@@ -150,33 +159,33 @@ impl KmerCounts {
         for (kmer, new_count) in other.iter() {
             let old_count = self.kmers.get_count(*kmer);
             self.kmers.insert_or_add(*kmer, *new_count);
-            histo.move_count(old_count, old_count + *new_count);
+            histo.move_count(old_count as u64, old_count as u64 + *new_count as u64);
         }
         Ok(())
     }
 
     /// Get the count of the canonical form of a kmer (min of forward and revcomp).
-    pub fn get_canonical_count(&self, kmer: &u64) -> u64 {
+    pub fn get_canonical_count(&self, kmer: &u64) -> u32 {
         let revcomp = revcomp_kmer(kmer, &self.k);
         let canonical = if *kmer < revcomp { *kmer } else { revcomp };
         self.kmers.get_count(canonical)
     }
 
     #[allow(dead_code)]
-    pub fn get(&self, kmer: &u64) -> Option<&u64> {
+    pub fn get(&self, kmer: &u64) -> Option<&u32> {
         self.kmers.get_value(*kmer)
     }
 
     /// Look up a kmer by checking both orientations (forward and reverse complement).
     /// Returns the count if found in either orientation, None if absent.
-    pub fn get_canonical(&self, kmer: &u64) -> Option<&u64> {
+    pub fn get_canonical(&self, kmer: &u64) -> Option<&u32> {
         self.kmers
             .get_value(*kmer)
             .or_else(|| self.kmers.get_value(revcomp_kmer(kmer, &self.k)))
     }
 
     #[allow(dead_code)]
-    pub fn get_count(&self, kmer: &u64) -> u64 {
+    pub fn get_count(&self, kmer: &u64) -> u32 {
         self.kmers.get_count(*kmer)
     }
 
@@ -186,11 +195,11 @@ impl KmerCounts {
     }
 
     #[allow(dead_code)]
-    pub fn remove_low_count_kmers(&mut self, min_count: &u64) {
+    pub fn remove_low_count_kmers(&mut self, min_count: &u32) {
         self.kmers.retain_above(*min_count);
     }
 
-    pub fn iter(&self) -> impl Iterator<Item = (&u64, &u64)> {
+    pub fn iter(&self) -> impl Iterator<Item = (&u64, &u32)> {
         self.kmers.iter()
     }
 
@@ -203,15 +212,16 @@ impl KmerCounts {
         self.k
     }
 
+    /// Total count of all kmers (sum of all counts). Returns u64 to avoid overflow.
     pub fn get_n_kmers(&self) -> u64 {
-        self.kmers.values().sum()
+        self.kmers.values().map(|&v| v as u64).sum()
     }
 
     pub fn get_n_unique_kmers(&self) -> u64 {
         self.kmers.len() as u64
     }
 
-    pub fn counts(&self) -> Vec<u64> {
+    pub fn counts(&self) -> Vec<u32> {
         self.kmers.values().copied().collect()
     }
 
@@ -219,7 +229,7 @@ impl KmerCounts {
         self.kmers.keys().copied().collect()
     }
 
-    pub fn get_max_count(&self) -> u64 {
+    pub fn get_max_count(&self) -> u32 {
         *self.kmers.values().max().unwrap_or(&0)
     }
 
@@ -229,7 +239,7 @@ impl KmerCounts {
 
     /// Create a filtered view of this KmerCounts that lazily excludes entries
     /// below `min_count`. No data is copied — lookups check the threshold on the fly.
-    pub fn filtered_view(&self, min_count: u64) -> FilteredKmerCounts<'_> {
+    pub fn filtered_view(&self, min_count: u32) -> FilteredKmerCounts<'_> {
         FilteredKmerCounts {
             inner: self,
             min_count,
@@ -241,7 +251,7 @@ impl KmerCounts {
 /// No data is copied — the threshold is checked at lookup time.
 pub struct FilteredKmerCounts<'a> {
     inner: &'a KmerCounts,
-    min_count: u64,
+    min_count: u32,
 }
 
 impl<'a> FilteredKmerCounts<'a> {
@@ -251,7 +261,7 @@ impl<'a> FilteredKmerCounts<'a> {
 
     /// Look up a kmer by checking both orientations, returning the count
     /// only if it meets the minimum threshold.
-    pub fn get_canonical(&self, kmer: &u64) -> Option<u64> {
+    pub fn get_canonical(&self, kmer: &u64) -> Option<u32> {
         self.inner.get_canonical(kmer).and_then(|&count| {
             if count >= self.min_count {
                 Some(count)
@@ -262,7 +272,7 @@ impl<'a> FilteredKmerCounts<'a> {
     }
 
     /// Get the count of the canonical form of a kmer, returning 0 if below threshold.
-    pub fn get_canonical_count(&self, kmer: &u64) -> u64 {
+    pub fn get_canonical_count(&self, kmer: &u64) -> u32 {
         let count = self.inner.get_canonical_count(kmer);
         if count >= self.min_count { count } else { 0 }
     }
@@ -270,7 +280,7 @@ impl<'a> FilteredKmerCounts<'a> {
     /// Iterate over all entries, including those below threshold.
     /// Callers that need filtering should check counts themselves
     /// (as find_oligos_in_kmers already does).
-    pub fn iter(&self) -> impl Iterator<Item = (&u64, &u64)> {
+    pub fn iter(&self) -> impl Iterator<Item = (&u64, &u32)> {
         self.inner.iter()
     }
 }

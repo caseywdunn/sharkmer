@@ -163,7 +163,7 @@ fn validate_fastq_record(
 pub(crate) struct FastqReadState {
     pub(crate) chunks: Vec<kmer::Chunk>,
     pub(crate) chunk_index: usize,
-    pub(crate) reads: Vec<kmer::Read>,
+    pub(crate) seqs: Vec<String>,
     pub(crate) n_reads_read: u64,
     pub(crate) n_bases_read: u64,
 }
@@ -237,18 +237,18 @@ fn read_fastq<R: BufRead>(
 
         // Process the sequence
         state.n_bases_read += sequence.len() as u64;
-        let new_reads = kmer::seq_to_reads(&sequence)?;
-        state.reads.extend(new_reads);
+        state.seqs.push(sequence);
         state.n_reads_read += 1;
 
         // If we have read enough reads, ingest them into current chunk
         if state.n_reads_read % N_READS_PER_BATCH == 0 {
-            state.chunks[state.chunk_index].ingest_reads(&state.reads)?;
+            for seq in state.seqs.drain(..) {
+                state.chunks[state.chunk_index].ingest_seq(&seq)?;
+            }
             state.chunk_index += 1;
             if state.chunk_index == n_chunks {
                 state.chunk_index = 0;
             }
-            state.reads.clear();
             progress.set_position(state.n_reads_read);
         }
 
@@ -282,7 +282,7 @@ pub(crate) fn ingest_reads(
     let mut state = FastqReadState {
         chunks,
         chunk_index: 0,
-        reads: Vec::new(),
+        seqs: Vec::new(),
         n_reads_read: 0,
         n_bases_read: 0,
     };
@@ -406,9 +406,10 @@ pub(crate) fn ingest_reads(
 
     progress.finish_and_clear();
 
-    // Ingest any remaining reads
-    state.chunks[state.chunk_index].ingest_reads(&state.reads)?;
-    state.reads.clear();
+    // Ingest any remaining sequences
+    for seq in state.seqs.drain(..) {
+        state.chunks[state.chunk_index].ingest_seq(&seq)?;
+    }
 
     let mut n_reads_ingested: u64 = 0;
     let mut n_bases_ingested: u64 = 0;

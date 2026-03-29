@@ -10,7 +10,9 @@ pub mod histogram;
 pub use chunk::Chunk;
 pub use counting::{FilteredKmerCounts, KmerCounts};
 #[allow(unused_imports)]
-pub use encoding::{Read, kmer_to_seq, revcomp_kmer, seq_to_kmer, seq_to_reads};
+pub use encoding::{
+    Read, count_valid_bases, kmer_to_seq, kmers_from_ascii, revcomp_kmer, seq_to_kmer, seq_to_reads,
+};
 pub use histogram::Histogram;
 
 #[cfg(test)]
@@ -233,14 +235,63 @@ mod tests {
         assert_eq!(seq, "GCGAGCGA");
     }
 
+    /// Helper: get kmers via the old Read pipeline for comparison.
+    fn kmers_via_reads(seq: &str, k: usize) -> Vec<u64> {
+        let reads = seq_to_reads(seq).unwrap();
+        let mut all = Vec::new();
+        for read in &reads {
+            all.extend(read.get_kmers(&k).unwrap());
+        }
+        all
+    }
+
+    #[test]
+    fn test_kmers_from_ascii_matches_read_pipeline() {
+        let cases = vec![
+            "CGTAATGCGGCGA",
+            "CGTANATGCGGCGA",
+            "NCGTANATGCGGCGA",
+            "NCGTANATGCGGCGANN",
+            "NNCGTANATGCGGCGA",
+            "TANCACN",
+            "NTANCACNAGAAAATC",
+            "AAAA",
+            "ACGTACGTACGT",
+        ];
+
+        for k in [3, 5, 9, 11] {
+            for seq in &cases {
+                let expected = kmers_via_reads(seq, k);
+                let actual = kmers_from_ascii(seq, k).unwrap();
+                assert_eq!(actual, expected, "Mismatch for seq={} k={}", seq, k);
+            }
+        }
+    }
+
+    #[test]
+    fn test_kmers_from_ascii_short_sequences() {
+        // Sequence shorter than k should produce no kmers
+        assert_eq!(kmers_from_ascii("ACGT", 9).unwrap(), Vec::<u64>::new());
+        // Sequence of length k should produce exactly one kmer
+        assert_eq!(kmers_from_ascii("ACGTACGTA", 9).unwrap().len(), 1);
+    }
+
+    #[test]
+    fn test_count_valid_bases() {
+        assert_eq!(count_valid_bases("ACGTACGT"), 8);
+        assert_eq!(count_valid_bases("ACNGT"), 4);
+        assert_eq!(count_valid_bases("NNN"), 0);
+        assert_eq!(count_valid_bases(""), 0);
+    }
+
     #[test]
     fn test_histogram() {
         let mut kmers = KmerCounts::new(&11usize);
-        kmers.insert(&1, &5);
-        kmers.insert(&20, &5);
-        kmers.insert(&2, &7);
-        kmers.insert(&11, &11);
-        kmers.insert(&12, &12);
+        kmers.insert(&1, &5u32);
+        kmers.insert(&20, &5u32);
+        kmers.insert(&2, &7u32);
+        kmers.insert(&11, &11u32);
+        kmers.insert(&12, &12u32);
 
         let histo_max = 10;
         let histo = Histogram::from_kmer_counts(&kmers, &histo_max);

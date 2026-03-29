@@ -107,9 +107,9 @@ baseline at multiple coverage levels to measure the impact of later phases.
 Internal changes deferred from v2.0. No result changes expected — benchmark
 to confirm.
 
-- [ ] Extract kmers directly from ASCII sequence in a single pass, eliminating
+- [x] Extract kmers directly from ASCII sequence in a single pass, eliminating
   the `Read` struct encoding/decoding round-trip
-- [ ] Use `u32` for kmer counts instead of `u64` (~33% hash table memory
+- [x] Use `u32` for kmer counts instead of `u64` (~33% hash table memory
   savings). Saturate at u32::MAX.
 - [ ] Run benchmarks, confirm identical results with performance improvement
 

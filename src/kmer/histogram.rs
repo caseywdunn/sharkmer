@@ -29,10 +29,11 @@ impl Histogram {
     #[allow(dead_code)]
     pub fn ingest_kmer_counts(&mut self, kmer_counts: &KmerCounts) {
         for (_, count) in kmer_counts.iter() {
-            if *count <= self.histo_max {
-                self.histo[*count as usize] += 1;
+            let count = *count as u64;
+            if count <= self.histo_max {
+                self.histo[count as usize] += 1;
             } else {
-                let counter = self.histo_large.entry(*count).or_insert(0);
+                let counter = self.histo_large.entry(count).or_insert(0);
                 *counter += 1;
             }
         }

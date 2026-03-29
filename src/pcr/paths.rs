@@ -79,7 +79,7 @@ pub(super) fn generate_sequences_from_paths(
 
     for path in all_paths.into_iter() {
         let mut sequence = String::new();
-        let mut edge_counts: Vec<u64> = Vec::new();
+        let mut edge_counts: Vec<u64> = Vec::new(); // u64 for compute_mean/median compatibility
         let mut parent_node: NodeIndex = NodeIndex::new(0);
         for node in path.iter() {
             let node_data = graph
@@ -100,7 +100,7 @@ pub(super) fn generate_sequences_from_paths(
                     .find_edge(parent_node, *node)
                     .context("Edge not found between path nodes")?;
                 let edge_data = graph.edge_weight(edge).context("Edge weight not found")?;
-                edge_counts.push(edge_data.count);
+                edge_counts.push(edge_data.count as u64);
                 parent_node = *node;
             }
         }
@@ -144,7 +144,7 @@ pub(super) fn generate_sequences_from_paths(
         let record = fasta::Record::with_attrs(&id, Some(&desc), sequence.as_bytes());
         assembly_records.push(AssemblyRecord {
             fasta_record: record,
-            kmer_min_count: *count_min,
+            kmer_min_count: *count_min as u32,
         });
     }
 

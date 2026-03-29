@@ -198,7 +198,7 @@ pub(super) fn get_backward_edge_counts(
     graph: &StableDiGraph<DBNode, DBEdge>,
     focal_node: NodeIndex,
     depth: usize,
-) -> Vec<u64> {
+) -> Vec<u32> {
     let mut edge_counts = Vec::new();
     let mut current_node = focal_node;
     let mut current_depth = 0;
@@ -379,7 +379,7 @@ pub(super) fn extend_graph(
     seed_graph: &StableDiGraph<DBNode, DBEdge>,
     seed_node_lookup: &HashMap<u64, NodeIndex>,
     kmer_counts: &FilteredKmerCounts,
-    min_count: &u64,
+    min_count: &u32,
     params: &PCRParams,
 ) -> Result<StableDiGraph<DBNode, DBEdge>> {
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
@@ -629,10 +629,10 @@ pub(super) fn extend_graph(
 }
 
 fn get_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64> {
-    let mut counts: Vec<u64> = Vec::new();
-    for edge in graph.edge_indices() {
-        counts.push(graph[edge].count);
-    }
+    let counts: Vec<u64> = graph
+        .edge_indices()
+        .map(|e| graph[e].count as u64)
+        .collect();
 
     if counts.is_empty() {
         return None;
@@ -682,10 +682,10 @@ pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     );
 
     // Print the mean, median, and max count of edges
-    let mut counts: Vec<u64> = Vec::new();
-    for edge in graph.edge_indices() {
-        counts.push(graph[edge].count);
-    }
+    let counts: Vec<u64> = graph
+        .edge_indices()
+        .map(|e| graph[e].count as u64)
+        .collect();
 
     if counts.is_empty() {
         debug!(

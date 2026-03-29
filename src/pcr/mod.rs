@@ -34,10 +34,10 @@ mod pruning;
 
 /// The multiplier for establishing when a kmer is considered to have high coverage,
 /// relative to the min_count threshold. It is then used to also adjust the threshold.
-const COVERAGE_MULTIPLIER: u64 = 2;
+const COVERAGE_MULTIPLIER: u32 = 2;
 
 /// A multiplier for adjusting the threshold as it is applied.
-const COVERAGE_STEPS: u64 = 4;
+const COVERAGE_STEPS: u32 = 4;
 
 /// The maximum number of kmers containing the forward or reverse primers to maintain,
 /// with only those with the highest count being retained
@@ -48,7 +48,7 @@ pub const DEFAULT_DEDUP_EDIT_THRESHOLD: u32 = 10;
 
 struct AssemblyRecord {
     fasta_record: fasta::Record,
-    kmer_min_count: u64,
+    kmer_min_count: u32,
 }
 
 // Create a structure to hold a kmer representing an oligo up to 32 nucleotides long in the
@@ -77,7 +77,7 @@ pub struct DBNode {
 #[derive(Debug, Clone)]
 pub struct DBEdge {
     pub _kmer: u64, // kmer that contains overlap between sub_kmers
-    pub count: u64, // Number of times this kmer was observed
+    pub count: u32, // Number of times this kmer was observed
 }
 
 #[derive(Clone, Debug, serde::Deserialize)]
@@ -90,7 +90,7 @@ pub struct PCRParams {
     pub max_length: usize,
     pub gene_name: String,
     #[serde(default = "default_min_count")]
-    pub min_count: u64,
+    pub min_count: u32,
     #[serde(default = "default_mismatches")]
     pub mismatches: usize,
     #[serde(default = "default_trim")]
@@ -111,7 +111,7 @@ pub struct PCRParams {
 fn default_max_length() -> usize {
     10000
 }
-fn default_min_count() -> u64 {
+fn default_min_count() -> u32 {
     2
 }
 fn default_mismatches() -> usize {
@@ -234,9 +234,9 @@ pub fn validate_pcr_params(params: &PCRParams) -> Vec<(String, String)> {
 
 /// Compute a sequence of coverage thresholds for graph extension, stepping down
 /// from a high threshold (derived from observed primer coverage) to `min_count`.
-fn compute_coverage_thresholds(primer_count: u64, min_count: u64) -> Vec<u64> {
+fn compute_coverage_thresholds(primer_count: u32, min_count: u32) -> Vec<u32> {
     let coverage_high_threshold = primer_count / COVERAGE_MULTIPLIER;
-    let mut thresholds: Vec<u64> = Vec::new();
+    let mut thresholds: Vec<u32> = Vec::new();
 
     if coverage_high_threshold <= min_count {
         thresholds.push(min_count);
@@ -298,7 +298,7 @@ pub fn do_pcr(
     let mut amplicon_index: usize = 0;
 
     // Sort by kmer value for deterministic output
-    let mut sorted_forward: Vec<(u64, u64)> =
+    let mut sorted_forward: Vec<(u64, u32)> =
         forward_primer_kmers.iter().map(|(&k, &v)| (k, v)).collect();
     sorted_forward.sort();
     for (kmer, count) in sorted_forward.iter() {
@@ -480,7 +480,7 @@ pub fn do_pcr(
             max_forward_count, max_reverse_count
         );
 
-        let count_threshold = 5;
+        let count_threshold: u32 = 5;
         if (max_forward_count < count_threshold) || (max_reverse_count < count_threshold) {
             gene_info!(
                 params.gene_name,

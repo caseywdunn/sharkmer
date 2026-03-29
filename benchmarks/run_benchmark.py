@@ -132,9 +132,10 @@ def find_sample_data(sample_name, sample_config):
     return all_fastq_paths
 
 
-def run_sharkmer(sample_name, fastq_paths, arguments, max_reads, threads=THREADS):
+def run_sharkmer(sample_name, fastq_paths, arguments, max_reads, output_dir,
+                 threads=THREADS):
     """Run sharkmer and return wall time in seconds."""
-    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    output_dir.mkdir(parents=True, exist_ok=True)
 
     k_reads = max_reads // 1000
     sample_prefix = f"{sample_name}_{k_reads}k"
@@ -145,7 +146,7 @@ def run_sharkmer(sample_name, fastq_paths, arguments, max_reads, threads=THREADS
         "-t", str(threads),
         "--max-reads", str(max_reads),
         "--dump-graph",
-        "-o", str(OUTPUT_DIR) + "/",
+        "-o", str(output_dir) + "/",
         "-s", sample_prefix,
     ]
 
@@ -168,7 +169,7 @@ def run_sharkmer(sample_name, fastq_paths, arguments, max_reads, threads=THREADS
         return None, wall_time
 
     # Save log
-    log_path = OUTPUT_DIR / f"{sample_prefix}.log"
+    log_path = output_dir / f"{sample_prefix}.log"
     with open(log_path, "w") as f:
         f.write(result.stdout)
         f.write(result.stderr)
@@ -193,10 +194,10 @@ def parse_stats_file(stats_path):
     return stats
 
 
-def parse_fasta_products(sample_prefix):
+def parse_fasta_products(sample_prefix, output_dir):
     """Find and parse all FASTA output files for a sample."""
     products = []
-    pattern = str(OUTPUT_DIR / f"{sample_prefix}_*.fasta")
+    pattern = str(output_dir / f"{sample_prefix}_*.fasta")
     for fasta_path in sorted(glob.glob(pattern)):
         gene_name = Path(fasta_path).stem.replace(f"{sample_prefix}_", "")
         sequences = []
@@ -234,17 +235,18 @@ def parse_fasta_products(sample_prefix):
     return products
 
 
-def collect_sample_result(sample_name, sample_config, sample_prefix, wall_time):
+def collect_sample_result(sample_name, sample_config, sample_prefix, wall_time,
+                          output_dir):
     """Collect all results for a single sample."""
     # Try YAML stats first (v2.0+), fall back to old TSV format
-    stats_yaml_path = OUTPUT_DIR / f"{sample_prefix}.stats.yaml"
-    stats_path = OUTPUT_DIR / f"{sample_prefix}.stats"
+    stats_yaml_path = output_dir / f"{sample_prefix}.stats.yaml"
+    stats_path = output_dir / f"{sample_prefix}.stats"
     if stats_yaml_path.exists():
         with open(stats_yaml_path) as f:
             stats = yaml.safe_load(f) or {}
     else:
         stats = parse_stats_file(stats_path)
-    products = parse_fasta_products(sample_prefix)
+    products = parse_fasta_products(sample_prefix, output_dir)
 
     # Determine panel from arguments
     arguments = sample_config.get("arguments", "")
@@ -291,10 +293,16 @@ def run_benchmark(samples_to_run=None, threads=THREADS, max_reads_override=None,
     git_commit = get_git_commit()
     machine_info = get_machine_info()
 
+    # Create a timestamped output subdirectory for this run
+    run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    run_output_dir = OUTPUT_DIR / run_timestamp
+    run_output_dir.mkdir(parents=True, exist_ok=True)
+
     print(f"sharkmer version: {sharkmer_version}")
     print(f"git commit: {git_commit}")
     print(f"machine: {machine_info}")
     print(f"samples: {len(samples_to_run)}")
+    print(f"output: {run_output_dir}")
     print()
 
     results = []
@@ -323,7 +331,8 @@ def run_benchmark(samples_to_run=None, threads=THREADS, max_reads_override=None,
             # Run sharkmer
             arguments = sample_config.get("arguments", "")
             sample_prefix, wall_time = run_sharkmer(
-                sample_name, fastq_paths, arguments, max_reads, threads=threads
+                sample_name, fastq_paths, arguments, max_reads,
+                run_output_dir, threads=threads
             )
             if sample_prefix is None:
                 print(f"  FAILED, skipping result collection")
@@ -337,7 +346,8 @@ def run_benchmark(samples_to_run=None, threads=THREADS, max_reads_override=None,
 
             # Collect results
             sample_result = collect_sample_result(
-                sample_name, sample_config, sample_prefix, wall_time
+                sample_name, sample_config, sample_prefix, wall_time,
+                run_output_dir
             )
             sample_result["max_reads"] = max_reads
             results.append(sample_result)

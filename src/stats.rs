@@ -48,7 +48,7 @@ pub(crate) fn run_pcr(
     pcr_runs: &[pcr::PCRParams],
     sample: &str,
     directory: &str,
-    min_kmer_count: u64,
+    min_kmer_count: u32,
     dump_graph: bool,
     show_progress: bool,
 ) -> Result<Vec<PcrGeneResult>> {

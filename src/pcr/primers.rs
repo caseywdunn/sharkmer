@@ -187,7 +187,7 @@ fn find_oligos_in_kmers(
     oligos: &[Oligo],
     kmers: &FilteredKmerCounts,
     dir: &PrimerDirection,
-    min_count: &u64,
+    min_count: &u32,
 ) -> KmerCounts {
     // Assume all oligos have the same length
     let oligo_length = oligos[0].length;
@@ -350,7 +350,7 @@ pub(super) fn get_kmers_from_primers(
     primer_variants: &HashSet<String>,
     kmer_counts: &FilteredKmerCounts,
     dir: PrimerDirection,
-    min_count: &u64,
+    min_count: &u32,
 ) -> Result<KmerCounts> {
     // Get the kmers that contain the primers
     let mut oligos: Vec<Oligo> = Vec::new();
@@ -370,7 +370,7 @@ pub(super) fn filter_primer_kmers(matches: KmerCounts) -> KmerCounts {
         return matches;
     }
 
-    let mut counts: Vec<u64> = matches.counts();
+    let mut counts: Vec<u32> = matches.counts();
 
     counts.sort();
     counts.reverse();
