@@ -92,6 +92,34 @@ def check_blastn_available():
         return False
 
 
+def verify_local_blast_db(db_path):
+    """Verify that a local BLAST database is usable by running a test query.
+
+    Returns True if the database works, False otherwise.
+    """
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".fasta", delete=False) as f:
+        f.write(">test\nATCGATCGATCGATCGATCGATCGATCG\n")
+        query_path = f.name
+
+    try:
+        result = subprocess.run(
+            [
+                "blastn",
+                "-db", db_path,
+                "-query", query_path,
+                "-evalue", "10",
+                "-max_target_seqs", "1",
+                "-outfmt", "6",
+            ],
+            capture_output=True, text=True, timeout=30
+        )
+        return result.returncode == 0
+    except (subprocess.TimeoutExpired, Exception):
+        return False
+    finally:
+        os.unlink(query_path)
+
+
 def blast_sequence_local(sequence, db_path):
     """Run blastn locally against a database. Returns parsed hit or None."""
     with tempfile.NamedTemporaryFile(mode="w", suffix=".fasta", delete=False) as f:
@@ -286,6 +314,13 @@ def validate_results(result_path, dry_run=False):
     local_db = None
     if check_blastn_available():
         local_db = find_local_blast_db()
+        if local_db:
+            print(f"Found local BLAST database: {local_db}")
+            if verify_local_blast_db(local_db):
+                print("  Database verified OK")
+            else:
+                print("  Database verification failed — falling back to remote API")
+                local_db = None
 
     if local_db:
         mode = "local"
@@ -295,7 +330,7 @@ def validate_results(result_path, dry_run=False):
         if not check_blastn_available():
             print("blastn not found — using NCBI remote API")
         else:
-            print("No local database found in /db/ — using NCBI remote API")
+            print("No usable local database — using NCBI remote API")
 
     email = None
     if mode == "remote":

@@ -29,7 +29,8 @@ sharkmer/                  # Repo root
 ├── meta.yaml              # Bioconda recipe
 ├── build.sh               # Bioconda build script
 ├── src/
-│   ├── main.rs            # Entry point, main() orchestration (~115 lines)
+│   ├── main.rs            # Entry point, main() orchestration (~145 lines)
+│   ├── cache.rs           # Read cache for remote downloads (SHA-256 verified)
 │   ├── cli.rs             # Args struct, CLI parsing, validation, early exits
 │   ├── io.rs              # FASTQ reading, ENA streaming, FASTA writing
 │   ├── format.rs          # Number/byte/duration formatting utilities
@@ -83,6 +84,23 @@ ln -sf ../../scripts/pre-commit .git/hooks/pre-commit
 
 This prevents commits that would fail CI. The hook runs fmt, clippy
 (`-D warnings`), and tests before every commit.
+
+### Running benchmarks
+
+Benchmarks require the `sharkmer-bench` conda environment, which provides
+`blastn` for BLAST validation of amplicons:
+
+```bash
+conda env create -f benchmarks/environment.yaml   # first time only
+conda activate sharkmer-bench
+python benchmarks/run_benchmark.py --samples Porites_lutea --max-reads 1000000 --no-blast
+python benchmarks/run_benchmark.py                # all samples, with BLAST
+```
+
+Benchmarks use local FASTQ files from `benchmarks/data/` when present.
+If local files are absent, they fall back to `--ena` with read caching
+(cached in `benchmarks/data/cache/`). A local BLAST database in `/db/`
+is used if `blastn` is available; otherwise falls back to NCBI remote API.
 
 ## Feature flags
 

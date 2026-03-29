@@ -163,10 +163,9 @@ additional archives later.
 - [x] Log cache activity at info level: cache location, cache hit/miss per
   file, download vs reuse
 - [ ] Run benchmarks, confirm no result changes
-- [x] Switch benchmark suite to use `--ena` with cached reads instead of
-  pre-downloaded reads in `data/` directory. Benchmarks benefit from
-  caching automatically — first run downloads, subsequent runs use cache.
-  Cache stored in `benchmarks/data/cache/`.
+- [x] Switch benchmark suite to support `--ena` with cached reads as
+  fallback when local data files are absent. Local files in `data/` are
+  preferred when present (faster). Cache stored in `benchmarks/data/cache/`.
 
 ## Phase 3 — Graph traversal
 

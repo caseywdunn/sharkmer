@@ -36,6 +36,7 @@ from summarize import summarize
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = REPO_ROOT / "benchmarks" / "config.yaml"
 SHARKMER_BIN = REPO_ROOT / "target" / "release" / "sharkmer"
+DATA_DIR = REPO_ROOT / "benchmarks" / "data"
 CACHE_DIR = REPO_ROOT / "benchmarks" / "data" / "cache"
 OUTPUT_DIR = REPO_ROOT / "benchmarks" / "output"
 RESULTS_DIR = REPO_ROOT / "benchmarks" / "results"
@@ -105,6 +106,69 @@ def get_machine_info():
     except Exception:
         info["total_ram_gb"] = None
     return info
+
+
+def find_sample_data(sample_config):
+    """Find local data files for a sample.
+
+    Data files are named {accession}.fastq in benchmarks/data/.
+    Returns a list of FASTQ file paths, or None if any are missing.
+    """
+    accessions = sample_config.get("reads", [])
+    if not accessions:
+        return None
+
+    all_fastq_paths = []
+    for accession in accessions:
+        fastq_path = DATA_DIR / f"{accession}.fastq"
+        if fastq_path.exists():
+            all_fastq_paths.append(fastq_path)
+        else:
+            return None  # At least one file missing
+
+    return all_fastq_paths
+
+
+def run_sharkmer_local(sample_name, fastq_paths, arguments, max_reads,
+                       output_dir, threads=THREADS):
+    """Run sharkmer with local files and return wall time in seconds."""
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    k_reads = max_reads // 1000
+    sample_prefix = f"{sample_name}_{k_reads}k"
+
+    cmd = [
+        str(SHARKMER_BIN),
+        "-k", str(K),
+        "-t", str(threads),
+        "--max-reads", str(max_reads),
+        "--dump-graph",
+        "-o", str(output_dir) + "/",
+        "-s", sample_prefix,
+    ]
+
+    if arguments:
+        cmd.extend(arguments.split())
+
+    for fq in fastq_paths:
+        cmd.append(str(fq))
+
+    print(f"  Running: {' '.join(cmd)}")
+
+    start_time = time.time()
+    result = subprocess.run(cmd, capture_output=True, text=True)
+    wall_time = time.time() - start_time
+
+    if result.returncode != 0:
+        print(f"  ERROR running sharkmer: {result.stderr[-500:]}")
+        return None, wall_time
+
+    log_path = output_dir / f"{sample_prefix}.log"
+    with open(log_path, "w") as f:
+        f.write(result.stdout)
+        f.write(result.stderr)
+
+    return sample_prefix, wall_time
 
 
 def run_sharkmer_ena(sample_name, accession, arguments, max_reads, output_dir,
@@ -290,6 +354,13 @@ def run_benchmark(samples_to_run=None, threads=THREADS, max_reads_override=None,
             print(f"  WARNING: No reads defined for {sample_name}, skipping")
             continue
 
+        # Check for local data files; fall back to --ena with caching
+        fastq_paths = find_sample_data(sample_config)
+        if fastq_paths:
+            print(f"  Using local data files for {sample_name}")
+        else:
+            print(f"  No local data for {sample_name}, will use --ena with caching")
+
         # Determine sweep levels
         if max_reads_override is not None:
             sample_reads = sorted(max_reads_override, reverse=True)
@@ -300,12 +371,18 @@ def run_benchmark(samples_to_run=None, threads=THREADS, max_reads_override=None,
             k_reads = max_reads // 1000
             print(f"=== {sample_name} ({k_reads}k reads) ===")
 
-            # Run sharkmer with --ena and read caching
+            # Run sharkmer: use local files if available, otherwise --ena
             arguments = sample_config.get("arguments", "")
-            sample_prefix, wall_time = run_sharkmer_ena(
-                sample_name, accessions[0], arguments, max_reads,
-                run_output_dir, threads=threads
-            )
+            if fastq_paths:
+                sample_prefix, wall_time = run_sharkmer_local(
+                    sample_name, fastq_paths, arguments, max_reads,
+                    run_output_dir, threads=threads
+                )
+            else:
+                sample_prefix, wall_time = run_sharkmer_ena(
+                    sample_name, accessions[0], arguments, max_reads,
+                    run_output_dir, threads=threads
+                )
             if sample_prefix is None:
                 print(f"  FAILED, skipping result collection")
                 results.append({
