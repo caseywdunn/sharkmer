@@ -128,9 +128,17 @@ DBNode {
 }
 
 DBEdge {
-    _kmer: u64,         the full kmer connecting two nodes
-    count: u32,         observed frequency in the data
+    _kmer: u64,           the full kmer connecting two nodes
+    count: u32,           observed frequency in the data
+    coverage_ratio: f64,  count / global median (annotated post-pruning)
 }
+
+PathScore {
+    median_count: f64,        robust central tendency of edge counts
+    coverage_cv: f64,         coefficient of variation across edge counts
+    max_coverage_ratio: f64,  highest edge coverage_ratio on the path
+}
+    composite() = median * cv_penalty * repeat_penalty
 
 Graph: petgraph::StableDiGraph<DBNode, DBEdge>
 ```
@@ -159,10 +167,10 @@ Graph: petgraph::StableDiGraph<DBNode, DBEdge>
               v
  +---------------------------+
  | 3. Seed graph             |   graph.rs: create_seed_graph()
- |    Forward primer kmers   |   Each forward kmer iterated separately
- |      -> start nodes       |   (one graph per forward primer kmer)
- |    Reverse primer kmers   |
- |      -> end nodes         |
+ |    All forward primer     |   Single graph per gene seeded with
+ |    kmers -> start nodes   |   all forward kmers simultaneously
+ |    All reverse primer     |
+ |    kmers -> end nodes     |
  +---------------------------+
               |
               v
@@ -172,35 +180,45 @@ Graph: petgraph::StableDiGraph<DBNode, DBEdge>
  |    node, find extending   |   Check kmer exists above threshold
  |    kmers in the data      |   Mark terminal if no extensions
  +---------------------------+
- |    Repeated with decreasing coverage thresholds
+ |    Extended incrementally across coverage threshold steps
  |    (high -> min_count, in COVERAGE_STEPS steps)
+ |    prepare_for_lower_threshold() resets terminal flags
+ |    between steps; only newly qualifying edges are added
  |
- |    Ballooning detection:
+ |    Coverage-ratio filtering:
  |      - Skip edges with count > 10x median
- |      - Pop high-degree subgraphs periodically
- |      - Terminate nodes in rapidly branching regions
  |      - Abandon if graph exceeds 50,000 nodes
+ |      - Break on first threshold that produces a product
               |
               v
  +---------------------------+
- | 5. Prune graph            |   pruning.rs
- |    pop_balloons()         |   Remove high-degree explosions
- |    remove_side_branches() |   Trim dead-end paths
- |    remove_orphan_nodes()  |   Delete disconnected components
+ | 5. Prune graph            |   pruning.rs (post-extension, on clone)
+ |  remove_low_coverage_tips |   Dead-end tips < k with count
+ |                           |     < 0.1x global median
+ |  reachability_pruning()   |   Bidirectional BFS from start/end
+ |                           |     nodes; remove unreachable nodes
+ +---------------------------+
+              |
+              v
+ +---------------------------+
+ | 5b. Annotate edges        |   graph.rs: annotate_coverage_ratios()
+ |    coverage_ratio =       |   count / global median per edge
+ |    count / global median  |   Feeds into path scoring
  +---------------------------+
               |
               v
  +---------------------------+
  | 6. Find paths             |   paths.rs: get_assembly_paths()
- |    All simple paths from  |   Max 20 paths per start-end pair
- |    start to end nodes     |   Respect min/max length constraints
+ |    Coverage-weighted DFS  |   Explores highest-count edges first
+ |    from start to end      |   Max 20 paths per start node
+ |    nodes                  |   Bounded revisitation: MAX_NODE_VISITS=2
  +---------------------------+
               |
               v
  +---------------------------+
  | 7. Generate sequences     |   paths.rs: generate_sequences_from_paths()
- |    Chain node sub_kmers   |   Record edge count statistics
- |    Deduplicate by edit    |   Levenshtein threshold (default 10)
+ |    Chain node sub_kmers   |   PathScore: median, CV, coverage ratio
+ |    Deduplicate by edit    |   Greedy clustering (O(N) memory)
  |    distance               |   Max 20 amplicons per gene
  +---------------------------+
               |
@@ -210,9 +228,13 @@ Graph: petgraph::StableDiGraph<DBNode, DBEdge>
 
 #### Coverage threshold stepping
 
-The graph is extended multiple times with decreasing minimum kmer count
+The graph is extended incrementally with decreasing minimum kmer count
 thresholds. Starting from `primer_count / 2` and stepping down to
-`min_count` in 4 steps. If a complete path (start -> end) is found at a
+`min_count` in 4 steps (`COVERAGE_STEPS`). Unlike earlier versions that
+rebuilt the graph from scratch at each threshold, Phase 3 extends the
+existing graph: `prepare_for_lower_threshold()` resets terminal flags on
+nodes that may gain new successors, then `extend_graph()` adds only
+newly qualifying edges. If a complete path (start -> end) is found at a
 higher threshold, the search stops. This allows clean assembly at high
 coverage before falling back to noisier low-coverage extension.
 
@@ -256,6 +278,22 @@ Small utility module: `format_count()`, `format_bytes()`,
   iteration. FASTA files are written sequentially (not in parallel).
   Products are re-numbered after deduplication.
 
-- **Separate graphs per forward primer kmer**: Currently, each forward
-  primer kmer seeds its own independent graph. Phase 3 (#94) plans to
-  unify these into a single graph per gene.
+- **Single graph per gene**: All forward primer kmers seed a single
+  graph simultaneously (Phase 3, #94). This avoids redundant graph
+  construction and ensures shared structure is discovered once.
+
+- **Annotation-only model**: Graph structure (bubbles, variants) is
+  preserved through pruning. Only dead-end tips with low coverage and
+  unreachable nodes are removed. Path selection uses coverage-based
+  scoring (`PathScore` composite) rather than destructive pruning to
+  choose the best sequences. This preserves information for future
+  read-threading phases.
+
+- **Coverage-weighted path finding**: DFS explores highest-count edges
+  first, so the first paths found are highest quality. Bounded
+  revisitation (`MAX_NODE_VISITS = 2`) handles tandem repeats without
+  exponential blowup. Replaces exhaustive `all_simple_paths` enumeration.
+
+- **O(N) deduplication**: Greedy clustering computes bounded Levenshtein
+  distance on-the-fly against kept records only, replacing the previous
+  O(N^2) pairwise distance matrix.

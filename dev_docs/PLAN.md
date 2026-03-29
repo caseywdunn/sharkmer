@@ -280,7 +280,6 @@ Read threading behavior by input source:
   will be fetched from server twice
 - **stdin**: implies `--no-read-threading`, log info message explaining why
 
-- [ ] Run benchmarks to snapshot state before backend changes
 - [ ] #96 Two-pass architecture: Pass 1 counts kmers (as now), Pass 2
   re-reads FASTQ for threading. `--no-read-threading` flag to skip second
   pass. File input seeks back; remote input reads from cache (Phase 2);
@@ -293,7 +292,6 @@ Read threading behavior by input source:
   if odd, round up to next even). Not implicit for `--ena` since some
   accessions are single-end. Without `--paired`, multiple files are read
   sequentially as in v2.0 (no pairing assumed).
-- [ ] Run benchmarks, confirm no result changes from backend refactoring alone
 
 ## Phase 5 — Read threading
 
@@ -313,7 +311,6 @@ for the annotation-only model.
   point (in-degree > 1 or out-degree > 1), record (incoming_edge,
   outgoing_edge) link with count. This captures read-scale haplotype
   structure.
-- [ ] Run benchmarks
 
 ## Phase 6 — Threading-dependent path selection
 
@@ -325,14 +322,20 @@ pluggable interface designed in Phase 3 (#90). No graph structure edits.
 - [ ] #100 Read-aware bubble resolution: use branch-point phasing to
   determine which bubble arms connect to which — resolves cases where
   kmer coverage alone is ambiguous
-- [ ] #101 Paired-end path constraints: use insert size distribution to
-  link branches further apart than a single read can span (longer-range
-  phasing)
+- [ ] #101 Paired-end phasing: when both mates of a pair map to the same
+  amplicon graph in correct orientation (forward on one strand, reverse
+  on the other), use the pair as a phasing link across the spanned
+  region. Insert size is not known a priori and amplicons are only on
+  the kb scale, so rather than estimating insert size distribution,
+  simply require both mates to map to the same amplicon in valid
+  orientation. This provides longer-range phasing than single reads
+  without needing insert size calibration.
 - [ ] Run benchmarks, compare to Phase 3 and Phase 5 results
 
 ## Phase 7 — Cleanup and validation
 
-- [ ] Final benchmark comparison across all phases
+- [ ] Final benchmark comparison across all phases (skip if already run
+  at end of Phase 6)
 - [ ] Update integration tests for v3.0 behavior
 - [ ] Update documentation:
   - [ ] README.md (user-facing changes, new flags, updated examples)
