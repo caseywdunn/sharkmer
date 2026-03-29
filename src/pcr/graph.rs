@@ -32,28 +32,21 @@ const HIGH_COVERAGE_RATIO_THRESHOLD: f64 = 10.0;
 
 // A mask that can be used to isolate the last k-1 nucleotides of a kmer
 pub(super) fn get_suffix_mask(k: &usize) -> u64 {
-    let suffix_mask: u64 = (1 << (2 * (*k - 1))) - 1;
-    suffix_mask
+    (1 << (2 * (*k - 1))) - 1
 }
 
 pub fn n_nonterminal_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize {
-    let mut n_nonterminal_nodes = 0;
-    for node in graph.node_indices() {
-        if !graph[node].is_terminal {
-            n_nonterminal_nodes += 1;
-        }
-    }
-    n_nonterminal_nodes
+    graph
+        .node_indices()
+        .filter(|&node| !graph[node].is_terminal)
+        .count()
 }
 
 pub fn n_unvisited_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize {
-    let mut n = 0;
-    for node in graph.node_indices() {
-        if !graph[node].visited {
-            n += 1;
-        }
-    }
-    n
+    graph
+        .node_indices()
+        .filter(|&node| !graph[node].visited)
+        .count()
 }
 
 pub fn get_path_length(
@@ -105,23 +98,17 @@ pub fn get_dbedge(kmer: &u64, kmer_counts: &FilteredKmerCounts) -> DBEdge {
 }
 
 pub fn get_start_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
-    let mut nodes: Vec<NodeIndex> = Vec::new();
-    for node in graph.node_indices() {
-        if graph[node].is_start {
-            nodes.push(node)
-        }
-    }
-    nodes
+    graph
+        .node_indices()
+        .filter(|&node| graph[node].is_start)
+        .collect()
 }
 
 pub fn get_end_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
-    let mut nodes: Vec<NodeIndex> = Vec::new();
-    for node in graph.node_indices() {
-        if graph[node].is_end {
-            nodes.push(node)
-        }
-    }
-    nodes
+    graph
+        .node_indices()
+        .filter(|&node| graph[node].is_end)
+        .collect()
 }
 
 // Find the descendants of a node, each descendent no more than `depth` edges away
@@ -167,19 +154,14 @@ pub(super) fn get_backward_edge_counts(
     let mut current_depth = 0;
 
     while current_depth < depth {
-        let incoming_edges: Vec<_> = graph
+        if let Some(edge) = graph
             .edges_directed(current_node, Direction::Incoming)
-            .collect();
-
-        if incoming_edges.is_empty() {
-            // Stop if the current node has no incoming edges
-            break;
-        }
-
-        // Assuming there's only one incoming edge per node in this context
-        if let Some(edge) = incoming_edges.first() {
+            .next()
+        {
             edge_counts.push(edge.weight().count);
             current_node = edge.source();
+        } else {
+            break;
         }
 
         current_depth += 1;
@@ -564,10 +546,10 @@ pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     }
 
     // Print the mean, median, and max degree of all nodes
-    let mut degrees: Vec<usize> = Vec::new();
-    for node in graph.node_indices() {
-        degrees.push(graph.neighbors(node).count());
-    }
+    let degrees: Vec<usize> = graph
+        .node_indices()
+        .map(|node| graph.neighbors(node).count())
+        .collect();
 
     if degrees.is_empty() {
         debug!(
@@ -617,11 +599,10 @@ pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     );
 
     // Create a vector of n_descendants for each node given a depth of EXTENSION_EVALUATION_DEPTH
-    let mut n_descendants_vec: Vec<u64> = Vec::new();
-    for node in graph.node_indices() {
-        let n = descendants(graph, node, EXTENSION_EVALUATION_DEPTH).len();
-        n_descendants_vec.push(n as u64);
-    }
+    let n_descendants_vec: Vec<u64> = graph
+        .node_indices()
+        .map(|node| descendants(graph, node, EXTENSION_EVALUATION_DEPTH).len() as u64)
+        .collect();
 
     let max_n_descendants = n_descendants_vec
         .iter()

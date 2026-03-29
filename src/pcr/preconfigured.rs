@@ -100,7 +100,7 @@ fn get_preconfigured_panels() -> Vec<PanelFile> {
         }
     }
 
-    panels.sort_by_key(|panel| panel.name.clone());
+    panels.sort_by(|a, b| a.name.cmp(&b.name));
 
     panels
 }

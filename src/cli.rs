@@ -14,16 +14,16 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
 
     let split: Vec<&str> = pcr_string.split(',').collect();
 
-    let mut forward_seq = "".to_string();
-    let mut reverse_seq = "".to_string();
-    let mut gene_name = "".to_string();
+    let mut forward_seq = String::new();
+    let mut reverse_seq = String::new();
+    let mut gene_name = String::new();
     let mut max_length = 10000;
     let mut min_length = 0;
     let mut min_count = 2;
     let mut mismatches = 2;
     let mut trim = 15;
-    let mut citation = "".to_string();
-    let mut notes = "".to_string();
+    let mut citation = String::new();
+    let mut notes = String::new();
     let mut dedup_edit_threshold = pcr::DEFAULT_DEDUP_EDIT_THRESHOLD;
 
     for item in split.iter() {
@@ -501,15 +501,14 @@ pub(crate) fn collect_pcr_params(args: &Args) -> Result<Vec<pcr::PCRParams>> {
     }
 
     // Check that there are no duplicate gene names
-    let mut gene_names: Vec<String> = Vec::new();
+    let mut gene_names: std::collections::HashSet<String> = std::collections::HashSet::new();
     for pcr_params in pcr_runs.iter() {
         ensure!(
-            !gene_names.contains(&pcr_params.gene_name),
+            gene_names.insert(pcr_params.gene_name.clone()),
             "Duplicate gene name '{}' (from {})",
             pcr_params.gene_name,
             pcr_params.source
         );
-        gene_names.push(pcr_params.gene_name.clone());
     }
 
     Ok(pcr_runs)
@@ -629,18 +628,18 @@ pub(crate) fn validate_args(args: &Args, pcr_runs: &[pcr::PCRParams]) -> Result<
         }
 
         // Check for duplicate input files (after canonicalization)
-        let mut canonical_paths: Vec<PathBuf> = Vec::new();
+        let mut canonical_paths: std::collections::HashSet<PathBuf> =
+            std::collections::HashSet::new();
         for file_path in input_files.iter() {
             let canonical = file_path
                 .canonicalize()
                 .with_context(|| format!("Failed to resolve path: {}", file_path.display()))?;
-            if canonical_paths.contains(&canonical) {
+            if !canonical_paths.insert(canonical) {
                 warn!(
                     "Duplicate input file: {} (same as previous entry after path resolution)",
                     file_path.display()
                 );
             }
-            canonical_paths.push(canonical);
         }
     }
 

@@ -78,36 +78,32 @@ impl Histogram {
     }
 
     pub fn get_n_kmers(&self) -> u64 {
-        let mut sum: u64 = 0;
-        for i in 1..self.histo.len() {
-            sum += self.histo[i] * i as u64;
-        }
-
-        for (count, n_kmers) in self.histo_large.iter() {
-            sum += count * n_kmers;
-        }
-
-        sum
+        let small: u64 = self
+            .histo
+            .iter()
+            .enumerate()
+            .skip(1)
+            .map(|(i, &n)| n * i as u64)
+            .sum();
+        let large: u64 = self
+            .histo_large
+            .iter()
+            .map(|(count, n_kmers)| count * n_kmers)
+            .sum();
+        small + large
     }
 
     pub fn get_n_unique_kmers(&self) -> u64 {
-        let mut sum: u64 = 0;
-        for i in 1..self.histo.len() {
-            sum += self.histo[i];
-        }
-
-        for (_count, n_kmers) in self.histo_large.iter() {
-            sum += n_kmers;
-        }
-
-        sum
+        let small: u64 = self.histo.iter().skip(1).sum();
+        let large: u64 = self.histo_large.values().sum();
+        small + large
     }
 
     pub fn get_vector(&self) -> Result<Vec<u64>> {
         let mut histo_vec = self.histo.clone();
         let last = histo_vec.last_mut().context("Histogram vector is empty")?;
 
-        for (_, n_kmers) in self.histo_large.iter() {
+        for n_kmers in self.histo_large.values() {
             *last += n_kmers;
         }
 

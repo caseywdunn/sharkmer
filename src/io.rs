@@ -275,10 +275,7 @@ pub(crate) fn ingest_reads(
 
     // When chunks == 0, allocate 1 internal chunk for kmer storage (needed for sPCR)
     let n_chunks = if args.chunks == 0 { 1 } else { args.chunks };
-    let mut chunks: Vec<kmer::Chunk> = Vec::new();
-    for _ in 0..n_chunks {
-        chunks.push(Chunk::new(&k));
-    }
+    let chunks: Vec<kmer::Chunk> = (0..n_chunks).map(|_| Chunk::new(&k)).collect();
 
     let mut state = FastqReadState {
         chunks,
@@ -554,19 +551,22 @@ pub(crate) fn consolidate_and_histogram(
         writeln!(file, "{}", histo_comment).context("Failed to write histogram comment")?;
 
         // Header row
-        let mut header = "count".to_string();
-        for i in 1..=histos.len() {
-            header = format!("{}\tchunk_{}", header, i);
-        }
+        let header: String = std::iter::once("count".to_string())
+            .chain((1..=histos.len()).map(|i| format!("chunk_{}", i)))
+            .collect::<Vec<_>>()
+            .join("\t");
         writeln!(file, "{}", header).context("Failed to write histogram header")?;
 
-        // Data rows
+        // Data rows — precompute histogram vectors to avoid re-computing per row
+        let histo_vecs: Vec<Vec<u64>> = histos
+            .iter()
+            .map(kmer::Histogram::get_vector)
+            .collect::<Result<_>>()?;
         for i in 1..args.histo_max as usize + 2 {
-            let mut line = format!("{}", i);
-            for histo in histos.iter() {
-                let histo_vec = kmer::Histogram::get_vector(histo)?;
-                line = format!("{}\t{}", line, histo_vec[i]);
-            }
+            let line: String = std::iter::once(i.to_string())
+                .chain(histo_vecs.iter().map(|v| v[i].to_string()))
+                .collect::<Vec<_>>()
+                .join("\t");
             writeln!(file, "{}", line).context("Failed to write histogram data")?;
         }
 
