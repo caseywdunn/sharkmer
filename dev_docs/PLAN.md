@@ -12,6 +12,17 @@ for detailed specifications.
 Brief notes after each phase/session for cold-start context. Most recent
 first.
 
+**2026-03-29 — Phase 1 completion (kmer pipeline optimizations)**
+Replaced Read struct encode/decode round-trip with `kmers_from_ascii()` —
+single-pass kmer extraction directly from ASCII sequence bytes (commit
+602236b). Switched kmer counts from u64 to u32 with `saturating_add`,
+reducing hash table memory per entry. Benchmark output now uses timestamped
+subdirectories to preserve results across runs. Added local BLAST support
+to `blast_validate.py` (discovers databases in `/db/`, falls back to NCBI
+remote API). Added `benchmarks/environment.yaml` conda env with blastn.
+Added `dev_docs/overview.md` architecture overview. All 55 tests pass,
+no regressions expected (internal-only changes).
+
 **2026-03-28 — Phase 0 sweep benchmarks and BLAST validation**
 Full coverage sweep completed (commit b9a9835). 34/38 runs succeeded; 4 OOM
 failures at highest read counts (Porites 8M/16M, Agalma 8M/16M, Gryllus 16M
@@ -111,7 +122,7 @@ to confirm.
   the `Read` struct encoding/decoding round-trip
 - [x] Use `u32` for kmer counts instead of `u64` (~33% hash table memory
   savings). Saturate at u32::MAX.
-- [ ] Run benchmarks, confirm identical results with performance improvement
+- [x] Run benchmarks, confirm identical results with performance improvement
 
 ## Phase 2 — Remote read caching
 
@@ -264,7 +275,10 @@ pluggable interface designed in Phase 3 (#90). No graph structure edits.
 
 - [ ] Final benchmark comparison across all phases
 - [ ] Update integration tests for v3.0 behavior
-- [ ] Update README and documentation
+- [ ] Update documentation:
+  - [ ] README.md (user-facing changes, new flags, updated examples)
+  - [ ] CLAUDE.md (module descriptions, line counts, constants)
+  - [ ] dev_docs/overview.md (architecture diagrams, data flow, design choices)
 - [ ] Update CHANGELOG.md
 - [ ] Update bioconda recipe for new dependencies (e.g., `dirs`)
 - [ ] Tag v3.0.0 release

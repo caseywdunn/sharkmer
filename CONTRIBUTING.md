@@ -94,6 +94,7 @@ regression benchmarks have been run.
 Before preparing the release, run the full regression benchmark suite on `dev`
 and commit the results:
 
+    conda activate sharkmer-bench
     python benchmarks/run_benchmark.py
 
 Review the results in `benchmarks/results/` and compare against prior versions
@@ -162,7 +163,13 @@ A benchmark suite in `benchmarks/` runs sharkmer against 14 real-world SRA
 datasets across multiple primer panels. Run after each development phase or
 before a release to check for regressions.
 
-Requires Python 3 with `pyyaml` installed.
+Set up the benchmark conda environment (first time only):
+
+    conda env create -f benchmarks/environment.yaml
+
+Then activate it before running benchmarks:
+
+    conda activate sharkmer-bench
 
     # Run the full benchmark (builds sharkmer, downloads data if needed, runs all samples)
     python benchmarks/run_benchmark.py
@@ -181,6 +188,19 @@ Sample data (~1M reads each) is cached in `benchmarks/data/` and downloaded
 from ENA on first run. The download streams and truncates early, so it does
 not fetch full runs. Configuration (samples, panels, read counts) is in
 `benchmarks/config.yaml`.
+
+## Local BLAST database
+
+The devcontainer mounts `~/db/` (read-only) to `/db` inside the container.
+This directory must exist on the host machine — create it if it doesn't:
+
+    mkdir -p ~/db
+
+If you have a local BLAST database (e.g., NCBI `core_nt`), place it in
+`~/db/`. For example, `~/db/core_nt.83/` will be accessible at
+`/db/core_nt.83/` in the container. The benchmark BLAST validation will
+use a local database if found, and fall back to the NCBI remote API
+otherwise.
 
 ## Bioconda recipe
 

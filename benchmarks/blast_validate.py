@@ -2,21 +2,25 @@
 """
 Optional BLAST validation for sharkmer benchmark amplicons.
 
-Batch-submits all amplicon sequences from a benchmark result to NCBI BLAST,
-parses results, and annotates the benchmark YAML with validation data.
+Validates amplicon sequences against NCBI nucleotide databases. Uses a local
+BLAST database if one is found in /db/ (mounted from ~/db/ on the host),
+otherwise falls back to the NCBI remote BLAST API.
 
-Requires network access and takes a few minutes per run.
+Requires network access (for remote fallback) and takes a few minutes per run.
 
 Usage:
     python benchmarks/blast_validate.py benchmarks/results/RESULT.yaml
 
 The script adds a 'blast_hits' field to each product in the result file.
-Uses git config user.email for NCBI API identification.
+Uses git config user.email for NCBI API identification (remote only).
 """
 
 import argparse
+import glob
+import os
 import subprocess
 import sys
+import tempfile
 import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
@@ -30,6 +34,94 @@ BLAST_URL = "https://blast.ncbi.nlm.nih.gov/blast/Blast.cgi"
 E_VALUE_THRESHOLD = 1e-50
 POLL_INTERVAL = 30  # seconds between status checks
 MAX_WAIT = 600  # maximum seconds to wait for a single BLAST job
+
+# Local database search path
+LOCAL_DB_DIR = Path("/db")
+
+
+def find_local_blast_db():
+    """Discover a local nucleotide BLAST database in /db/.
+
+    Scans /db/ for subdirectories containing .nsq files (nucleotide sequence
+    data). Prefers databases with 'core_nt' in the name, then 'nt'.
+    Returns the database path (without extension) or None.
+    """
+    if not LOCAL_DB_DIR.is_dir():
+        return None
+
+    # Find all .nsq files (indicates a nucleotide BLAST database)
+    nsq_files = list(LOCAL_DB_DIR.rglob("*.nsq"))
+    if not nsq_files:
+        return None
+
+    # Extract unique database prefixes (strip .nsq or .NN.nsq)
+    db_prefixes = set()
+    for nsq in nsq_files:
+        name = nsq.name
+        # Handle multivolume: name.NN.nsq -> name
+        # Handle single volume: name.nsq -> name
+        stem = name
+        if stem.endswith(".nsq"):
+            stem = stem[:-4]
+        # Strip volume number if present (e.g., core_nt.83 -> keep as-is,
+        # it's the db name not a volume number in the old format)
+        db_prefixes.add(str(nsq.parent / stem))
+
+    if not db_prefixes:
+        return None
+
+    # Prefer core_nt, then nt, then anything else
+    for preference in ["core_nt", "nt"]:
+        for prefix in sorted(db_prefixes):
+            if preference in os.path.basename(prefix):
+                return prefix
+
+    # Fall back to first available
+    return sorted(db_prefixes)[0]
+
+
+def check_blastn_available():
+    """Check if blastn is installed and accessible."""
+    try:
+        result = subprocess.run(
+            ["blastn", "-version"],
+            capture_output=True, text=True
+        )
+        return result.returncode == 0
+    except FileNotFoundError:
+        return False
+
+
+def blast_sequence_local(sequence, db_path):
+    """Run blastn locally against a database. Returns parsed hit or None."""
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".fasta", delete=False) as f:
+        f.write(f">query\n{sequence}\n")
+        query_path = f.name
+
+    try:
+        result = subprocess.run(
+            [
+                "blastn",
+                "-db", db_path,
+                "-query", query_path,
+                "-evalue", str(E_VALUE_THRESHOLD),
+                "-max_target_seqs", "1",
+                "-outfmt", "5",  # XML output
+            ],
+            capture_output=True, text=True, timeout=120
+        )
+
+        if result.returncode != 0:
+            print(f"    Local BLAST error: {result.stderr[:200]}")
+            return None
+
+        return parse_blast_xml(result.stdout)
+
+    except subprocess.TimeoutExpired:
+        print("    Local BLAST timed out")
+        return None
+    finally:
+        os.unlink(query_path)
 
 
 def get_git_email():
@@ -153,8 +245,8 @@ def parse_blast_xml(xml_text):
     }
 
 
-def blast_sequence(sequence, email):
-    """Submit, wait for, and parse BLAST results for a single sequence."""
+def blast_sequence_remote(sequence, email):
+    """Submit, wait for, and parse BLAST results via NCBI remote API."""
     rid = submit_blast(sequence, email)
     print(f"    Submitted RID: {rid}")
 
@@ -183,12 +275,32 @@ def validate_results(result_path, dry_run=False):
 
     Only BLASTs product 0 (the highest-scoring amplicon) per gene to keep
     runtime practical. The primary purpose is confirming gene identity.
+
+    Uses a local BLAST database if available, otherwise falls back to the
+    NCBI remote API.
     """
     with open(result_path) as f:
         benchmark = yaml.safe_load(f)
 
-    email = get_git_email()
-    print(f"Using email: {email}")
+    # Determine BLAST mode: local or remote
+    local_db = None
+    if check_blastn_available():
+        local_db = find_local_blast_db()
+
+    if local_db:
+        mode = "local"
+        print(f"Using local BLAST database: {local_db}")
+    else:
+        mode = "remote"
+        if not check_blastn_available():
+            print("blastn not found — using NCBI remote API")
+        else:
+            print("No local database found in /db/ — using NCBI remote API")
+
+    email = None
+    if mode == "remote":
+        email = get_git_email()
+        print(f"Using email: {email}")
 
     results = benchmark.get("results", [])
     total_seqs = sum(
@@ -221,7 +333,11 @@ def validate_results(result_path, dry_run=False):
             print(f"  [{seq_count}/{total_seqs}] {sample} {gene} ({len(seq)} bp)")
 
             try:
-                hit = blast_sequence(seq, email)
+                if mode == "local":
+                    hit = blast_sequence_local(seq, local_db)
+                else:
+                    hit = blast_sequence_remote(seq, email)
+
                 if hit:
                     product["blast_hit"] = hit
                     print(f"    Hit: {hit['accession']} {hit['pct_identity']}% {hit['hit_def'][:80]}")
@@ -238,7 +354,13 @@ def validate_results(result_path, dry_run=False):
                 product["blast_hit"] = {"error": str(e)}
 
             # NCBI rate limit: max 1 request per second (we already wait 30s in polling)
-            time.sleep(1)
+            if mode == "remote":
+                time.sleep(1)
+
+    # Record which BLAST mode was used
+    benchmark["blast_mode"] = mode
+    if local_db:
+        benchmark["blast_db"] = os.path.basename(local_db)
 
     # Write updated results back
     with open(result_path, "w") as f:

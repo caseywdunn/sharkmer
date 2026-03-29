@@ -277,7 +277,7 @@ pub fn do_pcr(
         );
         gene_info!(
             params.gene_name,
-            "Suggested action: optimize primer sequence."
+            "Suggested actions: optimize primer sequence, or increase the number of reads."
         );
         return Ok(Vec::new());
     }
@@ -289,7 +289,7 @@ pub fn do_pcr(
         );
         gene_info!(
             params.gene_name,
-            "Suggested action: optimize primer sequence."
+            "Suggested actions: optimize primer sequence, or increase the number of reads."
         );
         return Ok(Vec::new());
     }
