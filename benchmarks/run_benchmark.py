@@ -28,6 +28,7 @@ import yaml
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from blast_validate import validate_results
+from summarize import summarize
 
 
 # --- Configuration ---
@@ -384,6 +385,13 @@ def run_benchmark(samples_to_run=None, threads=THREADS, max_reads_override=None,
     else:
         print("Skipping BLAST validation (--no-blast). Run manually with:")
         print(f"  python benchmarks/blast_validate.py {result_path}")
+
+    # Generate human-readable summary
+    summary_path = result_path.with_suffix(".summary.md")
+    try:
+        summarize(result_path, output_path=summary_path)
+    except Exception as e:
+        print(f"Summary generation failed: {e}")
 
     return result_path
 
