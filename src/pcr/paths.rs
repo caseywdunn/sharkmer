@@ -25,6 +25,10 @@ const MAX_NUM_AMPLICONS: usize = 20;
 /// traversal (handles tandem duplications).
 const MAX_NODE_VISITS: usize = 2;
 
+/// Maximum number of DFS states to explore per start node before
+/// giving up. Prevents combinatorial explosion in complex graphs.
+const MAX_DFS_STATES: usize = 100_000;
+
 /// Find paths from start nodes to end nodes using coverage-weighted DFS.
 /// At each branch point, outgoing edges are explored in descending order
 /// of edge count, so the highest-coverage paths are found first.
@@ -50,6 +54,7 @@ pub fn get_assembly_paths(
 
     for start in get_start_nodes(graph) {
         let mut paths_from_start = 0;
+        let mut states_explored: usize = 0;
 
         // DFS stack: (current_path, visit_counts)
         // visit_counts tracks how many times each node appears in the path
@@ -60,7 +65,8 @@ pub fn get_assembly_paths(
         stack.push((vec![start], initial_visits));
 
         while let Some((path, visit_counts)) = stack.pop() {
-            if paths_from_start >= MAX_NUM_PATHS_PER_PAIR {
+            states_explored += 1;
+            if paths_from_start >= MAX_NUM_PATHS_PER_PAIR || states_explored >= MAX_DFS_STATES {
                 break;
             }
 
