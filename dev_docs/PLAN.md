@@ -12,6 +12,19 @@ for detailed specifications.
 Brief notes after each phase/session for cold-start context. Most recent
 first.
 
+**2026-03-29 — Phase 2 implementation (remote read caching)**
+Added persistent local cache for reads downloaded from remote URLs (ENA).
+New `src/cache.rs` module with `CacheConfig`: lookup by SHA-256(URL) key,
+download-then-read strategy (full gzipped file cached, `--max-reads` applied
+at read time), SHA-256 checksum verification on cache hit, YAML sidecar
+metadata (via `serde_yml`). Three new CLI flags: `--cache-dir` (override
+cache location), `--no-cache` (stream directly as before), `--clear-cache`
+(delete cache and exit). New deps: `dirs` (platform cache dir), `sha2`
+(checksums). Benchmark `run_benchmark.py` switched entirely to `--ena --cache-dir
+benchmarks/data/cache`, removing local file lookup (`find_sample_data` and
+`run_sharkmer` removed; only `run_sharkmer_ena` remains).
+All 66 tests pass, no code changes to existing logic.
+
 **2026-03-29 — Phase 1 completion (kmer pipeline optimizations)**
 Replaced Read struct encode/decode round-trip with `kmers_from_ascii()` —
 single-pass kmer extraction directly from ASCII sequence bytes (commit
@@ -132,28 +145,28 @@ multiple runs on the same dataset. Internals should use generic terminology
 (e.g., "URL read source") rather than ENA-specific naming, to support
 additional archives later.
 
-- [ ] Local cache for reads fetched from remote URLs (always cache by default).
+- [x] Local cache for reads fetched from remote URLs (always cache by default).
   Default location: `dirs::cache_dir()/sharkmer/reads/` (e.g.,
   `~/.cache/sharkmer/reads/` on Linux, `~/Library/Caches/sharkmer/reads/`
   on macOS). Overridable with `--cache-dir`. Add `dirs` crate dependency.
-- [ ] Cache metadata per entry (sidecar file): read count, whether the
-  download was complete (unlimited) or partial (`--max-reads` limited),
-  and SHA-256 checksum of the cached file. Verify checksum on cache hit;
-  treat mismatch as cache miss and re-download. Add `sha2` crate.
+- [x] Cache metadata per entry (sidecar file): whether the
+  download was complete, and SHA-256 checksum of the cached file. Verify
+  checksum on cache hit; treat mismatch as cache miss and re-download.
+  Add `sha2` crate. Sidecar format: YAML (via existing `serde_yml`).
   Cache hit logic:
   - Complete cached file: always a hit, regardless of `--max-reads` requested
     (there are no more reads to get)
-  - Partial cached file: hit if requested `--max-reads` <= cached read count,
-    re-download and replace otherwise
   - No cache entry: download
-- [ ] Cache flags: `--no-cache` (skip reading from and writing to cache),
+  - Checksum mismatch: re-download
+- [x] Cache flags: `--no-cache` (skip reading from and writing to cache),
   `--clear-cache` (delete cache directory and exit)
-- [ ] Log cache activity at info level: cache location, cache hit/miss per
+- [x] Log cache activity at info level: cache location, cache hit/miss per
   file, download vs reuse
 - [ ] Run benchmarks, confirm no result changes
-- [ ] Switch benchmark suite to use `--ena` with cached reads instead of
+- [x] Switch benchmark suite to use `--ena` with cached reads instead of
   pre-downloaded reads in `data/` directory. Benchmarks benefit from
   caching automatically — first run downloads, subsequent runs use cache.
+  Cache stored in `benchmarks/data/cache/`.
 
 ## Phase 3 — Graph traversal
 

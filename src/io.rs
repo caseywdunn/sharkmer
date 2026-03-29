@@ -267,6 +267,7 @@ pub(crate) fn ingest_reads(
     args: &Args,
     k: usize,
     mut cached_ena_result: Option<EnaResult>,
+    cache_config: Option<&crate::cache::CacheConfig>,
     show_progress: bool,
 ) -> Result<(FastqReadState, u64, u64, u64)> {
     let start = std::time::Instant::now();
@@ -317,12 +318,32 @@ pub(crate) fn ingest_reads(
             None => get_ena_fastq_urls(accession)?,
         };
         for url in &ena_result.urls {
-            info!("Streaming from {}...", url);
-            let response = ureq::get(url)
-                .call()
-                .with_context(|| format!("Failed to download {}", url))?;
-            let reader =
-                std::io::BufReader::new(flate2::read::GzDecoder::new(response.into_reader()));
+            let reader: Box<dyn BufRead> = if let Some(cache) = cache_config {
+                // Use cache: lookup or download
+                let local_path = match cache.lookup(url)? {
+                    Some(path) => {
+                        info!("Cache hit for {}", url);
+                        path
+                    }
+                    None => {
+                        info!("Cache miss for {}, downloading...", url);
+                        cache.download_to_cache(url)?
+                    }
+                };
+                let file = std::fs::File::open(&local_path).with_context(|| {
+                    format!("Failed to open cached file: {}", local_path.display())
+                })?;
+                Box::new(std::io::BufReader::new(flate2::read::GzDecoder::new(file)))
+            } else {
+                // No cache: stream directly
+                info!("Streaming from {} (no cache)...", url);
+                let response = ureq::get(url)
+                    .call()
+                    .with_context(|| format!("Failed to download {}", url))?;
+                Box::new(std::io::BufReader::new(flate2::read::GzDecoder::new(
+                    response.into_reader(),
+                )))
+            };
             let reached_max = read_fastq(
                 reader,
                 &mut state,

@@ -6,6 +6,7 @@ use log::{debug, info};
 use peak_alloc::PeakAlloc;
 use std::io::IsTerminal;
 
+mod cache;
 mod cli;
 mod format;
 mod io;
@@ -78,9 +79,23 @@ fn main() -> Result<()> {
 
     let show_progress = std::io::stderr().is_terminal();
 
+    // Set up read cache for remote downloads
+    let cache_config = if !args.no_cache && args.ena.is_some() {
+        let cc = cache::CacheConfig::new(args.cache_dir.as_deref())?;
+        info!("Read cache: {}", cc.cache_dir.display());
+        Some(cc)
+    } else {
+        None
+    };
+
     // Ingest FASTQ reads from all input sources
-    let (state, n_reads_ingested, n_bases_ingested, n_kmers_ingested) =
-        io::ingest_reads(&args, k, cached_ena_result, show_progress)?;
+    let (state, n_reads_ingested, n_bases_ingested, n_kmers_ingested) = io::ingest_reads(
+        &args,
+        k,
+        cached_ena_result,
+        cache_config.as_ref(),
+        show_progress,
+    )?;
 
     // Consolidate chunks and optionally write histograms
     let mut state = state;

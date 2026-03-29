@@ -36,7 +36,7 @@ from summarize import summarize
 REPO_ROOT = Path(__file__).resolve().parent.parent
 CONFIG_PATH = REPO_ROOT / "benchmarks" / "config.yaml"
 SHARKMER_BIN = REPO_ROOT / "target" / "release" / "sharkmer"
-DATA_DIR = REPO_ROOT / "benchmarks" / "data"
+CACHE_DIR = REPO_ROOT / "benchmarks" / "data" / "cache"
 OUTPUT_DIR = REPO_ROOT / "benchmarks" / "output"
 RESULTS_DIR = REPO_ROOT / "benchmarks" / "results"
 
@@ -107,34 +107,9 @@ def get_machine_info():
     return info
 
 
-def find_sample_data(sample_name, sample_config):
-    """Find local data files for a sample.
-
-    Data files are named {accession}.fastq in benchmarks/data/.
-    Returns a list of FASTQ file paths, or None if any are missing.
-    """
-    accessions = sample_config.get("reads", [])
-    if not accessions:
-        print(f"  WARNING: No reads defined for {sample_name}, skipping")
-        return None
-
-    all_fastq_paths = []
-    for accession in accessions:
-        fastq_path = DATA_DIR / f"{accession}.fastq"
-        if fastq_path.exists():
-            all_fastq_paths.append(fastq_path)
-        else:
-            print(f"  ERROR: data file not found: {fastq_path}")
-            print(f"    Download with: benchmarks/sra_download.sh {accession} <nreads>")
-            print(f"    Then rename to {fastq_path}")
-            return None
-
-    return all_fastq_paths
-
-
-def run_sharkmer(sample_name, fastq_paths, arguments, max_reads, output_dir,
-                 threads=THREADS):
-    """Run sharkmer and return wall time in seconds."""
+def run_sharkmer_ena(sample_name, accession, arguments, max_reads, output_dir,
+                     threads=THREADS):
+    """Run sharkmer with --ena and read caching, return wall time in seconds."""
     output_dir.mkdir(parents=True, exist_ok=True)
 
     k_reads = max_reads // 1000
@@ -148,15 +123,12 @@ def run_sharkmer(sample_name, fastq_paths, arguments, max_reads, output_dir,
         "--dump-graph",
         "-o", str(output_dir) + "/",
         "-s", sample_prefix,
+        "--ena", accession,
+        "--cache-dir", str(CACHE_DIR),
     ]
 
-    # Parse the arguments string (e.g., "--pcr-panel cnidaria --pcr-panel bacteria")
     if arguments:
         cmd.extend(arguments.split())
-
-    # Add input files
-    for fq in fastq_paths:
-        cmd.append(str(fq))
 
     print(f"  Running: {' '.join(cmd)}")
 
@@ -313,9 +285,9 @@ def run_benchmark(samples_to_run=None, threads=THREADS, max_reads_override=None,
 
         sample_config = config[sample_name]
 
-        # Find data files (one per accession, reused across sweep levels)
-        fastq_paths = find_sample_data(sample_name, sample_config)
-        if fastq_paths is None:
+        accessions = sample_config.get("reads", [])
+        if not accessions:
+            print(f"  WARNING: No reads defined for {sample_name}, skipping")
             continue
 
         # Determine sweep levels
@@ -328,10 +300,10 @@ def run_benchmark(samples_to_run=None, threads=THREADS, max_reads_override=None,
             k_reads = max_reads // 1000
             print(f"=== {sample_name} ({k_reads}k reads) ===")
 
-            # Run sharkmer
+            # Run sharkmer with --ena and read caching
             arguments = sample_config.get("arguments", "")
-            sample_prefix, wall_time = run_sharkmer(
-                sample_name, fastq_paths, arguments, max_reads,
+            sample_prefix, wall_time = run_sharkmer_ena(
+                sample_name, accessions[0], arguments, max_reads,
                 run_output_dir, threads=threads
             )
             if sample_prefix is None:

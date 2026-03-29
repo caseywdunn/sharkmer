@@ -234,6 +234,18 @@ pub(crate) struct Args {
     /// Validate inputs and print what would happen, then exit
     #[arg(long, help_heading = "General")]
     pub(crate) dry_run: bool,
+
+    /// Override cache directory for remote reads
+    #[arg(long, help_heading = "Cache")]
+    pub(crate) cache_dir: Option<PathBuf>,
+
+    /// Disable read caching (stream directly, do not read from or write to cache)
+    #[arg(long, help_heading = "Cache")]
+    pub(crate) no_cache: bool,
+
+    /// Delete the read cache directory and exit
+    #[arg(long, help_heading = "Cache")]
+    pub(crate) clear_cache: bool,
 }
 
 /// Color output mode for log messages.
@@ -303,6 +315,13 @@ pub(crate) fn init_logging(verbose: u8, quiet: bool, color: &ColorMode) {
 /// Handle early-exit flags (--completions, --cite, --list-panels, --export-panel, --help-pcr).
 /// Each prints output and calls process::exit(0).
 pub(crate) fn handle_early_exits(args: &Args) -> Result<()> {
+    // Clear read cache and exit
+    if args.clear_cache {
+        crate::cache::CacheConfig::clear(args.cache_dir.as_deref())?;
+        println!("Cache cleared.");
+        std::process::exit(0);
+    }
+
     // Generate shell completions and exit
     if let Some(shell) = args.completions {
         let mut cmd = Args::command();
