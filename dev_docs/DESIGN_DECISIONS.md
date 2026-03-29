@@ -560,3 +560,324 @@ Preserving all bubbles increases the number of paths. Mitigations:
 - **Phase 6**: add read-support and phasing signals to path scoring.
   Paired-end constraints for longer-range phasing. Second scoring pass
   with the richer annotation set.
+
+## Graph traversal: v1 shortcomings and Phase 3 approach
+
+### V1 shortcomings
+
+The current graph construction and traversal has several interrelated
+problems that limit gene recovery — particularly for single-copy nuclear
+genes at moderate coverage.
+
+**1. One graph per forward primer kmer.** `do_pcr()` iterates over every
+forward primer kmer (produced by ambiguity expansion and mismatch
+permutation) and builds a separate graph for each. If a primer produces 10
+kmer variants, 10 nearly-identical graphs are built, extended, pruned, and
+path-found independently. This is the single largest performance waste in
+the tool. (Already discussed in the "Single graph seeded with all forward
+primer kmers" section above — the fix is decided, this section focuses on
+the traversal problems within each graph.)
+
+**2. Greedy forward-only extension.** `extend_graph()` starts at seed
+nodes and extends outward one node at a time, checking all four possible
+successor kmers. This is conceptually simple but has a structural problem:
+the extension frontier expands breadth-first across *all* growing tips
+simultaneously. In repetitive regions of the genome, a single high-copy
+kmer can inject hundreds of successors into the frontier, and each of those
+can branch again. The graph balloons not because the amplicon region is
+complex, but because the extension wandered into a repeat.
+
+**3. Ad-hoc ballooning controls.** The current code has multiple overlapping
+heuristics to contain graph explosion, none of which are principled:
+
+- **Backward degree check** (graph.rs lines 471-500): if a node and its
+  recent ancestors all have degree > 2, mark it terminal. This is a proxy
+  for "we're in a repeat" but fires based on local topology, not coverage.
+  It can falsely terminate real amplicon branches that happen to have a
+  few consecutive branch points (e.g., heterozygous SNPs in close
+  proximity).
+- **Long-range degree check** (graph.rs lines 489-499): over a 15-node
+  window, if 3+ ancestors have degree > 1, terminate. Same proxy problem
+  with a wider window.
+- **BALLOONING_COUNT_THRESHOLD_MULTIPLIER** (graph.rs lines 550-562):
+  reject edges with count > 10× the median edge count. This prevents
+  high-copy repeat kmers from being added, but the 10× multiplier is
+  arbitrary and the median shifts as the graph grows, making the behavior
+  unpredictable.
+- **pop_balloons()** (pruning.rs): periodically count descendants within
+  depth 4. If the count exceeds 4^3 = 64, delete the entire subtree.
+  This is the most destructive heuristic — it removes real structure along
+  with noise, and the threshold is topology-based (branching factor) rather
+  than coverage-based.
+
+These heuristics interact in hard-to-predict ways. A graph that happens to
+balloon on one extension step may get pop_balloons'd, removing nodes that
+would have been useful if the extension had proceeded in a different order.
+The result is non-deterministic in practice (depending on HashMap iteration
+order and when periodic checks fire) despite the sorted-kmer determinism
+efforts.
+
+**4. Destructive pruning before path finding.** After extension,
+`remove_side_branches()` deletes all dead-end nodes that aren't end nodes,
+regardless of their coverage. A dead end with 50× coverage (possibly a
+real variant whose extension was terminated by one of the ballooning
+heuristics) is treated the same as a dead end with 1× coverage (almost
+certainly a sequencing error). `remove_orphan_nodes()` then deletes end
+nodes with no incoming edges. Information lost during pruning cannot be
+recovered.
+
+**5. `all_simple_paths` enumeration is exponential.** Path finding uses
+petgraph's `all_simple_paths`, which enumerates every distinct path between
+start and end nodes. For a graph with B bubbles, this produces up to 2^B
+paths. The `MAX_NUM_PATHS_PER_PAIR = 20` cap prevents runaway computation
+but means that in a complex graph, only an arbitrary subset of paths is
+considered. There is no guarantee that the best path (by any quality
+metric) is among the first 20 enumerated.
+
+**6. Cycle avoidance is absolute.** `would_form_cycle()` does a full BFS
+from the child node to check if the parent is reachable. If so, the edge
+is rejected entirely. This prevents any repeat from being traversed more
+than once, which is correct for simple tandem repeats but wrong for
+legitimate biological structures like tandem duplications or gene
+conversion tracts where the same kmer sequence genuinely appears twice
+in the amplicon.
+
+**7. Path scoring is minimal.** Paths are ranked solely by `kmer_min_count`
+— the lowest edge count along the path. This is a reasonable first-order
+heuristic but ignores the distribution of counts along the path. A path
+with one low edge and 200 high edges scores worse than a path with
+uniformly mediocre edges.
+
+**8. Threshold annealing rebuilds from scratch.** The stepping-down
+threshold approach (high threshold → low threshold via
+`compute_coverage_thresholds()`) is sound in principle: start with
+high-confidence edges, then progressively include lower-coverage edges.
+But each step rebuilds the graph from the seed, because `extend_graph()`
+takes the immutable `seed_graph` and produces a new graph. Work done at
+higher thresholds is discarded. And if a product is found at any threshold
+step, the remaining steps are skipped (`break` at line 474), so lower
+thresholds never run — even if they would have found a better product.
+
+### How other de Bruijn assemblers handle traversal
+
+The problems above are well-studied in the genome assembly literature.
+Here is how the major assemblers address them:
+
+**Tip clipping (Velvet, ABySS, SPAdes, MEGAHIT).** Dead-end paths shorter
+than 2k with low coverage are removed as sequencing error artifacts. This
+is the one form of structural editing that all assemblers agree on. The key
+distinction from sharkmer's `remove_side_branches()` is the *coverage
+criterion*: assemblers only clip tips that are both short AND low-coverage.
+High-coverage dead ends are preserved because they may represent real
+structural variants whose connection was broken by an under-sampled kmer.
+
+**Bubble detection and resolution (Velvet, SPAdes).** Rather than deleting
+bubbles during construction, assemblers identify them explicitly: a bubble
+is a pair of paths that diverge from a node and reconverge at another
+node. Velvet's Tour Bus algorithm does a modified Dijkstra traversal to
+find bubbles and then merges them (keeping the higher-coverage arm).
+SPAdes detects bubbles and marks them as alternative paths without deleting
+either arm, deferring the choice to later stages with more information.
+
+**Coverage-guided traversal (SPAdes, MEGAHIT).** Instead of enumerating all
+paths and then scoring them, assemblers traverse the graph greedily,
+following the highest-coverage outgoing edge at each branch point. When a
+branch point is encountered, the traversal can:
+- Follow the dominant edge immediately (greedy best-first)
+- Record the branch for later exploration (depth-first with backtracking)
+- Fork into parallel paths at the branch (breadth-first)
+
+SPAdes uses coverage to distinguish between errors (low-coverage edges) and
+real polymorphism (coverage proportional to the organism's allele
+frequency). MEGAHIT's "mercy kmer" approach recovers low-coverage paths
+that were filtered out of the initial graph.
+
+**Repeat resolution.** Assemblers handle repeats through multiple
+complementary strategies:
+- **Read threading / read coherence** (SPAdes, Velvet): map original reads
+  back to the graph and use the sequence of kmers within a single read to
+  link edges across branch points. This is the most powerful technique and
+  is what our Phase 5-6 implements.
+- **Paired-end constraints** (Velvet scaffolding, SPAdes): use insert size
+  to link branches that are further apart than a single read spans.
+- **Coverage depth**: in a unique region, expected coverage is C; in a
+  2-copy repeat, expected coverage is 2C. Edges with anomalously high
+  coverage are flagged as repetitive.
+
+**Iterative k-mer assembly (IDBA, SPAdes).** Rather than building one
+graph at a fixed k, build graphs at multiple k values. Small k recovers
+connections in low-coverage regions; large k resolves repeats. SPAdes
+combines information across k values in its assembly graph. This is
+analogous to sharkmer's threshold annealing but operates on the k
+parameter rather than the count threshold. The key insight is that the
+graphs at different parameters should *share information*, not be built
+independently.
+
+### Phase 3 approach
+
+The new approach addresses each v1 shortcoming. Here are the key design
+decisions and how specific challenges are handled:
+
+**Single graph per gene, seeded with all primer kmers.** (Already decided
+above.) Eliminates the N-graph-per-gene waste. All forward primer kmers
+seed start nodes in one graph; all reverse primer kmers seed end nodes.
+
+**Bidirectional extension with coverage awareness.** Instead of extending
+only forward from start nodes, extend backward from end nodes as well.
+The graph is complete when the two frontiers meet (start-rooted subgraph
+connects to end-rooted subgraph) or when extension exhausts. This
+halves the search space on average and ensures that the graph includes
+the amplicon interior even if one primer site is in a complex region.
+
+**Coverage-based edge filtering replaces topology-based ballooning
+heuristics.** The backward-degree checks, descendant counting, and
+pop_balloons are all removed. Instead:
+
+- During extension, an edge is added only if its count ≥ `min_count`
+  (this part is unchanged).
+- After extension, edges are annotated with a "coverage ratio": the
+  edge's count divided by the local median (median of counts in a
+  neighborhood of depth ~5). Edges with a ratio far above 1.0 are flagged
+  as potentially repetitive. Edges with a ratio far below 1.0 are flagged
+  as potential errors.
+- These annotations inform path scoring but do not cause edge deletion.
+
+This addresses the "common kmer" problem directly: if the extension
+encounters a kmer with count 10,000× the local median, that edge gets a
+very high coverage ratio annotation. The path scorer can then strongly
+penalize paths that traverse it, effectively routing around repeats without
+deleting them from the graph. If a later phase (read threading) provides
+evidence that the high-copy edge is genuinely part of the amplicon, the
+evidence overrides the coverage penalty.
+
+**Threshold annealing: incremental, not rebuild.** The stepping-down
+threshold approach is retained because it is fundamentally sound — start
+conservative, relax progressively. But the implementation changes:
+
+- The graph is built once at the highest threshold.
+- At each subsequent (lower) threshold, only newly qualifying edges are
+  added to the existing graph. Edges and nodes from higher thresholds
+  are preserved.
+- Path finding runs after each threshold step. If a complete
+  start-to-end path exists, it is recorded but extension continues at
+  lower thresholds. All paths found across all thresholds are collected
+  and scored together at the end.
+- This means a high-quality path found at a high threshold is not
+  discarded just because a lower threshold also produces paths. The
+  scorer picks the best among all candidates.
+
+The practical benefit: at high thresholds, only high-confidence edges
+exist and the graph is small/fast. Most amplicons are found here. Lower
+thresholds add edges incrementally, and the graph grows modestly because
+most of the structure is already in place.
+
+**Controlling graph size at low thresholds.** The concern with walking
+thresholds down to `min_count` (which may be 2) is that at low thresholds,
+many noise edges qualify and the graph can explode. The controls are:
+
+1. **Reachability constraint.** After each threshold step, remove edges
+   and nodes that are not on any path from a start node to an end node
+   (or could not plausibly become part of such a path). Specifically,
+   keep only the connected component that contains at least one start
+   node and at least one end node. This is the "light structural cleanup"
+   from the annotation model decision above.
+
+2. **Extension frontier limiting.** Rather than extending all unvisited
+   nodes simultaneously, extend from the current frontier (nodes added
+   in the most recent threshold step). At each step, only nodes within
+   `max_length` graph distance from a start node (or end node, for
+   backward extension) are eligible for extension. This prevents the
+   graph from wandering arbitrarily far from the amplicon region.
+
+3. **MAX_NUM_NODES limit is retained** as a hard safety bound.
+
+**Coverage-weighted best-path traversal replaces `all_simple_paths`.**
+Instead of enumerating all paths and taking the first 20, use a
+coverage-weighted traversal:
+
+1. From each start node, do a priority-queue traversal toward end nodes.
+   The priority of an edge is its coverage (or a score combining coverage
+   and coverage ratio). At each branch point, the traversal follows the
+   highest-scoring edge first.
+2. When an end node is reached, record the path. Continue exploring
+   to find alternative paths (backtrack at branch points), but with a
+   budget: stop after `MAX_NUM_PATHS_PER_PAIR` paths per start-end pair.
+3. Because the traversal is coverage-ordered, the first paths found are
+   the highest-quality paths. The arbitrary first-20 problem is eliminated.
+
+This is essentially Dijkstra's algorithm with coverage as the edge weight,
+run on a DAG (after cycle handling — see below). It naturally routes around
+low-coverage noise and through high-coverage amplicon sequence.
+
+**Cycle handling.** The absolute cycle ban is replaced with bounded repeat
+traversal. During path finding, a node can be visited up to N times
+(configurable, default 2). This allows the traversal to pass through a
+tandem duplication twice but prevents infinite loops. For graph
+construction, cycles are allowed in the graph structure — the acyclicity
+constraint moves from construction time to path-finding time, where it
+can be enforced per-path rather than globally.
+
+**Pluggable path scoring.** Paths are scored by a function that takes
+multiple signals as input:
+
+- `kmer_min_count`: minimum edge count along the path (current metric,
+  retained as one input)
+- `kmer_mean_count` and `kmer_median_count`: distribution statistics
+- `coverage_consistency`: variance of edge counts along the path (a good
+  path through a unique region should have roughly uniform coverage)
+- `coverage_ratio_penalty`: sum of log-ratios for edges flagged as
+  potentially repetitive
+- `path_length`: penalize paths far from the expected amplicon length,
+  if known
+
+Phase 3 uses only kmer-coverage-based signals. Phases 5-6 add read
+support and phasing signals to the same interface without restructuring.
+
+**Light structural cleanup.** The only structural edits to the graph are:
+
+- Remove dead-end tips shorter than k with coverage below a fraction
+  of the local median (e.g., < 0.1× local median). These are almost
+  certainly sequencing errors.
+- Remove connected components not reachable from any start or end node.
+- Remove edges and nodes that cannot be part of any start-to-end path
+  within the length bounds.
+
+Everything else — bubbles, side branches with real coverage, repeat
+edges — stays in the graph and is handled by the scorer.
+
+### Threshold selection: how to avoid being too high or too low
+
+This is the most delicate practical challenge. A threshold too high misses
+real amplicon edges (especially in low-coverage regions of the amplicon,
+which are common near GC-biased or repetitive primer binding sites). A
+threshold too low admits noise and repeats, bloating the graph.
+
+The annealing approach addresses this by trying thresholds from high to
+low, but the v1 implementation gives up as soon as any product is found.
+The Phase 3 approach collects products across all thresholds and scores
+them together. This means:
+
+- **Too-high thresholds** produce incomplete graphs (no start-to-end
+  path) or paths with gaps. These are simply not scored — no harm done,
+  and the lower thresholds fill in.
+- **Too-low thresholds** produce noisy graphs with many paths. The scorer
+  penalizes paths with high coverage variance and low minimum count. If a
+  clean path was already found at a higher threshold, the noisy paths from
+  lower thresholds will score worse.
+- **The "just right" threshold** produces a graph with a clear, high-
+  coverage path from start to end. This path scores best and is emitted.
+
+The threshold sequence itself is unchanged: start at
+`primer_count / COVERAGE_MULTIPLIER` and step down to `min_count` in
+`COVERAGE_STEPS` steps. These constants may need tuning based on Phase 3
+benchmarks, but the framework is robust to the exact values because all
+threshold levels contribute candidates rather than short-circuiting.
+
+**Why not use a single adaptive threshold?** Some assemblers (e.g.,
+MEGAHIT) use iterative approaches that automatically find the right
+threshold by monitoring graph quality metrics. This is appealing but adds
+complexity. The multi-threshold approach is simpler to implement, reason
+about, and debug: each threshold produces a concrete graph that can be
+visualized with `--dump-graph`. If benchmarks show that the multi-threshold
+approach misses cases that an adaptive threshold would catch, this can be
+revisited.

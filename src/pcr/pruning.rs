@@ -1,128 +1,160 @@
-// pcr/pruning.rs — graph pruning
+// pcr/pruning.rs — graph cleanup
 
-use log::{debug, info, trace, warn};
+use log::{debug, trace};
 use petgraph::Direction;
 use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
 
-use super::graph::{EXTENSION_EVALUATION_DEPTH, descendants, get_descendants};
 use super::{DBEdge, DBNode};
 
-const EXTENSION_EVALUATION_DIFF: usize = 1;
+/// Coverage fraction below which a tip is considered an error artifact.
+const TIP_COVERAGE_FRACTION: f64 = 0.1;
 
-pub(super) fn pop_balloons(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize) {
-    let mut to_clip: Vec<NodeIndex> = Vec::new();
-    for node in graph.node_indices() {
-        let d = descendants(graph, node, EXTENSION_EVALUATION_DEPTH);
-        let n = d.len();
-        // The maximum number of descendants would be 4^EXTENSION_EVALUATION_DEPTH
-        if n > 4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32) {
-            let seq = crate::kmer::kmer_to_seq(&graph[node].sub_kmer, &(*k - 1));
-            warn!(
-                "Node {} with sequence {} has {} descendants at a depth of {}. This exceeds the maximum of 4^{}={} that is expected",
-                node.index(),
-                seq,
-                n,
-                EXTENSION_EVALUATION_DEPTH,
-                EXTENSION_EVALUATION_DEPTH,
-                4_usize.pow((EXTENSION_EVALUATION_DEPTH) as u32)
-            );
+/// Remove dead-end tips that are short (< k nodes) AND have low coverage
+/// relative to the local median. These are almost certainly sequencing errors.
+/// Tips with meaningful coverage are preserved — they may represent real
+/// variants whose graph extension was truncated.
+pub fn remove_low_coverage_tips(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize) {
+    let mut removed = 1;
+    while removed > 0 {
+        removed = 0;
 
-            // Get a vector of sequences of the descendants
-            let mut seqs: Vec<String> = Vec::new();
-            for descendant in d {
-                seqs.push(crate::kmer::kmer_to_seq(
-                    &graph[descendant].sub_kmer,
-                    &(*k - 1),
-                ));
-            }
+        // Compute global median edge count as coverage reference
+        let median_count = global_median_edge_count(graph).unwrap_or(1.0);
+        let min_tip_count = (median_count * TIP_COVERAGE_FRACTION).max(1.0);
 
-            debug!("  Sequences: {:?}", seqs);
-        }
-
-        if n > 4_usize.pow((EXTENSION_EVALUATION_DEPTH - EXTENSION_EVALUATION_DIFF) as u32) {
-            to_clip.push(node);
-            trace!(
-                "  Node {} with sequence {} has {} descendants at a depth of {}, descendants will be clipped",
-                node.index(),
-                crate::kmer::kmer_to_seq(&graph[node].sub_kmer, &(*k - 1)),
-                n,
-                EXTENSION_EVALUATION_DEPTH
-            );
-        }
-    }
-
-    // Mark the clipped nodes as terminal
-    for node in &to_clip {
-        graph[*node].is_terminal = true;
-    }
-
-    // Vector to hold nodes to be pruned
-    let mut to_prune: Vec<NodeIndex> = Vec::new();
-    for node in &to_clip {
-        // Node may have been removed already, so check if it is in graph
-        if graph.node_weight(*node).is_some() {
-            // prune away all the descendants of the node, but keep the node
-            let mut descendants = get_descendants(graph, *node);
-            to_prune.append(&mut descendants);
-        }
-    }
-
-    if !to_prune.is_empty() {
-        info!(
-            "    Removing {} nodes descended from {} nodes with ballooning graph extension",
-            to_prune.len(),
-            to_clip.len()
-        );
-    }
-
-    // StableDiGraph preserves indices on removal, so order doesn't matter,
-    // but sorting for deterministic behavior
-    to_prune.sort_by(|a, b| b.cmp(a));
-
-    // Remove the nodes in to_prune
-    for node in to_prune {
-        graph.remove_node(node);
-    }
-}
-
-// Iteratively remove nodes that do not have outgoing edges and are not end nodes
-// These are terminal side branches.
-pub fn remove_side_branches(graph: &mut StableDiGraph<DBNode, DBEdge>) {
-    let mut removed_nodes = 1;
-    while removed_nodes > 0 {
-        removed_nodes = 0;
-
-        let nodes_to_remove: Vec<_> = graph
+        let nodes_to_remove: Vec<NodeIndex> = graph
             .node_indices()
             .filter(|&node| {
-                if graph[node].is_end {
-                    false
-                } else {
-                    graph.neighbors_directed(node, Direction::Outgoing).count() == 0
+                // Don't remove end nodes or start nodes
+                if graph[node].is_end || graph[node].is_start {
+                    return false;
                 }
+                // Must be a dead end (no outgoing edges)
+                if graph.neighbors_directed(node, Direction::Outgoing).count() > 0 {
+                    return false;
+                }
+                // Must be a short tip: trace back and check length
+                let tip_len = tip_length(graph, node);
+                if tip_len >= *k {
+                    return false;
+                }
+                // Must have low coverage: check the incoming edge count
+                let max_incoming_count = graph
+                    .edges_directed(node, Direction::Incoming)
+                    .map(|e| e.weight().count)
+                    .max()
+                    .unwrap_or(0);
+                (max_incoming_count as f64) < min_tip_count
             })
             .collect();
 
         for node in nodes_to_remove {
+            trace!("Removing low-coverage tip node {}", node.index());
             graph.remove_node(node);
-            removed_nodes += 1;
+            removed += 1;
         }
     }
 }
 
-// remove end nodes that have no incoming edges
-pub fn remove_orphan_nodes(graph: &mut StableDiGraph<DBNode, DBEdge>) {
+/// Trace back from a dead-end node to count how many nodes until
+/// a branch point (node with out-degree > 1) or a start node.
+fn tip_length(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex) -> usize {
+    let mut length = 0;
+    let mut current = node;
+    loop {
+        length += 1;
+        // Get the single incoming neighbor (if unbranched)
+        let incoming: Vec<NodeIndex> = graph
+            .neighbors_directed(current, Direction::Incoming)
+            .collect();
+        if incoming.len() != 1 {
+            break;
+        }
+        let parent = incoming[0];
+        // If parent has multiple outgoing edges, this is the branch point
+        if graph
+            .neighbors_directed(parent, Direction::Outgoing)
+            .count()
+            > 1
+        {
+            break;
+        }
+        // If parent is a start node, stop
+        if graph[parent].is_start {
+            break;
+        }
+        current = parent;
+    }
+    length
+}
+
+fn global_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64> {
+    let mut counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
+    if counts.is_empty() {
+        return None;
+    }
+    counts.sort();
+    let mid = counts.len() / 2;
+    if counts.len() % 2 == 0 {
+        Some((counts[mid - 1] as f64 + counts[mid] as f64) / 2.0)
+    } else {
+        Some(counts[mid] as f64)
+    }
+}
+
+/// Remove nodes that cannot be part of any start-to-end path.
+///
+/// A node is reachable from start if a forward BFS from any start node visits
+/// it. A node can reach an end if a backward BFS from any end node visits it.
+/// Nodes that fail either criterion are removed. This also removes
+/// disconnected components and subsumes `remove_orphan_nodes` behavior.
+pub fn reachability_pruning(graph: &mut StableDiGraph<DBNode, DBEdge>) {
+    use std::collections::HashSet;
+
+    // Forward reachability from all start nodes
+    let mut forward_reachable: HashSet<NodeIndex> = HashSet::new();
+    for node in graph.node_indices() {
+        if graph[node].is_start {
+            let mut stack = vec![node];
+            while let Some(n) = stack.pop() {
+                if forward_reachable.insert(n) {
+                    for neighbor in graph.neighbors_directed(n, Direction::Outgoing) {
+                        stack.push(neighbor);
+                    }
+                }
+            }
+        }
+    }
+
+    // Backward reachability from all end nodes
+    let mut backward_reachable: HashSet<NodeIndex> = HashSet::new();
+    for node in graph.node_indices() {
+        if graph[node].is_end {
+            let mut stack = vec![node];
+            while let Some(n) = stack.pop() {
+                if backward_reachable.insert(n) {
+                    for neighbor in graph.neighbors_directed(n, Direction::Incoming) {
+                        stack.push(neighbor);
+                    }
+                }
+            }
+        }
+    }
+
+    // Remove nodes not in the intersection
     let nodes_to_remove: Vec<NodeIndex> = graph
         .node_indices()
-        .filter(|&node| {
-            if graph[node].is_end {
-                graph.neighbors_directed(node, Direction::Incoming).count() == 0
-            } else {
-                false
-            }
-        })
+        .filter(|n| !forward_reachable.contains(n) || !backward_reachable.contains(n))
         .collect();
+
+    if !nodes_to_remove.is_empty() {
+        debug!(
+            "Reachability pruning: removing {} of {} nodes not on any start-to-end path",
+            nodes_to_remove.len(),
+            graph.node_count()
+        );
+    }
 
     for node in nodes_to_remove {
         graph.remove_node(node);

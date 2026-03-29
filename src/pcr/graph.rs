@@ -6,7 +6,7 @@ use petgraph::Direction;
 use petgraph::algo::is_cyclic_directed;
 use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
-use petgraph::visit::{Bfs, EdgeRef};
+use petgraph::visit::EdgeRef;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
@@ -22,12 +22,13 @@ const EXTENSION_EVALUATION_FREQUENCY: usize = 1_000;
 /// The graph depth over which to evaluate ballooning growth
 pub(super) const EXTENSION_EVALUATION_DEPTH: usize = 4;
 
-/// If an edges count has more than BALLOONING_COUNT_THRESHOLD_MULTIPLIER * median_edge_count, it is
-/// likely going to balloon and is not added to the graph
-const BALLOONING_COUNT_THRESHOLD_MULTIPLIER: f64 = 10.0;
-
 /// Give up if the graph gets too large
 const MAX_NUM_NODES: usize = 50_000;
+
+/// Skip edges during extension whose count exceeds this multiple of the
+/// graph's median edge count. Such edges likely lead into repetitive
+/// regions and would cause the graph to balloon.
+const HIGH_COVERAGE_RATIO_THRESHOLD: f64 = 10.0;
 
 // A mask that can be used to isolate the last k-1 nucleotides of a kmer
 pub(super) fn get_suffix_mask(k: &usize) -> u64 {
@@ -99,22 +100,8 @@ pub fn get_dbedge(kmer: &u64, kmer_counts: &FilteredKmerCounts) -> DBEdge {
     DBEdge {
         _kmer: *kmer,
         count: kmer_counts.get_canonical_count(kmer),
+        coverage_ratio: 0.0, // set during annotation pass
     }
-}
-
-pub fn would_form_cycle(
-    graph: &StableDiGraph<DBNode, DBEdge>,
-    parent: NodeIndex,
-    child: NodeIndex,
-) -> bool {
-    // If there's a path from the `child` to `parent`, adding an edge from `parent` to `child` would create a cycle
-    let mut bfs = Bfs::new(graph, child);
-    while let Some(node) = bfs.next(graph) {
-        if node == parent {
-            return true;
-        }
-    }
-    false
 }
 
 pub fn get_start_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
@@ -168,30 +155,6 @@ pub(super) fn descendants(
     descendants
 }
 
-// Get all descendants of a node in a directed graph
-pub(super) fn get_descendants(
-    graph: &StableDiGraph<DBNode, DBEdge>,
-    node: NodeIndex,
-) -> Vec<NodeIndex> {
-    let mut visited = HashSet::new();
-    let mut stack = vec![node];
-    visited.insert(node); // mark the original node as visited
-
-    while let Some(node) = stack.pop() {
-        for neighbor in graph.neighbors(node) {
-            if !visited.contains(&neighbor) {
-                visited.insert(neighbor); // mark neighbor as visited
-                stack.push(neighbor);
-            }
-        }
-    }
-
-    // Remove the original node from the set before converting it to a Vec
-    visited.remove(&node);
-
-    visited.into_iter().collect()
-}
-
 // Get a vector of edge counts by traversing the graph backwards from the focal node
 #[allow(dead_code)]
 pub(super) fn get_backward_edge_counts(
@@ -225,41 +188,6 @@ pub(super) fn get_backward_edge_counts(
     edge_counts
 }
 
-// Get a vector of node degrees by traversing the graph backwards from the focal node
-fn get_backward_node_degrees(
-    graph: &StableDiGraph<DBNode, DBEdge>,
-    focal_node: NodeIndex,
-    depth: usize,
-) -> Vec<usize> {
-    let mut node_degrees = Vec::new();
-    let mut current_node = focal_node;
-    let mut current_depth = 0;
-
-    while current_depth < depth {
-        // Get the number of outgoing edges from the current node
-        let degree = graph
-            .edges_directed(current_node, Direction::Outgoing)
-            .count();
-        node_degrees.push(degree);
-
-        let incoming_edges: Vec<_> = graph
-            .edges_directed(current_node, Direction::Incoming)
-            .collect();
-
-        // Move to the next node (the source of the first incoming edge)
-        if let Some(edge) = incoming_edges.first() {
-            current_node = edge.source();
-        } else {
-            // Break if there are no incoming edges to follow
-            break;
-        }
-
-        current_depth += 1;
-    }
-
-    node_degrees
-}
-
 pub fn compute_mean(numbers: &[u64]) -> f64 {
     if numbers.is_empty() {
         return 0.0;
@@ -282,14 +210,6 @@ pub fn compute_median(numbers: &[u64]) -> f64 {
     } else {
         sorted[mid] as f64
     }
-}
-
-/// Build a HashMap from sub_kmer to NodeIndex for O(1) node lookup.
-fn build_node_lookup(graph: &StableDiGraph<DBNode, DBEdge>) -> HashMap<u64, NodeIndex> {
-    graph
-        .node_indices()
-        .map(|node| (graph[node].sub_kmer, node))
-        .collect()
 }
 
 pub(super) fn create_seed_graph(
@@ -375,17 +295,48 @@ pub(super) fn create_seed_graph(
 // - The prefix of the kmer of the node is the sub_kmer of the parent node in the graph
 // - The suffix of the kmer of the node is the sub_kmer of the new node in the graph
 // - If a node with the sub_kmer already exists, add a new edge to the existing node
+/// Reset terminal and visited flags on nodes that may have new successors at a
+/// lower count threshold. End nodes stay terminal (they are true endpoints).
+/// Nodes at max-length stay terminal (re-extension would re-mark them anyway).
+/// All other terminal nodes are un-terminaled and un-visited so extension can
+/// retry them.
+pub(super) fn prepare_for_lower_threshold(
+    graph: &mut StableDiGraph<DBNode, DBEdge>,
+    kmer_counts: &FilteredKmerCounts,
+    params: &PCRParams,
+) {
+    // Collect nodes to reset (cannot mutate graph while iterating)
+    let nodes_to_reset: Vec<NodeIndex> = graph
+        .node_indices()
+        .filter(|&node| {
+            let data = &graph[node];
+            if !data.is_terminal || data.is_end {
+                return false;
+            }
+            // Keep terminal if at max-length
+            if let Ok(Some(path_length)) = get_path_length(graph, node) {
+                if path_length + kmer_counts.get_k() > params.max_length {
+                    return false;
+                }
+            }
+            true
+        })
+        .collect();
+
+    for node in nodes_to_reset {
+        graph[node].is_terminal = false;
+        graph[node].visited = false;
+    }
+}
+
 pub(super) fn extend_graph(
-    seed_graph: &StableDiGraph<DBNode, DBEdge>,
-    seed_node_lookup: &HashMap<u64, NodeIndex>,
+    mut graph: StableDiGraph<DBNode, DBEdge>,
+    mut node_lookup: HashMap<u64, NodeIndex>,
     kmer_counts: &FilteredKmerCounts,
     min_count: &u32,
     params: &PCRParams,
 ) -> Result<StableDiGraph<DBNode, DBEdge>> {
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
-
-    let mut graph = seed_graph.clone();
-    let mut node_lookup = seed_node_lookup.clone();
 
     let mut last_check: usize = 0;
     while n_unvisited_nodes_in_graph(&graph) > 0 {
@@ -401,27 +352,29 @@ pub(super) fn extend_graph(
             break;
         }
 
-        // Get the median edge count, or min_count if there are no edges
-        let edge_count_summary: f64 = match get_median_edge_count(&graph) {
-            Some(count) => count,
-            None => *min_count as f64,
+        // Compute the median edge count for high-coverage-ratio filtering.
+        // Edges far above the median likely lead into repetitive regions.
+        let median_edge_count: f64 = {
+            let mut counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
+            if counts.is_empty() {
+                *min_count as f64
+            } else {
+                counts.sort();
+                let mid = counts.len() / 2;
+                if counts.len() % 2 == 0 {
+                    (counts[mid - 1] as f64 + counts[mid] as f64) / 2.0
+                } else {
+                    counts[mid] as f64
+                }
+            }
         };
 
-        // Periodically evaluate extension
-        // After pruning, n_nodes can be less than last_check and there will be an overflow on subtracting
+        // Periodically log extension progress
         if (n_nodes > last_check) && ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
             last_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
 
             gene_info!(params.gene_name, "Evaluating extension:");
             summarize_extension(&graph, "    ");
-
-            // Some graphs balloon in size and get to hundreds of thousands of nodes while extension gets
-            // slower and slower because there are so many growing tips. This may be due to a sequencing
-            // adapter becoming integrated into the graph, for example. So periodically check for a region
-            // of high degree and prune it if found
-            super::pruning::pop_balloons(&mut graph, &kmer_counts.get_k());
-            // Rebuild lookup after pop_balloons may have removed nodes
-            node_lookup = build_node_lookup(&graph);
         }
 
         // Iterate over the nodes
@@ -467,38 +420,6 @@ pub(super) fn extend_graph(
                     continue;
                 }
 
-                // Get the degrees of ancestor nodes, skipping degree of this node
-                let node_degrees = get_backward_node_degrees(&graph, node, 20);
-                let node_degrees_slice = &node_degrees[1..];
-
-                // If the node is in a rapidly ballooning region of the graph, don't add it
-                if candidate_kmers.len() > 2
-                    && node_degrees_slice.len() >= 2
-                    && (node_degrees_slice[0] > 2)
-                    && (node_degrees_slice[1] > 2)
-                {
-                    trace!(
-                        "Marking node as terminal because it and immediate ancestors have high degree."
-                    );
-                    graph[node].is_terminal = true;
-                    graph[node].visited = true;
-                    continue;
-                }
-
-                // Check for a lower growth rate over a longer path, and terminate if found
-                if node_degrees_slice.len() >= 15 {
-                    // Get the number of elements of node_degrees_slice that are greater than 1
-                    let n_high_degree = node_degrees_slice.iter().filter(|&x| *x > 1).count();
-                    if n_high_degree >= 3 {
-                        trace!(
-                            "Marking node as terminal because its recent ancestors have moderately elevated degree."
-                        );
-                        graph[node].is_terminal = true;
-                        graph[node].visited = true;
-                        continue;
-                    }
-                }
-
                 // Add new nodes if needed, and new edges
                 for kmer in candidate_kmers.iter() {
                     let suffix = kmer & suffix_mask;
@@ -515,7 +436,10 @@ pub(super) fn extend_graph(
                     // Otherwise, create a new node with sub_kmer == suffix, and add an edge to the new node
 
                     if let Some(&existing_node) = node_lookup.get(&suffix) {
-                        if !would_form_cycle(&graph, node, existing_node) {
+                        // Allow edges that would form cycles — cycles are
+                        // handled during path finding via bounded revisitation.
+                        // Only add the edge if it doesn't already exist.
+                        if graph.find_edge(node, existing_node).is_none() {
                             let edge = get_dbedge(kmer, kmer_counts);
                             graph.add_edge(node, existing_node, edge);
                             if graph[existing_node].is_end {
@@ -524,39 +448,21 @@ pub(super) fn extend_graph(
                                     "End node incorporated into graph, complete PCR product found."
                                 );
                             }
-                            let outgoing =
-                                graph.neighbors_directed(node, Direction::Outgoing).count();
-                            if outgoing > 4 {
-                                gene_warn!(
-                                    params.gene_name,
-                                    "Node {} has {} outgoing edges. This exceeds the maximum of 4 that is expected",
-                                    node.index(),
-                                    outgoing
-                                );
-                            }
-                        } else {
-                            graph[node].is_terminal = true;
-
-                            trace!(
-                                "Adding edge to node {} would form cycle. Not adding edge, and marking current node as terminal.",
-                                node.index()
-                            );
                         }
                     } else {
                         let edge = get_dbedge(kmer, kmer_counts);
                         let edge_count = edge.count;
 
-                        // Don't add node and edge if the edge count is very high
-                        if (edge_count as f64)
-                            > (edge_count_summary * BALLOONING_COUNT_THRESHOLD_MULTIPLIER)
+                        // Skip edges with count far above the median — they
+                        // likely lead into repetitive regions
+                        if (edge_count as f64) > (median_edge_count * HIGH_COVERAGE_RATIO_THRESHOLD)
                         {
                             trace!(
-                                "Edge count {} exceeds {} * median edge count {}. Not adding edge with kmer {} or node with sub_kmer {}.",
+                                "Skipping high-coverage edge (count {} > {:.0} × {:.0} median). kmer {}",
                                 edge_count,
-                                BALLOONING_COUNT_THRESHOLD_MULTIPLIER,
-                                edge_count_summary,
+                                HIGH_COVERAGE_RATIO_THRESHOLD,
+                                median_edge_count,
                                 crate::kmer::kmer_to_seq(kmer, &kmer_counts.get_k()),
-                                crate::kmer::kmer_to_seq(&suffix, &(kmer_counts.get_k() - 1))
                             );
                             continue;
                         }
@@ -571,15 +477,6 @@ pub(super) fn extend_graph(
                         node_lookup.insert(suffix, new_node);
 
                         graph.add_edge(node, new_node, edge);
-                        let outgoing = graph.neighbors_directed(node, Direction::Outgoing).count();
-                        if outgoing > 4 {
-                            gene_warn!(
-                                params.gene_name,
-                                "Node {} has {} outgoing edges when adding new node. This exceeds the maximum of 4 that is expected",
-                                node.index(),
-                                outgoing
-                            );
-                        }
 
                         trace!(
                             "Added sub_kmer {} for new node {} with edge kmer count {}.",
@@ -628,18 +525,30 @@ pub(super) fn extend_graph(
     Ok(graph)
 }
 
-fn get_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64> {
-    let counts: Vec<u64> = graph
-        .edge_indices()
-        .map(|e| graph[e].count as u64)
-        .collect();
-
+/// Annotate each edge with its coverage ratio: count / global median.
+/// High ratios (>> 1.0) indicate potentially repetitive edges.
+/// Low ratios (<< 1.0) indicate potential sequencing errors.
+pub(super) fn annotate_coverage_ratios(graph: &mut StableDiGraph<DBNode, DBEdge>) {
+    let mut counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
     if counts.is_empty() {
-        return None;
+        return;
+    }
+    counts.sort();
+    let mid = counts.len() / 2;
+    let median = if counts.len() % 2 == 0 {
+        (counts[mid - 1] as f64 + counts[mid] as f64) / 2.0
+    } else {
+        counts[mid] as f64
+    };
+
+    if median <= 0.0 {
+        return;
     }
 
-    let median_edge_count = compute_median(&counts);
-    Some(median_edge_count)
+    for edge_idx in graph.edge_indices().collect::<Vec<_>>() {
+        let count = graph[edge_idx].count as f64;
+        graph[edge_idx].coverage_ratio = count / median;
+    }
 }
 
 pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {

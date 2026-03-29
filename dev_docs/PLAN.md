@@ -171,43 +171,79 @@ additional archives later.
 ## Phase 3 — Graph traversal
 
 Replace ad-hoc graph heuristics with principled algorithms from the assembler
-literature. All work in this phase is independent of read threading.
+literature. All work in this phase is independent of read threading. See
+[DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#graph-traversal-v1-shortcomings-and-phase-3-approach)
+for detailed analysis of v1 shortcomings and the new approach.
 
 Key design change: adopt annotation-only model (see
 [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#graph-annotation-model-preserve-structure-defer-decisions)).
 Replace destructive pruning with light structural cleanup + annotation-informed
 path selection. Bubbles and variants are preserved until sequence emission.
 
-### Light structural cleanup (replaces destructive pruning)
+Implementation order: graph construction changes first (they simplify
+everything downstream), then structural cleanup, then path finding.
 
-- [ ] #89 Replace heuristic ballooning detection with light tip removal:
-  remove dead-end tips shorter than k with very low coverage (sequencing
-  errors). Preserve all bubbles and meaningful branching.
+### Step 1: Graph construction efficiency
+
+- [ ] #94 Build a single graph per gene seeded with all forward primer kmers
+  simultaneously, instead of one graph per forward primer kmer (see
+  [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#single-graph-seeded-with-all-forward-primer-kmers)).
+  Refactor `do_pcr()` to pass the full `forward_primer_kmers` to
+  `create_seed_graph()` instead of looping. Path finding runs from each
+  start node to each end node within the single graph.
+- [ ] #95 Extend graphs incrementally across coverage threshold steps instead
+  of rebuilding from scratch at each threshold. Build graph once at the
+  highest threshold; at each subsequent (lower) threshold, add only newly
+  qualifying edges to the existing graph. Remove the `break` on first
+  product (mod.rs line 474) — collect candidates across all thresholds
+  and score together at the end.
+
+### Step 2: Light structural cleanup (replaces destructive pruning)
+
+- [ ] #89 Replace heuristic ballooning detection with coverage-aware tip
+  removal: remove dead-end tips shorter than k with coverage below a
+  fraction of the local median (e.g., < 0.1× local median). Preserve
+  all bubbles and meaningful branching. Remove `pop_balloons()`,
+  backward-degree checks, and `BALLOONING_COUNT_THRESHOLD_MULTIPLIER`
+  filtering from `extend_graph()`.
+- [ ] Reachability pruning: after each incremental threshold step, remove
+  nodes and edges that cannot be part of any start-to-end path within
+  the length bounds. Keep only connected components containing at least
+  one start node and at least one end node. This is the main defense
+  against graph bloat at low thresholds.
 - [ ] Remove disconnected components not reachable from any start node
-- [ ] #91 Replace backward-degree-based termination with principled traversal
+  (subsumed by reachability pruning above, but listed for clarity).
+- [ ] #91 Replace backward-degree-based termination in `extend_graph()`
+  with coverage-based decisions. Remove the topology-based heuristics
+  (backward degree checks at lines 471-500 of graph.rs). Extension
+  termination is now: end node reached, no qualifying successors,
+  max-length exceeded, or MAX_NUM_NODES exceeded.
+- [ ] Coverage-ratio annotation: annotate each edge with its count divided
+  by the local median (median of counts in a neighborhood of depth ~5).
+  High ratios flag potentially repetitive edges; low ratios flag potential
+  errors. These annotations feed into the scoring interface (#90).
 
-### Annotation-informed path finding
+### Step 3: Annotation-informed path finding
 
 - [ ] #90 Pluggable scoring interface for path selection. Takes kmer
-  coverage as input; Phase 6 adds read support and phasing signals
-  without restructuring. Bubbles resolved at path selection, not by
-  graph editing.
-- [ ] #92 Improved handling of repeats (current cycle avoidance is too aggressive)
+  coverage signals as input (min count, mean/median count, coverage
+  consistency, coverage-ratio penalty, path length). Phase 6 adds read
+  support and phasing signals without restructuring. Bubbles resolved
+  at path selection, not by graph editing.
 - [ ] #93 Coverage-weighted best-path algorithm to replace `all_simple_paths`
-  enumeration, better path scoring beyond `kmer_min_count` ordering
+  enumeration. Dijkstra-style priority-queue traversal from start nodes
+  toward end nodes, following highest-scoring edges first. First paths
+  found are highest-quality. Budget: stop after `MAX_NUM_PATHS_PER_PAIR`
+  paths per start-end pair.
+- [ ] #92 Improved handling of repeats: replace absolute cycle ban
+  (`would_form_cycle()` BFS) with bounded repeat traversal during path
+  finding. A node can be visited up to N times (default 2) per path.
+  Cycles are allowed in the graph structure; the acyclicity constraint
+  moves from construction time to path-finding time.
 - [ ] #76 Fix O(N^2) dedup memory (compute distances on the fly instead of
   pre-allocating pairwise matrix)
 - [ ] Evaluate #12 (duplicate product 0) — may be resolved by improved
   graph traversal and path selection
-
-### Graph construction efficiency
-
-- [ ] #94 Build a single graph per gene seeded with all forward primer kmers
-  simultaneously, instead of one graph per forward primer kmer (see
-  [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#single-graph-seeded-with-all-forward-primer-kmers))
-- [ ] #95 Extend graphs incrementally across coverage threshold steps instead
-  of rebuilding from scratch at each threshold; incremental histogram updates
-  after each chunk merge
 
 ### Validation
 
