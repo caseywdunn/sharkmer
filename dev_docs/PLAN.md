@@ -162,7 +162,8 @@ additional archives later.
   `--clear-cache` (delete cache directory and exit)
 - [x] Log cache activity at info level: cache location, cache hit/miss per
   file, download vs reuse
-- [ ] Run benchmarks, confirm no result changes
+- [x] Run benchmarks, confirm no result changes (1M baseline: all 14
+  samples match Phase 0 gene counts exactly)
 - [x] Switch benchmark suite to support `--ena` with cached reads as
   fallback when local data files are absent. Local files in `data/` are
   preferred when present (faster). Cache stored in `benchmarks/data/cache/`.
