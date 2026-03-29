@@ -12,7 +12,23 @@ for detailed specifications.
 Brief notes after each phase/session for cold-start context. Most recent
 first.
 
-**2026-03-28 — Phase 0 completion**
+**2026-03-28 — Phase 0 sweep benchmarks and BLAST validation**
+Full coverage sweep completed (commit b9a9835). 34/38 runs succeeded; 4 OOM
+failures at highest read counts (Porites 8M/16M, Agalma 8M/16M, Gryllus 16M
+— all exceed 32GB RAM). 289 amplicons BLAST-validated against NCBI nt.
+Results: `benchmarks/results/2026-03-28_sharkmer_3.0.0-dev_b9a9835.yaml`.
+
+Key sweep findings for nuclear gene recovery:
+- **cnidaria EF1A**: Porites recovered at 1M–2M (not at 4M — likely graph
+  complexity at higher coverage); Agalma not recovered at any level; Rhopilema
+  recovered at 4M and 16M (intermittent).
+- **insecta Yp2**: Drosophila recovered at 16M only. No other insect nuclear
+  genes (EF1g, Fz4, Gpdh, Pgi) recovered at any level.
+- **More genes at higher coverage**: Drosophila goes 8→9 genes (1M→16M);
+  Heliconius 7→10; Gryllus 13→15 (1M→4M). Diminishing returns above 4M
+  for mitochondrial/rRNA genes.
+
+**2026-03-28 — Phase 0 completion (infrastructure)**
 Ran 1M baseline benchmark for all 14 samples with BLAST validation (commit
 7944499). Results: `benchmarks/results/2026-03-28_sharkmer_3.0.0-dev_7944499.yaml`.
 Restructured benchmark infrastructure: sweep levels are now per-sample in
@@ -57,9 +73,11 @@ baseline at multiple coverage levels to measure the impact of later phases.
   status per node/edge. Phase 5 adds read support and phasing annotations.
 - [x] Enable `--dump-graph` in benchmark runs to capture baseline graphs
 - [x] Capture baseline benchmarks at 1M reads for all 14 samples with BLAST
-  validation. Sweep data downloaded and ready; sweep benchmarks (2M+)
-  pending local run (requires >=16GB RAM). Run with:
-  `python benchmarks/run_benchmark.py`
+  validation. Full coverage sweeps (4M/2M/1M) completed for all sweep
+  samples; 8M/16M completed for Rhopilema, Drosophila, Heliconius;
+  8M/16M OOM-killed for Porites, Agalma (both levels) and Gryllus
+  (16M only — 1.67GB genome). 289 amplicons BLAST-validated.
+  Results: `benchmarks/results/2026-03-28_sharkmer_3.0.0-dev_b9a9835.yaml`
 - [x] Define measurable success targets for Phase 3:
   - **No regressions at 1M** (baseline: 2026-03-28 commit 7944499):
     - Porites_lutea: 18S, 28S, 28S-v2, ITS, ITS-v2, EF1A (6 genes)
@@ -70,12 +88,17 @@ baseline at multiple coverage levels to measure the impact of later phases.
     - Gryllus_bimaculatus: 12S, 16S, 16S-v2, 18S-v2, 28S, CO1-v2, CO1, CO2,
       CytB, NADH, ND1, ND4, ND5 (13 genes)
     - All other samples: gene counts and identities must match baseline
-  - **Single-copy nuclear gene recovery** (sweep-dependent — fill after sweep):
-    - cnidaria_EF1A: already recovered at 1M for Porites_lutea; determine
-      minimum reads for Agalma_elegans and Rhopilema_esculentum from sweep
-    - insecta nuclear genes (EF1g, Fz4, Gpdh, Pgi, Yp2): not recovered at
-      1M for any insect sample; determine minimum reads per gene from sweep
-    - Phase 3 target: recover these at the same or fewer reads than baseline
+  - **Single-copy nuclear gene recovery** (baseline from sweep):
+    - cnidaria_EF1A: Porites recovered at 1M–2M (BLAST: no significant hit
+      — may be divergent or misassembled); not recovered at 4M (graph
+      complexity?). Agalma not recovered at any level (up to 4M tested).
+      Rhopilema recovered intermittently (4M, 16M but not 8M).
+    - insecta_Yp2: Drosophila recovered at 16M only (9 genes vs 8 at 1M).
+      Not recovered for Heliconius or Gryllus at any level.
+    - insecta nuclear genes (EF1g, Fz4, Gpdh, Pgi): not recovered at any
+      level for any insect sample (up to 16M tested).
+    - Phase 3 target: recover EF1A and Yp2 at the same or fewer reads than
+      baseline; attempt recovery of currently-unrecovered nuclear genes
   - **Sequence stability**: product sequences for rRNA and mitochondrial
     genes should be identical (same MD5 fingerprints) after Phase 3 changes
 
