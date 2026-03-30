@@ -118,31 +118,26 @@ def summarize(result_path, output_path=None):
         lines.append(f"## {panel}")
         lines.append(f"")
 
-        # Determine column widths
-        sample_w = max(len(s) for s, _, _ in rows) if rows else 10
-        reads_w = 7  # "16000k" is 6 chars
-        gene_ws = [max(len(sn), 1) for sn in short_names]
-
         # Header
-        header = f"{'Sample':<{sample_w}}  {'Reads':>{reads_w}}"
-        for sn, gw in zip(short_names, gene_ws):
-            header += f"  {sn:^{gw}}"
+        header = "| Sample | Reads |"
+        for sn in short_names:
+            header += f" {sn} |"
         lines.append(header)
 
         # Separator
-        sep = f"{'-' * sample_w}  {'-' * reads_w}"
-        for gw in gene_ws:
-            sep += f"  {'-' * max(gw, 1)}"
+        sep = "| --- | --- |"
+        for _ in short_names:
+            sep += " --- |"
         lines.append(sep)
 
         # Data rows
         for sample, max_reads, products in rows:
             k_reads = f"{max_reads // 1000}k"
-            row = f"{sample:<{sample_w}}  {k_reads:>{reads_w}}"
-            for gene, gw in zip(seen_genes, gene_ws):
+            row = f"| {sample} | {k_reads} |"
+            for gene in seen_genes:
                 product = products.get(gene)
                 icon = classify_product(product)
-                row += f"  {icon:^{gw}}"
+                row += f" {icon} |"
             lines.append(row)
 
         lines.append(f"")
