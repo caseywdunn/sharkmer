@@ -317,14 +317,14 @@ pub(crate) fn ingest_reads(
         for url in &ena_result.urls {
             let reader: Box<dyn BufRead> = if let Some(cache) = cache_config {
                 // Use cache: lookup or download
-                let local_path = match cache.lookup(url)? {
+                let local_path = match cache.lookup(url, max_reads)? {
                     Some(path) => {
                         info!("Cache hit for {}", url);
                         path
                     }
                     None => {
                         info!("Cache miss for {}, downloading...", url);
-                        cache.download_to_cache(url)?
+                        cache.download_to_cache(url, max_reads)?
                     }
                 };
                 let file = std::fs::File::open(&local_path).with_context(|| {
