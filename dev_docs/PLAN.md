@@ -272,7 +272,7 @@ everything downstream), then structural cleanup, then path finding.
   16S-PRK341F) but lost 2 (Rhopilema CO1 and 16S-515F-Y-926R — both
   marginal cases near 50K node budget or DFS state limits). See
   diagnostic evidence in `tmp/porites_tests/ANALYSIS_16M.md`.
-- [ ] #105 Bounded seed evaluation before full graph extension. Two
+- [x] #105 Bounded seed evaluation before full graph extension. Two
   goals: (1) avoid wasted compute when no product exists; (2) avoid
   polluting the graph with spurious extensions that obscure the real
   product and exhaust node/DFS budgets. Approach: before full
