@@ -272,12 +272,16 @@ everything downstream), then structural cleanup, then path finding.
   16S-PRK341F) but lost 2 (Rhopilema CO1 and 16S-515F-Y-926R — both
   marginal cases near 50K node budget or DFS state limits). See
   diagnostic evidence in `tmp/porites_tests/ANALYSIS_16M.md`.
-- [ ] #105 Early termination for off-target graph explosion. Evaluate
-  after #107 — reverse extension partially addresses the core problem
-  but shared node budget still causes regressions for genes with many
-  off-target seeds. Remaining mitigations to consider: adaptive
-  per-direction node budgets, seed coherence pre-check, early
-  termination when graph grows without convergence.
+- [ ] #105 Mitigate off-target graph explosion. Two goals: (1) avoid
+  wasted compute when no product exists (off-target seeds flood the
+  graph to the node limit across all threshold steps); (2) avoid
+  polluting the graph with spurious extensions that obscure the real
+  product and exhaust node/DFS budgets before the product is found
+  (e.g., Rhopilema CO1 where forward extension hits 50K nodes from
+  off-target seeds before reaching the actual end nodes). Remaining
+  mitigations to consider: adaptive per-direction node budgets, seed
+  coherence pre-check, early termination when graph grows without
+  convergence.
 
 ### Validation
 
