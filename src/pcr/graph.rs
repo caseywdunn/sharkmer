@@ -199,58 +199,77 @@ pub fn compute_median(numbers: &[u64]) -> f64 {
 pub(super) fn create_seed_graph(
     forward_primer_kmers: &KmerCounts,
     reverse_primer_kmers: &KmerCounts,
-    _kmer_counts: &FilteredKmerCounts,
+    kmer_counts: &FilteredKmerCounts,
 ) -> (StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>) {
     let mut seed_graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
     let mut node_lookup: HashMap<u64, NodeIndex> = HashMap::new();
 
-    // Add the forward primer matches to the graph
-    // Sort kmers for deterministic output
+    let k = kmer_counts.get_k();
+    let suffix_mask = get_suffix_mask(&k);
+
+    // Seed the graph with primer kmer nodes.
+    //
+    // Both forward and reverse primer kmers arrive from find_oligos_in_kmers()
+    // oriented with the primer at the 5' (START) of the kmer. For forward
+    // primers this is the sense strand; for reverse primers this is the
+    // antisense strand.
+    //
+    // All graph nodes must be on the same strand for extension and path
+    // finding to work (nodes are (k-1)-mers; two nodes representing the
+    // same position on opposite strands have different sub_kmer values and
+    // would never converge). We use the sense strand throughout.
+    //
+    // Forward seed sub_kmer derivation:
+    //   Kmer is already sense-strand:  5' PPPPPPPPPPPPPPP|XXXXXX 3'
+    //   sub_kmer = prefix (kmer >> 2): 5' PPPPPPPPPPPPPPPXXXXX  3'
+    //   Forward extension appends bases at the 3' end (rightward).
+    //
+    // Reverse seed sub_kmer derivation (strand normalization):
+    //   Kmer is antisense-strand:      5' RRRRRRRRRRRRRRR|XXXXXX 3'
+    //   Revcomp to sense strand:       5' X'X'X'X'X'X'|R'R'R'R'R'R'R'R'R'R'R'R'R'R'R' 3'
+    //   sub_kmer = suffix (& mask):    5' X'X'X'X'X'R'R'R'R'R'R'R'R'R'R'R'R'R'R'R'    3'
+    //   This is the sense-strand (k-1)-mer at the 3' end of the amplicon,
+    //   where forward extension arrives. Reverse extension prepends bases
+    //   at the 5' end (leftward on sense strand).
+
+    // Forward primer seeds
     let mut sorted_forward_kmers = forward_primer_kmers.kmers();
     sorted_forward_kmers.sort();
     for kmer in sorted_forward_kmers {
-        let prefix = kmer >> 2;
+        let sub_kmer = kmer >> 2;
 
-        if let Some(&existing) = node_lookup.get(&prefix) {
+        if let Some(&existing) = node_lookup.get(&sub_kmer) {
             seed_graph[existing].is_start = true;
         } else {
             let node = seed_graph.add_node(DBNode {
-                sub_kmer: prefix,
+                sub_kmer,
                 is_start: true,
                 is_end: false,
                 is_terminal: false,
                 visited: false,
             });
-            node_lookup.insert(prefix, node);
+            node_lookup.insert(sub_kmer, node);
         }
     }
 
-    // Add the reverse primer matches to the graph.
-    // Reverse primer kmers are in the antisense orientation (primer at START
-    // of the kmer). To place the end node on the sense strand (so forward
-    // extension can reach it), we reverse-complement the kmer and use its
-    // suffix as the sub_kmer. This is where forward extension would arrive
-    // when traversing the sense strand through the amplicon.
-    let k = _kmer_counts.get_k();
-    let suffix_mask = get_suffix_mask(&k);
+    // Reverse primer seeds (strand-normalized to sense strand)
     let mut sorted_reverse_kmers = reverse_primer_kmers.kmers();
     sorted_reverse_kmers.sort();
     for kmer in sorted_reverse_kmers {
         let rc_kmer = crate::kmer::revcomp_kmer(&kmer, &k);
-        let suffix = rc_kmer & suffix_mask;
+        let sub_kmer = rc_kmer & suffix_mask;
 
-        if let Some(&existing) = node_lookup.get(&suffix) {
+        if let Some(&existing) = node_lookup.get(&sub_kmer) {
             seed_graph[existing].is_end = true;
-            // If also a start node, keep it extendable in both directions
         } else {
             let node = seed_graph.add_node(DBNode {
-                sub_kmer: suffix,
+                sub_kmer,
                 is_start: false,
                 is_end: true,
                 is_terminal: false,
                 visited: false,
             });
-            node_lookup.insert(suffix, node);
+            node_lookup.insert(sub_kmer, node);
         }
     }
 
