@@ -287,8 +287,18 @@ everything downstream), then structural cleanup, then path finding.
 
 ### Validation
 
-- [ ] Run benchmarks, compare to Phase 2 baseline
-- [ ] Evaluate against Phase 0 success targets
+- [x] Run benchmarks, compare to Phase 2 baseline (v2.0.0, bcb7818):
+  14 new genes gained, 8 lost. Major gains: Drosophila 8→11, Gryllus
+  13→15, Homo_sapiens 3→9. Losses: Agalma CO1 (pre-existing from DFS
+  budget), Rhopilema -3 (16S pre-existing, CO1 and 16S-515F-Y from
+  #107 shared node budget), Seawater 4→0 (pre-existing from Phase 3
+  graph rewrite).
+- [x] Evaluate against Phase 0 success targets: 4/6 target samples
+  pass (Porites, Drosophila, Heliconius, Gryllus). Agalma misses CO1
+  (pre-existing regression). Rhopilema misses 3 genes (1 pre-existing,
+  2 from #107). Seawater regression is pre-existing. Nuclear gene
+  recovery improved: Drosophila gains CO1+CytB+ITS at 1M reads.
+  Sweep-level evaluation (2M/4M/8M/16M) not yet run on this branch.
 
 ## Phase 4 — Read backend
 
