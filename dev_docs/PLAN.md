@@ -277,10 +277,12 @@ everything downstream), then structural cleanup, then path finding.
   polluting the graph with spurious extensions that obscure the real
   product and exhaust node/DFS budgets. Approach: before full
   extension, give each seed a bounded local exploration (proportional
-  to max_length), then evaluate structural signatures — connectivity
-  to opposite-direction seeds, local graph linearity, edge count
-  consistency. Seeds that fail are abandoned early, keeping their
-  nodes out of the shared graph.
+  to max_length), then evaluate structural signatures — local graph
+  linearity, edge count consistency with primer kmer count. Seeds
+  that fail are abandoned early, keeping their nodes out of the
+  shared graph. If bounded exploration completes a full path to an
+  opposite-direction seed, retain it but still evaluate remaining
+  seeds (paralogs, alleles).
 
 ### Validation
 
