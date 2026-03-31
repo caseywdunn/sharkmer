@@ -415,6 +415,16 @@ and rationale.
 - [ ] #104 Stream histogram rows during output instead of materializing
   all histogram vectors simultaneously
 
+### Parameter tuning (#109)
+
+- [ ] #109 Revisit hard-coded graph parameters. Profile benchmark runs
+  to understand how often each limit is hit and whether it causes
+  regressions. Constants to review: MAX_NUM_NODES (50K shared budget
+  — Rhopilema CO1 regression), MAX_DFS_STATES (100K — Rhopilema
+  16S-515F-Y regression), HIGH_COVERAGE_RATIO_THRESHOLD, seed eval
+  thresholds. Some may benefit from being derived from other
+  parameters (e.g., node budget scaled by max_length).
+
 ### Validation
 
 - [ ] Run benchmarks, confirm identical results to Phase 6
