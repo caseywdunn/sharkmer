@@ -252,8 +252,9 @@ everything downstream), then structural cleanup, then path finding.
   graph structure.
 - [x] #76 Fix O(N^2) dedup memory: greedy clustering computes
   `bounded_levenshtein` on-the-fly against kept records only.
-- [ ] Evaluate #12 (duplicate product 0) — may be resolved by improved
-  graph traversal and path selection
+- [x] Evaluate #12 (duplicate product 0) — resolved by greedy
+  Levenshtein dedup (#76) and sequential product re-numbering after
+  dedup. No duplicate product IDs in any benchmark output.
 - [x] #108 Unify forward and reverse primer handling. Remove the
   asymmetric reverse-complement step during preprocessing; both
   primers are processed identically (trim → expand → permute) and
