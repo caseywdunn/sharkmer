@@ -254,6 +254,26 @@ everything downstream), then structural cleanup, then path finding.
   `bounded_levenshtein` on-the-fly against kept records only.
 - [ ] Evaluate #12 (duplicate product 0) — may be resolved by improved
   graph traversal and path selection
+- [ ] #108 Unify forward and reverse primer handling. Remove the
+  asymmetric reverse-complement step during preprocessing; both
+  primers are processed identically (trim → expand → permute) and
+  matched at the START of their respective kmers. Nodes are annotated
+  as forward or reverse, paths emitted only from forward to reverse.
+  Prerequisite refactor for #107 — makes bidirectional extension
+  fall out naturally (forward seeds extend rightward, reverse seeds
+  extend leftward).
+- [ ] #107 Bidirectional graph extension from forward and reverse primer
+  seeds. Extend graph from both directions simultaneously; frontiers
+  converge at the amplicon region and off-target seeds never meet.
+  Naturally provides seed coherence, reduces path length through
+  complex regions (exponential branching cut in half), and focuses
+  the graph on the amplicon subgraph. Depends on #108. See diagnostic
+  evidence in `tmp/porites_tests/ANALYSIS_16M.md`.
+- [ ] #105 Early termination for off-target graph explosion. Evaluate
+  after #107 — bidirectional extension may address the core problem
+  (seed coherence, wasted node budget) directly, reducing or
+  eliminating the need for the heuristic mitigations proposed in
+  #105 (adaptive budget, early termination checks).
 
 ### Validation
 
@@ -332,10 +352,58 @@ pluggable interface designed in Phase 3 (#90). No graph structure edits.
   without needing insert size calibration.
 - [ ] Run benchmarks, compare to Phase 3 and Phase 5 results
 
-## Phase 7 — Cleanup and validation
+## Phase 7 — Performance optimizations
+
+Hot-path performance improvements identified by code review. No behavioral
+changes — benchmark to confirm identical results. See #103 for full analysis
+and rationale.
+
+### Easy wins (items 1–6 from #103)
+
+- [ ] #103 Use entry API in `extend_with_histogram` to eliminate double
+  hash lookup per kmer during chunk consolidation
+- [ ] #103 Cache median edge count in `extend_graph` — recompute every N
+  nodes instead of every iteration
+- [ ] #103 Guard `summarize_extension` BFS descendants computation behind
+  `log::log_enabled!(Level::Debug)` check
+- [ ] #103 Replace `HashSet<u64>` with `[Option<u64>; 4]` stack array for
+  candidate kmers in graph extension inner loop
+- [ ] #103 Pre-allocate `KmerCounts` capacity from sum of chunk sizes
+  before consolidation
+- [ ] #103 Replace `get_path_length` per-call HashSet with bounded depth
+  counter for cycle detection
+
+### Larger refactors (items 7–9 from #103)
+
+- [ ] #103 DFS path finding: replace path/visit_counts cloning with
+  stack-based backtracking (push/pop instead of clone per state)
+- [ ] #103 Avoid full graph clone for pruning — use in-place pruning on
+  a copy-on-write structure or track removals separately
+- [ ] #103 Implement byte-level lookup table for `revcomp_kmer` to reduce
+  from O(k) to O(k/4) bit operations
+
+### Memory reductions (#104)
+
+- [ ] #104 Remove unused `DBEdge._kmer` field — reconstruct from node pair
+  in `write_annotated_dot()` when needed
+- [ ] #104 Drop `node_lookup` HashMap after graph extension completes
+  (rebuilt between threshold steps anyway)
+- [ ] #104 Add `kmer_last_base()` helper to avoid `kmer_to_seq()` String
+  allocation per node during path assembly
+- [ ] #104 Clone only histogram `Vec<u64>` instead of full `Histogram`
+  struct (skip `FxHashMap` clone) in incremental counting
+- [ ] #104 Stream histogram rows during output instead of materializing
+  all histogram vectors simultaneously
+
+### Validation
+
+- [ ] Run benchmarks, confirm identical results to Phase 6
+- [ ] Profile before/after to quantify gains
+
+## Phase 8 — Cleanup and validation
 
 - [ ] Final benchmark comparison across all phases (skip if already run
-  at end of Phase 6)
+  at end of Phase 7)
 - [ ] Update integration tests for v3.0 behavior
 - [ ] Update documentation:
   - [ ] README.md (user-facing changes, new flags, updated examples)

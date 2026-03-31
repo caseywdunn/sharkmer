@@ -1,0 +1,374 @@
+# Primer binding site analysis for genes that fail to amplify.
+#
+# For each failed gene/species combination, the actual primer binding
+# sequence in the species is recorded along with the public accession
+# it was derived from. Binding sequences are given on the same strand
+# as the primer is specified on in the panel YAML. Mismatches relative
+# to the primer are noted.
+#
+# Where no public sequence is available for the gene in that species,
+# the entry is omitted and noted in a comment.
+
+primer_binding:
+
+    # ── Cnidaria panel failures ──────────────────────────────────────
+
+    # Porites lutea — 16S fails at all coverages (1M–16M)
+    cnidaria_16S__Porites_lutea:
+        forward_binding: "GGCTGTTTACCAAAAACATA"
+        reverse_binding: "AATTCAACATCGAGG"
+        accession: "KU159432.1"
+        forward_mismatches: 0
+        reverse_mismatches: 0
+        notes: >
+            Both primers match perfectly. 16S rRNA at positions 4034-4732
+            in the mitochondrial genome. Failure is not due to primer
+            mismatch — likely insufficient mitochondrial coverage given
+            the large genome (~542 Mb).
+
+    # Porites lutea — CO1 fails at all coverages
+    cnidaria_CO1__Porites_lutea:
+        forward_binding: "CCATAAAGACATTGG"
+        reverse_binding: "ATGCCCAAAGAACCA"
+        accession: "KU159432.1"
+        forward_mismatches: 2
+        reverse_mismatches: 1
+        notes: >
+            Forward: pos 1 T->C, pos 10 T->C. Reverse: pos 10 A->G.
+            COX1 is a split gene in Porites with an intron; both primers
+            bind within exon 1 (positions 42-729). With mismatches: 2
+            allowed in the panel, individual primers should match, but
+            combined 3 mismatches across the pair plus degenerate primer
+            expansion may limit kmer search.
+
+    # Agalma elegans — CO1 fails at 16M and 8M (works at lower coverages)
+    cnidaria_CO1__Agalma_elegans:
+        forward_binding: "TCATAAAGATATAGG"
+        reverse_binding: "ATGACCAAAAAATCA"
+        accession: "NC_080954.1"
+        forward_mismatches: 0
+        reverse_mismatches: 1
+        notes: >
+            Forward is an exact match. Reverse has 1 mismatch at position
+            13 of 15 (C->T), which is 3 bases from the 3' end — critical
+            for polymerase extension. Paradoxically amplifies at lower
+            coverages (1M-4M) but not at higher (8M-16M).
+
+    # Agalma elegans — EF1A fails at all coverages
+    cnidaria_EF1A__Agalma_elegans:
+        forward_binding: "ACGTGGTATGGTTGCATCTG"
+        reverse_binding: "TTTGATTATACCAACAGCAAC"
+        accession: "DQ157428.1"
+        forward_mismatches: 3
+        reverse_mismatches: 0
+        notes: >
+            Forward primer has 3 consecutive mismatches at positions 16-18
+            of 20 (positions 3-5 from 3' end): primer expects GCTGGTG but
+            target has GCATCTG. These 3' mismatches block polymerase
+            extension. Reverse primer is an exact match.
+
+    # Rhopilema esculentum — cnidaria ITS fails at 16M
+    cnidaria_ITS__Rhopilema_esculentum:
+        forward_binding: "TACACACCGCCCGTCGCTACTA"
+        reverse_binding: "ACTCGCCGTTACTGGGG"
+        accession_forward: "JX845352.1"
+        accession_reverse: "XR_010517148.1"
+        forward_mismatches: 0
+        reverse_mismatches: 0
+        notes: >
+            Both primers match perfectly. Forward at 18S pos 1643-1664,
+            reverse at 28S pos 78-94. Failure is not primer mismatch —
+            likely rDNA copy-number variation creating graph complexity,
+            or repetitive GT-rich motifs in ITS1.
+
+    # ── Insecta panel failures — Drosophila melanogaster ─────────────
+
+    # 12S fails at 16M (works at 2M)
+    insecta_12S__Drosophila_melanogaster:
+        forward_binding: "ACTATGTTACGACTTATC"
+        reverse_binding: "AGGATTAGATACCCTATT"
+        accession: "KJ947872.2"
+        forward_mismatches: 0
+        reverse_mismatches: 0
+        notes: >
+            Both primers match perfectly. Predicted amplicon ~425 bp.
+            Failure is not primer mismatch. Works at 2M reads but not
+            at 16M — may indicate a coverage-dependent graph complexity
+            issue.
+
+    # 16S fails at all coverages
+    insecta_16S__Drosophila_melanogaster:
+        forward_binding: "TAATCCAACATCGAGGTC"
+        reverse_binding: "CTGTGCAAAGGTAGCATA"
+        accession: "KJ947872.2"
+        forward_mismatches: 0
+        reverse_mismatches: 0
+        notes: >
+            Both Marquina Chiar16S primers match perfectly. Predicted
+            amplicon ~387 bp. Failure is not primer mismatch.
+
+    # 16S-v2 fails at all coverages
+    insecta_16S-v2__Drosophila_melanogaster:
+        forward_binding: "CCGGTTTGAACTCAGATCATGT"
+        reverse_binding: "CGCCTGTTTAACAAAAACAT"
+        accession: "KJ947872.2"
+        forward_mismatches: 1
+        reverse_mismatches: 0
+        notes: >
+            Forward: 1 mismatch at pos 20 of 22 (C->T), internal to
+            primer (not at 3' end). Reverse: exact match. Predicted
+            amplicon ~554 bp. Single internal mismatch should not
+            prevent amplification.
+
+    # ND1 fails at 16M (works at 2M-4M)
+    insecta_ND1__Drosophila_melanogaster:
+        forward_binding: "ATTAATTTATCATAACGA"
+        reverse_binding: "TTTTGATTTTGCTGAAGG"
+        accession: "KJ947872.2"
+        forward_mismatches: 0
+        reverse_mismatches: 0
+        notes: >
+            Both Marquina HexND1 primers match perfectly. Predicted
+            amplicon ~246 bp. Failure is not primer mismatch.
+            Works at lower coverages (2M-4M) but not at 16M.
+
+    # ND4 fails at 16M (works at 2M)
+    insecta_ND4__Drosophila_melanogaster:
+        forward_binding: "TGGAGCTTCAACATGAGC"
+        reverse_binding: "AGGTTATCAGCCAGAACG"
+        accession: "KJ947872.2"
+        forward_mismatches: 0
+        reverse_mismatches: 0
+        notes: >
+            Both Marquina HexND4 primers match perfectly. Predicted
+            amplicon ~247 bp. Failure is not primer mismatch.
+
+    # NADH (actually ND2) fails at all coverages
+    insecta_NADH__Drosophila_melanogaster:
+        forward_binding: "AGCTACTGGGTTCATACCCC"
+        reverse_binding: "GAAGTTTGATTTAATCCTCC"
+        accession: "KJ947872.2"
+        forward_mismatches: 2
+        reverse_mismatches: 2
+        notes: >
+            These O'Grady primers actually target ND2, not ND5.
+            Forward: 2mm at pos 6 (T->C) and pos 15 (G->T).
+            Reverse: 2mm at pos 9 (G->A) and pos 15 (A->T).
+            All mismatches are internal (not at 3' terminus).
+            Predicted amplicon ~560 bp.
+
+    # 28S (Machida) fails at all coverages
+    insecta_28S__Drosophila_melanogaster:
+        forward_binding: "GGGAAAGAAGACCCTTTTGAG"
+        reverse_binding: "GCTTGGCCGCCACAAGCCAGTTA"
+        accession: "M21017.1"
+        forward_mismatches: 1
+        reverse_mismatches: 0
+        notes: >
+            Forward: 1mm at pos 16 (G->T). Reverse: exact match.
+            Predicted amplicon ~601 bp (shorter than expected ~757 bp
+            due to Drosophila 28S being shorter in this region).
+            Also note: Drosophila 28S has R1/R2 retrotransposon
+            insertions in many rDNA copies, complicating graph assembly.
+
+    # ITS (full-length 18S-to-28S) fails at all coverages
+    insecta_ITS__Drosophila_melanogaster:
+        forward_binding: "AACTTAAAGGAATTGACGGA"
+        reverse_binding: "CTCAAAAGGGTCTTCTTTCCC"
+        accession: "M21017.1"
+        forward_mismatches: 0
+        reverse_mismatches: 1
+        notes: >
+            Forward: exact match. Reverse: 1mm at pos 6 (C->A).
+            Amplicon is ~4835 bp (matches expected ~4800 bp).
+            Drosophila ITS1 is unusually long (~726 bp vs ~200-400 bp
+            in typical insects). The very large amplicon size likely
+            exceeds what de Bruijn graph assembly can handle from
+            short reads.
+
+    # EF1g (Magnacca, designed for Hylaeus bees) fails at all coverages
+    insecta_EF1g__Drosophila_melanogaster:
+        forward_binding: "GCCTTTGAGACCGCCGAAGG"
+        reverse_binding: "ATCTTGTCCAGACGCTGGAA"
+        accession: "NM_143743.3"
+        forward_mismatches: 3
+        reverse_mismatches: 1
+        notes: >
+            Forward: 3mm at pos 3 (T->C), pos 16 (T->G), pos 18 (T->A) —
+            2 of 3 mismatches in 3' half of primer. Reverse: 1mm.
+            Primers designed for Hylaeus bees (Hymenoptera), too divergent
+            for Diptera.
+
+    # Fz4 (Magnacca) — no functional binding site
+    insecta_Fz4__Drosophila_melanogaster:
+        forward_binding: "GTGTCTTCCTTATGCGCTACTAT"
+        reverse_binding: null
+        accession: "NM_078513.3"
+        forward_mismatches: 4
+        reverse_mismatches: ">5"
+        notes: >
+            Forward: 4 mismatches. Reverse: no detectable binding site
+            within 5 mismatches anywhere in the fz4 gene. Primers designed
+            for Hylaeus bees, completely incompatible with Drosophila.
+
+    # Gpdh (Magnacca) fails at all coverages
+    insecta_Gpdh__Drosophila_melanogaster:
+        forward_binding: "CCCGACCTGGTTGAGGCCGCCAAGAACGC"
+        reverse_binding: "ACATATGCTCAGGGTGATTGCGTATGCA"
+        accession: "NM_057219.4"
+        forward_mismatches: 2
+        reverse_mismatches: 0
+        notes: >
+            Forward: 2mm at pos 17 (T->C) and pos 27 (T->C).
+            Reverse: exact match. mRNA amplicon ~820 bp; genomic would
+            be larger with introns (~1071 bp expected). Marginal —
+            may work with relaxed conditions.
+
+    # Pgi (Magnacca) fails at all coverages
+    insecta_Pgi__Drosophila_melanogaster:
+        forward_binding: "GCCATGTTCTCCGGCCAGCACAT"
+        reverse_binding: "TAGCGACCGCCCACCCAATCCCA"
+        accession: "NM_078939.3"
+        forward_mismatches: 0
+        reverse_mismatches: 2
+        notes: >
+            Forward: exact match (all degenerate bases resolve).
+            Reverse: 2mm at pos 3 (A->G) and pos 9 (T->C).
+            mRNA amplicon ~572 bp; genomic ~633 bp expected.
+
+    # 28S-v2 (Evans) — too many mismatches
+    insecta_28S-v2__Drosophila_melanogaster:
+        forward_binding: "TCTTAGTAGCGGCGAGC"
+        reverse_binding: null
+        accession: "M21017.1"
+        forward_mismatches: 3
+        reverse_mismatches: 5
+        notes: >
+            Forward: 3mm at pos 1, 9, 17 (including first and last
+            positions). Reverse: 5mm — functionally non-binding.
+            Evans et al. primers target conserved 28S regions that have
+            diverged in Drosophila.
+
+    # ITS-v2 (Ji) — reverse primer incompatible
+    insecta_ITS-v2__Drosophila_melanogaster:
+        forward_binding: "TACACACCGCCCGTCGCTACTA"
+        reverse_binding: "GCTCGCCGCTACTAAGA"
+        accession: "M21017.1"
+        forward_mismatches: 0
+        reverse_mismatches: 3
+        notes: >
+            Forward: exact match in 18S. Reverse: 3mm at pos 1, 9, 17.
+            The reverse primer shares its binding target with 28S-v2
+            forward (same 5' region of 28S). Even if it bound, the
+            Drosophila amplicon would be ~1567 bp (vs expected 770-880 bp)
+            due to the expanded ITS1 (~726 bp).
+
+    # ITS-v3 (Ji) — reverse primer incompatible
+    insecta_ITS-v3__Drosophila_melanogaster:
+        forward_binding: "GTAGGTGAACCTGCGGAAGGATCA"
+        reverse_binding: "GCTCGCCGCTACTAAGA"
+        accession: "M21017.1"
+        forward_mismatches: 1
+        reverse_mismatches: 3
+        notes: >
+            Forward: 1mm at pos 15 (A->G). Reverse: same 3mm as ITS-v2.
+            Even if bound, amplicon would be ~1420 bp (vs expected
+            620-730 bp) due to expanded ITS1.
+
+    # ── Insecta panel failures — Heliconius pachinus ─────────────────
+
+    # 16S-v2 (O'Grady, Drosophila-specific) fails at 16M
+    insecta_16S-v2__Heliconius_pachinus:
+        forward_binding: "CCGGTTTGAACTCAGATCATGT"
+        reverse_binding: "CACTTGTTTATCAAAAACAT"
+        accession: "NC_024741.1"
+        forward_mismatches: 1
+        reverse_mismatches: 3
+        notes: >
+            Forward: 1mm at pos 20 (C->T), 3 bases from 3' end.
+            Reverse: 3mm at pos 2 (G->A), pos 4 (C->T), pos 11 (A->T).
+            Drosophila-specific primers; reverse is too divergent for
+            Lepidoptera.
+
+    # CO2-v2 (O'Grady, Drosophila-specific) fails at all coverages
+    insecta_CO2-v2__Heliconius_pachinus:
+        forward_binding: "ATGGCAACCTGATCTAATTT"
+        reverse_binding: "GTTTAAGAGACCAGTACTTG"
+        accession: "NC_024741.1"
+        forward_mismatches: 7
+        reverse_mismatches: 0
+        notes: >
+            Forward: 7+ mismatches — completely incompatible. Only the
+            first 6 bases match (start codon region ATGGCA). Reverse:
+            exact match. Drosophila-specific primers.
+
+    # ND4 (Marquina, Hexapoda) fails at 16M (works at 4M)
+    insecta_ND4__Heliconius_pachinus:
+        forward_binding: "AGGAGCTTCAACATGAGC"
+        reverse_binding: "AGGATATCAACCTGAGCG"
+        accession: "NC_024741.1"
+        forward_mismatches: 0
+        reverse_mismatches: 0
+        notes: >
+            Both primers match perfectly. Predicted amplicon 248 bp.
+            Failure is not primer mismatch. Highly degenerate primers
+            (H/D/Y/N/R) may generate too many kmer permutations,
+            or AT-rich Lepidopteran mt genome causes graph issues.
+
+    # NADH (O'Grady) — binds wrong gene region entirely
+    insecta_NADH__Heliconius_pachinus:
+        forward_binding: "AGCTTTTGGGTTCATACCCC"
+        reverse_binding: "GAAGTTTGATTGAATCTTCC"
+        accession: "NC_024741.1"
+        forward_mismatches: 2
+        reverse_mismatches: 4
+        notes: >
+            Forward best match is in tRNA-Met (not ND5); reverse best
+            match is in ND2. Neither primer binds near ND5 (complement
+            6333-8066). Drosophila-specific primers are non-functional
+            in Lepidoptera.
+
+    # Yp2 — gene does not exist in Lepidoptera
+    insecta_Yp2__Heliconius_pachinus:
+        forward_binding: null
+        reverse_binding: null
+        accession: null
+        forward_mismatches: null
+        reverse_mismatches: null
+        notes: >
+            Yp2 (yolk protein 2) is a Diptera-specific gene. It does not
+            exist in Lepidoptera. Amplification failure is expected.
+
+    # EF1g, Fz4, Gpdh, Pgi — no public Heliconius sequences available
+    # 28S, 28S-v2, ITS, ITS-v2, ITS-v3 — no suitable standalone
+    #   reference sequences in GenBank for Heliconius
+
+    # ── Insecta panel failures — Gryllus bimaculatus ─────────────────
+
+    # CO2-v2 (O'Grady, Drosophila-specific) fails at all coverages
+    insecta_CO2-v2__Gryllus_bimaculatus:
+        forward_binding: "ATGGCAGAAAAGTGCGATGA"
+        reverse_binding: "ATTTAAGAGATCATTACTTA"
+        accession: "MT993975.1"
+        forward_mismatches: 4
+        reverse_mismatches: 4
+        notes: >
+            Forward: 4mm at pos 9, 10, 16, 20. Reverse: 4mm at pos
+            1, 11, 14, 20. Both primers exceed the mismatches: 2
+            threshold. O'Grady Drosophila-specific primers are too
+            divergent for Orthoptera (~300 Myr divergence).
+
+    # Yp2 — Diptera-specific gene
+    insecta_Yp2__Gryllus_bimaculatus:
+        forward_binding: null
+        reverse_binding: null
+        accession: null
+        forward_mismatches: null
+        reverse_mismatches: null
+        notes: >
+            Yp2 is a Diptera-specific gene. The ortholog in crickets
+            (vitellogenin) is too divergent for these primers. Failure
+            is expected.
+
+    # 28S-v2, ITS-v2, ITS-v3 — only partial reference sequences available
+    # EF1g, Fz4, Gpdh, Pgi — no public Gryllus gene sequences available
