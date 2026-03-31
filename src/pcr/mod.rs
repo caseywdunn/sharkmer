@@ -31,6 +31,7 @@ mod graph;
 mod paths;
 mod primers;
 mod pruning;
+mod seed_eval;
 
 // Constants that may require tuning
 
@@ -354,7 +355,7 @@ pub fn do_pcr(
         forward_primer_kmers.len(),
         reverse_primer_kmers.len()
     );
-    let (seed_graph, node_lookup) =
+    let (mut seed_graph, node_lookup) =
         graph::create_seed_graph(&forward_primer_kmers, &reverse_primer_kmers, kmer_counts);
 
     debug!(
@@ -390,6 +391,16 @@ pub fn do_pcr(
 
     let coverage_thresholds = compute_coverage_thresholds(primer_count, params.min_count);
     debug!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
+
+    // Evaluate seeds: bounded local exploration to filter off-target seeds
+    let highest_threshold = coverage_thresholds[0];
+    seed_eval::evaluate_seeds(
+        &mut seed_graph,
+        &node_lookup,
+        kmer_counts,
+        params,
+        highest_threshold,
+    );
 
     let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
     let mut amplicon_index: usize = 0;
