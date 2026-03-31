@@ -254,7 +254,7 @@ everything downstream), then structural cleanup, then path finding.
   `bounded_levenshtein` on-the-fly against kept records only.
 - [ ] Evaluate #12 (duplicate product 0) — may be resolved by improved
   graph traversal and path selection
-- [ ] #108 Unify forward and reverse primer handling. Remove the
+- [x] #108 Unify forward and reverse primer handling. Remove the
   asymmetric reverse-complement step during preprocessing; both
   primers are processed identically (trim → expand → permute) and
   matched at the START of their respective kmers. Nodes are annotated
@@ -262,18 +262,19 @@ everything downstream), then structural cleanup, then path finding.
   Prerequisite refactor for #107 — makes reverse extension
   fall out naturally (forward seeds extend rightward, reverse seeds
   extend leftward).
-- [ ] #107 Reverse graph extension from forward and reverse primer
+- [x] #107 Reverse graph extension from forward and reverse primer
   seeds. Extend graph from both directions simultaneously; frontiers
   converge at the amplicon region and off-target seeds never meet.
   Naturally provides seed coherence, reduces path length through
   complex regions (exponential branching cut in half), and focuses
   the graph on the amplicon subgraph. Depends on #108. See diagnostic
   evidence in `tmp/porites_tests/ANALYSIS_16M.md`.
-- [ ] #105 Early termination for off-target graph explosion. Evaluate
-  after #107 — reverse extension may address the core problem
-  (seed coherence, wasted node budget) directly, reducing or
-  eliminating the need for the heuristic mitigations proposed in
-  #105 (adaptive budget, early termination checks).
+- [ ] #105 Early termination for off-target graph explosion. Evaluated
+  after #107: reverse extension gained 3 genes but lost 2 (Rhopilema
+  CO1 and 16S-515F-Y-926R — both marginal cases near 50K node budget
+  or DFS state limits). Remaining mitigations to consider: adaptive
+  per-direction node budgets, seed coherence pre-check, early
+  termination when graph grows without convergence.
 
 ### Validation
 
