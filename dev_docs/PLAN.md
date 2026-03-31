@@ -259,10 +259,10 @@ everything downstream), then structural cleanup, then path finding.
   primers are processed identically (trim → expand → permute) and
   matched at the START of their respective kmers. Nodes are annotated
   as forward or reverse, paths emitted only from forward to reverse.
-  Prerequisite refactor for #107 — makes bidirectional extension
+  Prerequisite refactor for #107 — makes reverse extension
   fall out naturally (forward seeds extend rightward, reverse seeds
   extend leftward).
-- [ ] #107 Bidirectional graph extension from forward and reverse primer
+- [ ] #107 Reverse graph extension from forward and reverse primer
   seeds. Extend graph from both directions simultaneously; frontiers
   converge at the amplicon region and off-target seeds never meet.
   Naturally provides seed coherence, reduces path length through
@@ -270,7 +270,7 @@ everything downstream), then structural cleanup, then path finding.
   the graph on the amplicon subgraph. Depends on #108. See diagnostic
   evidence in `tmp/porites_tests/ANALYSIS_16M.md`.
 - [ ] #105 Early termination for off-target graph explosion. Evaluate
-  after #107 — bidirectional extension may address the core problem
+  after #107 — reverse extension may address the core problem
   (seed coherence, wasted node budget) directly, reducing or
   eliminating the need for the heuristic mitigations proposed in
   #105 (adaptive budget, early termination checks).
