@@ -320,6 +320,13 @@ Read threading behavior by input source:
   will be fetched from server twice
 - **stdin**: implies `--no-read-threading`, log info message explaining why
 
+**Design note for Phase 7 (runway) reuse:** The read retention
+infrastructure should support filtering reads by primer kmer match (not
+just graph edge match). Phase 7 needs primer-containing reads before
+the full graph exists — during seed evaluation. Design the retention
+API so it can be queried per-seed (e.g., "give me all reads containing
+this primer kmer") rather than only per-graph-edge.
+
 - [ ] #96 Two-pass architecture: Pass 1 counts kmers (as now), Pass 2
   re-reads FASTQ for threading. `--no-read-threading` flag to skip second
   pass. File input seeks back; remote input reads from cache (Phase 2);
@@ -342,6 +349,12 @@ for full mechanics and
 [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#graph-annotation-model-preserve-structure-defer-decisions)
 for the annotation-only model.
 
+**Design note for Phase 7 (runway) reuse:** The read-to-graph mapping
+logic should work on arbitrary subgraphs, not just the full amplicon
+graph. Phase 7 threads reads through bounded seed subgraphs using the
+same mapping code. Keep the threading API graph-agnostic: accept any
+`StableDiGraph<DBNode, DBEdge>` plus a set of reads, return annotations.
+
 - [ ] #98 Map reads to graph edges via maximal contiguous runs of adjacent
   graph kmers. Annotate per edge:
   - `read_support_total` — every read whose run includes this edge
@@ -356,6 +369,14 @@ for the annotation-only model.
 
 Use read-support and phasing annotations to improve path scoring via the
 pluggable interface designed in Phase 3 (#90). No graph structure edits.
+
+**Design note for Phase 7 (runway) reuse:** The read-support signals
+used for path scoring (read count, consistency, unambiguous support)
+are the same signals Phase 7 uses to evaluate seeds. Phase 7 asks
+"does this seed have consistent read support?" rather than "which path
+has the best read support?" — same data, different question. Keep the
+signal computation separate from the scoring/decision logic so both
+phases can reuse it.
 
 - [ ] #99 Add read-support signal to path scoring: penalize edges with
   zero read support, prefer edges with high unambiguous support
@@ -372,7 +393,26 @@ pluggable interface designed in Phase 3 (#90). No graph structure edits.
   without needing insert size calibration.
 - [ ] Run benchmarks, compare to Phase 3 and Phase 5 results
 
-## Phase 7 — Performance optimizations
+## Phase 7 — Read-backed runway for seed evaluation
+
+Reuse the read threading infrastructure (Phases 4-6) to replace the
+kmer-table-only seed evaluation (#105) with read-backed evaluation.
+For each seed, actual reads containing the primer kmer provide direct
+evidence of whether the seed is real. See #110 for full design.
+
+- [ ] #110 Read-backed runway: during Pass 2, collect reads matching
+  each primer kmer. For each seed, thread its reads through a bounded
+  local subgraph. Seeds with consistent read support (reads extending
+  in the same direction, sharing overlapping kmers) are real. Seeds
+  where reads diverge immediately are off-target. Seeds that pass
+  get a pre-built read-backed subgraph ("runway") incorporated into
+  the main graph, giving full extension a head start.
+- [ ] Evaluate whether kmer-only seed evaluation (#105) should be
+  retained as a fast pre-filter before read-backed evaluation, or
+  replaced entirely.
+- [ ] Run benchmarks, compare to Phase 3 (#105 kmer-only) results.
+
+## Phase 8 — Performance optimizations
 
 Hot-path performance improvements identified by code review. No behavioral
 changes — benchmark to confirm identical results. See #103 for full analysis
@@ -427,13 +467,13 @@ and rationale.
 
 ### Validation
 
-- [ ] Run benchmarks, confirm identical results to Phase 6
+- [ ] Run benchmarks, confirm identical results to Phase 7
 - [ ] Profile before/after to quantify gains
 
-## Phase 8 — Cleanup and validation
+## Phase 9 — Cleanup and validation
 
 - [ ] Final benchmark comparison across all phases (skip if already run
-  at end of Phase 7)
+  at end of Phase 8)
 - [ ] Update integration tests for v3.0 behavior
 - [ ] Update documentation:
   - [ ] README.md (user-facing changes, new flags, updated examples)
