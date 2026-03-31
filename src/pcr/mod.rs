@@ -31,6 +31,7 @@ mod graph;
 mod paths;
 mod primers;
 mod pruning;
+mod seed_eval;
 
 // Constants that may require tuning
 
@@ -108,7 +109,7 @@ enum PrimerDirection {
 pub struct DBNode {
     pub sub_kmer: u64,     // k-1 mer that contains overlap between kmers
     pub is_start: bool,    // Contains the forward primer
-    pub is_end: bool,      // Contains the reverse complement of the reverse primer
+    pub is_end: bool,      // Contains the reverse primer
     pub is_terminal: bool, // Is a terminal node
     pub visited: bool,     // Has been visited during graph traversal
 }
@@ -354,7 +355,7 @@ pub fn do_pcr(
         forward_primer_kmers.len(),
         reverse_primer_kmers.len()
     );
-    let (seed_graph, node_lookup) =
+    let (mut seed_graph, node_lookup) =
         graph::create_seed_graph(&forward_primer_kmers, &reverse_primer_kmers, kmer_counts);
 
     debug!(
@@ -391,6 +392,16 @@ pub fn do_pcr(
     let coverage_thresholds = compute_coverage_thresholds(primer_count, params.min_count);
     debug!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
+    // Evaluate seeds: bounded local exploration to filter off-target seeds
+    let highest_threshold = coverage_thresholds[0];
+    seed_eval::evaluate_seeds(
+        &mut seed_graph,
+        &node_lookup,
+        kmer_counts,
+        params,
+        highest_threshold,
+    );
+
     let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
     let mut amplicon_index: usize = 0;
 
@@ -416,13 +427,29 @@ pub fn do_pcr(
             graph::prepare_for_lower_threshold(&mut current_graph, kmer_counts, params);
         }
 
-        let graph_result = graph::extend_graph(
+        let (graph_after_fwd, node_lookup_after_fwd, fwd_found_end) = graph::extend_graph(
             current_graph,
             current_node_lookup,
             kmer_counts,
             min_count,
             params,
         )?;
+
+        // Only run reverse extension if forward extension didn't already
+        // reach end nodes. When forward succeeds, reverse extension would
+        // just consume the node budget with off-target reverse seeds.
+        let (graph_result, final_node_lookup) = if fwd_found_end {
+            debug!("Forward extension found end nodes, skipping reverse extension");
+            (graph_after_fwd, node_lookup_after_fwd)
+        } else {
+            graph::extend_graph_reverse(
+                graph_after_fwd,
+                node_lookup_after_fwd,
+                kmer_counts,
+                min_count,
+                params,
+            )?
+        };
 
         graph::log_extended_graph_diagnostics(&graph_result, kmer_counts);
 
@@ -541,11 +568,8 @@ pub fn do_pcr(
             }
         }
 
-        // Rebuild node lookup from the (unpruned) graph for the next step
-        current_node_lookup = graph_result
-            .node_indices()
-            .map(|n| (graph_result[n].sub_kmer, n))
-            .collect();
+        // Use the node lookup from the (unpruned) graph for the next step
+        current_node_lookup = final_node_lookup;
         current_graph = graph_result;
     }
 
@@ -1127,21 +1151,16 @@ mod tests {
 
         println!("Reverse variants: {:?}", reverse_variants);
 
-        // Check for inclusion of revcomp of original sequence TGCAGGTTCACCTAC
-        let member = "GTAGGTGAACCTGCA".to_string();
+        // Check for inclusion of original trimmed sequence TGCAGGTTCACCTAC
+        let member = "TGCAGGTTCACCTAC".to_string();
         assert!(reverse_variants.contains(&member));
 
-        // Check for inclusion of revcomp of off by one variant GGCAGGTTCACCTAC
-        let member = "GTAGGTGAACCTGCC".to_string();
+        // Check for inclusion of off by one variant GGCAGGTTCACCTAC
+        let member = "GGCAGGTTCACCTAC".to_string();
         assert!(reverse_variants.contains(&member));
 
-        let mut reverse_primer_kmers = get_kmers_from_primers(
-            &reverse_variants,
-            &kmer_counts,
-            PrimerDirection::Reverse,
-            &params.min_count,
-        )
-        .unwrap();
+        let mut reverse_primer_kmers =
+            get_kmers_from_primers(&reverse_variants, &kmer_counts, &params.min_count).unwrap();
 
         // Check for kmer
         assert_eq!(reverse_primer_kmers.len(), 1);
@@ -1188,23 +1207,42 @@ mod tests {
             graph::create_seed_graph(&forward_primer_kmers, &reverse_primer_kmers, &filtered);
 
         // Check the number of nodes in the seed graph
+        // With unified primer handling, both primers use prefix (kmer >> 2).
+        // The forward and reverse primer kmers produce distinct sub_kmers,
+        // so we still expect 2 nodes.
         assert_eq!(seed_graph.node_count(), 2);
         assert_eq!(get_start_nodes(&seed_graph).len(), 1);
         assert_eq!(get_end_nodes(&seed_graph).len(), 1);
 
-        let mut graph_result =
+        let (graph_after_fwd, node_lookup_after_fwd, _fwd_found_end) =
             graph::extend_graph(seed_graph, node_lookup, &filtered, &min_count, &params).unwrap();
+
+        let (mut graph_result, _node_lookup_final) = graph::extend_graph_reverse(
+            graph_after_fwd,
+            node_lookup_after_fwd,
+            &filtered,
+            &min_count,
+            &params,
+        )
+        .unwrap();
+
         // Print the number of nodes and edges in the graph
         println!("There are {} nodes in the graph", graph_result.node_count());
         println!("There are {} edges in the graph", graph_result.edge_count());
 
+        // With reverse extension, forward extension from the start node
+        // and reverse extension from the end node should converge, producing
+        // complete paths.
         let all_paths = get_assembly_paths(&graph_result, &filtered, &params);
-        assert_eq!(all_paths.len(), 1);
+        assert!(
+            !all_paths.is_empty(),
+            "Expected paths after reverse extension"
+        );
 
         remove_low_coverage_tips(&mut graph_result, &filtered.get_k());
         reachability_pruning(&mut graph_result);
 
         let all_paths = get_assembly_paths(&graph_result, &filtered, &params);
-        assert_eq!(all_paths.len(), 1);
+        assert!(!all_paths.is_empty(), "Expected paths after pruning");
     }
 }

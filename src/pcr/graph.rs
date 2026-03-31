@@ -1,6 +1,6 @@
 // pcr/graph.rs — graph data structures and construction
 
-use anyhow::{Context, Result, bail};
+use anyhow::{Context, Result};
 use log::{debug, trace};
 use petgraph::Direction;
 use petgraph::algo::is_cyclic_directed;
@@ -83,7 +83,9 @@ pub fn get_path_length(
         {
             current_node = next_node;
         } else {
-            bail!("Node has no incoming edge; cannot trace path back to start node.");
+            // Node has no incoming edge — may be a reverse-extended node
+            // that hasn't connected to a start node yet
+            return Ok(None);
         }
     }
     Ok(Some(path_length))
@@ -202,49 +204,72 @@ pub(super) fn create_seed_graph(
     let mut seed_graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
     let mut node_lookup: HashMap<u64, NodeIndex> = HashMap::new();
 
-    // Create a suffix mask with 1 in the (2 * (k - 1)) least significant bits
-    let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
+    let k = kmer_counts.get_k();
+    let suffix_mask = get_suffix_mask(&k);
 
-    // Add the forward primer matches to the graph
-    // Sort kmers for deterministic output
+    // Seed the graph with primer kmer nodes.
+    //
+    // Both forward and reverse primer kmers arrive from find_oligos_in_kmers()
+    // oriented with the primer at the 5' (START) of the kmer. For forward
+    // primers this is the sense strand; for reverse primers this is the
+    // antisense strand.
+    //
+    // All graph nodes must be on the same strand for extension and path
+    // finding to work (nodes are (k-1)-mers; two nodes representing the
+    // same position on opposite strands have different sub_kmer values and
+    // would never converge). We use the sense strand throughout.
+    //
+    // Forward seed sub_kmer derivation:
+    //   Kmer is already sense-strand:  5' PPPPPPPPPPPPPPP|XXXXXX 3'
+    //   sub_kmer = prefix (kmer >> 2): 5' PPPPPPPPPPPPPPPXXXXX  3'
+    //   Forward extension appends bases at the 3' end (rightward).
+    //
+    // Reverse seed sub_kmer derivation (strand normalization):
+    //   Kmer is antisense-strand:      5' RRRRRRRRRRRRRRR|XXXXXX 3'
+    //   Revcomp to sense strand:       5' X'X'X'X'X'X'|R'R'R'R'R'R'R'R'R'R'R'R'R'R'R' 3'
+    //   sub_kmer = suffix (& mask):    5' X'X'X'X'X'R'R'R'R'R'R'R'R'R'R'R'R'R'R'R'    3'
+    //   This is the sense-strand (k-1)-mer at the 3' end of the amplicon,
+    //   where forward extension arrives. Reverse extension prepends bases
+    //   at the 5' end (leftward on sense strand).
+
+    // Forward primer seeds
     let mut sorted_forward_kmers = forward_primer_kmers.kmers();
     sorted_forward_kmers.sort();
     for kmer in sorted_forward_kmers {
-        let prefix = kmer >> 2;
+        let sub_kmer = kmer >> 2;
 
-        if let Some(&existing) = node_lookup.get(&prefix) {
+        if let Some(&existing) = node_lookup.get(&sub_kmer) {
             seed_graph[existing].is_start = true;
         } else {
             let node = seed_graph.add_node(DBNode {
-                sub_kmer: prefix,
+                sub_kmer,
                 is_start: true,
                 is_end: false,
                 is_terminal: false,
                 visited: false,
             });
-            node_lookup.insert(prefix, node);
+            node_lookup.insert(sub_kmer, node);
         }
     }
 
-    // Add the reverse primer matches to the graph
-    // Sort kmers for deterministic output
+    // Reverse primer seeds (strand-normalized to sense strand)
     let mut sorted_reverse_kmers = reverse_primer_kmers.kmers();
     sorted_reverse_kmers.sort();
     for kmer in sorted_reverse_kmers {
-        let suffix = kmer & suffix_mask;
+        let rc_kmer = crate::kmer::revcomp_kmer(&kmer, &k);
+        let sub_kmer = rc_kmer & suffix_mask;
 
-        if let Some(&existing) = node_lookup.get(&suffix) {
+        if let Some(&existing) = node_lookup.get(&sub_kmer) {
             seed_graph[existing].is_end = true;
-            seed_graph[existing].is_terminal = true;
         } else {
             let node = seed_graph.add_node(DBNode {
-                sub_kmer: suffix,
+                sub_kmer,
                 is_start: false,
                 is_end: true,
-                is_terminal: true,
-                visited: true,
+                is_terminal: false,
+                visited: false,
             });
-            node_lookup.insert(suffix, node);
+            node_lookup.insert(sub_kmer, node);
         }
     }
 
@@ -277,11 +302,11 @@ pub(super) fn create_seed_graph(
 // - The prefix of the kmer of the node is the sub_kmer of the parent node in the graph
 // - The suffix of the kmer of the node is the sub_kmer of the new node in the graph
 // - If a node with the sub_kmer already exists, add a new edge to the existing node
-/// Reset terminal and visited flags on nodes that may have new successors at a
-/// lower count threshold. End nodes stay terminal (they are true endpoints).
-/// Nodes at max-length stay terminal (re-extension would re-mark them anyway).
-/// All other terminal nodes are un-terminaled and un-visited so extension can
-/// retry them.
+/// Reset terminal and visited flags on nodes that may have new successors or
+/// predecessors at a lower count threshold. Nodes that are both start AND end
+/// (overlapping primers) stay terminal. Nodes at max-length from their
+/// respective direction's seed stay terminal. All other terminal nodes are
+/// un-terminaled and un-visited so extension can retry them.
 pub(super) fn prepare_for_lower_threshold(
     graph: &mut StableDiGraph<DBNode, DBEdge>,
     kmer_counts: &FilteredKmerCounts,
@@ -292,13 +317,27 @@ pub(super) fn prepare_for_lower_threshold(
         .node_indices()
         .filter(|&node| {
             let data = &graph[node];
-            if !data.is_terminal || data.is_end {
+            if !data.is_terminal {
                 return false;
             }
-            // Keep terminal if at max-length
-            if let Ok(Some(path_length)) = get_path_length(graph, node) {
-                if path_length + kmer_counts.get_k() > params.max_length {
-                    return false;
+            // Nodes that are both start and end (overlapping primers) stay terminal
+            if data.is_start && data.is_end {
+                return false;
+            }
+            // Keep terminal if at max-length from start (forward direction)
+            if !data.is_end {
+                if let Ok(Some(path_length)) = get_path_length(graph, node) {
+                    if path_length + kmer_counts.get_k() > params.max_length {
+                        return false;
+                    }
+                }
+            }
+            // Keep terminal if at max-length from end (reverse direction)
+            if !data.is_start {
+                if let Ok(Some(path_length)) = get_path_length_from_end(graph, node) {
+                    if path_length + kmer_counts.get_k() > params.max_length {
+                        return false;
+                    }
                 }
             }
             true
@@ -311,14 +350,24 @@ pub(super) fn prepare_for_lower_threshold(
     }
 }
 
+#[allow(clippy::type_complexity)]
 pub(super) fn extend_graph(
     mut graph: StableDiGraph<DBNode, DBEdge>,
     mut node_lookup: HashMap<u64, NodeIndex>,
     kmer_counts: &FilteredKmerCounts,
     min_count: &u32,
     params: &PCRParams,
-) -> Result<StableDiGraph<DBNode, DBEdge>> {
+) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>, bool)> {
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
+    let mut found_end_node = false;
+
+    // Mark end-only nodes as visited so forward extension skips them.
+    // They will be un-visited by reverse extension.
+    for node in graph.node_indices().collect::<Vec<_>>() {
+        if graph[node].is_end && !graph[node].is_start {
+            graph[node].visited = true;
+        }
+    }
 
     let mut last_check: usize = 0;
     while n_unvisited_nodes_in_graph(&graph) > 0 {
@@ -425,6 +474,7 @@ pub(super) fn extend_graph(
                             let edge = get_dbedge(kmer, kmer_counts);
                             graph.add_edge(node, existing_node, edge);
                             if graph[existing_node].is_end {
+                                found_end_node = true;
                                 gene_info!(
                                     params.gene_name,
                                     "End node incorporated into graph, complete PCR product found."
@@ -504,7 +554,261 @@ pub(super) fn extend_graph(
         }
     }
 
-    Ok(graph)
+    Ok((graph, node_lookup, found_end_node))
+}
+
+/// Trace forward (outgoing edges) from a node to find the shortest path to an
+/// end node. Returns `None` if a cycle is encountered before reaching an end.
+pub fn get_path_length_from_end(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    new_node: NodeIndex,
+) -> Result<Option<usize>> {
+    let mut path_length = 0;
+    let mut current_node = new_node;
+    let mut visited_nodes: HashSet<NodeIndex> = HashSet::new();
+
+    loop {
+        if visited_nodes.contains(&current_node) {
+            return Ok(None);
+        }
+        visited_nodes.insert(current_node);
+
+        let current_node_data = graph
+            .node_weight(current_node)
+            .context("Node not found in graph during path length calculation")?;
+        if current_node_data.is_end {
+            break;
+        }
+
+        path_length += 1;
+        if let Some(next_node) = graph
+            .neighbors_directed(current_node, Direction::Outgoing)
+            .next()
+        {
+            current_node = next_node;
+        } else {
+            // Node has no outgoing edge and is not an end node — during
+            // reverse extension, new nodes may not yet have outgoing paths.
+            return Ok(None);
+        }
+    }
+    Ok(Some(path_length))
+}
+
+/// Extend graph in reverse from end nodes by adding predecessor edges/nodes.
+/// Mirrors `extend_graph` but extends leftward: for each unvisited end node,
+/// finds candidate predecessor kmers and adds them to the graph.
+pub(super) fn extend_graph_reverse(
+    mut graph: StableDiGraph<DBNode, DBEdge>,
+    mut node_lookup: HashMap<u64, NodeIndex>,
+    kmer_counts: &FilteredKmerCounts,
+    min_count: &u32,
+    params: &PCRParams,
+) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>)> {
+    let k = kmer_counts.get_k();
+    let prefix_shift = 2 * (k - 1);
+
+    let mut last_check: usize = 0;
+
+    // Un-visit end-only nodes so reverse extension processes them.
+    // Forward extension marked them visited to skip them.
+    for node in graph.node_indices().collect::<Vec<_>>() {
+        if graph[node].is_end && !graph[node].is_start && !graph[node].is_terminal {
+            graph[node].visited = false;
+        }
+    }
+    loop {
+        // Find unvisited nodes that should be reverse-extended.
+        // These are nodes that are either end nodes or were created by reverse extension.
+        let unvisited: Vec<NodeIndex> = graph
+            .node_indices()
+            .filter(|&node| !graph[node].visited)
+            .collect();
+
+        if unvisited.is_empty() {
+            break;
+        }
+
+        let n_nodes = graph.node_count();
+
+        if n_nodes > MAX_NUM_NODES {
+            gene_info!(
+                params.gene_name,
+                "Reverse extension: {} nodes exceeds maximum of {}, stopping.",
+                n_nodes,
+                MAX_NUM_NODES
+            );
+            break;
+        }
+
+        // Compute the median edge count for high-coverage-ratio filtering.
+        let median_edge_count: f64 = {
+            let mut counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
+            if counts.is_empty() {
+                *min_count as f64
+            } else {
+                counts.sort();
+                let mid = counts.len() / 2;
+                if counts.len() % 2 == 0 {
+                    (counts[mid - 1] as f64 + counts[mid] as f64) / 2.0
+                } else {
+                    counts[mid] as f64
+                }
+            }
+        };
+
+        // Periodically log extension progress
+        if (n_nodes > last_check) && ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
+            last_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
+            gene_info!(params.gene_name, "Evaluating reverse extension:");
+            summarize_extension(&graph, "    ");
+        }
+
+        for node in unvisited {
+            // Skip if already visited (may have been visited during this iteration)
+            if graph[node].visited {
+                continue;
+            }
+
+            let sub_kmer = graph[node].sub_kmer;
+
+            trace!(
+                "  Reverse extending node {} with sub_kmer {}.",
+                node.index(),
+                crate::kmer::kmer_to_seq(&sub_kmer, &(k - 1)),
+            );
+
+            // Find candidate predecessor kmers: (base << prefix_shift) | sub_kmer
+            let mut candidate_kmers: HashSet<u64> = HashSet::new();
+
+            for base in 0u64..4 {
+                let kmer = (base << prefix_shift) | sub_kmer;
+
+                if let Some(count) = kmer_counts.get_canonical(&kmer)
+                    && count >= *min_count
+                {
+                    candidate_kmers.insert(kmer);
+                }
+            }
+
+            trace!(
+                "There are {} candidate predecessor kmers.",
+                candidate_kmers.len()
+            );
+
+            // If there are no candidates, the node is terminal
+            if candidate_kmers.is_empty() {
+                trace!(
+                    "Marking node {} as terminal (no reverse candidates).",
+                    node.index()
+                );
+                graph[node].is_terminal = true;
+                graph[node].visited = true;
+                continue;
+            }
+
+            for kmer in candidate_kmers.iter() {
+                let prefix = kmer >> 2;
+
+                // Self-loop detection
+                if prefix == sub_kmer {
+                    graph[node].is_terminal = true;
+                    graph[node].visited = true;
+                    trace!(
+                        "Node {} reverse-extends to itself. Marking as terminal.",
+                        node.index()
+                    );
+                    break;
+                }
+
+                if let Some(&existing_node) = node_lookup.get(&prefix) {
+                    // Add edge from existing predecessor TO current node
+                    if graph.find_edge(existing_node, node).is_none() {
+                        let edge = get_dbedge(kmer, kmer_counts);
+                        graph.add_edge(existing_node, node, edge);
+                        if graph[existing_node].is_start {
+                            gene_info!(
+                                params.gene_name,
+                                "Start node reached from end, reverse extension convergence."
+                            );
+                        }
+                    }
+                } else {
+                    let edge = get_dbedge(kmer, kmer_counts);
+                    let edge_count = edge.count;
+
+                    // Skip edges with count far above the median
+                    if (edge_count as f64) > (median_edge_count * HIGH_COVERAGE_RATIO_THRESHOLD) {
+                        trace!(
+                            "Skipping high-coverage reverse edge (count {} > {:.0} x {:.0} median). kmer {}",
+                            edge_count,
+                            HIGH_COVERAGE_RATIO_THRESHOLD,
+                            median_edge_count,
+                            crate::kmer::kmer_to_seq(kmer, &k),
+                        );
+                        continue;
+                    }
+
+                    let new_node = graph.add_node(DBNode {
+                        sub_kmer: prefix,
+                        is_start: false,
+                        is_end: false,
+                        is_terminal: false,
+                        visited: false,
+                    });
+                    node_lookup.insert(prefix, new_node);
+
+                    // Edge goes from new predecessor TO current node
+                    graph.add_edge(new_node, node, edge);
+
+                    trace!(
+                        "Added reverse sub_kmer {} for new node {} with edge kmer count {}.",
+                        crate::kmer::kmer_to_seq(&prefix, &(k - 1)),
+                        new_node.index(),
+                        edge_count
+                    );
+
+                    // Check max-length from end node
+                    let path_length = get_path_length_from_end(&graph, new_node);
+
+                    match path_length {
+                        Ok(Some(path_length)) => {
+                            trace!("Reverse path length to end is {}.", path_length);
+                            if path_length + k > params.max_length {
+                                graph[new_node].is_terminal = true;
+                                graph[new_node].visited = true;
+                                trace!(
+                                    "Marking new reverse node {} as terminal (exceeds max-length from end).",
+                                    new_node.index()
+                                );
+                            }
+                        }
+                        Ok(None) => {
+                            graph[new_node].is_terminal = true;
+                            trace!(
+                                "Marking new reverse node {} as terminal (cycle detected).",
+                                new_node.index()
+                            );
+                        }
+                        Err(_) => {
+                            // Node has no outgoing path to end — this can happen when
+                            // reverse extension creates a node whose only outgoing
+                            // neighbor was already visited and is not an end node.
+                            // Leave it non-terminal so it continues extending in reverse.
+                        }
+                    }
+                }
+            }
+            graph[node].visited = true;
+
+            trace!(
+                "Reverse extension: {} unvisited nodes remaining.",
+                n_unvisited_nodes_in_graph(&graph),
+            );
+        }
+    }
+
+    Ok((graph, node_lookup))
 }
 
 /// Annotate each edge with its coverage ratio: count / global median.

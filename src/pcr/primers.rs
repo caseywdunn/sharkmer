@@ -156,6 +156,7 @@ pub(super) fn generate_recursive_permutations(
     }
 }
 
+#[allow(dead_code)]
 pub(super) fn reverse_complement(seq: &str) -> Result<String> {
     seq.chars()
         .rev()
@@ -181,76 +182,37 @@ pub(super) fn reverse_complement(seq: &str) -> Result<String> {
 }
 
 // Find the kmers that contain the oligos.
-// If direction is forward, match the oligo at the start of the kmer.
-// If direction is reverse, match the oligo at the end of the kmer.
+// Always match the oligo at the START of the kmer.
 fn find_oligos_in_kmers(
     oligos: &[Oligo],
     kmers: &FilteredKmerCounts,
-    dir: &PrimerDirection,
     min_count: &u32,
 ) -> KmerCounts {
     // Assume all oligos have the same length
     let oligo_length = oligos[0].length;
 
-    // Create hash set of oligos
-    let oligo_set: HashSet<u64> = match dir {
-        PrimerDirection::Forward => {
-            // Rotate the oligo kmers to the start of the kmer
-            oligos
-                .iter()
-                .map(|oligo| oligo.kmer << (2 * (kmers.get_k() - oligo_length)))
-                .collect()
-        }
-        PrimerDirection::Reverse => {
-            // Just add the oligo kmers
-            oligos.iter().map(|oligo| oligo.kmer).collect()
-        }
-    };
+    // Create hash set of oligos, shifted to the start (high-order bits) of the kmer
+    let oligo_set: HashSet<u64> = oligos
+        .iter()
+        .map(|oligo| oligo.kmer << (2 * (kmers.get_k() - oligo_length)))
+        .collect();
 
-    // Create mask for kmers so they can be compared to the oligo subsequence
-    // If dir is forward, mask is set to 1 starting at the first position of the kmer for 2*oligo_length
-    // If dir is reverse, mask is set to 1 for the 2*oligo_length least significant bits
+    // Create mask covering the high-order bits where the oligo sits
     let mut mask: u64 = 0;
-    match dir {
-        PrimerDirection::Forward => {
-            for _i in 0..(2 * oligo_length) {
-                mask = (mask << 1) | 1;
-            }
-            mask <<= 2 * kmers.get_k() - 2 * oligo_length;
-        }
-        PrimerDirection::Reverse => {
-            for _i in 0..(2 * oligo_length) {
-                mask = (mask << 1) | 1;
-            }
-        }
+    for _i in 0..(2 * oligo_length) {
+        mask = (mask << 1) | 1;
     }
+    mask <<= 2 * kmers.get_k() - 2 * oligo_length;
 
     let mut kmers_match: KmerCounts = KmerCounts::new(&kmers.get_k());
 
-    // Build the reverse complement mask by mirroring the mask bits
-    let rc_mask = {
-        let shift = 2 * kmers.get_k() - 2 * oligo_length;
-        match dir {
-            // Forward mask covers high bits; RC of a forward-matching kmer has primer in low bits
-            PrimerDirection::Forward => (1u64 << (2 * oligo_length)) - 1,
-            // Reverse mask covers low bits; RC of a reverse-matching kmer has primer in high bits
-            PrimerDirection::Reverse => ((1u64 << (2 * oligo_length)) - 1) << shift,
-        }
-    };
+    // RC mask covers low bits (reverse complement of a start-matching kmer has primer in low bits)
+    let rc_mask = (1u64 << (2 * oligo_length)) - 1;
 
-    // Build the set of RC oligos (reverse complement of each oligo, shifted to match rc_mask)
+    // Build the set of RC oligos (reverse complement of each oligo, unshifted)
     let rc_oligo_set: HashSet<u64> = oligos
         .iter()
-        .map(|oligo| {
-            let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &oligo_length);
-            match dir {
-                PrimerDirection::Forward => rc,
-                PrimerDirection::Reverse => {
-                    let shift = 2 * kmers.get_k() - 2 * oligo_length;
-                    rc << shift
-                }
-            }
-        })
+        .map(|oligo| crate::kmer::revcomp_kmer(&oligo.kmer, &oligo_length))
         .collect();
 
     for (kmer, count) in kmers.iter() {
@@ -328,15 +290,6 @@ pub(super) fn preprocess_primer(
     // Get all possible variants of the primers
     primer_variants = permute_sequences(primer_variants, &mismatches);
 
-    if dir == PrimerDirection::Reverse {
-        // Replace the reverse variants with their reverse complements
-        let mut primer_variants_revcomp = HashSet::new();
-        for variant in primer_variants.iter() {
-            primer_variants_revcomp.insert(reverse_complement(variant)?);
-        }
-        primer_variants = primer_variants_revcomp;
-    }
-
     debug!(
         "  There are {} variants of the primer",
         primer_variants.len()
@@ -349,7 +302,6 @@ pub(super) fn preprocess_primer(
 pub(super) fn get_kmers_from_primers(
     primer_variants: &HashSet<String>,
     kmer_counts: &FilteredKmerCounts,
-    dir: PrimerDirection,
     min_count: &u32,
 ) -> Result<KmerCounts> {
     // Get the kmers that contain the primers
@@ -358,7 +310,7 @@ pub(super) fn get_kmers_from_primers(
         oligos.push(string_to_oligo(variant)?);
     }
 
-    Ok(find_oligos_in_kmers(&oligos, kmer_counts, &dir, min_count))
+    Ok(find_oligos_in_kmers(&oligos, kmer_counts, min_count))
 }
 
 /// Given a set of kmers that contain primers, filter them to retain only those with the highest counts
@@ -421,24 +373,16 @@ pub(super) fn get_primer_kmers(
         params.gene_name,
         "Searching kmers that contain the forward primer variants"
     );
-    let mut forward_primer_kmers = get_kmers_from_primers(
-        &forward_variants,
-        kmer_counts,
-        PrimerDirection::Forward,
-        &params.min_count,
-    )?;
+    let mut forward_primer_kmers =
+        get_kmers_from_primers(&forward_variants, kmer_counts, &params.min_count)?;
     forward_primer_kmers = filter_primer_kmers(forward_primer_kmers);
 
     gene_info!(
         params.gene_name,
         "Searching kmers that contain the reverse primer variants"
     );
-    let mut reverse_primer_kmers = get_kmers_from_primers(
-        &reverse_variants,
-        kmer_counts,
-        PrimerDirection::Reverse,
-        &params.min_count,
-    )?;
+    let mut reverse_primer_kmers =
+        get_kmers_from_primers(&reverse_variants, kmer_counts, &params.min_count)?;
     reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers);
 
     Ok((forward_primer_kmers, reverse_primer_kmers))

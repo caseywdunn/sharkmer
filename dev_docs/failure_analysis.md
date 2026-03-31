@@ -66,17 +66,56 @@ references), EF1g, Fz4, Gpdh, Pgi (no Gryllus gene sequences).
 
 ### Perfect-match failures (8 entries)
 
-Primers bind perfectly but sPCR still fails. These point to software or
-coverage issues rather than biological incompatibility:
+Primers bind perfectly (0-1mm) but sPCR still fails. Diagnostic runs
+with `-v` confirmed that **all 8 are graph traversal failures, not
+primer-finding failures.** In every case, primer kmers are found in the
+reads, a graph is seeded, but no path is found from forward to reverse
+primer binding sites.
 
-- Porites lutea 16S, Rhopilema esculentum ITS
-- Drosophila melanogaster 12S, 16S, ND1, ND4
-- Heliconius pachinus ND4
+None of these failures are caused by insufficient read coverage to find
+primers. The Drosophila 16S-v2 (1mm internal) and 28S (1mm) are
+near-perfect matches that exhibit the same graph traversal failure
+pattern and are included in the analysis below.
 
-Several of these paradoxically work at lower read depths (1M-4M) but fail
-at higher (8M-16M), suggesting coverage-dependent graph complexity. The
-Drosophila 16S-v2 (1mm internal) and 28S (1mm) are near-perfect matches
-that should also amplify.
+| Gene | Species | Reads | Fwd seeds | Rev seeds | Primer cov | Failure mode |
+| --- | --- | --- | --- | --- | --- | --- |
+| 16S | Porites lutea | 4M | 144 | 108 | 122 | Graph traversal, all 4 thresholds |
+| CO1 | Porites lutea | 4M | 151 | 104 | 395 | Graph traversal, all 4 thresholds |
+| ITS | Rhopilema esculentum | 16M | 45 | 102 | 966 | Graph traversal, all 4 thresholds |
+| 12S | Drosophila melanogaster | 16M | 112 | 103 | 330 | Graph traversal, all 4 thresholds |
+| 16S | Drosophila melanogaster | 16M | 118 | 125 | 162 | Graph traversal, all 4 thresholds |
+| 16S-v2 | Drosophila melanogaster | 16M | 109 | 109 | 110 | End node found at min-count 2, but no valid path |
+| 28S | Drosophila melanogaster | 16M | 100 | 113 | 980 | End node found at min-count 490, but no valid path |
+| ND1 | Drosophila melanogaster | 16M | 106 | 102 | 724 | End node found at min-count 242, but no valid path |
+| ND4 | Drosophila melanogaster | 16M | 104 | 100 | 957 | Graph traversal, all 4 thresholds |
+| ND4 | Heliconius pachinus | 16M | 101 | 107 | 188 | Graph traversal, all 4 thresholds |
+
+Key observations:
+
+- **Non-specific primer seeding.** The degenerate Marquina primers
+  (12S, 16S, ND1, ND4) seed 100-280 kmer nodes per primer due to
+  ambiguity codes (H, D, Y, N, R). `MAX_NUM_PRIMER_KMERS` is 100, so
+  many of these are at or above the cap. Most seed kmers are non-specific
+  (from unrelated genomic regions), creating a graph with many false
+  start/end nodes that don't connect.
+
+- **End nodes found but no path.** For ND1, 16S-v2, and 28S in
+  Drosophila, the log shows "End node incorporated into graph, complete
+  PCR product found" — meaning forward and reverse primer regions are
+  connected in the graph — but the path-finding step still fails to
+  extract a valid product. This points to graph pruning or path
+  enumeration issues rather than graph connectivity.
+
+- **Coverage-dependent failures.** Drosophila 12S and ND1 amplify at
+  2M reads but fail at 16M. At 2M, 12S seeds 278 forward + 150 reverse
+  nodes (more non-specific seeds than at 16M) but has lower observed
+  primer coverage (42 vs 330). The lower thresholds at 2M may allow the
+  correct path to survive pruning, while at 16M the higher coverage
+  creates a denser, more complex graph that obscures the target path.
+
+- **Porites CO1 is also graph traversal.** Despite having 2+1 primer
+  mismatches, Porites CO1 primers are still found (151 + 104 seed nodes,
+  coverage 395) — the failure is in graph traversal, not primer binding.
 
 ### Primer mismatch failures (13 entries)
 

@@ -722,8 +722,8 @@ decisions and how specific challenges are handled:
 above.) Eliminates the N-graph-per-gene waste. All forward primer kmers
 seed start nodes in one graph; all reverse primer kmers seed end nodes.
 
-**Bidirectional extension with coverage awareness.** Instead of extending
-only forward from start nodes, extend backward from end nodes as well.
+**Reverse extension with coverage awareness.** Instead of extending
+only forward from start nodes, extend in reverse from end nodes as well.
 The graph is complete when the two frontiers meet (start-rooted subgraph
 connects to end-rooted subgraph) or when extension exhausts. This
 halves the search space on average and ensures that the graph includes
@@ -786,7 +786,7 @@ many noise edges qualify and the graph can explode. The controls are:
    nodes simultaneously, extend from the current frontier (nodes added
    in the most recent threshold step). At each step, only nodes within
    `max_length` graph distance from a start node (or end node, for
-   backward extension) are eligible for extension. This prevents the
+   reverse extension) are eligible for extension. This prevents the
    graph from wandering arbitrarily far from the amplicon region.
 
 3. **MAX_NUM_NODES limit is retained** as a hard safety bound.

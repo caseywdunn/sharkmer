@@ -198,7 +198,8 @@ gates, and patching workflow. Key points:
   `cargo clippy -- -D warnings`, `cargo test --release`.
 - The pre-commit hook (`scripts/pre-commit`) enforces these automatically.
 - Present a summary and any concerns to the user for review before committing.
-  Check off the issue in dev_docs/PLAN.md when done.
+- **Before committing**, check off completed items in dev_docs/PLAN.md.
+  This is easy to forget — do it as part of the commit, not as a follow-up.
 
 ## Current development
 

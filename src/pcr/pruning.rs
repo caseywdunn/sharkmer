@@ -14,6 +14,10 @@ const TIP_COVERAGE_FRACTION: f64 = 0.1;
 /// relative to the local median. These are almost certainly sequencing errors.
 /// Tips with meaningful coverage are preserved — they may represent real
 /// variants whose graph extension was truncated.
+///
+/// With reverse extension, dead-ends can occur in both directions:
+/// - Forward tips: nodes with no outgoing edges (not end nodes)
+/// - Backward tips: nodes with no incoming edges (not start nodes)
 pub fn remove_low_coverage_tips(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize) {
     let mut removed = 1;
     while removed > 0 {
@@ -30,22 +34,48 @@ pub fn remove_low_coverage_tips(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &u
                 if graph[node].is_end || graph[node].is_start {
                     return false;
                 }
-                // Must be a dead end (no outgoing edges)
-                if graph.neighbors_directed(node, Direction::Outgoing).count() > 0 {
+
+                let no_outgoing = graph.neighbors_directed(node, Direction::Outgoing).count() == 0;
+                let no_incoming = graph.neighbors_directed(node, Direction::Incoming).count() == 0;
+
+                // Must be a dead end in at least one direction
+                if !no_outgoing && !no_incoming {
                     return false;
                 }
-                // Must be a short tip: trace back and check length
-                let tip_len = tip_length(graph, node);
-                if tip_len >= *k {
-                    return false;
+
+                if no_outgoing {
+                    // Forward tip: trace back to branch point
+                    let tip_len = tip_length_backward(graph, node);
+                    if tip_len >= *k {
+                        return false;
+                    }
+                    let max_incoming_count = graph
+                        .edges_directed(node, Direction::Incoming)
+                        .map(|e| e.weight().count)
+                        .max()
+                        .unwrap_or(0);
+                    if (max_incoming_count as f64) >= min_tip_count {
+                        return false;
+                    }
                 }
-                // Must have low coverage: check the incoming edge count
-                let max_incoming_count = graph
-                    .edges_directed(node, Direction::Incoming)
-                    .map(|e| e.weight().count)
-                    .max()
-                    .unwrap_or(0);
-                (max_incoming_count as f64) < min_tip_count
+
+                if no_incoming {
+                    // Backward tip: trace forward to branch point
+                    let tip_len = tip_length_forward(graph, node);
+                    if tip_len >= *k {
+                        return false;
+                    }
+                    let max_outgoing_count = graph
+                        .edges_directed(node, Direction::Outgoing)
+                        .map(|e| e.weight().count)
+                        .max()
+                        .unwrap_or(0);
+                    if (max_outgoing_count as f64) >= min_tip_count {
+                        return false;
+                    }
+                }
+
+                true
             })
             .collect();
 
@@ -57,14 +87,13 @@ pub fn remove_low_coverage_tips(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &u
     }
 }
 
-/// Trace back from a dead-end node to count how many nodes until
-/// a branch point (node with out-degree > 1) or a start node.
-fn tip_length(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex) -> usize {
+/// Trace back from a dead-end node (no outgoing edges) to count how many
+/// nodes until a branch point (node with out-degree > 1) or a start node.
+fn tip_length_backward(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex) -> usize {
     let mut length = 0;
     let mut current = node;
     loop {
         length += 1;
-        // Get the single incoming neighbor (if unbranched)
         let incoming: Vec<NodeIndex> = graph
             .neighbors_directed(current, Direction::Incoming)
             .collect();
@@ -72,7 +101,6 @@ fn tip_length(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex) -> usize {
             break;
         }
         let parent = incoming[0];
-        // If parent has multiple outgoing edges, this is the branch point
         if graph
             .neighbors_directed(parent, Direction::Outgoing)
             .count()
@@ -80,11 +108,35 @@ fn tip_length(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex) -> usize {
         {
             break;
         }
-        // If parent is a start node, stop
         if graph[parent].is_start {
             break;
         }
         current = parent;
+    }
+    length
+}
+
+/// Trace forward from a dead-end node (no incoming edges) to count how many
+/// nodes until a branch point (node with in-degree > 1) or an end node.
+fn tip_length_forward(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex) -> usize {
+    let mut length = 0;
+    let mut current = node;
+    loop {
+        length += 1;
+        let outgoing: Vec<NodeIndex> = graph
+            .neighbors_directed(current, Direction::Outgoing)
+            .collect();
+        if outgoing.len() != 1 {
+            break;
+        }
+        let child = outgoing[0];
+        if graph.neighbors_directed(child, Direction::Incoming).count() > 1 {
+            break;
+        }
+        if graph[child].is_end {
+            break;
+        }
+        current = child;
     }
     length
 }

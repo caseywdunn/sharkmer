@@ -252,33 +252,53 @@ everything downstream), then structural cleanup, then path finding.
   graph structure.
 - [x] #76 Fix O(N^2) dedup memory: greedy clustering computes
   `bounded_levenshtein` on-the-fly against kept records only.
-- [ ] Evaluate #12 (duplicate product 0) — may be resolved by improved
-  graph traversal and path selection
-- [ ] #108 Unify forward and reverse primer handling. Remove the
+- [x] Evaluate #12 (duplicate product 0) — resolved by greedy
+  Levenshtein dedup (#76) and sequential product re-numbering after
+  dedup. No duplicate product IDs in any benchmark output.
+- [x] #108 Unify forward and reverse primer handling. Remove the
   asymmetric reverse-complement step during preprocessing; both
   primers are processed identically (trim → expand → permute) and
   matched at the START of their respective kmers. Nodes are annotated
   as forward or reverse, paths emitted only from forward to reverse.
-  Prerequisite refactor for #107 — makes bidirectional extension
+  Prerequisite refactor for #107 — makes reverse extension
   fall out naturally (forward seeds extend rightward, reverse seeds
   extend leftward).
-- [ ] #107 Bidirectional graph extension from forward and reverse primer
+- [x] #107 Reverse graph extension from forward and reverse primer
   seeds. Extend graph from both directions simultaneously; frontiers
   converge at the amplicon region and off-target seeds never meet.
   Naturally provides seed coherence, reduces path length through
   complex regions (exponential branching cut in half), and focuses
-  the graph on the amplicon subgraph. Depends on #108. See diagnostic
-  evidence in `tmp/porites_tests/ANALYSIS_16M.md`.
-- [ ] #105 Early termination for off-target graph explosion. Evaluate
-  after #107 — bidirectional extension may address the core problem
-  (seed coherence, wasted node budget) directly, reducing or
-  eliminating the need for the heuristic mitigations proposed in
-  #105 (adaptive budget, early termination checks).
+  the graph on the amplicon subgraph. Depends on #108. Benchmark
+  results: gained 3 genes (Drosophila CO1, Gryllus 18S-v2, Covercrop
+  16S-PRK341F) but lost 2 (Rhopilema CO1 and 16S-515F-Y-926R — both
+  marginal cases near 50K node budget or DFS state limits). See
+  diagnostic evidence in `tmp/porites_tests/ANALYSIS_16M.md`.
+- [x] #105 Bounded seed evaluation before full graph extension. Two
+  goals: (1) avoid wasted compute when no product exists; (2) avoid
+  polluting the graph with spurious extensions that obscure the real
+  product and exhaust node/DFS budgets. Approach: before full
+  extension, give each seed a bounded local exploration (proportional
+  to max_length), then evaluate structural signatures — local graph
+  linearity, edge count consistency with primer kmer count. Seeds
+  that fail are abandoned early, keeping their nodes out of the
+  shared graph. If bounded exploration completes a full path to an
+  opposite-direction seed, retain it but still evaluate remaining
+  seeds (paralogs, alleles).
 
 ### Validation
 
-- [ ] Run benchmarks, compare to Phase 2 baseline
-- [ ] Evaluate against Phase 0 success targets
+- [x] Run benchmarks, compare to Phase 2 baseline (v2.0.0, bcb7818):
+  14 new genes gained, 8 lost. Major gains: Drosophila 8→11, Gryllus
+  13→15, Homo_sapiens 3→9. Losses: Agalma CO1 (pre-existing from DFS
+  budget), Rhopilema -3 (16S pre-existing, CO1 and 16S-515F-Y from
+  #107 shared node budget), Seawater 4→0 (pre-existing from Phase 3
+  graph rewrite).
+- [x] Evaluate against Phase 0 success targets: 4/6 target samples
+  pass (Porites, Drosophila, Heliconius, Gryllus). Agalma misses CO1
+  (pre-existing regression). Rhopilema misses 3 genes (1 pre-existing,
+  2 from #107). Seawater regression is pre-existing. Nuclear gene
+  recovery improved: Drosophila gains CO1+CytB+ITS at 1M reads.
+  Sweep-level evaluation (2M/4M/8M/16M) not yet run on this branch.
 
 ## Phase 4 — Read backend
 
@@ -299,6 +319,13 @@ Read threading behavior by input source:
 - **Remote URLs, `--no-cache`**: download twice, log warning that reads
   will be fetched from server twice
 - **stdin**: implies `--no-read-threading`, log info message explaining why
+
+**Design note for Phase 7 (runway) reuse:** The read retention
+infrastructure should support filtering reads by primer kmer match (not
+just graph edge match). Phase 7 needs primer-containing reads before
+the full graph exists — during seed evaluation. Design the retention
+API so it can be queried per-seed (e.g., "give me all reads containing
+this primer kmer") rather than only per-graph-edge.
 
 - [ ] #96 Two-pass architecture: Pass 1 counts kmers (as now), Pass 2
   re-reads FASTQ for threading. `--no-read-threading` flag to skip second
@@ -322,6 +349,12 @@ for full mechanics and
 [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#graph-annotation-model-preserve-structure-defer-decisions)
 for the annotation-only model.
 
+**Design note for Phase 7 (runway) reuse:** The read-to-graph mapping
+logic should work on arbitrary subgraphs, not just the full amplicon
+graph. Phase 7 threads reads through bounded seed subgraphs using the
+same mapping code. Keep the threading API graph-agnostic: accept any
+`StableDiGraph<DBNode, DBEdge>` plus a set of reads, return annotations.
+
 - [ ] #98 Map reads to graph edges via maximal contiguous runs of adjacent
   graph kmers. Annotate per edge:
   - `read_support_total` — every read whose run includes this edge
@@ -336,6 +369,14 @@ for the annotation-only model.
 
 Use read-support and phasing annotations to improve path scoring via the
 pluggable interface designed in Phase 3 (#90). No graph structure edits.
+
+**Design note for Phase 7 (runway) reuse:** The read-support signals
+used for path scoring (read count, consistency, unambiguous support)
+are the same signals Phase 7 uses to evaluate seeds. Phase 7 asks
+"does this seed have consistent read support?" rather than "which path
+has the best read support?" — same data, different question. Keep the
+signal computation separate from the scoring/decision logic so both
+phases can reuse it.
 
 - [ ] #99 Add read-support signal to path scoring: penalize edges with
   zero read support, prefer edges with high unambiguous support
@@ -352,7 +393,26 @@ pluggable interface designed in Phase 3 (#90). No graph structure edits.
   without needing insert size calibration.
 - [ ] Run benchmarks, compare to Phase 3 and Phase 5 results
 
-## Phase 7 — Performance optimizations
+## Phase 7 — Read-backed runway for seed evaluation
+
+Reuse the read threading infrastructure (Phases 4-6) to replace the
+kmer-table-only seed evaluation (#105) with read-backed evaluation.
+For each seed, actual reads containing the primer kmer provide direct
+evidence of whether the seed is real. See #110 for full design.
+
+- [ ] #110 Read-backed runway: during Pass 2, collect reads matching
+  each primer kmer. For each seed, thread its reads through a bounded
+  local subgraph. Seeds with consistent read support (reads extending
+  in the same direction, sharing overlapping kmers) are real. Seeds
+  where reads diverge immediately are off-target. Seeds that pass
+  get a pre-built read-backed subgraph ("runway") incorporated into
+  the main graph, giving full extension a head start.
+- [ ] Evaluate whether kmer-only seed evaluation (#105) should be
+  retained as a fast pre-filter before read-backed evaluation, or
+  replaced entirely.
+- [ ] Run benchmarks, compare to Phase 3 (#105 kmer-only) results.
+
+## Phase 8 — Performance optimizations
 
 Hot-path performance improvements identified by code review. No behavioral
 changes — benchmark to confirm identical results. See #103 for full analysis
@@ -395,15 +455,25 @@ and rationale.
 - [ ] #104 Stream histogram rows during output instead of materializing
   all histogram vectors simultaneously
 
+### Parameter tuning (#109)
+
+- [ ] #109 Revisit hard-coded graph parameters. Profile benchmark runs
+  to understand how often each limit is hit and whether it causes
+  regressions. Constants to review: MAX_NUM_NODES (50K shared budget
+  — Rhopilema CO1 regression), MAX_DFS_STATES (100K — Rhopilema
+  16S-515F-Y regression), HIGH_COVERAGE_RATIO_THRESHOLD, seed eval
+  thresholds. Some may benefit from being derived from other
+  parameters (e.g., node budget scaled by max_length).
+
 ### Validation
 
-- [ ] Run benchmarks, confirm identical results to Phase 6
+- [ ] Run benchmarks, confirm identical results to Phase 7
 - [ ] Profile before/after to quantify gains
 
-## Phase 8 — Cleanup and validation
+## Phase 9 — Cleanup and validation
 
 - [ ] Final benchmark comparison across all phases (skip if already run
-  at end of Phase 7)
+  at end of Phase 8)
 - [ ] Update integration tests for v3.0 behavior
 - [ ] Update documentation:
   - [ ] README.md (user-facing changes, new flags, updated examples)
