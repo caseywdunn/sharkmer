@@ -267,12 +267,15 @@ everything downstream), then structural cleanup, then path finding.
   converge at the amplicon region and off-target seeds never meet.
   Naturally provides seed coherence, reduces path length through
   complex regions (exponential branching cut in half), and focuses
-  the graph on the amplicon subgraph. Depends on #108. See diagnostic
-  evidence in `tmp/porites_tests/ANALYSIS_16M.md`.
-- [ ] #105 Early termination for off-target graph explosion. Evaluated
-  after #107: reverse extension gained 3 genes but lost 2 (Rhopilema
-  CO1 and 16S-515F-Y-926R — both marginal cases near 50K node budget
-  or DFS state limits). Remaining mitigations to consider: adaptive
+  the graph on the amplicon subgraph. Depends on #108. Benchmark
+  results: gained 3 genes (Drosophila CO1, Gryllus 18S-v2, Covercrop
+  16S-PRK341F) but lost 2 (Rhopilema CO1 and 16S-515F-Y-926R — both
+  marginal cases near 50K node budget or DFS state limits). See
+  diagnostic evidence in `tmp/porites_tests/ANALYSIS_16M.md`.
+- [ ] #105 Early termination for off-target graph explosion. Evaluate
+  after #107 — reverse extension partially addresses the core problem
+  but shared node budget still causes regressions for genes with many
+  off-target seeds. Remaining mitigations to consider: adaptive
   per-direction node budgets, seed coherence pre-check, early
   termination when graph grows without convergence.
 
