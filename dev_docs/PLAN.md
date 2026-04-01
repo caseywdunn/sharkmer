@@ -349,12 +349,12 @@ Read threading behavior by input source:
   will be fetched from server twice
 - **stdin**: implies `--no-read-threading`, log info message explaining why
 
-**Design note for Phase 7 (runway) reuse:** The read retention
-infrastructure should support filtering reads by primer kmer match (not
-just graph edge match). Phase 7 needs primer-containing reads before
-the full graph exists — during seed evaluation. Design the retention
-API so it can be queried per-seed (e.g., "give me all reads containing
-this primer kmer") rather than only per-graph-edge.
+**Design note for Phase 7 (runway):** Phase 7 needs primer-matching
+reads available at seed evaluation time — before the full graph exists
+and before Pass 2 runs. This requires retaining primer-matching reads
+during Pass 1 ingestion via bitwise Oligo matching (see Phase 7 for
+details). Pass 2 re-reading serves a separate purpose: threading reads
+through the completed graph for edge annotations and phasing.
 
 - [x] #96 Two-pass architecture: Pass 1 counts kmers (as now), Pass 2
   re-reads FASTQ for threading. `--no-read-threading` flag to skip second
@@ -378,11 +378,11 @@ for full mechanics and
 [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#graph-annotation-model-preserve-structure-defer-decisions)
 for the annotation-only model.
 
-**Design note for Phase 7 (runway) reuse:** The read-to-graph mapping
-logic should work on arbitrary subgraphs, not just the full amplicon
-graph. Phase 7 threads reads through bounded seed subgraphs using the
-same mapping code. Keep the threading API graph-agnostic: accept any
-`StableDiGraph<DBNode, DBEdge>` plus a set of reads, return annotations.
+**Design note for Phase 7 (runway) reuse:** The threading API is
+graph-agnostic — it accepts any `StableDiGraph<DBNode, DBEdge>` plus
+reads and returns annotations. Phase 7 reuses this to thread
+Pass 1-retained reads through bounded seed subgraphs during seed
+evaluation (before the full graph exists).
 
 - [x] #98 Map reads to graph edges via maximal contiguous runs of adjacent
   graph kmers. Annotate per edge:
@@ -400,12 +400,11 @@ Use read-support and phasing annotations to improve path scoring via the
 pluggable interface designed in Phase 3 (#90). No graph structure edits.
 
 **Design note for Phase 7 (runway) reuse:** The read-support signals
-used for path scoring (read count, consistency, unambiguous support)
-are the same signals Phase 7 uses to evaluate seeds. Phase 7 asks
-"does this seed have consistent read support?" rather than "which path
-has the best read support?" — same data, different question. Keep the
-signal computation separate from the scoring/decision logic so both
-phases can reuse it.
+(read count, consistency, unambiguous support) are the same signals
+Phase 7 uses to evaluate seeds. Phase 7 asks "does this seed have
+consistent read support?" rather than "which path has the best read
+support?" — same data, different question. Signal computation is
+separate from the scoring/decision logic so both phases reuse it.
 
 - [x] #99 Add read-support signal to path scoring: penalize edges with
   zero read support, prefer edges with high unambiguous support
@@ -429,22 +428,55 @@ phases can reuse it.
 
 ## Phase 7 — Read-backed runway for seed evaluation
 
-Reuse the read threading infrastructure (Phases 4-6) to replace the
-kmer-table-only seed evaluation (#105) with read-backed evaluation.
-For each seed, actual reads containing the primer kmer provide direct
-evidence of whether the seed is real. See #110 for full design.
+Augment the existing kmer-only seed evaluation (#105) with read-backed
+evidence. For each seed, actual reads containing the primer provide
+direct evidence of whether the seed is real. The kmer-only heuristics
+remain as a first-pass filter; read-backed evaluation provides
+additional signal to improve seed keep/abandon decisions.
 
-- [ ] #110 Read-backed runway: during Pass 2, collect reads matching
-  each primer kmer. For each seed, thread its reads through a bounded
-  local subgraph. Seeds with consistent read support (reads extending
-  in the same direction, sharing overlapping kmers) are real. Seeds
-  where reads diverge immediately are off-target. Seeds that pass
-  get a pre-built read-backed subgraph ("runway") incorporated into
-  the main graph, giving full extension a head start.
-- [ ] Evaluate whether kmer-only seed evaluation (#105) should be
-  retained as a fast pre-filter before read-backed evaluation, or
-  replaced entirely.
-- [ ] Run benchmarks, compare to Phase 3 (#105 kmer-only) results.
+**Key timing constraint:** Seed evaluation happens *before* full graph
+extension, so reads must be available before Pass 2 threading (which
+runs after the graph is complete). This requires retaining
+primer-matching reads during Pass 1 ingestion, not during Pass 2.
+
+**Two-tier read design:**
+- **Pass 1 retention**: While ingesting reads and counting kmers,
+  identify reads containing primer sequences via bitwise matching.
+  Retain these reads in memory (tiny fraction of total — ~200 reads
+  per amplicon). Available for seed evaluation before graph extension.
+- **Pass 2 threading**: After graph extension/pruning/path finding,
+  re-read all sequences and thread through completed graphs for edge
+  annotations, bubble resolution, and paired-end phasing (Phases 4-6,
+  unchanged).
+
+**Pass 1 primer matching approach:** Before ingestion, run the
+text-processing portion of primer preprocessing (trim → resolve
+ambiguity → permute mismatches) and encode each variant as a 2-bit
+`Oligo`. During `kmers_from_ascii` in Pass 1, for each kmer check if
+high-order bits match any forward primer Oligo (mask + compare) or
+low-order bits match any reverse primer Oligo. One bitwise comparison
+per primer variant per kmer — very cheap. Retained reads stored as
+raw ASCII sequences, indexed by which primer(s) they matched.
+
+- [ ] #110 Read-backed runway:
+  - [ ] Move primer text preprocessing (trim, ambiguity resolution,
+    mismatch permutation, Oligo encoding) to run before `ingest_reads()`,
+    producing a set of 2-bit primer Oligos per gene.
+  - [ ] During Pass 1 kmer extraction, bitwise-match each kmer against
+    primer Oligos. Retain reads that match any primer (store sequence +
+    which primer matched). Memory cost: negligible (~200 reads/amplicon).
+  - [ ] During seed evaluation, thread retained primer-matching reads
+    through each seed's bounded local subgraph using the existing
+    graph-agnostic threading API. Seeds with consistent read support
+    (reads extending in the same direction, sharing overlapping kmers)
+    get additional evidence they are real. Seeds where reads diverge
+    immediately get evidence they are off-target.
+  - [ ] Incorporate read-backed evidence into seed keep/abandon
+    decisions alongside existing kmer-only heuristics (#105). Seeds
+    that pass get a pre-built read-backed subgraph ("runway")
+    incorporated into the main graph, giving full extension a head
+    start.
+- [ ] Run benchmarks, compare to Phase 6 results.
 
 ## Phase 8 — Performance optimizations
 
