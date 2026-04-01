@@ -87,10 +87,12 @@ pub(crate) struct OligoFilter {
     low_mask: u64,
 }
 
-/// Number of bits used for bitset indexing. 2^20 = 1M entries = 128KB per bitset.
-const BITSET_BITS: u32 = 20;
-const BITSET_SIZE: usize = 1 << BITSET_BITS; // number of u64 words needed
-const BITSET_WORDS: usize = BITSET_SIZE / 64;
+/// Number of bits used for bloom filter indexing. 2^24 = 16M entries = 2MB per bitset.
+/// Two hash functions reduce false positive rate. With ~50K Oligo variants,
+/// occupancy is ~0.3%, giving FP rate ~(0.003)^2 ≈ 0.001%.
+const BLOOM_BITS: u32 = 24;
+const BLOOM_SIZE: usize = 1 << BLOOM_BITS;
+const BLOOM_WORDS: usize = BLOOM_SIZE / 64;
 
 impl OligoFilter {
     /// Build a filter from pre-encoded primer Oligo sets for all genes.
@@ -99,53 +101,42 @@ impl OligoFilter {
     /// one for high-bit position (oligo at kmer start) and one for
     /// low-bit position (RC oligo at kmer end).
     pub(crate) fn new(oligo_sets: &[crate::pcr::PrimerOligoSet], k: usize) -> Self {
-        let mut high_bits = vec![0u64; BITSET_WORDS];
-        let mut low_bits = vec![0u64; BITSET_WORDS];
+        let mut high_bits = vec![0u64; BLOOM_WORDS];
+        let mut low_bits = vec![0u64; BLOOM_WORDS];
         let mut high_mask: u64 = 0;
         let mut low_mask: u64 = 0;
         let mut high_shift: u32 = 0;
 
         for set in oligo_sets {
-            // Forward oligos: shift to high-order bits
             let fwd_len = set.forward_oligo_length;
             if fwd_len > 0 {
                 let fwd_shift = 2 * (k - fwd_len);
-                let mask = ((1u64 << (2 * fwd_len)) - 1) << fwd_shift;
-                high_mask = mask;
-                // Shift masked value right so the index fits in BITSET_BITS
-                high_shift = fwd_shift.saturating_sub(0) as u32;
+                high_mask = ((1u64 << (2 * fwd_len)) - 1) << fwd_shift;
+                high_shift = fwd_shift as u32;
+                let rc_mask_val = (1u64 << (2 * fwd_len)) - 1;
+                low_mask = rc_mask_val;
 
                 for oligo in &set.forward_oligos {
                     let val = oligo.kmer << fwd_shift;
-                    bitset_insert(&mut high_bits, val >> high_shift);
-                }
-                // RC of forward oligos at low bits
-                let rc_mask_val = (1u64 << (2 * fwd_len)) - 1;
-                low_mask = rc_mask_val;
-                for oligo in &set.forward_oligos {
+                    bloom_insert(&mut high_bits, val >> high_shift);
                     let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &fwd_len);
-                    bitset_insert(&mut low_bits, rc);
+                    bloom_insert(&mut low_bits, rc);
                 }
             }
 
-            // Reverse oligos: also at high bits (primer at start of kmer)
             let rev_len = set.reverse_oligo_length;
             if rev_len > 0 {
                 let rev_shift = 2 * (k - rev_len);
-                let mask = ((1u64 << (2 * rev_len)) - 1) << rev_shift;
-                high_mask = mask;
+                high_mask = ((1u64 << (2 * rev_len)) - 1) << rev_shift;
                 high_shift = rev_shift as u32;
+                let rc_mask_val = (1u64 << (2 * rev_len)) - 1;
+                low_mask = rc_mask_val;
 
                 for oligo in &set.reverse_oligos {
                     let val = oligo.kmer << rev_shift;
-                    bitset_insert(&mut high_bits, val >> high_shift);
-                }
-                // RC of reverse oligos at low bits
-                let rc_mask_val = (1u64 << (2 * rev_len)) - 1;
-                low_mask = rc_mask_val;
-                for oligo in &set.reverse_oligos {
+                    bloom_insert(&mut high_bits, val >> high_shift);
                     let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &rev_len);
-                    bitset_insert(&mut low_bits, rc);
+                    bloom_insert(&mut low_bits, rc);
                 }
             }
         }
@@ -165,32 +156,46 @@ impl OligoFilter {
     #[inline]
     pub(crate) fn check_kmer(&self, kmer: u64) -> bool {
         let high_val = (kmer & self.high_mask) >> self.high_shift;
-        if bitset_contains(&self.high_bits, high_val) {
+        if bloom_contains(&self.high_bits, high_val) {
             return true;
         }
         let low_val = kmer & self.low_mask;
-        bitset_contains(&self.low_bits, low_val)
+        bloom_contains(&self.low_bits, low_val)
     }
 }
 
-/// Insert a value into a bitset. Uses the low BITSET_BITS bits as index.
+/// Two hash functions for the bloom filter. Both derived from the same
+/// u64 value using different bit mixing to produce independent indices.
 #[inline]
-fn bitset_insert(bits: &mut [u64], val: u64) {
-    let idx = (val as usize) & (BITSET_SIZE - 1);
-    let word = idx / 64;
-    let bit = idx % 64;
-    if word < bits.len() {
-        bits[word] |= 1u64 << bit;
-    }
+fn bloom_h1(val: u64) -> usize {
+    (val as usize) & (BLOOM_SIZE - 1)
 }
 
-/// Check if a value is in a bitset. Uses the low BITSET_BITS bits as index.
 #[inline]
-fn bitset_contains(bits: &[u64], val: u64) -> bool {
-    let idx = (val as usize) & (BITSET_SIZE - 1);
-    let word = idx / 64;
-    let bit = idx % 64;
-    word < bits.len() && (bits[word] & (1u64 << bit)) != 0
+fn bloom_h2(val: u64) -> usize {
+    // Rotate bits and XOR to get a second independent hash
+    let mixed = (val >> 17) ^ (val.wrapping_mul(0x9E3779B97F4A7C15));
+    (mixed as usize) & (BLOOM_SIZE - 1)
+}
+
+/// Insert a value into the bloom filter using two hash functions.
+#[inline]
+fn bloom_insert(bits: &mut [u64], val: u64) {
+    let i1 = bloom_h1(val);
+    bits[i1 / 64] |= 1u64 << (i1 % 64);
+    let i2 = bloom_h2(val);
+    bits[i2 / 64] |= 1u64 << (i2 % 64);
+}
+
+/// Check if a value may be in the bloom filter (both bits must be set).
+#[inline]
+fn bloom_contains(bits: &[u64], val: u64) -> bool {
+    let i1 = bloom_h1(val);
+    if (bits[i1 / 64] & (1u64 << (i1 % 64))) == 0 {
+        return false;
+    }
+    let i2 = bloom_h2(val);
+    (bits[i2 / 64] & (1u64 << (i2 % 64))) != 0
 }
 
 /// Result of querying ENA for an accession.
