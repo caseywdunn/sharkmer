@@ -475,15 +475,21 @@ raw ASCII sequences, indexed by which primer(s) they matched.
     (~200 reads/amplicon).
   - [ ] During seed evaluation, thread retained primer-matching reads
     through each seed's bounded local subgraph using the existing
-    graph-agnostic threading API. Seeds with consistent read support
-    (reads extending in the same direction, sharing overlapping kmers)
-    get additional evidence they are real. Seeds where reads diverge
-    immediately get evidence they are off-target.
-  - [ ] Incorporate read-backed evidence into seed keep/abandon
-    decisions alongside existing kmer-only heuristics (#105). Seeds
-    that pass get a pre-built read-backed subgraph ("runway")
-    incorporated into the main graph, giving full extension a head
-    start.
+    graph-agnostic threading API. Two signals are computed:
+    - **Read coherence**: multiple reads extend consistently in the
+      same direction, sharing overlapping kmers — positive evidence
+      a seed is real. Noted but not used for filtering (would reject
+      good seeds at low coverage where only 1-2 reads exist).
+    - **Read divergence**: reads branch within k bases of the primer
+      — negative evidence, seed is likely off-target. Off-target
+      primer matches in repetitive/high-copy regions tend to produce
+      many divergent reads even at low coverage.
+  - [ ] Use read divergence to reject seeds. Seeds without divergence
+    (including seeds with zero or one retained read) pass through to
+    existing kmer-only evaluation (#105) unchanged. Read coherence is
+    logged for diagnostics but does not affect filtering. Seeds that
+    pass get a pre-built read-backed subgraph ("runway") incorporated
+    into the main graph, giving full extension a head start.
 - [ ] Run benchmarks, compare to Phase 6 results.
 
 ## Phase 8 — Performance optimizations
