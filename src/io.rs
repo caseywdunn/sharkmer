@@ -52,12 +52,9 @@ pub(crate) enum Mate {
 }
 
 /// A read retained during Pass 1 because it matched a primer Oligo.
-#[allow(dead_code)]
 pub(crate) struct RetainedRead {
     /// Raw sequence (ASCII ACGT)
     pub(crate) sequence: String,
-    /// Index of the gene whose primer matched (into pcr_runs array)
-    pub(crate) gene_index: usize,
 }
 
 /// Collects reads retained during Pass 1 primer Oligo matching.
@@ -484,10 +481,10 @@ fn drain_batch(
         if let Some(filter) = oligo_filter {
             let matched = state.chunks[state.chunk_index].ingest_seq_with_filter(&seq, filter)?;
             if matched {
-                state.retained_reads.reads.push(RetainedRead {
-                    sequence: seq,
-                    gene_index: 0, // gene attribution not needed for divergence check
-                });
+                state
+                    .retained_reads
+                    .reads
+                    .push(RetainedRead { sequence: seq });
             }
         } else {
             state.chunks[state.chunk_index].ingest_seq(&seq)?;

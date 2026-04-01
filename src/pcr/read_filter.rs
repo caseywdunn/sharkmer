@@ -57,7 +57,6 @@ impl PrimerReadFilter {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::io::Mate;
 
     #[test]
     fn test_empty_filter() {
