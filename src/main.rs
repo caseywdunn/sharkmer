@@ -147,6 +147,7 @@ fn main() -> Result<()> {
         show_progress,
         threading_reads.as_deref(),
         &state.retained_reads,
+        args.max_nodes,
     )?;
 
     // Build and write run statistics

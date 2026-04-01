@@ -54,6 +54,7 @@ pub(crate) fn run_pcr(
     show_progress: bool,
     reads: Option<&[crate::io::ReadRecord]>,
     retained_reads: &crate::io::RetainedReads,
+    max_nodes: usize,
 ) -> Result<Vec<PcrGeneResult>> {
     let mut pcr_results: Vec<PcrGeneResult> = Vec::new();
 
@@ -98,6 +99,7 @@ pub(crate) fn run_pcr(
                 directory,
                 reads,
                 &all_retained,
+                max_nodes,
             );
             (pcr_params, fasta)
         })

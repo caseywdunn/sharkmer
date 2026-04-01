@@ -33,6 +33,7 @@ mod paths;
 mod primers;
 mod pruning;
 
+pub use graph::DEFAULT_MAX_NUM_NODES;
 pub use primers::{PrimerOligoSet, preprocess_primer_oligos};
 pub(crate) mod read_filter;
 mod seed_eval;
@@ -335,6 +336,7 @@ pub fn do_pcr(
     output_directory: &str,
     reads: Option<&[crate::io::ReadRecord]>,
     retained_reads: &[&str],
+    max_num_nodes: usize,
 ) -> Result<Vec<bio::io::fasta::Record>> {
     gene_info!(params.gene_name, "Running PCR");
 
@@ -490,6 +492,7 @@ pub fn do_pcr(
             kmer_counts,
             min_count,
             params,
+            max_num_nodes,
         )?;
 
         // Only run reverse extension if forward extension didn't already
@@ -505,6 +508,7 @@ pub fn do_pcr(
                 kmer_counts,
                 min_count,
                 params,
+                max_num_nodes,
             )?
         };
 
@@ -1318,8 +1322,15 @@ mod tests {
         assert_eq!(get_start_nodes(&seed_graph).len(), 1);
         assert_eq!(get_end_nodes(&seed_graph).len(), 1);
 
-        let (graph_after_fwd, node_lookup_after_fwd, _fwd_found_end) =
-            graph::extend_graph(seed_graph, node_lookup, &filtered, &min_count, &params).unwrap();
+        let (graph_after_fwd, node_lookup_after_fwd, _fwd_found_end) = graph::extend_graph(
+            seed_graph,
+            node_lookup,
+            &filtered,
+            &min_count,
+            &params,
+            graph::DEFAULT_MAX_NUM_NODES,
+        )
+        .unwrap();
 
         let (mut graph_result, _node_lookup_final) = graph::extend_graph_reverse(
             graph_after_fwd,
@@ -1327,6 +1338,7 @@ mod tests {
             &filtered,
             &min_count,
             &params,
+            graph::DEFAULT_MAX_NUM_NODES,
         )
         .unwrap();
 

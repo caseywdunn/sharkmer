@@ -235,6 +235,10 @@ pub(crate) struct Args {
     #[arg(long, help_heading = "General")]
     pub(crate) dry_run: bool,
 
+    /// Maximum number of nodes in the assembly graph before abandoning extension
+    #[arg(long, default_value_t = crate::pcr::DEFAULT_MAX_NUM_NODES, help_heading = "PCR")]
+    pub(crate) max_nodes: usize,
+
     /// Enable read-backed seed evaluation: retain primer-matching reads during
     /// ingestion and use read divergence to reject off-target seeds
     #[arg(long, help_heading = "PCR")]

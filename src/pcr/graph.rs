@@ -22,8 +22,8 @@ const EXTENSION_EVALUATION_FREQUENCY: usize = 1_000;
 /// The graph depth over which to evaluate ballooning growth
 pub(super) const EXTENSION_EVALUATION_DEPTH: usize = 4;
 
-/// Give up if the graph gets too large
-const MAX_NUM_NODES: usize = 50_000;
+/// Default node budget — give up if the graph gets too large
+pub const DEFAULT_MAX_NUM_NODES: usize = 50_000;
 
 /// Skip edges during extension whose count exceeds this multiple of the
 /// graph's median edge count. Such edges likely lead into repetitive
@@ -357,6 +357,7 @@ pub(super) fn extend_graph(
     kmer_counts: &FilteredKmerCounts,
     min_count: &u32,
     params: &PCRParams,
+    max_num_nodes: usize,
 ) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>, bool)> {
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
     let mut found_end_node = false;
@@ -373,12 +374,12 @@ pub(super) fn extend_graph(
     while n_unvisited_nodes_in_graph(&graph) > 0 {
         let n_nodes = graph.node_count();
 
-        if n_nodes > MAX_NUM_NODES {
+        if n_nodes > max_num_nodes {
             gene_info!(
                 params.gene_name,
                 "There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.",
                 n_nodes,
-                MAX_NUM_NODES
+                max_num_nodes
             );
             break;
         }
@@ -604,6 +605,7 @@ pub(super) fn extend_graph_reverse(
     kmer_counts: &FilteredKmerCounts,
     min_count: &u32,
     params: &PCRParams,
+    max_num_nodes: usize,
 ) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>)> {
     let k = kmer_counts.get_k();
     let prefix_shift = 2 * (k - 1);
@@ -631,12 +633,12 @@ pub(super) fn extend_graph_reverse(
 
         let n_nodes = graph.node_count();
 
-        if n_nodes > MAX_NUM_NODES {
+        if n_nodes > max_num_nodes {
             gene_info!(
                 params.gene_name,
                 "Reverse extension: {} nodes exceeds maximum of {}, stopping.",
                 n_nodes,
-                MAX_NUM_NODES
+                max_num_nodes
             );
             break;
         }
