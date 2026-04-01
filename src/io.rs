@@ -67,31 +67,43 @@ pub(crate) struct RetainedReads {
 
 /// Fast primer Oligo filter for Pass 1 read retention.
 ///
-/// Combines all primer Oligos from all genes into two HashSets:
-/// one for high-bit matching (oligo at kmer start) and one for
-/// low-bit matching (RC oligo at kmer end). Two O(1) lookups per kmer.
+/// Uses a bitset (bitmask array) for O(1) lookup with no hashing.
+/// All primer Oligos from all genes are combined into a single bitset.
+/// Each kmer is masked and used as a direct index. May produce false
+/// positives (extra retained reads) but never false negatives.
+///
+/// Memory: 2^BITSET_BITS / 8 bytes per bitset × 2 bitsets.
+/// With 20 bits: 128KB × 2 = 256KB total.
 pub(crate) struct OligoFilter {
-    /// All primer Oligos shifted to high-order bits of the kmer
-    high_set: std::collections::HashSet<u64>,
-    /// Mask for high-bit matching
+    /// Bitset for high-bit matching (oligo at kmer start)
+    high_bits: Vec<u64>,
+    /// Mask to extract oligo from high-order bits of kmer
     high_mask: u64,
-    /// All primer Oligos in RC form at low-order bits
-    low_set: std::collections::HashSet<u64>,
-    /// Mask for low-bit matching
+    /// Right-shift to bring masked high bits down to bitset index range
+    high_shift: u32,
+    /// Bitset for low-bit matching (RC oligo at kmer end)
+    low_bits: Vec<u64>,
+    /// Mask to extract oligo from low-order bits of kmer
     low_mask: u64,
 }
+
+/// Number of bits used for bitset indexing. 2^20 = 1M entries = 128KB per bitset.
+const BITSET_BITS: u32 = 20;
+const BITSET_SIZE: usize = 1 << BITSET_BITS; // number of u64 words needed
+const BITSET_WORDS: usize = BITSET_SIZE / 64;
 
 impl OligoFilter {
     /// Build a filter from pre-encoded primer Oligo sets for all genes.
     ///
-    /// All Oligos across all genes are merged into two flat HashSets.
-    /// Assumes all primers are trimmed to the same length (enforced by
-    /// `preprocess_primer` clamping trim to min(trim, k)).
+    /// All Oligos across all genes are inserted into two bitsets:
+    /// one for high-bit position (oligo at kmer start) and one for
+    /// low-bit position (RC oligo at kmer end).
     pub(crate) fn new(oligo_sets: &[crate::pcr::PrimerOligoSet], k: usize) -> Self {
-        let mut high_set = std::collections::HashSet::new();
-        let mut low_set = std::collections::HashSet::new();
+        let mut high_bits = vec![0u64; BITSET_WORDS];
+        let mut low_bits = vec![0u64; BITSET_WORDS];
         let mut high_mask: u64 = 0;
         let mut low_mask: u64 = 0;
+        let mut high_shift: u32 = 0;
 
         for set in oligo_sets {
             // Forward oligos: shift to high-order bits
@@ -99,16 +111,20 @@ impl OligoFilter {
             if fwd_len > 0 {
                 let fwd_shift = 2 * (k - fwd_len);
                 let mask = ((1u64 << (2 * fwd_len)) - 1) << fwd_shift;
-                high_mask = mask; // all oligos same length after trim
+                high_mask = mask;
+                // Shift masked value right so the index fits in BITSET_BITS
+                high_shift = fwd_shift.saturating_sub(0) as u32;
 
                 for oligo in &set.forward_oligos {
-                    high_set.insert(oligo.kmer << fwd_shift);
+                    let val = oligo.kmer << fwd_shift;
+                    bitset_insert(&mut high_bits, val >> high_shift);
                 }
                 // RC of forward oligos at low bits
                 let rc_mask_val = (1u64 << (2 * fwd_len)) - 1;
                 low_mask = rc_mask_val;
                 for oligo in &set.forward_oligos {
-                    low_set.insert(crate::kmer::revcomp_kmer(&oligo.kmer, &fwd_len));
+                    let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &fwd_len);
+                    bitset_insert(&mut low_bits, rc);
                 }
             }
 
@@ -118,34 +134,63 @@ impl OligoFilter {
                 let rev_shift = 2 * (k - rev_len);
                 let mask = ((1u64 << (2 * rev_len)) - 1) << rev_shift;
                 high_mask = mask;
+                high_shift = rev_shift as u32;
 
                 for oligo in &set.reverse_oligos {
-                    high_set.insert(oligo.kmer << rev_shift);
+                    let val = oligo.kmer << rev_shift;
+                    bitset_insert(&mut high_bits, val >> high_shift);
                 }
                 // RC of reverse oligos at low bits
                 let rc_mask_val = (1u64 << (2 * rev_len)) - 1;
                 low_mask = rc_mask_val;
                 for oligo in &set.reverse_oligos {
-                    low_set.insert(crate::kmer::revcomp_kmer(&oligo.kmer, &rev_len));
+                    let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &rev_len);
+                    bitset_insert(&mut low_bits, rc);
                 }
             }
         }
 
         OligoFilter {
-            high_set,
+            high_bits,
             high_mask,
-            low_set,
+            high_shift,
+            low_bits,
             low_mask,
         }
     }
 
     /// Check a single canonical kmer against the Oligo filter.
-    /// Returns true if this kmer matches any primer Oligo.
+    /// Returns true if this kmer *may* match a primer Oligo (may have
+    /// false positives, never false negatives).
     #[inline]
     pub(crate) fn check_kmer(&self, kmer: u64) -> bool {
-        self.high_set.contains(&(kmer & self.high_mask))
-            || self.low_set.contains(&(kmer & self.low_mask))
+        let high_val = (kmer & self.high_mask) >> self.high_shift;
+        if bitset_contains(&self.high_bits, high_val) {
+            return true;
+        }
+        let low_val = kmer & self.low_mask;
+        bitset_contains(&self.low_bits, low_val)
     }
+}
+
+/// Insert a value into a bitset. Uses the low BITSET_BITS bits as index.
+#[inline]
+fn bitset_insert(bits: &mut [u64], val: u64) {
+    let idx = (val as usize) & (BITSET_SIZE - 1);
+    let word = idx / 64;
+    let bit = idx % 64;
+    if word < bits.len() {
+        bits[word] |= 1u64 << bit;
+    }
+}
+
+/// Check if a value is in a bitset. Uses the low BITSET_BITS bits as index.
+#[inline]
+fn bitset_contains(bits: &[u64], val: u64) -> bool {
+    let idx = (val as usize) & (BITSET_SIZE - 1);
+    let word = idx / 64;
+    let bit = idx % 64;
+    word < bits.len() && (bits[word] & (1u64 << bit)) != 0
 }
 
 /// Result of querying ENA for an accession.
