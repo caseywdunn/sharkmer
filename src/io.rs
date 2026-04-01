@@ -52,12 +52,9 @@ pub(crate) enum Mate {
 }
 
 /// A read retained during Pass 1 because it matched a primer Oligo.
-#[allow(dead_code)]
 pub(crate) struct RetainedRead {
     /// Raw sequence (ASCII ACGT)
     pub(crate) sequence: String,
-    /// Index of the gene whose primer matched (into pcr_runs array)
-    pub(crate) gene_index: usize,
 }
 
 /// Collects reads retained during Pass 1 primer Oligo matching.
@@ -65,87 +62,165 @@ pub(crate) struct RetainedReads {
     pub(crate) reads: Vec<RetainedRead>,
 }
 
-/// Fast primer Oligo filter for Pass 1 read retention.
+/// Two-stage primer Oligo filter for Pass 1 read retention.
 ///
-/// Combines all primer Oligos from all genes into two HashSets:
-/// one for high-bit matching (oligo at kmer start) and one for
-/// low-bit matching (RC oligo at kmer end). Two O(1) lookups per kmer.
+/// Stage 1 (bloom filter): fast approximate check during kmer ingestion.
+/// Uses a bloom filter with two hash functions for O(1) lookup with no
+/// hash table overhead. May produce false positives, never false negatives.
+///
+/// Stage 2 (exact set): after ingestion, bloom-positive reads are verified
+/// against an exact AHashSet to eliminate false positives.
 pub(crate) struct OligoFilter {
-    /// All primer Oligos shifted to high-order bits of the kmer
-    high_set: std::collections::HashSet<u64>,
-    /// Mask for high-bit matching
+    /// Bloom filter for high-bit matching (oligo at kmer start)
+    high_bits: Vec<u64>,
+    /// Mask to extract oligo from high-order bits of kmer
     high_mask: u64,
-    /// All primer Oligos in RC form at low-order bits
-    low_set: std::collections::HashSet<u64>,
-    /// Mask for low-bit matching
+    /// Right-shift to bring masked high bits down to bloom index range
+    high_shift: u32,
+    /// Bloom filter for low-bit matching (RC oligo at kmer end)
+    low_bits: Vec<u64>,
+    /// Mask to extract oligo from low-order bits of kmer
     low_mask: u64,
+    /// Exact set for high-bit verification (ahash for speed)
+    high_exact: ahash::AHashSet<u64>,
+    /// Exact set for low-bit verification
+    low_exact: ahash::AHashSet<u64>,
 }
+
+/// Number of bits used for bloom filter indexing. 2^24 = 16M entries = 2MB per bitset.
+/// Two hash functions reduce false positive rate. With ~50K Oligo variants,
+/// occupancy is ~0.3%, giving FP rate ~(0.003)^2 ≈ 0.001%.
+const BLOOM_BITS: u32 = 24;
+const BLOOM_SIZE: usize = 1 << BLOOM_BITS;
+const BLOOM_WORDS: usize = BLOOM_SIZE / 64;
 
 impl OligoFilter {
     /// Build a filter from pre-encoded primer Oligo sets for all genes.
     ///
-    /// All Oligos across all genes are merged into two flat HashSets.
-    /// Assumes all primers are trimmed to the same length (enforced by
-    /// `preprocess_primer` clamping trim to min(trim, k)).
+    /// All Oligos across all genes are inserted into two bitsets:
+    /// one for high-bit position (oligo at kmer start) and one for
+    /// low-bit position (RC oligo at kmer end).
     pub(crate) fn new(oligo_sets: &[crate::pcr::PrimerOligoSet], k: usize) -> Self {
-        let mut high_set = std::collections::HashSet::new();
-        let mut low_set = std::collections::HashSet::new();
+        let mut high_bits = vec![0u64; BLOOM_WORDS];
+        let mut low_bits = vec![0u64; BLOOM_WORDS];
+        let mut high_exact = ahash::AHashSet::new();
+        let mut low_exact = ahash::AHashSet::new();
         let mut high_mask: u64 = 0;
         let mut low_mask: u64 = 0;
+        let mut high_shift: u32 = 0;
 
         for set in oligo_sets {
-            // Forward oligos: shift to high-order bits
             let fwd_len = set.forward_oligo_length;
             if fwd_len > 0 {
                 let fwd_shift = 2 * (k - fwd_len);
-                let mask = ((1u64 << (2 * fwd_len)) - 1) << fwd_shift;
-                high_mask = mask; // all oligos same length after trim
-
-                for oligo in &set.forward_oligos {
-                    high_set.insert(oligo.kmer << fwd_shift);
-                }
-                // RC of forward oligos at low bits
+                high_mask = ((1u64 << (2 * fwd_len)) - 1) << fwd_shift;
+                high_shift = fwd_shift as u32;
                 let rc_mask_val = (1u64 << (2 * fwd_len)) - 1;
                 low_mask = rc_mask_val;
+
                 for oligo in &set.forward_oligos {
-                    low_set.insert(crate::kmer::revcomp_kmer(&oligo.kmer, &fwd_len));
+                    let shifted = oligo.kmer << fwd_shift;
+                    bloom_insert(&mut high_bits, shifted >> high_shift);
+                    high_exact.insert(shifted);
+                    let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &fwd_len);
+                    bloom_insert(&mut low_bits, rc);
+                    low_exact.insert(rc);
                 }
             }
 
-            // Reverse oligos: also at high bits (primer at start of kmer)
             let rev_len = set.reverse_oligo_length;
             if rev_len > 0 {
                 let rev_shift = 2 * (k - rev_len);
-                let mask = ((1u64 << (2 * rev_len)) - 1) << rev_shift;
-                high_mask = mask;
-
-                for oligo in &set.reverse_oligos {
-                    high_set.insert(oligo.kmer << rev_shift);
-                }
-                // RC of reverse oligos at low bits
+                high_mask = ((1u64 << (2 * rev_len)) - 1) << rev_shift;
+                high_shift = rev_shift as u32;
                 let rc_mask_val = (1u64 << (2 * rev_len)) - 1;
                 low_mask = rc_mask_val;
+
                 for oligo in &set.reverse_oligos {
-                    low_set.insert(crate::kmer::revcomp_kmer(&oligo.kmer, &rev_len));
+                    let shifted = oligo.kmer << rev_shift;
+                    bloom_insert(&mut high_bits, shifted >> high_shift);
+                    high_exact.insert(shifted);
+                    let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &rev_len);
+                    bloom_insert(&mut low_bits, rc);
+                    low_exact.insert(rc);
                 }
             }
         }
 
         OligoFilter {
-            high_set,
+            high_bits,
             high_mask,
-            low_set,
+            high_shift,
+            low_bits,
             low_mask,
+            high_exact,
+            low_exact,
         }
     }
 
-    /// Check a single canonical kmer against the Oligo filter.
-    /// Returns true if this kmer matches any primer Oligo.
+    /// Fast approximate check during kmer ingestion (bloom filter).
+    /// May return false positives, never false negatives.
     #[inline]
     pub(crate) fn check_kmer(&self, kmer: u64) -> bool {
-        self.high_set.contains(&(kmer & self.high_mask))
-            || self.low_set.contains(&(kmer & self.low_mask))
+        let high_val = (kmer & self.high_mask) >> self.high_shift;
+        if bloom_contains(&self.high_bits, high_val) {
+            return true;
+        }
+        let low_val = kmer & self.low_mask;
+        bloom_contains(&self.low_bits, low_val)
     }
+
+    /// Exact verification of a read against the Oligo set (AHashSet).
+    /// Called on bloom-positive reads to eliminate false positives.
+    pub(crate) fn verify_read(&self, sequence: &str, k: usize) -> bool {
+        let kmers = match crate::kmer::encoding::kmers_from_ascii(sequence, k) {
+            Ok(k) => k,
+            Err(_) => return false,
+        };
+        for kmer in &kmers {
+            if self.high_exact.contains(&(kmer & self.high_mask)) {
+                return true;
+            }
+            if self.low_exact.contains(&(kmer & self.low_mask)) {
+                return true;
+            }
+        }
+        false
+    }
+}
+
+/// Two hash functions for the bloom filter. Both derived from the same
+/// u64 value using different bit mixing to produce independent indices.
+#[inline]
+fn bloom_h1(val: u64) -> usize {
+    (val as usize) & (BLOOM_SIZE - 1)
+}
+
+#[inline]
+fn bloom_h2(val: u64) -> usize {
+    // Rotate bits and XOR to get a second independent hash
+    let mixed = (val >> 17) ^ (val.wrapping_mul(0x9E3779B97F4A7C15));
+    (mixed as usize) & (BLOOM_SIZE - 1)
+}
+
+/// Insert a value into the bloom filter using two hash functions.
+#[inline]
+fn bloom_insert(bits: &mut [u64], val: u64) {
+    let i1 = bloom_h1(val);
+    bits[i1 / 64] |= 1u64 << (i1 % 64);
+    let i2 = bloom_h2(val);
+    bits[i2 / 64] |= 1u64 << (i2 % 64);
+}
+
+/// Check if a value may be in the bloom filter (both bits must be set).
+#[inline]
+fn bloom_contains(bits: &[u64], val: u64) -> bool {
+    let i1 = bloom_h1(val);
+    if (bits[i1 / 64] & (1u64 << (i1 % 64))) == 0 {
+        return false;
+    }
+    let i2 = bloom_h2(val);
+    (bits[i2 / 64] & (1u64 << (i2 % 64))) != 0
 }
 
 /// Result of querying ENA for an accession.
@@ -406,10 +481,10 @@ fn drain_batch(
         if let Some(filter) = oligo_filter {
             let matched = state.chunks[state.chunk_index].ingest_seq_with_filter(&seq, filter)?;
             if matched {
-                state.retained_reads.reads.push(RetainedRead {
-                    sequence: seq,
-                    gene_index: 0, // gene attribution not needed for divergence check
-                });
+                state
+                    .retained_reads
+                    .reads
+                    .push(RetainedRead { sequence: seq });
             }
         } else {
             state.chunks[state.chunk_index].ingest_seq(&seq)?;
@@ -634,11 +709,26 @@ pub(crate) fn ingest_reads(
             state.n_reads_read
         );
     }
+    // Verify bloom-positive reads against exact AHashSet and report counts
     if !state.retained_reads.reads.is_empty() {
-        info!(
-            "Retained {} reads matching primer Oligos for seed evaluation",
-            state.retained_reads.reads.len()
-        );
+        let bloom_count = state.retained_reads.reads.len();
+        if let Some(filter) = oligo_filter {
+            state
+                .retained_reads
+                .reads
+                .retain(|r| filter.verify_read(&r.sequence, k));
+            let verified_count = state.retained_reads.reads.len();
+            info!(
+                "Retained reads for seed evaluation: {} bloom hits, {} verified",
+                format_count(bloom_count as u64),
+                format_count(verified_count as u64)
+            );
+        } else {
+            info!(
+                "Retained {} reads for seed evaluation",
+                format_count(bloom_count as u64)
+            );
+        }
     }
     info!("Time to ingest reads: {}", format_duration(start.elapsed()));
 

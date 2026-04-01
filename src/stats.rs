@@ -78,18 +78,18 @@ pub(crate) fn run_pcr(
     info!("Filtering kmers with count < {} before PCR", min_kmer_count);
     let kmer_counts_pcr = kmer_counts.filtered_view(min_kmer_count);
 
+    // Collect all retained read sequences (shared across genes — each gene's
+    // divergence check filters to reads matching its own seed sub_kmers)
+    let all_retained: Vec<&str> = retained_reads
+        .reads
+        .iter()
+        .map(|r| r.sequence.as_str())
+        .collect();
+
     // Run PCR for each gene in parallel; kmer_counts_pcr and reads are read-only and shared
     let pcr_fasta_results: Vec<_> = pcr_runs
         .par_iter()
-        .enumerate()
-        .map(|(gene_index, pcr_params)| {
-            // Collect retained reads for this gene
-            let gene_retained: Vec<&str> = retained_reads
-                .reads
-                .iter()
-                .filter(|r| r.gene_index == gene_index)
-                .map(|r| r.sequence.as_str())
-                .collect();
+        .map(|pcr_params| {
             let fasta = pcr::do_pcr(
                 &kmer_counts_pcr,
                 sample,
@@ -97,7 +97,7 @@ pub(crate) fn run_pcr(
                 dump_graph,
                 directory,
                 reads,
-                &gene_retained,
+                &all_retained,
             );
             (pcr_params, fasta)
         })

@@ -166,14 +166,7 @@ pub(super) fn evaluate_seeds(
         // thread them through the bounded subgraph and check for
         // divergence within k bases of the primer.
         if !retained_reads.is_empty() {
-            let divergent = check_read_divergence(
-                sub_kmer,
-                &direction,
-                kmer_counts,
-                min_count,
-                k,
-                retained_reads,
-            );
+            let divergent = check_read_divergence(sub_kmer, &direction, k, retained_reads);
             if divergent {
                 gene_info!(
                     params.gene_name,
@@ -210,8 +203,6 @@ pub(super) fn evaluate_seeds(
 fn check_read_divergence(
     seed_sub_kmer: u64,
     direction: &SeedDirection,
-    _kmer_counts: &FilteredKmerCounts,
-    _min_count: u32,
     k: usize,
     retained_reads: &[&str],
 ) -> bool {

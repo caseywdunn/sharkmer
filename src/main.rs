@@ -79,14 +79,14 @@ fn main() -> Result<()> {
 
     let show_progress = std::io::stderr().is_terminal();
 
-    // Pre-encode primer Oligos for Pass 1 read retention (text-only, no kmer table)
-    let primer_oligo_sets = if !pcr_runs.is_empty() {
+    // Pre-encode primer Oligos for Pass 1 read retention (opt-in via --read-eval)
+    let oligo_filter = if args.read_eval && !pcr_runs.is_empty() {
         let sets = pcr::preprocess_primer_oligos(&pcr_runs, k)?;
         info!(
-            "Pre-encoded primer Oligos for {} gene(s) for Pass 1 read retention",
+            "Read-backed seed evaluation enabled: pre-encoded primer Oligos for {} gene(s)",
             sets.len()
         );
-        Some(sets)
+        Some(io::OligoFilter::new(&sets, k))
     } else {
         None
     };
@@ -99,11 +99,6 @@ fn main() -> Result<()> {
     } else {
         None
     };
-
-    // Build Oligo filter for Pass 1 read retention
-    let oligo_filter = primer_oligo_sets
-        .as_ref()
-        .map(|sets| io::OligoFilter::new(sets, k));
 
     // Ingest FASTQ reads from all input sources (Pass 1: kmer counting + read retention)
     let (state, n_reads_ingested, n_bases_ingested, n_kmers_ingested, read_plan) =
