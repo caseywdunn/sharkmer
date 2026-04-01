@@ -27,11 +27,14 @@ macro_rules! gene_warn {
 
 pub mod preconfigured;
 
+mod bubble;
 mod graph;
 mod paths;
 mod primers;
 mod pruning;
+pub(crate) mod read_filter;
 mod seed_eval;
+pub(crate) mod threading;
 
 // Constants that may require tuning
 
@@ -63,6 +66,12 @@ struct PathScore {
     /// Maximum coverage ratio seen on any edge in the path
     /// (high values indicate the path traverses a repeat)
     max_coverage_ratio: f64,
+    /// Number of edges with zero read support (None = threading not available)
+    zero_support_edges: Option<u32>,
+    /// Median unambiguous read support across path edges
+    median_unambiguous_support: Option<f64>,
+    /// Fraction of path edges with any read support
+    edge_support_fraction: Option<f64>,
 }
 
 impl PathScore {
@@ -82,7 +91,24 @@ impl PathScore {
         } else {
             1.0
         };
-        base * cv_penalty * repeat_penalty
+
+        // Read support factor (only when threading data available)
+        let read_support_factor = match (self.zero_support_edges, self.edge_support_fraction) {
+            (Some(zero_edges), Some(support_frac)) => {
+                // Penalize paths with zero-support edges: halve score per zero-support edge
+                let zero_penalty = if zero_edges > 0 {
+                    0.5_f64.powi(zero_edges.min(10) as i32)
+                } else {
+                    1.0
+                };
+                // Reward high support fraction (floor at 0.1 to avoid zeroing out)
+                let support_bonus = support_frac.max(0.1);
+                zero_penalty * support_bonus
+            }
+            _ => 1.0, // No threading data: neutral
+        };
+
+        base * cv_penalty * repeat_penalty * read_support_factor
     }
 }
 
@@ -304,6 +330,7 @@ pub fn do_pcr(
     params: &PCRParams,
     dump_graph: bool,
     output_directory: &str,
+    reads: Option<&[crate::io::ReadRecord]>,
 ) -> Result<Vec<bio::io::fasta::Record>> {
     gene_info!(params.gene_name, "Running PCR");
 
@@ -334,6 +361,23 @@ pub fn do_pcr(
         );
         return Ok(Vec::new());
     }
+
+    // Filter reads to those relevant to this gene (if reads available)
+    let gene_reads: Option<Vec<&crate::io::ReadRecord>> = reads.map(|all_reads| {
+        let filter = read_filter::PrimerReadFilter::from_primer_kmers(
+            &forward_primer_kmers,
+            &reverse_primer_kmers,
+            kmer_counts.get_k(),
+        );
+        let filtered = filter.filter_reads(all_reads);
+        gene_info!(
+            params.gene_name,
+            "Read threading: {} of {} reads match primer kmers",
+            filtered.len(),
+            all_reads.len()
+        );
+        filtered
+    });
 
     // Log forward primer kmers for diagnostics
     let mut sorted_forward: Vec<(u64, u32)> =
@@ -525,13 +569,59 @@ pub fn do_pcr(
             format_duration(start.elapsed())
         );
 
+        // Thread reads through the pruned graph (if available)
+        let threading_annotations = if let Some(ref reads) = gene_reads {
+            if !reads.is_empty() {
+                let start = std::time::Instant::now();
+                gene_info!(
+                    params.gene_name,
+                    "Threading reads through assembly graph..."
+                );
+                let has_paired = reads.iter().any(|r| r.mate != crate::io::Mate::Unpaired);
+                let ann = if has_paired {
+                    threading::thread_reads_paired(&pruned_graph, reads, kmer_counts.get_k())
+                } else {
+                    threading::thread_reads(&pruned_graph, reads, kmer_counts.get_k())
+                };
+                let supported_edges = ann
+                    .edge_support
+                    .values()
+                    .filter(|s| s.read_support_total > 0)
+                    .count();
+                gene_info!(
+                    params.gene_name,
+                    "Threading: {}/{} edges have read support, {} branch links, {} paired links. Time: {}",
+                    supported_edges,
+                    pruned_graph.edge_count(),
+                    ann.branch_links.len(),
+                    ann.paired_links.len(),
+                    format_duration(start.elapsed())
+                );
+                Some(ann)
+            } else {
+                None
+            }
+        } else {
+            None
+        };
+
         let start = std::time::Instant::now();
         gene_info!(
             params.gene_name,
             "Traversing the assembly graph to find paths from forward to reverse primers..."
         );
 
-        let all_paths = paths::get_assembly_paths(&pruned_graph, kmer_counts, params);
+        // Resolve bubbles using read support (if threading available)
+        let edge_preferences = threading_annotations
+            .as_ref()
+            .map(|ann| bubble::resolve_bubbles(&pruned_graph, ann));
+
+        let all_paths = paths::get_assembly_paths(
+            &pruned_graph,
+            kmer_counts,
+            params,
+            edge_preferences.as_ref(),
+        );
 
         debug!(
             "    There are {} paths from forward to reverse primers in the graph",
@@ -559,6 +649,7 @@ pub fn do_pcr(
                 sample_name,
                 params,
                 amplicon_index,
+                threading_annotations.as_ref(),
             )?;
             amplicon_index = new_index;
 
@@ -1241,7 +1332,7 @@ mod tests {
         // With reverse extension, forward extension from the start node
         // and reverse extension from the end node should converge, producing
         // complete paths.
-        let all_paths = get_assembly_paths(&graph_result, &filtered, &params);
+        let all_paths = get_assembly_paths(&graph_result, &filtered, &params, None);
         assert!(
             !all_paths.is_empty(),
             "Expected paths after reverse extension"
@@ -1250,7 +1341,7 @@ mod tests {
         remove_low_coverage_tips(&mut graph_result, &filtered.get_k());
         reachability_pruning(&mut graph_result);
 
-        let all_paths = get_assembly_paths(&graph_result, &filtered, &params);
+        let all_paths = get_assembly_paths(&graph_result, &filtered, &params, None);
         assert!(!all_paths.is_empty(), "Expected paths after pruning");
     }
 }

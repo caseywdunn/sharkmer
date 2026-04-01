@@ -235,6 +235,14 @@ pub(crate) struct Args {
     #[arg(long, help_heading = "General")]
     pub(crate) dry_run: bool,
 
+    /// Skip read threading (Pass 2); use kmer-only scoring
+    #[arg(long, help_heading = "PCR")]
+    pub(crate) no_read_threading: bool,
+
+    /// Treat input as paired-end reads (exactly 2 files required: R1, R2)
+    #[arg(long, help_heading = "Input")]
+    pub(crate) paired: bool,
+
     /// Override cache directory for remote reads
     #[arg(long, help_heading = "Cache")]
     pub(crate) cache_dir: Option<PathBuf>,
@@ -610,6 +618,21 @@ pub(crate) fn validate_args(args: &Args, pcr_runs: &[pcr::PCRParams]) -> Result<
     // Validate that --ena is not combined with input files
     if args.ena.is_some() && args.input.is_some() {
         bail!("--ena cannot be combined with input files. Use one or the other.");
+    }
+
+    // Validate --paired: requires exactly 2 input files
+    if args.paired {
+        if args.ena.is_some() {
+            bail!("--paired cannot be combined with --ena. Provide exactly 2 local input files.");
+        }
+        match &args.input {
+            Some(files) if files.len() == 2 => {} // ok
+            Some(files) => bail!(
+                "--paired requires exactly 2 input files (R1, R2), got {}",
+                files.len()
+            ),
+            None => bail!("--paired requires exactly 2 input files (R1, R2). Cannot use stdin."),
+        }
     }
 
     // Validate input files exist before starting processing

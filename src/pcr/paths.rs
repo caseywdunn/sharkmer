@@ -5,7 +5,7 @@ use bio::alignment::distance::simd::*;
 use bio::io::fasta;
 use log::debug;
 use petgraph::Direction;
-use petgraph::graph::NodeIndex;
+use petgraph::graph::{EdgeIndex, NodeIndex};
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::visit::EdgeRef;
 
@@ -32,10 +32,13 @@ const MAX_DFS_STATES: usize = 100_000;
 /// Find paths from start nodes to end nodes using coverage-weighted DFS.
 /// At each branch point, outgoing edges are explored in descending order
 /// of edge count, so the highest-coverage paths are found first.
+/// When `edge_preferences` are provided (from bubble resolution), they
+/// boost the ordering of read-supported edges at branch points.
 pub fn get_assembly_paths(
     graph: &StableDiGraph<DBNode, DBEdge>,
     kmer_counts: &FilteredKmerCounts,
     params: &PCRParams,
+    edge_preferences: Option<&std::collections::HashMap<EdgeIndex, f64>>,
 ) -> Vec<Vec<NodeIndex>> {
     let min_path_nodes = if params.min_length <= kmer_counts.get_k() {
         1
@@ -86,13 +89,25 @@ pub fn get_assembly_paths(
                 continue;
             }
 
-            // Get outgoing edges sorted by count (descending) for coverage-weighted exploration
-            let mut outgoing: Vec<(NodeIndex, u32)> = graph
+            // Get outgoing edges sorted by score for coverage-weighted exploration.
+            // When edge preferences are available (from bubble resolution),
+            // combine kmer count with read-support preference.
+            let mut outgoing: Vec<(NodeIndex, f64)> = graph
                 .edges_directed(current, Direction::Outgoing)
-                .map(|e| (e.target(), e.weight().count))
+                .map(|e| {
+                    let base_score = e.weight().count as f64;
+                    let edge_id = e.id();
+                    let pref = edge_preferences
+                        .and_then(|prefs: &std::collections::HashMap<EdgeIndex, f64>| {
+                            prefs.get(&edge_id)
+                        })
+                        .copied()
+                        .unwrap_or(1.0);
+                    (e.target(), base_score * pref)
+                })
                 .collect();
-            // Sort ascending so that when pushed to stack, highest-count is popped first
-            outgoing.sort_by(|a, b| a.1.cmp(&b.1));
+            // Sort ascending so that when pushed to stack, highest-score is popped first
+            outgoing.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
 
             for (neighbor, _count) in outgoing {
                 let current_visits = visit_counts.get(&neighbor).copied().unwrap_or(0);
@@ -119,6 +134,7 @@ pub(super) fn generate_sequences_from_paths(
     sample_name: &str,
     params: &PCRParams,
     mut amplicon_index: usize,
+    threading: Option<&super::threading::ThreadingAnnotations>,
 ) -> Result<(Vec<AssemblyRecord>, usize)> {
     let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
 
@@ -203,11 +219,56 @@ pub(super) fn generate_sequences_from_paths(
             max_ratio
         };
 
+        // Compute read-support metrics from threading annotations
+        let (zero_support_edges, median_unambiguous_support, edge_support_fraction) =
+            if let Some(ann) = threading {
+                let mut total_edges = 0u32;
+                let mut supported_edges = 0u32;
+                let mut zero_count = 0u32;
+                let mut unambiguous_counts: Vec<u64> = Vec::new();
+
+                let mut parent = path[0];
+                for &node in &path[1..] {
+                    if let Some(edge_idx) = graph.find_edge(parent, node) {
+                        total_edges += 1;
+                        match ann.edge_support.get(&edge_idx) {
+                            Some(s) if s.read_support_total > 0 => {
+                                supported_edges += 1;
+                                unambiguous_counts.push(s.read_support_unambiguous as u64);
+                            }
+                            _ => {
+                                zero_count += 1;
+                                unambiguous_counts.push(0);
+                            }
+                        }
+                    }
+                    parent = node;
+                }
+
+                let frac = if total_edges > 0 {
+                    supported_edges as f64 / total_edges as f64
+                } else {
+                    0.0
+                };
+                let median_unamb = if unambiguous_counts.is_empty() {
+                    0.0
+                } else {
+                    compute_median(&unambiguous_counts)
+                };
+
+                (Some(zero_count), Some(median_unamb), Some(frac))
+            } else {
+                (None, None, None)
+            };
+
         let score = super::PathScore {
             kmer_min_count: *count_min as u32,
             kmer_median_count: count_median,
             coverage_cv,
             max_coverage_ratio,
+            zero_support_edges,
+            median_unambiguous_support,
+            edge_support_fraction,
         };
 
         let id = format!("{}_{}_{}", sample_name, params.gene_name, amplicon_index);

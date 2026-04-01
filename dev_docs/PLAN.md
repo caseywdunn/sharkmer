@@ -12,6 +12,35 @@ for detailed specifications.
 Brief notes after each phase/session for cold-start context. Most recent
 first.
 
+**2026-03-31 — Phases 4-6 implementation (read threading)**
+Two-pass read backend: Pass 1 counts kmers (unchanged), Pass 2 re-reads
+FASTQ for read threading. New CLI flags: `--no-read-threading` (skip Pass 2),
+`--paired` (paired-end R1/R2 alternating ingestion). `ReadSourcePlan` tracks
+input sources for Pass 2 re-reading (local files, cached remote, uncached
+remote, stdin=unavailable). `reread_sequences()` collects reads into
+`ReadRecord` structs. Paired ingestion via `read_fastq_paired()` alternates
+R1/R2 reads with `--max-reads` rounded up to even.
+
+Read threading (#98): `threading.rs` module maps reads to graph edges via
+maximal contiguous runs of adjacent graph kmers. Per-edge annotations:
+`read_support_total` and `read_support_unambiguous` (single unbranched path).
+Branch-point phasing records (incoming_edge, outgoing_edge) links at
+branch points. `PrimerReadFilter` (`read_filter.rs`) filters reads per-gene
+using primer kmer matching before threading. Threading is graph-agnostic
+(accepts any `StableDiGraph<DBNode, DBEdge>`), designed for Phase 7 reuse.
+
+Threading-dependent scoring (#99): `PathScore` extended with
+`zero_support_edges`, `median_unambiguous_support`, `edge_support_fraction`.
+`composite()` penalizes zero-support edges (0.5^n) and rewards high support
+fraction. Bubble resolution (#100): `bubble.rs` detects simple bubbles
+(diverge/converge patterns), ranks branches by read support + phasing,
+returns edge preferences that boost DFS edge ordering. Paired-end phasing
+(#101): `thread_reads_paired()` groups reads by pair index, creates
+`PairedEndLink` when both mates map to the same graph.
+
+All 83 tests pass (61 unit + 22 integration). 11 new unit tests added
+(5 threading, 3 bubble, 1 read_filter, 2 existing updated).
+
 **2026-03-29 — Phase 3 implementation (graph traversal)**
 Replaced ad-hoc graph heuristics with principled algorithms. Graph
 construction: single graph per gene seeded with all forward primer kmers
@@ -327,11 +356,11 @@ the full graph exists — during seed evaluation. Design the retention
 API so it can be queried per-seed (e.g., "give me all reads containing
 this primer kmer") rather than only per-graph-edge.
 
-- [ ] #96 Two-pass architecture: Pass 1 counts kmers (as now), Pass 2
+- [x] #96 Two-pass architecture: Pass 1 counts kmers (as now), Pass 2
   re-reads FASTQ for threading. `--no-read-threading` flag to skip second
   pass. File input seeks back; remote input reads from cache (Phase 2);
   `--no-cache` re-downloads with warning; stdin implies `--no-read-threading`.
-- [ ] #97 `--paired` flag: first file is R1, second is R2. Errors if not
+- [x] #97 `--paired` flag: first file is R1, second is R2. Errors if not
   exactly 2 input files (local or remote). Errors if used with stdin. When
   set, reads are ingested alternately from R1 and R2 so graph is built from
   the same balanced read set that will later be threaded and analyzed as
@@ -355,12 +384,12 @@ graph. Phase 7 threads reads through bounded seed subgraphs using the
 same mapping code. Keep the threading API graph-agnostic: accept any
 `StableDiGraph<DBNode, DBEdge>` plus a set of reads, return annotations.
 
-- [ ] #98 Map reads to graph edges via maximal contiguous runs of adjacent
+- [x] #98 Map reads to graph edges via maximal contiguous runs of adjacent
   graph kmers. Annotate per edge:
   - `read_support_total` — every read whose run includes this edge
   - `read_support_unambiguous` — only reads mapping to a single
     unbranched path
-- [ ] Branch-point phasing: when a contiguous run passes through a branch
+- [x] Branch-point phasing: when a contiguous run passes through a branch
   point (in-degree > 1 or out-degree > 1), record (incoming_edge,
   outgoing_edge) link with count. This captures read-scale haplotype
   structure.
@@ -378,12 +407,12 @@ has the best read support?" — same data, different question. Keep the
 signal computation separate from the scoring/decision logic so both
 phases can reuse it.
 
-- [ ] #99 Add read-support signal to path scoring: penalize edges with
+- [x] #99 Add read-support signal to path scoring: penalize edges with
   zero read support, prefer edges with high unambiguous support
-- [ ] #100 Read-aware bubble resolution: use branch-point phasing to
+- [x] #100 Read-aware bubble resolution: use branch-point phasing to
   determine which bubble arms connect to which — resolves cases where
   kmer coverage alone is ambiguous
-- [ ] #101 Paired-end phasing: when both mates of a pair map to the same
+- [x] #101 Paired-end phasing: when both mates of a pair map to the same
   amplicon graph in correct orientation (forward on one strand, reverse
   on the other), use the pair as a phasing link across the spanned
   region. Insert size is not known a priori and amplicons are only on
@@ -391,7 +420,12 @@ phases can reuse it.
   simply require both mates to map to the same amplicon in valid
   orientation. This provides longer-range phasing than single reads
   without needing insert size calibration.
-- [ ] Run benchmarks, compare to Phase 3 and Phase 5 results
+- [x] Run benchmarks, compare to Phase 3 and Phase 5 results.
+  All 14 samples at 1M reads: identical gene counts to Phase 3 baseline.
+  Three samples have minor sequence changes from threading-informed
+  edge ordering (Covercrop 16S reordering, Gryllus ITS 4→2 products,
+  Porites ITS 1bp). Wall time ~50-70% higher due to Pass 2 re-reading.
+  Results: `benchmarks/results/2026-03-31_sharkmer_3.0.0-dev_a834cab.yaml`
 
 ## Phase 7 — Read-backed runway for seed evaluation
 

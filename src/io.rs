@@ -4,6 +4,7 @@ use log::{debug, info, warn};
 use std::io::BufRead;
 use std::io::IsTerminal;
 use std::io::Write;
+use std::path::PathBuf;
 
 use crate::cli::Args;
 use crate::format::{format_bytes, format_count, format_duration};
@@ -12,6 +13,43 @@ use crate::kmer::{Chunk, KmerCounts};
 
 pub(crate) const FASTA_LINE_WIDTH: usize = 80;
 pub(crate) const N_READS_PER_BATCH: u64 = 1000;
+
+/// Describes how to re-acquire read data for Pass 2 (read threading).
+pub(crate) enum ReadSourcePlan {
+    /// Local files that can be reopened
+    LocalFiles(Vec<PathBuf>),
+    /// Remote files cached locally (paths to cached files)
+    CachedRemote(Vec<PathBuf>),
+    /// Remote files that must be re-downloaded (URLs)
+    UncachedRemote(Vec<String>),
+    /// Cannot re-read (stdin or --no-read-threading)
+    Unavailable,
+}
+
+/// Plan for Pass 2 re-reading of FASTQ data.
+pub(crate) struct ReadPlan {
+    pub(crate) source: ReadSourcePlan,
+    pub(crate) paired: bool,
+    pub(crate) max_reads: u64,
+}
+
+/// A retained read for Pass 2 threading.
+pub(crate) struct ReadRecord {
+    /// Raw sequence (ASCII ACGT)
+    pub(crate) sequence: String,
+    /// Global read index (0-based, in order of ingestion)
+    pub(crate) index: u64,
+    /// Mate designation for paired-end reads
+    pub(crate) mate: Mate,
+}
+
+/// Mate designation for paired-end reads.
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub(crate) enum Mate {
+    Unpaired,
+    R1,
+    R2,
+}
 
 /// Result of querying ENA for an accession.
 pub(crate) struct EnaResult {
@@ -262,14 +300,15 @@ fn read_fastq<R: BufRead>(
 }
 
 /// Ingest FASTQ reads from all input sources (ENA, files, or stdin).
-/// Returns the read state with populated chunks, and summary statistics.
+/// Returns the read state with populated chunks, summary statistics, and a
+/// `ReadPlan` describing how to re-read the same data in Pass 2.
 pub(crate) fn ingest_reads(
     args: &Args,
     k: usize,
     mut cached_ena_result: Option<EnaResult>,
     cache_config: Option<&crate::cache::CacheConfig>,
     show_progress: bool,
-) -> Result<(FastqReadState, u64, u64, u64)> {
+) -> Result<(FastqReadState, u64, u64, u64, ReadPlan)> {
     let start = std::time::Instant::now();
     info!("Ingesting reads...");
 
@@ -308,12 +347,17 @@ pub(crate) fn ingest_reads(
         ProgressBar::hidden()
     };
 
+    // Track the input source for Pass 2 re-reading
+    let mut read_source_plan = ReadSourcePlan::Unavailable;
+
     if let Some(accession) = &args.ena {
         // Stream reads from ENA (use cached result if available)
         let ena_result = match cached_ena_result.take() {
             Some(r) => r,
             None => get_ena_fastq_urls(accession)?,
         };
+        let mut cached_paths: Vec<PathBuf> = Vec::new();
+        let mut is_cached = false;
         for url in &ena_result.urls {
             let reader: Box<dyn BufRead> = if let Some(cache) = cache_config {
                 // Use cache: lookup or download
@@ -327,6 +371,8 @@ pub(crate) fn ingest_reads(
                         cache.download_to_cache(url, max_reads)?
                     }
                 };
+                cached_paths.push(local_path.clone());
+                is_cached = true;
                 let file = std::fs::File::open(&local_path).with_context(|| {
                     format!("Failed to open cached file: {}", local_path.display())
                 })?;
@@ -353,54 +399,56 @@ pub(crate) fn ingest_reads(
                 break;
             }
         }
+        read_source_plan = if is_cached {
+            ReadSourcePlan::CachedRemote(cached_paths)
+        } else {
+            warn!("Read threading will require re-downloading reads from ENA (no cache)");
+            ReadSourcePlan::UncachedRemote(ena_result.urls)
+        };
     } else if let Some(input_files) = &args.input {
-        // Read from one or more files
-        for file_path in input_files.iter() {
-            let file = std::fs::File::open(file_path)
-                .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
-
-            let file_name = file_path.to_string_lossy();
-            let has_gz_ext = file_name.ends_with(".gz") || file_name.ends_with(".gzip");
-
-            // Detect gzip magic bytes for files without .gz extension
-            let use_gzip = if has_gz_ext {
-                true
+        if args.paired {
+            // Paired-end: alternate reads from R1 and R2
+            let reader1 = open_fastq_reader(&input_files[0])?;
+            let reader2 = open_fastq_reader(&input_files[1])?;
+            let name1 = input_files[0].to_string_lossy().to_string();
+            let name2 = input_files[1].to_string_lossy().to_string();
+            // Round max_reads up to even for balanced pairs
+            let paired_max = if max_reads > 0 && max_reads % 2 != 0 {
+                max_reads + 1
             } else {
-                let mut buf_reader = std::io::BufReader::new(file);
-                let magic = buf_reader.fill_buf().context("Failed to peek at file")?;
-                let is_gzip = magic.len() >= 2 && magic[0] == 0x1f && magic[1] == 0x8b;
-                if is_gzip {
-                    warn!(
-                        "File '{}' appears to be gzipped (magic bytes detected) but lacks a .gz extension. Reading as gzipped.",
-                        file_path.display()
-                    );
-                }
-                // We need to re-open the file since BufReader consumed ownership
-                drop(buf_reader);
-                is_gzip
+                max_reads
             };
-
-            let file = std::fs::File::open(file_path)
-                .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
-            let reader: Box<dyn BufRead> = if use_gzip {
-                Box::new(std::io::BufReader::new(flate2::read::GzDecoder::new(file)))
-            } else {
-                Box::new(std::io::BufReader::new(file))
-            };
-            let reached_max = read_fastq(
-                reader,
+            read_fastq_paired(
+                reader1,
+                reader2,
                 &mut state,
-                max_reads,
+                paired_max,
                 args.validate_every,
-                &file_name,
+                &name1,
+                &name2,
                 &progress,
             )?;
-            if reached_max {
-                break;
+        } else {
+            // Read from one or more files sequentially
+            for file_path in input_files.iter() {
+                let reader = open_fastq_reader(file_path)?;
+                let file_name = file_path.to_string_lossy();
+                let reached_max = read_fastq(
+                    reader,
+                    &mut state,
+                    max_reads,
+                    args.validate_every,
+                    &file_name,
+                    &progress,
+                )?;
+                if reached_max {
+                    break;
+                }
             }
         }
+        read_source_plan = ReadSourcePlan::LocalFiles(input_files.clone());
     } else {
-        // Read from stdin
+        // Read from stdin (cannot re-read for Pass 2)
         let stdin = std::io::stdin();
         ensure!(
             !stdin.is_terminal(),
@@ -420,6 +468,7 @@ pub(crate) fn ingest_reads(
             "stdin",
             &progress,
         )?;
+        // read_source_plan remains Unavailable for stdin
     }
 
     progress.finish_and_clear();
@@ -466,7 +515,342 @@ pub(crate) fn ingest_reads(
         bail!("No reads were ingested. Check that input files contain valid FASTQ records.");
     }
 
-    Ok((state, n_reads_ingested, n_bases_ingested, n_kmers_ingested))
+    let read_plan = ReadPlan {
+        source: read_source_plan,
+        paired: args.paired,
+        max_reads,
+    };
+
+    Ok((
+        state,
+        n_reads_ingested,
+        n_bases_ingested,
+        n_kmers_ingested,
+        read_plan,
+    ))
+}
+
+/// Open a FASTQ file as a buffered reader, with automatic gzip detection.
+fn open_fastq_reader(file_path: &std::path::Path) -> Result<Box<dyn BufRead>> {
+    let file_name = file_path.to_string_lossy();
+    let has_gz_ext = file_name.ends_with(".gz") || file_name.ends_with(".gzip");
+
+    let use_gzip = if has_gz_ext {
+        true
+    } else {
+        let file = std::fs::File::open(file_path)
+            .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
+        let mut buf_reader = std::io::BufReader::new(file);
+        let magic = buf_reader.fill_buf().context("Failed to peek at file")?;
+        let is_gzip = magic.len() >= 2 && magic[0] == 0x1f && magic[1] == 0x8b;
+        drop(buf_reader);
+        is_gzip
+    };
+
+    let file = std::fs::File::open(file_path)
+        .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
+    if use_gzip {
+        Ok(Box::new(std::io::BufReader::new(
+            flate2::read::GzDecoder::new(file),
+        )))
+    } else {
+        Ok(Box::new(std::io::BufReader::new(file)))
+    }
+}
+
+/// Read FASTQ sequences from two files in alternating order (R1, R2, R1, R2, ...).
+/// Returns true if max_reads was reached.
+#[allow(clippy::too_many_arguments)]
+fn read_fastq_paired<R1: BufRead, R2: BufRead>(
+    reader1: R1,
+    reader2: R2,
+    state: &mut FastqReadState,
+    max_reads: u64,
+    validate_every: u64,
+    source1_name: &str,
+    source2_name: &str,
+    progress: &ProgressBar,
+) -> Result<bool> {
+    let mut lines1 = reader1.lines();
+    let mut lines2 = reader2.lines();
+    let n_chunks = state.chunks.len();
+
+    loop {
+        // Read one record from R1
+        let r1_done = read_one_fastq_record(&mut lines1, state, validate_every, source1_name)?;
+        if r1_done {
+            break;
+        }
+        if state.n_reads_read % N_READS_PER_BATCH == 0 {
+            for seq in state.seqs.drain(..) {
+                state.chunks[state.chunk_index].ingest_seq(&seq)?;
+            }
+            state.chunk_index = (state.chunk_index + 1) % n_chunks;
+            progress.set_position(state.n_reads_read);
+        }
+        if max_reads > 0 && state.n_reads_read >= max_reads {
+            progress.set_position(state.n_reads_read);
+            return Ok(true);
+        }
+
+        // Read one record from R2
+        let r2_done = read_one_fastq_record(&mut lines2, state, validate_every, source2_name)?;
+        if r2_done {
+            break;
+        }
+        if state.n_reads_read % N_READS_PER_BATCH == 0 {
+            for seq in state.seqs.drain(..) {
+                state.chunks[state.chunk_index].ingest_seq(&seq)?;
+            }
+            state.chunk_index = (state.chunk_index + 1) % n_chunks;
+            progress.set_position(state.n_reads_read);
+        }
+        if max_reads > 0 && state.n_reads_read >= max_reads {
+            progress.set_position(state.n_reads_read);
+            return Ok(true);
+        }
+    }
+
+    Ok(false)
+}
+
+/// Read a single FASTQ record (4 lines) from a lines iterator.
+/// Returns true if EOF was reached (no more records).
+fn read_one_fastq_record<R: BufRead>(
+    lines: &mut std::io::Lines<R>,
+    state: &mut FastqReadState,
+    validate_every: u64,
+    source_name: &str,
+) -> Result<bool> {
+    let header = match lines.next() {
+        Some(result) => {
+            result.with_context(|| format!("Failed to read header from {}", source_name))?
+        }
+        None => return Ok(true), // EOF
+    };
+
+    let sequence = match lines.next() {
+        Some(line) => {
+            line.with_context(|| format!("Failed to read sequence from {}", source_name))?
+        }
+        None => bail!(
+            "Truncated FASTQ record at record {} in {}: missing sequence line",
+            state.n_reads_read + 1,
+            source_name,
+        ),
+    };
+
+    let separator = match lines.next() {
+        Some(line) => {
+            line.with_context(|| format!("Failed to read separator from {}", source_name))?
+        }
+        None => bail!(
+            "Truncated FASTQ record at record {} in {}: missing separator line",
+            state.n_reads_read + 1,
+            source_name,
+        ),
+    };
+
+    let quality = match lines.next() {
+        Some(line) => {
+            line.with_context(|| format!("Failed to read quality from {}", source_name))?
+        }
+        None => bail!(
+            "Truncated FASTQ record at record {} in {}: missing quality line",
+            state.n_reads_read + 1,
+            source_name,
+        ),
+    };
+
+    let should_validate =
+        state.n_reads_read == 0 || (validate_every > 0 && state.n_reads_read % validate_every == 0);
+    if should_validate {
+        validate_fastq_record(
+            &header,
+            &sequence,
+            &separator,
+            &quality,
+            sequence.len(),
+            state.n_reads_read,
+        )?;
+    }
+
+    state.n_bases_read += sequence.len() as u64;
+    state.seqs.push(sequence);
+    state.n_reads_read += 1;
+
+    Ok(false) // not EOF
+}
+
+/// Re-read FASTQ sequences for Pass 2 (read threading).
+/// Opens the same sources used in Pass 1 and collects sequences into `ReadRecord`s.
+pub(crate) fn reread_sequences(plan: &ReadPlan, show_progress: bool) -> Result<Vec<ReadRecord>> {
+    let start = std::time::Instant::now();
+    info!("Pass 2: re-reading sequences for read threading...");
+
+    let files: Vec<PathBuf> = match &plan.source {
+        ReadSourcePlan::LocalFiles(paths) => paths.clone(),
+        ReadSourcePlan::CachedRemote(paths) => paths.clone(),
+        ReadSourcePlan::UncachedRemote(urls) => {
+            // Re-download to temporary cache paths
+            warn!("Re-downloading reads for Pass 2 (use --cache-dir to avoid this)");
+            let mut paths = Vec::new();
+            for url in urls {
+                info!("Downloading {} for Pass 2...", url);
+                let response = ureq::get(url)
+                    .call()
+                    .with_context(|| format!("Failed to download {} for Pass 2", url))?;
+                // Write to a temporary file
+                let tmp_path = std::env::temp_dir().join(format!(
+                    "sharkmer_pass2_{}.fastq.gz",
+                    url.len() // simple disambiguator
+                ));
+                let mut tmp_file = std::fs::File::create(&tmp_path).with_context(|| {
+                    format!(
+                        "Failed to create temp file for Pass 2: {}",
+                        tmp_path.display()
+                    )
+                })?;
+                std::io::copy(&mut response.into_reader(), &mut tmp_file)
+                    .context("Failed to write Pass 2 temp file")?;
+                paths.push(tmp_path);
+            }
+            paths
+        }
+        ReadSourcePlan::Unavailable => {
+            return Ok(Vec::new());
+        }
+    };
+
+    let progress = if show_progress && plan.max_reads > 0 {
+        let pb = ProgressBar::new(plan.max_reads);
+        pb.set_style(
+            ProgressStyle::with_template("Pass 2 {bar:30} {human_pos}/{human_len} [{per_sec}]")
+                .expect("valid progress template"),
+        );
+        pb
+    } else if show_progress {
+        let pb = ProgressBar::new_spinner();
+        pb.set_style(
+            ProgressStyle::with_template("Pass 2 {spinner} {human_pos} [{per_sec}]")
+                .expect("valid progress template"),
+        );
+        pb
+    } else {
+        ProgressBar::hidden()
+    };
+
+    let mut records: Vec<ReadRecord> = Vec::new();
+    let mut index: u64 = 0;
+
+    if plan.paired && files.len() == 2 {
+        // Paired-end: alternate R1 and R2
+        let reader1 = open_fastq_reader(&files[0])?;
+        let reader2 = open_fastq_reader(&files[1])?;
+        let mut lines1 = reader1.lines();
+        let mut lines2 = reader2.lines();
+
+        loop {
+            // Read R1
+            match read_sequence_only(&mut lines1)? {
+                Some(seq) => {
+                    records.push(ReadRecord {
+                        sequence: seq,
+                        index,
+                        mate: Mate::R1,
+                    });
+                    index += 1;
+                }
+                None => break,
+            }
+            progress.set_position(index);
+            if plan.max_reads > 0 && index >= plan.max_reads {
+                break;
+            }
+
+            // Read R2
+            match read_sequence_only(&mut lines2)? {
+                Some(seq) => {
+                    records.push(ReadRecord {
+                        sequence: seq,
+                        index,
+                        mate: Mate::R2,
+                    });
+                    index += 1;
+                }
+                None => break,
+            }
+            progress.set_position(index);
+            if plan.max_reads > 0 && index >= plan.max_reads {
+                break;
+            }
+        }
+    } else {
+        // Unpaired: read files sequentially
+        for file_path in &files {
+            let reader = open_fastq_reader(file_path)?;
+            let mut lines = reader.lines();
+
+            while let Some(seq) = read_sequence_only(&mut lines)? {
+                records.push(ReadRecord {
+                    sequence: seq,
+                    index,
+                    mate: Mate::Unpaired,
+                });
+                index += 1;
+                if index % 10_000 == 0 {
+                    progress.set_position(index);
+                }
+                if plan.max_reads > 0 && index >= plan.max_reads {
+                    break;
+                }
+            }
+            if plan.max_reads > 0 && index >= plan.max_reads {
+                break;
+            }
+        }
+    }
+
+    progress.finish_and_clear();
+    info!(
+        "Pass 2: collected {} reads for threading in {}",
+        format_count(index),
+        format_duration(start.elapsed())
+    );
+
+    Ok(records)
+}
+
+/// Read a single FASTQ record and return only the sequence line.
+/// Returns None at EOF.
+fn read_sequence_only<R: BufRead>(lines: &mut std::io::Lines<R>) -> Result<Option<String>> {
+    // Header
+    match lines.next() {
+        Some(result) => {
+            result.context("Failed to read FASTQ header")?;
+        }
+        None => return Ok(None),
+    }
+    // Sequence
+    let sequence = match lines.next() {
+        Some(result) => result.context("Failed to read FASTQ sequence")?,
+        None => bail!("Truncated FASTQ record: missing sequence line"),
+    };
+    // Separator
+    match lines.next() {
+        Some(result) => {
+            result.context("Failed to read FASTQ separator")?;
+        }
+        None => bail!("Truncated FASTQ record: missing separator line"),
+    }
+    // Quality
+    match lines.next() {
+        Some(result) => {
+            result.context("Failed to read FASTQ quality")?;
+        }
+        None => bail!("Truncated FASTQ record: missing quality line"),
+    }
+    Ok(Some(sequence))
 }
 
 /// Consolidate chunks into a single KmerCounts table, optionally writing histograms.

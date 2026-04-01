@@ -88,14 +88,15 @@ fn main() -> Result<()> {
         None
     };
 
-    // Ingest FASTQ reads from all input sources
-    let (state, n_reads_ingested, n_bases_ingested, n_kmers_ingested) = io::ingest_reads(
-        &args,
-        k,
-        cached_ena_result,
-        cache_config.as_ref(),
-        show_progress,
-    )?;
+    // Ingest FASTQ reads from all input sources (Pass 1: kmer counting)
+    let (state, n_reads_ingested, n_bases_ingested, n_kmers_ingested, read_plan) =
+        io::ingest_reads(
+            &args,
+            k,
+            cached_ena_result,
+            cache_config.as_ref(),
+            show_progress,
+        )?;
 
     // Consolidate chunks and optionally write histograms
     let mut state = state;
@@ -109,6 +110,22 @@ fn main() -> Result<()> {
         show_progress,
     )?;
 
+    // Pass 2: re-read sequences for read threading (if enabled and PCR requested)
+    let threading_reads = if !args.no_read_threading && !pcr_runs.is_empty() {
+        match &read_plan.source {
+            io::ReadSourcePlan::Unavailable => {
+                info!("Read threading unavailable (stdin input); using kmer-only scoring");
+                None
+            }
+            _ => Some(io::reread_sequences(&read_plan, show_progress)?),
+        }
+    } else {
+        if args.no_read_threading && !pcr_runs.is_empty() {
+            info!("Read threading disabled (--no-read-threading)");
+        }
+        None
+    };
+
     // Run in silico PCR
     let pcr_results = stats::run_pcr(
         &kmer_counts,
@@ -118,6 +135,7 @@ fn main() -> Result<()> {
         args.min_kmer_count,
         args.dump_graph,
         show_progress,
+        threading_reads.as_deref(),
     )?;
 
     // Build and write run statistics

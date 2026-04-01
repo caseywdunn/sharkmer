@@ -43,6 +43,7 @@ pub(crate) struct RunStats {
 }
 
 /// Run in silico PCR for all primer pairs, write FASTA output files, and print results.
+#[allow(clippy::too_many_arguments)]
 pub(crate) fn run_pcr(
     kmer_counts: &KmerCounts,
     pcr_runs: &[pcr::PCRParams],
@@ -51,6 +52,7 @@ pub(crate) fn run_pcr(
     min_kmer_count: u32,
     dump_graph: bool,
     show_progress: bool,
+    reads: Option<&[crate::io::ReadRecord]>,
 ) -> Result<Vec<PcrGeneResult>> {
     let mut pcr_results: Vec<PcrGeneResult> = Vec::new();
 
@@ -75,11 +77,18 @@ pub(crate) fn run_pcr(
     info!("Filtering kmers with count < {} before PCR", min_kmer_count);
     let kmer_counts_pcr = kmer_counts.filtered_view(min_kmer_count);
 
-    // Run PCR for each gene in parallel; kmer_counts_pcr is read-only and shared
+    // Run PCR for each gene in parallel; kmer_counts_pcr and reads are read-only and shared
     let pcr_fasta_results: Vec<_> = pcr_runs
         .par_iter()
         .map(|pcr_params| {
-            let fasta = pcr::do_pcr(&kmer_counts_pcr, sample, pcr_params, dump_graph, directory);
+            let fasta = pcr::do_pcr(
+                &kmer_counts_pcr,
+                sample,
+                pcr_params,
+                dump_graph,
+                directory,
+                reads,
+            );
             (pcr_params, fasta)
         })
         .collect();
