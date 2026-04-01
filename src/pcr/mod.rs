@@ -393,13 +393,21 @@ pub fn do_pcr(
     debug!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
     // Evaluate seeds: bounded local exploration to filter off-target seeds
-    let highest_threshold = coverage_thresholds[0];
+    // Use the highest coverage threshold for seed evaluation. This is
+    // stringent enough that off-target seeds (random genomic matches) fail
+    // to extend, while on-target seeds with real coverage extend well.
+    // Note: for genes where the real kmer coverage is far below the max
+    // primer kmer count (e.g., single-copy genes with high off-target
+    // primer counts), on-target seeds may be falsely abandoned. This is
+    // a known limitation to be addressed by #109 (parameter tuning) and
+    // #110 (read-backed runway).
+    let seed_eval_threshold = coverage_thresholds[0];
     seed_eval::evaluate_seeds(
         &mut seed_graph,
         &node_lookup,
         kmer_counts,
         params,
-        highest_threshold,
+        seed_eval_threshold,
     );
 
     let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
