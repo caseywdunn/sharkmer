@@ -235,6 +235,11 @@ pub(crate) struct Args {
     #[arg(long, help_heading = "General")]
     pub(crate) dry_run: bool,
 
+    /// Enable read-backed seed evaluation: retain primer-matching reads during
+    /// ingestion and use read divergence to reject off-target seeds
+    #[arg(long, help_heading = "PCR")]
+    pub(crate) read_eval: bool,
+
     /// Enable read threading (Pass 2): re-read FASTQ to annotate graph edges with read support
     #[arg(long, help_heading = "PCR")]
     pub(crate) read_threading: bool,
