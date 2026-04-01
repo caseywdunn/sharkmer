@@ -62,6 +62,80 @@ GenBank references).
 No public sequences available for: 28S-v2, ITS-v2, ITS-v3 (only partial
 references), EF1g, Fz4, Gpdh, Pgi (no Gryllus gene sequences).
 
+## Current status (post Phases 3-7, commit df4269e)
+
+Updated analysis of perfect-match failures using current code (Phase 3
+graph traversal improvements + Phase 7 read-backed seed evaluation).
+Tested at multiple coverage levels with and without `--read-eval`.
+
+### Recovery summary
+
+| Gene | Species | Old status | 1M | 2M | 4M | 4M --read-eval | 8M | 16M | 16M --read-eval |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 16S | Porites | Fail 4M | - | - | - | - | - | - | - |
+| CO1 | Porites | Fail 4M | - | - | - | - | - | - | - |
+| 12S | Drosophila | Fail 16M | Y | Y | Y | Y | Y | Y | Y |
+| 16S | Drosophila | Fail 16M | - | - | - | - | - | - | - |
+| 16S-v2 | Drosophila | Fail 16M | - | - | - | - | - | - | - |
+| 28S | Drosophila | Fail 16M | - | - | - | - | - | - | - |
+| ND1 | Drosophila | Fail 16M | Y | Y | Y | Y | - | Y | Y |
+| ND4 | Drosophila | Fail 16M | - | - | Y | Y | - | - | - |
+| ITS | Drosophila | Fail 16M | - | - | - | **Y** | - | - | - |
+| ITS | Rhopilema | Fail 16M | - | - | - | - | - | - | - |
+| ND4 | Heliconius | Fail 16M | - | - | Y | - | - | Y | Y |
+
+Key: Y = recovered, - = still fails, **Y** = recovered only with --read-eval
+
+### Analysis of changes since original failure analysis
+
+**Newly recovered genes:**
+- **Drosophila 12S**: Was failing at 16M in original analysis but now
+  recovers at all coverage levels 1M-16M. Phase 3 graph traversal
+  improvements (bidirectional extension, coverage-weighted DFS) resolved
+  the graph complexity issue at high coverage.
+- **Drosophila ND1**: Similar to 12S — was failing at 16M, now recovers
+  at 1M-4M and 16M. Drops out at 8M, suggesting a coverage-dependent
+  graph complexity sweet spot.
+- **Drosophila ND4**: Recovers at 4M (both with and without --read-eval)
+  and at some higher coverages. Previously failed at all levels.
+- **Drosophila ITS**: Recovers at 4M **only with --read-eval**. The
+  read-backed seed evaluation rejects off-target seeds that were consuming
+  graph budget, allowing the correct seeds to extend successfully. This is
+  the first gene where `--read-eval` makes a difference.
+- **Heliconius ND4**: Now recovers at 4M and 16M. Previously failed at
+  all levels.
+
+**Still failing:**
+- **Porites 16S, CO1 at 4M**: Still fail. Porites has a 542 Mb genome —
+  at 4M 150bp reads, local coverage is only ~1x. The target regions
+  likely don't have enough kmer coverage to build connected graphs.
+- **Drosophila 16S, 16S-v2, 28S**: Still fail at all levels. These use
+  degenerate Marquina primers that seed 100+ kmer nodes per primer due
+  to ambiguity codes. The non-specific seeds create graphs with many
+  false start/end nodes. ND1 recovery suggests some similar genes can
+  be rescued by Phase 3 improvements, but 16S/28S remain too complex.
+- **Rhopilema ITS at 16M**: Still fails. This is likely rDNA copy number
+  variation creating graph complexity that exceeds node/DFS budgets.
+
+**Coverage-dependent instability:**
+- **Drosophila ND1**: Recovers at 1M-4M and 16M but not 8M. This
+  suggests a narrow window where graph complexity is just right —
+  too low and there's insufficient coverage, too high and repeat
+  regions overwhelm the graph, but at very high coverage the
+  threshold stepping finds a good balance.
+- **Drosophila ND4**: Only at 4M. Similar coverage sensitivity.
+
+### Effect of --read-eval
+
+`--read-eval` had a clear positive effect in one case:
+- **Drosophila ITS at 4M**: 11 → 12 genes. The ITS amplicon (~4835 bp)
+  is at the edge of what de Bruijn graphs from short reads can handle.
+  Read-eval rejects off-target primer seeds that waste the node budget,
+  leaving more budget for the real ITS graph to extend fully.
+
+No regressions from `--read-eval` were observed at any coverage level
+for any species tested.
+
 ## Failure categories
 
 ### Perfect-match failures (8 entries)
