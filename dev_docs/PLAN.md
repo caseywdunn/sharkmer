@@ -449,22 +449,30 @@ primer-matching reads during Pass 1 ingestion, not during Pass 2.
   annotations, bubble resolution, and paired-end phasing (Phases 4-6,
   unchanged).
 
-**Pass 1 primer matching approach:** Before ingestion, run the
-text-processing portion of primer preprocessing (trim → resolve
-ambiguity → permute mismatches) and encode each variant as a 2-bit
-`Oligo`. During `kmers_from_ascii` in Pass 1, for each kmer check if
-high-order bits match any forward primer Oligo (mask + compare) or
-low-order bits match any reverse primer Oligo. One bitwise comparison
-per primer variant per kmer — very cheap. Retained reads stored as
+**Pass 1 primer Oligo matching:** Primer Oligos are 2-bit encoded
+representations of the primer sequence itself (not full k-mers — those
+require the kmer table, which isn't available until after Pass 1).
+Oligos are derived purely from the primer text sequences provided via
+CLI/panels: trim → resolve ambiguity → permute mismatches → encode
+as 2-bit `Oligo`. This can run before `ingest_reads()`.
+
+During Pass 1, for each kmer extracted by `kmers_from_ascii`, check
+whether the high-order bits match any forward primer Oligo or the
+low-order bits match any reverse primer Oligo (bitwise mask + compare).
+A match means the read contains the primer sequence — retain it.
+One comparison per Oligo variant per kmer. Retained reads stored as
 raw ASCII sequences, indexed by which primer(s) they matched.
 
 - [ ] #110 Read-backed runway:
   - [ ] Move primer text preprocessing (trim, ambiguity resolution,
     mismatch permutation, Oligo encoding) to run before `ingest_reads()`,
-    producing a set of 2-bit primer Oligos per gene.
+    producing a set of 2-bit Oligos per gene. These are primer Oligos
+    (the primer sequence only), not primer kmers (which also include
+    flanking genomic nucleotides and require the kmer table).
   - [ ] During Pass 1 kmer extraction, bitwise-match each kmer against
-    primer Oligos. Retain reads that match any primer (store sequence +
-    which primer matched). Memory cost: negligible (~200 reads/amplicon).
+    primer Oligos. Retain reads that contain any primer Oligo (store
+    sequence + which primer matched). Memory cost: negligible
+    (~200 reads/amplicon).
   - [ ] During seed evaluation, thread retained primer-matching reads
     through each seed's bounded local subgraph using the existing
     graph-agnostic threading API. Seeds with consistent read support
