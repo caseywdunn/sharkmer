@@ -235,9 +235,9 @@ pub(crate) struct Args {
     #[arg(long, help_heading = "General")]
     pub(crate) dry_run: bool,
 
-    /// Skip read threading (Pass 2); use kmer-only scoring
+    /// Enable read threading (Pass 2): re-read FASTQ to annotate graph edges with read support
     #[arg(long, help_heading = "PCR")]
-    pub(crate) no_read_threading: bool,
+    pub(crate) read_threading: bool,
 
     /// Treat input as paired-end reads (exactly 2 files required: R1, R2)
     #[arg(long, help_heading = "Input")]

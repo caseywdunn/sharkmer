@@ -110,8 +110,8 @@ fn main() -> Result<()> {
         show_progress,
     )?;
 
-    // Pass 2: re-read sequences for read threading (if enabled and PCR requested)
-    let threading_reads = if !args.no_read_threading && !pcr_runs.is_empty() {
+    // Pass 2: re-read sequences for read threading (opt-in via --read-threading)
+    let threading_reads = if args.read_threading && !pcr_runs.is_empty() {
         match &read_plan.source {
             io::ReadSourcePlan::Unavailable => {
                 info!("Read threading unavailable (stdin input); using kmer-only scoring");
@@ -120,9 +120,6 @@ fn main() -> Result<()> {
             _ => Some(io::reread_sequences(&read_plan, show_progress)?),
         }
     } else {
-        if args.no_read_threading && !pcr_runs.is_empty() {
-            info!("Read threading disabled (--no-read-threading)");
-        }
         None
     };
 
