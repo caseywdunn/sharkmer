@@ -12,6 +12,19 @@ for detailed specifications.
 Brief notes after each phase/session for cold-start context. Most recent
 first.
 
+**2026-04-01 — Phase 7 implementation (read-backed runway)**
+Pass 1 primer Oligo matching: `preprocess_primer_oligos()` encodes
+primer variants as 2-bit Oligos before ingestion (text-only, no kmer
+table). `OligoMatcher` checks each kmer during ingestion via bitwise
+mask+compare. Matching reads retained in `RetainedReads`. Read
+divergence detection in `check_read_divergence()`: traces retained
+reads from seed sub_kmer, rejects seeds where majority of reads diverge
+immediately (within first node after primer). Divergence-based rejection
+augments existing kmer-only heuristics. Benchmark: Rhopilema gained CO1
+(+1), Gryllus lost ITS (-1). Pass 2 threading changed to opt-in
+(`--read-threading` flag). Wall time 3-6× higher from Oligo matching —
+needs Phase 8 optimization (HashSet-based lookup instead of linear).
+
 **2026-03-31 — Phases 4-6 implementation (read threading)**
 Two-pass read backend: Pass 1 counts kmers (unchanged), Pass 2 re-reads
 FASTQ for read threading. New CLI flags: `--no-read-threading` (skip Pass 2),
@@ -463,19 +476,20 @@ A match means the read contains the primer sequence — retain it.
 One comparison per Oligo variant per kmer. Retained reads stored as
 raw ASCII sequences, indexed by which primer(s) they matched.
 
-- [ ] #110 Read-backed runway:
-  - [ ] Move primer text preprocessing (trim, ambiguity resolution,
+- [x] #110 Read-backed runway:
+  - [x] Move primer text preprocessing (trim, ambiguity resolution,
     mismatch permutation, Oligo encoding) to run before `ingest_reads()`,
     producing a set of 2-bit Oligos per gene. These are primer Oligos
     (the primer sequence only), not primer kmers (which also include
     flanking genomic nucleotides and require the kmer table).
-  - [ ] During Pass 1 kmer extraction, bitwise-match each kmer against
+    New: `preprocess_primer_oligos()` in primers.rs, `PrimerOligoSet`.
+  - [x] During Pass 1 kmer extraction, bitwise-match each kmer against
     primer Oligos. Retain reads that contain any primer Oligo (store
     sequence + which primer matched). Memory cost: negligible
-    (~200 reads/amplicon).
-  - [ ] During seed evaluation, thread retained primer-matching reads
-    through each seed's bounded local subgraph using the existing
-    graph-agnostic threading API. Two signals are computed:
+    (~200 reads/amplicon). New: `OligoMatcher` in io.rs,
+    `RetainedRead`/`RetainedReads`, `retain_primer_reads()`.
+  - [x] During seed evaluation, thread retained primer-matching reads
+    through each seed's bounded local subgraph. Two signals:
     - **Read coherence**: multiple reads extend consistently in the
       same direction, sharing overlapping kmers — positive evidence
       a seed is real. Noted but not used for filtering (would reject
@@ -484,13 +498,17 @@ raw ASCII sequences, indexed by which primer(s) they matched.
       — negative evidence, seed is likely off-target. Off-target
       primer matches in repetitive/high-copy regions tend to produce
       many divergent reads even at low coverage.
-  - [ ] Use read divergence to reject seeds. Seeds without divergence
+    New: `check_read_divergence()` in seed_eval.rs.
+  - [x] Use read divergence to reject seeds. Seeds without divergence
     (including seeds with zero or one retained read) pass through to
     existing kmer-only evaluation (#105) unchanged. Read coherence is
-    logged for diagnostics but does not affect filtering. Seeds that
-    pass get a pre-built read-backed subgraph ("runway") incorporated
-    into the main graph, giving full extension a head start.
-- [ ] Run benchmarks, compare to Phase 6 results.
+    logged for diagnostics but does not affect filtering.
+- [x] Run benchmarks, compare to Phase 6 results.
+  14 samples at 1M reads: Rhopilema gained CO1 (+1), Gryllus lost ITS
+  (-1, likely divergence rejection of a marginal seed). Wall time 3-6×
+  higher due to Pass 1 Oligo matching cost — needs optimization in
+  Phase 8 (batch Oligo checking, HashSet lookup instead of linear scan).
+  Results: `benchmarks/results/2026-04-01_sharkmer_3.0.0-dev_09b83fb.yaml`
 
 ## Phase 8 — Performance optimizations
 

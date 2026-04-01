@@ -53,6 +53,7 @@ pub(crate) fn run_pcr(
     dump_graph: bool,
     show_progress: bool,
     reads: Option<&[crate::io::ReadRecord]>,
+    retained_reads: &crate::io::RetainedReads,
 ) -> Result<Vec<PcrGeneResult>> {
     let mut pcr_results: Vec<PcrGeneResult> = Vec::new();
 
@@ -80,7 +81,15 @@ pub(crate) fn run_pcr(
     // Run PCR for each gene in parallel; kmer_counts_pcr and reads are read-only and shared
     let pcr_fasta_results: Vec<_> = pcr_runs
         .par_iter()
-        .map(|pcr_params| {
+        .enumerate()
+        .map(|(gene_index, pcr_params)| {
+            // Collect retained reads for this gene
+            let gene_retained: Vec<&str> = retained_reads
+                .reads
+                .iter()
+                .filter(|r| r.gene_index == gene_index)
+                .map(|r| r.sequence.as_str())
+                .collect();
             let fasta = pcr::do_pcr(
                 &kmer_counts_pcr,
                 sample,
@@ -88,6 +97,7 @@ pub(crate) fn run_pcr(
                 dump_graph,
                 directory,
                 reads,
+                &gene_retained,
             );
             (pcr_params, fasta)
         })

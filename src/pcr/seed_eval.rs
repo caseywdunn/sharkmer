@@ -5,6 +5,7 @@ use petgraph::stable_graph::StableDiGraph;
 use std::collections::HashMap;
 
 use crate::kmer::FilteredKmerCounts;
+use crate::kmer::encoding::kmers_from_ascii;
 
 use super::graph::get_suffix_mask;
 use super::{DBEdge, DBNode, PCRParams};
@@ -40,13 +41,15 @@ enum SeedDirection {
 
 /// Evaluate each seed node with a bounded local exploration. Seeds that
 /// look off-target are marked terminal so they do not participate in
-/// full graph extension.
+/// full graph extension. When retained reads are available, also checks
+/// for read divergence (reads branching within k bases of the primer).
 pub(super) fn evaluate_seeds(
     graph: &mut StableDiGraph<DBNode, DBEdge>,
     node_lookup: &HashMap<u64, NodeIndex>,
     kmer_counts: &FilteredKmerCounts,
     params: &PCRParams,
     min_count: u32,
+    retained_reads: &[&str],
 ) {
     let k = kmer_counts.get_k();
     let expected_linear_nodes = params.max_length.saturating_sub(k);
@@ -159,6 +162,31 @@ pub(super) fn evaluate_seeds(
             continue;
         }
 
+        // Read divergence check: if retained reads are available,
+        // thread them through the bounded subgraph and check for
+        // divergence within k bases of the primer.
+        if !retained_reads.is_empty() {
+            let divergent = check_read_divergence(
+                sub_kmer,
+                &direction,
+                kmer_counts,
+                min_count,
+                k,
+                retained_reads,
+            );
+            if divergent {
+                gene_info!(
+                    params.gene_name,
+                    "Seed {} ({}): Abandoned — read divergence detected (reads branch within k bases of primer)",
+                    node_idx.index(),
+                    direction_str
+                );
+                graph[node_idx].is_terminal = true;
+                graph[node_idx].visited = true;
+                continue;
+            }
+        }
+
         gene_info!(
             params.gene_name,
             "Seed {} ({}): Kept — passed evaluation ({} nodes, branching ratio {:.2})",
@@ -168,6 +196,117 @@ pub(super) fn evaluate_seeds(
             branching_ratio
         );
     }
+}
+
+/// Check if retained reads show divergence at a seed.
+///
+/// For each read, extract kmers and trace them through the local kmer
+/// graph starting from the seed. Divergence means reads take different
+/// paths within the first k bases after the primer — evidence of
+/// off-target binding in repetitive regions.
+///
+/// Returns true if divergence is detected, false otherwise (including
+/// when there are 0 or 1 matching reads — not enough to detect divergence).
+fn check_read_divergence(
+    seed_sub_kmer: u64,
+    direction: &SeedDirection,
+    _kmer_counts: &FilteredKmerCounts,
+    _min_count: u32,
+    k: usize,
+    retained_reads: &[&str],
+) -> bool {
+    // We need at least 2 reads that extend from this seed to detect divergence
+    let suffix_mask = get_suffix_mask(&k);
+
+    // For each read, find the sequence of sub_kmers it follows from the seed.
+    // We only care about the first k nodes (divergence within k bases).
+    let max_trace_depth = k;
+    let mut traces: Vec<Vec<u64>> = Vec::new();
+
+    for read_seq in retained_reads {
+        let read_kmers = match kmers_from_ascii(read_seq, k) {
+            Ok(k) => k,
+            Err(_) => continue,
+        };
+
+        // Check if any kmer in this read corresponds to the seed sub_kmer
+        let mut trace = Vec::new();
+        let mut found_seed = false;
+
+        for &kmer in &read_kmers {
+            // Check both orientations of this kmer against the seed
+            let sub_kmer_prefix = kmer >> 2; // prefix (k-1 mer)
+            let sub_kmer_suffix = kmer & suffix_mask; // suffix (k-1 mer)
+            let rc_kmer = crate::kmer::revcomp_kmer(&kmer, &k);
+            let rc_prefix = rc_kmer >> 2;
+            let rc_suffix = rc_kmer & suffix_mask;
+
+            if !found_seed {
+                // Look for the seed sub_kmer as a prefix or suffix
+                if sub_kmer_prefix == seed_sub_kmer
+                    || sub_kmer_suffix == seed_sub_kmer
+                    || rc_prefix == seed_sub_kmer
+                    || rc_suffix == seed_sub_kmer
+                {
+                    found_seed = true;
+                    // Start tracing from the next position
+                    match direction {
+                        SeedDirection::Forward => {
+                            trace.push(sub_kmer_suffix);
+                        }
+                        SeedDirection::Reverse => {
+                            trace.push(sub_kmer_prefix);
+                        }
+                    }
+                }
+            } else if trace.len() < max_trace_depth {
+                // Continue tracing: record the next sub_kmer in the read's direction
+                match direction {
+                    SeedDirection::Forward => {
+                        trace.push(sub_kmer_suffix);
+                    }
+                    SeedDirection::Reverse => {
+                        trace.push(sub_kmer_prefix);
+                    }
+                }
+            } else {
+                break;
+            }
+        }
+
+        if found_seed && !trace.is_empty() {
+            traces.push(trace);
+        }
+    }
+
+    // Need at least 2 traces to detect divergence
+    if traces.len() < 2 {
+        return false;
+    }
+
+    // Check for divergence: do traces share the same path for the first
+    // few nodes? If any two traces diverge at the same position within
+    // the first k nodes, that's divergence.
+    let reference_trace = &traces[0];
+    let mut n_divergent = 0;
+    for trace in &traces[1..] {
+        let min_len = reference_trace.len().min(trace.len());
+        if min_len == 0 {
+            continue;
+        }
+        // Check if they diverge at position 0 (immediately after seed)
+        if trace[0] != reference_trace[0] {
+            n_divergent += 1;
+        }
+    }
+
+    // Divergence: majority of reads diverge immediately from the reference
+    let total_comparisons = traces.len() - 1;
+    if total_comparisons > 0 && n_divergent > total_comparisons / 2 {
+        return true;
+    }
+
+    false
 }
 
 /// Perform a bounded extension from a single seed node, building a
@@ -329,7 +468,7 @@ mod tests {
         let mut params = make_params();
         params.max_length = 30;
 
-        evaluate_seeds(&mut graph, &node_lookup, &fkc, &params, 1);
+        evaluate_seeds(&mut graph, &node_lookup, &fkc, &params, 1, &[]);
 
         // The seed should NOT be marked terminal (linear chain, not branchy)
         assert!(
@@ -386,7 +525,7 @@ mod tests {
 
         let params = make_params();
 
-        evaluate_seeds(&mut graph, &node_lookup, &fkc, &params, 1);
+        evaluate_seeds(&mut graph, &node_lookup, &fkc, &params, 1, &[]);
 
         // The seed should be marked terminal (budget exhausted with high branching)
         assert!(graph[node].is_terminal, "Branchy seed should be abandoned");
@@ -425,7 +564,7 @@ mod tests {
         // We only have ~2 nodes, which is well below 249 and terminated
         let params = make_params();
 
-        evaluate_seeds(&mut graph, &node_lookup, &fkc, &params, 1);
+        evaluate_seeds(&mut graph, &node_lookup, &fkc, &params, 1, &[]);
 
         assert!(
             graph[node].is_terminal,
@@ -454,7 +593,7 @@ mod tests {
 
         let params = make_params();
 
-        evaluate_seeds(&mut graph, &node_lookup, &fkc, &params, 1);
+        evaluate_seeds(&mut graph, &node_lookup, &fkc, &params, 1, &[]);
 
         // Dual-role node should never be marked terminal
         assert!(

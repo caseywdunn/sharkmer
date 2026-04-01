@@ -79,6 +79,18 @@ fn main() -> Result<()> {
 
     let show_progress = std::io::stderr().is_terminal();
 
+    // Pre-encode primer Oligos for Pass 1 read retention (text-only, no kmer table)
+    let primer_oligo_sets = if !pcr_runs.is_empty() {
+        let sets = pcr::preprocess_primer_oligos(&pcr_runs, k)?;
+        info!(
+            "Pre-encoded primer Oligos for {} gene(s) for Pass 1 read retention",
+            sets.len()
+        );
+        Some(sets)
+    } else {
+        None
+    };
+
     // Set up read cache for remote downloads
     let cache_config = if !args.no_cache && args.ena.is_some() {
         let cc = cache::CacheConfig::new(args.cache_dir.as_deref())?;
@@ -88,7 +100,12 @@ fn main() -> Result<()> {
         None
     };
 
-    // Ingest FASTQ reads from all input sources (Pass 1: kmer counting)
+    // Build Oligo matcher for Pass 1 read retention
+    let oligo_matcher = primer_oligo_sets
+        .as_ref()
+        .map(|sets| io::OligoMatcher::new(sets, k));
+
+    // Ingest FASTQ reads from all input sources (Pass 1: kmer counting + read retention)
     let (state, n_reads_ingested, n_bases_ingested, n_kmers_ingested, read_plan) =
         io::ingest_reads(
             &args,
@@ -96,6 +113,7 @@ fn main() -> Result<()> {
             cached_ena_result,
             cache_config.as_ref(),
             show_progress,
+            oligo_matcher.as_ref(),
         )?;
 
     // Consolidate chunks and optionally write histograms
@@ -133,6 +151,7 @@ fn main() -> Result<()> {
         args.dump_graph,
         show_progress,
         threading_reads.as_deref(),
+        &state.retained_reads,
     )?;
 
     // Build and write run statistics
