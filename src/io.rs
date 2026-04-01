@@ -65,26 +65,29 @@ pub(crate) struct RetainedReads {
     pub(crate) reads: Vec<RetainedRead>,
 }
 
-/// Fast primer Oligo filter for Pass 1 read retention.
+/// Two-stage primer Oligo filter for Pass 1 read retention.
 ///
-/// Uses a bitset (bitmask array) for O(1) lookup with no hashing.
-/// All primer Oligos from all genes are combined into a single bitset.
-/// Each kmer is masked and used as a direct index. May produce false
-/// positives (extra retained reads) but never false negatives.
+/// Stage 1 (bloom filter): fast approximate check during kmer ingestion.
+/// Uses a bloom filter with two hash functions for O(1) lookup with no
+/// hash table overhead. May produce false positives, never false negatives.
 ///
-/// Memory: 2^BITSET_BITS / 8 bytes per bitset × 2 bitsets.
-/// With 20 bits: 128KB × 2 = 256KB total.
+/// Stage 2 (exact set): after ingestion, bloom-positive reads are verified
+/// against an exact AHashSet to eliminate false positives.
 pub(crate) struct OligoFilter {
-    /// Bitset for high-bit matching (oligo at kmer start)
+    /// Bloom filter for high-bit matching (oligo at kmer start)
     high_bits: Vec<u64>,
     /// Mask to extract oligo from high-order bits of kmer
     high_mask: u64,
-    /// Right-shift to bring masked high bits down to bitset index range
+    /// Right-shift to bring masked high bits down to bloom index range
     high_shift: u32,
-    /// Bitset for low-bit matching (RC oligo at kmer end)
+    /// Bloom filter for low-bit matching (RC oligo at kmer end)
     low_bits: Vec<u64>,
     /// Mask to extract oligo from low-order bits of kmer
     low_mask: u64,
+    /// Exact set for high-bit verification (ahash for speed)
+    high_exact: ahash::AHashSet<u64>,
+    /// Exact set for low-bit verification
+    low_exact: ahash::AHashSet<u64>,
 }
 
 /// Number of bits used for bloom filter indexing. 2^24 = 16M entries = 2MB per bitset.
@@ -103,6 +106,8 @@ impl OligoFilter {
     pub(crate) fn new(oligo_sets: &[crate::pcr::PrimerOligoSet], k: usize) -> Self {
         let mut high_bits = vec![0u64; BLOOM_WORDS];
         let mut low_bits = vec![0u64; BLOOM_WORDS];
+        let mut high_exact = ahash::AHashSet::new();
+        let mut low_exact = ahash::AHashSet::new();
         let mut high_mask: u64 = 0;
         let mut low_mask: u64 = 0;
         let mut high_shift: u32 = 0;
@@ -117,10 +122,12 @@ impl OligoFilter {
                 low_mask = rc_mask_val;
 
                 for oligo in &set.forward_oligos {
-                    let val = oligo.kmer << fwd_shift;
-                    bloom_insert(&mut high_bits, val >> high_shift);
+                    let shifted = oligo.kmer << fwd_shift;
+                    bloom_insert(&mut high_bits, shifted >> high_shift);
+                    high_exact.insert(shifted);
                     let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &fwd_len);
                     bloom_insert(&mut low_bits, rc);
+                    low_exact.insert(rc);
                 }
             }
 
@@ -133,10 +140,12 @@ impl OligoFilter {
                 low_mask = rc_mask_val;
 
                 for oligo in &set.reverse_oligos {
-                    let val = oligo.kmer << rev_shift;
-                    bloom_insert(&mut high_bits, val >> high_shift);
+                    let shifted = oligo.kmer << rev_shift;
+                    bloom_insert(&mut high_bits, shifted >> high_shift);
+                    high_exact.insert(shifted);
                     let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &rev_len);
                     bloom_insert(&mut low_bits, rc);
+                    low_exact.insert(rc);
                 }
             }
         }
@@ -147,12 +156,13 @@ impl OligoFilter {
             high_shift,
             low_bits,
             low_mask,
+            high_exact,
+            low_exact,
         }
     }
 
-    /// Check a single canonical kmer against the Oligo filter.
-    /// Returns true if this kmer *may* match a primer Oligo (may have
-    /// false positives, never false negatives).
+    /// Fast approximate check during kmer ingestion (bloom filter).
+    /// May return false positives, never false negatives.
     #[inline]
     pub(crate) fn check_kmer(&self, kmer: u64) -> bool {
         let high_val = (kmer & self.high_mask) >> self.high_shift;
@@ -161,6 +171,24 @@ impl OligoFilter {
         }
         let low_val = kmer & self.low_mask;
         bloom_contains(&self.low_bits, low_val)
+    }
+
+    /// Exact verification of a read against the Oligo set (AHashSet).
+    /// Called on bloom-positive reads to eliminate false positives.
+    pub(crate) fn verify_read(&self, sequence: &str, k: usize) -> bool {
+        let kmers = match crate::kmer::encoding::kmers_from_ascii(sequence, k) {
+            Ok(k) => k,
+            Err(_) => return false,
+        };
+        for kmer in &kmers {
+            if self.high_exact.contains(&(kmer & self.high_mask)) {
+                return true;
+            }
+            if self.low_exact.contains(&(kmer & self.low_mask)) {
+                return true;
+            }
+        }
+        false
     }
 }
 
@@ -684,11 +712,26 @@ pub(crate) fn ingest_reads(
             state.n_reads_read
         );
     }
+    // Verify bloom-positive reads against exact AHashSet and report counts
     if !state.retained_reads.reads.is_empty() {
-        info!(
-            "Retained {} reads matching primer Oligos for seed evaluation",
-            state.retained_reads.reads.len()
-        );
+        let bloom_count = state.retained_reads.reads.len();
+        if let Some(filter) = oligo_filter {
+            state
+                .retained_reads
+                .reads
+                .retain(|r| filter.verify_read(&r.sequence, k));
+            let verified_count = state.retained_reads.reads.len();
+            info!(
+                "Retained reads for seed evaluation: {} bloom hits, {} verified",
+                format_count(bloom_count as u64),
+                format_count(verified_count as u64)
+            );
+        } else {
+            info!(
+                "Retained {} reads for seed evaluation",
+                format_count(bloom_count as u64)
+            );
+        }
     }
     info!("Time to ingest reads: {}", format_duration(start.elapsed()));
 
