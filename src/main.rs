@@ -100,10 +100,10 @@ fn main() -> Result<()> {
         None
     };
 
-    // Build Oligo matcher for Pass 1 read retention
-    let oligo_matcher = primer_oligo_sets
+    // Build Oligo filter for Pass 1 read retention
+    let oligo_filter = primer_oligo_sets
         .as_ref()
-        .map(|sets| io::OligoMatcher::new(sets, k));
+        .map(|sets| io::OligoFilter::new(sets, k));
 
     // Ingest FASTQ reads from all input sources (Pass 1: kmer counting + read retention)
     let (state, n_reads_ingested, n_bases_ingested, n_kmers_ingested, read_plan) =
@@ -113,7 +113,7 @@ fn main() -> Result<()> {
             cached_ena_result,
             cache_config.as_ref(),
             show_progress,
-            oligo_matcher.as_ref(),
+            oligo_filter.as_ref(),
         )?;
 
     // Consolidate chunks and optionally write histograms

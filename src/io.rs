@@ -65,108 +65,86 @@ pub(crate) struct RetainedReads {
     pub(crate) reads: Vec<RetainedRead>,
 }
 
-/// Matches kmers against pre-encoded primer Oligos during Pass 1.
-/// For each kmer, checks whether high-order bits match any forward
-/// primer Oligo or low-order bits match any reverse primer Oligo.
-pub(crate) struct OligoMatcher {
-    /// Per-gene: (forward Oligos shifted to high bits, mask, rc Oligos, rc mask)
-    gene_matchers: Vec<GeneMatcher>,
+/// Fast primer Oligo filter for Pass 1 read retention.
+///
+/// Combines all primer Oligos from all genes into two HashSets:
+/// one for high-bit matching (oligo at kmer start) and one for
+/// low-bit matching (RC oligo at kmer end). Two O(1) lookups per kmer.
+pub(crate) struct OligoFilter {
+    /// All primer Oligos shifted to high-order bits of the kmer
+    high_set: std::collections::HashSet<u64>,
+    /// Mask for high-bit matching
+    high_mask: u64,
+    /// All primer Oligos in RC form at low-order bits
+    low_set: std::collections::HashSet<u64>,
+    /// Mask for low-bit matching
+    low_mask: u64,
 }
 
-struct GeneMatcher {
-    /// Forward oligos shifted to kmer high-order bits
-    forward_set: std::collections::HashSet<u64>,
-    /// Mask for forward matching (covers high-order oligo bits)
-    forward_mask: u64,
-    /// Reverse complement oligos (unshifted, match low-order bits)
-    rc_set: std::collections::HashSet<u64>,
-    /// Mask for RC matching (covers low-order oligo bits)
-    rc_mask: u64,
-}
-
-impl OligoMatcher {
-    /// Build a matcher from pre-encoded primer Oligo sets.
+impl OligoFilter {
+    /// Build a filter from pre-encoded primer Oligo sets for all genes.
     ///
-    /// For matching against canonical kmers (as returned by `kmers_from_ascii`):
-    /// - Forward primer Oligos are shifted to high-order bits and matched there
-    /// - Both forward and reverse Oligos are also checked in RC form at
-    ///   low-order bits, since the canonical kmer may be the RC of the
-    ///   original read kmer
+    /// All Oligos across all genes are merged into two flat HashSets.
+    /// Assumes all primers are trimmed to the same length (enforced by
+    /// `preprocess_primer` clamping trim to min(trim, k)).
     pub(crate) fn new(oligo_sets: &[crate::pcr::PrimerOligoSet], k: usize) -> Self {
-        let mut gene_matchers = Vec::new();
+        let mut high_set = std::collections::HashSet::new();
+        let mut low_set = std::collections::HashSet::new();
+        let mut high_mask: u64 = 0;
+        let mut low_mask: u64 = 0;
 
         for set in oligo_sets {
-            let mut forward_set = std::collections::HashSet::new();
-            let mut rc_set = std::collections::HashSet::new();
-
-            // Forward oligos: shift to high-order bits of k-mer
+            // Forward oligos: shift to high-order bits
             let fwd_len = set.forward_oligo_length;
-            let fwd_shift = if k > fwd_len { 2 * (k - fwd_len) } else { 0 };
-            let mut fwd_mask: u64 = 0;
-            for _ in 0..(2 * fwd_len) {
-                fwd_mask = (fwd_mask << 1) | 1;
-            }
-            fwd_mask <<= fwd_shift;
+            if fwd_len > 0 {
+                let fwd_shift = 2 * (k - fwd_len);
+                let mask = ((1u64 << (2 * fwd_len)) - 1) << fwd_shift;
+                high_mask = mask; // all oligos same length after trim
 
-            for oligo in &set.forward_oligos {
-                forward_set.insert(oligo.kmer << fwd_shift);
+                for oligo in &set.forward_oligos {
+                    high_set.insert(oligo.kmer << fwd_shift);
+                }
+                // RC of forward oligos at low bits
+                let rc_mask_val = (1u64 << (2 * fwd_len)) - 1;
+                low_mask = rc_mask_val;
+                for oligo in &set.forward_oligos {
+                    low_set.insert(crate::kmer::revcomp_kmer(&oligo.kmer, &fwd_len));
+                }
             }
 
-            // Reverse oligos also shifted to high bits (primer at start of kmer)
+            // Reverse oligos: also at high bits (primer at start of kmer)
             let rev_len = set.reverse_oligo_length;
-            let rev_shift = if k > rev_len { 2 * (k - rev_len) } else { 0 };
-            for oligo in &set.reverse_oligos {
-                forward_set.insert(oligo.kmer << rev_shift);
-            }
+            if rev_len > 0 {
+                let rev_shift = 2 * (k - rev_len);
+                let mask = ((1u64 << (2 * rev_len)) - 1) << rev_shift;
+                high_mask = mask;
 
-            // RC forms of both primer directions at low-order bits:
-            // when the canonical kmer is the RC, the primer appears at the end
-            let rc_mask_fwd = (1u64 << (2 * fwd_len)) - 1;
-            let rc_mask_rev = (1u64 << (2 * rev_len)) - 1;
-            // Use the wider mask (both should be same length after trimming,
-            // but be safe)
-            let rc_mask_val = rc_mask_fwd.max(rc_mask_rev);
-
-            for oligo in &set.forward_oligos {
-                rc_set.insert(crate::kmer::revcomp_kmer(&oligo.kmer, &fwd_len));
+                for oligo in &set.reverse_oligos {
+                    high_set.insert(oligo.kmer << rev_shift);
+                }
+                // RC of reverse oligos at low bits
+                let rc_mask_val = (1u64 << (2 * rev_len)) - 1;
+                low_mask = rc_mask_val;
+                for oligo in &set.reverse_oligos {
+                    low_set.insert(crate::kmer::revcomp_kmer(&oligo.kmer, &rev_len));
+                }
             }
-            for oligo in &set.reverse_oligos {
-                rc_set.insert(crate::kmer::revcomp_kmer(&oligo.kmer, &rev_len));
-            }
-
-            gene_matchers.push(GeneMatcher {
-                forward_set,
-                forward_mask: fwd_mask,
-                rc_set,
-                rc_mask: rc_mask_val,
-            });
         }
 
-        OligoMatcher { gene_matchers }
+        OligoFilter {
+            high_set,
+            high_mask,
+            low_set,
+            low_mask,
+        }
     }
 
-    /// Check if a read contains any primer Oligo by examining its kmers.
-    /// Returns the gene index if matched, or None.
-    pub(crate) fn check_read(&self, sequence: &str, k: usize) -> Option<usize> {
-        let kmers = match crate::kmer::encoding::kmers_from_ascii(sequence, k) {
-            Ok(k) => k,
-            Err(_) => return None,
-        };
-
-        for kmer in &kmers {
-            for (gene_idx, matcher) in self.gene_matchers.iter().enumerate() {
-                // Check forward orientation (oligo at high bits)
-                if matcher.forward_set.contains(&(kmer & matcher.forward_mask)) {
-                    return Some(gene_idx);
-                }
-                // Check RC orientation (oligo at low bits)
-                if matcher.rc_set.contains(&(kmer & matcher.rc_mask)) {
-                    return Some(gene_idx);
-                }
-            }
-        }
-
-        None
+    /// Check a single canonical kmer against the Oligo filter.
+    /// Returns true if this kmer matches any primer Oligo.
+    #[inline]
+    pub(crate) fn check_kmer(&self, kmer: u64) -> bool {
+        self.high_set.contains(&(kmer & self.high_mask))
+            || self.low_set.contains(&(kmer & self.low_mask))
     }
 }
 
@@ -339,8 +317,7 @@ fn read_fastq<R: BufRead>(
     validate_every: u64,
     source_name: &str,
     progress: &ProgressBar,
-    oligo_matcher: Option<&OligoMatcher>,
-    k: usize,
+    oligo_filter: Option<&OligoFilter>,
 ) -> Result<bool> {
     let mut lines = reader.lines();
     let n_chunks = state.chunks.len();
@@ -404,17 +381,7 @@ fn read_fastq<R: BufRead>(
 
         // If we have read enough reads, ingest them into current chunk
         if state.n_reads_read % N_READS_PER_BATCH == 0 {
-            // Check for primer Oligo matches before consuming sequences
-            if let Some(matcher) = oligo_matcher {
-                retain_primer_reads(state, matcher, k);
-            }
-            for seq in state.seqs.drain(..) {
-                state.chunks[state.chunk_index].ingest_seq(&seq)?;
-            }
-            state.chunk_index += 1;
-            if state.chunk_index == n_chunks {
-                state.chunk_index = 0;
-            }
+            drain_batch(state, oligo_filter, n_chunks)?;
             progress.set_position(state.n_reads_read);
         }
 
@@ -427,16 +394,29 @@ fn read_fastq<R: BufRead>(
     Ok(false) // did not reach max reads (EOF)
 }
 
-/// Check sequences for primer Oligo matches and retain matching reads.
-fn retain_primer_reads(state: &mut FastqReadState, oligo_matcher: &OligoMatcher, k: usize) {
-    for seq in &state.seqs {
-        if let Some(gene_index) = oligo_matcher.check_read(seq, k) {
-            state.retained_reads.reads.push(RetainedRead {
-                sequence: seq.clone(),
-                gene_index,
-            });
+/// Drain accumulated sequences into the current chunk, optionally checking
+/// each kmer against the Oligo filter during ingestion. Matching reads
+/// are retained for seed evaluation.
+fn drain_batch(
+    state: &mut FastqReadState,
+    oligo_filter: Option<&OligoFilter>,
+    n_chunks: usize,
+) -> Result<()> {
+    for seq in state.seqs.drain(..) {
+        if let Some(filter) = oligo_filter {
+            let matched = state.chunks[state.chunk_index].ingest_seq_with_filter(&seq, filter)?;
+            if matched {
+                state.retained_reads.reads.push(RetainedRead {
+                    sequence: seq,
+                    gene_index: 0, // gene attribution not needed for divergence check
+                });
+            }
+        } else {
+            state.chunks[state.chunk_index].ingest_seq(&seq)?;
         }
     }
+    state.chunk_index = (state.chunk_index + 1) % n_chunks;
+    Ok(())
 }
 
 /// Ingest FASTQ reads from all input sources (ENA, files, or stdin).
@@ -448,7 +428,7 @@ pub(crate) fn ingest_reads(
     mut cached_ena_result: Option<EnaResult>,
     cache_config: Option<&crate::cache::CacheConfig>,
     show_progress: bool,
-    oligo_matcher: Option<&OligoMatcher>,
+    oligo_filter: Option<&OligoFilter>,
 ) -> Result<(FastqReadState, u64, u64, u64, ReadPlan)> {
     let start = std::time::Instant::now();
     info!("Ingesting reads...");
@@ -536,8 +516,7 @@ pub(crate) fn ingest_reads(
                 args.validate_every,
                 url,
                 &progress,
-                oligo_matcher,
-                k,
+                oligo_filter,
             )?;
             if reached_max {
                 break;
@@ -571,8 +550,7 @@ pub(crate) fn ingest_reads(
                 &name1,
                 &name2,
                 &progress,
-                oligo_matcher,
-                k,
+                oligo_filter,
             )?;
         } else {
             // Read from one or more files sequentially
@@ -586,8 +564,7 @@ pub(crate) fn ingest_reads(
                     args.validate_every,
                     &file_name,
                     &progress,
-                    oligo_matcher,
-                    k,
+                    oligo_filter,
                 )?;
                 if reached_max {
                     break;
@@ -615,23 +592,16 @@ pub(crate) fn ingest_reads(
             args.validate_every,
             "stdin",
             &progress,
-            oligo_matcher,
-            k,
+            oligo_filter,
         )?;
         // read_source_plan remains Unavailable for stdin
     }
 
     progress.finish_and_clear();
 
-    // Check remaining sequences for primer Oligo matches
-    if let Some(matcher) = oligo_matcher {
-        retain_primer_reads(&mut state, matcher, k);
-    }
-
-    // Ingest any remaining sequences
-    for seq in state.seqs.drain(..) {
-        state.chunks[state.chunk_index].ingest_seq(&seq)?;
-    }
+    // Ingest any remaining sequences (with Oligo filter check if active)
+    let n_chunks = state.chunks.len();
+    drain_batch(&mut state, oligo_filter, n_chunks)?;
 
     let mut n_reads_ingested: u64 = 0;
     let mut n_bases_ingested: u64 = 0;
@@ -731,8 +701,7 @@ fn read_fastq_paired<R1: BufRead, R2: BufRead>(
     source1_name: &str,
     source2_name: &str,
     progress: &ProgressBar,
-    oligo_matcher: Option<&OligoMatcher>,
-    k: usize,
+    oligo_filter: Option<&OligoFilter>,
 ) -> Result<bool> {
     let mut lines1 = reader1.lines();
     let mut lines2 = reader2.lines();
@@ -745,13 +714,7 @@ fn read_fastq_paired<R1: BufRead, R2: BufRead>(
             break;
         }
         if state.n_reads_read % N_READS_PER_BATCH == 0 {
-            if let Some(matcher) = oligo_matcher {
-                retain_primer_reads(state, matcher, k);
-            }
-            for seq in state.seqs.drain(..) {
-                state.chunks[state.chunk_index].ingest_seq(&seq)?;
-            }
-            state.chunk_index = (state.chunk_index + 1) % n_chunks;
+            drain_batch(state, oligo_filter, n_chunks)?;
             progress.set_position(state.n_reads_read);
         }
         if max_reads > 0 && state.n_reads_read >= max_reads {
@@ -765,13 +728,7 @@ fn read_fastq_paired<R1: BufRead, R2: BufRead>(
             break;
         }
         if state.n_reads_read % N_READS_PER_BATCH == 0 {
-            if let Some(matcher) = oligo_matcher {
-                retain_primer_reads(state, matcher, k);
-            }
-            for seq in state.seqs.drain(..) {
-                state.chunks[state.chunk_index].ingest_seq(&seq)?;
-            }
-            state.chunk_index = (state.chunk_index + 1) % n_chunks;
+            drain_batch(state, oligo_filter, n_chunks)?;
             progress.set_position(state.n_reads_read);
         }
         if max_reads > 0 && state.n_reads_read >= max_reads {

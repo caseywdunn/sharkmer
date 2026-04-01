@@ -127,6 +127,23 @@ impl KmerCounts {
         Ok(())
     }
 
+    /// Ingest kmers from an ASCII sequence, checking each kmer against an
+    /// Oligo filter. Returns true if any kmer matched the filter.
+    pub fn ingest_seq_with_filter(
+        &mut self,
+        seq: &str,
+        filter: &crate::io::OligoFilter,
+    ) -> Result<bool> {
+        let mut matched = false;
+        for kmer in kmers_from_ascii(seq, self.k)? {
+            self.kmers.insert_or_add(kmer, 1);
+            if !matched && filter.check_kmer(kmer) {
+                matched = true;
+            }
+        }
+        Ok(matched)
+    }
+
     /// Adds a kmer and its count to the KmerCounts object.
     pub fn insert(&mut self, kmer: &u64, count: &u32) {
         self.kmers.insert_or_add(*kmer, *count);

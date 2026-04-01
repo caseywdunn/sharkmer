@@ -37,6 +37,19 @@ impl Chunk {
         Ok(())
     }
 
+    /// Ingest a sequence and check each kmer against an Oligo filter.
+    /// Returns true if any kmer matched the filter.
+    pub fn ingest_seq_with_filter(
+        &mut self,
+        seq: &str,
+        filter: &crate::io::OligoFilter,
+    ) -> Result<bool> {
+        let matched = self.kmer_counts.ingest_seq_with_filter(seq, filter)?;
+        self.n_reads += 1;
+        self.n_bases += count_valid_bases(seq);
+        Ok(matched)
+    }
+
     pub fn get_kmer_counts(&self) -> &KmerCounts {
         &self.kmer_counts
     }
