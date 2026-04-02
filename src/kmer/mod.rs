@@ -11,7 +11,8 @@ pub use chunk::Chunk;
 pub use counting::{FilteredKmerCounts, KmerCounts};
 #[allow(unused_imports)]
 pub use encoding::{
-    Read, count_valid_bases, kmer_to_seq, kmers_from_ascii, revcomp_kmer, seq_to_kmer, seq_to_reads,
+    Read, count_valid_bases, kmer_last_base, kmer_to_seq, kmers_from_ascii, revcomp_kmer,
+    seq_to_kmer, seq_to_reads,
 };
 pub use histogram::Histogram;
 

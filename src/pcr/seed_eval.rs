@@ -10,8 +10,7 @@ use crate::kmer::encoding::kmers_from_ascii;
 use super::graph::get_suffix_mask;
 use super::{DBEdge, DBNode, PCRParams};
 
-/// Maximum number of nodes to explore per seed during evaluation.
-const MAX_NODES_PER_SEED: usize = 500;
+// MAX_NODES_PER_SEED is now read from params.max_seed_nodes
 
 /// Abandon a seed if branching ratio exceeds this (too branchy overall).
 const MAX_BRANCHING_RATIO: f64 = 0.4;
@@ -92,6 +91,7 @@ pub(super) fn evaluate_seeds(
             k,
             node_lookup,
             graph,
+            params.max_seed_nodes,
         );
 
         let direction_str = match direction {
@@ -303,6 +303,7 @@ fn check_read_divergence(
 /// Perform a bounded extension from a single seed node, building a
 /// throwaway local exploration for evaluation only. Checks the main
 /// graph's node_lookup to detect convergence with opposite-direction seeds.
+#[allow(clippy::too_many_arguments)]
 fn bounded_extend(
     seed_sub_kmer: u64,
     direction: &SeedDirection,
@@ -311,6 +312,7 @@ fn bounded_extend(
     k: usize,
     main_node_lookup: &HashMap<u64, NodeIndex>,
     main_graph: &StableDiGraph<DBNode, DBEdge>,
+    max_seed_nodes: usize,
 ) -> SeedMetrics {
     let suffix_mask = get_suffix_mask(&k);
     let prefix_shift = 2 * (k - 1);
@@ -327,7 +329,7 @@ fn bounded_extend(
     let mut terminated = true; // assume terminated unless budget runs out
 
     while let Some(current_sub_kmer) = frontier.pop() {
-        if node_count >= MAX_NODES_PER_SEED {
+        if node_count >= max_seed_nodes {
             budget_exhausted = true;
             terminated = false;
             break;
@@ -406,7 +408,11 @@ fn bounded_extend(
 mod tests {
     use super::*;
     use crate::kmer::KmerCounts;
-    use crate::pcr::DEFAULT_DEDUP_EDIT_THRESHOLD;
+    use crate::pcr::{
+        DEFAULT_DEDUP_EDIT_THRESHOLD, DEFAULT_HIGH_COVERAGE_RATIO, DEFAULT_MAX_DFS_STATES,
+        DEFAULT_MAX_NODE_VISITS, DEFAULT_MAX_NUM_PRIMER_KMERS, DEFAULT_MAX_PATHS_PER_PAIR,
+        DEFAULT_MAX_SEED_NODES, DEFAULT_TIP_COVERAGE_FRACTION,
+    };
 
     fn make_params() -> PCRParams {
         PCRParams {
@@ -422,6 +428,13 @@ mod tests {
             notes: "".to_string(),
             dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
             source: "test".to_string(),
+            max_dfs_states: DEFAULT_MAX_DFS_STATES,
+            max_paths_per_pair: DEFAULT_MAX_PATHS_PER_PAIR,
+            max_node_visits: DEFAULT_MAX_NODE_VISITS,
+            max_primer_kmers: DEFAULT_MAX_NUM_PRIMER_KMERS,
+            max_seed_nodes: DEFAULT_MAX_SEED_NODES,
+            high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
+            tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
         }
     }
 

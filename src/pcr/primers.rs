@@ -6,7 +6,7 @@ use std::collections::HashSet;
 
 use crate::kmer::{FilteredKmerCounts, KmerCounts};
 
-use super::{MAX_NUM_PRIMER_KMERS, Oligo, PCRParams, PrimerDirection};
+use super::{Oligo, PCRParams, PrimerDirection};
 
 pub(super) fn is_valid_nucleotide(c: char) -> bool {
     match c {
@@ -313,11 +313,10 @@ pub(super) fn get_kmers_from_primers(
     Ok(find_oligos_in_kmers(&oligos, kmer_counts, min_count))
 }
 
-/// Given a set of kmers that contain primers, filter them to retain only those with the highest counts
-/// If there are more than MAX_NUM_PRIMER_KMERS, retain only the MAX_NUM_PRIMER_KMERS with the highest counts
-/// If there are less than MAX_NUM_PRIMER_KMERS, retain all of them
-/// Returns a hash map of the kmers and their counts
-pub(super) fn filter_primer_kmers(matches: KmerCounts) -> KmerCounts {
+/// Given a set of kmers that contain primers, filter them to retain only those with the highest counts.
+/// If there are more than `max_primer_kmers`, retain only that many with the highest counts.
+/// Returns a hash map of the kmers and their counts.
+pub(super) fn filter_primer_kmers(matches: KmerCounts, max_primer_kmers: usize) -> KmerCounts {
     if matches.is_empty() {
         return matches;
     }
@@ -330,13 +329,9 @@ pub(super) fn filter_primer_kmers(matches: KmerCounts) -> KmerCounts {
     // set equal to last element
     let mut top_count_cutoff = counts.last().expect("counts is non-empty (checked above)");
 
-    if counts.len() > MAX_NUM_PRIMER_KMERS {
-        top_count_cutoff = &counts[MAX_NUM_PRIMER_KMERS - 1];
+    if counts.len() > max_primer_kmers {
+        top_count_cutoff = &counts[max_primer_kmers - 1];
     }
-
-    // If there are less than MAX_NUM_PRIMER_KMERS matches, this is the lowest count
-    // If there are more than MAX_NUM_PRIMER_KMERS matches, get the count of the
-    // MAX_NUM_PRIMER_KMERS highest count matches and use that as the cutoff
 
     let mut matches_keep: KmerCounts = KmerCounts::new(&matches.get_k());
     for (kmer, count) in matches.iter() {
@@ -375,7 +370,7 @@ pub(super) fn get_primer_kmers(
     );
     let mut forward_primer_kmers =
         get_kmers_from_primers(&forward_variants, kmer_counts, &params.min_count)?;
-    forward_primer_kmers = filter_primer_kmers(forward_primer_kmers);
+    forward_primer_kmers = filter_primer_kmers(forward_primer_kmers, params.max_primer_kmers);
 
     gene_info!(
         params.gene_name,
@@ -383,7 +378,7 @@ pub(super) fn get_primer_kmers(
     );
     let mut reverse_primer_kmers =
         get_kmers_from_primers(&reverse_variants, kmer_counts, &params.min_count)?;
-    reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers);
+    reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers, params.max_primer_kmers);
 
     Ok((forward_primer_kmers, reverse_primer_kmers))
 }

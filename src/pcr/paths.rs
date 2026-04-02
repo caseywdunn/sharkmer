@@ -14,20 +14,29 @@ use crate::kmer::FilteredKmerCounts;
 use super::graph::{compute_mean, compute_median, get_end_nodes, get_start_nodes};
 use super::{AssemblyRecord, DBEdge, DBNode, PCRParams};
 
-/// Budget: maximum paths to find per start-end pair
-const MAX_NUM_PATHS_PER_PAIR: usize = 20;
-
 /// The maximum number of fasta records to return
 const MAX_NUM_AMPLICONS: usize = 20;
 
-/// Maximum number of times a node can appear in a single path.
-/// 1 = no revisiting (classic simple path). 2 = allow one repeat
-/// traversal (handles tandem duplications).
-const MAX_NODE_VISITS: usize = 2;
-
-/// Maximum number of DFS states to explore per start node before
-/// giving up. Prevents combinatorial explosion in complex graphs.
-const MAX_DFS_STATES: usize = 100_000;
+/// Get outgoing edges sorted by score (ascending so pop gives highest first).
+fn sorted_children(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    node: NodeIndex,
+    edge_preferences: Option<&std::collections::HashMap<EdgeIndex, f64>>,
+) -> Vec<(NodeIndex, f64)> {
+    let mut outgoing: Vec<(NodeIndex, f64)> = graph
+        .edges_directed(node, Direction::Outgoing)
+        .map(|e| {
+            let base_score = e.weight().count as f64;
+            let pref = edge_preferences
+                .and_then(|prefs| prefs.get(&e.id()))
+                .copied()
+                .unwrap_or(1.0);
+            (e.target(), base_score * pref)
+        })
+        .collect();
+    outgoing.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
+    outgoing
+}
 
 /// Find paths from start nodes to end nodes using coverage-weighted DFS.
 /// At each branch point, outgoing edges are explored in descending order
@@ -59,65 +68,69 @@ pub fn get_assembly_paths(
         let mut paths_from_start = 0;
         let mut states_explored: usize = 0;
 
-        // DFS stack: (current_path, visit_counts)
-        // visit_counts tracks how many times each node appears in the path
-        let mut stack: Vec<(Vec<NodeIndex>, std::collections::HashMap<NodeIndex, usize>)> =
-            Vec::new();
-        let mut initial_visits = std::collections::HashMap::new();
-        initial_visits.insert(start, 1);
-        stack.push((vec![start], initial_visits));
+        // Stack-based DFS with push/pop backtracking instead of cloning.
+        // `path` and `visit_counts` are maintained incrementally.
+        // `child_stack` holds remaining children to explore at each depth.
+        let mut path: Vec<NodeIndex> = vec![start];
+        let mut visit_counts: std::collections::HashMap<NodeIndex, usize> =
+            std::collections::HashMap::new();
+        visit_counts.insert(start, 1);
 
-        while let Some((path, visit_counts)) = stack.pop() {
-            states_explored += 1;
-            if paths_from_start >= MAX_NUM_PATHS_PER_PAIR || states_explored >= MAX_DFS_STATES {
+        // Compute sorted children for the start node
+        let children = sorted_children(graph, start, edge_preferences);
+        let mut child_stack: Vec<Vec<(NodeIndex, f64)>> = vec![children];
+
+        loop {
+            if paths_from_start >= params.max_paths_per_pair
+                || states_explored >= params.max_dfs_states
+            {
                 break;
             }
 
-            let current = *path.last().unwrap();
-            let path_len = path.len();
+            let depth = child_stack.len() - 1;
 
-            // Check if we reached an end node with valid length
-            if end_nodes.contains(&current) && path_len >= min_path_nodes {
-                all_paths.push(path.clone());
-                paths_from_start += 1;
-                // Don't continue extending past end nodes
-                continue;
-            }
+            if let Some((neighbor, _score)) = child_stack[depth].pop() {
+                states_explored += 1;
 
-            // Don't extend past max length
-            if path_len >= max_path_nodes {
-                continue;
-            }
-
-            // Get outgoing edges sorted by score for coverage-weighted exploration.
-            // When edge preferences are available (from bubble resolution),
-            // combine kmer count with read-support preference.
-            let mut outgoing: Vec<(NodeIndex, f64)> = graph
-                .edges_directed(current, Direction::Outgoing)
-                .map(|e| {
-                    let base_score = e.weight().count as f64;
-                    let edge_id = e.id();
-                    let pref = edge_preferences
-                        .and_then(|prefs: &std::collections::HashMap<EdgeIndex, f64>| {
-                            prefs.get(&edge_id)
-                        })
-                        .copied()
-                        .unwrap_or(1.0);
-                    (e.target(), base_score * pref)
-                })
-                .collect();
-            // Sort ascending so that when pushed to stack, highest-score is popped first
-            outgoing.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
-
-            for (neighbor, _count) in outgoing {
                 let current_visits = visit_counts.get(&neighbor).copied().unwrap_or(0);
-                if current_visits < MAX_NODE_VISITS {
-                    let mut new_path = path.clone();
-                    new_path.push(neighbor);
-                    let mut new_visits = visit_counts.clone();
-                    *new_visits.entry(neighbor).or_insert(0) += 1;
-                    stack.push((new_path, new_visits));
+                if current_visits >= params.max_node_visits {
+                    continue;
                 }
+
+                // Push neighbor onto path
+                path.push(neighbor);
+                *visit_counts.entry(neighbor).or_insert(0) += 1;
+
+                let path_len = path.len();
+
+                // Check if we reached an end node with valid length
+                if end_nodes.contains(&neighbor) && path_len >= min_path_nodes {
+                    all_paths.push(path.clone());
+                    paths_from_start += 1;
+                    // Backtrack: undo push
+                    *visit_counts.get_mut(&neighbor).unwrap() -= 1;
+                    path.pop();
+                    continue;
+                }
+
+                // Don't extend past max length
+                if path_len >= max_path_nodes {
+                    *visit_counts.get_mut(&neighbor).unwrap() -= 1;
+                    path.pop();
+                    continue;
+                }
+
+                // Explore deeper: push children frame
+                let children = sorted_children(graph, neighbor, edge_preferences);
+                child_stack.push(children);
+            } else {
+                // No more children at this depth, backtrack
+                child_stack.pop();
+                if child_stack.is_empty() {
+                    break;
+                }
+                let backtrack_node = path.pop().unwrap();
+                *visit_counts.get_mut(&backtrack_node).unwrap() -= 1;
             }
         }
     }
@@ -146,16 +159,12 @@ pub(super) fn generate_sequences_from_paths(
             let node_data = graph
                 .node_weight(*node)
                 .context("Node not found in graph during sequence generation")?;
-            let subread = crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(kmer_counts.get_k() - 1));
             if sequence.is_empty() {
-                sequence = subread;
+                sequence =
+                    crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(kmer_counts.get_k() - 1));
                 parent_node = *node;
             } else {
-                let last_char = subread
-                    .chars()
-                    .last()
-                    .context("Empty subread during sequence generation")?;
-                sequence.push(last_char);
+                sequence.push(crate::kmer::kmer_last_base(&node_data.sub_kmer));
 
                 let edge = graph
                     .find_edge(parent_node, *node)

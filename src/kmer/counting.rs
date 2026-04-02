@@ -21,6 +21,7 @@ trait KmerMap {
     fn new_map() -> Self;
     fn new_map_with_capacity(capacity: usize) -> Self;
     fn insert_or_add(&mut self, key: u64, count: u32);
+    fn insert_or_add_get_old(&mut self, key: u64, count: u32) -> u32;
     fn get_value(&self, key: u64) -> Option<&u32>;
     fn get_count(&self, key: u64) -> u32;
     fn contains(&self, key: u64) -> bool;
@@ -38,6 +39,12 @@ impl KmerMap for rustc_hash::FxHashMap<u64, u32> {
     fn insert_or_add(&mut self, key: u64, count: u32) {
         let c = self.entry(key).or_insert(0);
         *c = c.saturating_add(count);
+    }
+    fn insert_or_add_get_old(&mut self, key: u64, count: u32) -> u32 {
+        let c = self.entry(key).or_insert(0);
+        let old = *c;
+        *c = c.saturating_add(count);
+        old
     }
     fn get_value(&self, key: u64) -> Option<&u32> {
         self.get(&key)
@@ -67,6 +74,12 @@ impl KmerMap for AHashMap<u64, u32> {
     fn insert_or_add(&mut self, key: u64, count: u32) {
         let c = self.entry(key).or_insert(0);
         *c = c.saturating_add(count);
+    }
+    fn insert_or_add_get_old(&mut self, key: u64, count: u32) -> u32 {
+        let c = self.entry(key).or_insert(0);
+        let old = *c;
+        *c = c.saturating_add(count);
+        old
     }
     fn get_value(&self, key: u64) -> Option<&u32> {
         self.get(&key)
@@ -101,7 +114,6 @@ impl KmerCounts {
         }
     }
 
-    #[allow(dead_code)]
     pub fn new_with_capacity(k: &usize, capacity: usize) -> KmerCounts {
         KmerCounts {
             kmers: MapType::new_map_with_capacity(capacity),
@@ -174,8 +186,7 @@ impl KmerCounts {
         }
 
         for (kmer, new_count) in other.iter() {
-            let old_count = self.kmers.get_count(*kmer);
-            self.kmers.insert_or_add(*kmer, *new_count);
+            let old_count = self.kmers.insert_or_add_get_old(*kmer, *new_count);
             histo.move_count(old_count as u64, old_count as u64 + *new_count as u64);
         }
         Ok(())
@@ -248,6 +259,21 @@ impl KmerCounts {
 
     pub fn get_max_count(&self) -> u32 {
         *self.kmers.values().max().unwrap_or(&0)
+    }
+
+    pub fn get_median_count(&self) -> u32 {
+        let mut counts: Vec<u32> = self.kmers.values().copied().collect();
+        if counts.is_empty() {
+            return 0;
+        }
+        counts.sort();
+        let mid = counts.len() / 2;
+        if counts.len() % 2 == 0 {
+            // Average of two middle values, rounded down
+            (counts[mid - 1] / 2) + (counts[mid] / 2)
+        } else {
+            counts[mid]
+        }
     }
 
     pub fn is_empty(&self) -> bool {

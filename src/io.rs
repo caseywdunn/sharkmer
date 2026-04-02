@@ -1101,7 +1101,8 @@ pub(crate) fn consolidate_and_histogram(
     };
     let start = std::time::Instant::now();
 
-    let mut kmer_counts: KmerCounts = KmerCounts::new(&k);
+    let estimated_capacity: usize = state.chunks.iter().map(|c| c.get_kmer_counts().len()).sum();
+    let mut kmer_counts: KmerCounts = KmerCounts::new_with_capacity(&k, estimated_capacity);
     let mut n_singleton_kmers: Option<u64> = None;
 
     let histo_comment = format!(
@@ -1112,15 +1113,17 @@ pub(crate) fn consolidate_and_histogram(
     );
 
     if args.chunks > 0 {
-        // Incremental histogram mode: update histogram as chunks are merged
-        let mut histos: Vec<kmer::Histogram> = Vec::with_capacity(args.chunks);
+        // Incremental histogram mode: update histogram as chunks are merged.
+        // Snapshot only the Vec<u64> at each step (not the full Histogram struct
+        // with its FxHashMap).
+        let mut histo_vecs: Vec<Vec<u64>> = Vec::with_capacity(args.chunks);
         let mut running_histo = kmer::Histogram::new(&args.histo_max);
 
         for chunk in state.chunks.drain(..) {
             kmer_counts.extend_with_histogram(chunk.get_kmer_counts(), &mut running_histo)?;
             drop(chunk);
 
-            histos.push(running_histo.clone());
+            histo_vecs.push(running_histo.get_vector()?);
         }
         consolidate_spinner.finish_and_clear();
         info!(
@@ -1154,16 +1157,12 @@ pub(crate) fn consolidate_and_histogram(
 
         // Header row
         let header: String = std::iter::once("count".to_string())
-            .chain((1..=histos.len()).map(|i| format!("chunk_{}", i)))
+            .chain((1..=histo_vecs.len()).map(|i| format!("chunk_{}", i)))
             .collect::<Vec<_>>()
             .join("\t");
         writeln!(file, "{}", header).context("Failed to write histogram header")?;
 
-        // Data rows — precompute histogram vectors to avoid re-computing per row
-        let histo_vecs: Vec<Vec<u64>> = histos
-            .iter()
-            .map(kmer::Histogram::get_vector)
-            .collect::<Result<_>>()?;
+        // Data rows — histo_vecs already contains the precomputed vectors
         for i in 1..args.histo_max as usize + 2 {
             let line: String = std::iter::once(i.to_string())
                 .chain(histo_vecs.iter().map(|v| v[i].to_string()))
@@ -1174,8 +1173,7 @@ pub(crate) fn consolidate_and_histogram(
 
         // Write the final histogram with header
         info!("Writing final histogram to file...");
-        let last_histo = histos.last().context("No histograms were produced")?;
-        let last_histo_vec = kmer::Histogram::get_vector(last_histo)?;
+        let last_histo_vec = histo_vecs.last().context("No histograms were produced")?;
 
         let final_histo_path = format!("{}{}.final.histo", directory, sample);
         warn_if_exists(&final_histo_path);
@@ -1200,7 +1198,7 @@ pub(crate) fn consolidate_and_histogram(
         n_singleton_kmers = Some(singleton_count);
 
         // Warn if singleton rate is very high (>95% of unique kmers)
-        let n_unique = last_histo.get_n_unique_kmers();
+        let n_unique = running_histo.get_n_unique_kmers();
         if n_unique > 0 {
             let singleton_rate = singleton_count as f64 / n_unique as f64;
             if singleton_rate > 0.95 {
@@ -1212,8 +1210,8 @@ pub(crate) fn consolidate_and_histogram(
             }
         }
 
-        let n_unique_kmers_histo: u64 = last_histo.get_n_unique_kmers();
-        let n_kmers_histo: u64 = last_histo.get_n_kmers();
+        let n_unique_kmers_histo: u64 = running_histo.get_n_unique_kmers();
+        let n_kmers_histo: u64 = running_histo.get_n_kmers();
 
         debug!("{} unique kmers in histogram", n_unique_kmers_histo);
         debug!("{} kmers in histogram", n_kmers_histo);

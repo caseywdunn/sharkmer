@@ -269,7 +269,6 @@ mod tests {
             n0,
             n1,
             DBEdge {
-                _kmer: 10,
                 count: 5,
                 coverage_ratio: 1.0,
             },
@@ -278,7 +277,6 @@ mod tests {
             n0,
             n2,
             DBEdge {
-                _kmer: 20,
                 count: 3,
                 coverage_ratio: 1.0,
             },
@@ -287,7 +285,6 @@ mod tests {
             n1,
             n3,
             DBEdge {
-                _kmer: 30,
                 count: 5,
                 coverage_ratio: 1.0,
             },
@@ -296,7 +293,6 @@ mod tests {
             n2,
             n3,
             DBEdge {
-                _kmer: 40,
                 count: 3,
                 coverage_ratio: 1.0,
             },
@@ -387,7 +383,6 @@ mod tests {
             n0,
             n1,
             DBEdge {
-                _kmer: 10,
                 count: 5,
                 coverage_ratio: 1.0,
             },

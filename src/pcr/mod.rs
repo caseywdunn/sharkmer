@@ -48,9 +48,7 @@ const COVERAGE_MULTIPLIER: u32 = 2;
 /// A multiplier for adjusting the threshold as it is applied.
 const COVERAGE_STEPS: u32 = 4;
 
-/// The maximum number of kmers containing the forward or reverse primers to maintain,
-/// with only those with the highest count being retained
-const MAX_NUM_PRIMER_KMERS: usize = 100;
+// MAX_NUM_PRIMER_KMERS is now read from params.max_primer_kmers
 
 /// Default edit distance threshold for deduplication of sPCR products
 pub const DEFAULT_DEDUP_EDIT_THRESHOLD: u32 = 10;
@@ -145,7 +143,6 @@ pub struct DBNode {
 
 #[derive(Debug, Clone)]
 pub struct DBEdge {
-    pub _kmer: u64,          // kmer that contains overlap between sub_kmers
     pub count: u32,          // Number of times this kmer was observed
     pub coverage_ratio: f64, // count / local median (set during annotation)
 }
@@ -176,6 +173,22 @@ pub struct PCRParams {
     /// Where this primer was loaded from (display only, not serialized)
     #[serde(skip)]
     pub source: String,
+
+    // --- Runtime tuning parameters (set from CLI, not from YAML panels) ---
+    #[serde(default = "default_max_dfs_states")]
+    pub max_dfs_states: usize,
+    #[serde(default = "default_max_paths_per_pair")]
+    pub max_paths_per_pair: usize,
+    #[serde(default = "default_max_node_visits")]
+    pub max_node_visits: usize,
+    #[serde(default = "default_max_primer_kmers")]
+    pub max_primer_kmers: usize,
+    #[serde(default = "default_max_seed_nodes")]
+    pub max_seed_nodes: usize,
+    #[serde(default = "default_high_coverage_ratio")]
+    pub high_coverage_ratio: f64,
+    #[serde(default = "default_tip_coverage_fraction")]
+    pub tip_coverage_fraction: f64,
 }
 
 fn default_max_length() -> usize {
@@ -193,6 +206,36 @@ fn default_trim() -> usize {
 fn default_dedup_edit_threshold() -> u32 {
     DEFAULT_DEDUP_EDIT_THRESHOLD
 }
+fn default_max_dfs_states() -> usize {
+    DEFAULT_MAX_DFS_STATES
+}
+fn default_max_paths_per_pair() -> usize {
+    DEFAULT_MAX_PATHS_PER_PAIR
+}
+fn default_max_node_visits() -> usize {
+    DEFAULT_MAX_NODE_VISITS
+}
+fn default_max_primer_kmers() -> usize {
+    DEFAULT_MAX_NUM_PRIMER_KMERS
+}
+fn default_max_seed_nodes() -> usize {
+    DEFAULT_MAX_SEED_NODES
+}
+fn default_high_coverage_ratio() -> f64 {
+    DEFAULT_HIGH_COVERAGE_RATIO
+}
+fn default_tip_coverage_fraction() -> f64 {
+    DEFAULT_TIP_COVERAGE_FRACTION
+}
+
+// Default values for tuning constants (exposed as hidden CLI arguments)
+pub const DEFAULT_MAX_DFS_STATES: usize = 100_000;
+pub const DEFAULT_MAX_PATHS_PER_PAIR: usize = 20;
+pub const DEFAULT_MAX_NODE_VISITS: usize = 2;
+pub const DEFAULT_MAX_NUM_PRIMER_KMERS: usize = 100;
+pub const DEFAULT_MAX_SEED_NODES: usize = 500;
+pub const DEFAULT_HIGH_COVERAGE_RATIO: f64 = 10.0;
+pub const DEFAULT_TIP_COVERAGE_FRACTION: f64 = 0.1;
 
 /// Validate a primer pair and return a list of (error, suggestion) pairs.
 /// An empty list means the primer is valid.
@@ -430,27 +473,32 @@ pub fn do_pcr(
 
     let max_forward_count = forward_primer_kmers.get_max_count();
     let max_reverse_count = reverse_primer_kmers.get_max_count();
-    let primer_count = max_forward_count.min(max_reverse_count);
+
+    // Use median primer kmer count for coverage threshold computation.
+    // The max count is inflated by degenerate primers matching off-target
+    // genomic regions, making the threshold too stringent for real seeds.
+    // The median is more robust to these outliers.
+    let median_forward_count = forward_primer_kmers.get_median_count();
+    let median_reverse_count = reverse_primer_kmers.get_median_count();
+    let primer_count = median_forward_count.min(median_reverse_count);
 
     gene_info!(
         params.gene_name,
-        "Observed primer coverage is {}, user specified min-count is {}",
+        "Observed primer coverage: median {}, max fwd {}, max rev {}. User specified min-count is {}",
         primer_count,
+        max_forward_count,
+        max_reverse_count,
         params.min_count
     );
 
     let coverage_thresholds = compute_coverage_thresholds(primer_count, params.min_count);
     debug!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
-    // Evaluate seeds: bounded local exploration to filter off-target seeds
-    // Use the highest coverage threshold for seed evaluation. This is
-    // stringent enough that off-target seeds (random genomic matches) fail
-    // to extend, while on-target seeds with real coverage extend well.
-    // Note: for genes where the real kmer coverage is far below the max
-    // primer kmer count (e.g., single-copy genes with high off-target
-    // primer counts), on-target seeds may be falsely abandoned. This is
-    // a known limitation to be addressed by #109 (parameter tuning) and
-    // #110 (read-backed runway).
+    // Evaluate seeds: bounded local exploration to filter off-target seeds.
+    // Uses the highest coverage threshold, derived from the median primer
+    // kmer count. This is more permissive than the old max-based threshold,
+    // allowing real seeds to extend even when off-target primer matches
+    // inflate the max count.
     let seed_eval_threshold = coverage_thresholds[0];
     seed_eval::evaluate_seeds(
         &mut seed_graph,
@@ -549,7 +597,11 @@ pub fn do_pcr(
         let start = std::time::Instant::now();
         gene_info!(params.gene_name, "Pruning the assembly graph...");
 
-        pruning::remove_low_coverage_tips(&mut pruned_graph, &kmer_counts.get_k());
+        pruning::remove_low_coverage_tips(
+            &mut pruned_graph,
+            &kmer_counts.get_k(),
+            params.tip_coverage_fraction,
+        );
         pruning::reachability_pruning(&mut pruned_graph);
 
         // Annotate edges with coverage ratios for scoring
@@ -791,7 +843,8 @@ fn write_annotated_dot(
     for edge_idx in graph.edge_indices() {
         let (src, tgt) = graph.edge_endpoints(edge_idx).unwrap();
         let edge = &graph[edge_idx];
-        let seq = crate::kmer::kmer_to_seq(&edge._kmer, &k);
+        let edge_kmer = graph::reconstruct_edge_kmer(graph, edge_idx);
+        let seq = crate::kmer::kmer_to_seq(&edge_kmer, &k);
         writeln!(
             dot,
             "  {} -> {} [label=\"{} ({})\"];",
@@ -912,7 +965,6 @@ mod tests {
             nodes["a"],
             nodes["b"],
             DBEdge {
-                _kmer: 10,
                 count: 5,
                 coverage_ratio: 0.0,
             },
@@ -921,7 +973,6 @@ mod tests {
             nodes["b"],
             nodes["c"],
             DBEdge {
-                _kmer: 11,
                 count: 10,
                 coverage_ratio: 0.0,
             },
@@ -930,7 +981,6 @@ mod tests {
             nodes["c"],
             nodes["d"],
             DBEdge {
-                _kmer: 12,
                 count: 4,
                 coverage_ratio: 0.0,
             },
@@ -939,7 +989,6 @@ mod tests {
             nodes["c"],
             nodes["e"],
             DBEdge {
-                _kmer: 13,
                 count: 1,
                 coverage_ratio: 0.0,
             },
@@ -1241,6 +1290,13 @@ mod tests {
             notes: "".to_string(),
             dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
             source: "test".to_string(),
+            max_dfs_states: DEFAULT_MAX_DFS_STATES,
+            max_paths_per_pair: DEFAULT_MAX_PATHS_PER_PAIR,
+            max_node_visits: DEFAULT_MAX_NODE_VISITS,
+            max_primer_kmers: DEFAULT_MAX_NUM_PRIMER_KMERS,
+            max_seed_nodes: DEFAULT_MAX_SEED_NODES,
+            high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
+            tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
         };
 
         (read_string, k, replicates, kmer_counts, params)
@@ -1273,7 +1329,8 @@ mod tests {
         // Check for kmer
         assert_eq!(reverse_primer_kmers.len(), 1);
 
-        reverse_primer_kmers = filter_primer_kmers(reverse_primer_kmers);
+        reverse_primer_kmers =
+            filter_primer_kmers(reverse_primer_kmers, DEFAULT_MAX_NUM_PRIMER_KMERS);
 
         // Check for kmer after filtering
         assert_eq!(reverse_primer_kmers.len(), 1);
@@ -1355,7 +1412,11 @@ mod tests {
             "Expected paths after reverse extension"
         );
 
-        remove_low_coverage_tips(&mut graph_result, &filtered.get_k());
+        remove_low_coverage_tips(
+            &mut graph_result,
+            &filtered.get_k(),
+            DEFAULT_TIP_COVERAGE_FRACTION,
+        );
         reachability_pruning(&mut graph_result);
 
         let all_paths = get_assembly_paths(&graph_result, &filtered, &params, None);

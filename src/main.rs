@@ -33,7 +33,18 @@ fn main() -> Result<()> {
     cli::handle_early_exits(&args)?;
 
     // Collect and validate PCR primer specifications from all sources
-    let pcr_runs = cli::collect_pcr_params(&args)?;
+    let mut pcr_runs = cli::collect_pcr_params(&args)?;
+
+    // Apply CLI tuning overrides to all PCR params
+    for p in &mut pcr_runs {
+        p.max_dfs_states = args.max_dfs_states;
+        p.max_paths_per_pair = args.max_paths_per_pair;
+        p.max_node_visits = args.max_node_visits;
+        p.max_primer_kmers = args.max_primer_kmers;
+        p.max_seed_nodes = args.max_seed_nodes;
+        p.high_coverage_ratio = args.high_coverage_ratio;
+        p.tip_coverage_fraction = args.tip_coverage_fraction;
+    }
 
     // Handle --validate-panels (prints and exits)
     if args.validate_panels {

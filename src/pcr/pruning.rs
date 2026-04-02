@@ -7,9 +7,6 @@ use petgraph::stable_graph::StableDiGraph;
 
 use super::{DBEdge, DBNode};
 
-/// Coverage fraction below which a tip is considered an error artifact.
-const TIP_COVERAGE_FRACTION: f64 = 0.1;
-
 /// Remove dead-end tips that are short (< k nodes) AND have low coverage
 /// relative to the local median. These are almost certainly sequencing errors.
 /// Tips with meaningful coverage are preserved — they may represent real
@@ -18,14 +15,18 @@ const TIP_COVERAGE_FRACTION: f64 = 0.1;
 /// With reverse extension, dead-ends can occur in both directions:
 /// - Forward tips: nodes with no outgoing edges (not end nodes)
 /// - Backward tips: nodes with no incoming edges (not start nodes)
-pub fn remove_low_coverage_tips(graph: &mut StableDiGraph<DBNode, DBEdge>, k: &usize) {
+pub fn remove_low_coverage_tips(
+    graph: &mut StableDiGraph<DBNode, DBEdge>,
+    k: &usize,
+    tip_coverage_fraction: f64,
+) {
     let mut removed = 1;
     while removed > 0 {
         removed = 0;
 
         // Compute global median edge count as coverage reference
         let median_count = global_median_edge_count(graph).unwrap_or(1.0);
-        let min_tip_count = (median_count * TIP_COVERAGE_FRACTION).max(1.0);
+        let min_tip_count = (median_count * tip_coverage_fraction).max(1.0);
 
         let nodes_to_remove: Vec<NodeIndex> = graph
             .node_indices()

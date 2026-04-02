@@ -106,6 +106,13 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
         notes,
         dedup_edit_threshold,
         source: format!("--pcr-primers \"{}\"", pcr_string),
+        max_dfs_states: pcr::DEFAULT_MAX_DFS_STATES,
+        max_paths_per_pair: pcr::DEFAULT_MAX_PATHS_PER_PAIR,
+        max_node_visits: pcr::DEFAULT_MAX_NODE_VISITS,
+        max_primer_kmers: pcr::DEFAULT_MAX_NUM_PRIMER_KMERS,
+        max_seed_nodes: pcr::DEFAULT_MAX_SEED_NODES,
+        high_coverage_ratio: pcr::DEFAULT_HIGH_COVERAGE_RATIO,
+        tip_coverage_fraction: pcr::DEFAULT_TIP_COVERAGE_FRACTION,
     };
 
     Ok(pcr_params)
@@ -238,6 +245,34 @@ pub(crate) struct Args {
     /// Maximum number of nodes in the assembly graph before abandoning extension
     #[arg(long, default_value_t = crate::pcr::DEFAULT_MAX_NUM_NODES, help_heading = "PCR", hide = true)]
     pub(crate) max_nodes: usize,
+
+    /// Maximum DFS states to explore per start node during path finding
+    #[arg(long, default_value_t = crate::pcr::DEFAULT_MAX_DFS_STATES, help_heading = "PCR", hide = true)]
+    pub(crate) max_dfs_states: usize,
+
+    /// Maximum paths to find per primer pair
+    #[arg(long, default_value_t = crate::pcr::DEFAULT_MAX_PATHS_PER_PAIR, help_heading = "PCR", hide = true)]
+    pub(crate) max_paths_per_pair: usize,
+
+    /// Maximum times a node can appear in a single path (cycle tolerance)
+    #[arg(long, default_value_t = crate::pcr::DEFAULT_MAX_NODE_VISITS, help_heading = "PCR", hide = true)]
+    pub(crate) max_node_visits: usize,
+
+    /// Maximum number of primer-matching kmers to retain per primer
+    #[arg(long, default_value_t = crate::pcr::DEFAULT_MAX_NUM_PRIMER_KMERS, help_heading = "PCR", hide = true)]
+    pub(crate) max_primer_kmers: usize,
+
+    /// Maximum nodes to explore per seed during seed evaluation
+    #[arg(long, default_value_t = crate::pcr::DEFAULT_MAX_SEED_NODES, help_heading = "PCR", hide = true)]
+    pub(crate) max_seed_nodes: usize,
+
+    /// Skip edges during extension whose count exceeds this multiple of the median
+    #[arg(long, default_value_t = crate::pcr::DEFAULT_HIGH_COVERAGE_RATIO, help_heading = "PCR", hide = true)]
+    pub(crate) high_coverage_ratio: f64,
+
+    /// Tip coverage fraction below which a dead-end tip is pruned
+    #[arg(long, default_value_t = crate::pcr::DEFAULT_TIP_COVERAGE_FRACTION, help_heading = "PCR", hide = true)]
+    pub(crate) tip_coverage_fraction: f64,
 
     /// Enable read-backed seed evaluation: retain primer-matching reads during
     /// ingestion and use read divergence to reject off-target seeds

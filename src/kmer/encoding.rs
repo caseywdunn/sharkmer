@@ -192,13 +192,52 @@ impl PartialEq for Read {
 /// # Returns
 ///
 /// A 64-bit unsigned integer representing the reverse complement of the given kmer.
+/// Lookup table for reverse-complementing 4 bases (1 byte) at a time.
+/// Each byte encodes 4 bases in 2-bit format. The table entry for byte `b`
+/// is the reverse complement of those 4 bases packed into the low 8 bits.
+const REVCOMP_BYTE_LUT: [u8; 256] = {
+    let mut table = [0u8; 256];
+    let mut i: u16 = 0;
+    while i < 256 {
+        // Process 4 bases from least significant to most significant
+        let b0 = (i & 3) as u8;
+        let b1 = ((i >> 2) & 3) as u8;
+        let b2 = ((i >> 4) & 3) as u8;
+        let b3 = ((i >> 6) & 3) as u8;
+        // Reverse order and complement each (3 - base)
+        table[i as usize] = ((3 - b0) << 6) | ((3 - b1) << 4) | ((3 - b2) << 2) | (3 - b3);
+        i += 1;
+    }
+    table
+};
+
 pub fn revcomp_kmer(kmer: &u64, k: &usize) -> u64 {
-    let mut revcomp = 0;
-    for i in 0..*k {
-        let base = (kmer >> (2 * i)) & 3;
+    // Process 4 bases (1 byte) at a time using the lookup table.
+    // This reduces the loop from k iterations to ceil(k/4).
+    let total_bits = 2 * k;
+    let mut revcomp: u64 = 0;
+    let mut remaining = *k;
+    let mut shift = 0;
+
+    while remaining >= 4 {
+        let byte = ((kmer >> shift) & 0xFF) as u8;
+        revcomp = (revcomp << 8) | REVCOMP_BYTE_LUT[byte as usize] as u64;
+        shift += 8;
+        remaining -= 4;
+    }
+
+    // Handle remaining 1–3 bases
+    for i in 0..remaining {
+        let base = (kmer >> (shift + 2 * i)) & 3;
         revcomp = (revcomp << 2) | (3 - base);
     }
-    revcomp
+
+    // Mask to keep only the k bases (2k bits)
+    if total_bits < 64 {
+        revcomp & ((1u64 << total_bits) - 1)
+    } else {
+        revcomp
+    }
 }
 
 /// Converts a DNA sequence into a vector of Reads (really subreads).
@@ -235,6 +274,17 @@ pub fn seq_to_reads(seq: &str) -> Result<Vec<Read>> {
         }
     }
     Ok(reads)
+}
+
+/// Extract the last (lowest 2 bits) base of a sub_kmer as a character.
+pub fn kmer_last_base(kmer: &u64) -> char {
+    match kmer & 3 {
+        0 => 'A',
+        1 => 'C',
+        2 => 'G',
+        3 => 'T',
+        _ => unreachable!("2-bit encoding only produces values 0-3"),
+    }
 }
 
 pub fn kmer_to_seq(kmer: &u64, k: &usize) -> String {

@@ -200,7 +200,7 @@ fn build_edge_lookup(graph: &StableDiGraph<DBNode, DBEdge>, k: usize) -> HashMap
     let mut lookup: HashMap<u64, EdgeIndex> = HashMap::new();
 
     for edge_ref in graph.edge_references() {
-        let kmer = edge_ref.weight()._kmer;
+        let kmer = super::graph::reconstruct_edge_kmer(graph, edge_ref.id());
         // Store canonical form (what kmers_from_ascii returns)
         let rc = revcomp_kmer(&kmer, &k);
         let canonical = kmer.min(rc);
@@ -348,7 +348,6 @@ mod tests {
             n0,
             n1,
             DBEdge {
-                _kmer: 0b000001,
                 count: 10,
                 coverage_ratio: 1.0,
             },
@@ -358,7 +357,6 @@ mod tests {
             n1,
             n2,
             DBEdge {
-                _kmer: 0b000110,
                 count: 8,
                 coverage_ratio: 1.0,
             },
@@ -428,7 +426,6 @@ mod tests {
             petgraph::graph::NodeIndex::new(1), // n1
             n3,
             DBEdge {
-                _kmer: 0b001010,
                 count: 3,
                 coverage_ratio: 0.3,
             },

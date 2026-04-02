@@ -25,10 +25,7 @@ pub(super) const EXTENSION_EVALUATION_DEPTH: usize = 4;
 /// Default node budget — give up if the graph gets too large
 pub const DEFAULT_MAX_NUM_NODES: usize = 50_000;
 
-/// Skip edges during extension whose count exceeds this multiple of the
-/// graph's median edge count. Such edges likely lead into repetitive
-/// regions and would cause the graph to balloon.
-const HIGH_COVERAGE_RATIO_THRESHOLD: f64 = 10.0;
+// HIGH_COVERAGE_RATIO_THRESHOLD is now read from params.high_coverage_ratio
 
 // A mask that can be used to isolate the last k-1 nucleotides of a kmer
 pub(super) fn get_suffix_mask(k: &usize) -> u64 {
@@ -49,25 +46,38 @@ pub fn n_unvisited_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usiz
         .count()
 }
 
+fn compute_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>, default: f64) -> f64 {
+    let mut counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
+    if counts.is_empty() {
+        default
+    } else {
+        counts.sort();
+        let mid = counts.len() / 2;
+        if counts.len() % 2 == 0 {
+            (counts[mid - 1] as f64 + counts[mid] as f64) / 2.0
+        } else {
+            counts[mid] as f64
+        }
+    }
+}
+
 pub fn get_path_length(
     graph: &StableDiGraph<DBNode, DBEdge>,
     new_node: NodeIndex,
 ) -> Result<Option<usize>> {
-    // Get the length of the path from the start node to the new node
+    // Get the length of the path from the start node to the new node.
+    // Use a bounded counter instead of a HashSet to detect cycles:
+    // the graph has at most graph.node_count() nodes, so any path
+    // longer than that must contain a cycle.
+    let max_steps = graph.node_count();
     let mut path_length = 0;
     let mut current_node = new_node;
 
-    // Create an empty set to contain the visited nodes
-    let mut visited_nodes: HashSet<NodeIndex> = HashSet::new();
-
     loop {
-        // If the current node has already been visited, break
-        if visited_nodes.contains(&current_node) {
+        // If we've taken more steps than there are nodes, we're in a cycle
+        if path_length > max_steps {
             return Ok(None);
         }
-
-        // Add the current node to the visited nodes
-        visited_nodes.insert(current_node);
 
         let current_node_data = graph
             .node_weight(current_node)
@@ -93,10 +103,19 @@ pub fn get_path_length(
 
 pub fn get_dbedge(kmer: &u64, kmer_counts: &FilteredKmerCounts) -> DBEdge {
     DBEdge {
-        _kmer: *kmer,
         count: kmer_counts.get_canonical_count(kmer),
         coverage_ratio: 0.0, // set during annotation pass
     }
+}
+
+/// Reconstruct the full kmer for an edge from its source and target node sub_kmers.
+/// The edge kmer is: (source.sub_kmer << 2) | (target.sub_kmer & 3).
+pub(super) fn reconstruct_edge_kmer(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    edge_idx: petgraph::graph::EdgeIndex,
+) -> u64 {
+    let (src, tgt) = graph.edge_endpoints(edge_idx).unwrap();
+    (graph[src].sub_kmer << 2) | (graph[tgt].sub_kmer & 3)
 }
 
 pub fn get_start_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
@@ -371,6 +390,9 @@ pub(super) fn extend_graph(
     }
 
     let mut last_check: usize = 0;
+    let mut median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
+    let mut last_median_check: usize = 0;
+
     while n_unvisited_nodes_in_graph(&graph) > 0 {
         let n_nodes = graph.node_count();
 
@@ -384,22 +406,13 @@ pub(super) fn extend_graph(
             break;
         }
 
-        // Compute the median edge count for high-coverage-ratio filtering.
-        // Edges far above the median likely lead into repetitive regions.
-        let median_edge_count: f64 = {
-            let mut counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
-            if counts.is_empty() {
-                *min_count as f64
-            } else {
-                counts.sort();
-                let mid = counts.len() / 2;
-                if counts.len() % 2 == 0 {
-                    (counts[mid - 1] as f64 + counts[mid] as f64) / 2.0
-                } else {
-                    counts[mid] as f64
-                }
-            }
-        };
+        // Recompute cached median edge count periodically
+        if n_nodes > last_median_check
+            && (n_nodes - last_median_check) > EXTENSION_EVALUATION_FREQUENCY
+        {
+            median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
+            last_median_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
+        }
 
         // Periodically log extension progress
         if (n_nodes > last_check) && ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
@@ -422,10 +435,11 @@ pub(super) fn extend_graph(
                     node.index()
                 );
 
-                // Get the kmers that could extend the node
-                let mut candidate_kmers: HashSet<u64> = HashSet::new();
+                // Get the kmers that could extend the node (at most 4, one per base)
+                let mut candidate_kmers: [Option<u64>; 4] = [None; 4];
+                let mut n_candidates = 0;
 
-                for base in 0..4 {
+                for base in 0..4u64 {
                     let kmer = (sub_kmer << 2) | base;
 
                     // If the kmer is in the kmer_counts hash (either orientation)
@@ -433,17 +447,15 @@ pub(super) fn extend_graph(
                     if let Some(count) = kmer_counts.get_canonical(&kmer)
                         && count >= *min_count
                     {
-                        candidate_kmers.insert(kmer);
+                        candidate_kmers[n_candidates] = Some(kmer);
+                        n_candidates += 1;
                     }
                 }
 
-                trace!(
-                    "There are {} candidate kmers for extension.",
-                    candidate_kmers.len()
-                );
+                trace!("There are {} candidate kmers for extension.", n_candidates);
 
                 // If there are no candidate kmers, the node is terminal
-                if candidate_kmers.is_empty() {
+                if n_candidates == 0 {
                     trace!(
                         "Marking node as terminal because there are no candidates for extension."
                     );
@@ -453,7 +465,7 @@ pub(super) fn extend_graph(
                 }
 
                 // Add new nodes if needed, and new edges
-                for kmer in candidate_kmers.iter() {
+                for kmer in candidate_kmers.iter().flatten() {
                     let suffix = kmer & suffix_mask;
 
                     // Check if the node extends by itself and mark it as terminal if it does
@@ -488,12 +500,11 @@ pub(super) fn extend_graph(
 
                         // Skip edges with count far above the median — they
                         // likely lead into repetitive regions
-                        if (edge_count as f64) > (median_edge_count * HIGH_COVERAGE_RATIO_THRESHOLD)
-                        {
+                        if (edge_count as f64) > (median_edge_count * params.high_coverage_ratio) {
                             trace!(
                                 "Skipping high-coverage edge (count {} > {:.0} × {:.0} median). kmer {}",
                                 edge_count,
-                                HIGH_COVERAGE_RATIO_THRESHOLD,
+                                params.high_coverage_ratio,
                                 median_edge_count,
                                 crate::kmer::kmer_to_seq(kmer, &kmer_counts.get_k()),
                             );
@@ -564,15 +575,14 @@ pub fn get_path_length_from_end(
     graph: &StableDiGraph<DBNode, DBEdge>,
     new_node: NodeIndex,
 ) -> Result<Option<usize>> {
+    let max_steps = graph.node_count();
     let mut path_length = 0;
     let mut current_node = new_node;
-    let mut visited_nodes: HashSet<NodeIndex> = HashSet::new();
 
     loop {
-        if visited_nodes.contains(&current_node) {
+        if path_length > max_steps {
             return Ok(None);
         }
-        visited_nodes.insert(current_node);
 
         let current_node_data = graph
             .node_weight(current_node)
@@ -611,6 +621,8 @@ pub(super) fn extend_graph_reverse(
     let prefix_shift = 2 * (k - 1);
 
     let mut last_check: usize = 0;
+    let mut median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
+    let mut last_median_check: usize = 0;
 
     // Un-visit end-only nodes so reverse extension processes them.
     // Forward extension marked them visited to skip them.
@@ -643,21 +655,13 @@ pub(super) fn extend_graph_reverse(
             break;
         }
 
-        // Compute the median edge count for high-coverage-ratio filtering.
-        let median_edge_count: f64 = {
-            let mut counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
-            if counts.is_empty() {
-                *min_count as f64
-            } else {
-                counts.sort();
-                let mid = counts.len() / 2;
-                if counts.len() % 2 == 0 {
-                    (counts[mid - 1] as f64 + counts[mid] as f64) / 2.0
-                } else {
-                    counts[mid] as f64
-                }
-            }
-        };
+        // Recompute cached median edge count periodically
+        if n_nodes > last_median_check
+            && (n_nodes - last_median_check) > EXTENSION_EVALUATION_FREQUENCY
+        {
+            median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
+            last_median_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
+        }
 
         // Periodically log extension progress
         if (n_nodes > last_check) && ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
@@ -681,7 +685,8 @@ pub(super) fn extend_graph_reverse(
             );
 
             // Find candidate predecessor kmers: (base << prefix_shift) | sub_kmer
-            let mut candidate_kmers: HashSet<u64> = HashSet::new();
+            let mut candidate_kmers: [Option<u64>; 4] = [None; 4];
+            let mut n_candidates = 0;
 
             for base in 0u64..4 {
                 let kmer = (base << prefix_shift) | sub_kmer;
@@ -689,17 +694,15 @@ pub(super) fn extend_graph_reverse(
                 if let Some(count) = kmer_counts.get_canonical(&kmer)
                     && count >= *min_count
                 {
-                    candidate_kmers.insert(kmer);
+                    candidate_kmers[n_candidates] = Some(kmer);
+                    n_candidates += 1;
                 }
             }
 
-            trace!(
-                "There are {} candidate predecessor kmers.",
-                candidate_kmers.len()
-            );
+            trace!("There are {} candidate predecessor kmers.", n_candidates);
 
             // If there are no candidates, the node is terminal
-            if candidate_kmers.is_empty() {
+            if n_candidates == 0 {
                 trace!(
                     "Marking node {} as terminal (no reverse candidates).",
                     node.index()
@@ -709,7 +712,7 @@ pub(super) fn extend_graph_reverse(
                 continue;
             }
 
-            for kmer in candidate_kmers.iter() {
+            for kmer in candidate_kmers.iter().flatten() {
                 let prefix = kmer >> 2;
 
                 // Self-loop detection
@@ -740,11 +743,11 @@ pub(super) fn extend_graph_reverse(
                     let edge_count = edge.count;
 
                     // Skip edges with count far above the median
-                    if (edge_count as f64) > (median_edge_count * HIGH_COVERAGE_RATIO_THRESHOLD) {
+                    if (edge_count as f64) > (median_edge_count * params.high_coverage_ratio) {
                         trace!(
                             "Skipping high-coverage reverse edge (count {} > {:.0} x {:.0} median). kmer {}",
                             edge_count,
-                            HIGH_COVERAGE_RATIO_THRESHOLD,
+                            params.high_coverage_ratio,
                             median_edge_count,
                             crate::kmer::kmer_to_seq(kmer, &k),
                         );
@@ -840,6 +843,10 @@ pub(super) fn annotate_coverage_ratios(graph: &mut StableDiGraph<DBNode, DBEdge>
 }
 
 pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
+    if !log::log_enabled!(log::Level::Debug) {
+        return;
+    }
+
     // Print the number of nodes and edges in the graph
     debug!("{}There are {} nodes in the graph", pad, graph.node_count());
     debug!("{}There are {} edges in the graph", pad, graph.edge_count());

@@ -153,9 +153,10 @@ New: `OligoFilter` (bloom filter + AHashSet for Pass 1 read retention),
 ### kmer/ (4 submodules)
 
 - `encoding.rs`: `Read` struct, 2-bit encoding (A=00, C=01, G=10, T=11),
-  `get_kmers()`, `revcomp_kmer()`, `seq_to_reads()`, `kmer_to_seq()`
-- `counting.rs`: `KmerMap` trait, feature-gated impls, `KmerCounts`,
-  `FilteredKmerCounts`
+  `get_kmers()`, `revcomp_kmer()` (byte LUT), `seq_to_reads()`,
+  `kmer_to_seq()`, `kmer_last_base()`
+- `counting.rs`: `KmerMap` trait (with `insert_or_add_get_old`),
+  feature-gated impls, `KmerCounts`, `FilteredKmerCounts`
 - `histogram.rs`: `Histogram` struct
 - `chunk.rs`: `Chunk` struct
 - `mod.rs`: re-exports and tests
@@ -191,15 +192,19 @@ find paths → generate sequences → deduplicate
 - `preconfigured.rs`: YAML panel loading (built-in via `include_str!()`,
   user via `--pcr-panel-file`)
 
-Key constants (may need tuning — see #109):
+Key constants (all exposed as hidden CLI arguments via PCRParams):
 - `COVERAGE_MULTIPLIER = 2`: High coverage definition
 - `COVERAGE_STEPS = 4`: Threshold reduction steps
-- `MAX_NUM_PRIMER_KMERS = 100`: Primer variant filtering cap
-- `DEFAULT_MAX_NUM_NODES = 50_000`: Graph size limit (CLI: `--max-nodes`)
-- `MAX_NUM_PATHS_PER_PAIR = 20`: Path enumeration limit
+- `DEFAULT_MAX_NUM_NODES = 50_000`: Graph size limit (`--max-nodes`)
+- `DEFAULT_MAX_DFS_STATES = 100_000`: DFS state budget (`--max-dfs-states`)
+- `DEFAULT_MAX_PATHS_PER_PAIR = 20`: Path enumeration limit (`--max-paths-per-pair`)
+- `DEFAULT_MAX_NODE_VISITS = 2`: Cycle tolerance (`--max-node-visits`)
+- `DEFAULT_MAX_NUM_PRIMER_KMERS = 100`: Primer variant cap (`--max-primer-kmers`)
+- `DEFAULT_MAX_SEED_NODES = 500`: Seed eval budget (`--max-seed-nodes`)
+- `DEFAULT_HIGH_COVERAGE_RATIO = 10.0`: Repeat edge filter (`--high-coverage-ratio`)
+- `DEFAULT_TIP_COVERAGE_FRACTION = 0.1`: Tip pruning (`--tip-coverage-fraction`)
 - `MAX_NUM_AMPLICONS = 20`: Output sequence limit
 - `DEFAULT_DEDUP_EDIT_THRESHOLD = 10`: Levenshtein threshold for dedup
-- `HIGH_COVERAGE_RATIO_THRESHOLD = 10.0`: Repeat edge filtering
 
 ### panels/ directory
 
@@ -208,14 +213,10 @@ compile time via `include_str!()`.
 
 ## Current known issues
 
-- **Seed eval threshold too stringent for degenerate primers (#109)**:
-  Perfect-match failures (Drosophila 16S, 28S) are caused by the seed
-  evaluation threshold being derived from the max primer kmer count.
-  With degenerate primers, off-target matches inflate this count, making
-  the threshold too high for real seeds to extend. All seeds are
-  abandoned at "1 node". This is NOT a node budget issue — increasing
-  `--max-nodes` to 500K has no effect. Fix requires #109 parameter
-  tuning (use median primer count, or step down seed eval threshold).
+- **Seed eval threshold (fixed in Phase 8)**: Changed from max to median
+  primer kmer count. Degenerate primers with off-target matches previously
+  inflated the threshold too high. Needs benchmark validation with
+  Drosophila 16S/28S to confirm the fix works in practice.
 - **~15% runtime overhead from Phase 4-6 code** (compared to pre-Phase-4):
   The `f64` edge scoring in DFS path finding (bubble resolution
   infrastructure) adds overhead even when `--read-threading` is off.

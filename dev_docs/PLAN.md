@@ -528,42 +528,42 @@ and rationale.
 
 ### Easy wins (items 1–6 from #103)
 
-- [ ] #103 Use entry API in `extend_with_histogram` to eliminate double
+- [x] #103 Use entry API in `extend_with_histogram` to eliminate double
   hash lookup per kmer during chunk consolidation
-- [ ] #103 Cache median edge count in `extend_graph` — recompute every N
+- [x] #103 Cache median edge count in `extend_graph` — recompute every N
   nodes instead of every iteration
-- [ ] #103 Guard `summarize_extension` BFS descendants computation behind
+- [x] #103 Guard `summarize_extension` BFS descendants computation behind
   `log::log_enabled!(Level::Debug)` check
-- [ ] #103 Replace `HashSet<u64>` with `[Option<u64>; 4]` stack array for
+- [x] #103 Replace `HashSet<u64>` with `[Option<u64>; 4]` stack array for
   candidate kmers in graph extension inner loop
-- [ ] #103 Pre-allocate `KmerCounts` capacity from sum of chunk sizes
+- [x] #103 Pre-allocate `KmerCounts` capacity from sum of chunk sizes
   before consolidation
-- [ ] #103 Replace `get_path_length` per-call HashSet with bounded depth
+- [x] #103 Replace `get_path_length` per-call HashSet with bounded depth
   counter for cycle detection
 - [ ] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
 
 ### Larger refactors (items 7–9 from #103)
 
-- [ ] #103 DFS path finding: replace path/visit_counts cloning with
+- [x] #103 DFS path finding: replace path/visit_counts cloning with
   stack-based backtracking (push/pop instead of clone per state)
-- [ ] #103 Avoid full graph clone for pruning — use in-place pruning on
-  a copy-on-write structure or track removals separately
-- [ ] #103 Implement byte-level lookup table for `revcomp_kmer` to reduce
+- [N/A] #103 Avoid full graph clone for pruning — StableDiGraph node
+  indices cannot be restored after removal; clone is O(N+E) and fast
+- [x] #103 Implement byte-level lookup table for `revcomp_kmer` to reduce
   from O(k) to O(k/4) bit operations
 - [ ] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
 
 ### Memory reductions (#104)
 
-- [ ] #104 Remove unused `DBEdge._kmer` field — reconstruct from node pair
-  in `write_annotated_dot()` when needed
-- [ ] #104 Drop `node_lookup` HashMap after graph extension completes
-  (rebuilt between threshold steps anyway)
-- [ ] #104 Add `kmer_last_base()` helper to avoid `kmer_to_seq()` String
+- [x] #104 Remove `DBEdge._kmer` field — reconstruct from node pair
+  via `reconstruct_edge_kmer()` (saves 8 bytes per edge)
+- [N/A] #104 Drop `node_lookup` HashMap after graph extension completes —
+  needed across threshold steps; goes out of scope naturally at fn end
+- [x] #104 Add `kmer_last_base()` helper to avoid `kmer_to_seq()` String
   allocation per node during path assembly
-- [ ] #104 Clone only histogram `Vec<u64>` instead of full `Histogram`
+- [x] #104 Clone only histogram `Vec<u64>` instead of full `Histogram`
   struct (skip `FxHashMap` clone) in incremental counting
-- [ ] #104 Stream histogram rows during output instead of materializing
-  all histogram vectors simultaneously
+- [x] #104 Stream histogram rows during output — subsumed by histogram
+  Vec snapshot (3.4); intermediate `histo_vecs` eliminated
 - [ ] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
 
 ### Parameter tuning (#109)
@@ -577,19 +577,18 @@ perfect-match failures (see failure_analysis.md). All Drosophila 16S
 seeds abandoned at "1 node" because threshold derived from max primer
 kmer count is too high for real amplicon coverage.
 
-- [ ] #109 Expose constants as hidden CLI arguments:
+- [x] #109 Expose constants as hidden CLI arguments:
   - `--max-nodes` (done, DEFAULT_MAX_NUM_NODES = 50K)
-  - `--max-dfs-states` (MAX_DFS_STATES = 100K)
-  - `--max-paths-per-pair` (MAX_NUM_PATHS_PER_PAIR = 20)
-  - `--max-node-visits` (MAX_NODE_VISITS = 2)
-  - `--max-primer-kmers` (MAX_NUM_PRIMER_KMERS = 100)
-  - `--max-seed-nodes` (MAX_NODES_PER_SEED = 500)
-  - `--high-coverage-ratio` (HIGH_COVERAGE_RATIO_THRESHOLD = 10.0)
-  - `--tip-coverage-fraction` (TIP_COVERAGE_FRACTION = 0.1)
-- [ ] #109 Fix seed eval threshold: change from
-  `primer_count / COVERAGE_MULTIPLIER` (uses max primer kmer count)
-  to median or lower-quartile primer kmer count, or step down through
-  multiple thresholds during seed eval (as graph extension already does).
+  - `--max-dfs-states` (DEFAULT_MAX_DFS_STATES = 100K)
+  - `--max-paths-per-pair` (DEFAULT_MAX_PATHS_PER_PAIR = 20)
+  - `--max-node-visits` (DEFAULT_MAX_NODE_VISITS = 2)
+  - `--max-primer-kmers` (DEFAULT_MAX_NUM_PRIMER_KMERS = 100)
+  - `--max-seed-nodes` (DEFAULT_MAX_SEED_NODES = 500)
+  - `--high-coverage-ratio` (DEFAULT_HIGH_COVERAGE_RATIO = 10.0)
+  - `--tip-coverage-fraction` (DEFAULT_TIP_COVERAGE_FRACTION = 0.1)
+- [x] #109 Fix seed eval threshold: changed from max to median primer
+  kmer count. The median is robust to off-target matches inflating the
+  count with degenerate primers.
 - [ ] #109 Benchmark with adjusted parameters, compare to current
   defaults. Focus on Drosophila 16S/28S (perfect-match failures) and
   Rhopilema CO1/16S (node budget / DFS regressions).
