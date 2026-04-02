@@ -477,8 +477,8 @@ fn drain_batch(
     oligo_filter: Option<&OligoFilter>,
     n_chunks: usize,
 ) -> Result<()> {
-    for seq in state.seqs.drain(..) {
-        if let Some(filter) = oligo_filter {
+    if let Some(filter) = oligo_filter {
+        for seq in state.seqs.drain(..) {
             let matched = state.chunks[state.chunk_index].ingest_seq_with_filter(&seq, filter)?;
             if matched {
                 state
@@ -486,7 +486,9 @@ fn drain_batch(
                     .reads
                     .push(RetainedRead { sequence: seq });
             }
-        } else {
+        }
+    } else {
+        for seq in state.seqs.drain(..) {
             state.chunks[state.chunk_index].ingest_seq(&seq)?;
         }
     }
