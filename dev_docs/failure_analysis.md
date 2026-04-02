@@ -109,11 +109,8 @@ Key: Y = recovered, - = still fails, **Y** = recovered only with --read-eval
 - **Porites 16S, CO1 at 4M**: Still fail. Porites has a 542 Mb genome —
   at 4M 150bp reads, local coverage is only ~1x. The target regions
   likely don't have enough kmer coverage to build connected graphs.
-- **Drosophila 16S, 16S-v2, 28S**: Still fail at all levels. These use
-  degenerate Marquina primers that seed 100+ kmer nodes per primer due
-  to ambiguity codes. The non-specific seeds create graphs with many
-  false start/end nodes. ND1 recovery suggests some similar genes can
-  be rescued by Phase 3 improvements, but 16S/28S remain too complex.
+- **Drosophila 16S, 16S-v2, 28S**: Still fail at all levels.
+  See "Root cause: seed eval threshold" below.
 - **Rhopilema ITS at 16M**: Still fails. This is likely rDNA copy number
   variation creating graph complexity that exceeds node/DFS budgets.
 
@@ -124,6 +121,32 @@ Key: Y = recovered, - = still fails, **Y** = recovered only with --read-eval
   regions overwhelm the graph, but at very high coverage the
   threshold stepping finds a good balance.
 - **Drosophila ND4**: Only at 4M. Similar coverage sensitivity.
+
+### Root cause: seed eval threshold (not node budget)
+
+Tested Drosophila 16S/28S at 4M reads with `--max-nodes` from 50K to
+500K (10× default). **No additional genes recovered at any budget.**
+The graph does not hit the node budget for these genes.
+
+Diagnostic output shows the real problem: all 119 forward seeds for
+16S are abandoned with "1 nodes < 46 minimum" — the bounded seed
+evaluation cannot extend any seed even a single node at the seed eval
+threshold. The seed eval threshold is `coverage_thresholds[0]` =
+`primer_count / COVERAGE_MULTIPLIER`. With degenerate Marquina primers
+(ambiguity codes H, D, Y, N, R), off-target genomic matches inflate
+the max primer kmer count far above the real amplicon coverage. The
+real seeds' flanking kmers fall below this stringent threshold, so
+every seed is falsely abandoned.
+
+This is the known limitation documented in `mod.rs`:
+
+> for genes where the real kmer coverage is far below the max primer
+> kmer count (e.g., single-copy genes with high off-target primer
+> counts), on-target seeds may be falsely abandoned
+
+The fix is #109 (parameter tuning): derive the seed eval threshold
+from something other than the max primer kmer count, or use the
+median/lower-quartile primer kmer count instead of the max.
 
 ### Effect of --read-eval
 
