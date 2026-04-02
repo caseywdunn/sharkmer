@@ -30,6 +30,23 @@ sample:
             size_mb: 541.6
             n50_mb: 36
 
+    Xenia_sp:
+        taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Xeniidae; Xenia; unclassified Xenia"
+        reads:
+            - SRR9278435 # From genome bioproject, SRR9278432 is a smaller dataset
+        arguments: "--pcr-panel cnidaria"
+        genome:
+            accession: GCF_021976095.1
+            size_mb: 222.7 # 10x is about 15M reads
+            n50_mb: 14.8
+        biosample: https://www.ncbi.nlm.nih.gov/biosample/SAMN23741995/
+        max_reads:
+            - 16000000
+            - 8000000
+            - 4000000
+            - 2000000
+            - 1000000
+
     Agalma_elegans:
         taxonomy: "Eumetazoa; Cnidaria; Hydrozoa; Hydroidolina; Siphonophorae; Physonectae; Agalmatidae; Agalma"
         reads:
@@ -41,7 +58,6 @@ sample:
             - 4000000
             - 2000000
             - 1000000
-        # no public genome available March 2025
 
 # These samples are selected for cnidarian sequences as well as bacterial carryover sequences
     Rhopilema_esculentum:
@@ -145,14 +161,6 @@ sample:
             accession: "GCA_054131365.1"
             size_mb: 1668.9
             n50_mb: 111.7
-
-# Metazoan metabarcoding - gut content datasets
-    Bargmannia_gutmetagenome:
-        reads:
-            - SRR14670475
-        arguments: "--pcr-panel metazoa"
-        max_reads:
-            - 1000000
 
 # Bacterial metagenomics
     Covercrop_rhizosphere:
