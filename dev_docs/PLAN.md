@@ -12,18 +12,21 @@ for detailed specifications.
 Brief notes after each phase/session for cold-start context. Most recent
 first.
 
-**2026-04-01 — Phase 7 implementation (read-backed runway)**
-Pass 1 primer Oligo matching: `preprocess_primer_oligos()` encodes
-primer variants as 2-bit Oligos before ingestion (text-only, no kmer
-table). `OligoMatcher` checks each kmer during ingestion via bitwise
-mask+compare. Matching reads retained in `RetainedReads`. Read
-divergence detection in `check_read_divergence()`: traces retained
+**2026-04-01 — Phase 7 implementation (read-backed seed evaluation)**
+Pass 1 primer Oligo matching via two-stage filter: bloom filter (24-bit,
+4MB) for fast approximate check during kmer ingestion, then AHashSet
+for exact verification. `preprocess_primer_oligos()` encodes primer
+variants as 2-bit Oligos before ingestion. Opt-in via `--read-eval`.
+Read divergence detection in `check_read_divergence()`: traces retained
 reads from seed sub_kmer, rejects seeds where majority of reads diverge
-immediately (within first node after primer). Divergence-based rejection
-augments existing kmer-only heuristics. Benchmark: Rhopilema gained CO1
-(+1), Gryllus lost ITS (-1). Pass 2 threading changed to opt-in
-(`--read-threading` flag). Wall time 3-6× higher from Oligo matching —
-needs Phase 8 optimization (HashSet-based lookup instead of linear).
+immediately. `--read-eval` uniquely enables Drosophila ITS recovery at
+4M reads. Updated failure analysis: 5/10 perfect-match failures now
+recovered (Phase 3 improvements did most of the work). Remaining
+failures (Drosophila 16S, 28S) diagnosed as seed eval threshold issue
+(#109), not node budget — all seeds abandoned at "1 node" because
+threshold derived from inflated max primer kmer count. Runway subgraph
+construction deferred until #109 threshold tuning opens up new seeds
+that could benefit from pre-built subgraphs.
 
 **2026-03-31 — Phases 4-6 implementation (read threading)**
 Two-pass read backend: Pass 1 counts kmers (unchanged), Pass 2 re-reads
@@ -504,11 +507,18 @@ raw ASCII sequences, indexed by which primer(s) they matched.
     existing kmer-only evaluation (#105) unchanged. Read coherence is
     logged for diagnostics but does not affect filtering.
 - [x] Run benchmarks, compare to Phase 6 results.
-  14 samples at 1M reads: Rhopilema gained CO1 (+1), Gryllus lost ITS
-  (-1, likely divergence rejection of a marginal seed). Wall time 3-6×
-  higher due to Pass 1 Oligo matching cost — needs optimization in
-  Phase 8 (batch Oligo checking, HashSet lookup instead of linear scan).
-  Results: `benchmarks/results/2026-04-01_sharkmer_3.0.0-dev_09b83fb.yaml`
+  With `--read-eval`: ~15-25% overhead vs default (bloom filter + AHashSet
+  verification). Without `--read-eval`: no overhead. `--read-eval`
+  uniquely enables Drosophila ITS recovery at 4M. Failure analysis
+  updated: remaining perfect-match failures (16S, 28S) are seed eval
+  threshold issues (#109), not node budget — increasing `--max-nodes`
+  to 500K recovers zero additional genes.
+  Results: `benchmarks/results/2026-04-01_sharkmer_3.0.0-dev_df4269e.yaml`
+- Runway subgraph construction deferred: retained reads currently used
+  only for divergence rejection. Pre-building subgraphs from retained
+  reads and incorporating them into the main graph would help seeds
+  that survive evaluation but struggle during extension. Deferred until
+  #109 threshold tuning opens up new seeds that could benefit.
 
 ## Phase 8 — Performance optimizations
 
