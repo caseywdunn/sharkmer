@@ -40,6 +40,7 @@ sample:
             size_mb: 222.7 # 10x is about 15M reads
             n50_mb: 14.8
         biosample: https://www.ncbi.nlm.nih.gov/biosample/SAMN23741995/
+        publication: https://doi.org/10.1038/s41586-020-2385-7
         max_reads:
             - 16000000
             - 8000000
