@@ -28,9 +28,32 @@ NO_BLAST = "?"    # ?  product, no BLAST hit
 EMPTY = "\u00b7"  # ·  no product
 
 
+PANELS_DIR = Path(__file__).parent.parent / "panels"
+
+
 def load_results(path):
     with open(path) as f:
         return yaml.safe_load(f)
+
+
+def load_panel_genes(panel_str):
+    """Load the full gene list for a panel string (e.g. 'cnidaria, bacteria').
+
+    Returns a list of prefixed gene names (e.g. 'cnidaria_18S') preserving
+    the order defined in the panel YAML files.
+    """
+    genes = []
+    for panel_name in panel_str.split(", "):
+        panel_file = PANELS_DIR / f"{panel_name}.yaml"
+        if not panel_file.exists():
+            continue
+        with open(panel_file) as f:
+            panel = yaml.safe_load(f)
+        for primer in panel.get("primers", []):
+            prefixed = f"{panel_name}_{primer['gene_name']}"
+            if prefixed not in genes:
+                genes.append(prefixed)
+    return genes
 
 
 def strip_panel_prefix(gene, panel):
@@ -105,12 +128,14 @@ def summarize(result_path, output_path=None):
     for panel in sorted(panel_data.keys()):
         rows = panel_data[panel]
 
-        # Collect all genes seen in this panel, preserve order from first appearance
-        seen_genes = []
-        for _, _, products in rows:
-            for gene in products:
-                if gene not in seen_genes:
-                    seen_genes.append(gene)
+        # Full gene list from panel YAML (includes genes with no products)
+        seen_genes = load_panel_genes(panel)
+        if not seen_genes:
+            # Fallback: collect genes from results if panel YAML not found
+            for _, _, products in rows:
+                for gene in products:
+                    if gene not in seen_genes:
+                        seen_genes.append(gene)
 
         # Short gene names (strip panel prefix)
         short_names = [strip_panel_prefix(g, panel) for g in seen_genes]
