@@ -372,3 +372,121 @@ primer_binding:
 
     # 28S-v2, ITS-v2, ITS-v3 — only partial reference sequences available
     # EF1g, Fz4, Gpdh, Pgi — no public Gryllus gene sequences available
+
+    # ── Cnidaria panel — Xenia sp. ──────────────────────────────────
+    #
+    # No complete Xenia sp. mitochondrial genome is in GenBank.
+    # Mitochondrial primer binding sites assessed via the closest
+    # Xeniidae mitogenome: Ovabunda macrospiculata NC_062021.1.
+    # Xenia partial sequences (PV199031.1, PV707736.1) are identical
+    # to Ovabunda in overlapping regions.
+    #
+    # Nuclear rDNA assessed via Xenia sp. 1 TK-2019 (LC467126.1,
+    # 18S/ITS1/5.8S/ITS2/28S partial, 972 bp) and Xenia sp. TK-2021
+    # (LC656681.1, 28S partial, 773 bp). These partial sequences do
+    # not cover all primer binding regions.
+
+    # 16S — predicted to amplify (0 mismatches)
+    cnidaria_16S__Xenia_sp:
+        forward_binding: "GACTGTTTACCAAAAACATA"
+        reverse_binding: "AATTCAACATCGAGG"
+        accession: "NC_062021.1"
+        forward_mismatches: 0
+        reverse_mismatches: 0
+        notes: >
+            Both primers match perfectly. Predicted amplicon ~626 bp
+            (within expected 500-700 bp). Assessed via Ovabunda
+            macrospiculata mitogenome (closest Xeniidae); the partial
+            Xenia 16S in PV199031.1 is identical to Ovabunda in the
+            overlapping 3' region. No amplification issues expected.
+
+    # CO1 — predicted to amplify (0 mismatches)
+    cnidaria_CO1__Xenia_sp:
+        forward_binding: "TCATAAGGATATAGG"
+        reverse_binding: "GTGTCCAAAAAACCA"
+        accession: "NC_062021.1"
+        forward_mismatches: 0
+        reverse_mismatches: 0
+        notes: >
+            Both primers match perfectly. Predicted amplicon ~688 bp
+            (within expected 600-800 bp). Assessed via Ovabunda
+            macrospiculata mitogenome; the partial Xenia COX1 in
+            PV707736.1 is identical to Ovabunda in the overlapping
+            region. No amplification issues expected.
+
+    # 18S — partially assessed (reverse 1mm; forward site not in reference)
+    cnidaria_18S__Xenia_sp:
+        forward_binding: null
+        reverse_binding: "TGATCCTTCCGCAGGTTCACCTAC"
+        accession: "LC467126.1"
+        forward_mismatches: null
+        reverse_mismatches: 1
+        notes: >
+            LC467126.1 covers only the 3' end of 18S through 5' of
+            28S. Forward primer (Medlin 18S 5' end) is outside this
+            fragment. Reverse: 1mm at pos 10 of 24 (T->C). Should
+            amplify if both primers bind, but forward cannot be
+            assessed from available sequences.
+
+    # 28S (Evans F97/R3238) — partially assessed (forward 2mm; reverse
+    #   site not in reference)
+    cnidaria_28S__Xenia_sp:
+        forward_binding: "CCCCAGTAATGGCGAAT"
+        reverse_binding: null
+        accession: "LC467126.1"
+        forward_mismatches: 2
+        reverse_mismatches: null
+        notes: >
+            Forward (F97): 2mm at pos 3 (Y->C, matches C/T → C ok;
+            actually mismatch at pos 10 C->T and pos 16 G->A). At the
+            mismatches: 2 threshold. Reverse (R3238) binds ~3230 bp
+            downstream; no Xenia reference covers that region.
+            The 2 forward mismatches are both in the interior of the
+            primer, which is more favorable for binding.
+
+    # ITS (CAS18SF1 / RC of 28S F97) — partially assessed
+    cnidaria_ITS__Xenia_sp:
+        forward_binding: null
+        reverse_binding: "ATTCGCCATTACTGGGG"
+        accession: "LC467126.1"
+        forward_mismatches: null
+        reverse_mismatches: 2
+        notes: >
+            Forward (CAS18SF1) binds 18S pos ~1843, outside the
+            LC467126.1 fragment. Reverse is the RC of the 28S forward
+            primer (F97); same binding site as cnidaria_28S forward,
+            same 2 mismatches viewed from the opposite strand: pos 2
+            (C->T) and pos 8 (G->A) of the 17-mer. At the
+            mismatches: 2 threshold — marginal.
+
+    # ITS-v2 — forward 1mm, reverse 2mm (3 total — potentially marginal)
+    cnidaria_ITS-v2__Xenia_sp:
+        forward_binding: "GTAGGTGAACCTGCGGAAGGATCA"
+        reverse_binding: "ATTCGCCATTACTGGGG"
+        accession: "LC467126.1"
+        forward_mismatches: 1
+        reverse_mismatches: 2
+        notes: >
+            Forward: 1mm at pos 15 of 24 (A->G). Reverse: same 2mm
+            as ITS reverse (pos 2 C->T, pos 8 G->A). With
+            mismatches: 2 in the panel, each primer individually is
+            within threshold, but combined 3 mismatches across the
+            pair may limit kmer search efficiency. Predicted amplicon
+            ~761 bp (within expected 600-1000 bp).
+
+    # 28S-v2 (McCartin eDNA) — predicted to amplify (1mm forward, 0mm reverse)
+    cnidaria_28S-v2__Xenia_sp:
+        forward_binding: "CGTGAAACCGTTGAAAAGG"
+        reverse_binding: "TTGGTCCGTGTTTCAAGACG"
+        accession: "LC656681.1"
+        forward_mismatches: 1
+        reverse_mismatches: 0
+        notes: >
+            Forward: 1mm at pos 17 of 19 (G->A), 3 bases from 3'
+            end. Reverse: exact match. Predicted amplicon ~423 bp
+            (below expected ~540 bp; may reflect Xenia-specific 28S
+            length variation or partial reference). Should amplify.
+
+    # EF1A — no public Xenia sequence available
+    # No Xenia elongation factor 1-alpha sequences exist in GenBank.
+    # Cannot assess primer binding.
