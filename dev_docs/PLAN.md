@@ -565,13 +565,31 @@ and rationale.
 
 ### Parameter tuning (#109)
 
-- [ ] #109 Revisit hard-coded graph parameters. Profile benchmark runs
-  to understand how often each limit is hit and whether it causes
-  regressions. Constants to review: MAX_NUM_NODES (50K shared budget
-  — Rhopilema CO1 regression), MAX_DFS_STATES (100K — Rhopilema
-  16S-515F-Y regression), HIGH_COVERAGE_RATIO_THRESHOLD, seed eval
-  thresholds. Some may benefit from being derived from other
-  parameters (e.g., node budget scaled by max_length).
+Expose all tunable constants as hidden CLI arguments (`hide = true`)
+so they can be adjusted without recompiling. Same pattern as
+`--max-nodes`. Then benchmark systematically to find better defaults.
+
+**Highest priority:** seed eval threshold — root cause of remaining
+perfect-match failures (see failure_analysis.md). All Drosophila 16S
+seeds abandoned at "1 node" because threshold derived from max primer
+kmer count is too high for real amplicon coverage.
+
+- [ ] #109 Expose constants as hidden CLI arguments:
+  - `--max-nodes` (done, DEFAULT_MAX_NUM_NODES = 50K)
+  - `--max-dfs-states` (MAX_DFS_STATES = 100K)
+  - `--max-paths-per-pair` (MAX_NUM_PATHS_PER_PAIR = 20)
+  - `--max-node-visits` (MAX_NODE_VISITS = 2)
+  - `--max-primer-kmers` (MAX_NUM_PRIMER_KMERS = 100)
+  - `--max-seed-nodes` (MAX_NODES_PER_SEED = 500)
+  - `--high-coverage-ratio` (HIGH_COVERAGE_RATIO_THRESHOLD = 10.0)
+  - `--tip-coverage-fraction` (TIP_COVERAGE_FRACTION = 0.1)
+- [ ] #109 Fix seed eval threshold: change from
+  `primer_count / COVERAGE_MULTIPLIER` (uses max primer kmer count)
+  to median or lower-quartile primer kmer count, or step down through
+  multiple thresholds during seed eval (as graph extension already does).
+- [ ] #109 Benchmark with adjusted parameters, compare to current
+  defaults. Focus on Drosophila 16S/28S (perfect-match failures) and
+  Rhopilema CO1/16S (node budget / DFS regressions).
 
 ### Validation
 
