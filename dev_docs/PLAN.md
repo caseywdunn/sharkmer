@@ -540,6 +540,7 @@ and rationale.
   before consolidation
 - [ ] #103 Replace `get_path_length` per-call HashSet with bounded depth
   counter for cycle detection
+- [ ] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
 
 ### Larger refactors (items 7–9 from #103)
 
@@ -549,6 +550,7 @@ and rationale.
   a copy-on-write structure or track removals separately
 - [ ] #103 Implement byte-level lookup table for `revcomp_kmer` to reduce
   from O(k) to O(k/4) bit operations
+- [ ] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
 
 ### Memory reductions (#104)
 
@@ -562,6 +564,7 @@ and rationale.
   struct (skip `FxHashMap` clone) in incremental counting
 - [ ] #104 Stream histogram rows during output instead of materializing
   all histogram vectors simultaneously
+- [ ] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
 
 ### Parameter tuning (#109)
 
@@ -590,6 +593,7 @@ kmer count is too high for real amplicon coverage.
 - [ ] #109 Benchmark with adjusted parameters, compare to current
   defaults. Focus on Drosophila 16S/28S (perfect-match failures) and
   Rhopilema CO1/16S (node budget / DFS regressions).
+- [ ] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
 
 ### Validation
 
