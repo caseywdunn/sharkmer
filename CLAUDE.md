@@ -118,27 +118,35 @@ cargo build --features fxhashmap --no-default-features
 See [dev_docs/overview.md](dev_docs/overview.md) for a detailed
 architecture overview with data flow diagrams.
 
-### main.rs (~135 lines)
+### main.rs (~180 lines)
 
 Entry point. Parses CLI, delegates to helper modules, orchestrates the
-pipeline: init logging → collect primers → validate → ingest reads →
-consolidate → run PCR → write stats → print summary.
+pipeline: init logging → collect primers → validate → pre-encode primer
+Oligos (if `--read-eval`) → build Oligo filter → ingest reads (Pass 1)
+→ consolidate → re-read sequences (if `--read-threading`, Pass 2) →
+run PCR → write stats → print summary.
 
-### cli.rs (~715 lines)
+### cli.rs (~770 lines)
 
 `Args` struct (clap), `ColorMode`, `parse_pcr_primers_string()`,
-`init_logging()`, early exits, validation, `--dry-run`.
+`init_logging()`, early exits, validation, `--dry-run`. New flags:
+`--read-eval` (Pass 1 read retention for seed eval), `--read-threading`
+(Pass 2 re-read for graph annotation), `--paired` (paired-end R1/R2),
+`--max-nodes` (hidden, graph node budget).
 
-### io.rs (~640 lines)
+### io.rs (~1260 lines)
 
 `read_fastq()`, `validate_fastq_record()`, `get_ena_fastq_urls()`,
 `write_fasta_record()`, `ingest_reads()`, `consolidate_and_histogram()`.
+New: `OligoFilter` (bloom filter + AHashSet for Pass 1 read retention),
+`RetainedRead`/`RetainedReads`, `ReadRecord`/`ReadPlan`/`ReadSourcePlan`
+(Pass 2 re-reading), `reread_sequences()`, `read_fastq_paired()`.
 
 ### format.rs (~45 lines)
 
 `format_count()`, `format_bytes()`, `format_duration()`.
 
-### stats.rs (~215 lines)
+### stats.rs (~235 lines)
 
 `RunStats`, `PcrGeneResult`, `run_pcr()`, `write_stats()`, `print_summary()`.
 
@@ -152,31 +160,46 @@ consolidate → run PCR → write stats → print summary.
 - `chunk.rs`: `Chunk` struct
 - `mod.rs`: re-exports and tests
 
-### pcr/ (5 submodules)
+### pcr/ (8 submodules)
 
 Pipeline: preprocess primers → find primer kmers → seed graph →
-extend graph → prune → find paths → generate sequences → deduplicate
+evaluate seeds (with optional read divergence) → extend graph →
+prune → thread reads (if `--read-threading`) → resolve bubbles →
+find paths → generate sequences → deduplicate
 
 - `primers.rs`: Primer preprocessing, ambiguity resolution, mismatch
-  permutation, kmer extraction
+  permutation, kmer extraction. New: `PrimerOligoSet`,
+  `preprocess_primer_oligos()` for Pass 1 Oligo encoding
 - `graph.rs`: `DBNode`, `DBEdge`, seed graph, `extend_graph()`,
-  diagnostics. Graph: `petgraph::StableDiGraph<DBNode, DBEdge>`
-- `pruning.rs`: `pop_balloons()`, `remove_side_branches()`,
-  `remove_orphan_nodes()`
-- `paths.rs`: `get_assembly_paths()`, sequence extraction, deduplication
-- `mod.rs`: `do_pcr()` orchestration, `PCRParams`, validation, constants
+  `extend_graph_reverse()`, diagnostics.
+  Graph: `petgraph::StableDiGraph<DBNode, DBEdge>`
+- `pruning.rs`: `remove_low_coverage_tips()`, `reachability_pruning()`
+- `paths.rs`: `get_assembly_paths()`, sequence extraction, deduplication.
+  Edge ordering uses bubble resolution preferences when available.
+- `seed_eval.rs`: `evaluate_seeds()`, `bounded_extend()`,
+  `check_read_divergence()`. Bounded local exploration to filter
+  off-target seeds before full graph extension.
+- `threading.rs`: `thread_reads()`, `thread_reads_paired()`. Maps reads
+  to graph edges via maximal contiguous runs. Graph-agnostic API.
+  `EdgeReadSupport`, `BranchLink`, `PairedEndLink`, `ThreadingAnnotations`.
+- `read_filter.rs`: `PrimerReadFilter` for per-gene read filtering
+  during Pass 2 threading
+- `bubble.rs`: `resolve_bubbles()`. Detects simple bubbles, ranks
+  branches by read support + phasing, returns edge preferences.
+- `mod.rs`: `do_pcr()` orchestration, `PCRParams`, `PathScore`
+  (with read-support fields), validation, constants
 - `preconfigured.rs`: YAML panel loading (built-in via `include_str!()`,
   user via `--pcr-panel-file`)
 
-Key constants (may need tuning):
+Key constants (may need tuning — see #109):
 - `COVERAGE_MULTIPLIER = 2`: High coverage definition
 - `COVERAGE_STEPS = 4`: Threshold reduction steps
 - `MAX_NUM_PRIMER_KMERS = 100`: Primer variant filtering cap
-- `MAX_NUM_NODES = 50_000`: Graph size limit
+- `DEFAULT_MAX_NUM_NODES = 50_000`: Graph size limit (CLI: `--max-nodes`)
 - `MAX_NUM_PATHS_PER_PAIR = 20`: Path enumeration limit
 - `MAX_NUM_AMPLICONS = 20`: Output sequence limit
 - `DEFAULT_DEDUP_EDIT_THRESHOLD = 10`: Levenshtein threshold for dedup
-- `BALLOONING_COUNT_THRESHOLD_MULTIPLIER = 10.0`: Spurious edge detection
+- `HIGH_COVERAGE_RATIO_THRESHOLD = 10.0`: Repeat edge filtering
 
 ### panels/ directory
 
@@ -185,7 +208,18 @@ compile time via `include_str!()`.
 
 ## Current known issues
 
-None currently tracked.
+- **Seed eval threshold too stringent for degenerate primers (#109)**:
+  Perfect-match failures (Drosophila 16S, 28S) are caused by the seed
+  evaluation threshold being derived from the max primer kmer count.
+  With degenerate primers, off-target matches inflate this count, making
+  the threshold too high for real seeds to extend. All seeds are
+  abandoned at "1 node". This is NOT a node budget issue — increasing
+  `--max-nodes` to 500K has no effect. Fix requires #109 parameter
+  tuning (use median primer count, or step down seed eval threshold).
+- **~15% runtime overhead from Phase 4-6 code** (compared to pre-Phase-4):
+  The `f64` edge scoring in DFS path finding (bubble resolution
+  infrastructure) adds overhead even when `--read-threading` is off.
+  This is the cost of the pluggable scoring architecture.
 
 ## Git workflow
 
