@@ -594,42 +594,48 @@ kmer count is too high for real amplicon coverage.
   Rhopilema CO1/16S (node budget / DFS regressions).
 - [ ] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
 
-### Seed-prioritized graph extension (#112)
+### Component-prioritized graph extension (#112)
 
 The current `extend_graph()` extends all seeds breadth-first in each
 iteration — every unvisited node is extended one step before looping.
 Off-target seeds consume the node budget before on-target seeds can
-connect. Three related changes, implemented as ordered subtasks:
+connect. Four related changes, implemented as ordered subtasks:
 
-1. **Depth-first seed extension.** Refactor `extend_graph()` to accept
-   an ordered list of seeds and extend each seed's subgraph to
-   completion (terminal or budget) before starting the next. This is
-   the core structural change to the extension loop.
+1. **Per-component node budgets.** Allocate node budgets per connected
+   component rather than a single global budget. Multiple seeds in the
+   same component (e.g., forward and reverse primer variants for the
+   same amplicon) share one budget. The global `--max-nodes` becomes a
+   backstop that can be raised since individual components are bounded.
 
-2. **Seed prioritization.** After seed eval, rank seeds: connected
-   pairs first (seeds that "reached opposite-direction seed" during
-   bounded exploration), then by seed eval metrics (extension size,
-   branching ratio). Feed the ranked order into the depth-first
-   extension.
+2. **Depth-first per-component extension.** Refactor `extend_graph()`
+   to extend each connected component to completion (terminal or
+   per-component budget) before starting the next.
 
-3. **Configurable stopping criteria.** After each seed's extension
+3. **Component prioritization.** After seed eval, rank components:
+   connected-seed components first (seeds that "reached opposite-
+   direction seed" during bounded exploration), then by component-level
+   metrics (total seed extension size, lowest branching ratio). Feed
+   the ranked order into the depth-first extension.
+
+4. **Configurable stopping criteria.** After each component's extension
    completes, attempt path finding. If a product is found, apply the
    stopping criterion. Exposed as `--extension-strategy` with presets:
    - `first-product` (new default): stop after first product found
-   - `all-seeds`: extend all seeds (current behavior, for
+   - `all-seeds`: extend all components (current behavior, for
      benchmarking/debugging)
-   - `connected-first`: extend connected seeds only, skip the rest
-     if product found
+   - `connected-first`: extend connected-seed components only, skip
+     the rest if product found
 
 **Rationale:** Benchmark analysis shows that seed eval correctly
 identifies connected seeds ("early product recovery") but full
-extension ignores this signal. Heliconius ND4 at k=31/8M: seeds find
+extension ignores this signal. Heliconius ND4 at k=21/8M: seeds find
 each other during eval, but off-target seeds exhaust the 50K node
 budget during breadth-first extension. Drosophila ND4 at 1M with
 degenerate primers: same pattern.
 
-- [ ] Implement depth-first per-seed extension
-- [ ] Implement seed ranking after seed eval
+- [ ] Implement per-component node budgets
+- [ ] Implement depth-first per-component extension
+- [ ] Implement component ranking after seed eval
 - [ ] Implement `--extension-strategy` with `first-product` default
 - [ ] Run benchmarks: compare recovery and runtime vs current behavior
 
