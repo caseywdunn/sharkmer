@@ -369,6 +369,37 @@ pub(super) fn prepare_for_lower_threshold(
     }
 }
 
+/// Mask all seed nodes NOT in the given component set by marking them
+/// visited and terminal. Returns saved states for later restoration.
+pub(super) fn mask_other_components(
+    graph: &mut StableDiGraph<DBNode, DBEdge>,
+    component_seeds: &std::collections::HashSet<NodeIndex>,
+) -> Vec<(NodeIndex, bool, bool)> {
+    let mut saved = Vec::new();
+    for node in graph.node_indices().collect::<Vec<_>>() {
+        let data = &graph[node];
+        if (data.is_start || data.is_end) && !component_seeds.contains(&node) {
+            saved.push((node, data.visited, data.is_terminal));
+            graph[node].visited = true;
+            graph[node].is_terminal = true;
+        }
+    }
+    saved
+}
+
+/// Restore seed node states that were masked by `mask_other_components`.
+pub(super) fn unmask_nodes(
+    graph: &mut StableDiGraph<DBNode, DBEdge>,
+    saved: &[(NodeIndex, bool, bool)],
+) {
+    for &(node, visited, is_terminal) in saved {
+        if graph.contains_node(node) {
+            graph[node].visited = visited;
+            graph[node].is_terminal = is_terminal;
+        }
+    }
+}
+
 #[allow(clippy::type_complexity)]
 pub(super) fn extend_graph(
     mut graph: StableDiGraph<DBNode, DBEdge>,
@@ -377,9 +408,11 @@ pub(super) fn extend_graph(
     min_count: &u32,
     params: &PCRParams,
     max_num_nodes: usize,
+    component_budget: Option<usize>,
 ) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>, bool)> {
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
     let mut found_end_node = false;
+    let nodes_at_start = graph.node_count();
 
     // Mark end-only nodes as visited so forward extension skips them.
     // They will be un-visited by reverse extension.
@@ -404,6 +437,18 @@ pub(super) fn extend_graph(
                 max_num_nodes
             );
             break;
+        }
+
+        if let Some(budget) = component_budget {
+            if n_nodes.saturating_sub(nodes_at_start) >= budget {
+                gene_info!(
+                    params.gene_name,
+                    "Component budget exhausted ({} nodes added, budget {}), moving to next component.",
+                    n_nodes - nodes_at_start,
+                    budget
+                );
+                break;
+            }
         }
 
         // Recompute cached median edge count periodically
@@ -616,9 +661,11 @@ pub(super) fn extend_graph_reverse(
     min_count: &u32,
     params: &PCRParams,
     max_num_nodes: usize,
+    component_budget: Option<usize>,
 ) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>)> {
     let k = kmer_counts.get_k();
     let prefix_shift = 2 * (k - 1);
+    let nodes_at_start = graph.node_count();
 
     let mut last_check: usize = 0;
     let mut median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
@@ -653,6 +700,18 @@ pub(super) fn extend_graph_reverse(
                 max_num_nodes
             );
             break;
+        }
+
+        if let Some(budget) = component_budget {
+            if n_nodes.saturating_sub(nodes_at_start) >= budget {
+                gene_info!(
+                    params.gene_name,
+                    "Reverse extension: component budget exhausted ({} nodes added, budget {}), moving to next component.",
+                    n_nodes - nodes_at_start,
+                    budget
+                );
+                break;
+            }
         }
 
         // Recompute cached median edge count periodically

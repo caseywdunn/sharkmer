@@ -1,5 +1,4 @@
 // pcr/components.rs — Seed component identification, prioritization, and budget allocation
-#![allow(dead_code)] // Functions used in Step 3 of #112
 
 use std::collections::HashMap;
 

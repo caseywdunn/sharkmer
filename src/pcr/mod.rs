@@ -3,6 +3,7 @@
 use anyhow::{Context, Result};
 use bio::io::fasta;
 use log::{debug, trace};
+use petgraph::graph::NodeIndex;
 use std::fs::File;
 use std::io::Write;
 
@@ -523,7 +524,7 @@ pub fn do_pcr(
     // robust to outliers. This is separate from extension thresholds, which
     // still use the max to maintain graph quality.
     let seed_eval_threshold = compute_coverage_thresholds(median_primer_count, params.min_count)[0];
-    let _seed_eval_result = seed_eval::evaluate_seeds(
+    let seed_eval_result = seed_eval::evaluate_seeds(
         &mut seed_graph,
         &node_lookup,
         kmer_counts,
@@ -535,226 +536,325 @@ pub fn do_pcr(
     let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
     let mut amplicon_index: usize = 0;
 
+    // Identify connected components among surviving seeds and prioritize
+    let seed_components = {
+        let mut comps = components::identify_components(&seed_eval_result, &seed_graph);
+        components::prioritize_components(&mut comps);
+        components::allocate_budgets(&mut comps, max_num_nodes, params.min_component_budget);
+        comps
+    };
+
+    let use_components = seed_components.len() > 1;
+    if use_components {
+        gene_info!(
+            params.gene_name,
+            "Identified {} seed components ({} connected)",
+            seed_components.len(),
+            seed_components
+                .iter()
+                .filter(|c| c.has_connected_seeds)
+                .count()
+        );
+    }
+
     // The graph accumulates across threshold steps. Start from the seed;
     // at each lower threshold, re-extend from previously-terminal nodes
     // that may now have qualifying successors.
     let mut current_graph = seed_graph;
     let mut current_node_lookup = node_lookup;
 
-    for (step_idx, min_count) in coverage_thresholds.iter().enumerate() {
-        let start = std::time::Instant::now();
-        gene_info!(
-            params.gene_name,
-            "Extending graph with minimum kmer count {} (step {}/{})",
-            min_count,
-            step_idx + 1,
-            coverage_thresholds.len()
-        );
-
-        // For steps after the first, prepare the existing graph for
-        // re-extension at the lower threshold
-        if step_idx > 0 {
-            graph::prepare_for_lower_threshold(&mut current_graph, kmer_counts, params);
-        }
-
-        let (graph_after_fwd, node_lookup_after_fwd, fwd_found_end) = graph::extend_graph(
-            current_graph,
-            current_node_lookup,
-            kmer_counts,
-            min_count,
-            params,
-            max_num_nodes,
-        )?;
-
-        // Only run reverse extension if forward extension didn't already
-        // reach end nodes. When forward succeeds, reverse extension would
-        // just consume the node budget with off-target reverse seeds.
-        let (graph_result, final_node_lookup) = if fwd_found_end {
-            debug!("Forward extension found end nodes, skipping reverse extension");
-            (graph_after_fwd, node_lookup_after_fwd)
+    // Component-aware extension: iterate components in priority order.
+    // For single-component case, skip masking overhead.
+    let component_iter: Vec<(Option<usize>, Option<std::collections::HashSet<NodeIndex>>)> =
+        if use_components {
+            seed_components
+                .iter()
+                .enumerate()
+                .filter(|(_i, comp)| {
+                    // Skip non-connected components if ConnectedOnly
+                    if params.stopping_criteria == StoppingCriteria::ConnectedOnly
+                        && !comp.has_connected_seeds
+                    {
+                        return false;
+                    }
+                    true
+                })
+                .map(|(i, comp)| {
+                    let seeds: std::collections::HashSet<NodeIndex> =
+                        comp.all_seeds().into_iter().collect();
+                    (Some(i), Some(seeds))
+                })
+                .collect()
         } else {
-            graph::extend_graph_reverse(
-                graph_after_fwd,
-                node_lookup_after_fwd,
-                kmer_counts,
-                min_count,
-                params,
-                max_num_nodes,
-            )?
+            // Single component or no components: one iteration, no masking
+            vec![(None, None)]
         };
 
-        graph::log_extended_graph_diagnostics(&graph_result, kmer_counts);
+    let mut found_product = false;
 
-        debug!("  Final extension statistics:");
-        graph::summarize_extension(&graph_result, "    ");
-        debug!(
-            "  There are {} start nodes with edges",
-            graph::get_start_nodes(&graph_result).len()
-        );
-        debug!(
-            "  There are {} end nodes with edges",
-            graph::get_end_nodes(&graph_result).len()
-        );
-
-        if dump_graph || log::log_enabled!(log::Level::Trace) {
-            let dot_string = write_annotated_dot(&graph_result, kmer_counts);
-            let file_name = format!(
-                "{}{}_{}_{}.dot",
-                output_directory, sample_name, params.gene_name, min_count
-            );
-            trace!("Writing dot file {}", file_name);
-            let mut file = File::create(&file_name).context("Unable to create dot file")?;
-            file.write_all(dot_string.as_bytes())
-                .context("Unable to write dot file")?;
-        }
-
-        gene_info!(
-            params.gene_name,
-            "Done. Time to extend graph: {}",
-            format_duration(start.elapsed())
-        );
-
-        // Prune and find paths on a copy — the original graph is kept for
-        // incremental extension at the next threshold step
-        let mut pruned_graph = graph_result.clone();
-        let start = std::time::Instant::now();
-        gene_info!(params.gene_name, "Pruning the assembly graph...");
-
-        pruning::remove_low_coverage_tips(
-            &mut pruned_graph,
-            &kmer_counts.get_k(),
-            params.tip_coverage_fraction,
-        );
-        pruning::reachability_pruning(&mut pruned_graph);
-
-        // Annotate edges with coverage ratios for scoring
-        graph::annotate_coverage_ratios(&mut pruned_graph);
-
-        debug!(
-            "    There are {} nodes in the graph",
-            pruned_graph.node_count()
-        );
-        debug!(
-            "    There are {} edges in the graph",
-            pruned_graph.edge_count()
-        );
-        debug!(
-            "    There are {} start nodes",
-            graph::get_start_nodes(&pruned_graph).len()
-        );
-        debug!(
-            "    There are {} end nodes",
-            graph::get_end_nodes(&pruned_graph).len()
-        );
-
-        gene_info!(
-            params.gene_name,
-            "Done. Time to prune graph: {}",
-            format_duration(start.elapsed())
-        );
-
-        // Thread reads through the pruned graph (if available)
-        let threading_annotations = if let Some(ref reads) = gene_reads {
-            if !reads.is_empty() {
-                let start = std::time::Instant::now();
+    'component_loop: for (comp_idx, comp_seeds) in &component_iter {
+        // Mask other components' seeds
+        let saved_states = if let Some(seeds) = comp_seeds {
+            if let Some(idx) = comp_idx {
                 gene_info!(
                     params.gene_name,
-                    "Threading reads through assembly graph..."
+                    "Extending component {} (priority {:.0}, {} seeds, budget {}, connected: {})",
+                    idx,
+                    seed_components[*idx].priority_score,
+                    seed_components[*idx].seed_count(),
+                    seed_components[*idx].node_budget,
+                    seed_components[*idx].has_connected_seeds
                 );
-                let has_paired = reads.iter().any(|r| r.mate != crate::io::Mate::Unpaired);
-                let ann = if has_paired {
-                    threading::thread_reads_paired(&pruned_graph, reads, kmer_counts.get_k())
-                } else {
-                    threading::thread_reads(&pruned_graph, reads, kmer_counts.get_k())
-                };
-                let supported_edges = ann
-                    .edge_support
-                    .values()
-                    .filter(|s| s.read_support_total > 0)
-                    .count();
-                gene_info!(
-                    params.gene_name,
-                    "Threading: {}/{} edges have read support, {} branch links, {} paired links. Time: {}",
-                    supported_edges,
-                    pruned_graph.edge_count(),
-                    ann.branch_links.len(),
-                    ann.paired_links.len(),
-                    format_duration(start.elapsed())
-                );
-                Some(ann)
-            } else {
-                None
             }
+            Some(graph::mask_other_components(&mut current_graph, seeds))
         } else {
             None
         };
 
-        let start = std::time::Instant::now();
-        gene_info!(
-            params.gene_name,
-            "Traversing the assembly graph to find paths from forward to reverse primers..."
-        );
+        let component_budget = comp_idx.map(|i| seed_components[i].node_budget);
 
-        // Resolve bubbles using read support (if threading available)
-        let edge_preferences = threading_annotations
-            .as_ref()
-            .map(|ann| bubble::resolve_bubbles(&pruned_graph, ann));
-
-        let all_paths = paths::get_assembly_paths(
-            &pruned_graph,
-            kmer_counts,
-            params,
-            edge_preferences.as_ref(),
-        );
-
-        debug!(
-            "    There are {} paths from forward to reverse primers in the graph",
-            all_paths.len()
-        );
-        gene_info!(
-            params.gene_name,
-            "Done. Time to traverse graph: {}",
-            format_duration(start.elapsed())
-        );
-
-        if all_paths.is_empty() {
-            gene_info!(
-                params.gene_name,
-                "Extending graph with minimum kmer count {} failed to generate a PCR product.",
-                min_count
-            );
-        } else {
-            gene_info!(params.gene_name, "Generating sequences from paths...");
-
-            let (records, new_index) = paths::generate_sequences_from_paths(
-                &pruned_graph,
-                all_paths,
-                kmer_counts,
-                sample_name,
-                params,
-                amplicon_index,
-                threading_annotations.as_ref(),
-            )?;
-            amplicon_index = new_index;
-
-            if records.is_empty() {
-                gene_info!(params.gene_name, "Did not obtain PCR product.");
-            } else {
-                gene_info!(
-                    params.gene_name,
-                    "Obtained {} PCR product(s) at threshold {}.",
-                    records.len(),
-                    min_count
-                );
-                assembly_records_all.extend(records);
-                break;
-            }
+        // Reset graph state for this component's threshold sweep
+        // (first component starts from seed graph state; subsequent
+        // components need terminal flags reset on their seeds)
+        if comp_idx.is_some() && *comp_idx != Some(0) {
+            graph::prepare_for_lower_threshold(&mut current_graph, kmer_counts, params);
         }
 
-        // Use the node lookup from the (unpruned) graph for the next step
-        current_node_lookup = final_node_lookup;
-        current_graph = graph_result;
-    }
+        for (step_idx, min_count) in coverage_thresholds.iter().enumerate() {
+            let start = std::time::Instant::now();
+            gene_info!(
+                params.gene_name,
+                "Extending graph with minimum kmer count {} (step {}/{})",
+                min_count,
+                step_idx + 1,
+                coverage_thresholds.len()
+            );
+
+            // For steps after the first, prepare the existing graph for
+            // re-extension at the lower threshold
+            if step_idx > 0 {
+                graph::prepare_for_lower_threshold(&mut current_graph, kmer_counts, params);
+            }
+
+            let (graph_after_fwd, node_lookup_after_fwd, fwd_found_end) = graph::extend_graph(
+                current_graph,
+                current_node_lookup,
+                kmer_counts,
+                min_count,
+                params,
+                max_num_nodes,
+                component_budget,
+            )?;
+
+            // Only run reverse extension if forward extension didn't already
+            // reach end nodes. When forward succeeds, reverse extension would
+            // just consume the node budget with off-target reverse seeds.
+            let (graph_result, final_node_lookup) = if fwd_found_end {
+                debug!("Forward extension found end nodes, skipping reverse extension");
+                (graph_after_fwd, node_lookup_after_fwd)
+            } else {
+                graph::extend_graph_reverse(
+                    graph_after_fwd,
+                    node_lookup_after_fwd,
+                    kmer_counts,
+                    min_count,
+                    params,
+                    max_num_nodes,
+                    component_budget,
+                )?
+            };
+
+            graph::log_extended_graph_diagnostics(&graph_result, kmer_counts);
+
+            debug!("  Final extension statistics:");
+            graph::summarize_extension(&graph_result, "    ");
+            debug!(
+                "  There are {} start nodes with edges",
+                graph::get_start_nodes(&graph_result).len()
+            );
+            debug!(
+                "  There are {} end nodes with edges",
+                graph::get_end_nodes(&graph_result).len()
+            );
+
+            if dump_graph || log::log_enabled!(log::Level::Trace) {
+                let dot_string = write_annotated_dot(&graph_result, kmer_counts);
+                let file_name = format!(
+                    "{}{}_{}_{}.dot",
+                    output_directory, sample_name, params.gene_name, min_count
+                );
+                trace!("Writing dot file {}", file_name);
+                let mut file = File::create(&file_name).context("Unable to create dot file")?;
+                file.write_all(dot_string.as_bytes())
+                    .context("Unable to write dot file")?;
+            }
+
+            gene_info!(
+                params.gene_name,
+                "Done. Time to extend graph: {}",
+                format_duration(start.elapsed())
+            );
+
+            // Prune and find paths on a copy — the original graph is kept for
+            // incremental extension at the next threshold step
+            let mut pruned_graph = graph_result.clone();
+            let start = std::time::Instant::now();
+            gene_info!(params.gene_name, "Pruning the assembly graph...");
+
+            pruning::remove_low_coverage_tips(
+                &mut pruned_graph,
+                &kmer_counts.get_k(),
+                params.tip_coverage_fraction,
+            );
+            pruning::reachability_pruning(&mut pruned_graph);
+
+            // Annotate edges with coverage ratios for scoring
+            graph::annotate_coverage_ratios(&mut pruned_graph);
+
+            debug!(
+                "    There are {} nodes in the graph",
+                pruned_graph.node_count()
+            );
+            debug!(
+                "    There are {} edges in the graph",
+                pruned_graph.edge_count()
+            );
+            debug!(
+                "    There are {} start nodes",
+                graph::get_start_nodes(&pruned_graph).len()
+            );
+            debug!(
+                "    There are {} end nodes",
+                graph::get_end_nodes(&pruned_graph).len()
+            );
+
+            gene_info!(
+                params.gene_name,
+                "Done. Time to prune graph: {}",
+                format_duration(start.elapsed())
+            );
+
+            // Thread reads through the pruned graph (if available)
+            let threading_annotations = if let Some(ref reads) = gene_reads {
+                if !reads.is_empty() {
+                    let start = std::time::Instant::now();
+                    gene_info!(
+                        params.gene_name,
+                        "Threading reads through assembly graph..."
+                    );
+                    let has_paired = reads.iter().any(|r| r.mate != crate::io::Mate::Unpaired);
+                    let ann = if has_paired {
+                        threading::thread_reads_paired(&pruned_graph, reads, kmer_counts.get_k())
+                    } else {
+                        threading::thread_reads(&pruned_graph, reads, kmer_counts.get_k())
+                    };
+                    let supported_edges = ann
+                        .edge_support
+                        .values()
+                        .filter(|s| s.read_support_total > 0)
+                        .count();
+                    gene_info!(
+                        params.gene_name,
+                        "Threading: {}/{} edges have read support, {} branch links, {} paired links. Time: {}",
+                        supported_edges,
+                        pruned_graph.edge_count(),
+                        ann.branch_links.len(),
+                        ann.paired_links.len(),
+                        format_duration(start.elapsed())
+                    );
+                    Some(ann)
+                } else {
+                    None
+                }
+            } else {
+                None
+            };
+
+            let start = std::time::Instant::now();
+            gene_info!(
+                params.gene_name,
+                "Traversing the assembly graph to find paths from forward to reverse primers..."
+            );
+
+            // Resolve bubbles using read support (if threading available)
+            let edge_preferences = threading_annotations
+                .as_ref()
+                .map(|ann| bubble::resolve_bubbles(&pruned_graph, ann));
+
+            let all_paths = paths::get_assembly_paths(
+                &pruned_graph,
+                kmer_counts,
+                params,
+                edge_preferences.as_ref(),
+            );
+
+            debug!(
+                "    There are {} paths from forward to reverse primers in the graph",
+                all_paths.len()
+            );
+            gene_info!(
+                params.gene_name,
+                "Done. Time to traverse graph: {}",
+                format_duration(start.elapsed())
+            );
+
+            if all_paths.is_empty() {
+                gene_info!(
+                    params.gene_name,
+                    "Extending graph with minimum kmer count {} failed to generate a PCR product.",
+                    min_count
+                );
+            } else {
+                gene_info!(params.gene_name, "Generating sequences from paths...");
+
+                let (records, new_index) = paths::generate_sequences_from_paths(
+                    &pruned_graph,
+                    all_paths,
+                    kmer_counts,
+                    sample_name,
+                    params,
+                    amplicon_index,
+                    threading_annotations.as_ref(),
+                )?;
+                amplicon_index = new_index;
+
+                if records.is_empty() {
+                    gene_info!(params.gene_name, "Did not obtain PCR product.");
+                } else {
+                    gene_info!(
+                        params.gene_name,
+                        "Obtained {} PCR product(s) at threshold {}.",
+                        records.len(),
+                        min_count
+                    );
+                    assembly_records_all.extend(records);
+                    found_product = true;
+                }
+            }
+
+            // Use the node lookup from the (unpruned) graph for the next step
+            current_node_lookup = final_node_lookup;
+            current_graph = graph_result;
+
+            if found_product {
+                break; // break threshold loop for this component
+            }
+        } // end threshold loop
+
+        // Unmask other components' seeds
+        if let Some(ref saved) = saved_states {
+            graph::unmask_nodes(&mut current_graph, saved);
+        }
+
+        // Check stopping criteria
+        if found_product && params.stopping_criteria == StoppingCriteria::FirstProduct {
+            gene_info!(
+                params.gene_name,
+                "Product found, stopping (--stopping-criteria first-product)"
+            );
+            break 'component_loop;
+        }
+    } // end component loop
 
     debug!(
         "      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large differences in value can indicate non-specific binding of one of the primers.",
@@ -1411,6 +1511,7 @@ mod tests {
             &min_count,
             &params,
             graph::DEFAULT_MAX_NUM_NODES,
+            None,
         )
         .unwrap();
 
@@ -1421,6 +1522,7 @@ mod tests {
             &min_count,
             &params,
             graph::DEFAULT_MAX_NUM_NODES,
+            None,
         )
         .unwrap();
 
