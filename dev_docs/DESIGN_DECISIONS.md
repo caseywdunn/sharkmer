@@ -867,11 +867,35 @@ them together. This means:
 - **The "just right" threshold** produces a graph with a clear, high-
   coverage path from start to end. This path scores best and is emitted.
 
-The threshold sequence itself is unchanged: start at
-`primer_count / COVERAGE_MULTIPLIER` and step down to `min_count` in
-`COVERAGE_STEPS` steps. These constants may need tuning based on Phase 3
+The threshold sequence starts at
+`primer_count / COVERAGE_MULTIPLIER` and steps down to `min_count` in
+`COVERAGE_STEPS` steps. These constants may need tuning based on
 benchmarks, but the framework is robust to the exact values because all
 threshold levels contribute candidates rather than short-circuiting.
+
+**Which primer count statistic to use matters.** Extension thresholds
+and seed eval thresholds serve different purposes and need different
+primer count statistics:
+
+- **Extension thresholds use the max** primer kmer count (`max` of
+  forward and reverse minimums). Starting high keeps the graph focused on
+  confident kmers first, avoiding premature node budget exhaustion. If
+  the initial threshold is too low, the graph extends aggressively into
+  low-coverage regions and hits the 50K node budget before connecting
+  forward and reverse primer sites.
+
+- **Seed eval threshold uses the median** primer kmer count. Degenerate
+  primers (ambiguity codes H, D, Y, N, R) generate off-target genomic
+  matches that inflate the max far above real amplicon coverage. Using
+  max for seed eval makes the threshold too stringent: real seeds cannot
+  extend even a single node, and every seed is falsely abandoned. The
+  median is robust to these outliers. See `failure_analysis.md` "Root
+  cause: seed eval threshold" for the diagnostic evidence.
+
+This split was validated by benchmark regression: using median for both
+caused 41 gene regressions (graphs exhausting node budget), while using
+max for both caused seed eval failures for degenerate primers. The split
+approach recovers all genes from both failure modes.
 
 **Why not use a single adaptive threshold?** Some assemblers (e.g.,
 MEGAHIT) use iterative approaches that automatically find the right

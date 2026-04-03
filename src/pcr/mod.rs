@@ -473,33 +473,33 @@ pub fn do_pcr(
 
     let max_forward_count = forward_primer_kmers.get_max_count();
     let max_reverse_count = reverse_primer_kmers.get_max_count();
+    let max_primer_count = max_forward_count.min(max_reverse_count);
 
-    // Use median primer kmer count for coverage threshold computation.
-    // The max count is inflated by degenerate primers matching off-target
-    // genomic regions, making the threshold too stringent for real seeds.
-    // The median is more robust to these outliers.
     let median_forward_count = forward_primer_kmers.get_median_count();
     let median_reverse_count = reverse_primer_kmers.get_median_count();
-    let primer_count = median_forward_count.min(median_reverse_count);
+    let median_primer_count = median_forward_count.min(median_reverse_count);
 
     gene_info!(
         params.gene_name,
         "Observed primer coverage: median {}, max fwd {}, max rev {}. User specified min-count is {}",
-        primer_count,
+        median_primer_count,
         max_forward_count,
         max_reverse_count,
         params.min_count
     );
 
-    let coverage_thresholds = compute_coverage_thresholds(primer_count, params.min_count);
+    // Graph extension thresholds: derived from max primer kmer count.
+    // Starting high ensures the graph is built from confident kmers first,
+    // then steps down to include lower-coverage regions.
+    let coverage_thresholds = compute_coverage_thresholds(max_primer_count, params.min_count);
     debug!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
-    // Evaluate seeds: bounded local exploration to filter off-target seeds.
-    // Uses the highest coverage threshold, derived from the median primer
-    // kmer count. This is more permissive than the old max-based threshold,
-    // allowing real seeds to extend even when off-target primer matches
-    // inflate the max count.
-    let seed_eval_threshold = coverage_thresholds[0];
+    // Seed eval threshold: use median primer kmer count instead of max.
+    // The max is inflated by degenerate primers matching off-target regions,
+    // making the threshold too stringent for real seeds. The median is more
+    // robust to outliers. This is separate from extension thresholds, which
+    // still use the max to maintain graph quality.
+    let seed_eval_threshold = compute_coverage_thresholds(median_primer_count, params.min_count)[0];
     seed_eval::evaluate_seeds(
         &mut seed_graph,
         &node_lookup,
