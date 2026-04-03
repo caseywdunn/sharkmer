@@ -23,7 +23,7 @@ const EXTENSION_EVALUATION_FREQUENCY: usize = 1_000;
 pub(super) const EXTENSION_EVALUATION_DEPTH: usize = 4;
 
 /// Default node budget — give up if the graph gets too large
-pub const DEFAULT_MAX_NUM_NODES: usize = 50_000;
+pub const DEFAULT_MAX_NUM_NODES: usize = 200_000;
 
 // HIGH_COVERAGE_RATIO_THRESHOLD is now read from params.high_coverage_ratio
 
@@ -426,7 +426,18 @@ pub(super) fn extend_graph(
     let mut median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
     let mut last_median_check: usize = 0;
 
-    while n_unvisited_nodes_in_graph(&graph) > 0 {
+    // Frontier queue: only unvisited nodes, avoids O(n) scan each iteration
+    let mut frontier: std::collections::VecDeque<NodeIndex> = graph
+        .node_indices()
+        .filter(|&n| !graph[n].visited)
+        .collect();
+
+    while let Some(node) = frontier.pop_front() {
+        // Node may have been visited since it was added to the frontier
+        if graph[node].visited {
+            continue;
+        }
+
         let n_nodes = graph.node_count();
 
         if n_nodes > max_num_nodes {
@@ -467,147 +478,143 @@ pub(super) fn extend_graph(
             summarize_extension(&graph, "    ");
         }
 
-        // Iterate over the nodes
-        let node_indices: Vec<_> = graph.node_indices().collect();
-        for node in node_indices {
-            if !(graph[node].visited) {
-                // Get the suffix of the kmer of the node
-                let sub_kmer = graph[node].sub_kmer;
+        {
+            // Get the suffix of the kmer of the node
+            let sub_kmer = graph[node].sub_kmer;
 
-                trace!(
-                    "  {} sub_kmer being extended for node {}.",
-                    crate::kmer::kmer_to_seq(&sub_kmer, &(kmer_counts.get_k() - 1)),
-                    node.index()
-                );
+            trace!(
+                "  {} sub_kmer being extended for node {}.",
+                crate::kmer::kmer_to_seq(&sub_kmer, &(kmer_counts.get_k() - 1)),
+                node.index()
+            );
 
-                // Get the kmers that could extend the node (at most 4, one per base)
-                let mut candidate_kmers: [Option<u64>; 4] = [None; 4];
-                let mut n_candidates = 0;
+            // Get the kmers that could extend the node (at most 4, one per base)
+            let mut candidate_kmers: [Option<u64>; 4] = [None; 4];
+            let mut n_candidates = 0;
 
-                for base in 0..4u64 {
-                    let kmer = (sub_kmer << 2) | base;
+            for base in 0..4u64 {
+                let kmer = (sub_kmer << 2) | base;
 
-                    // If the kmer is in the kmer_counts hash (either orientation)
-                    // and has count >= min_count, add it to the candidate kmers
-                    if let Some(count) = kmer_counts.get_canonical(&kmer)
-                        && count >= *min_count
-                    {
-                        candidate_kmers[n_candidates] = Some(kmer);
-                        n_candidates += 1;
-                    }
+                // If the kmer is in the kmer_counts hash (either orientation)
+                // and has count >= min_count, add it to the candidate kmers
+                if let Some(count) = kmer_counts.get_canonical(&kmer)
+                    && count >= *min_count
+                {
+                    candidate_kmers[n_candidates] = Some(kmer);
+                    n_candidates += 1;
                 }
+            }
 
-                trace!("There are {} candidate kmers for extension.", n_candidates);
+            trace!("There are {} candidate kmers for extension.", n_candidates);
 
-                // If there are no candidate kmers, the node is terminal
-                if n_candidates == 0 {
-                    trace!(
-                        "Marking node as terminal because there are no candidates for extension."
-                    );
+            // If there are no candidate kmers, the node is terminal
+            if n_candidates == 0 {
+                trace!("Marking node as terminal because there are no candidates for extension.");
+                graph[node].is_terminal = true;
+                graph[node].visited = true;
+                continue;
+            }
+
+            // Add new nodes if needed, and new edges
+            for kmer in candidate_kmers.iter().flatten() {
+                let suffix = kmer & suffix_mask;
+
+                // Check if the node extends by itself and mark it as terminal if it does
+                if suffix == sub_kmer {
                     graph[node].is_terminal = true;
                     graph[node].visited = true;
-                    continue;
+                    trace!("Node {} extends itself. Marking as terminal.", node.index());
+                    break;
                 }
 
-                // Add new nodes if needed, and new edges
-                for kmer in candidate_kmers.iter().flatten() {
-                    let suffix = kmer & suffix_mask;
+                // If the node with sub_kmer == suffix already exists, add an edge to the existing node
+                // Otherwise, create a new node with sub_kmer == suffix, and add an edge to the new node
 
-                    // Check if the node extends by itself and mark it as terminal if it does
-                    if suffix == sub_kmer {
-                        graph[node].is_terminal = true;
-                        graph[node].visited = true;
-                        trace!("Node {} extends itself. Marking as terminal.", node.index());
-                        break;
+                if let Some(&existing_node) = node_lookup.get(&suffix) {
+                    // Allow edges that would form cycles — cycles are
+                    // handled during path finding via bounded revisitation.
+                    // Only add the edge if it doesn't already exist.
+                    if graph.find_edge(node, existing_node).is_none() {
+                        let edge = get_dbedge(kmer, kmer_counts);
+                        graph.add_edge(node, existing_node, edge);
+                        if graph[existing_node].is_end {
+                            found_end_node = true;
+                            gene_info!(
+                                params.gene_name,
+                                "End node incorporated into graph, complete PCR product found."
+                            );
+                        }
+                    }
+                } else {
+                    let edge = get_dbedge(kmer, kmer_counts);
+                    let edge_count = edge.count;
+
+                    // Skip edges with count far above the median — they
+                    // likely lead into repetitive regions
+                    if (edge_count as f64) > (median_edge_count * params.high_coverage_ratio) {
+                        trace!(
+                            "Skipping high-coverage edge (count {} > {:.0} × {:.0} median). kmer {}",
+                            edge_count,
+                            params.high_coverage_ratio,
+                            median_edge_count,
+                            crate::kmer::kmer_to_seq(kmer, &kmer_counts.get_k()),
+                        );
+                        continue;
                     }
 
-                    // If the node with sub_kmer == suffix already exists, add an edge to the existing node
-                    // Otherwise, create a new node with sub_kmer == suffix, and add an edge to the new node
+                    let new_node = graph.add_node(DBNode {
+                        sub_kmer: suffix,
+                        is_start: false,
+                        is_end: false,
+                        is_terminal: false,
+                        visited: false,
+                    });
+                    node_lookup.insert(suffix, new_node);
 
-                    if let Some(&existing_node) = node_lookup.get(&suffix) {
-                        // Allow edges that would form cycles — cycles are
-                        // handled during path finding via bounded revisitation.
-                        // Only add the edge if it doesn't already exist.
-                        if graph.find_edge(node, existing_node).is_none() {
-                            let edge = get_dbedge(kmer, kmer_counts);
-                            graph.add_edge(node, existing_node, edge);
-                            if graph[existing_node].is_end {
-                                found_end_node = true;
-                                gene_info!(
-                                    params.gene_name,
-                                    "End node incorporated into graph, complete PCR product found."
-                                );
-                            }
-                        }
-                    } else {
-                        let edge = get_dbedge(kmer, kmer_counts);
-                        let edge_count = edge.count;
+                    graph.add_edge(node, new_node, edge);
 
-                        // Skip edges with count far above the median — they
-                        // likely lead into repetitive regions
-                        if (edge_count as f64) > (median_edge_count * params.high_coverage_ratio) {
-                            trace!(
-                                "Skipping high-coverage edge (count {} > {:.0} × {:.0} median). kmer {}",
-                                edge_count,
-                                params.high_coverage_ratio,
-                                median_edge_count,
-                                crate::kmer::kmer_to_seq(kmer, &kmer_counts.get_k()),
-                            );
-                            continue;
-                        }
+                    trace!(
+                        "Added sub_kmer {} for new node {} with edge kmer count {}.",
+                        crate::kmer::kmer_to_seq(&suffix, &(kmer_counts.get_k() - 1)),
+                        new_node.index(),
+                        edge_count
+                    );
 
-                        let new_node = graph.add_node(DBNode {
-                            sub_kmer: suffix,
-                            is_start: false,
-                            is_end: false,
-                            is_terminal: false,
-                            visited: false,
-                        });
-                        node_lookup.insert(suffix, new_node);
+                    // Check if the new node is max-length - k + 1 from a start node
+                    // If so, mark the new node as terminal
+                    let path_length = get_path_length(&graph, new_node)?;
 
-                        graph.add_edge(node, new_node, edge);
+                    // If the path length is None, the node is part of a cycle and is marked terminal.
+                    // If the path length is Some, is marked terminal if the path length is >= max-length - k + 1
+                    if let Some(path_length) = path_length {
+                        trace!("Path length is {}.", path_length);
 
-                        trace!(
-                            "Added sub_kmer {} for new node {} with edge kmer count {}.",
-                            crate::kmer::kmer_to_seq(&suffix, &(kmer_counts.get_k() - 1)),
-                            new_node.index(),
-                            edge_count
-                        );
-
-                        // Check if the new node is max-length - k + 1 from a start node
-                        // If so, mark the new node as terminal
-                        let path_length = get_path_length(&graph, new_node)?;
-
-                        // If the path length is None, the node is part of a cycle and is marked terminal.
-                        // If the path length is Some, is marked terminal if the path length is >= max-length - k + 1
-                        if let Some(path_length) = path_length {
-                            trace!("Path length is {}.", path_length);
-
-                            if path_length + kmer_counts.get_k() > params.max_length {
-                                graph[new_node].is_terminal = true;
-                                graph[new_node].visited = true;
-                                trace!(
-                                    "Marking new node {} as terminal because it exceeds max-length from start.",
-                                    new_node.index()
-                                );
-                            }
-                        } else {
+                        if path_length + kmer_counts.get_k() > params.max_length {
                             graph[new_node].is_terminal = true;
+                            graph[new_node].visited = true;
                             trace!(
-                                "Marking new node {} as terminal because it is part of a cycle.",
+                                "Marking new node {} as terminal because it exceeds max-length from start.",
                                 new_node.index()
                             );
+                        } else {
+                            frontier.push_back(new_node);
                         }
+                    } else {
+                        graph[new_node].is_terminal = true;
+                        trace!(
+                            "Marking new node {} as terminal because it is part of a cycle.",
+                            new_node.index()
+                        );
                     }
                 }
-                graph[node].visited = true;
-
-                trace!(
-                    "There are now {} unvisited and {} non-terminal nodes in the graph.",
-                    n_unvisited_nodes_in_graph(&graph),
-                    n_nonterminal_nodes_in_graph(&graph)
-                );
             }
+            graph[node].visited = true;
+
+            trace!(
+                "There are now {} unvisited and {} non-terminal nodes in the graph.",
+                n_unvisited_nodes_in_graph(&graph),
+                n_nonterminal_nodes_in_graph(&graph)
+            );
         }
     }
 
@@ -678,16 +685,17 @@ pub(super) fn extend_graph_reverse(
             graph[node].visited = false;
         }
     }
-    loop {
-        // Find unvisited nodes that should be reverse-extended.
-        // These are nodes that are either end nodes or were created by reverse extension.
-        let unvisited: Vec<NodeIndex> = graph
-            .node_indices()
-            .filter(|&node| !graph[node].visited)
-            .collect();
 
-        if unvisited.is_empty() {
-            break;
+    // Frontier queue: only unvisited nodes, avoids O(n) scan each iteration
+    let mut frontier: std::collections::VecDeque<NodeIndex> = graph
+        .node_indices()
+        .filter(|&n| !graph[n].visited)
+        .collect();
+
+    while let Some(node) = frontier.pop_front() {
+        // Node may have been visited since it was added to the frontier
+        if graph[node].visited {
+            continue;
         }
 
         let n_nodes = graph.node_count();
@@ -729,12 +737,7 @@ pub(super) fn extend_graph_reverse(
             summarize_extension(&graph, "    ");
         }
 
-        for node in unvisited {
-            // Skip if already visited (may have been visited during this iteration)
-            if graph[node].visited {
-                continue;
-            }
-
+        {
             let sub_kmer = graph[node].sub_kmer;
 
             trace!(
@@ -845,6 +848,8 @@ pub(super) fn extend_graph_reverse(
                                     "Marking new reverse node {} as terminal (exceeds max-length from end).",
                                     new_node.index()
                                 );
+                            } else {
+                                frontier.push_back(new_node);
                             }
                         }
                         Ok(None) => {
@@ -859,6 +864,7 @@ pub(super) fn extend_graph_reverse(
                             // reverse extension creates a node whose only outgoing
                             // neighbor was already visited and is not an end node.
                             // Leave it non-terminal so it continues extending in reverse.
+                            frontier.push_back(new_node);
                         }
                     }
                 }
