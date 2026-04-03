@@ -619,11 +619,11 @@ connect. Four related changes, implemented as ordered subtasks:
 
 4. **Configurable stopping criteria.** After each component's extension
    completes, attempt path finding. If a product is found, apply the
-   stopping criterion. Exposed as `--extension-strategy` with presets:
+   stopping criterion. Exposed as `--stopping-criteria` with presets:
    - `first-product` (new default): stop after first product found
-   - `all-seeds`: extend all components (current behavior, for
+   - `all-components`: extend all components (current behavior, for
      benchmarking/debugging)
-   - `connected-first`: extend connected-seed components only, skip
+   - `connected-only`: extend connected-seed components only, skip
      the rest if product found
 
 **Rationale:** Benchmark analysis shows that seed eval correctly
@@ -636,7 +636,7 @@ degenerate primers: same pattern.
 - [ ] Implement per-component node budgets
 - [ ] Implement depth-first per-component extension
 - [ ] Implement component ranking after seed eval
-- [ ] Implement `--extension-strategy` with `first-product` default
+- [ ] Implement `--stopping-criteria` with `first-product` default
 - [ ] Run benchmarks: compare recovery and runtime vs current behavior
 
 ### Validation
