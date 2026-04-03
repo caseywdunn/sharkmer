@@ -252,10 +252,10 @@ pub const DEFAULT_MIN_COMPONENT_BUDGET: usize = 20_000;
 /// Controls when graph extension stops after finding products.
 #[derive(Clone, Debug, Default, clap::ValueEnum, PartialEq)]
 pub enum StoppingCriteria {
-    /// Extend all components (current behavior)
-    #[default]
+    /// Extend all components
     AllComponents,
     /// Stop after the first component produces a valid product
+    #[default]
     FirstProduct,
     /// Only extend components where seed eval found connected seeds
     ConnectedOnly,
@@ -610,13 +610,10 @@ pub fn do_pcr(
             None
         };
 
-        // Per-component budgets only apply when using component-aware stopping.
-        // With AllComponents, use the global budget only (no per-component limit).
-        let component_budget = if params.stopping_criteria == StoppingCriteria::AllComponents {
-            None
-        } else {
-            comp_idx.map(|i| seed_components[i].node_budget)
-        };
+        // Per-component budgets apply whenever there are multiple components,
+        // regardless of stopping criteria. This prevents any single off-target
+        // component from consuming the entire global budget.
+        let component_budget = comp_idx.map(|i| seed_components[i].node_budget);
 
         // Reset graph state for this component's threshold sweep
         // (first component starts from seed graph state; subsequent

@@ -279,7 +279,7 @@ pub(crate) struct Args {
     /// When to stop extending graph components after finding products
     #[arg(
         long,
-        default_value = "all-components",
+        default_value = "first-product",
         value_enum,
         help_heading = "PCR"
     )]
