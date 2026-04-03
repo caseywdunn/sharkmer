@@ -813,3 +813,28 @@ about, and debug: each threshold produces a concrete graph that can be
 visualized with `--dump-graph`. If benchmarks show that the multi-threshold
 approach misses cases that an adaptive threshold would catch, this can be
 revisited.
+
+### Node budget sizing and extension cost model
+
+**Extension cost is O(n²), not O(n).** The `extend_graph()` loop
+iterates all node indices each pass to find unvisited nodes, making the
+cost of adding n nodes roughly proportional to n². This means doubling
+the node budget quadruples runtime, not doubles it. Benchmark evidence
+(commit 5ed7445, 2026-04-03): raising the global budget from 50K to
+200K (4×) increased Agalma elegans runtime from 22s to 347s (~16×,
+consistent with 4² = 16).
+
+**Implication for budget defaults.** The O(n²) cost makes large global
+budgets impractical. The per-component architecture (#112) provides
+the right solution: each component gets a moderate budget (default
+20K via `--min-component-budget`), and the global `--max-nodes` (50K)
+is a backstop. This bounds the worst case per component while allowing
+multiple components to collectively use more than 50K nodes across a
+gene (since each component's 20K is independent).
+
+**Future optimization.** The O(n²) bottleneck is in the unvisited-node
+scan, not in the extension logic itself. Maintaining a frontier queue
+of unvisited nodes (instead of scanning `graph.node_indices()` each
+iteration) would make extension O(n) and remove the budget sensitivity.
+This is a targeted optimization that doesn't require architectural
+changes — just replacing the inner loop with a queue drain.
