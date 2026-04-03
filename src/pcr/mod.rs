@@ -261,6 +261,14 @@ pub enum StoppingCriteria {
     AllComponents,
 }
 
+/// Result of running in silico PCR for a single gene.
+pub struct PcrOutcome {
+    /// FASTA records of recovered products (empty if none found)
+    pub records: Vec<bio::io::fasta::Record>,
+    /// Short description of why no product was found (None if successful)
+    pub failure_reason: Option<String>,
+}
+
 /// Validate a primer pair and return a list of (error, suggestion) pairs.
 /// An empty list means the primer is valid.
 pub fn validate_pcr_params(params: &PCRParams) -> Vec<(String, String)> {
@@ -404,7 +412,7 @@ pub fn do_pcr(
     reads: Option<&[crate::io::ReadRecord]>,
     retained_reads: &[&str],
     max_num_nodes: usize,
-) -> Result<Vec<bio::io::fasta::Record>> {
+) -> Result<PcrOutcome> {
     gene_info!(params.gene_name, "Running PCR");
 
     gene_info!(params.gene_name, "Preprocessing primers");
@@ -420,7 +428,10 @@ pub fn do_pcr(
             params.gene_name,
             "Suggested actions: optimize primer sequence, or increase the number of reads."
         );
-        return Ok(Vec::new());
+        return Ok(PcrOutcome {
+            records: Vec::new(),
+            failure_reason: Some("forward primer not found".to_string()),
+        });
     }
 
     if reverse_primer_kmers.is_empty() {
@@ -432,7 +443,10 @@ pub fn do_pcr(
             params.gene_name,
             "Suggested actions: optimize primer sequence, or increase the number of reads."
         );
-        return Ok(Vec::new());
+        return Ok(PcrOutcome {
+            records: Vec::new(),
+            failure_reason: Some("reverse primer not found".to_string()),
+        });
     }
 
     // Filter reads to those relevant to this gene (if reads available)
@@ -590,6 +604,13 @@ pub fn do_pcr(
             vec![(None, None)]
         };
 
+    // Track the most informative failure reason across all components
+    let mut failure_reason: Option<String> = if seed_eval_result.seed_metrics.is_empty() {
+        Some("all seeds abandoned".to_string())
+    } else {
+        Some("no path found".to_string())
+    };
+
     'component_loop: for (comp_idx, comp_seeds) in &component_iter {
         let mut component_found_product = false;
         // Mask other components' seeds
@@ -665,6 +686,13 @@ pub fn do_pcr(
                     component_budget,
                 )?
             };
+
+            // Track if budget was the limiting factor
+            if graph_result.node_count() >= max_num_nodes
+                || component_budget.is_some_and(|b| graph_result.node_count() >= b)
+            {
+                failure_reason = Some("node budget exceeded".to_string());
+            }
 
             graph::log_extended_graph_diagnostics(&graph_result, kmer_counts);
 
@@ -831,6 +859,7 @@ pub fn do_pcr(
                     );
                     assembly_records_all.extend(records);
                     component_found_product = true;
+                    failure_reason = None;
                 }
             }
 
@@ -890,7 +919,10 @@ pub fn do_pcr(
             "  - The primers may have non-specific binding and are not close enough to generate a product. Consider increasing the primer trim length from the default to create a more specific primer."
         );
 
-        return Ok(Vec::new());
+        return Ok(PcrOutcome {
+            records: Vec::new(),
+            failure_reason,
+        });
     }
 
     let records = paths::sort_and_deduplicate(assembly_records_all, params);
@@ -923,7 +955,10 @@ pub fn do_pcr(
         })
         .collect();
 
-    Ok(records)
+    Ok(PcrOutcome {
+        records,
+        failure_reason: None,
+    })
 }
 
 /// Write an annotated DOT file with node and edge attributes for visualization.

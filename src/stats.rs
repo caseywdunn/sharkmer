@@ -18,6 +18,8 @@ pub(crate) struct PcrGeneResult {
     pub(crate) product_lengths: Vec<usize>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) output_file: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) failure_reason: Option<String>,
 }
 
 /// Structured run statistics, serialized as YAML.
@@ -108,17 +110,18 @@ pub(crate) fn run_pcr(
 
     // Write output files sequentially to maintain deterministic order
     for (pcr_params, fasta_result) in pcr_fasta_results {
-        let fasta = fasta_result?;
+        let outcome = fasta_result?;
 
-        if !fasta.is_empty() {
+        if !outcome.records.is_empty() {
             let fasta_path = format!("{}{}_{}.fasta", directory, sample, pcr_params.gene_name);
             warn_if_exists(&fasta_path);
             let mut file = std::fs::File::create(&fasta_path)
                 .with_context(|| format!("Failed to create FASTA file: {}", fasta_path))?;
 
-            let product_lengths: Vec<usize> = fasta.iter().map(|r| r.seq().len()).collect();
+            let product_lengths: Vec<usize> =
+                outcome.records.iter().map(|r| r.seq().len()).collect();
 
-            for record in fasta.iter() {
+            for record in outcome.records.iter() {
                 write_fasta_record(&mut file, record).context("Failed to write FASTA record")?;
             }
 
@@ -127,7 +130,8 @@ pub(crate) fn run_pcr(
                 status: "success".to_string(),
                 n_products: product_lengths.len(),
                 product_lengths,
-                output_file: Some(fasta_path),
+                output_file: None,
+                failure_reason: None,
             });
         } else {
             pcr_results.push(PcrGeneResult {
@@ -136,6 +140,7 @@ pub(crate) fn run_pcr(
                 n_products: 0,
                 product_lengths: Vec::new(),
                 output_file: None,
+                failure_reason: outcome.failure_reason,
             });
         }
     }
@@ -162,7 +167,14 @@ pub(crate) fn run_pcr(
                 lengths.join(", ")
             );
         } else {
-            warn!("  {} {} (no products)", sym_fail, result.gene_name);
+            if let Some(ref reason) = result.failure_reason {
+                warn!(
+                    "  {} {} (no products, {})",
+                    sym_fail, result.gene_name, reason
+                );
+            } else {
+                warn!("  {} {} (no products)", sym_fail, result.gene_name);
+            }
         }
     }
 
