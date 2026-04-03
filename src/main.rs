@@ -45,7 +45,7 @@ fn main() -> Result<()> {
         p.high_coverage_ratio = args.high_coverage_ratio;
         p.tip_coverage_fraction = args.tip_coverage_fraction;
         p.stopping_criteria = args.stopping_criteria.clone();
-        p.min_component_budget = args.min_component_budget;
+        p.min_component_budget = args.node_budget_component;
     }
 
     // Handle --validate-panels (prints and exits)
@@ -160,7 +160,7 @@ fn main() -> Result<()> {
         show_progress,
         threading_reads.as_deref(),
         &state.retained_reads,
-        args.max_nodes,
+        args.node_budget_global,
     )?;
 
     // Build and write run statistics
