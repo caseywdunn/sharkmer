@@ -590,9 +590,8 @@ pub fn do_pcr(
             vec![(None, None)]
         };
 
-    let mut found_product = false;
-
     'component_loop: for (comp_idx, comp_seeds) in &component_iter {
+        let mut component_found_product = false;
         // Mask other components' seeds
         let saved_states = if let Some(seeds) = comp_seeds {
             if let Some(idx) = comp_idx {
@@ -611,7 +610,13 @@ pub fn do_pcr(
             None
         };
 
-        let component_budget = comp_idx.map(|i| seed_components[i].node_budget);
+        // Per-component budgets only apply when using component-aware stopping.
+        // With AllComponents, use the global budget only (no per-component limit).
+        let component_budget = if params.stopping_criteria == StoppingCriteria::AllComponents {
+            None
+        } else {
+            comp_idx.map(|i| seed_components[i].node_budget)
+        };
 
         // Reset graph state for this component's threshold sweep
         // (first component starts from seed graph state; subsequent
@@ -828,7 +833,7 @@ pub fn do_pcr(
                         min_count
                     );
                     assembly_records_all.extend(records);
-                    found_product = true;
+                    component_found_product = true;
                 }
             }
 
@@ -836,7 +841,7 @@ pub fn do_pcr(
             current_node_lookup = final_node_lookup;
             current_graph = graph_result;
 
-            if found_product {
+            if component_found_product {
                 break; // break threshold loop for this component
             }
         } // end threshold loop
@@ -847,7 +852,7 @@ pub fn do_pcr(
         }
 
         // Check stopping criteria
-        if found_product && params.stopping_criteria == StoppingCriteria::FirstProduct {
+        if component_found_product && params.stopping_criteria == StoppingCriteria::FirstProduct {
             gene_info!(
                 params.gene_name,
                 "Product found, stopping (--stopping-criteria first-product)"
