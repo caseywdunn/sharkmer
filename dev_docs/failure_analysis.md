@@ -6,13 +6,82 @@ parameter tuning, and user documentation.
 
 ## Failure categories
 
-Failures fall into three groups: limitations of the target sequence,
-limitations of the input data, and limitations of the method.
+Failures fall into four groups: primer design issues, limitations of the
+target sequence, limitations of the input data, and limitations of the
+method.
+
+### Primer limitations
+
+These are failures caused by the primer sequences themselves, either
+because they don't match the target or because their properties create
+problems for the algorithm.
+
+#### Primer does not match the target
+
+The primer has too many mismatches to the target species' sequence to
+be found. This includes primers designed for a different clade (e.g.,
+Drosophila-specific primers applied to Lepidoptera) and primers that
+bind a divergent region. The `mismatches` parameter (default 2) sets
+the tolerance, but mismatches near the 3' end of the primer are more
+damaging than internal mismatches because they block polymerase
+extension in wet-lab PCR and reduce kmer matching specificity in sPCR.
+
+**Examples:** Heliconius CO2-v2 (7mm fwd, Drosophila-specific);
+Agalma EF1A (3 consecutive 3' mm in fwd); Drosophila 28S-v2 (5mm rev).
+
+**Mitigation (user):** Use a panel designed for the target clade.
+Increase `mismatches` for marginal cases (2-3 total mm), but this
+increases off-target noise.
+
+#### Primer too degenerate
+
+Primers with many ambiguity codes (H, D, Y, N, R) expand into a large
+number of kmer variants. Each variant that matches the genome creates a
+seed node, and most of these are off-target. The combined off-target
+seeds consume the node budget before the real amplicon is connected.
+
+The degeneracy is a fixed property of the primer, but its effect is
+sample-specific: different genomes have different off-target match
+profiles for the same set of degenerate kmer variants.
+
+**Examples:** Marquina Hexapoda primers (16S, ND1, ND4) have ambiguity
+codes H, D, Y, N, R that generate many kmer variants.
+
+**Mitigation (user):** Increase `trim` to use more of the primer (more
+specific matching). Decrease `mismatches` to reduce the number of
+variants. Increase `--max-nodes` (hidden) to allow a larger graph.
+
+**Mitigation (developer):** Better seed evaluation to distinguish
+on-target from off-target seeds. `--read-eval` helps. The
+`--max-primer-kmers` cap (default 100) limits the worst cases.
+
+#### Primer too specific for cross-species use
+
+A primer designed from a single species' sequence may not match closely
+related species due to normal sequence divergence. This is the opposite
+problem from excessive degeneracy — the primer is too narrow.
+
+**Mitigation (user):** Increase `mismatches`. Use a more degenerate
+primer designed from a multiple sequence alignment across the target
+clade.
 
 ### Sequence limitations
 
 These are properties of the target organism or locus that make recovery
-inherently difficult.
+inherently difficult or impossible.
+
+#### Target sequence absent from the genome
+
+The gene does not exist in the target species (e.g., gene loss,
+lineage-specific gene) or the user has selected a panel designed for a
+different clade. No amount of data or parameter tuning can recover a
+sequence that isn't there.
+
+**Examples:** Yp2 (Diptera-specific) in Lepidoptera and Orthoptera;
+Magnacca bee primers (EF1g, Fz4, Gpdh, Pgi) applied to Diptera.
+
+**Mitigation:** Verify that the panel is appropriate for the target
+taxon before interpreting failures.
 
 #### Low-complexity / AT-rich regions
 
@@ -110,8 +179,12 @@ coverage due to GC bias, library preparation artifacts, or secondary
 structure. This creates the same gap problem as insufficient total
 coverage but is harder to predict.
 
+Some datasets are highly depleted in mitochondrial reads (eg ERR571460), due to filtering or diffrences in mitochodnrial abundance across tissues.
+
 **Mitigation (user):** Increase `--max-reads` to raise the coverage
-floor. Decrease `-k` to reduce the number of distinct kmers needed.
+floor. Decrease `-k` so that each unique kmer is covered by more reads
+(shorter kmers are shared by more read positions, increasing per-kmer
+counts).
 
 ### Method limitations
 
@@ -183,12 +256,22 @@ Controls how many reads from the input are used.
 
 - **Increase:** More coverage, fewer gaps, recovers genes that fail at
   lower counts. Linear cost in runtime and memory for kmer counting.
+  However, some genes that recover at lower read counts may **drop out**
+  at higher counts. This happens because increased coverage raises kmer
+  counts genome-wide, which increases the extension threshold (derived
+  from primer kmer counts) and makes the graph denser and more complex.
+  Off-target seeds that were below threshold at lower coverage now
+  survive and consume the node budget. This coverage-dependent
+  instability has been observed for Drosophila ND1 (recovers at 1-4M
+  and 16M but not 8M) and ND4 (recovers at 4M but not 8M).
 - **Decrease:** Faster runtime, but genes with low coverage will fail.
   Useful for quick surveys or when only high-copy targets (mt, plastid)
   are needed.
 - **Guidance:** Start with 1M for mt/plastid genes. Use 4-8M for
   nuclear genes in medium genomes. Use 16M+ for large genomes or
-  single-copy targets.
+  single-copy targets. If a gene recovers at a lower count but drops
+  out at a higher count, this indicates a graph complexity issue rather
+  than a coverage issue.
 
 ### Kmer size (`-k`)
 
