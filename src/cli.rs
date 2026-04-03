@@ -276,14 +276,14 @@ pub(crate) struct Args {
     #[arg(long, default_value_t = crate::pcr::DEFAULT_TIP_COVERAGE_FRACTION, help_heading = "PCR", hide = true)]
     pub(crate) tip_coverage_fraction: f64,
 
-    /// When to stop extending graph components after finding products
+    /// When to stop searching for PCR products
     #[arg(
         long,
         default_value = "first-product",
         value_enum,
         help_heading = "PCR"
     )]
-    pub(crate) stopping_criteria: crate::pcr::StoppingCriteria,
+    pub(crate) pcr_stopping_criteria: crate::pcr::StoppingCriteria,
 
     /// Per-component node budget: minimum nodes allocated to each seed component
     #[arg(long, default_value_t = crate::pcr::DEFAULT_MIN_COMPONENT_BUDGET, help_heading = "PCR", hide = true)]

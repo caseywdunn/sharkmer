@@ -249,16 +249,16 @@ pub const DEFAULT_HIGH_COVERAGE_RATIO: f64 = 10.0;
 pub const DEFAULT_TIP_COVERAGE_FRACTION: f64 = 0.1;
 pub const DEFAULT_MIN_COMPONENT_BUDGET: usize = 10_000;
 
-/// Controls when graph extension stops after finding products.
+/// Controls when to stop searching for PCR products.
 #[derive(Clone, Debug, Default, clap::ValueEnum, PartialEq)]
 pub enum StoppingCriteria {
-    /// Extend all components
-    AllComponents,
-    /// Stop after the first component produces a valid product
+    /// Stop as soon as a product is found for each gene (fastest)
     #[default]
     FirstProduct,
-    /// Only extend components where seed eval found connected seeds
+    /// Try all promising primer binding regions, skip unpromising ones (moderate)
     ConnectedOnly,
+    /// Try all primer binding regions exhaustively (slowest, maximum sensitivity)
+    AllComponents,
 }
 
 /// Validate a primer pair and return a list of (error, suggestion) pairs.
