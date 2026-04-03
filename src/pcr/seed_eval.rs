@@ -24,12 +24,21 @@ const MIN_EXTENSION_FRACTION: f64 = 0.1;
 const BUDGET_BRANCHING_THRESHOLD: f64 = 0.2;
 
 /// Metrics collected during bounded extension of a single seed.
-struct SeedMetrics {
-    node_count: usize,
-    branching_events: usize,
-    budget_exhausted: bool,
-    reached_opposite: bool,
-    terminated: bool,
+pub(super) struct SeedMetrics {
+    pub(super) node_count: usize,
+    pub(super) branching_events: usize,
+    pub(super) budget_exhausted: bool,
+    pub(super) reached_opposite: bool,
+    pub(super) terminated: bool,
+}
+
+/// Results from seed evaluation: per-seed metrics and connectivity info.
+pub(super) struct SeedEvalResult {
+    /// Surviving seed metrics: (node_index, is_start, metrics)
+    pub(super) seed_metrics: Vec<(NodeIndex, bool, SeedMetrics)>,
+    /// Forward→reverse seed connections found during bounded exploration.
+    /// Each entry is (forward_seed_node, reverse_seed_node).
+    pub(super) connections: Vec<(NodeIndex, NodeIndex)>,
 }
 
 /// Direction a seed extends.
@@ -49,9 +58,14 @@ pub(super) fn evaluate_seeds(
     params: &PCRParams,
     min_count: u32,
     retained_reads: &[&str],
-) {
+) -> SeedEvalResult {
     let k = kmer_counts.get_k();
     let expected_linear_nodes = params.max_length.saturating_sub(k);
+
+    let mut result = SeedEvalResult {
+        seed_metrics: Vec::new(),
+        connections: Vec::new(),
+    };
 
     // Collect seed nodes to evaluate (cannot mutate graph while iterating)
     let seeds: Vec<(NodeIndex, bool, bool, u64)> = graph
@@ -74,6 +88,18 @@ pub(super) fn evaluate_seeds(
                 "Seed {} (dual): Kept — dual-role node (both start and end)",
                 node_idx.index()
             );
+            result.seed_metrics.push((
+                node_idx,
+                is_start,
+                SeedMetrics {
+                    node_count: 1,
+                    branching_events: 0,
+                    budget_exhausted: false,
+                    reached_opposite: true,
+                    terminated: false,
+                },
+            ));
+            result.connections.push((node_idx, node_idx));
             continue;
         }
 
@@ -83,7 +109,7 @@ pub(super) fn evaluate_seeds(
             SeedDirection::Reverse
         };
 
-        let metrics = bounded_extend(
+        let (metrics, reached_nodes) = bounded_extend(
             sub_kmer,
             &direction,
             kmer_counts,
@@ -107,6 +133,15 @@ pub(super) fn evaluate_seeds(
                 node_idx.index(),
                 direction_str
             );
+            // Record connections: forward seed → each reverse seed reached (or vice versa)
+            for &reached in &reached_nodes {
+                if is_start {
+                    result.connections.push((node_idx, reached));
+                } else {
+                    result.connections.push((reached, node_idx));
+                }
+            }
+            result.seed_metrics.push((node_idx, is_start, metrics));
             continue;
         }
 
@@ -188,7 +223,10 @@ pub(super) fn evaluate_seeds(
             metrics.node_count,
             branching_ratio
         );
+        result.seed_metrics.push((node_idx, is_start, metrics));
     }
+
+    result
 }
 
 /// Check if retained reads show divergence at a seed.
@@ -304,6 +342,8 @@ fn check_read_divergence(
 /// throwaway local exploration for evaluation only. Checks the main
 /// graph's node_lookup to detect convergence with opposite-direction seeds.
 #[allow(clippy::too_many_arguments)]
+/// Returns (SeedMetrics, Vec<NodeIndex>) where the Vec contains the main-graph
+/// node indices of opposite-direction seeds that were reached.
 fn bounded_extend(
     seed_sub_kmer: u64,
     direction: &SeedDirection,
@@ -313,7 +353,7 @@ fn bounded_extend(
     main_node_lookup: &HashMap<u64, NodeIndex>,
     main_graph: &StableDiGraph<DBNode, DBEdge>,
     max_seed_nodes: usize,
-) -> SeedMetrics {
+) -> (SeedMetrics, Vec<NodeIndex>) {
     let suffix_mask = get_suffix_mask(&k);
     let prefix_shift = 2 * (k - 1);
 
@@ -325,6 +365,7 @@ fn bounded_extend(
     let mut node_count: usize = 0;
     let mut branching_events: usize = 0;
     let mut reached_opposite = false;
+    let mut reached_nodes: Vec<NodeIndex> = Vec::new();
     let mut budget_exhausted = false;
     let mut terminated = true; // assume terminated unless budget runs out
 
@@ -353,6 +394,7 @@ fn bounded_extend(
                             if let Some(&main_node_idx) = main_node_lookup.get(&new_sub_kmer) {
                                 if main_graph[main_node_idx].is_end {
                                     reached_opposite = true;
+                                    reached_nodes.push(main_node_idx);
                                 }
                             }
                         }
@@ -372,6 +414,7 @@ fn bounded_extend(
                             if let Some(&main_node_idx) = main_node_lookup.get(&new_sub_kmer) {
                                 if main_graph[main_node_idx].is_start {
                                     reached_opposite = true;
+                                    reached_nodes.push(main_node_idx);
                                 }
                             }
                         }
@@ -395,13 +438,16 @@ fn bounded_extend(
         }
     }
 
-    SeedMetrics {
-        node_count,
-        branching_events,
-        budget_exhausted,
-        reached_opposite,
-        terminated,
-    }
+    (
+        SeedMetrics {
+            node_count,
+            branching_events,
+            budget_exhausted,
+            reached_opposite,
+            terminated,
+        },
+        reached_nodes,
+    )
 }
 
 #[cfg(test)]
@@ -411,7 +457,8 @@ mod tests {
     use crate::pcr::{
         DEFAULT_DEDUP_EDIT_THRESHOLD, DEFAULT_HIGH_COVERAGE_RATIO, DEFAULT_MAX_DFS_STATES,
         DEFAULT_MAX_NODE_VISITS, DEFAULT_MAX_NUM_PRIMER_KMERS, DEFAULT_MAX_PATHS_PER_PAIR,
-        DEFAULT_MAX_SEED_NODES, DEFAULT_TIP_COVERAGE_FRACTION,
+        DEFAULT_MAX_SEED_NODES, DEFAULT_MIN_COMPONENT_BUDGET, DEFAULT_TIP_COVERAGE_FRACTION,
+        StoppingCriteria,
     };
 
     fn make_params() -> PCRParams {
@@ -435,6 +482,8 @@ mod tests {
             max_seed_nodes: DEFAULT_MAX_SEED_NODES,
             high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
             tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
+            stopping_criteria: StoppingCriteria::AllComponents,
+            min_component_budget: DEFAULT_MIN_COMPONENT_BUDGET,
         }
     }
 

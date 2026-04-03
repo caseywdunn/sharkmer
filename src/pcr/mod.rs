@@ -28,6 +28,7 @@ macro_rules! gene_warn {
 pub mod preconfigured;
 
 mod bubble;
+pub(crate) mod components;
 mod graph;
 mod paths;
 mod primers;
@@ -189,6 +190,10 @@ pub struct PCRParams {
     pub high_coverage_ratio: f64,
     #[serde(default = "default_tip_coverage_fraction")]
     pub tip_coverage_fraction: f64,
+    #[serde(skip)]
+    pub stopping_criteria: StoppingCriteria,
+    #[serde(skip)]
+    pub min_component_budget: usize,
 }
 
 fn default_max_length() -> usize {
@@ -227,6 +232,11 @@ fn default_high_coverage_ratio() -> f64 {
 fn default_tip_coverage_fraction() -> f64 {
     DEFAULT_TIP_COVERAGE_FRACTION
 }
+// default_min_component_budget will be used once PCRParams gets serde support for this field
+#[allow(dead_code)]
+fn default_min_component_budget() -> usize {
+    DEFAULT_MIN_COMPONENT_BUDGET
+}
 
 // Default values for tuning constants (exposed as hidden CLI arguments)
 pub const DEFAULT_MAX_DFS_STATES: usize = 100_000;
@@ -236,6 +246,19 @@ pub const DEFAULT_MAX_NUM_PRIMER_KMERS: usize = 100;
 pub const DEFAULT_MAX_SEED_NODES: usize = 500;
 pub const DEFAULT_HIGH_COVERAGE_RATIO: f64 = 10.0;
 pub const DEFAULT_TIP_COVERAGE_FRACTION: f64 = 0.1;
+pub const DEFAULT_MIN_COMPONENT_BUDGET: usize = 1000;
+
+/// Controls when graph extension stops after finding products.
+#[derive(Clone, Debug, Default, clap::ValueEnum, PartialEq)]
+pub enum StoppingCriteria {
+    /// Extend all components (current behavior)
+    #[default]
+    AllComponents,
+    /// Stop after the first component produces a valid product
+    FirstProduct,
+    /// Only extend components where seed eval found connected seeds
+    ConnectedOnly,
+}
 
 /// Validate a primer pair and return a list of (error, suggestion) pairs.
 /// An empty list means the primer is valid.
@@ -500,7 +523,7 @@ pub fn do_pcr(
     // robust to outliers. This is separate from extension thresholds, which
     // still use the max to maintain graph quality.
     let seed_eval_threshold = compute_coverage_thresholds(median_primer_count, params.min_count)[0];
-    seed_eval::evaluate_seeds(
+    let _seed_eval_result = seed_eval::evaluate_seeds(
         &mut seed_graph,
         &node_lookup,
         kmer_counts,
@@ -1297,6 +1320,8 @@ mod tests {
             max_seed_nodes: DEFAULT_MAX_SEED_NODES,
             high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
             tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
+            stopping_criteria: StoppingCriteria::AllComponents,
+            min_component_budget: DEFAULT_MIN_COMPONENT_BUDGET,
         };
 
         (read_string, k, replicates, kmer_counts, params)

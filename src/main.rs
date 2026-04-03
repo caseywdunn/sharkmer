@@ -44,6 +44,8 @@ fn main() -> Result<()> {
         p.max_seed_nodes = args.max_seed_nodes;
         p.high_coverage_ratio = args.high_coverage_ratio;
         p.tip_coverage_fraction = args.tip_coverage_fraction;
+        p.stopping_criteria = args.stopping_criteria.clone();
+        p.min_component_budget = args.min_component_budget;
     }
 
     // Handle --validate-panels (prints and exits)
