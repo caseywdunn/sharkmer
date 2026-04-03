@@ -830,8 +830,27 @@ the front. This makes extension O(n) in the number of nodes added.
 Benchmark: Agalma with `--max-nodes 200000` dropped from 347s to 65s
 (5.3× speedup).
 
-**Current budget defaults.** With O(n) extension, larger budgets are
-practical. The global `--max-nodes` is 200K (backstop for total graph
-size). Per-component budgets (default 20K via `--min-component-budget`)
-bound each connected component independently, preventing any single
-off-target component from consuming the entire global budget.
+**Current budget defaults.** The global `--node-budget-global` is 50K.
+Per-component budgets (default 20K via `--node-budget-component`) bound
+each connected component independently, preventing any single off-target
+component from consuming the entire global budget.
+
+**Why 50K global.** A sweep across 14 benchmark samples at 1M reads
+(commit f7cbc90, 2026-04-03) shows diminishing returns above 50K:
+
+| Budget | Total genes | Total time | Marginal genes | Marginal time |
+| ---: | ---: | ---: | ---: | ---: |
+| 50K | 106 | 159s | — | — |
+| 100K | 109 | 214s | +3 | +55s |
+| 200K | 110 | 296s | +1 | +82s |
+
+The 50K→100K step recovers 3 additional genes (Gryllus) but costs 34%
+more time. The 100K→200K step recovers only 1 more gene (Drosophila)
+at 38% more time. Most of the extra time is spent on off-target
+components that ultimately fail — Liriodendron goes from 9s to 67s
+with no gene gain at 200K.
+
+Users who need the marginal genes can increase the budget with
+`--node-budget-global 100000`. The per-component budget (20K) provides
+the real protection against runaway extension; the global budget is
+a backstop.
