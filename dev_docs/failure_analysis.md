@@ -1,237 +1,368 @@
-# Benchmark failure analysis
+# sPCR failure analysis
 
-Primer binding site analysis for genes that fail to amplify in sPCR
-benchmarks. Actual binding sequences in each species were identified from
-publicly available sequences (mitochondrial genomes, rRNA, mRNA) and
-compared to the panel primer sequences. Full binding site data is in
-[`primer_binding.yaml`](primer_binding.yaml).
-
-Failures at 16M reads (highest coverage tested) unless noted otherwise.
-
-## Cnidaria panel
-
-| Gene | Species | Fwd mm | Rev mm | Accession | Verdict |
-| --- | --- | --- | --- | --- | --- |
-| 16S | Porites lutea | 0 | 0 | KU159432.1 | Not primer mismatch — likely coverage (large 542 Mb genome) |
-| CO1 | Porites lutea | 2 | 1 | KU159432.1 | 3 total mm; COX1 is a split gene with intron |
-| CO1 | Agalma elegans | 0 | 1 | NC_080954.1 | 1mm at 3' critical position (pos 13/15); paradoxically works at lower coverages |
-| EF1A | Agalma elegans | 3 | 0 | DQ157428.1 | 3 consecutive 3' mismatches in forward primer block extension |
-| ITS | Rhopilema esculentum | 0 | 0 | JX845352.1 / XR_010517148.1 | Not primer mismatch — likely rDNA copy variation / graph complexity |
-
-## Insecta panel — Drosophila melanogaster
-
-| Gene | Fwd mm | Rev mm | Accession | Verdict |
-| --- | --- | --- | --- | --- |
-| 12S | 0 | 0 | KJ947872.2 | Not primer mismatch — works at 2M but fails at 16M (graph complexity?) |
-| 16S | 0 | 0 | KJ947872.2 | Not primer mismatch |
-| 16S-v2 | 1 | 0 | KJ947872.2 | 1mm internal, should not prevent amplification |
-| ND1 | 0 | 0 | KJ947872.2 | Not primer mismatch — works at 2M-4M but fails at 16M |
-| ND4 | 0 | 0 | KJ947872.2 | Not primer mismatch |
-| NADH | 2 | 2 | KJ947872.2 | Actually targets ND2, not ND5; 4 total mm (all internal) |
-| 28S | 1 | 0 | M21017.1 | 1mm marginal; R1/R2 retrotransposon insertions complicate graph |
-| ITS | 0 | 1 | M21017.1 | Amplicon ~4835 bp — too large for de Bruijn graph from short reads |
-| EF1g | 3 | 1 | NM_143743.3 | Hylaeus bee primers, too divergent for Diptera |
-| Fz4 | 4 | >5 | NM_078513.3 | No reverse binding site — completely incompatible |
-| Gpdh | 2 | 0 | NM_057219.4 | Marginal; may work with relaxed conditions |
-| Pgi | 0 | 2 | NM_078939.3 | Marginal; forward is exact match |
-| 28S-v2 | 3 | 5 | M21017.1 | Reverse non-binding; Drosophila 28S too diverged for Evans primers |
-| ITS-v2 | 0 | 3 | M21017.1 | Reverse shares 28S-v2 binding site (3mm); amplicon would be ~1567 bp |
-| ITS-v3 | 1 | 3 | M21017.1 | Same reverse primer problem as ITS-v2; amplicon ~1420 bp |
-
-## Insecta panel — Heliconius pachinus
-
-| Gene | Fwd mm | Rev mm | Accession | Verdict |
-| --- | --- | --- | --- | --- |
-| 16S-v2 | 1 | 3 | NC_024741.1 | Drosophila-specific; reverse too divergent for Lepidoptera |
-| CO2-v2 | 7 | 0 | NC_024741.1 | Forward completely incompatible (only first 6 bases match) |
-| ND4 | 0 | 0 | NC_024741.1 | Not primer mismatch — degenerate primer kmer explosion or AT-rich graph issues |
-| NADH | 2 | 4 | NC_024741.1 | Primers bind tRNA-Met/ND2, not near ND5 at all |
-| Yp2 | — | — | — | Gene does not exist in Lepidoptera (Diptera-specific) |
-
-No public sequences available for: EF1g, Fz4, Gpdh, Pgi (no Heliconius
-orthologs sequenced), 28S, 28S-v2, ITS, ITS-v2, ITS-v3 (no standalone
-GenBank references).
-
-## Insecta panel — Gryllus bimaculatus
-
-| Gene | Fwd mm | Rev mm | Accession | Verdict |
-| --- | --- | --- | --- | --- |
-| CO2-v2 | 4 | 4 | MT993975.1 | Drosophila-specific; both primers exceed mismatch threshold |
-| Yp2 | — | — | — | Diptera-specific gene; ortholog (vitellogenin) too divergent |
-
-No public sequences available for: 28S-v2, ITS-v2, ITS-v3 (only partial
-references), EF1g, Fz4, Gpdh, Pgi (no Gryllus gene sequences).
-
-## Current status (post Phases 3-7, commit df4269e)
-
-Updated analysis of perfect-match failures using current code (Phase 3
-graph traversal improvements + Phase 7 read-backed seed evaluation).
-Tested at multiple coverage levels with and without `--read-eval`.
-
-### Recovery summary
-
-| Gene | Species | Old status | 1M | 2M | 4M | 4M --read-eval | 8M | 16M | 16M --read-eval |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| 16S | Porites | Fail 4M | - | - | - | - | - | - | - |
-| CO1 | Porites | Fail 4M | - | - | - | - | - | - | - |
-| 12S | Drosophila | Fail 16M | Y | Y | Y | Y | Y | Y | Y |
-| 16S | Drosophila | Fail 16M | - | - | - | - | - | - | - |
-| 16S-v2 | Drosophila | Fail 16M | - | - | - | - | - | - | - |
-| 28S | Drosophila | Fail 16M | - | - | - | - | - | - | - |
-| ND1 | Drosophila | Fail 16M | Y | Y | Y | Y | - | Y | Y |
-| ND4 | Drosophila | Fail 16M | - | - | Y | Y | - | - | - |
-| ITS | Drosophila | Fail 16M | - | - | - | **Y** | - | - | - |
-| ITS | Rhopilema | Fail 16M | - | - | - | - | - | - | - |
-| ND4 | Heliconius | Fail 16M | - | - | Y | - | - | Y | Y |
-
-Key: Y = recovered, - = still fails, **Y** = recovered only with --read-eval
-
-### Analysis of changes since original failure analysis
-
-**Newly recovered genes:**
-- **Drosophila 12S**: Was failing at 16M in original analysis but now
-  recovers at all coverage levels 1M-16M. Phase 3 graph traversal
-  improvements (bidirectional extension, coverage-weighted DFS) resolved
-  the graph complexity issue at high coverage.
-- **Drosophila ND1**: Similar to 12S — was failing at 16M, now recovers
-  at 1M-4M and 16M. Drops out at 8M, suggesting a coverage-dependent
-  graph complexity sweet spot.
-- **Drosophila ND4**: Recovers at 4M (both with and without --read-eval)
-  and at some higher coverages. Previously failed at all levels.
-- **Drosophila ITS**: Recovers at 4M **only with --read-eval**. The
-  read-backed seed evaluation rejects off-target seeds that were consuming
-  graph budget, allowing the correct seeds to extend successfully. This is
-  the first gene where `--read-eval` makes a difference.
-- **Heliconius ND4**: Now recovers at 4M and 16M. Previously failed at
-  all levels.
-
-**Still failing:**
-- **Porites 16S, CO1 at 4M**: Still fail. Porites has a 542 Mb genome —
-  at 4M 150bp reads, local coverage is only ~1x. The target regions
-  likely don't have enough kmer coverage to build connected graphs.
-- **Drosophila 16S, 16S-v2, 28S**: Still fail at all levels.
-  See "Root cause: seed eval threshold" below.
-- **Rhopilema ITS at 16M**: Still fails. This is likely rDNA copy number
-  variation creating graph complexity that exceeds node/DFS budgets.
-
-**Coverage-dependent instability:**
-- **Drosophila ND1**: Recovers at 1M-4M and 16M but not 8M. This
-  suggests a narrow window where graph complexity is just right —
-  too low and there's insufficient coverage, too high and repeat
-  regions overwhelm the graph, but at very high coverage the
-  threshold stepping finds a good balance.
-- **Drosophila ND4**: Only at 4M. Similar coverage sensitivity.
-
-### Root cause: seed eval threshold (not node budget)
-
-Tested Drosophila 16S/28S at 4M reads with `--max-nodes` from 50K to
-500K (10× default). **No additional genes recovered at any budget.**
-The graph does not hit the node budget for these genes.
-
-Diagnostic output shows the real problem: all 119 forward seeds for
-16S are abandoned with "1 nodes < 46 minimum" — the bounded seed
-evaluation cannot extend any seed even a single node at the seed eval
-threshold. The seed eval threshold is `coverage_thresholds[0]` =
-`primer_count / COVERAGE_MULTIPLIER`. With degenerate Marquina primers
-(ambiguity codes H, D, Y, N, R), off-target genomic matches inflate
-the max primer kmer count far above the real amplicon coverage. The
-real seeds' flanking kmers fall below this stringent threshold, so
-every seed is falsely abandoned.
-
-This is the known limitation documented in `mod.rs`:
-
-> for genes where the real kmer coverage is far below the max primer
-> kmer count (e.g., single-copy genes with high off-target primer
-> counts), on-target seeds may be falsely abandoned
-
-The fix is #109 (parameter tuning): derive the seed eval threshold
-from something other than the max primer kmer count, or use the
-median/lower-quartile primer kmer count instead of the max.
-
-### Effect of --read-eval
-
-`--read-eval` had a clear positive effect in one case:
-- **Drosophila ITS at 4M**: 11 → 12 genes. The ITS amplicon (~4835 bp)
-  is at the edge of what de Bruijn graphs from short reads can handle.
-  Read-eval rejects off-target primer seeds that waste the node budget,
-  leaving more budget for the real ITS graph to extend fully.
-
-No regressions from `--read-eval` were observed at any coverage level
-for any species tested.
+A systematic analysis of why sharkmer's in silico PCR fails to recover
+amplicons, organized by root cause. Used to guide development priorities,
+parameter tuning, and user documentation.
 
 ## Failure categories
 
-### Perfect-match failures (8 entries)
+Failures fall into three groups: limitations of the target sequence,
+limitations of the input data, and limitations of the method.
 
-Primers bind perfectly (0-1mm) but sPCR still fails. Diagnostic runs
-with `-v` confirmed that **all 8 are graph traversal failures, not
-primer-finding failures.** In every case, primer kmers are found in the
-reads, a graph is seeded, but no path is found from forward to reverse
-primer binding sites.
+### Sequence limitations
 
-None of these failures are caused by insufficient read coverage to find
-primers. The Drosophila 16S-v2 (1mm internal) and 28S (1mm) are
-near-perfect matches that exhibit the same graph traversal failure
-pattern and are included in the analysis below.
+These are properties of the target organism or locus that make recovery
+inherently difficult.
 
-| Gene | Species | Reads | Fwd seeds | Rev seeds | Primer cov | Failure mode |
-| --- | --- | --- | --- | --- | --- | --- |
-| 16S | Porites lutea | 4M | 144 | 108 | 122 | Graph traversal, all 4 thresholds |
-| CO1 | Porites lutea | 4M | 151 | 104 | 395 | Graph traversal, all 4 thresholds |
-| ITS | Rhopilema esculentum | 16M | 45 | 102 | 966 | Graph traversal, all 4 thresholds |
-| 12S | Drosophila melanogaster | 16M | 112 | 103 | 330 | Graph traversal, all 4 thresholds |
-| 16S | Drosophila melanogaster | 16M | 118 | 125 | 162 | Graph traversal, all 4 thresholds |
-| 16S-v2 | Drosophila melanogaster | 16M | 109 | 109 | 110 | End node found at min-count 2, but no valid path |
-| 28S | Drosophila melanogaster | 16M | 100 | 113 | 980 | End node found at min-count 490, but no valid path |
-| ND1 | Drosophila melanogaster | 16M | 106 | 102 | 724 | End node found at min-count 242, but no valid path |
-| ND4 | Drosophila melanogaster | 16M | 104 | 100 | 957 | Graph traversal, all 4 thresholds |
-| ND4 | Heliconius pachinus | 16M | 101 | 107 | 188 | Graph traversal, all 4 thresholds |
+#### Low-complexity / AT-rich regions
 
-Key observations:
+The amplicon contains a stretch where kmer diversity is low (typically
+high AT content). In these regions, fewer distinct kmers exist, so even
+with adequate read depth, individual kmer counts may fall below the
+minimum threshold. The de Bruijn graph fragments into disconnected
+forward and backward components with a gap in the low-complexity
+region.
 
-- **Non-specific primer seeding.** The degenerate Marquina primers
-  (12S, 16S, ND1, ND4) seed 100-280 kmer nodes per primer due to
-  ambiguity codes (H, D, Y, N, R). `MAX_NUM_PRIMER_KMERS` is 100, so
-  many of these are at or above the cap. Most seed kmers are non-specific
-  (from unrelated genomic regions), creating a graph with many false
-  start/end nodes that don't connect.
+**Mechanism:** Shorter kmers have higher coverage per unique kmer
+because fewer possible kmers exist in a low-complexity region. At k=31,
+an 85% AT region has most 31-mers appearing only once; at k=21, the
+same region may have kmers appearing 2+ times. However, below ~k=15,
+kmers become too non-specific and the graph explodes with branching.
 
-- **End nodes found but no path.** For ND1, 16S-v2, and 28S in
-  Drosophila, the log shows "End node incorporated into graph, complete
-  PCR product found" — meaning forward and reverse primer regions are
-  connected in the graph — but the path-finding step still fails to
-  extract a valid product. This points to graph pruning or path
-  enumeration issues rather than graph connectivity.
+**Mitigation (user):** Decrease `-k` (e.g., from 31 to 21). This
+bridges moderate AT-rich gaps but increases graph complexity elsewhere.
 
-- **Coverage-dependent failures.** Drosophila 12S and ND1 amplify at
-  2M reads but fail at 16M. At 2M, 12S seeds 278 forward + 150 reverse
-  nodes (more non-specific seeds than at 16M) but has lower observed
-  primer coverage (42 vs 330). The lower thresholds at 2M may allow the
-  correct path to survive pruning, while at 16M the higher coverage
-  creates a denser, more complex graph that obscures the target path.
+**Mitigation (developer):** Variable-k assembly — detect AT-rich gaps
+and retry the gap region with smaller k. This is a significant
+architectural change (see SPAdes/IDBA iterative k-mer assembly).
 
-- **Porites CO1 is also graph traversal.** Despite having 2+1 primer
-  mismatches, Porites CO1 primers are still found (151 + 104 seed nodes,
-  coverage 395) — the failure is in graph traversal, not primer binding.
+#### Repetitive amplicon flanking regions
 
-### Primer mismatch failures (13 entries)
+The primer binding site or the region immediately adjacent is in or
+near a repetitive element (e.g., retrotransposon insertions in rDNA,
+tandem repeats). The de Bruijn graph includes edges from many genomic
+copies, creating a dense tangle that exceeds the node budget or makes
+path finding intractable.
 
-Range from marginal (1-2mm total) to completely incompatible:
+**Mitigation (user):** Increase `--max-nodes` (hidden). May not help
+if the repeat complexity is inherently too high.
 
-- **Incompatible (>3mm or no binding site):** Drosophila Fz4 (>5mm rev),
-  28S-v2 (5mm rev), ITS-v2/ITS-v3 (3mm shared rev site); Heliconius
-  CO2-v2 (7mm fwd), NADH (wrong gene); Gryllus CO2-v2 (4mm each);
-  Agalma EF1A (3 consecutive 3' mm)
-- **Marginal (1-2mm, may work with tuning):** Porites CO1 (2+1mm),
-  Drosophila NADH (2+2mm), Gpdh (2mm fwd), Pgi (2mm rev), 28S (1mm fwd)
+**Mitigation (developer):** Read threading with repeat-aware scoring
+(`--read-threading`) can help resolve which path through the repeat
+is the real amplicon.
 
-Key pattern: the ITS-v2, ITS-v3, and 28S-v2 reverse primers all target
-the same 5' region of 28S that has 3mm in Drosophila — a single point of
-divergence causes three primer pairs to fail.
+#### Amplicon too large for short-read graph assembly
 
-### Gene absent or no reference data (6 entries)
+The expected amplicon exceeds what de Bruijn graph assembly can
+construct from short reads (~150 bp). For amplicons >2-3 kb, the
+probability of spanning any given position with reads drops, and the
+graph is more likely to fragment. Amplicons >5 kb are essentially
+unrecoverable from 150 bp reads alone.
 
-- **Gene absent:** Yp2 in Heliconius and Gryllus (Diptera-specific gene)
-- **No public sequence:** Magnacca bee primers (EF1g, Fz4, Gpdh, Pgi) and
-  rRNA markers in Heliconius/Gryllus lack standalone GenBank entries to
-  check against
+**Example:** Drosophila ITS amplicon is ~4835 bp.
+
+**Mitigation (user):** Use longer reads (if available) or redesign
+primers for a shorter amplicon.
+
+**Mitigation (developer):** No practical fix with short reads. Document
+the amplicon length limit.
+
+#### rDNA copy-number variation
+
+Ribosomal RNA genes exist in hundreds of tandem copies that are not
+perfectly identical. Sequence variants across copies create bubbles and
+branches in the de Bruijn graph that can exceed path-finding budgets.
+
+**Mitigation (developer):** Bubble resolution with read threading
+(`resolve_bubbles()`) already addresses simple cases. More aggressive
+consensus calling across bubble arms could help.
+
+### Data limitations
+
+These are properties of the sequencing data that can be addressed by
+providing different input.
+
+#### Insufficient read coverage at the target locus
+
+The most common failure cause. At low read counts, some kmers in the
+amplicon region are never observed (count 0) or observed only once
+(below min_count=2). The graph has gaps where coverage drops out.
+
+The required read count depends on genome size. For a 150 bp read
+library:
+
+| Genome | Size | Reads for ~5x mt coverage | Reads for ~5x nuclear |
+| --- | --- | --- | --- |
+| Drosophila | 144 Mb | ~1M | ~5M |
+| Coral (Porites) | 542 Mb | ~4M | ~18M |
+| Human | 3.1 Gb | ~20M | ~103M |
+
+Mitochondrial and plastid genes are easier because organellar copy
+number provides ~100x enrichment over single-copy nuclear genes.
+
+**Mitigation (user):** Increase `--max-reads`. More reads = higher
+coverage per kmer = fewer gaps.
+
+#### Uneven coverage across the amplicon
+
+Even with adequate average coverage, specific regions may have low
+coverage due to GC bias, library preparation artifacts, or secondary
+structure. This creates the same gap problem as insufficient total
+coverage but is harder to predict.
+
+**Mitigation (user):** Increase `--max-reads` to raise the coverage
+floor. Decrease `-k` to reduce the number of distinct kmers needed.
+
+### Method limitations
+
+These are failure modes caused by the algorithm's design or parameter
+settings, addressable through code changes or parameter tuning.
+
+#### Off-target seed nodes consuming the node budget
+
+Degenerate primers (with ambiguity codes) match many genomic loci.
+Each match creates a seed node that extends into an off-target
+subgraph. When many off-target seeds survive seed evaluation, their
+combined extension exhausts the 50K node budget before the on-target
+amplicon is connected.
+
+This failure is sample-specific even though primer degeneracy is fixed:
+different genomes have different off-target match profiles.
+
+**Mitigation (user):** Increase `--max-nodes` (hidden) to allow a
+larger graph. Decrease primer `mismatches` to reduce off-target
+matches. Increase primer `trim` to use more of the primer sequence
+(more specific).
+
+**Mitigation (developer):** Better seed evaluation — the current
+`evaluate_seeds()` filters seeds by branching ratio and local
+exploration size, but some off-target seeds pass because they extend
+linearly into off-target regions. Read-backed seed evaluation
+(`--read-eval`) helps by checking read divergence.
+
+#### Seed evaluation threshold too stringent
+
+The seed evaluation threshold (derived from median primer kmer count)
+determines the minimum kmer count for bounded seed exploration. If the
+median is inflated by off-target matches, real seeds fail to extend and
+are falsely abandoned.
+
+**Status:** Addressed in v3 by using median (not max) for seed eval
+and max for extension thresholds. See DESIGN_DECISIONS.md "Which primer
+count statistic to use matters."
+
+#### Graph extension threshold too low
+
+When extension thresholds start too low, the graph extends aggressively
+from all seed nodes and hits the node budget before connecting forward
+to reverse primer sites.
+
+**Status:** Addressed in v3 by using max primer kmer count for
+extension thresholds (starting high, stepping down).
+
+#### Path finding budget exhausted
+
+The DFS-based path finder has a state budget (`max_dfs_states`, default
+100K). In complex graphs with many bubbles, the budget may be exhausted
+before a valid start-to-end path is found.
+
+**Mitigation (user):** Increase `--max-dfs-states` (hidden).
+
+**Mitigation (developer):** Better edge ordering in DFS (coverage-
+weighted, with bubble preferences) ensures the best paths are found
+first. Already implemented.
+
+## User-facing parameters and their effects
+
+These are the knobs users can turn to improve recovery. Each has
+trade-offs.
+
+### Read count (`--max-reads`)
+
+Controls how many reads from the input are used.
+
+- **Increase:** More coverage, fewer gaps, recovers genes that fail at
+  lower counts. Linear cost in runtime and memory for kmer counting.
+- **Decrease:** Faster runtime, but genes with low coverage will fail.
+  Useful for quick surveys or when only high-copy targets (mt, plastid)
+  are needed.
+- **Guidance:** Start with 1M for mt/plastid genes. Use 4-8M for
+  nuclear genes in medium genomes. Use 16M+ for large genomes or
+  single-copy targets.
+
+### Kmer size (`-k`)
+
+Controls the length of kmers used for counting and graph construction.
+
+- **Increase (e.g., k=31):** More specific kmers, simpler graphs, but
+  higher coverage needed per unique kmer. AT-rich regions may fragment.
+- **Decrease (e.g., k=21):** Each kmer has higher coverage, bridging
+  low-complexity gaps, but graphs have more branching and are larger.
+  Below k=15, specificity is too low for most applications.
+- **Default:** 31. Consider 21 for AT-rich organisms (Lepidoptera mt,
+  some plastid genomes).
+
+### Primer mismatches (`mismatches` in panel YAML)
+
+Maximum allowed mismatches between primer and genome.
+
+- **Increase:** Finds primers in more divergent species, but generates
+  more primer kmer variants → more off-target seeds → larger graphs.
+- **Decrease:** Fewer off-target matches, cleaner graphs, but may miss
+  the target if the primer doesn't match exactly.
+- **Default:** 2. Rarely needs changing.
+
+### Primer trim (`trim` in panel YAML)
+
+Number of 3' bases retained from the primer for kmer searching.
+
+- **Increase:** More specific primer matching, fewer off-target seeds.
+  But the trimmed primer must fit within a single kmer (trim ≤ k-1),
+  and longer trim means fewer reads will contain the exact sequence.
+- **Decrease:** More permissive matching, finds primers even with 3'
+  divergence, but generates more off-target seeds.
+- **Default:** 15. Increase for highly degenerate primers.
+
+### Product length bounds (`min_length`, `max_length` in panel YAML)
+
+Expected amplicon size range.
+
+- **Too narrow:** May reject valid products that differ slightly from
+  expected size (e.g., indels, species-specific length variation).
+- **Too wide:** Allows spurious products from off-target amplification.
+- **Guidance:** Set based on known amplicon sizes with ~20% margin.
+
+### Read evaluation (`--read-eval`)
+
+Enables read-backed seed evaluation (Pass 1 read retention).
+
+- **On:** Filters off-target seeds more effectively by checking read
+  divergence around seed nodes. Costs ~10% more memory (retained reads)
+  and ~5% more time.
+- **Off (default):** Faster, lower memory. Adequate for most cases.
+- **Guidance:** Enable for degenerate primers or when seed explosion is
+  suspected (many seeds abandoned in verbose output).
+
+### Read threading (`--read-threading`)
+
+Enables Pass 2 re-reading and read threading through the graph.
+
+- **On:** Annotates edges with read support and phasing information.
+  Enables bubble resolution. Costs a second read pass (I/O) and
+  additional memory for retained reads.
+- **Off (default):** Faster. Adequate when graph complexity is low.
+- **Guidance:** Enable for genes with known heterozygosity or when
+  multiple similar products are expected.
+
+## Developer tuning parameters
+
+These are hidden CLI arguments and hard-coded constants. They control
+the algorithm's resource budgets and heuristic thresholds.
+
+### Hidden CLI arguments
+
+| Parameter | Default | Effect of increase | Effect of decrease |
+| --- | ---: | --- | --- |
+| `--max-nodes` | 50,000 | Allows larger graphs; may recover genes in complex regions but uses more memory and time | Smaller graphs; faster but may truncate before amplicon is connected |
+| `--max-dfs-states` | 100,000 | Explores more paths; finds products in complex graphs | Faster path finding but may miss valid paths |
+| `--max-paths-per-pair` | 20 | Reports more variant products | Fewer output sequences |
+| `--max-node-visits` | 2 | Tolerates more cycles (tandem repeats) | Stricter cycle avoidance |
+| `--max-primer-kmers` | 100 | Keeps more primer variants; better for degenerate primers | Fewer seeds; cleaner graphs |
+| `--max-seed-nodes` | 500 | More thorough seed evaluation | Faster seed filtering |
+| `--high-coverage-ratio` | 10.0 | Allows higher-coverage edges (less aggressive repeat filtering) | More aggressive repeat filtering |
+| `--tip-coverage-fraction` | 0.1 | Prunes more tips (higher coverage threshold for keeping tips) | Preserves more tips |
+
+### Hard-coded constants
+
+| Constant | Value | Location | Controls |
+| --- | ---: | --- | --- |
+| `COVERAGE_MULTIPLIER` | 2 | `mod.rs` | Divisor for initial extension threshold: `primer_count / 2` |
+| `COVERAGE_STEPS` | 4 | `mod.rs` | Number of threshold steps from initial to min_count |
+| `MAX_NUM_AMPLICONS` | 20 | `paths.rs` | Hard limit on output FASTA records per gene |
+| `EXTENSION_EVALUATION_FREQUENCY` | 1,000 | `graph.rs` | Graph size checked every N nodes |
+| `MAX_BRANCHING_RATIO` | 0.4 | `seed_eval.rs` | Abandon seed if branching ratio exceeds this |
+| `BUDGET_BRANCHING_THRESHOLD` | 0.2 | `seed_eval.rs` | Abandon seed if budget exhausted AND branching > this |
+| `MIN_EXTENSION_FRACTION` | 0.1 | `seed_eval.rs` | Abandon seed if terminated with < 10% of expected nodes |
+| `MAX_BUBBLE_DEPTH` | 50 | `bubble.rs` | Maximum depth for bubble detection |
+
+## Real-world failure examples
+
+Specific failures observed in benchmarks, with diagnosed root causes.
+Full primer binding site data is in
+[`primer_binding.yaml`](primer_binding.yaml).
+
+### Insufficient read coverage
+
+| Gene | Sample | Reads | Primer mm | Root cause |
+| --- | --- | ---: | :---: | --- |
+| 16S | Porites lutea | 1M | 0+0 | 542 Mb genome; ~0.4x mt coverage at 1M reads |
+| CO1 | Xenia sp. | 1M | 0+0 | 223 Mb genome; insufficient mt coverage |
+| ND4 | Drosophila | 1M | 0+0 | Primer kmer counts 3-11; **recovers at 4M** |
+| ND4 | Heliconius | 1M | 0+0 | Reverse primer not found in reads at 1M |
+
+### AT-rich kmer coverage gaps
+
+| Gene | Sample | Reads | k | Root cause |
+| --- | --- | ---: | ---: | --- |
+| ND4 | Heliconius | 8M | 31 | AT-rich gap fragments graph; **recovers at k=21** |
+| 16S | Drosophila | 8M | 31 | Severe AT-rich gap (83-90% AT); fails at k=21 and k=15 |
+
+Graph evidence (k=31, 8M reads, exact primers):
+
+- **Drosophila 16S:** 229 nodes. Forward component (146 nodes)
+  terminates at `...CCCCAATAAAATATT` (83% AT). Backward component (83
+  nodes) starts at `TTTTGACTAAAAAATAAAA...` (90% AT). Zero overlap.
+- **Heliconius ND4:** 202 nodes. Forward component terminates after 1
+  node — the primer's flanking region is deeply AT-rich and no 31-mer
+  has count >= 2.
+
+### Node budget exhaustion from off-target seeds
+
+| Gene | Sample | Reads | Root cause |
+| --- | --- | ---: | --- |
+| ND4 | Drosophila | 1M (panel) | Degenerate Marquina primers; 50K node budget hit during reverse extension |
+
+With exact (non-degenerate) species-specific primers, Drosophila ND4
+recovers at 4M reads. The panel's degenerate primers create additional
+off-target seeds that consume the node budget.
+
+### Structural complexity
+
+| Gene | Sample | Reads | Root cause |
+| --- | --- | ---: | --- |
+| ITS | Rhopilema | 1M | 0+0 primers; rDNA copy variation creates graph complexity |
+| 28S | Drosophila | 8M | 1+0 mm; R1/R2 retrotransposon insertions in rDNA copies |
+| ITS | Drosophila | 8M | 0+1 mm; amplicon ~4835 bp, too large for short-read graph |
+
+### Primer mismatch failures
+
+These are expected failures — the primers don't match the target
+species well enough. Not a limitation of the method.
+
+**Incompatible (>3 total mm or no binding site):**
+- Drosophila: Fz4 (>5mm rev), 28S-v2 (5mm rev), ITS-v2/ITS-v3 (3mm
+  shared rev site)
+- Heliconius: CO2-v2 (7mm fwd), NADH (wrong gene entirely)
+- Gryllus: CO2-v2 (4+4mm)
+- Agalma: EF1A (3 consecutive 3' mm in fwd)
+
+**Marginal (2-3 total mm, may work with tuning):**
+- Porites CO1 (2+1mm), Drosophila NADH (2+2mm), Gpdh (2+0mm),
+  Pgi (0+2mm)
+
+**Gene absent in species:**
+- Yp2 in Heliconius and Gryllus (Diptera-specific gene)
+
+### Recovery statistics by gene type (1M reads, all benchmark samples)
+
+| Gene type | Recovered | Total | Rate |
+| --- | ---: | ---: | ---: |
+| mitochondrial | 39 | 57 | 68% |
+| rRNA | 45 | 100 | 45% |
+| nuclear | 2 | 19 | 11% |
+| plastid | 13 | 18 | 72% |
+| **total** | **99** | **194** | **51%** |
+
+Note: these rates include genes with known primer mismatches and
+genes absent from the target species. Excluding those, recovery rates
+for genes with compatible primers are substantially higher.
