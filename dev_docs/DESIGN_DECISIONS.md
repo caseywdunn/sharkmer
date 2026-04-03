@@ -851,6 +851,20 @@ components that ultimately fail — Liriodendron goes from 9s to 67s
 with no gene gain at 200K.
 
 Users who need the marginal genes can increase the budget with
-`--node-budget-global 100000`. The per-component budget (20K) provides
-the real protection against runaway extension; the global budget is
-a backstop.
+`--node-budget-global 100000`.
+
+**Why 10K per-component.** A sweep of per-component budgets with global
+held at 100K (commit f7cbc90, 2026-04-03, same 14 samples at 1M reads):
+
+| Component budget | Total genes | Total time |
+| ---: | ---: | ---: |
+| 5K | 98 | 181s |
+| 10K | 110 | 194s |
+| 20K | 109 | 210s |
+
+10K is the sweet spot: +12 genes over 5K for only +13s. 20K actually
+loses 1 gene vs 10K while being slower — at 20K, off-target components
+consume enough budget to starve on-target components in some genes
+(e.g., Heliconius loses a gene at 20K that it finds at 10K). The
+per-component budget is the primary protection against runaway
+extension; the global budget is a backstop.
