@@ -868,3 +868,27 @@ consume enough budget to starve on-target components in some genes
 (e.g., Heliconius loses a gene at 20K that it finds at 10K). The
 per-component budget is the primary protection against runaway
 extension; the global budget is a backstop.
+
+### Why `--read-eval` is off by default
+
+Read-backed seed evaluation (`--read-eval`) retains primer-matching
+reads during Pass 1 and uses read divergence to reject off-target
+seeds. Benchmark comparison at 1M reads (commit b5d48ef, 2026-04-03,
+14 samples):
+
+| Mode | Total genes | Total time |
+| --- | ---: | ---: |
+| default | 106 | 160s |
+| --read-eval | 106 | 429s |
+
+Zero additional genes recovered, 2.7× slower. Some samples show large
+slowdowns (Gryllus 24s→136s, Drosophila 22s→65s). The component-
+prioritized architecture with per-component budgets (#112) already
+filters off-target seeds effectively at 1M reads, making read-eval
+redundant at this coverage level.
+
+`--read-eval` may still help at higher read counts (4M+) where more
+off-target seeds survive basic seed evaluation, or for specific genes
+where read divergence is the only signal distinguishing on-target from
+off-target seeds (e.g., Drosophila ITS at 4M in the failure analysis).
+It remains available as an opt-in flag for these cases.
