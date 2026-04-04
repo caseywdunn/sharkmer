@@ -149,6 +149,27 @@ fn main() -> Result<()> {
         None
     };
 
+    // Resolve global node budget: user-pinned or dynamic based on data volume
+    let node_budget_global = match args.node_budget_global {
+        Some(budget) => {
+            info!(
+                "Global node budget: {} (pinned via --node-budget-global)",
+                budget
+            );
+            budget
+        }
+        None => {
+            let budget = pcr::compute_node_budget(n_bases_ingested);
+            info!(
+                "Global node budget: {} (auto, based on {} bp ingested; ~{}M reads at 150bp). Pin with --node-budget-global.",
+                budget,
+                n_bases_ingested,
+                n_bases_ingested / 150_000_000
+            );
+            budget
+        }
+    };
+
     // Run in silico PCR
     let pcr_results = stats::run_pcr(
         &kmer_counts,
@@ -160,7 +181,7 @@ fn main() -> Result<()> {
         show_progress,
         threading_reads.as_deref(),
         &state.retained_reads,
-        args.node_budget_global,
+        node_budget_global,
     )?;
 
     // Build and write run statistics

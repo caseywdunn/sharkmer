@@ -244,9 +244,10 @@ pub(crate) struct Args {
     #[arg(long, help_heading = "General")]
     pub(crate) dry_run: bool,
 
-    /// Global node budget: maximum total nodes in the assembly graph
-    #[arg(long, default_value_t = crate::pcr::DEFAULT_MAX_NUM_NODES, help_heading = "PCR", hide = true)]
-    pub(crate) node_budget_global: usize,
+    /// Global node budget: maximum total nodes in the assembly graph.
+    /// If not set, scales automatically with data volume (100K–500K).
+    #[arg(long, help_heading = "PCR", hide = true)]
+    pub(crate) node_budget_global: Option<usize>,
 
     /// Maximum DFS states to explore per start node during path finding
     #[arg(long, default_value_t = crate::pcr::DEFAULT_MAX_DFS_STATES, help_heading = "PCR", hide = true)]

@@ -35,7 +35,7 @@ mod paths;
 mod primers;
 mod pruning;
 
-pub use graph::DEFAULT_MAX_NUM_NODES;
+pub use graph::compute_node_budget;
 pub use primers::{PrimerOligoSet, preprocess_primer_oligos};
 pub(crate) mod read_filter;
 mod seed_eval;

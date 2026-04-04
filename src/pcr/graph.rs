@@ -22,8 +22,38 @@ const EXTENSION_EVALUATION_FREQUENCY: usize = 1_000;
 /// The graph depth over which to evaluate ballooning growth
 pub(super) const EXTENSION_EVALUATION_DEPTH: usize = 4;
 
-/// Default node budget — give up if the graph gets too large
+/// Maximum global node budget (used at high data volumes)
 pub const DEFAULT_MAX_NUM_NODES: usize = 500_000;
+
+/// Minimum global node budget (used at low data volumes)
+const MIN_NODE_BUDGET: usize = 100_000;
+
+/// Bases ingested below which the minimum budget is used (~1M × 150bp reads)
+const BUDGET_LERP_LOW_BP: u64 = 150_000_000;
+
+/// Bases ingested above which the maximum budget is used (~5M × 150bp reads)
+const BUDGET_LERP_HIGH_BP: u64 = 750_000_000;
+
+/// Compute the global node budget based on data volume.
+///
+/// Lerps from 100K nodes (≤150M bp, ~1M reads at 150bp) to 500K nodes
+/// (≥750M bp, ~5M reads at 150bp). At low coverage, a smaller budget
+/// avoids wasting time on off-target components that can't produce
+/// products anyway. At high coverage, more seeds survive and need
+/// more budget to be tried.
+pub fn compute_node_budget(n_bases_ingested: u64) -> usize {
+    if n_bases_ingested <= BUDGET_LERP_LOW_BP {
+        MIN_NODE_BUDGET
+    } else if n_bases_ingested >= BUDGET_LERP_HIGH_BP {
+        DEFAULT_MAX_NUM_NODES
+    } else {
+        let fraction = (n_bases_ingested - BUDGET_LERP_LOW_BP) as f64
+            / (BUDGET_LERP_HIGH_BP - BUDGET_LERP_LOW_BP) as f64;
+        let budget =
+            MIN_NODE_BUDGET as f64 + fraction * (DEFAULT_MAX_NUM_NODES - MIN_NODE_BUDGET) as f64;
+        budget as usize
+    }
+}
 
 // HIGH_COVERAGE_RATIO_THRESHOLD is now read from params.high_coverage_ratio
 

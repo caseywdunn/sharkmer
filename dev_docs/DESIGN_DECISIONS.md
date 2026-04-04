@@ -830,30 +830,38 @@ the front. This makes extension O(n) in the number of nodes added.
 Benchmark: Agalma with `--max-nodes 200000` dropped from 347s to 65s
 (5.3× speedup).
 
-**Current budget defaults.** The global `--node-budget-global` is 500K.
-Per-component budgets (default 10K via `--node-budget-component`) bound
-each connected component independently, preventing any single off-target
-component from consuming the entire global budget.
+**Current budget defaults.** The global `--node-budget-global` is set
+dynamically based on data volume (#113). Per-component budgets (default
+10K via `--node-budget-component`) bound each connected component
+independently.
 
-**Why 500K global.** The global budget is a backstop, not the primary
-cost control — the per-component budget (10K) limits each component
-independently, and `first-product` stopping avoids extending further
-once a product is found. But the global budget must be large enough
-to accommodate genes with many seed components.
+**Why dynamic global budget.** The optimal global budget depends on
+read count. Sweep of 6 samples × 5 read counts × 4 budgets (k=19,
+commit 39fe56f, 2026-04-04):
 
-At high read counts, degenerate primers generate many surviving seeds
-(e.g., Drosophila 12S: 195 components at 16M reads). With a 50K
-global budget, only ~3 components could extend before the global
-budget was exhausted, causing genes that worked at 1M to fail at 16M.
-With 500K, the per-component budget is the effective limit: Drosophila
-insecta recovered 20/24 genes at 16M in 3m18s (vs 9/24 at 50K).
+| Reads | 50K | 100K | 200K | 500K |
+| ---: | ---: | ---: | ---: | ---: |
+| 1M | 72 (108s) | 76 (135s) | **81** (174s) | 81 (364s) |
+| 2M | 72 (241s) | 86 (194s) | 91 (246s) | **101** (369s) |
+| 4M | 72 (382s) | 81 (401s) | 90 (454s) | **98** (564s) |
+| 8M | 71 (721s) | 81 (744s) | 91 (759s) | **95** (851s) |
+| 16M | 66 (998s) | 71 (1107s) | 80 (1093s) | **88** (1163s) |
 
-The earlier global budget sweep (commit f7cbc90) was done before the
-frontier queue optimization. With O(n²) extension, 200K was too slow.
-With O(n) extension (commit bfea426), 500K is practical.
+At 1M reads, budget saturates at 200K — the 200K→500K step adds
+zero net genes but doubles runtime (174s→364s). It actually *hurts*
+Heliconius (-2 genes at 500K vs 200K) because off-target components
+extend further and interfere with on-target graph structure. Budget
+sensitivity at 1M is entirely in insecta panel samples with degenerate
+Marquina primers; cnidarian samples are insensitive (saturate at 50K).
 
-Users who need the marginal genes can increase the budget with
-`--node-budget-global 100000`.
+At 2M+ reads, 500K keeps gaining 4-10 genes per step with no
+saturation. More reads → more surviving seeds → more components
+needing budget. At 16M, Drosophila 12S has 195 components; a 50K
+global budget exhausts after ~3 components.
+
+The dynamic budget lerps from 100K (≤150M bp, ~1M reads) to 500K
+(≥750M bp, ~5M reads). Users can pin a specific value with
+`--node-budget-global`.
 
 **Why 10K per-component.** A sweep of per-component budgets with global
 held at 100K (commit f7cbc90, 2026-04-03, same 14 samples at 1M reads):
