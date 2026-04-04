@@ -298,6 +298,115 @@ def blast_sequence_remote(sequence, email):
     return parse_blast_xml(xml_text)
 
 
+def submit_blast_batch(fasta_text, email, program="blastn", database="nt"):
+    """Submit a multi-FASTA batch and return the RID."""
+    params = parse.urlencode({
+        "CMD": "Put",
+        "PROGRAM": program,
+        "DATABASE": database,
+        "QUERY": fasta_text,
+        "EXPECT": str(E_VALUE_THRESHOLD),
+        "HITLIST_SIZE": "1",
+        "FORMAT_TYPE": "XML",
+        "TOOL": "sharkmer_benchmark",
+        "EMAIL": email,
+    }).encode()
+
+    req = request.Request(BLAST_URL, data=params)
+    with request.urlopen(req, timeout=60) as response:
+        text = response.read().decode()
+
+    rid = None
+    for line in text.split("\n"):
+        if line.strip().startswith("RID = "):
+            rid = line.strip().split("= ")[1].strip()
+            break
+
+    if not rid:
+        raise RuntimeError(f"Failed to get RID from BLAST submission:\n{text[:500]}")
+
+    return rid
+
+
+def parse_blast_xml_batch(xml_text):
+    """Parse BLAST XML output with multiple iterations. Returns dict: query_id -> hit."""
+    root = ET.fromstring(xml_text)
+    iterations = root.findall(".//Iteration")
+    results = {}
+
+    for iteration in iterations:
+        # Query ID is in <Iteration_query-def> — we set it via FASTA header
+        query_def = iteration.findtext("Iteration_query-def", "").strip()
+        # Split to get just the ID (first token)
+        query_id = query_def.split()[0] if query_def else ""
+
+        hits = iteration.findall(".//Hit")
+        if not hits:
+            results[query_id] = None
+            continue
+
+        hit = hits[0]
+        hsp = hit.find(".//Hsp")
+        if hsp is None:
+            results[query_id] = None
+            continue
+
+        evalue = float(hsp.findtext("Hsp_evalue", "999"))
+        if evalue > E_VALUE_THRESHOLD:
+            results[query_id] = None
+            continue
+
+        hit_def = hit.findtext("Hit_def", "")
+        accession = hit.findtext("Hit_accession", "")
+        identity = int(hsp.findtext("Hsp_identity", "0"))
+        align_len = int(hsp.findtext("Hsp_align-len", "1"))
+        pct_identity = round(100.0 * identity / align_len, 1)
+
+        results[query_id] = {
+            "accession": accession,
+            "hit_def": hit_def[:200],
+            "evalue": evalue,
+            "pct_identity": pct_identity,
+            "align_length": align_len,
+        }
+
+    return results
+
+
+def blast_batch_remote(sequences_with_ids, email):
+    """Submit a batch of sequences as multi-FASTA. Returns dict: id -> hit (or None).
+
+    sequences_with_ids: list of (query_id, sequence) tuples.
+    """
+    fasta_lines = []
+    for query_id, seq in sequences_with_ids:
+        fasta_lines.append(f">{query_id}")
+        fasta_lines.append(seq)
+    fasta_text = "\n".join(fasta_lines)
+
+    rid = submit_blast_batch(fasta_text, email)
+    print(f"    Submitted batch RID: {rid} ({len(sequences_with_ids)} sequences)")
+
+    elapsed = 0
+    while elapsed < MAX_WAIT:
+        time.sleep(POLL_INTERVAL)
+        elapsed += POLL_INTERVAL
+        status = check_blast_status(rid)
+        if status == "READY":
+            break
+        if status not in ("WAITING",):
+            print(f"    Unexpected BLAST status: {status}")
+            return {}
+        print(f"    Waiting... ({elapsed}s)")
+
+    if elapsed >= MAX_WAIT:
+        print(f"    BLAST timed out after {MAX_WAIT}s")
+        return {}
+
+    xml_text = get_blast_results(rid)
+    return parse_blast_xml_batch(xml_text)
+
+
 def validate_results(result_path, dry_run=False):
     """Add BLAST validation to amplicons in a benchmark result file.
 
@@ -349,33 +458,53 @@ def validate_results(result_path, dry_run=False):
         print("Dry run — not submitting to BLAST.")
         return
 
-    seq_count = 0
-    for result in results:
-        sample = result.get("sample", "?")
-        max_reads = result.get("max_reads", "?")
-        products = result.get("products", [])
+    if mode == "remote":
+        # Batch remote BLAST: collect all sequences with unique IDs, submit in
+        # chunks, then map results back to products.
+        BATCH_SIZE = 50
+        batch = []  # list of (query_id, seq, product_ref, label)
+        all_entries = []  # (query_id, product_ref, label)
+        for result in results:
+            sample = result.get("sample", "?")
+            for product in result.get("products", []):
+                sequences = product.get("sequences", [])
+                if not sequences:
+                    continue
+                gene = product.get("gene", "?")
+                query_id = f"q{len(all_entries)}"
+                label = f"{sample} {gene} ({len(sequences[0])} bp)"
+                all_entries.append((query_id, sequences[0], product, label))
 
-        for product in products:
-            gene = product.get("gene", "?")
-            sequences = product.get("sequences", [])
+        print(
+            f"Batching {len(all_entries)} sequences into batches of {BATCH_SIZE}"
+        )
 
-            if not sequences:
-                continue
-
-            # Only BLAST product 0 (best amplicon) per gene
-            seq = sequences[0]
-            seq_count += 1
-            print(f"  [{seq_count}/{total_seqs}] {sample} {gene} ({len(seq)} bp)")
+        for batch_start in range(0, len(all_entries), BATCH_SIZE):
+            batch = all_entries[batch_start : batch_start + BATCH_SIZE]
+            batch_end = batch_start + len(batch)
+            print(
+                f"\nBatch {batch_start // BATCH_SIZE + 1}: sequences {batch_start + 1}-{batch_end} of {len(all_entries)}"
+            )
+            for _, _, _, label in batch:
+                print(f"  {label}")
 
             try:
-                if mode == "local":
-                    hit = blast_sequence_local(seq, local_db)
-                else:
-                    hit = blast_sequence_remote(seq, email)
+                sequences_with_ids = [(qid, seq) for qid, seq, _, _ in batch]
+                hits_by_id = blast_batch_remote(sequences_with_ids, email)
+            except Exception as e:
+                print(f"  Batch BLAST error: {e}")
+                for _, _, product, _ in batch:
+                    product["blast_hit"] = {"error": str(e)}
+                time.sleep(1)
+                continue
 
+            for query_id, _, product, label in batch:
+                hit = hits_by_id.get(query_id)
                 if hit:
                     product["blast_hit"] = hit
-                    print(f"    Hit: {hit['accession']} {hit['pct_identity']}% {hit['hit_def'][:80]}")
+                    print(
+                        f"  {label} -> {hit['accession']} {hit['pct_identity']}% {hit['hit_def'][:60]}"
+                    )
                 else:
                     product["blast_hit"] = {
                         "accession": None,
@@ -383,14 +512,45 @@ def validate_results(result_path, dry_run=False):
                         "evalue": None,
                         "pct_identity": None,
                     }
-                    print(f"    No significant hit")
-            except Exception as e:
-                print(f"    BLAST error: {e}")
-                product["blast_hit"] = {"error": str(e)}
+                    print(f"  {label} -> no significant hit")
 
-            # NCBI rate limit: max 1 request per second (we already wait 30s in polling)
-            if mode == "remote":
-                time.sleep(1)
+            time.sleep(1)
+    else:
+        # Local BLAST: one sequence at a time (fast enough)
+        seq_count = 0
+        for result in results:
+            sample = result.get("sample", "?")
+            products = result.get("products", [])
+
+            for product in products:
+                gene = product.get("gene", "?")
+                sequences = product.get("sequences", [])
+
+                if not sequences:
+                    continue
+
+                seq = sequences[0]
+                seq_count += 1
+                print(f"  [{seq_count}/{total_seqs}] {sample} {gene} ({len(seq)} bp)")
+
+                try:
+                    hit = blast_sequence_local(seq, local_db)
+                    if hit:
+                        product["blast_hit"] = hit
+                        print(
+                            f"    Hit: {hit['accession']} {hit['pct_identity']}% {hit['hit_def'][:80]}"
+                        )
+                    else:
+                        product["blast_hit"] = {
+                            "accession": None,
+                            "hit_def": "no significant hit",
+                            "evalue": None,
+                            "pct_identity": None,
+                        }
+                        print(f"    No significant hit")
+                except Exception as e:
+                    print(f"    BLAST error: {e}")
+                    product["blast_hit"] = {"error": str(e)}
 
     # Record which BLAST mode was used
     benchmark["blast_mode"] = mode
