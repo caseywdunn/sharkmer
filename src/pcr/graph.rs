@@ -23,7 +23,7 @@ const EXTENSION_EVALUATION_FREQUENCY: usize = 1_000;
 pub(super) const EXTENSION_EVALUATION_DEPTH: usize = 4;
 
 /// Default node budget — give up if the graph gets too large
-pub const DEFAULT_MAX_NUM_NODES: usize = 50_000;
+pub const DEFAULT_MAX_NUM_NODES: usize = 500_000;
 
 // HIGH_COVERAGE_RATIO_THRESHOLD is now read from params.high_coverage_ratio
 
