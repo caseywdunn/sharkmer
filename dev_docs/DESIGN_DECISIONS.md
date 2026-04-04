@@ -916,8 +916,26 @@ and more balanced across samples (k=17 has spectacular wins on some
 samples but loses on others). k=15 is too short for eukaryotes but
 best for bacteria.
 
-The current default remains k=21 pending validation at higher read
-counts. If k=19 holds up at 4M-16M reads, it should become the
-default. The optimal k may also vary by panel — bacterial 16S benefits
-from shorter k while nuclear genes in large genomes need longer k for
-specificity.
+**Sweep across read counts** (commit b0b0ff9, 2026-04-03, 7 sweep
+samples with coverage data at 2M-16M):
+
+| Reads | k=17 | k=19 | k=21 | k=25 | k=31 |
+| ---: | ---: | ---: | ---: | ---: | ---: |
+| 1M | **119** | **119** | 103 | 97 | 95 |
+| 2M | **79** | 77 | 69 | 66 | 67 |
+| 4M | **80** | 78 | 66 | 70 | 69 |
+| 8M | 73 | **77** | 74 | 69 | 69 |
+| 16M | 69 | **72** | 70 | 70 | 70 |
+
+(1M row is 14 samples; 2M-16M rows are the 7 sweep samples only, so
+totals are not directly comparable across rows.)
+
+k=17 wins at low coverage (1M-4M) but degrades at 16M (80→69). k=19
+is the most stable: best or tied-best at 8M-16M, competitive at 1M-4M,
+and never worst at any level. All k values converge at high coverage
+(16M gap is only 3 genes). k=21-31 consistently underperform.
+
+**Decision: default k=19.** k=19 is the best single value across the
+coverage range. Users working with AT-rich organisms or low coverage
+can try k=17. Users needing maximum specificity at very high coverage
+can use k=25 or k=31.

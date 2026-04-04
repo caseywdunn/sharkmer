@@ -185,7 +185,7 @@ pub(crate) struct Args {
     pub(crate) help_pcr: bool,
 
     /// Kmer length
-    #[arg(short, default_value_t = 21, help_heading = "Kmer")]
+    #[arg(short, default_value_t = 19, help_heading = "Kmer")]
     pub(crate) k: usize,
 
     /// Number of incremental chunks (0 = skip histograms)

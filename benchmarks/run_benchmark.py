@@ -41,7 +41,7 @@ CACHE_DIR = REPO_ROOT / "benchmarks" / "data" / "cache"
 OUTPUT_DIR = REPO_ROOT / "benchmarks" / "output"
 RESULTS_DIR = REPO_ROOT / "benchmarks" / "results"
 
-K = 31
+K = 19  # Match sharkmer default; see dev_docs/DESIGN_DECISIONS.md for k sweep
 THREADS = 8
 DEFAULT_MAX_READS = [1_000_000]
 
