@@ -13,22 +13,10 @@ sample:
 ### Public datasets of paired-end reads from NCBI SRA
 
 # Selected cndiarian datasets — coverage sweep for nuclear gene sensitivity
-    Porites_lutea:
-        taxonomy: "Eumetazoa; Cnidaria; Anthozoa; Hexacorallia; Scleractinia; Fungiina; Poritidae; Porites"
-        reads:
-            # - SRR2976390 # low quality at end of reads, small dataset. Alternate options - ERS514281
-            - ERR571460
-        arguments: "--pcr-panel cnidaria"
-        max_reads:
-            - 16000000
-            - 8000000
-            - 4000000
-            - 2000000
-            - 1000000
-        genome:
-            accession: "GCA_958299795.1"
-            size_mb: 541.6
-            n50_mb: 36
+
+    # Porites_lutea removed: ERR571460 has almost no mitochondrial reads,
+    # making it uninformative for mt gene benchmarking and confusing results.
+    # See dev_docs/failure_analysis.md for details.
 
     Xenia_sp:
         taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Xeniidae; Xenia; unclassified Xenia"
