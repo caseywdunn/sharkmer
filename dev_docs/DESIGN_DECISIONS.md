@@ -830,25 +830,27 @@ the front. This makes extension O(n) in the number of nodes added.
 Benchmark: Agalma with `--max-nodes 200000` dropped from 347s to 65s
 (5.3× speedup).
 
-**Current budget defaults.** The global `--node-budget-global` is 50K.
-Per-component budgets (default 20K via `--node-budget-component`) bound
+**Current budget defaults.** The global `--node-budget-global` is 500K.
+Per-component budgets (default 10K via `--node-budget-component`) bound
 each connected component independently, preventing any single off-target
 component from consuming the entire global budget.
 
-**Why 50K global.** A sweep across 14 benchmark samples at 1M reads
-(commit f7cbc90, 2026-04-03) shows diminishing returns above 50K:
+**Why 500K global.** The global budget is a backstop, not the primary
+cost control — the per-component budget (10K) limits each component
+independently, and `first-product` stopping avoids extending further
+once a product is found. But the global budget must be large enough
+to accommodate genes with many seed components.
 
-| Budget | Total genes | Total time | Marginal genes | Marginal time |
-| ---: | ---: | ---: | ---: | ---: |
-| 50K | 106 | 159s | — | — |
-| 100K | 109 | 214s | +3 | +55s |
-| 200K | 110 | 296s | +1 | +82s |
+At high read counts, degenerate primers generate many surviving seeds
+(e.g., Drosophila 12S: 195 components at 16M reads). With a 50K
+global budget, only ~3 components could extend before the global
+budget was exhausted, causing genes that worked at 1M to fail at 16M.
+With 500K, the per-component budget is the effective limit: Drosophila
+insecta recovered 20/24 genes at 16M in 3m18s (vs 9/24 at 50K).
 
-The 50K→100K step recovers 3 additional genes (Gryllus) but costs 34%
-more time. The 100K→200K step recovers only 1 more gene (Drosophila)
-at 38% more time. Most of the extra time is spent on off-target
-components that ultimately fail — Liriodendron goes from 9s to 67s
-with no gene gain at 200K.
+The earlier global budget sweep (commit f7cbc90) was done before the
+frontier queue optimization. With O(n²) extension, 200K was too slow.
+With O(n) extension (commit bfea426), 500K is practical.
 
 Users who need the marginal genes can increase the budget with
 `--node-budget-global 100000`.
