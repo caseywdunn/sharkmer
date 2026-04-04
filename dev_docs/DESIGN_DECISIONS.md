@@ -892,3 +892,32 @@ off-target seeds survive basic seed evaluation, or for specific genes
 where read divergence is the only signal distinguishing on-target from
 off-target seeds (e.g., Drosophila ITS at 4M in the failure analysis).
 It remains available as an opt-in flag for these cases.
+
+### Kmer size (`-k`) selection
+
+The kmer size controls the trade-off between specificity (longer kmers
+= simpler graphs, fewer false extensions) and sensitivity (shorter
+kmers = higher per-kmer coverage, bridging low-complexity regions).
+
+**Sweep at 1M reads** (commit b5d48ef, 2026-04-03, 14 benchmark
+samples, `--pcr-stopping-criteria first-product`):
+
+| k | Total genes | Total time | Notes |
+| ---: | ---: | ---: | --- |
+| 15 | 79 | 187s | Too short: branching kills most eukaryotes; bacteria benefit |
+| 17 | **119** | 188s | Best for Rhopilema (21), Drosophila (15), Acer (10) |
+| 19 | **119** | 150s | Best for Heliconius (12), Gryllus (16); faster than k=17 |
+| 21 | 103 | 154s | Current default; safe but suboptimal |
+| 25 | 97 | 154s | Declining — longer kmers need more coverage |
+| 31 | 95 | 154s | Worst for most samples |
+
+k=17 and k=19 both recover 16 more genes than k=21. k=19 is faster
+and more balanced across samples (k=17 has spectacular wins on some
+samples but loses on others). k=15 is too short for eukaryotes but
+best for bacteria.
+
+The current default remains k=21 pending validation at higher read
+counts. If k=19 holds up at 4M-16M reads, it should become the
+default. The optimal k may also vary by panel — bacterial 16S benefits
+from shorter k while nuclear genes in large genomes need longer k for
+specificity.
