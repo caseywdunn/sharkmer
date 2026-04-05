@@ -92,7 +92,7 @@ struct ExpectedGene {
 
 /// Parse a YAML string into a PanelFile.
 fn parse_panel_yaml(yaml_str: &str) -> Result<PanelFile> {
-    serde_yml::from_str(yaml_str).context("Failed to parse panel YAML")
+    serde_yaml_ng::from_str(yaml_str).context("Failed to parse panel YAML")
 }
 
 /// Check whether a string looks like a URL.

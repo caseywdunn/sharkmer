@@ -303,14 +303,14 @@ fn read_meta(path: &Path) -> Result<Option<CacheMeta>> {
     }
     let contents = std::fs::read_to_string(path)
         .with_context(|| format!("Failed to read sidecar {}", path.display()))?;
-    let meta: CacheMeta = serde_yml::from_str(&contents)
+    let meta: CacheMeta = serde_yaml_ng::from_str(&contents)
         .map_err(|e| anyhow::anyhow!("Failed to parse sidecar {}: {}", path.display(), e))?;
     Ok(Some(meta))
 }
 
 /// Write sidecar metadata to a JSON file.
 fn write_meta(path: &Path, meta: &CacheMeta) -> Result<()> {
-    let contents = serde_yml::to_string(meta)
+    let contents = serde_yaml_ng::to_string(meta)
         .map_err(|e| anyhow::anyhow!("Failed to serialize cache sidecar: {}", e))?;
     std::fs::write(path, contents)
         .with_context(|| format!("Failed to write sidecar {}", path.display()))?;
@@ -541,7 +541,7 @@ mod tests {
     fn test_meta_backward_compat() {
         // Old sidecar YAML without n_reads should deserialize with n_reads=0
         let yaml = "url: http://example.com/test.fastq.gz\nsha256: abc123\ncomplete: true\n";
-        let meta: CacheMeta = serde_yml::from_str(yaml).unwrap();
+        let meta: CacheMeta = serde_yaml_ng::from_str(yaml).unwrap();
         assert_eq!(meta.n_reads, 0);
         assert!(meta.complete);
     }
