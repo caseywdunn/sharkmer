@@ -95,44 +95,56 @@ fn compute_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>, default: f64
     }
 }
 
+/// Shortest path length (in edges) from any start node to `new_node`,
+/// walking the graph along incoming edges. Returns `None` if no start
+/// node is reachable (disconnected or cycle-isolated).
+///
+/// Uses BFS rather than a first-incoming-neighbor chain walk. In graphs
+/// where `new_node` has multiple ancestral paths (merges, bubbles in the
+/// amplicon), the first-neighbor approach would pick an arbitrary — and
+/// often longer — path, causing `extend_graph` and `prepare_for_lower_threshold`
+/// to over-estimate the node's distance from start and mark it terminal
+/// prematurely, prematurely halting extension before a valid amplicon
+/// could be recovered. BFS guarantees the correct shortest distance
+/// regardless of petgraph iteration order.
+///
+/// Complexity is O(V+E) worst case, but ancestry is typically bounded
+/// by max_length / k (≈ 50 nodes for default parameters), so the hot
+/// path during extension remains cheap.
 pub fn get_path_length(
     graph: &StableDiGraph<DBNode, DBEdge>,
     new_node: NodeIndex,
 ) -> Result<Option<usize>> {
-    // Get the length of the path from the start node to the new node.
-    // Use a bounded counter instead of a HashSet to detect cycles:
-    // the graph has at most graph.node_count() nodes, so any path
-    // longer than that must contain a cycle.
-    let max_steps = graph.node_count();
-    let mut path_length = 0;
-    let mut current_node = new_node;
+    let start_data = graph
+        .node_weight(new_node)
+        .context("Node not found in graph during path length calculation")?;
+    if start_data.is_start {
+        return Ok(Some(0));
+    }
 
-    loop {
-        // If we've taken more steps than there are nodes, we're in a cycle
-        if path_length > max_steps {
-            return Ok(None);
-        }
+    let mut visited: HashSet<NodeIndex> = HashSet::new();
+    let mut queue: VecDeque<(NodeIndex, usize)> = VecDeque::new();
+    visited.insert(new_node);
+    queue.push_back((new_node, 0));
 
-        let current_node_data = graph
-            .node_weight(current_node)
-            .context("Node not found in graph during path length calculation")?;
-        if current_node_data.is_start {
-            break;
-        }
-
-        path_length += 1;
-        if let Some(next_node) = graph
-            .neighbors_directed(current_node, Direction::Incoming)
-            .next()
-        {
-            current_node = next_node;
-        } else {
-            // Node has no incoming edge — may be a reverse-extended node
-            // that hasn't connected to a start node yet
-            return Ok(None);
+    while let Some((node, dist)) = queue.pop_front() {
+        for neighbor in graph.neighbors_directed(node, Direction::Incoming) {
+            if !visited.insert(neighbor) {
+                continue;
+            }
+            let neighbor_data = graph
+                .node_weight(neighbor)
+                .context("Node not found in graph during path length calculation")?;
+            if neighbor_data.is_start {
+                return Ok(Some(dist + 1));
+            }
+            queue.push_back((neighbor, dist + 1));
         }
     }
-    Ok(Some(path_length))
+    // No start node reachable via incoming edges — may be a reverse-
+    // extended node that hasn't yet connected to a start, or a node
+    // isolated inside a cycle.
+    Ok(None)
 }
 
 pub fn get_dbedge(kmer: &u64, kmer_counts: &FilteredKmerCounts) -> DBEdge {
@@ -657,39 +669,42 @@ pub(super) fn extend_graph(
 
 /// Trace forward (outgoing edges) from a node to find the shortest path to an
 /// end node. Returns `None` if a cycle is encountered before reaching an end.
+/// Mirror of `get_path_length` walking forward along outgoing edges to
+/// the nearest end node. BFS for the same reason as the forward version:
+/// a first-outgoing-neighbor walk would over-estimate distance on graphs
+/// with outgoing merges, causing premature terminal marking of nodes
+/// that are in fact within `max_length` of an end via the shortest path.
 pub fn get_path_length_from_end(
     graph: &StableDiGraph<DBNode, DBEdge>,
     new_node: NodeIndex,
 ) -> Result<Option<usize>> {
-    let max_steps = graph.node_count();
-    let mut path_length = 0;
-    let mut current_node = new_node;
+    let start_data = graph
+        .node_weight(new_node)
+        .context("Node not found in graph during path length calculation")?;
+    if start_data.is_end {
+        return Ok(Some(0));
+    }
 
-    loop {
-        if path_length > max_steps {
-            return Ok(None);
-        }
+    let mut visited: HashSet<NodeIndex> = HashSet::new();
+    let mut queue: VecDeque<(NodeIndex, usize)> = VecDeque::new();
+    visited.insert(new_node);
+    queue.push_back((new_node, 0));
 
-        let current_node_data = graph
-            .node_weight(current_node)
-            .context("Node not found in graph during path length calculation")?;
-        if current_node_data.is_end {
-            break;
-        }
-
-        path_length += 1;
-        if let Some(next_node) = graph
-            .neighbors_directed(current_node, Direction::Outgoing)
-            .next()
-        {
-            current_node = next_node;
-        } else {
-            // Node has no outgoing edge and is not an end node — during
-            // reverse extension, new nodes may not yet have outgoing paths.
-            return Ok(None);
+    while let Some((node, dist)) = queue.pop_front() {
+        for neighbor in graph.neighbors_directed(node, Direction::Outgoing) {
+            if !visited.insert(neighbor) {
+                continue;
+            }
+            let neighbor_data = graph
+                .node_weight(neighbor)
+                .context("Node not found in graph during path length calculation")?;
+            if neighbor_data.is_end {
+                return Ok(Some(dist + 1));
+            }
+            queue.push_back((neighbor, dist + 1));
         }
     }
-    Ok(Some(path_length))
+    Ok(None)
 }
 
 /// Extend graph in reverse from end nodes by adding predecessor edges/nodes.
@@ -1072,5 +1087,111 @@ pub(super) fn log_extended_graph_diagnostics(
             crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(kmer_counts.get_k() - 1)),
             edge_count
         );
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn mk_node(sub_kmer: u64, is_start: bool, is_end: bool) -> DBNode {
+        DBNode {
+            sub_kmer,
+            is_start,
+            is_end,
+            is_terminal: false,
+            visited: false,
+        }
+    }
+
+    fn mk_edge(count: u32) -> DBEdge {
+        DBEdge {
+            count,
+            coverage_ratio: 1.0,
+        }
+    }
+
+    /// get_path_length must return the SHORTEST distance from any start
+    /// to the target node. Under the old first-incoming-neighbor walk,
+    /// the result depended on petgraph iteration order and could return
+    /// the length of an arbitrary longer ancestral path, causing callers
+    /// in extend_graph and prepare_for_lower_threshold to mark nodes
+    /// terminal prematurely.
+    ///
+    /// Graph topology for this test:
+    ///
+    ///     start ---> a ---> b ---> c ---> target
+    ///       |                              ^
+    ///       +----------- d ----------------+
+    ///
+    /// The shortest path from start to target is 2 edges (start -> d -> target).
+    /// A first-neighbor walk from target could follow the longer 4-edge
+    /// path (target <- c <- b <- a <- start) depending on which incoming
+    /// edge petgraph happens to return first.
+    #[test]
+    fn test_get_path_length_returns_shortest() {
+        let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+        let start = graph.add_node(mk_node(0, true, false));
+        let a = graph.add_node(mk_node(1, false, false));
+        let b = graph.add_node(mk_node(2, false, false));
+        let c = graph.add_node(mk_node(3, false, false));
+        let d = graph.add_node(mk_node(4, false, false));
+        let target = graph.add_node(mk_node(5, false, false));
+
+        // Long path: start -> a -> b -> c -> target (4 edges)
+        graph.add_edge(start, a, mk_edge(5));
+        graph.add_edge(a, b, mk_edge(5));
+        graph.add_edge(b, c, mk_edge(5));
+        graph.add_edge(c, target, mk_edge(5));
+        // Short path: start -> d -> target (2 edges)
+        graph.add_edge(start, d, mk_edge(5));
+        graph.add_edge(d, target, mk_edge(5));
+
+        let result = get_path_length(&graph, target)
+            .expect("no error")
+            .expect("start must be reachable");
+        assert_eq!(
+            result, 2,
+            "get_path_length must return the shortest path, not the first-neighbor walk"
+        );
+    }
+
+    /// Symmetric test for the forward (outgoing) version.
+    #[test]
+    fn test_get_path_length_from_end_returns_shortest() {
+        let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+        let target = graph.add_node(mk_node(0, false, false));
+        let a = graph.add_node(mk_node(1, false, false));
+        let b = graph.add_node(mk_node(2, false, false));
+        let c = graph.add_node(mk_node(3, false, false));
+        let d = graph.add_node(mk_node(4, false, false));
+        let end = graph.add_node(mk_node(5, false, true));
+
+        graph.add_edge(target, a, mk_edge(5));
+        graph.add_edge(a, b, mk_edge(5));
+        graph.add_edge(b, c, mk_edge(5));
+        graph.add_edge(c, end, mk_edge(5));
+        graph.add_edge(target, d, mk_edge(5));
+        graph.add_edge(d, end, mk_edge(5));
+
+        let result = get_path_length_from_end(&graph, target)
+            .expect("no error")
+            .expect("end must be reachable");
+        assert_eq!(result, 2, "must return shortest path to an end node");
+    }
+
+    /// Cycle with no reachable start: must return None rather than loop
+    /// or report a spurious length.
+    #[test]
+    fn test_get_path_length_cycle_returns_none() {
+        let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+        let a = graph.add_node(mk_node(0, false, false));
+        let b = graph.add_node(mk_node(1, false, false));
+        let c = graph.add_node(mk_node(2, false, false));
+        graph.add_edge(a, b, mk_edge(5));
+        graph.add_edge(b, c, mk_edge(5));
+        graph.add_edge(c, a, mk_edge(5)); // cycle, no start
+
+        assert!(get_path_length(&graph, c).expect("no error").is_none());
     }
 }
