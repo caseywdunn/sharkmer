@@ -77,8 +77,7 @@ impl CacheConfig {
                 "Cache checksum mismatch for {} (expected {}, got {}), re-downloading",
                 url, meta.sha256, actual_sha256
             );
-            let _ = std::fs::remove_file(&data_path);
-            let _ = std::fs::remove_file(&meta_path);
+            evict_stale(&data_path, &meta_path);
             return Ok(None);
         }
 
@@ -101,8 +100,7 @@ impl CacheConfig {
                     },
                     url
                 );
-                let _ = std::fs::remove_file(&data_path);
-                let _ = std::fs::remove_file(&meta_path);
+                evict_stale(&data_path, &meta_path);
                 return Ok(None);
             }
         }
@@ -286,6 +284,24 @@ impl CacheConfig {
 }
 
 /// Compute a deterministic cache key from a URL (hex-encoded SHA-256).
+/// Remove a stale cache entry (data file and sidecar). Logs a warning if
+/// removal fails, but does not error — the next download attempt will
+/// overwrite the stale file, and failing silently here would leave the
+/// cache in an inconsistent state without any user-visible signal.
+fn evict_stale(data_path: &Path, meta_path: &Path) {
+    for path in [data_path, meta_path] {
+        if let Err(e) = std::fs::remove_file(path) {
+            if e.kind() != std::io::ErrorKind::NotFound {
+                warn!(
+                    "Failed to remove stale cache entry {}: {}",
+                    path.display(),
+                    e
+                );
+            }
+        }
+    }
+}
+
 fn cache_key(url: &str) -> String {
     let mut hasher = Sha256::new();
     hasher.update(url.as_bytes());

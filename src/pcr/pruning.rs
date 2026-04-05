@@ -20,13 +20,18 @@ pub fn remove_low_coverage_tips(
     k: &usize,
     tip_coverage_fraction: f64,
 ) {
+    // Compute the coverage reference once, from the full graph, before any
+    // tips are removed. Using the pre-pruning median is both faster (no
+    // O(n log n) resort per iteration) and more stable: as low-coverage
+    // tips fall away, the median would drift upward, making the threshold
+    // more aggressive on later iterations — an arbitrary dependence on
+    // pruning order rather than on the amplicon's actual coverage profile.
+    let median_count = global_median_edge_count(graph).unwrap_or(1.0);
+    let min_tip_count = (median_count * tip_coverage_fraction).max(1.0);
+
     let mut removed = 1;
     while removed > 0 {
         removed = 0;
-
-        // Compute global median edge count as coverage reference
-        let median_count = global_median_edge_count(graph).unwrap_or(1.0);
-        let min_tip_count = (median_count * tip_coverage_fraction).max(1.0);
 
         let nodes_to_remove: Vec<NodeIndex> = graph
             .node_indices()

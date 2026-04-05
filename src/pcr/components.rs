@@ -275,8 +275,14 @@ pub(super) fn prioritize_components(components: &mut [SeedComponent]) {
     });
 }
 
-/// Allocate node budgets to components proportional to seed count,
-/// with a minimum floor per component.
+/// Allocate node budgets to components proportional to seed count, with a
+/// minimum floor per component.
+///
+/// If applying the requested floor to every component would cause their
+/// summed budgets to exceed `total_budget`, the floor is scaled down to the
+/// largest value that still fits (i.e. `total_budget / num_components`).
+/// This preserves fairness across components while guaranteeing that the
+/// sum of per-component budgets is `<= total_budget`.
 pub(super) fn allocate_budgets(
     components: &mut [SeedComponent],
     total_budget: usize,
@@ -286,12 +292,36 @@ pub(super) fn allocate_budgets(
         return;
     }
 
+    let num_components = components.len();
+    let effective_min = if min_per_component.saturating_mul(num_components) > total_budget {
+        total_budget / num_components
+    } else {
+        min_per_component
+    };
+
     let total_seeds: usize = components.iter().map(|c| c.seed_count().max(1)).sum();
 
     for comp in components.iter_mut() {
         let proportional =
             (comp.seed_count().max(1) as f64 / total_seeds as f64 * total_budget as f64) as usize;
-        comp.node_budget = proportional.max(min_per_component);
+        comp.node_budget = proportional.max(effective_min);
+    }
+
+    // Final safety: if floating-point rounding pushed the sum above budget
+    // (e.g. from several proportional allocations each rounding up), trim
+    // from the lowest-priority components until the sum fits. Components
+    // are ordered highest-priority first by `rank_components`.
+    let sum: usize = components.iter().map(|c| c.node_budget).sum();
+    if sum > total_budget {
+        let mut excess = sum - total_budget;
+        for comp in components.iter_mut().rev() {
+            if excess == 0 {
+                break;
+            }
+            let trim = excess.min(comp.node_budget.saturating_sub(1));
+            comp.node_budget -= trim;
+            excess -= trim;
+        }
     }
 }
 
@@ -452,6 +482,41 @@ mod tests {
         for comp in &components {
             assert!(comp.node_budget >= 1000);
         }
+    }
+
+    /// When the requested min_per_component × num_components exceeds
+    /// total_budget, the summed budget must not overflow total_budget.
+    #[test]
+    fn test_budget_allocation_respects_total() {
+        let mut eval = SeedEvalResult {
+            seed_metrics: Vec::new(),
+            connections: Vec::new(),
+        };
+        let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+        // 20 disconnected forward-only seed components.
+        for i in 0..20u64 {
+            let n = graph.add_node(DBNode {
+                sub_kmer: i,
+                is_start: true,
+                is_end: false,
+                is_terminal: false,
+                visited: false,
+            });
+            eval.seed_metrics
+                .push((n, true, make_metrics(10, 0, false)));
+        }
+
+        let mut components = identify_components(&eval, &graph);
+        // total_budget=10000, min_per_component=1000, 20 components:
+        // naive floor would give 20*1000 = 20000 > 10000.
+        allocate_budgets(&mut components, 10000, 1000);
+
+        let sum: usize = components.iter().map(|c| c.node_budget).sum();
+        assert!(
+            sum <= 10000,
+            "sum of per-component budgets ({}) exceeds total_budget (10000)",
+            sum
+        );
     }
 
     #[test]

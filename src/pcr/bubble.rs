@@ -108,7 +108,12 @@ fn detect_simple_bubbles(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<Bubble> {
             continue;
         }
 
-        // Trace each branch to find convergence
+        // Trace each branch to find convergence. Branches that terminate
+        // by running out of depth budget (MAX_BUBBLE_DEPTH) are discarded
+        // rather than recorded: they may or may not converge somewhere
+        // past the horizon, and pretending their current position is a
+        // bubble sink would fabricate a bubble from two unrelated paths
+        // that happen to land on the same node at the depth cutoff.
         let mut branch_endpoints: HashMap<NodeIndex, Vec<Vec<EdgeIndex>>> = HashMap::new();
 
         for edge_ref in &outgoing {
@@ -118,16 +123,23 @@ fn detect_simple_bubbles(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<Bubble> {
             let mut visited = HashSet::new();
             visited.insert(source);
             let mut depth = 0;
+            let mut terminated_naturally = false;
 
             // Follow linear path (single outgoing edge) until branch or convergence
             loop {
                 if depth >= MAX_BUBBLE_DEPTH {
+                    // Hit the depth limit without reaching a branch point,
+                    // dead end, or cycle. We cannot classify this branch.
                     break;
                 }
                 depth += 1;
 
                 if visited.contains(&current) {
-                    break; // cycle
+                    // Cycle detected: the branch looped back to an
+                    // already-visited node. This is not a real sink,
+                    // so drop the branch rather than treat the loop
+                    // point as a convergence candidate.
+                    break;
                 }
                 visited.insert(current);
 
@@ -140,15 +152,20 @@ fn detect_simple_bubbles(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<Bubble> {
                     current = next_edges[0].target();
                 } else {
                     // Branch point or dead end: record endpoint
+                    terminated_naturally = true;
                     break;
                 }
             }
 
-            // Record where this branch ended up
-            branch_endpoints
-                .entry(current)
-                .or_default()
-                .push(branch_edges);
+            // Only record branches that terminated naturally — at a branch
+            // point, dead end, or detected cycle. Depth-limited branches
+            // are dropped.
+            if terminated_naturally {
+                branch_endpoints
+                    .entry(current)
+                    .or_default()
+                    .push(branch_edges);
+            }
         }
 
         // A bubble exists if 2+ branches converge at the same sink
@@ -217,14 +234,44 @@ fn rank_branches(
         });
     }
 
-    // Sort by total evidence (descending)
+    // Sort by total evidence (descending). When two branches tie on
+    // evidence, we need a tiebreaker that is stable across runs — otherwise
+    // the winner depends on HashMap iteration order (via branch_endpoints
+    // in detect_simple_bubbles), which changes across hash seeds and leaks
+    // non-determinism into the output sequence. Use the canonical kmer of
+    // each branch's first edge as the tiebreaker: it is a content-derived
+    // value that stays the same regardless of graph insertion order.
     rankings.sort_by(|a, b| {
         let a_total = a.total_read_support + a.phasing_support;
         let b_total = b.total_read_support + b.phasing_support;
-        b_total.cmp(&a_total)
+        b_total.cmp(&a_total).then_with(|| {
+            let a_key = branch_sort_key(graph, &a.edges);
+            let b_key = branch_sort_key(graph, &b.edges);
+            a_key.cmp(&b_key)
+        })
     });
 
     rankings
+}
+
+/// Deterministic sort key for a branch: the reconstructed directional
+/// kmer of the branch's first edge. Two branches of the same bubble
+/// diverge at a shared source node with distinct outgoing edges, so
+/// their first edges have different target sub_kmers and therefore
+/// different directional kmers — no canonicalization is needed to make
+/// the key unique within a single bubble. The value is content-derived
+/// (depends only on node sub_kmers, which are determined by the input
+/// kmer sequences), so it is stable across runs regardless of HashMap
+/// iteration order during graph construction.
+fn branch_sort_key(graph: &StableDiGraph<DBNode, DBEdge>, edges: &[EdgeIndex]) -> u64 {
+    let first = match edges.first() {
+        Some(&e) => e,
+        None => return 0,
+    };
+    let (src, tgt) = graph
+        .edge_endpoints(first)
+        .expect("edge must exist in graph");
+    (graph[src].sub_kmer << 2) | (graph[tgt].sub_kmer & 3)
 }
 
 #[cfg(test)]
@@ -390,5 +437,97 @@ mod tests {
 
         let bubbles = detect_simple_bubbles(&graph);
         assert!(bubbles.is_empty());
+    }
+
+    /// Two branches that never converge within MAX_BUBBLE_DEPTH must not be
+    /// recorded as a bubble, even if their depth-limited endpoints happen
+    /// to share a node. The old code treated the depth-cutoff position as
+    /// a sink, which could fabricate bubbles from unrelated long paths.
+    #[test]
+    fn test_depth_limited_branches_not_a_bubble() {
+        let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+        // Two long linear branches from a shared source. Neither ever
+        // reaches a real convergence point — they just run off into
+        // the distance. MAX_BUBBLE_DEPTH is 50, so we make each branch
+        // 60 nodes long.
+        let source = graph.add_node(DBNode {
+            sub_kmer: 0,
+            is_start: true,
+            is_end: false,
+            is_terminal: false,
+            visited: false,
+        });
+        let mk_chain = |graph: &mut StableDiGraph<DBNode, DBEdge>, base: u64| -> NodeIndex {
+            let mut prev = source;
+            for i in 0..60u64 {
+                let n = graph.add_node(DBNode {
+                    sub_kmer: base + i + 1,
+                    is_start: false,
+                    is_end: false,
+                    is_terminal: true,
+                    visited: false,
+                });
+                graph.add_edge(
+                    prev,
+                    n,
+                    DBEdge {
+                        count: 5,
+                        coverage_ratio: 1.0,
+                    },
+                );
+                prev = n;
+            }
+            prev
+        };
+        let _ = mk_chain(&mut graph, 1000);
+        let _ = mk_chain(&mut graph, 2000);
+
+        let bubbles = detect_simple_bubbles(&graph);
+        assert!(
+            bubbles.is_empty(),
+            "depth-limited branches must not be classified as a bubble"
+        );
+    }
+
+    /// Tiebreaking must produce deterministic ranking when two branches
+    /// have equal read support. The winner must be independent of the
+    /// bubble's internal HashMap iteration order across runs.
+    #[test]
+    fn test_bubble_tiebreak_is_deterministic() {
+        let graph = make_bubble_graph();
+        // Both branches get identical support — the tie is resolved by
+        // the content-derived branch_sort_key.
+        let mut annotations = ThreadingAnnotations {
+            edge_support: HashMap::new(),
+            branch_links: HashMap::new(),
+            paired_links: Vec::new(),
+        };
+        for e in graph.edge_indices() {
+            annotations.edge_support.insert(
+                e,
+                super::super::threading::EdgeReadSupport {
+                    read_support_total: 10,
+                    read_support_unambiguous: 5,
+                },
+            );
+        }
+
+        // Resolve repeatedly; the full preference map must be bit-identical
+        // across calls. If the tiebreak leaked HashMap iteration order, the
+        // scores assigned to individual edges would vary between calls.
+        let reference: Vec<(EdgeIndex, u64)> = {
+            let prefs = resolve_bubbles(&graph, &annotations);
+            let mut pairs: Vec<(EdgeIndex, u64)> =
+                prefs.into_iter().map(|(e, s)| (e, s.to_bits())).collect();
+            pairs.sort_by_key(|(e, _)| e.index());
+            pairs
+        };
+        for _ in 0..10 {
+            let prefs = resolve_bubbles(&graph, &annotations);
+            let mut pairs: Vec<(EdgeIndex, u64)> =
+                prefs.into_iter().map(|(e, s)| (e, s.to_bits())).collect();
+            pairs.sort_by_key(|(e, _)| e.index());
+            assert_eq!(pairs, reference, "tiebreak must be deterministic");
+        }
     }
 }
