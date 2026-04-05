@@ -156,31 +156,6 @@ pub(super) fn generate_recursive_permutations(
     }
 }
 
-#[allow(dead_code)]
-pub(super) fn reverse_complement(seq: &str) -> Result<String> {
-    seq.chars()
-        .rev()
-        .map(|c| match c {
-            'A' => Ok('T'),
-            'T' => Ok('A'),
-            'G' => Ok('C'),
-            'C' => Ok('G'),
-            'Y' => Ok('R'), // C or T
-            'R' => Ok('Y'), // A or G
-            'S' => Ok('S'), // C or G
-            'W' => Ok('W'), // A or T
-            'K' => Ok('M'), // G or T
-            'M' => Ok('K'), // A or C
-            'B' => Ok('V'), // C or G or T
-            'V' => Ok('B'), // A or C or G
-            'D' => Ok('H'), // A or G or T
-            'H' => Ok('D'), // A or C or T
-            'N' => Ok('N'), // A or C or G or T
-            _ => bail!("Invalid nucleotide: {}", c),
-        })
-        .collect()
-}
-
 // Find the kmers that contain the oligos.
 // Always match the oligo at the START of the kmer.
 fn find_oligos_in_kmers(

@@ -35,7 +35,17 @@ fn main() -> Result<()> {
     // Collect and validate PCR primer specifications from all sources
     let mut pcr_runs = cli::collect_pcr_params(&args)?;
 
-    // Apply CLI tuning overrides to all PCR params
+    // Apply CLI tuning overrides to all PCR params.
+    //
+    // Precedence: CLI flags > panel defaults > hardcoded defaults. Every
+    // field below unconditionally overwrites the per-panel value with the
+    // CLI-provided value, even when the user did not explicitly set the
+    // flag — the CLI parser fills unset flags with the hardcoded defaults,
+    // so the effective precedence still holds but panel-supplied values
+    // for these specific fields are not honored. This is intentional: the
+    // hidden tuning flags are meant for debugging the PCR engine globally,
+    // not for per-gene customization (which is what the per-primer keys in
+    // the panel YAML are for).
     for p in &mut pcr_runs {
         p.max_dfs_states = args.max_dfs_states;
         p.max_paths_per_pair = args.max_paths_per_pair;

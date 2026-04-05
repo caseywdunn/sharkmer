@@ -4,7 +4,7 @@
 use anyhow::Result;
 
 use super::counting::KmerCounts;
-use super::encoding::{Read, count_valid_bases};
+use super::encoding::count_valid_bases;
 
 pub struct Chunk {
     kmer_counts: KmerCounts,
@@ -19,14 +19,6 @@ impl Chunk {
             n_reads: 0,
             n_bases: 0,
         }
-    }
-
-    #[allow(dead_code)]
-    pub fn ingest_reads(&mut self, reads: &[Read]) -> Result<()> {
-        self.kmer_counts.ingest_reads(reads)?;
-        self.n_reads += reads.len() as u64;
-        self.n_bases += reads.iter().map(|read| read.length as u64).sum::<u64>();
-        Ok(())
     }
 
     /// Ingest a single FASTQ sequence directly from ASCII, bypassing Read encoding.

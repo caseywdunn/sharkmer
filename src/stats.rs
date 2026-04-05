@@ -134,13 +134,22 @@ pub(crate) fn run_pcr(
                 failure_reason: None,
             });
         } else {
+            // Ensure failure_reason is always populated when status=="fail"
+            // so the YAML stats file is never ambiguous about *why* a gene
+            // failed. do_pcr should set this in every empty-records path,
+            // but default it here rather than silently leaving None if a
+            // new failure path is added upstream without updating the
+            // outcome.
+            let failure_reason = outcome
+                .failure_reason
+                .or_else(|| Some("unknown (no reason reported by PCR pipeline)".to_string()));
             pcr_results.push(PcrGeneResult {
                 gene_name: pcr_params.gene_name.clone(),
                 status: "fail".to_string(),
                 n_products: 0,
                 product_lengths: Vec::new(),
                 output_file: None,
-                failure_reason: outcome.failure_reason,
+                failure_reason,
             });
         }
     }

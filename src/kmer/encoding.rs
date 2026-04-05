@@ -1,5 +1,26 @@
 // kmer/encoding.rs
 //! 2-bit DNA encoding, kmer extraction, and sequence conversion utilities.
+//!
+//! This module intentionally contains two independent paths for turning an
+//! ASCII sequence into canonical kmers:
+//!
+//! - **Hot path** (production): `kmers_from_ascii`, a single-pass routine
+//!   that reads ASCII bytes directly, splits on `N`, and emits canonical
+//!   kmers without materializing an intermediate `Read` struct. All
+//!   ingestion in `Chunk::ingest_seq` / `KmerCounts::ingest_seq` uses this.
+//!
+//! - **Reference path** (tests only): `seq_to_reads` → `Read::from_str` →
+//!   `Read::get_kmers`. This is the earlier implementation, preserved so
+//!   tests can cross-check the hot path against a second, simpler encoder.
+//!   `test_kmers_from_ascii_matches_read_pipeline` in `kmer/mod.rs`
+//!   enforces that the two paths produce identical output on the same
+//!   input, which catches regressions in the hot path's bit math. The
+//!   `#[allow(dead_code)]` markers on the reference path are expected:
+//!   non-test builds never call it.
+//!
+//! If you change N-splitting, `k` bounds, or canonical-form selection in
+//! one path, update the other in the same commit or the cross-check test
+//! will fail.
 
 use anyhow::{Result, bail, ensure};
 

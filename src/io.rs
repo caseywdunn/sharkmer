@@ -816,26 +816,28 @@ fn open_fastq_reader(file_path: &std::path::Path) -> Result<Box<dyn BufRead>> {
     let file_name = file_path.to_string_lossy();
     let has_gz_ext = file_name.ends_with(".gz") || file_name.ends_with(".gzip");
 
+    // Open the file once. If we need to peek at the gzip magic bytes, do so
+    // through the BufReader: fill_buf() loads bytes into the internal buffer
+    // without consuming them, so subsequent reads (including through a
+    // GzDecoder wrapper) see the stream from position 0. This avoids a
+    // redundant second open that showed up as two syscalls per FASTQ file.
+    let file = std::fs::File::open(file_path)
+        .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
+    let mut buf_reader = std::io::BufReader::new(file);
+
     let use_gzip = if has_gz_ext {
         true
     } else {
-        let file = std::fs::File::open(file_path)
-            .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
-        let mut buf_reader = std::io::BufReader::new(file);
         let magic = buf_reader.fill_buf().context("Failed to peek at file")?;
-        let is_gzip = magic.len() >= 2 && magic[0] == 0x1f && magic[1] == 0x8b;
-        drop(buf_reader);
-        is_gzip
+        magic.len() >= 2 && magic[0] == 0x1f && magic[1] == 0x8b
     };
 
-    let file = std::fs::File::open(file_path)
-        .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
     if use_gzip {
         Ok(Box::new(std::io::BufReader::new(
-            flate2::read::GzDecoder::new(file),
+            flate2::read::GzDecoder::new(buf_reader),
         )))
     } else {
-        Ok(Box::new(std::io::BufReader::new(file)))
+        Ok(Box::new(buf_reader))
     }
 }
 

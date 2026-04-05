@@ -3,6 +3,10 @@
 use anyhow::{Context, Result};
 use log::{debug, trace};
 use petgraph::Direction;
+// Used only by `summarize_extension` for a single debug-level diagnostic
+// about whether the extended graph contains cycles. Not load-bearing for
+// correctness — if this import ever becomes unused again, the summarize
+// call has been removed and both can go.
 use petgraph::algo::is_cyclic_directed;
 use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;

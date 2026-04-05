@@ -319,6 +319,11 @@ pub(super) fn sort_and_deduplicate(
             .composite()
             .partial_cmp(&a.score.composite())
             .unwrap_or(std::cmp::Ordering::Equal)
+            // Byte-level sequence comparison as a deterministic tiebreaker
+            // when two records tie on composite score. Not biologically
+            // meaningful — its only purpose is to make dedup order stable
+            // across runs (otherwise iteration order would depend on
+            // HashMap seeds deeper in path enumeration).
             .then_with(|| a.fasta_record.seq().cmp(b.fasta_record.seq()))
     });
 
