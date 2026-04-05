@@ -49,15 +49,28 @@ pub fn get_assembly_paths(
     params: &PCRParams,
     edge_preferences: Option<&std::collections::HashMap<EdgeIndex, f64>>,
 ) -> Vec<Vec<NodeIndex>> {
-    let min_path_nodes = if params.min_length <= kmer_counts.get_k() {
+    // A path of N nodes produces a sequence of (k-1) + (N-1) = N+k-2 bases
+    // (first node contributes k-1 bases via its sub_kmer, each subsequent
+    // node extends by one base). Inverting: N = seq_length - k + 2.
+    //
+    // min_path_nodes is used only as a pre-filter during DFS; the exact
+    // lower bound is re-checked in `generate_sequences_from_paths` against
+    // the actual sequence length.
+    //
+    // max_path_nodes is the authoritative upper bound — the DFS caps paths
+    // at this value and there is no secondary check downstream, so an
+    // off-by-one here directly rejects valid amplicons at the user's
+    // declared max-length.
+    let k = kmer_counts.get_k();
+    let min_path_nodes = if params.min_length <= k {
         1
     } else {
-        (params.min_length - kmer_counts.get_k()) + 1
+        params.min_length - k + 2
     };
-    let max_path_nodes = if params.max_length <= kmer_counts.get_k() {
+    let max_path_nodes = if params.max_length <= k {
         1
     } else {
-        (params.max_length - kmer_counts.get_k()) + 1
+        params.max_length - k + 2
     };
 
     let end_nodes: std::collections::HashSet<NodeIndex> =

@@ -28,26 +28,30 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
     let mut seen_keys: std::collections::HashSet<String> = std::collections::HashSet::new();
 
     for item in split.iter() {
-        let key_value: Vec<&str> = item.split('=').collect();
-        if key_value.len() != 2 {
-            bail!(
+        // split_once(|c| == '=') keeps everything after the first '=' as the
+        // value. Values may legitimately contain '=' — citations include
+        // URLs, notes may include equations — so we do not reject them.
+        // Commas are still forbidden because they are the field separator
+        // at the outer level.
+        let (raw_key, value) = match item.split_once('=') {
+            Some(kv) => kv,
+            None => bail!(
                 "Invalid parameter (should be key=value): '{}'\n\
                  Commas are not allowed in field values. \
                  Use --pcr-panel-file with a YAML panel for complex metadata.",
                 item
-            );
-        }
+            ),
+        };
 
-        let key = key_value[0].to_lowercase();
-        if !seen_keys.insert(key.clone()) {
+        let key_owned = raw_key.to_lowercase();
+        if !seen_keys.insert(key_owned.clone()) {
             bail!(
                 "Duplicate parameter '{}' in primer specification '{}'. Each key may appear at most once.",
-                key,
+                key_owned,
                 pcr_string
             );
         }
-        let key = key.as_str();
-        let value = key_value[1];
+        let key = key_owned.as_str();
 
         match key {
             "name" => {
@@ -855,5 +859,16 @@ mod tests {
         assert_eq!(params.forward_seq, "AAAA");
         assert_eq!(params.reverse_seq, "TTTT");
         assert_eq!(params.max_length, 500);
+    }
+
+    /// Values may legitimately contain '=' (URLs in citations, equations in
+    /// notes). Only the first '=' separates key from value.
+    #[test]
+    fn test_parse_pcr_primers_value_with_equals() {
+        let spec = "forward=AAAA,reverse=TTTT,name=X,citation=https://doi.org/10.1/abc?x=1&y=2";
+        let params = parse_pcr_primers_string(spec)
+            .expect("values containing '=' should parse via splitn(2)");
+        assert_eq!(params.gene_name, "X");
+        assert_eq!(params.citation, "https://doi.org/10.1/abc?x=1&y=2");
     }
 }

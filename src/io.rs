@@ -70,20 +70,29 @@ pub(crate) struct RetainedReads {
 ///
 /// Stage 2 (exact set): after ingestion, bloom-positive reads are verified
 /// against an exact AHashSet to eliminate false positives.
+///
+/// When a panel mixes genes with different trim lengths (e.g. 15 for most
+/// genes but 12 for a trimmed primer), the filter stores a separate
+/// (mask, shift) pair per distinct trim length. `check_kmer` tries every
+/// pair against the incoming kmer — previously only the last gene's pair
+/// was retained, silently dropping reads matching earlier genes.
 pub(crate) struct OligoFilter {
-    /// Bloom filter for high-bit matching (oligo at kmer start)
+    /// Bloom filter for high-bit matching (oligo at kmer start).
+    /// Entries are keyed by raw oligo kmer values (shift removed at
+    /// insertion time), so a single bloom serves all trim lengths.
     high_bits: Vec<u64>,
-    /// Mask to extract oligo from high-order bits of kmer
-    high_mask: u64,
-    /// Right-shift to bring masked high bits down to bloom index range
-    high_shift: u32,
-    /// Bloom filter for low-bit matching (RC oligo at kmer end)
+    /// Bloom filter for low-bit matching (RC oligo at kmer end).
+    /// Entries are keyed by raw rc oligo values.
     low_bits: Vec<u64>,
-    /// Mask to extract oligo from low-order bits of kmer
-    low_mask: u64,
-    /// Exact set for high-bit verification (ahash for speed)
+    /// One (mask, shift) pair per distinct trim length seen across genes.
+    /// Typical panels have 1-3 entries here.
+    high_masks: Vec<(u64, u32)>,
+    /// One low-bit mask per distinct trim length seen across genes.
+    /// Shift is always 0 for the low-bit side.
+    low_masks: Vec<u64>,
+    /// Exact set for high-bit verification, keyed by raw oligo values.
     high_exact: ahash::AHashSet<u64>,
-    /// Exact set for low-bit verification
+    /// Exact set for low-bit verification, keyed by raw rc oligo values.
     low_exact: ahash::AHashSet<u64>,
 }
 
@@ -97,31 +106,42 @@ const BLOOM_WORDS: usize = BLOOM_SIZE / 64;
 impl OligoFilter {
     /// Build a filter from pre-encoded primer Oligo sets for all genes.
     ///
-    /// All Oligos across all genes are inserted into two bitsets:
-    /// one for high-bit position (oligo at kmer start) and one for
-    /// low-bit position (RC oligo at kmer end).
+    /// Each oligo length seen across the input contributes one entry to
+    /// `high_masks` and `low_masks`; duplicate lengths are deduplicated.
+    /// The bloom filters and exact sets store raw oligo values (shift
+    /// removed), so a single shared set of each covers all trim lengths.
     pub(crate) fn new(oligo_sets: &[crate::pcr::PrimerOligoSet], k: usize) -> Self {
         let mut high_bits = vec![0u64; BLOOM_WORDS];
         let mut low_bits = vec![0u64; BLOOM_WORDS];
         let mut high_exact = ahash::AHashSet::new();
         let mut low_exact = ahash::AHashSet::new();
-        let mut high_mask: u64 = 0;
-        let mut low_mask: u64 = 0;
-        let mut high_shift: u32 = 0;
+        let mut seen_lengths: std::collections::HashSet<usize> = std::collections::HashSet::new();
+        let mut high_masks: Vec<(u64, u32)> = Vec::new();
+        let mut low_masks: Vec<u64> = Vec::new();
+
+        let register_length = |len: usize,
+                               seen: &mut std::collections::HashSet<usize>,
+                               high: &mut Vec<(u64, u32)>,
+                               low: &mut Vec<u64>| {
+            if len == 0 || !seen.insert(len) {
+                return;
+            }
+            let shift = 2 * (k - len);
+            let size_mask = (1u64 << (2 * len)) - 1;
+            high.push((size_mask << shift, shift as u32));
+            low.push(size_mask);
+        };
 
         for set in oligo_sets {
             let fwd_len = set.forward_oligo_length;
             if fwd_len > 0 {
-                let fwd_shift = 2 * (k - fwd_len);
-                high_mask = ((1u64 << (2 * fwd_len)) - 1) << fwd_shift;
-                high_shift = fwd_shift as u32;
-                let rc_mask_val = (1u64 << (2 * fwd_len)) - 1;
-                low_mask = rc_mask_val;
-
+                register_length(fwd_len, &mut seen_lengths, &mut high_masks, &mut low_masks);
                 for oligo in &set.forward_oligos {
-                    let shifted = oligo.kmer << fwd_shift;
-                    bloom_insert(&mut high_bits, shifted >> high_shift);
-                    high_exact.insert(shifted);
+                    // Bloom and exact sets are keyed by the raw oligo value
+                    // (no shift baked in), so the same entry is checked at
+                    // any trim length via the corresponding (mask, shift).
+                    bloom_insert(&mut high_bits, oligo.kmer);
+                    high_exact.insert(oligo.kmer);
                     let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &fwd_len);
                     bloom_insert(&mut low_bits, rc);
                     low_exact.insert(rc);
@@ -130,16 +150,10 @@ impl OligoFilter {
 
             let rev_len = set.reverse_oligo_length;
             if rev_len > 0 {
-                let rev_shift = 2 * (k - rev_len);
-                high_mask = ((1u64 << (2 * rev_len)) - 1) << rev_shift;
-                high_shift = rev_shift as u32;
-                let rc_mask_val = (1u64 << (2 * rev_len)) - 1;
-                low_mask = rc_mask_val;
-
+                register_length(rev_len, &mut seen_lengths, &mut high_masks, &mut low_masks);
                 for oligo in &set.reverse_oligos {
-                    let shifted = oligo.kmer << rev_shift;
-                    bloom_insert(&mut high_bits, shifted >> high_shift);
-                    high_exact.insert(shifted);
+                    bloom_insert(&mut high_bits, oligo.kmer);
+                    high_exact.insert(oligo.kmer);
                     let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &rev_len);
                     bloom_insert(&mut low_bits, rc);
                     low_exact.insert(rc);
@@ -149,25 +163,31 @@ impl OligoFilter {
 
         OligoFilter {
             high_bits,
-            high_mask,
-            high_shift,
             low_bits,
-            low_mask,
+            high_masks,
+            low_masks,
             high_exact,
             low_exact,
         }
     }
 
     /// Fast approximate check during kmer ingestion (bloom filter).
-    /// May return false positives, never false negatives.
+    /// May return false positives, never false negatives. Tries every
+    /// registered trim-length mask; early-exits on the first hit.
     #[inline]
     pub(crate) fn check_kmer(&self, kmer: u64) -> bool {
-        let high_val = (kmer & self.high_mask) >> self.high_shift;
-        if bloom_contains(&self.high_bits, high_val) {
-            return true;
+        for &(mask, shift) in &self.high_masks {
+            let high_val = (kmer & mask) >> shift;
+            if bloom_contains(&self.high_bits, high_val) {
+                return true;
+            }
         }
-        let low_val = kmer & self.low_mask;
-        bloom_contains(&self.low_bits, low_val)
+        for &mask in &self.low_masks {
+            if bloom_contains(&self.low_bits, kmer & mask) {
+                return true;
+            }
+        }
+        false
     }
 
     /// Exact verification of a read against the Oligo set (AHashSet).
@@ -178,11 +198,15 @@ impl OligoFilter {
             Err(_) => return false,
         };
         for kmer in &kmers {
-            if self.high_exact.contains(&(kmer & self.high_mask)) {
-                return true;
+            for &(mask, shift) in &self.high_masks {
+                if self.high_exact.contains(&((kmer & mask) >> shift)) {
+                    return true;
+                }
             }
-            if self.low_exact.contains(&(kmer & self.low_mask)) {
-                return true;
+            for &mask in &self.low_masks {
+                if self.low_exact.contains(&(kmer & mask)) {
+                    return true;
+                }
             }
         }
         false
@@ -1342,4 +1366,77 @@ pub(crate) fn consolidate_and_histogram(
     }
 
     Ok((kmer_counts, n_singleton_kmers))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::pcr::{Oligo, PrimerOligoSet};
+
+    /// When a panel mixes genes with different trim lengths, the filter must
+    /// detect oligos from BOTH lengths, not just whichever gene was iterated
+    /// last. Prior to the fix, check_kmer only matched the last gene's
+    /// trim length; kmers placed at any other position silently missed.
+    #[test]
+    fn test_oligo_filter_mixed_trim_lengths() {
+        let k: usize = 19;
+
+        // Two distinct non-trivial oligos at different trim lengths. The
+        // bit patterns are chosen so that a truncation of either cannot
+        // match the other: oligo_a's top 12 bases differ from oligo_b,
+        // and oligo_b as a suffix of oligo_a's bit pattern would require
+        // specific alignment that doesn't occur here.
+        let oligo_a_value: u64 = 0x2A_F3B1_C9; // 30 bits, length-15
+        let oligo_b_value: u64 = 0x00_AB_CDEF; // 24 bits, length-12
+
+        // Set A declared FIRST, set B declared LAST. Under the old code,
+        // only set_b's (mask, shift) would be retained and oligo_a at its
+        // length-15 position would be unreachable from check_kmer.
+        let set_a = PrimerOligoSet {
+            gene_name: "A".to_string(),
+            forward_oligos: vec![Oligo {
+                length: 15,
+                kmer: oligo_a_value,
+            }],
+            reverse_oligos: Vec::new(),
+            forward_oligo_length: 15,
+            reverse_oligo_length: 0,
+        };
+        let set_b = PrimerOligoSet {
+            gene_name: "B".to_string(),
+            forward_oligos: vec![Oligo {
+                length: 12,
+                kmer: oligo_b_value,
+            }],
+            reverse_oligos: Vec::new(),
+            forward_oligo_length: 12,
+            reverse_oligo_length: 0,
+        };
+
+        let filter = OligoFilter::new(&[set_a, set_b], k);
+
+        // Two distinct trim lengths must be registered, not one.
+        assert_eq!(
+            filter.high_masks.len(),
+            2,
+            "filter must retain a mask per distinct trim length"
+        );
+
+        // A kmer with oligo_a at the length-15 position (high 30 bits),
+        // arbitrary bits elsewhere. check_kmer must find it via the
+        // length-15 mask; the old code silently missed this.
+        let kmer_with_a = (oligo_a_value << (2 * (k - 15))) | 0b01;
+        assert!(
+            filter.check_kmer(kmer_with_a),
+            "oligo_a at its length-15 position must match (old code missed \
+             this when set_b's trim length overwrote set_a's mask)"
+        );
+
+        // And oligo_b at its length-12 position still works.
+        let kmer_with_b = (oligo_b_value << (2 * (k - 12))) | 0b10;
+        assert!(
+            filter.check_kmer(kmer_with_b),
+            "oligo_b at its length-12 position must match"
+        );
+    }
 }

@@ -292,13 +292,23 @@ impl KmerCounts {
         if counts.is_empty() {
             return 0;
         }
-        counts.sort();
+        // select_nth_unstable is expected-linear vs sort's O(n log n).
+        // For odd len, the nth element is the median directly.
+        // For even len, partition at `mid` (placing the upper half to the
+        // right of index mid), then the max of the lower half is the
+        // (mid-1)th order statistic — the other middle value. Averaged
+        // with rounding-down via half-sums to avoid overflow.
         let mid = counts.len() / 2;
         if counts.len() % 2 == 0 {
-            // Average of two middle values, rounded down
-            (counts[mid - 1] / 2) + (counts[mid] / 2)
+            counts.select_nth_unstable(mid);
+            let upper_min = counts[mid];
+            let lower_max = *counts[..mid]
+                .iter()
+                .max()
+                .expect("non-empty lower half when len >= 2");
+            (lower_max / 2) + (upper_min / 2)
         } else {
-            counts[mid]
+            *counts.select_nth_unstable(mid).1
         }
     }
 

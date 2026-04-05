@@ -170,11 +170,18 @@ pub struct PCRParams {
     #[serde(default)]
     #[allow(dead_code)]
     pub expected_length: Option<usize>,
+    // `citation` and `notes` are accepted by the panel YAML schema (see
+    // PANELS.md) and appear in every in-tree panel file. They are
+    // provenance metadata for human readers and downstream tools (e.g.
+    // scripts/validate_panel.py); the Rust binary never consumes them.
+    // We still keep them as struct fields because PCRParams uses
+    // #[serde(deny_unknown_fields)], so any field present in a panel
+    // YAML must also be declared here or loading fails.
     #[serde(default)]
-    #[allow(dead_code)] // Deserialized from YAML panels and re-exported; not read by Rust code
+    #[allow(dead_code)]
     pub citation: String,
     #[serde(default)]
-    #[allow(dead_code)] // Deserialized from YAML panels and re-exported; not read by Rust code
+    #[allow(dead_code)]
     pub notes: String,
     #[serde(default = "default_dedup_edit_threshold")]
     pub dedup_edit_threshold: u32,
