@@ -129,6 +129,24 @@ of read depths so you can see the sensitivity floor.
 
 ### 4. Run the validator
 
+The validator reuses the `sharkmer-bench` conda environment, which
+provides `blastn` (for amplicon identity validation), `ruamel.yaml` (for
+round-tripping panel YAML in `--write` mode), and the other Python
+dependencies shared with `benchmarks/`. If you have not created it yet:
+
+```bash
+conda env create -f benchmarks/environment.yaml
+```
+
+If the environment already exists from a previous sharkmer version and
+is missing `ruamel.yaml` (added for the validator), update it in place:
+
+```bash
+conda env update -f benchmarks/environment.yaml --prune
+```
+
+Then activate and run:
+
 ```bash
 conda activate sharkmer-bench
 python scripts/validate_panel.py panels/my_panel.yaml
