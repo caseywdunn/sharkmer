@@ -540,7 +540,7 @@ and rationale.
   before consolidation
 - [x] #103 Replace `get_path_length` per-call HashSet with bounded depth
   counter for cycle detection
-- [ ] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
+- [x] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
 
 ### Larger refactors (items 7–9 from #103)
 
@@ -550,7 +550,7 @@ and rationale.
   indices cannot be restored after removal; clone is O(N+E) and fast
 - [x] #103 Implement byte-level lookup table for `revcomp_kmer` to reduce
   from O(k) to O(k/4) bit operations
-- [ ] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
+- [x] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
 
 ### Memory reductions (#104)
 
@@ -564,7 +564,7 @@ and rationale.
   struct (skip `FxHashMap` clone) in incremental counting
 - [x] #104 Stream histogram rows during output — subsumed by histogram
   Vec snapshot (3.4); intermediate `histo_vecs` eliminated
-- [ ] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
+- [x] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
 
 ### Parameter tuning (#109)
 
@@ -589,10 +589,12 @@ kmer count is too high for real amplicon coverage.
 - [x] #109 Fix seed eval threshold: changed from max to median primer
   kmer count. The median is robust to off-target matches inflating the
   count with degenerate primers.
-- [ ] #109 Benchmark with adjusted parameters, compare to current
-  defaults. Focus on Drosophila 16S/28S (perfect-match failures) and
-  Rhopilema CO1/16S (node budget / DFS regressions).
-- [ ] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
+- [x] #109 Benchmark with adjusted parameters, compare to current
+  defaults. Sweeps documented in `dev_docs/DESIGN_DECISIONS.md`:
+  k sweep (1M-16M), per-component budget sweep, global budget sweep,
+  --read-eval comparison. Default k changed from 21 to 19; component
+  budget set to 10K; global budget made dynamic (#113).
+- [x] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
 
 ### Component-prioritized graph extension (#112)
 
@@ -633,25 +635,32 @@ each other during eval, but off-target seeds exhaust the 50K node
 budget during breadth-first extension. Drosophila ND4 at 1M with
 degenerate primers: same pattern.
 
-- [ ] Implement per-component node budgets
-- [ ] Implement depth-first per-component extension
-- [ ] Implement component ranking after seed eval
-- [ ] Implement `--stopping-criteria` with `first-product` default
-- [ ] Run benchmarks: compare recovery and runtime vs current behavior
+- [x] Implement per-component node budgets
+- [x] Implement depth-first per-component extension
+- [x] Implement component ranking after seed eval
+- [x] Implement `--pcr-stopping-criteria` with `first-product` default
+  (renamed from `--stopping-criteria` for user clarity)
+- [x] Run benchmarks: compare recovery and runtime vs current behavior
+  (see `benchmarks/results/2026-04-04_sharkmer_3.0.0-dev_b373fed.yaml`:
+  116 genes at 1M vs 99 pre-refactor)
 
 ### Validation
 
-- [ ] Run benchmarks, confirm identical results to Phase 7
-- [ ] Profile before/after to quantify gains
+- [x] Run benchmarks: 116 genes recovered at 1M reads (vs 99 baseline).
+  Full sweep with BLAST validation at commit b373fed.
+- [x] Profile before/after to quantify gains. Key finding: O(n²)
+  extension scan replaced with O(n) frontier queue (commit bfea426);
+  Agalma with 200K budget: 347s → 65s (5.3× speedup).
 
 ## Phase 9 — Cleanup and validation
 
-- [ ] Final benchmark comparison across all phases (skip if already run
-  at end of Phase 8)
+- [x] Final benchmark comparison across all phases. BLAST-validated
+  1M-16M sweep committed as `benchmarks/results/2026-04-04_sharkmer_3.0.0-dev_b373fed.yaml`
+  (384/484 gene runs validated against NCBI nt).
 - [ ] Update integration tests for v3.0 behavior
 - [ ] Update documentation:
   - [ ] README.md (user-facing changes, new flags, updated examples)
-  - [ ] CLAUDE.md (module descriptions, line counts, constants)
+  - [x] CLAUDE.md (module descriptions, line counts, constants)
   - [ ] dev_docs/overview.md (architecture diagrams, data flow, design choices)
 - [ ] Update CHANGELOG.md
 - [ ] Update bioconda recipe for new dependencies (e.g., `dirs`)
