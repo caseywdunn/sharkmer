@@ -605,7 +605,7 @@ pub(crate) fn ingest_reads(
         retained_reads: RetainedReads { reads: Vec::new() },
     };
 
-    let max_reads = args.max_reads.unwrap_or(0);
+    let mut max_reads = args.max_reads.unwrap_or(0);
 
     // Create progress indicator: bar with ETA if max_reads is known, spinner otherwise.
     let progress = if show_progress && max_reads > 0 {
@@ -694,17 +694,20 @@ pub(crate) fn ingest_reads(
             let reader2 = open_fastq_reader(&input_files[1])?;
             let name1 = input_files[0].to_string_lossy().to_string();
             let name2 = input_files[1].to_string_lossy().to_string();
-            // Round max_reads up to even for balanced pairs
-            let paired_max = if max_reads > 0 && max_reads % 2 != 0 {
-                max_reads + 1
-            } else {
-                max_reads
-            };
+            // Round max_reads up to even so Pass 1 consumes balanced
+            // pairs. The rounded value is also recorded in the ReadPlan
+            // below so Pass 2 (re-read for threading) consumes the same
+            // number of reads; leaving the unrounded value here would
+            // cause Pass 2 to stop one R2 short of Pass 1 and drop the
+            // final read pair silently.
+            if max_reads > 0 && max_reads % 2 != 0 {
+                max_reads += 1;
+            }
             read_fastq_paired(
                 reader1,
                 reader2,
                 &mut state,
-                paired_max,
+                max_reads,
                 args.validate_every,
                 &name1,
                 &name2,
@@ -1071,13 +1074,22 @@ pub(crate) fn reread_sequences(plan: &ReadPlan, show_progress: bool) -> Result<V
     let mut index: u64 = 0;
 
     if plan.paired && files.len() == 2 {
-        // Paired-end: alternate R1 and R2
+        // Paired-end: alternate R1 and R2. Track per-side record counts
+        // so a truncated mate file can be surfaced to the user rather
+        // than silently producing an unbalanced read set for Pass 2
+        // threading. This mirrors the check in read_fastq_paired for
+        // Pass 1.
         let reader1 = open_fastq_reader(&files[0])?;
         let reader2 = open_fastq_reader(&files[1])?;
+        let name1 = files[0].to_string_lossy().to_string();
+        let name2 = files[1].to_string_lossy().to_string();
         let mut lines1 = reader1.lines();
         let mut lines2 = reader2.lines();
+        let mut r1_records: u64 = 0;
+        let mut r2_records: u64 = 0;
+        let mismatch_exit: bool;
 
-        loop {
+        'outer: loop {
             // Read R1
             match read_sequence_only(&mut lines1)? {
                 Some(seq) => {
@@ -1087,11 +1099,22 @@ pub(crate) fn reread_sequences(plan: &ReadPlan, show_progress: bool) -> Result<V
                         mate: Mate::R1,
                     });
                     index += 1;
+                    r1_records += 1;
                 }
-                None => break,
+                None => {
+                    // R1 exhausted. Check whether R2 also reached EOF —
+                    // if not, R2 has extra unmatched records.
+                    let r2_extra = read_sequence_only(&mut lines2)?.is_some();
+                    mismatch_exit = r2_extra;
+                    if r2_extra {
+                        r2_records += 1; // counted so the warning numbers are meaningful
+                    }
+                    break 'outer;
+                }
             }
             progress.set_position(index);
             if plan.max_reads > 0 && index >= plan.max_reads {
+                mismatch_exit = false;
                 break;
             }
 
@@ -1104,13 +1127,27 @@ pub(crate) fn reread_sequences(plan: &ReadPlan, show_progress: bool) -> Result<V
                         mate: Mate::R2,
                     });
                     index += 1;
+                    r2_records += 1;
                 }
-                None => break,
+                None => {
+                    // R2 ended mid-pair: R1 already consumed one more.
+                    mismatch_exit = true;
+                    break 'outer;
+                }
             }
             progress.set_position(index);
             if plan.max_reads > 0 && index >= plan.max_reads {
+                mismatch_exit = false;
                 break;
             }
+        }
+
+        if mismatch_exit && r1_records != r2_records {
+            warn!(
+                "Pass 2 paired-end input length mismatch: {} has {} reads, {} has {} reads. \
+                 Extra reads in the longer file were not re-read for threading.",
+                name1, r1_records, name2, r2_records
+            );
         }
     } else {
         // Unpaired: read files sequentially

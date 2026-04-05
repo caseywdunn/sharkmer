@@ -52,18 +52,23 @@ impl CacheConfig {
             return Ok(None);
         }
 
-        // Read sidecar
+        // Read sidecar. If it is missing or unreadable, the data file is
+        // orphaned — evict both sides so the next download can write a
+        // clean entry and the filesystem does not accumulate dangling
+        // .fastq.gz files without matching .yaml metadata.
         let meta = match read_meta(&meta_path) {
             Ok(Some(m)) => m,
             Ok(None) => {
                 warn!(
-                    "Cache data file exists without sidecar, treating as miss: {}",
+                    "Cache data file exists without sidecar, evicting: {}",
                     data_path.display()
                 );
+                evict_stale(&data_path, &meta_path);
                 return Ok(None);
             }
             Err(e) => {
-                warn!("Failed to read cache sidecar, treating as miss: {}", e);
+                warn!("Failed to read cache sidecar, evicting: {}", e);
+                evict_stale(&data_path, &meta_path);
                 return Ok(None);
             }
         };
