@@ -138,18 +138,22 @@ dependencies shared with `benchmarks/`. If you have not created it yet:
 conda env create -f benchmarks/environment.yaml
 ```
 
-If the environment already exists from a previous sharkmer version and
-is missing `ruamel.yaml` (added for the validator), update it in place:
-
-```bash
-conda env update -f benchmarks/environment.yaml --prune
-```
-
 Then activate and run:
 
 ```bash
 conda activate sharkmer-bench
 python scripts/validate_panel.py panels/my_panel.yaml
+```
+
+If `conda activate` errors with *"Run 'conda init' before 'conda
+activate'"*, your shell has not been initialised for conda. Either run
+`conda init zsh` (or `bash` — whichever shell you use), open a new
+terminal, and try again; or, for a one-off without touching your shell
+rc, source the conda shell script first:
+
+```bash
+source "$(conda info --base)/etc/profile.d/conda.sh"
+conda activate sharkmer-bench
 ```
 
 This runs sharkmer against each declared sample at each declared read depth
