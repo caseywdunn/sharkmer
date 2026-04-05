@@ -38,6 +38,4 @@ ureq = { version = "2" }
 peak_alloc = { version = "0.3" }
 dirs = { version = "6" }
 sha2 = { version = "0.10" }
-
-[dev-dependencies]
-tempfile = "3"
+tempfile = { version = "3" }

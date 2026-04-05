@@ -118,7 +118,6 @@ impl CacheConfig {
         let key = cache_key(url);
         let data_path = self.data_path(&key);
         let meta_path = self.meta_path(&key);
-        let tmp_path = data_path.with_extension("gz.tmp");
 
         // Ensure cache directory exists
         std::fs::create_dir_all(&self.cache_dir).with_context(|| {
@@ -127,6 +126,23 @@ impl CacheConfig {
                 self.cache_dir.display()
             )
         })?;
+
+        // Create a unique temp file in the cache directory. Using tempfile
+        // gives us a random-suffixed name (avoiding collisions between
+        // concurrent sharkmer invocations downloading the same URL) and
+        // auto-deletes on error paths. Keeping it in the cache dir ensures
+        // the final rename stays on the same filesystem and is atomic.
+        let tmp = tempfile::Builder::new()
+            .prefix(&format!("{}.", key))
+            .suffix(".gz.tmp")
+            .tempfile_in(&self.cache_dir)
+            .with_context(|| {
+                format!(
+                    "Failed to create temp file in cache directory: {}",
+                    self.cache_dir.display()
+                )
+            })?;
+        let (tmp_file, tmp_path) = tmp.into_parts();
 
         info!(
             "Downloading {} to cache (max_reads: {})...",
@@ -147,8 +163,6 @@ impl CacheConfig {
         let mut lines = buf_reader.lines();
 
         // Output pipeline: File → BufWriter → GzEncoder
-        let tmp_file = std::fs::File::create(&tmp_path)
-            .with_context(|| format!("Failed to create temp file: {}", tmp_path.display()))?;
         let mut gz_writer = flate2::write::GzEncoder::new(
             std::io::BufWriter::new(tmp_file),
             flate2::Compression::fast(),
@@ -219,14 +233,12 @@ impl CacheConfig {
         // Compute SHA-256 of the cached file
         let sha256 = compute_sha256(&tmp_path)?;
 
-        // Atomic rename
-        std::fs::rename(&tmp_path, &data_path).with_context(|| {
-            format!(
-                "Failed to rename {} to {}",
-                tmp_path.display(),
-                data_path.display()
-            )
-        })?;
+        // Atomic rename (same filesystem — tmp_path was created in cache_dir).
+        // persist() consumes the TempPath guard so its auto-delete drop no
+        // longer fires on the now-renamed file.
+        tmp_path
+            .persist(&data_path)
+            .with_context(|| format!("Failed to persist cache file to {}", data_path.display()))?;
 
         // Write sidecar
         let meta = CacheMeta {

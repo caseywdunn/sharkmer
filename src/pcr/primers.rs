@@ -188,13 +188,25 @@ fn find_oligos_in_kmers(
     kmers: &FilteredKmerCounts,
     min_count: &u32,
 ) -> KmerCounts {
+    assert!(
+        !oligos.is_empty(),
+        "find_oligos_in_kmers called with no oligos"
+    );
+
     // Assume all oligos have the same length
     let oligo_length = oligos[0].length;
+    let k = kmers.get_k();
+    assert!(
+        oligo_length > 0 && oligo_length <= k,
+        "oligo length {} out of range for k={} (must be 1..=k)",
+        oligo_length,
+        k
+    );
 
     // Create hash set of oligos, shifted to the start (high-order bits) of the kmer
     let oligo_set: HashSet<u64> = oligos
         .iter()
-        .map(|oligo| oligo.kmer << (2 * (kmers.get_k() - oligo_length)))
+        .map(|oligo| oligo.kmer << (2 * (k - oligo_length)))
         .collect();
 
     // Create mask covering the high-order bits where the oligo sits
@@ -202,9 +214,9 @@ fn find_oligos_in_kmers(
     for _i in 0..(2 * oligo_length) {
         mask = (mask << 1) | 1;
     }
-    mask <<= 2 * kmers.get_k() - 2 * oligo_length;
+    mask <<= 2 * k - 2 * oligo_length;
 
-    let mut kmers_match: KmerCounts = KmerCounts::new(&kmers.get_k());
+    let mut kmers_match: KmerCounts = KmerCounts::new(&k);
 
     // RC mask covers low bits (reverse complement of a start-matching kmer has primer in low bits)
     let rc_mask = (1u64 << (2 * oligo_length)) - 1;
@@ -222,7 +234,7 @@ fn find_oligos_in_kmers(
             } else if rc_oligo_set.contains(&(kmer & rc_mask)) {
                 // The primer matches the reverse complement orientation of this kmer,
                 // so insert the revcomp form for correct graph construction
-                let rc_kmer = crate::kmer::revcomp_kmer(kmer, &kmers.get_k());
+                let rc_kmer = crate::kmer::revcomp_kmer(kmer, &k);
                 kmers_match.insert(&rc_kmer, count);
             }
         }

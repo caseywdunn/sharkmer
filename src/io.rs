@@ -856,13 +856,24 @@ fn read_fastq_paired<R1: BufRead, R2: BufRead>(
     let mut lines1 = reader1.lines();
     let mut lines2 = reader2.lines();
     let n_chunks = state.chunks.len();
+    let mut r1_records: u64 = 0;
+    let mut r2_records: u64 = 0;
+    let mismatch_exit: bool;
 
     loop {
         // Read one record from R1
         let r1_done = read_one_fastq_record(&mut lines1, state, validate_every, source1_name)?;
         if r1_done {
+            // R1 exhausted. Verify R2 is also at EOF so we don't silently drop
+            // unmatched R2 records (truncated R1, mismatched inputs).
+            let r2_extra = read_one_fastq_record(&mut lines2, state, validate_every, source2_name)?;
+            mismatch_exit = !r2_extra;
+            if !r2_extra {
+                r2_records += 1;
+            }
             break;
         }
+        r1_records += 1;
         if state.n_reads_read % N_READS_PER_BATCH == 0 {
             drain_batch(state, oligo_filter, n_chunks)?;
             progress.set_position(state.n_reads_read);
@@ -875,8 +886,11 @@ fn read_fastq_paired<R1: BufRead, R2: BufRead>(
         // Read one record from R2
         let r2_done = read_one_fastq_record(&mut lines2, state, validate_every, source2_name)?;
         if r2_done {
+            // R2 ended mid-pair: R1 already consumed one more record than R2.
+            mismatch_exit = true;
             break;
         }
+        r2_records += 1;
         if state.n_reads_read % N_READS_PER_BATCH == 0 {
             drain_batch(state, oligo_filter, n_chunks)?;
             progress.set_position(state.n_reads_read);
@@ -885,6 +899,14 @@ fn read_fastq_paired<R1: BufRead, R2: BufRead>(
             progress.set_position(state.n_reads_read);
             return Ok(true);
         }
+    }
+
+    if mismatch_exit && r1_records != r2_records {
+        warn!(
+            "Paired-end input length mismatch: {} has {} reads, {} has {} reads. \
+             Extra reads in the longer file were not processed.",
+            source1_name, r1_records, source2_name, r2_records
+        );
     }
 
     Ok(false)
@@ -964,6 +986,10 @@ pub(crate) fn reread_sequences(plan: &ReadPlan, show_progress: bool) -> Result<V
     let start = std::time::Instant::now();
     info!("Pass 2: re-reading sequences for read threading...");
 
+    // Temp files held here are auto-deleted when this vec drops at end of
+    // function. Each NamedTempFile has a unique path (random suffix), so
+    // concurrent sharkmer invocations and same-length URLs cannot collide.
+    let mut _pass2_tempfiles: Vec<tempfile::NamedTempFile> = Vec::new();
     let files: Vec<PathBuf> = match &plan.source {
         ReadSourcePlan::LocalFiles(paths) => paths.clone(),
         ReadSourcePlan::CachedRemote(paths) => paths.clone(),
@@ -976,20 +1002,19 @@ pub(crate) fn reread_sequences(plan: &ReadPlan, show_progress: bool) -> Result<V
                 let response = ureq::get(url)
                     .call()
                     .with_context(|| format!("Failed to download {} for Pass 2", url))?;
-                // Write to a temporary file
-                let tmp_path = std::env::temp_dir().join(format!(
-                    "sharkmer_pass2_{}.fastq.gz",
-                    url.len() // simple disambiguator
-                ));
-                let mut tmp_file = std::fs::File::create(&tmp_path).with_context(|| {
-                    format!(
-                        "Failed to create temp file for Pass 2: {}",
-                        tmp_path.display()
-                    )
-                })?;
-                std::io::copy(&mut response.into_reader(), &mut tmp_file)
+                // Create a unique temp file (random suffix) in the system temp
+                // directory. The NamedTempFile guard is kept alive in
+                // `_pass2_tempfiles` below so the file persists through Pass 2
+                // reading and is deleted on function return.
+                let mut tmp = tempfile::Builder::new()
+                    .prefix("sharkmer_pass2_")
+                    .suffix(".fastq.gz")
+                    .tempfile()
+                    .context("Failed to create temp file for Pass 2")?;
+                std::io::copy(&mut response.into_reader(), tmp.as_file_mut())
                     .context("Failed to write Pass 2 temp file")?;
-                paths.push(tmp_path);
+                paths.push(tmp.path().to_path_buf());
+                _pass2_tempfiles.push(tmp);
             }
             paths
         }
