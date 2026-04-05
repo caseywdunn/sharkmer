@@ -380,6 +380,64 @@ pub(crate) struct FastqReadState {
     pub(crate) retained_reads: RetainedReads,
 }
 
+/// Build a context-rich error message for an I/O error that occurred mid-stream
+/// during FASTQ reading. Distinguishes abrupt connection drops (the common ENA
+/// failure mode) from actual FASTQ parse issues, and suggests the cache as a
+/// workaround when streaming fails.
+fn stream_io_error(
+    line_role: &str,
+    err: &std::io::Error,
+    source_name: &str,
+    n_reads_read: u64,
+) -> anyhow::Error {
+    use std::io::ErrorKind;
+    let is_stream_drop = matches!(
+        err.kind(),
+        ErrorKind::UnexpectedEof
+            | ErrorKind::ConnectionReset
+            | ErrorKind::ConnectionAborted
+            | ErrorKind::BrokenPipe
+            | ErrorKind::TimedOut
+            | ErrorKind::Interrupted
+    );
+    let is_remote = source_name.starts_with("http://") || source_name.starts_with("https://");
+
+    if is_stream_drop {
+        if is_remote {
+            anyhow::anyhow!(
+                "Stream from {} dropped while reading {} line of record {} (I/O error: {} — kind {:?}).\n\
+                 This is usually a transient network interruption, not a bad FASTQ file.\n\
+                 Retry the run. If it repeats, use the read cache (the default for --ena); \
+                 cached downloads are verified by SHA-256 and do not suffer mid-stream drops.",
+                source_name,
+                line_role,
+                n_reads_read + 1,
+                err,
+                err.kind(),
+            )
+        } else {
+            anyhow::anyhow!(
+                "Local read stream ended unexpectedly while reading {} line of record {} in {} \
+                 (I/O error: {} — kind {:?}). The file may be truncated or corrupted.",
+                line_role,
+                n_reads_read + 1,
+                source_name,
+                err,
+                err.kind(),
+            )
+        }
+    } else {
+        anyhow::anyhow!(
+            "Failed to read {} line of record {} in {}: {} (kind {:?})",
+            line_role,
+            n_reads_read + 1,
+            source_name,
+            err,
+            err.kind(),
+        )
+    }
+}
+
 /// Read FASTQ records from a buffered reader, ingesting sequences into chunks.
 ///
 /// Reads 4 lines at a time (header, sequence, separator, quality) and validates
@@ -399,12 +457,12 @@ fn read_fastq<R: BufRead>(
 
     while let Some(header_result) = lines.next() {
         // Read 4 lines for one FASTQ record
-        let header =
-            header_result.with_context(|| format!("Failed to read header from {}", source_name))?;
+        let header = header_result
+            .map_err(|e| stream_io_error("header", &e, source_name, state.n_reads_read))?;
 
         let sequence = match lines.next() {
             Some(line) => {
-                line.with_context(|| format!("Failed to read sequence from {}", source_name))?
+                line.map_err(|e| stream_io_error("sequence", &e, source_name, state.n_reads_read))?
             }
             None => bail!(
                 "Truncated FASTQ record at record {} in {}: missing sequence line",
@@ -415,7 +473,7 @@ fn read_fastq<R: BufRead>(
 
         let separator = match lines.next() {
             Some(line) => {
-                line.with_context(|| format!("Failed to read separator from {}", source_name))?
+                line.map_err(|e| stream_io_error("separator", &e, source_name, state.n_reads_read))?
             }
             None => bail!(
                 "Truncated FASTQ record at record {} in {}: missing separator line",
@@ -426,7 +484,7 @@ fn read_fastq<R: BufRead>(
 
         let quality = match lines.next() {
             Some(line) => {
-                line.with_context(|| format!("Failed to read quality from {}", source_name))?
+                line.map_err(|e| stream_io_error("quality", &e, source_name, state.n_reads_read))?
             }
             None => bail!(
                 "Truncated FASTQ record at record {} in {}: missing quality line",
@@ -842,14 +900,14 @@ fn read_one_fastq_record<R: BufRead>(
 ) -> Result<bool> {
     let header = match lines.next() {
         Some(result) => {
-            result.with_context(|| format!("Failed to read header from {}", source_name))?
+            result.map_err(|e| stream_io_error("header", &e, source_name, state.n_reads_read))?
         }
         None => return Ok(true), // EOF
     };
 
     let sequence = match lines.next() {
         Some(line) => {
-            line.with_context(|| format!("Failed to read sequence from {}", source_name))?
+            line.map_err(|e| stream_io_error("sequence", &e, source_name, state.n_reads_read))?
         }
         None => bail!(
             "Truncated FASTQ record at record {} in {}: missing sequence line",
@@ -860,7 +918,7 @@ fn read_one_fastq_record<R: BufRead>(
 
     let separator = match lines.next() {
         Some(line) => {
-            line.with_context(|| format!("Failed to read separator from {}", source_name))?
+            line.map_err(|e| stream_io_error("separator", &e, source_name, state.n_reads_read))?
         }
         None => bail!(
             "Truncated FASTQ record at record {} in {}: missing separator line",
@@ -871,7 +929,7 @@ fn read_one_fastq_record<R: BufRead>(
 
     let quality = match lines.next() {
         Some(line) => {
-            line.with_context(|| format!("Failed to read quality from {}", source_name))?
+            line.map_err(|e| stream_io_error("quality", &e, source_name, state.n_reads_read))?
         }
         None => bail!(
             "Truncated FASTQ record at record {} in {}: missing quality line",
