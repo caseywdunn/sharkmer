@@ -30,6 +30,13 @@ pub(super) struct SeedMetrics {
     pub(super) budget_exhausted: bool,
     pub(super) reached_opposite: bool,
     pub(super) terminated: bool,
+    /// Mean edge coverage (kmer count) across edges traversed during bounded extend.
+    /// Higher = path is in higher-coverage territory (real amplicon > off-target).
+    pub(super) mean_edge_count: f64,
+    /// Coefficient of variation of edge counts (stddev / mean).
+    /// Lower = uniform coverage (real amplicon); higher = wandering across
+    /// repeat boundaries or coverage regimes.
+    pub(super) coverage_cv: f64,
 }
 
 /// Results from seed evaluation: per-seed metrics and connectivity info.
@@ -97,6 +104,8 @@ pub(super) fn evaluate_seeds(
                     budget_exhausted: false,
                     reached_opposite: true,
                     terminated: false,
+                    mean_edge_count: 0.0,
+                    coverage_cv: 0.0,
                 },
             ));
             result.connections.push((node_idx, node_idx));
@@ -369,6 +378,11 @@ fn bounded_extend(
     let mut budget_exhausted = false;
     let mut terminated = true; // assume terminated unless budget runs out
 
+    // Edge coverage statistics (Welford's online algorithm for variance)
+    let mut edge_count_n: usize = 0;
+    let mut edge_count_mean: f64 = 0.0;
+    let mut edge_count_m2: f64 = 0.0;
+
     while let Some(current_sub_kmer) = frontier.pop() {
         if node_count >= max_seed_nodes {
             budget_exhausted = true;
@@ -390,6 +404,13 @@ fn bounded_extend(
                             let new_sub_kmer = candidate_kmer & suffix_mask;
                             successors.push(new_sub_kmer);
 
+                            // Track edge coverage (Welford's algorithm)
+                            edge_count_n += 1;
+                            let delta = count as f64 - edge_count_mean;
+                            edge_count_mean += delta / edge_count_n as f64;
+                            let delta2 = count as f64 - edge_count_mean;
+                            edge_count_m2 += delta * delta2;
+
                             // Check if we reached an end seed in the main graph
                             if let Some(&main_node_idx) = main_node_lookup.get(&new_sub_kmer) {
                                 if main_graph[main_node_idx].is_end {
@@ -409,6 +430,13 @@ fn bounded_extend(
                         if count >= min_count {
                             let new_sub_kmer = candidate_kmer >> 2;
                             successors.push(new_sub_kmer);
+
+                            // Track edge coverage (Welford's algorithm)
+                            edge_count_n += 1;
+                            let delta = count as f64 - edge_count_mean;
+                            edge_count_mean += delta / edge_count_n as f64;
+                            let delta2 = count as f64 - edge_count_mean;
+                            edge_count_m2 += delta * delta2;
 
                             // Check if we reached a start seed in the main graph
                             if let Some(&main_node_idx) = main_node_lookup.get(&new_sub_kmer) {
@@ -438,6 +466,15 @@ fn bounded_extend(
         }
     }
 
+    // Compute coefficient of variation from Welford's running stats.
+    // CV = stddev / mean; lower means more uniform coverage.
+    let coverage_cv = if edge_count_n > 1 && edge_count_mean > 0.0 {
+        let variance = edge_count_m2 / (edge_count_n - 1) as f64;
+        variance.sqrt() / edge_count_mean
+    } else {
+        0.0
+    };
+
     (
         SeedMetrics {
             node_count,
@@ -445,6 +482,8 @@ fn bounded_extend(
             budget_exhausted,
             reached_opposite,
             terminated,
+            mean_edge_count: edge_count_mean,
+            coverage_cv,
         },
         reached_nodes,
     )

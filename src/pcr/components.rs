@@ -20,6 +20,12 @@ pub(super) struct SeedComponent {
     pub avg_branching_ratio: f64,
     /// Sum of seed eval node counts across seeds in this component
     pub total_extension_nodes: usize,
+    /// Max mean edge coverage across seeds in this component (higher is better).
+    /// On-target paths explore high-coverage regions; off-target hits have low counts.
+    pub max_mean_edge_count: f64,
+    /// Min coverage CV across seeds in this component (lower is better).
+    /// Uniform coverage = real amplicon; high CV = wandering across repeat boundaries.
+    pub min_coverage_cv: f64,
     /// Allocated node budget for extension
     pub node_budget: usize,
     /// Priority score for ordering (higher = extend first)
@@ -146,6 +152,8 @@ pub(super) fn identify_components(
         let mut has_connected = false;
         let mut total_branching_ratio = 0.0;
         let mut total_extension_nodes = 0usize;
+        let mut max_mean_edge_count = 0.0f64;
+        let mut min_coverage_cv = f64::INFINITY;
         let mut seed_count = 0usize;
 
         for &node in members {
@@ -166,6 +174,12 @@ pub(super) fn identify_components(
                 };
                 total_branching_ratio += ratio;
                 total_extension_nodes += metrics.node_count;
+                if metrics.mean_edge_count > max_mean_edge_count {
+                    max_mean_edge_count = metrics.mean_edge_count;
+                }
+                if metrics.coverage_cv < min_coverage_cv && metrics.node_count > 0 {
+                    min_coverage_cv = metrics.coverage_cv;
+                }
                 seed_count += 1;
             } else {
                 // Node in connections but not in seed_metrics (shouldn't happen,
@@ -184,6 +198,9 @@ pub(super) fn identify_components(
         } else {
             0.0
         };
+        if !min_coverage_cv.is_finite() {
+            min_coverage_cv = 0.0;
+        }
 
         components.push(SeedComponent {
             start_seeds,
@@ -191,6 +208,8 @@ pub(super) fn identify_components(
             has_connected_seeds: has_connected,
             avg_branching_ratio,
             total_extension_nodes,
+            max_mean_edge_count,
+            min_coverage_cv,
             node_budget: 0,      // set by allocate_budgets
             priority_score: 0.0, // set by prioritize_components
         });
@@ -220,7 +239,28 @@ fn compute_priority_score(component: &SeedComponent) -> f64 {
     // Larger total extension during seed eval = more promising
     let extension_score = (component.total_extension_nodes as f64).sqrt();
 
-    connected_bonus + seed_count_score + branching_penalty + extension_score
+    // Higher mean edge coverage = path is in real amplicon territory, not
+    // a low-coverage off-target region. Log-scale to compress the range
+    // (coverage can span 2–2000+). ln(max_mean) gives ~0 at count 1,
+    // ~7 at count 1000.
+    let coverage_score = if component.max_mean_edge_count > 1.0 {
+        component.max_mean_edge_count.ln() * 5.0
+    } else {
+        0.0
+    };
+
+    // Lower coefficient of variation = uniform coverage = real amplicon.
+    // High CV means the path wanders between coverage regimes (e.g., into
+    // a repeat). Penalty scales linearly; typical good paths have CV < 0.5,
+    // wandering paths often have CV > 1.0.
+    let uniformity_penalty = -10.0 * component.min_coverage_cv;
+
+    connected_bonus
+        + seed_count_score
+        + branching_penalty
+        + extension_score
+        + coverage_score
+        + uniformity_penalty
 }
 
 /// Sort components by priority score (highest first) and compute scores.
@@ -267,6 +307,8 @@ mod tests {
             budget_exhausted: false,
             reached_opposite: reached,
             terminated: false,
+            mean_edge_count: 10.0,
+            coverage_cv: 0.3,
         }
     }
 
