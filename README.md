@@ -134,6 +134,8 @@ You can then edit the exported YAML to add genes, remove genes, or optimize prim
 
 If you have other primers that you would like to have added to the built-in panels, please submit them to the [issue tracker](https://github.com/caseywdunn/sharkmer/issues).
 
+See [PANELS.md](PANELS.md) for the full panel file schema (versioning, maintainers, changelog, validation block) and the panel development cycle, including how to validate a panel against declared ENA/SRA samples with `scripts/validate_panel.py`.
+
 ### Optimizing *in silico* PCR (sPCR)
 
 There are a few different strategies to take if you are not getting a sPCR product, or it is working inconsistently. If you get things working, please let me know in the [issue tracker](https://github.com/caseywdunn/sharkmer/issues) so I can improve the default primer sets and help other users. If you hit a wall, please also let me know in the issue tracker.
