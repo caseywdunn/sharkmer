@@ -222,8 +222,14 @@ pub(crate) fn print_summary(run_stats: &RunStats, elapsed: std::time::Duration) 
             .collect();
         let genes_detail = if gene_names.is_empty() {
             String::new()
-        } else {
+        } else if gene_names.len() <= 10 {
             format!(" ({})", gene_names.join(", "))
+        } else {
+            format!(
+                " ({}, +{} more)",
+                gene_names[..10].join(", "),
+                gene_names.len() - 10
+            )
         };
         warn!(
             "sharkmer complete: {} reads, {}/{} genes amplified{}, peak mem {}, {}",

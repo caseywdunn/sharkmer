@@ -160,6 +160,7 @@ pub(super) fn reconstruct_edge_kmer(
     graph: &StableDiGraph<DBNode, DBEdge>,
     edge_idx: petgraph::graph::EdgeIndex,
 ) -> u64 {
+    // Safe: callers pass edge indices from graph.edge_indices() / edge_references()
     let (src, tgt) = graph.edge_endpoints(edge_idx).unwrap();
     (graph[src].sub_kmer << 2) | (graph[tgt].sub_kmer & 3)
 }

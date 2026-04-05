@@ -126,7 +126,7 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
         max_seed_nodes: pcr::DEFAULT_MAX_SEED_NODES,
         high_coverage_ratio: pcr::DEFAULT_HIGH_COVERAGE_RATIO,
         tip_coverage_fraction: pcr::DEFAULT_TIP_COVERAGE_FRACTION,
-        stopping_criteria: pcr::StoppingCriteria::AllComponents,
+        stopping_criteria: pcr::StoppingCriteria::FirstProduct,
         min_component_budget: pcr::DEFAULT_MIN_COMPONENT_BUDGET,
     };
 

@@ -988,6 +988,7 @@ fn write_annotated_dot(
     let sub_k = k - 1;
     let mut dot = String::new();
 
+    // writeln! to String is infallible; unwrap is safe
     writeln!(dot, "digraph {{").unwrap();
     writeln!(dot, "  rankdir=LR;").unwrap();
 

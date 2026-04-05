@@ -43,6 +43,12 @@ impl CacheConfig {
     /// `None` on cache miss. A complete download (EOF reached) satisfies any
     /// `max_reads` value. A partial download satisfies only if it contains
     /// at least `max_reads` reads.
+    ///
+    /// **Cache trust model:** the SHA-256 checksum is verified on every
+    /// lookup, so each call re-hashes the cached file. There is no
+    /// in-process memoization — if the file is corrupted between calls
+    /// (e.g. by an external process), the next lookup will detect the
+    /// mismatch and evict the stale entry.
     pub(crate) fn lookup(&self, url: &str, max_reads: u64) -> Result<Option<PathBuf>> {
         let key = cache_key(url);
         let data_path = self.data_path(&key);

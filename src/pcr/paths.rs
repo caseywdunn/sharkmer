@@ -197,6 +197,10 @@ pub(super) fn generate_sequences_from_paths(
             continue;
         }
 
+        if edge_counts.is_empty() {
+            debug!("  Path has no edges (single node). Skipping.");
+            continue;
+        }
         let count_mean = compute_mean(&edge_counts);
         let count_median = compute_median(&edge_counts);
         let count_min = edge_counts

@@ -133,7 +133,7 @@ pub(super) fn generate_recursive_permutations(
     current: usize,
     unique_sequences: &mut HashSet<String>,
 ) {
-    let nucleotides = ["A", "T", "C", "G"];
+    let nucleotides = ['A', 'T', 'C', 'G'];
 
     if current == positions.len() {
         unique_sequences.insert(seq.to_string());
@@ -143,10 +143,7 @@ pub(super) fn generate_recursive_permutations(
     let pos = positions[current];
     for &nucleotide in nucleotides.iter() {
         let mut new_seq = seq.chars().collect::<Vec<_>>();
-        new_seq[pos] = nucleotide
-            .chars()
-            .next()
-            .expect("nucleotide literal is non-empty");
+        new_seq[pos] = nucleotide;
         generate_recursive_permutations(
             &new_seq.iter().collect::<String>(),
             positions,
@@ -171,6 +168,11 @@ fn find_oligos_in_kmers(
     // Assume all oligos have the same length
     let oligo_length = oligos[0].length;
     let k = kmers.get_k();
+    assert!(
+        k <= 31,
+        "k={} exceeds 31; 2-bit encoding requires k <= 31 for u64",
+        k
+    );
     assert!(
         oligo_length > 0 && oligo_length <= k,
         "oligo length {} out of range for k={} (must be 1..=k)",
@@ -419,4 +421,260 @@ pub fn preprocess_primer_oligos(pcr_runs: &[PCRParams], k: usize) -> Result<Vec<
     }
 
     Ok(result)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    // --- string_to_oligo ---
+
+    #[test]
+    fn test_string_to_oligo_single_base() {
+        // A=00, C=01, G=10, T=11
+        let a = string_to_oligo("A").unwrap();
+        assert_eq!(a.kmer, 0b00);
+        assert_eq!(a.length, 1);
+
+        let t = string_to_oligo("T").unwrap();
+        assert_eq!(t.kmer, 0b11);
+        assert_eq!(t.length, 1);
+    }
+
+    #[test]
+    fn test_string_to_oligo_encoding() {
+        // ACGT => 00_01_10_11
+        let oligo = string_to_oligo("ACGT").unwrap();
+        assert_eq!(oligo.kmer, 0b00011011);
+        assert_eq!(oligo.length, 4);
+    }
+
+    #[test]
+    fn test_string_to_oligo_invalid_base() {
+        assert!(string_to_oligo("ACNGT").is_err());
+        assert!(string_to_oligo("X").is_err());
+    }
+
+    #[test]
+    fn test_string_to_oligo_empty() {
+        let oligo = string_to_oligo("").unwrap();
+        assert_eq!(oligo.kmer, 0);
+        assert_eq!(oligo.length, 0);
+    }
+
+    // --- resolve_primer ---
+
+    #[test]
+    fn test_resolve_primer_no_ambiguity() {
+        let result = resolve_primer("ACGT");
+        assert_eq!(result.len(), 1);
+        assert!(result.contains("ACGT"));
+    }
+
+    #[test]
+    fn test_resolve_primer_single_ambiguity() {
+        // R = A or G
+        let result = resolve_primer("AR");
+        assert_eq!(result.len(), 2);
+        assert!(result.contains("AA"));
+        assert!(result.contains("AG"));
+    }
+
+    #[test]
+    fn test_resolve_primer_multiple_ambiguities() {
+        // R = A|G, Y = C|T => 2*2 = 4 variants
+        let result = resolve_primer("RY");
+        assert_eq!(result.len(), 4);
+        assert!(result.contains("AC"));
+        assert!(result.contains("AT"));
+        assert!(result.contains("GC"));
+        assert!(result.contains("GT"));
+    }
+
+    #[test]
+    fn test_resolve_primer_n_gives_four() {
+        let result = resolve_primer("N");
+        assert_eq!(result.len(), 4);
+        for base in &["A", "C", "G", "T"] {
+            assert!(result.contains(*base));
+        }
+    }
+
+    // --- combinations ---
+
+    #[test]
+    fn test_combinations_basic() {
+        assert_eq!(combinations(4, 2).len(), 6); // C(4,2) = 6
+        assert_eq!(combinations(5, 0).len(), 1); // C(n,0) = 1
+        assert_eq!(combinations(3, 3).len(), 1); // C(n,n) = 1
+    }
+
+    #[test]
+    fn test_combinations_r_exceeds_n() {
+        assert!(combinations(2, 5).is_empty());
+    }
+
+    // --- permute_sequences ---
+
+    #[test]
+    fn test_permute_zero_mismatches() {
+        let mut seqs = HashSet::new();
+        seqs.insert("ACG".to_string());
+        let result = permute_sequences(seqs, &0);
+        assert_eq!(result.len(), 1);
+        assert!(result.contains("ACG"));
+    }
+
+    #[test]
+    fn test_permute_one_mismatch() {
+        let mut seqs = HashSet::new();
+        seqs.insert("AC".to_string());
+        let result = permute_sequences(seqs, &1);
+        // Position 0: AC, TC, CC, GC (4); Position 1: AA, AT, AC, AG (4)
+        // Union = 7 unique (AC counted once)
+        assert_eq!(result.len(), 7);
+        assert!(result.contains("AC")); // original
+        assert!(result.contains("TC")); // pos 0 mutated
+        assert!(result.contains("AG")); // pos 1 mutated
+    }
+
+    // --- find_oligos_in_kmers ---
+
+    /// Build a KmerCounts table from a short sequence for testing primer matching.
+    fn build_kmer_counts(seq: &str, k: usize) -> KmerCounts {
+        let mut kmer_counts = KmerCounts::new(&k);
+        let reads = crate::kmer::seq_to_reads(seq).unwrap();
+        kmer_counts.ingest_reads(&reads).unwrap();
+        kmer_counts
+    }
+
+    #[test]
+    fn test_find_oligos_exact_match_forward() {
+        // Sequence: ACGTACGT, k=5
+        // Oligo "ACG" (length 3) should match kmers starting with ACG
+        let k = 5;
+        let kmer_counts = build_kmer_counts("ACGTACGT", k);
+        let filtered = kmer_counts.filtered_view(1);
+
+        let oligo = string_to_oligo("ACG").unwrap();
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
+
+        // Kmers in ACGTACGT: ACGTA, CGTAC, GTACG, TACGT
+        // Forward match (starts with ACG): ACGTA
+        // RC match: reverse complement of a kmer ending with CGT (=ACG rc)
+        assert!(
+            result.len() > 0,
+            "Should find at least one kmer matching oligo ACG"
+        );
+    }
+
+    #[test]
+    fn test_find_oligos_no_match() {
+        // Sequence of all A's — oligo "GGG" should not match
+        let k = 5;
+        let kmer_counts = build_kmer_counts("AAAAAAAAAA", k);
+        let filtered = kmer_counts.filtered_view(1);
+
+        let oligo = string_to_oligo("GGG").unwrap();
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
+
+        assert_eq!(result.len(), 0, "Should find no matching kmers");
+    }
+
+    #[test]
+    fn test_find_oligos_min_count_filter() {
+        // Use a non-palindromic sequence so canonical kmer counts stay at 1.
+        // AACCCAACC has k=5 kmers: AACCC, ACCCA, CCCAA, CCAAC, CAACC
+        // None of these are their own reverse complement, so each count=1.
+        let k = 5;
+        let kmer_counts = build_kmer_counts("AACCCAACC", k);
+        let filtered = kmer_counts.filtered_view(1);
+
+        let oligo = string_to_oligo("AAC").unwrap();
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &2);
+
+        assert_eq!(
+            result.len(),
+            0,
+            "Single-copy kmers should not pass min_count=2"
+        );
+    }
+
+    #[test]
+    fn test_find_oligos_rc_match() {
+        // Oligo "AAA" (length 3). The RC of "AAA" is "TTT".
+        // Sequence "TTTTTTT" with k=5: all kmers are TTTTT.
+        // RC of TTTTT = AAAAA. The high bits of AAAAA start with AAA → match.
+        // The matched kmer should be stored as the RC (AAAAA).
+        let k = 5;
+        let kmer_counts = build_kmer_counts("TTTTTTT", k);
+        let filtered = kmer_counts.filtered_view(1);
+
+        let oligo = string_to_oligo("AAA").unwrap();
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
+
+        assert!(
+            result.len() > 0,
+            "Should find RC match: oligo AAA should match kmers in all-T sequence"
+        );
+        // The matched kmer should be stored in the forward-oligo orientation (AAAAA)
+        let matched_kmer = result.iter().next().unwrap().0;
+        let matched_seq = crate::kmer::kmer_to_seq(matched_kmer, &k);
+        assert_eq!(matched_seq, "AAAAA");
+    }
+
+    #[test]
+    fn test_find_oligos_oligo_equals_k() {
+        // Edge case: oligo_length == k (shift = 0, mask covers all bits)
+        let k = 5;
+        let kmer_counts = build_kmer_counts("ACGTACGT", k);
+        let filtered = kmer_counts.filtered_view(1);
+
+        let oligo = string_to_oligo("ACGTA").unwrap();
+        assert_eq!(oligo.length, k);
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
+
+        assert!(
+            result.len() > 0,
+            "Full-length oligo (length == k) should match the exact kmer"
+        );
+    }
+
+    // --- filter_primer_kmers ---
+
+    #[test]
+    fn test_filter_primer_kmers_empty() {
+        let empty = KmerCounts::new(&5);
+        let result = filter_primer_kmers(empty, 10);
+        assert_eq!(result.len(), 0);
+    }
+
+    #[test]
+    fn test_filter_primer_kmers_cap() {
+        // Insert 5 kmers with different counts, cap at 3
+        let k = 5;
+        let mut counts = KmerCounts::new(&k);
+        for (i, seq) in ["AAAAA", "AAAAC", "AAACG", "AACGT", "ACGTA"]
+            .iter()
+            .enumerate()
+        {
+            let kmer = crate::kmer::seq_to_kmer(seq).unwrap();
+            let count = (i + 1) as u32; // counts: 1, 2, 3, 4, 5
+            counts.insert(&kmer, &count);
+        }
+        let result = filter_primer_kmers(counts, 3);
+        // Top 3 by count: 5, 4, 3 → 3 kmers retained
+        assert_eq!(result.len(), 3);
+    }
+
+    // --- is_valid_nucleotide ---
+
+    #[test]
+    fn test_valid_nucleotides() {
+        for c in "ACGTRYWSKMBDHVN".chars() {
+            assert!(is_valid_nucleotide(c), "{} should be valid", c);
+        }
+        assert!(!is_valid_nucleotide('X'));
+        assert!(!is_valid_nucleotide('a')); // lowercase not accepted
+    }
 }

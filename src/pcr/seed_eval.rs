@@ -245,6 +245,13 @@ pub(super) fn evaluate_seeds(
 /// paths within the first k bases after the primer — evidence of
 /// off-target binding in repetitive regions.
 ///
+/// **Assumption:** read traces are compared literally against each other
+/// without error tolerance. A single sequencing error in a read can
+/// produce a false divergence signal. This is acceptable because we
+/// require a *majority* of reads to diverge (line 343), so isolated
+/// errors in individual reads are diluted. However, at very low read
+/// counts (2–3 reads) a single error could tip the majority vote.
+///
 /// Returns true if divergence is detected, false otherwise (including
 /// when there are 0 or 1 matching reads — not enough to detect divergence).
 fn check_read_divergence(

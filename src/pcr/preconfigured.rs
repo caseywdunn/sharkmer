@@ -105,7 +105,7 @@ fn load_panel_file(path: &str) -> Result<Vec<PCRParams>> {
     let yaml_str = std::fs::read_to_string(path)
         .with_context(|| format!("Failed to read panel file: {}", path))?;
     let mut panel = parse_panel_yaml(&yaml_str)
-        .with_context(|| format!("Failed to parse panel file: {}", path))?;
+        .with_context(|| format!("Failed to parse panel file '{}'. Check for YAML syntax errors and ensure all primer fields are valid.", path))?;
 
     log_panel_version(&panel, path);
 

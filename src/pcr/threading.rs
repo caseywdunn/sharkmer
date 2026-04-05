@@ -235,7 +235,7 @@ fn resolve_candidates(
     prev_edge: Option<EdgeIndex>,
     graph: &StableDiGraph<DBNode, DBEdge>,
 ) -> EdgeIndex {
-    debug_assert!(!candidates.is_empty(), "lookup entry must be non-empty");
+    assert!(!candidates.is_empty(), "lookup entry must be non-empty");
     if candidates.len() == 1 {
         return candidates[0];
     }
@@ -314,8 +314,10 @@ fn find_contiguous_runs(
     runs
 }
 
-/// Check if a run is "unambiguous": every intermediate node has
+/// Check if a run is "unambiguous": every *intermediate* node has
 /// in-degree <= 1 and out-degree <= 1 in the full graph.
+/// Entry and exit nodes are intentionally excluded — branch points at
+/// run boundaries are expected and handled by the caller.
 fn is_run_unambiguous(graph: &StableDiGraph<DBNode, DBEdge>, edges: &[EdgeIndex]) -> bool {
     if edges.len() < 2 {
         return true; // single edge is trivially unambiguous

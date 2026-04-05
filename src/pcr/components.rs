@@ -304,7 +304,7 @@ pub(super) fn allocate_budgets(
     for comp in components.iter_mut() {
         let proportional =
             (comp.seed_count().max(1) as f64 / total_seeds as f64 * total_budget as f64) as usize;
-        comp.node_budget = proportional.max(effective_min);
+        comp.node_budget = proportional.max(effective_min).min(total_budget);
     }
 
     // Final safety: if floating-point rounding pushed the sum above budget
