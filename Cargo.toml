@@ -39,3 +39,4 @@ peak_alloc = { version = "0.3" }
 dirs = { version = "6" }
 sha2 = { version = "0.10" }
 tempfile = { version = "3" }
+smallvec = { version = "1" }
