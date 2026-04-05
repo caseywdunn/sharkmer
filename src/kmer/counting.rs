@@ -21,7 +21,14 @@ trait KmerMap {
     fn new_map() -> Self;
     fn new_map_with_capacity(capacity: usize) -> Self;
     fn insert_or_add(&mut self, key: u64, count: u32);
-    fn insert_or_add_get_old(&mut self, key: u64, count: u32) -> u32;
+    /// Insert a kmer or add to its existing count, returning
+    /// `(old_count, new_count_after_saturation)`. The new count is
+    /// `old.saturating_add(count)`, so at `u32::MAX` further additions are
+    /// silently dropped. Callers that maintain a parallel histogram must
+    /// use `new_count_after_saturation` as the new bin rather than
+    /// `old + count`, otherwise the histogram drifts out of sync with the
+    /// stored count once any kmer saturates.
+    fn insert_or_add_get_counts(&mut self, key: u64, count: u32) -> (u32, u32);
     fn get_value(&self, key: u64) -> Option<&u32>;
     fn get_count(&self, key: u64) -> u32;
     fn contains(&self, key: u64) -> bool;
@@ -40,11 +47,12 @@ impl KmerMap for rustc_hash::FxHashMap<u64, u32> {
         let c = self.entry(key).or_insert(0);
         *c = c.saturating_add(count);
     }
-    fn insert_or_add_get_old(&mut self, key: u64, count: u32) -> u32 {
+    fn insert_or_add_get_counts(&mut self, key: u64, count: u32) -> (u32, u32) {
         let c = self.entry(key).or_insert(0);
         let old = *c;
-        *c = c.saturating_add(count);
-        old
+        let new = old.saturating_add(count);
+        *c = new;
+        (old, new)
     }
     fn get_value(&self, key: u64) -> Option<&u32> {
         self.get(&key)
@@ -75,11 +83,12 @@ impl KmerMap for AHashMap<u64, u32> {
         let c = self.entry(key).or_insert(0);
         *c = c.saturating_add(count);
     }
-    fn insert_or_add_get_old(&mut self, key: u64, count: u32) -> u32 {
+    fn insert_or_add_get_counts(&mut self, key: u64, count: u32) -> (u32, u32) {
         let c = self.entry(key).or_insert(0);
         let old = *c;
-        *c = c.saturating_add(count);
-        old
+        let new = old.saturating_add(count);
+        *c = new;
+        (old, new)
     }
     fn get_value(&self, key: u64) -> Option<&u32> {
         self.get(&key)
@@ -185,9 +194,26 @@ impl KmerCounts {
             bail!("Cannot extend KmerCounts with different k");
         }
 
+        // Track whether any kmer hit u32::MAX during this merge so the
+        // operator sees a single warning rather than silent saturation.
+        let mut any_saturated = false;
         for (kmer, new_count) in other.iter() {
-            let old_count = self.kmers.insert_or_add_get_old(*kmer, *new_count);
-            histo.move_count(old_count as u64, old_count as u64 + *new_count as u64);
+            let (old_count, stored_count) = self.kmers.insert_or_add_get_counts(*kmer, *new_count);
+            // Use the actual stored count (post-saturation) as the new
+            // histogram bin, not old + new. Without this, a saturating
+            // kmer's histogram entry drifts above u32::MAX while its real
+            // count is capped.
+            histo.move_count(old_count as u64, stored_count as u64);
+            if stored_count == u32::MAX && old_count < u32::MAX {
+                any_saturated = true;
+            }
+        }
+        if any_saturated {
+            log::warn!(
+                "One or more kmer counts reached u32::MAX during ingestion. \
+                 Counts are now capped; histogram reflects the capped values. \
+                 This is only expected on extremely high-copy repeat kmers."
+            );
         }
         Ok(())
     }

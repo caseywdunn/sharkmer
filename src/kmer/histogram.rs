@@ -41,16 +41,38 @@ impl Histogram {
 
     /// Move a kmer from one count bin to another.
     /// Decrements the bin for `old_count` and increments the bin for `new_count`.
+    ///
+    /// Callers must pass a valid `old_count` that actually has at least one
+    /// kmer in the corresponding bin, or `old_count == new_count` (no-op).
+    /// This is asserted in debug builds; release builds tolerate the
+    /// inconsistency via saturating subtraction rather than panicking,
+    /// because a histogram miscount is strictly less harmful than a crash.
     pub(crate) fn move_count(&mut self, old_count: u64, new_count: u64) {
+        if old_count == new_count {
+            return;
+        }
         // Decrement old bin
         if old_count > 0 {
             if old_count <= self.histo_max {
-                self.histo[old_count as usize] -= 1;
+                let idx = old_count as usize;
+                debug_assert!(
+                    self.histo[idx] > 0,
+                    "Histogram::move_count: bin for old_count={} is empty; caller invariant violated",
+                    old_count
+                );
+                self.histo[idx] = self.histo[idx].saturating_sub(1);
             } else if let Some(n) = self.histo_large.get_mut(&old_count) {
-                *n -= 1;
+                debug_assert!(*n > 0, "Histogram::move_count: large bin is zero");
+                *n = n.saturating_sub(1);
                 if *n == 0 {
                     self.histo_large.remove(&old_count);
                 }
+            } else {
+                debug_assert!(
+                    false,
+                    "Histogram::move_count: no large bin for old_count={}",
+                    old_count
+                );
             }
         }
         // Increment new bin

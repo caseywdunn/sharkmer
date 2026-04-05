@@ -25,6 +25,7 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
     let mut citation = String::new();
     let mut notes = String::new();
     let mut dedup_edit_threshold = pcr::DEFAULT_DEDUP_EDIT_THRESHOLD;
+    let mut seen_keys: std::collections::HashSet<String> = std::collections::HashSet::new();
 
     for item in split.iter() {
         let key_value: Vec<&str> = item.split('=').collect();
@@ -38,6 +39,13 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
         }
 
         let key = key_value[0].to_lowercase();
+        if !seen_keys.insert(key.clone()) {
+            bail!(
+                "Duplicate parameter '{}' in primer specification '{}'. Each key may appear at most once.",
+                key,
+                pcr_string
+            );
+        }
         let key = key.as_str();
         let value = key_value[1];
 
@@ -820,4 +828,32 @@ pub(crate) fn handle_dry_run(
     }
 
     std::process::exit(0);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_parse_pcr_primers_duplicate_key_rejected() {
+        let spec = "forward=AAAA,reverse=TTTT,forward=CCCC,name=X";
+        let err = parse_pcr_primers_string(spec)
+            .expect_err("duplicate forward key must produce an error");
+        let msg = format!("{}", err);
+        assert!(
+            msg.contains("Duplicate parameter"),
+            "error should mention duplicate parameter: {}",
+            msg
+        );
+    }
+
+    #[test]
+    fn test_parse_pcr_primers_unique_keys_ok() {
+        let spec = "forward=AAAA,reverse=TTTT,name=X,max-length=500";
+        let params = parse_pcr_primers_string(spec).expect("unique keys should parse");
+        assert_eq!(params.gene_name, "X");
+        assert_eq!(params.forward_seq, "AAAA");
+        assert_eq!(params.reverse_seq, "TTTT");
+        assert_eq!(params.max_length, 500);
+    }
 }

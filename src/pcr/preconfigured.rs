@@ -107,6 +107,8 @@ fn load_panel_file(path: &str) -> Result<Vec<PCRParams>> {
     let mut panel = parse_panel_yaml(&yaml_str)
         .with_context(|| format!("Failed to parse panel file: {}", path))?;
 
+    log_panel_version(&panel, path);
+
     // Prepend panel name to gene names
     for param in panel.primers.iter_mut() {
         param.gene_name = format!("{}_{}", panel.name, param.gene_name);
@@ -115,19 +117,76 @@ fn load_panel_file(path: &str) -> Result<Vec<PCRParams>> {
     Ok(panel.primers)
 }
 
+/// Log the loaded panel's name and version at info level. A missing
+/// `version` field produces a warning because versioning is expected for
+/// reproducibility and a versionless panel breaks the panel development
+/// cycle documented in PANELS.md. Panel versions are deliberately *not*
+/// checked against sharkmer's own version — PANELS.md specifies they are
+/// independent — but the values are surfaced so users can cross-reference
+/// a run against the panel's changelog.
+fn log_panel_version(panel: &PanelFile, source: &str) {
+    match panel.version.as_deref() {
+        Some(v) => log::info!(
+            "Loaded panel '{}' v{} from {} ({} primer pair(s))",
+            panel.name,
+            v,
+            source,
+            panel.primers.len()
+        ),
+        None => log::warn!(
+            "Panel '{}' from {} has no `version` field. Versioning is \
+             recommended for reproducibility; see PANELS.md.",
+            panel.name,
+            source
+        ),
+    }
+}
+
+/// Maximum size of a panel YAML file fetched over the network. Real panels
+/// are a few kilobytes at most; this cap protects against a misconfigured
+/// or malicious URL that would otherwise stream unbounded data.
+const MAX_PANEL_YAML_BYTES: u64 = 10 * 1024 * 1024; // 10 MB
+
 /// Load a panel from a URL.
 fn load_panel_url(url: &str) -> Result<Vec<PCRParams>> {
-    log::info!("Downloading primer panel from {}", url);
-    let response = ureq::get(url)
-        .call()
-        .with_context(|| format!("Failed to download panel from URL: {}", url))?;
+    use std::io::Read;
+    use std::time::Duration;
 
-    let yaml_str = response
-        .into_string()
-        .with_context(|| format!("Failed to read panel response from URL: {}", url))?;
+    log::info!("Downloading primer panel from {}", url);
+
+    // Use an agent with explicit timeouts so a hung or slow endpoint cannot
+    // block sharkmer indefinitely on startup.
+    let agent = ureq::AgentBuilder::new()
+        .timeout_connect(Duration::from_secs(10))
+        .timeout_read(Duration::from_secs(30))
+        .build();
+
+    let response = agent.get(url).call().with_context(|| {
+        format!(
+            "Failed to download panel from URL: {} (network error, timeout, or HTTP failure)",
+            url
+        )
+    })?;
+
+    // Bound the response size to avoid OOM on pathological content.
+    let mut yaml_str = String::new();
+    response
+        .into_reader()
+        .take(MAX_PANEL_YAML_BYTES + 1)
+        .read_to_string(&mut yaml_str)
+        .with_context(|| format!("Failed to read panel response body from URL: {}", url))?;
+    if yaml_str.len() as u64 > MAX_PANEL_YAML_BYTES {
+        bail!(
+            "Panel YAML at {} exceeds maximum size of {} bytes",
+            url,
+            MAX_PANEL_YAML_BYTES
+        );
+    }
 
     let mut panel = parse_panel_yaml(&yaml_str)
-        .with_context(|| format!("Failed to parse panel YAML from URL: {}", url))?;
+        .with_context(|| format!("Downloaded panel from {} but failed to parse as YAML", url))?;
+
+    log_panel_version(&panel, url);
 
     // Prepend panel name to gene names
     for param in panel.primers.iter_mut() {
@@ -189,18 +248,20 @@ fn get_preconfigured_panels() -> Vec<PanelFile> {
 pub fn get_panel(panel_name: &str) -> Result<Vec<PCRParams>, String> {
     let panels = get_preconfigured_panels();
 
-    panels
-        .iter()
-        .find(|panel| panel.name == panel_name)
-        .map(|panel| panel.primers.clone())
-        .ok_or_else(|| {
+    match panels.iter().find(|panel| panel.name == panel_name) {
+        Some(panel) => {
+            log_panel_version(panel, &format!("built-in panel '{}'", panel_name));
+            Ok(panel.primers.clone())
+        }
+        None => {
             let available: Vec<&str> = panels.iter().map(|p| p.name.as_str()).collect();
-            format!(
+            Err(format!(
                 "Unknown panel '{}'. Available panels: {}",
                 panel_name,
                 available.join(", ")
-            )
-        })
+            ))
+        }
+    }
 }
 
 /// Export a built-in panel as raw YAML to stdout.
