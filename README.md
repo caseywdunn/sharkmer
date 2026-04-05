@@ -172,11 +172,9 @@ By default, sharkmer builds the de Bruijn graph from kmer counts alone and picks
 
 `--read-threading` enables a second pass over the reads after the graph is built. Each read is mapped onto the graph as a maximal contiguous run of edges, and that read support is used to rank branches when resolving bubbles and to phase adjacent variants that a single read spans. This makes a meaningful difference when the thing you care about is the identity of the product rather than whether any product exists.
 
-When input is paired-end, `--paired` tells sharkmer to treat two input files as R1/R2 mates. This only has an effect in combination with `--read-threading` — the pair relationship is used to link graph regions that are farther apart than a single read, extending the effective range of read-based phasing. `--paired` requires exactly two local input files (it cannot be combined with `--ena` or stdin).
-
 ```bash
 sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ \
-  --pcr-panel cnidaria --read-threading --paired \
+  --pcr-panel cnidaria --read-threading \
   data/SRR26955578_1.fastq.gz data/SRR26955578_2.fastq.gz
 ```
 
@@ -187,7 +185,7 @@ Some samples contain multiple similar templates that you want to recover as dist
 To pull multiple similar products out of a complex sample:
 
 - Change `--pcr-stopping-criteria` from the `first-product` default to `connected-only` or `all-components` so sharkmer does not bail out after the first successful primer-binding component. `all-components` is exhaustive and slowest but will explore every seed.
-- Enable `--read-threading` (and `--paired` if you have paired-end data) so that branches in the graph are ranked and phased by actual read support rather than coverage heuristics. Without read threading, genuinely distinct variants that share long stretches of sequence tend to be chosen against or merged.
+- Enable `--read-threading` so that branches in the graph are ranked and phased by actual read support rather than coverage heuristics. Without read threading, genuinely distinct variants that share long stretches of sequence tend to be chosen against or merged.
 - Lower the per-primer `dedup-edit-threshold`. Sharkmer's final deduplication collapses any two output records within this many edits (Levenshtein distance) of each other; the default is 10, which is appropriate when you expect at most one true product per gene but discards closely related variants. Set it lower (e.g. `dedup-edit-threshold=2` or `dedup-edit-threshold=0`) to retain products that differ by only a few bases. For example:
 
   ```

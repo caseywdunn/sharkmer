@@ -131,8 +131,10 @@ run PCR → write stats → print summary.
 `Args` struct (clap), `ColorMode`, `parse_pcr_primers_string()`,
 `init_logging()`, early exits, validation, `--dry-run`. New flags:
 `--read-eval` (Pass 1 read retention for seed eval), `--read-threading`
-(Pass 2 re-read for graph annotation), `--paired` (paired-end R1/R2),
-`--max-nodes` (hidden, graph node budget).
+(Pass 2 re-read for graph annotation), `--max-nodes` (hidden, graph
+node budget). `--paired` exists but is hidden — paired-end R1/R2
+reading works, but the paired-end phasing feature it is meant to
+unlock is not yet wired into branch ranking; see issue #101.
 
 ### io.rs (~1260 lines)
 
@@ -182,7 +184,10 @@ find paths → generate sequences → deduplicate
   off-target seeds before full graph extension.
 - `threading.rs`: `thread_reads()`, `thread_reads_paired()`. Maps reads
   to graph edges via maximal contiguous runs. Graph-agnostic API.
-  `EdgeReadSupport`, `BranchLink`, `PairedEndLink`, `ThreadingAnnotations`.
+  `EdgeReadSupport`, `BranchLink`, `ThreadingAnnotations`. Note:
+  `PairedEndLink` and `thread_reads_paired` construct paired-end link
+  data, but nothing downstream consumes it yet — see issue #101 for
+  what needs to happen to complete paired-end phasing.
 - `read_filter.rs`: `PrimerReadFilter` for per-gene read filtering
   during Pass 2 threading
 - `bubble.rs`: `resolve_bubbles()`. Detects simple bubbles, ranks

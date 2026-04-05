@@ -314,8 +314,12 @@ pub(crate) struct Args {
     #[arg(long, help_heading = "PCR")]
     pub(crate) read_threading: bool,
 
-    /// Treat input as paired-end reads (exactly 2 files required: R1, R2)
-    #[arg(long, help_heading = "Input")]
+    /// Treat input as paired-end reads (exactly 2 files required: R1, R2).
+    /// Hidden: ingestion works, but the paired-end phasing pipeline it is
+    /// meant to unlock is not yet wired into branch ranking. The
+    /// `PairedEndLink` data structure is populated during threading but
+    /// no downstream consumer reads it. See caseywdunn/sharkmer#101.
+    #[arg(long, help_heading = "Input", hide = true)]
     pub(crate) paired: bool,
 
     /// Override cache directory for remote reads
