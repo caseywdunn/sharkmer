@@ -70,6 +70,8 @@ struct LastValidated {
 struct ValidationSample {
     accession: String,
     #[serde(default)]
+    taxon: Option<String>,
+    #[serde(default)]
     taxonomy: Option<String>,
     max_reads: Vec<u64>,
     #[serde(default)]

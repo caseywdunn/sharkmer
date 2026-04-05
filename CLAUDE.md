@@ -217,10 +217,6 @@ compile time via `include_str!()`.
   primer kmer count. Degenerate primers with off-target matches previously
   inflated the threshold too high. Needs benchmark validation with
   Drosophila 16S/28S to confirm the fix works in practice.
-- **~15% runtime overhead from Phase 4-6 code** (compared to pre-Phase-4):
-  The `f64` edge scoring in DFS path finding (bubble resolution
-  infrastructure) adds overhead even when `--read-threading` is off.
-  This is the cost of the pluggable scoring architecture.
 
 ## Git workflow
 

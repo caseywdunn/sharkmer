@@ -302,21 +302,26 @@ primers:
 validation:
   samples:
     - accession: SRR31887760
+      taxon: "Drosophila melanogaster"
       taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
       max_reads: [1000000]
 
     - accession: SRR29149796
+      taxon: "Drosophila sechellia"
       taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
       max_reads: [1000000]
 
     - accession: SRR26246479
+      taxon: "Drosophila tanythrix"
       taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Diptera; Drosophilidae; Drosophila"
       max_reads: [1000000]
 
     - accession: SRR1057608
+      taxon: "Heliconius pachinus"
       taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Lepidoptera; Nymphalidae; Heliconius"
       max_reads: [1000000]
 
     - accession: SRR27962769
+      taxon: "Gryllus bimaculatus"
       taxonomy: "Eumetazoa; Arthropoda; Hexapoda; Insecta; Orthoptera; Gryllidae; Gryllus"
       max_reads: [1000000]

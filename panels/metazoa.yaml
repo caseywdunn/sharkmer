@@ -93,7 +93,9 @@ primers:
 validation:
   samples:
     - accession: SRR14670475
+      taxon: "gut metagenome"
       max_reads: [1000000]
 
     - accession: SRR14670462
+      taxon: "gut metagenome"
       max_reads: [1000000]

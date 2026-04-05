@@ -170,10 +170,13 @@ primers:
 validation:
   samples:
     - accession: SRR19418213
+      taxon: "rhizosphere metagenome"
       max_reads: [1000000]
 
     - accession: SRR24806237
+      taxon: "coral metagenome"
       max_reads: [1000000]
 
     - accession: ERR2596344
+      taxon: "seawater metagenome"
       max_reads: [1000000]

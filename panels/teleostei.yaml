@@ -71,13 +71,16 @@ primers:
 validation:
   samples:
     - accession: SRR22396603
+      taxon: "Nomeus gronovii"
       taxonomy: "Teleostei; Osteoglossocephalai; Clupeocephala; Euteleosteomorpha; Neoteleostei; Eurypterygia; Ctenosquamata; Acanthomorphata; Euacanthomorphacea; Percomorphaceae; Pelagiaria; Scombriformes; Nomeidae; Nomeus"
       max_reads: [1000000]
 
     - accession: SRR19434448
+      taxon: "Hirundichthys speculiger"
       taxonomy: "Teleostei; Osteoglossocephalai; Clupeocephala; Euteleosteomorpha; Neoteleostei; Eurypterygia; Ctenosquamata; Acanthomorphata; Euacanthomorphacea; Percomorphaceae; Ovalentaria; Atherinomorphae; Beloniformes; Belonoidei; Exocoetidae; Hirundichthys"
       max_reads: [1000000]
 
     - accession: SRR11679523
+      taxon: "Engraulis encrasicolus"
       taxonomy: "Teleostei; Osteoglossocephalai; Clupeocephala; Otomorpha; Clupei; Clupeiformes; Clupeoidei; Engraulidae; Engraulinae; Engraulis"
       max_reads: [1000000]

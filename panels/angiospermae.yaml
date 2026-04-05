@@ -126,17 +126,21 @@ primers:
 validation:
   samples:
     - accession: SRR25378184
+      taxon: "Liriodendron tulipifera"
       taxonomy: "Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; Magnoliidae; Magnoliales; Magnoliaceae; Liriodendron"
       max_reads: [1000000]
 
     - accession: ERR14009273
+      taxon: "Acer monspessulanum"
       taxonomy: "Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; rosids; malvids; Sapindales; Sapindaceae; Hippocastanoideae; Acereae; Acer"
       max_reads: [1000000]
 
     - accession: SRR26398994
+      taxon: "Opuntia comonduensis"
       taxonomy: "Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; Caryophyllales; Cactineae; Cactaceae; Opuntioideae; Opuntia"
       max_reads: [1000000]
 
     - accession: ERR14010214
+      taxon: "Euphorbia nicaeensis subsp. nicaeensis"
       taxonomy: "Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; rosids; fabids; Malpighiales; Euphorbiaceae; Euphorbioideae; Euphorbieae; Euphorbia; Euphorbia subgen. Esula; Euphorbia sect. Pithyusa; Euphorbia nicaeensis"
       max_reads: [1000000]

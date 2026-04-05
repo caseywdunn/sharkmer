@@ -710,11 +710,15 @@ def write_report(
 
     for sample_block, runs in sample_results:
         accession = sample_block["accession"]
+        taxon = sample_block.get("taxon", "")
         taxonomy = sample_block.get("taxonomy", "")
         expected_block = sample_block.get("expected", {}) or {}
         lines.append(f"## Sample: {accession}")
-        if taxonomy:
+        if taxon or taxonomy:
             lines.append(f"")
+        if taxon:
+            lines.append(f"Taxon: {taxon}")
+        if taxonomy:
             lines.append(f"Taxonomy: {taxonomy}")
         lines.append("")
 
@@ -754,6 +758,51 @@ def write_report(
             )
         lines.append("")
 
+        # Read-depth sensitivity sweep: show recovered amplicon length for
+        # each gene at each max_reads value. Helps identify the sensitivity
+        # floor for each primer pair on this sample.
+        successful_runs = [r for r in runs if r["success"]]
+        if len(successful_runs) >= 2:
+            # Order columns low -> high so the sensitivity floor reads
+            # left-to-right (earlier depths are where recovery first appears).
+            sorted_runs = sorted(successful_runs, key=lambda r: r["max_reads"])
+
+            # Build gene -> {max_reads: length} map from the raw run data.
+            # Use the first (longest) product sequence per gene per run.
+            depth_recovery: dict[str, dict[int, int]] = {}
+            for run in sorted_runs:
+                for prod in run["genes"]:
+                    gene = prod["gene"]
+                    seqs = prod.get("sequences", [])
+                    lengths = prod.get("lengths", [])
+                    length = (
+                        lengths[0] if lengths
+                        else (len(seqs[0]) if seqs else None)
+                    )
+                    if length is None:
+                        continue
+                    depth_recovery.setdefault(gene, {})[run["max_reads"]] = length
+
+            lines.append("Read-depth sensitivity (amplicon length by max_reads):")
+            lines.append("")
+            depth_headers = [
+                f"{r['max_reads'] // 1000}k" for r in sorted_runs
+            ]
+            header = "| Gene | " + " | ".join(depth_headers) + " |"
+            sep = "|------|" + "|".join(["---:"] * len(sorted_runs)) + "|"
+            lines.append(header)
+            lines.append(sep)
+            for gene in considered_genes:
+                gene_row = depth_recovery.get(gene, {})
+                cells = [
+                    str(gene_row[r["max_reads"]])
+                    if r["max_reads"] in gene_row
+                    else "—"
+                    for r in sorted_runs
+                ]
+                lines.append(f"| {gene} | " + " | ".join(cells) + " |")
+            lines.append("")
+
     # Primer binding analysis
     analyses = analyze_primer_bindings(panel_data, sample_results, considered_genes)
     if analyses:
@@ -776,9 +825,12 @@ def write_report(
     lines.append("  samples:")
     for sample_block, runs in sample_results:
         accession = sample_block["accession"]
+        taxon = sample_block.get("taxon", "")
         taxonomy = sample_block.get("taxonomy", "")
         max_reads_list = sample_block.get("max_reads", [])
         lines.append(f"    - accession: {accession}")
+        if taxon:
+            lines.append(f"      taxon: \"{taxon}\"")
         if taxonomy:
             lines.append(f"      taxonomy: \"{taxonomy}\"")
         lines.append(f"      max_reads: {list(max_reads_list)}")

@@ -41,6 +41,7 @@ primers:
 validation:
   samples:
     - accession: SRR9278435
+      taxon: "Xenia sp."
       taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Xeniidae; Xenia; unclassified Xenia"
       max_reads: [1000000, 2000000, 4000000, 8000000, 16000000]
       expected:
@@ -71,6 +72,9 @@ validation:
   to accommodate biological variation.
 - `min_length`, `max_length`, `mismatches`, `trim`, and `min_count` are passed
   through to sharkmer's PCR engine. See the main README for their meanings.
+- `validation.samples[*].taxon` is the species (or lowest-rank identification)
+  of the sample organism, e.g. `"Xenia sp."` or `"Homo sapiens"`. This is a
+  short human-readable label, distinct from the full lineage in `taxonomy`.
 - `validation.samples[*].taxonomy` should be the NCBI lineage string for the
   sample organism (when the sample is not a metagenome). This makes it easy
   to see at a glance how much taxonomic diversity a panel has been tested
@@ -109,14 +113,16 @@ you changed and why. Dates are in `YYYY-MM-DD`.
 ### 3. Declare validation samples
 
 In the `validation.samples` list, declare one or more ENA/SRA accessions that
-the panel should be tested against, with `max_reads` values and an optional
-`taxonomy` string. Leave `expected` thresholds empty on first pass — the
-validator will populate them on the next step.
+the panel should be tested against, with `max_reads` values and optional
+`taxon` (species label) and `taxonomy` (NCBI lineage) strings. Leave
+`expected` thresholds empty on first pass — the validator will populate them
+on the next step.
 
 ```yaml
 validation:
   samples:
     - accession: SRR9278435
+      taxon: "Xenia sp."
       taxonomy: "Eukaryota; Opisthokonta; Metazoa; ... Xenia"
       max_reads: [1000000]
 ```
