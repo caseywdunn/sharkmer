@@ -1483,6 +1483,7 @@ dependencies = [
  "serde",
  "serde_yaml_ng",
  "sha2",
+ "smallvec",
  "tempfile",
  "ureq",
 ]
