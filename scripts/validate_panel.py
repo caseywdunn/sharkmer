@@ -386,8 +386,287 @@ def build_per_sample_summary(sample, runs, panel_data):
                 "max_reads_recovered": run["max_reads"],
                 "kmer_count_median": prod.get("kmer_count_median"),
                 "blast_hit": prod.get("blast_hit"),
+                "sequence": seqs[0] if seqs else None,
             }
     return per_gene
+
+
+# ---------------------------------------------------------------------------
+# Primer binding analysis
+# ---------------------------------------------------------------------------
+#
+# sharkmer matches the 3' `trim` bases of each primer (default 15) against
+# k-length kmers in the read set, anchored at the start of the kmer. The
+# product written to FASTA therefore contains, at its very ends, the genome
+# sequence at the primer binding sites:
+#
+#   - product[0:trim] = forward primer binding, same orientation as user
+#   - product[-trim:] = reverse complement of the reverse primer binding
+#
+# We compare each position against the user's IUPAC-coded primer to decide
+# whether degeneracy was fully utilised, could be reduced (only a subset of
+# the coded bases actually seen), or was exceeded (an off-code base was
+# absorbed by sharkmer's --mismatches tolerance).
+
+IUPAC_SETS = {
+    "A": frozenset("A"),
+    "C": frozenset("C"),
+    "G": frozenset("G"),
+    "T": frozenset("T"),
+    "R": frozenset("AG"),
+    "Y": frozenset("CT"),
+    "M": frozenset("AC"),
+    "K": frozenset("GT"),
+    "S": frozenset("CG"),
+    "W": frozenset("AT"),
+    "B": frozenset("CGT"),
+    "D": frozenset("AGT"),
+    "H": frozenset("ACT"),
+    "V": frozenset("ACG"),
+    "N": frozenset("ACGT"),
+}
+_SET_TO_IUPAC = {v: k for k, v in IUPAC_SETS.items()}
+_COMPLEMENT = str.maketrans("ACGTRYMKSWBDHVNacgtrymkswbdhvn", "TGCAYRKMSWVHDBNtgcayrkmswvhdbn")
+DEFAULT_TRIM = 15
+
+
+def revcomp(seq: str) -> str:
+    return seq.translate(_COMPLEMENT)[::-1]
+
+
+def iupac_from_set(bases: frozenset) -> str:
+    """Smallest IUPAC code covering exactly `bases`. Falls back to N."""
+    return _SET_TO_IUPAC.get(bases, "N")
+
+
+def panel_primer_map(panel_data):
+    """Return dict: gene_name -> primer entry dict (forward_seq, reverse_seq, trim)."""
+    return {p["gene_name"]: p for p in panel_data.get("primers", [])}
+
+
+def analyze_primer_bindings(panel_data, sample_results, considered_genes):
+    """For each gene in considered_genes, analyse forward and reverse primer
+    bindings across all samples that recovered it. Returns a list of dicts
+    suitable for rendering, one per gene.
+
+    Each gene analysis has:
+      - gene_name, forward_spec_full, reverse_spec_full, trim
+      - forward: per_sample list + position_analysis list + verdict
+      - reverse: same, already in user-facing orientation
+      - missing_samples: list of accessions that did not recover this gene
+    """
+    primers = panel_primer_map(panel_data)
+    analyses = []
+
+    for gene in considered_genes:
+        primer = primers.get(gene)
+        if primer is None:
+            continue
+        forward_full = primer.get("forward_seq", "")
+        reverse_full = primer.get("reverse_seq", "")
+        trim = int(primer.get("trim", DEFAULT_TRIM))
+        # Clamp trim to K to match sharkmer's own clamp (trim > k -> k).
+        trim = min(trim, K)
+        if not forward_full or not reverse_full:
+            continue
+
+        forward_spec = forward_full[-trim:] if len(forward_full) >= trim else forward_full
+        reverse_spec = reverse_full[-trim:] if len(reverse_full) >= trim else reverse_full
+
+        per_sample_fwd = []
+        per_sample_rev = []
+        missing = []
+
+        for sample_block, runs in sample_results:
+            accession = sample_block["accession"]
+            per_gene = build_per_sample_summary(sample_block, runs, panel_data)
+            info = per_gene.get(gene)
+            if info is None or not info.get("sequence"):
+                missing.append(accession)
+                continue
+            seq = info["sequence"].upper()
+            if len(seq) < len(forward_spec) or len(seq) < len(reverse_spec):
+                missing.append(accession)
+                continue
+            fwd_obs = seq[: len(forward_spec)]
+            rev_obs = revcomp(seq[-len(reverse_spec):])
+            per_sample_fwd.append({"accession": accession, "observed": fwd_obs})
+            per_sample_rev.append({"accession": accession, "observed": rev_obs})
+
+        analyses.append({
+            "gene_name": gene,
+            "forward_full": forward_full,
+            "reverse_full": reverse_full,
+            "trim": trim,
+            "missing_samples": missing,
+            "forward": _analyze_one_primer(forward_spec, per_sample_fwd),
+            "reverse": _analyze_one_primer(reverse_spec, per_sample_rev),
+        })
+    return analyses
+
+
+def _analyze_one_primer(spec, per_sample):
+    """spec is the IUPAC-coded primer (trimmed to the match window).
+    per_sample is a list of {accession, observed} dicts. Returns a dict with
+    spec, per_sample, position_analysis, verdict.
+    """
+    result = {
+        "spec": spec,
+        "per_sample": per_sample,
+        "position_analysis": [],
+        "verdict_lines": [],
+    }
+    if not per_sample:
+        result["verdict_lines"].append("No samples recovered this gene — cannot analyse.")
+        return result
+
+    spec_len = len(spec)
+    per_position = []
+    n_fully_utilised = 0
+    n_could_reduce = 0
+    n_widening = 0
+    n_fixed = 0
+
+    for i in range(spec_len):
+        code = spec[i]
+        allowed = IUPAC_SETS.get(code, frozenset())
+        observed_bases = frozenset(s["observed"][i] for s in per_sample if i < len(s["observed"]))
+        outside = observed_bases - allowed
+        inside = observed_bases & allowed
+        if len(allowed) == 1:
+            status = "fixed"
+            if outside:
+                status = "mismatch_absorbed"
+                n_widening += 1
+            else:
+                n_fixed += 1
+        else:
+            if outside:
+                status = "mismatch_absorbed"
+                n_widening += 1
+            elif inside == allowed:
+                status = "fully_utilised"
+                n_fully_utilised += 1
+            else:
+                status = "could_reduce"
+                n_could_reduce += 1
+
+        per_position.append({
+            "pos": i + 1,
+            "spec": code,
+            "allowed": allowed,
+            "observed": observed_bases,
+            "status": status,
+        })
+
+    result["position_analysis"] = per_position
+
+    # Build human-readable verdict lines.
+    for pos in per_position:
+        if pos["status"] == "fully_utilised":
+            result["verdict_lines"].append(
+                f"  pos {pos['pos']:>2}: {pos['spec']} ({_fmt_set(pos['allowed'])}) "
+                f"fully utilised — observed {_fmt_set(pos['observed'])}"
+            )
+        elif pos["status"] == "could_reduce":
+            reduced = iupac_from_set(pos["observed"])
+            result["verdict_lines"].append(
+                f"  pos {pos['pos']:>2}: {pos['spec']} ({_fmt_set(pos['allowed'])}) "
+                f"partially utilised — observed {_fmt_set(pos['observed'])}; "
+                f"could reduce to {reduced}"
+            )
+        elif pos["status"] == "mismatch_absorbed":
+            widened = iupac_from_set(pos["allowed"] | pos["observed"])
+            result["verdict_lines"].append(
+                f"  pos {pos['pos']:>2}: {pos['spec']} ({_fmt_set(pos['allowed'])}) "
+                f"observed {_fmt_set(pos['observed'])} — off-code base(s) "
+                f"absorbed by --mismatches; consider widening to {widened}"
+            )
+        # 'fixed' positions with exact match are not listed; they are the norm.
+
+    if n_widening == 0 and n_could_reduce == 0 and n_fully_utilised == 0:
+        result["verdict_lines"].append(
+            "  all positions fixed (no degeneracy codes) and all observed bases "
+            "match — nothing to tune."
+        )
+    elif n_widening == 0 and n_could_reduce == 0:
+        result["verdict_lines"].insert(
+            0,
+            f"  {n_fully_utilised} degenerate position(s) fully utilised across samples.",
+        )
+    return result
+
+
+def _fmt_set(s: frozenset) -> str:
+    return "{" + ",".join(sorted(s)) + "}"
+
+
+def format_binding_section(analyses):
+    """Render the primer binding analysis for the markdown report.
+    Returns a list of lines."""
+    lines = []
+    lines.append("## Primer binding analysis")
+    lines.append("")
+    lines.append(
+        "For each gene, the first and last `trim` bases of each recovered "
+        "amplicon are compared against the user-specified primer sequence "
+        "(3'-trimmed to the match window). Reverse primer bindings are shown "
+        "reverse-complemented so they appear in the same orientation as the "
+        "primer was written in the panel (i.e. facing the forward primer). "
+        "Use this section to decide whether a primer's degeneracy should be "
+        "reduced (only a subset of coded bases is actually seen) or widened "
+        "(an off-code base was absorbed by sharkmer's `--mismatches` "
+        "tolerance)."
+    )
+    lines.append("")
+
+    for a in analyses:
+        gene = a["gene_name"]
+        trim = a["trim"]
+        lines.append(f"### {gene}")
+        lines.append("")
+        if a["missing_samples"]:
+            lines.append(
+                f"**Not recovered** in: {', '.join(a['missing_samples'])}. "
+                "This may indicate insufficient primer degeneracy, "
+                "insufficient read coverage, or the target taxon lacks the "
+                "locus."
+            )
+            lines.append("")
+        if not a["forward"]["per_sample"] and not a["reverse"]["per_sample"]:
+            lines.append("_(no samples recovered this gene; skipping alignment)_")
+            lines.append("")
+            continue
+
+        for which, title in (("forward", "Forward primer"), ("reverse", "Reverse primer")):
+            info = a[which]
+            full = a[f"{which}_full"]
+            lines.append(
+                f"**{title}** — spec `{full}` (trim={trim}, match window "
+                f"`{info['spec']}`)"
+            )
+            lines.append("")
+            lines.append("```")
+            lines.append(f"  {'spec':<14}{info['spec']}")
+            # Match marker row: | = fixed match, . = degeneracy resolved,
+            # x = mismatch absorbed
+            marker = []
+            for pos in info["position_analysis"]:
+                if pos["status"] == "fixed":
+                    marker.append("|")
+                elif pos["status"] == "fully_utilised" or pos["status"] == "could_reduce":
+                    marker.append(".")
+                else:
+                    marker.append("x")
+            lines.append(f"  {'':<14}{''.join(marker)}")
+            for s in info["per_sample"]:
+                lines.append(f"  {s['accession']:<14}{s['observed']}")
+            lines.append("```")
+            lines.append("")
+            for v in info["verdict_lines"]:
+                lines.append(v)
+            lines.append("")
+    return lines
 
 
 def format_identity(pct):
@@ -474,6 +753,11 @@ def write_report(
                 f"{format_pass_fail(status)} | {reason} |"
             )
         lines.append("")
+
+    # Primer binding analysis
+    analyses = analyze_primer_bindings(panel_data, sample_results, considered_genes)
+    if analyses:
+        lines.extend(format_binding_section(analyses))
 
     # Suggested validation block
     lines.append("## Suggested validation block")
