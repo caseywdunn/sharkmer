@@ -62,6 +62,21 @@ from blast_validate import (  # noqa: E402
 REPORTS_DIR = REPO_ROOT / "panels" / "reports"
 RUNS_DIR = REPO_ROOT / "panels" / "validation_runs"
 
+
+def clean_sharkmer_version(raw: str) -> str:
+    """Extract just the version number from sharkmer's --version output.
+
+    Example: "sharkmer 3.0.0-dev (https://github.com/caseywdunn/sharkmer)"
+             -> "3.0.0-dev"
+    Falls back to the raw string if the expected format is not recognised.
+    """
+    # Drop anything in parentheses (repo URL), drop the "sharkmer" prefix.
+    s = raw.split("(")[0].strip()
+    parts = s.split()
+    if len(parts) >= 2 and parts[0].lower() == "sharkmer":
+        return parts[1]
+    return s or raw
+
 # Default safety margins used when writing observed values back as thresholds.
 # See PANELS.md for rationale — the goal is to absorb normal run-to-run
 # variation so the panel does not break on small shifts.
@@ -703,7 +718,7 @@ def main():
     )
 
     try:
-        sharkmer_version = get_sharkmer_version()
+        sharkmer_version = clean_sharkmer_version(get_sharkmer_version())
         print(f"sharkmer version: {sharkmer_version}")
         print(f"panel: {panel_name} v{panel_data.get('version', 'unversioned')}")
         print(f"samples: {len(samples)}")
@@ -741,8 +756,7 @@ def main():
 
         # Write report.
         panel_version = panel_data.get("version", "unversioned")
-        safe_version = sharkmer_version.split("(")[0].strip().replace(" ", "_")
-        report_name = f"{panel_name}_{panel_version}_{safe_version}_{stamp}.md"
+        report_name = f"{panel_name}_{panel_version}_{sharkmer_version}_{stamp}.md"
         report_path = args.output_dir / report_name
         write_report(
             panel_path,
