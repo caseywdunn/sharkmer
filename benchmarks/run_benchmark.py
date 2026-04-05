@@ -74,6 +74,31 @@ def get_git_commit():
     return result.stdout.strip()
 
 
+def get_panel_versions(samples_to_run, config):
+    """Return a dict mapping panel name -> panel version, for panels referenced
+    by the samples that will be run. Missing/unversioned panels get 'unknown'.
+    """
+    panel_dir = REPO_ROOT / "panels"
+    versions = {}
+    for sample_name in samples_to_run:
+        sample_cfg = config.get(sample_name, {})
+        arguments = sample_cfg.get("arguments", "")
+        for panel in re.findall(r"--pcr-panel\s+(\S+)", arguments):
+            if panel in versions:
+                continue
+            panel_file = panel_dir / f"{panel}.yaml"
+            if panel_file.exists():
+                try:
+                    with open(panel_file) as f:
+                        data = yaml.safe_load(f)
+                    versions[panel] = data.get("version", "unknown")
+                except Exception:
+                    versions[panel] = "unknown"
+            else:
+                versions[panel] = "unknown"
+    return versions
+
+
 def get_rustc_version():
     result = subprocess.run(
         ["rustc", "--version"],
@@ -411,8 +436,11 @@ def run_benchmark(samples_to_run=None, threads=THREADS, max_reads_override=None,
     filename = f"{date_str}_{safe_version}_{git_commit}.yaml"
     result_path = RESULTS_DIR / filename
 
+    panel_versions = get_panel_versions(samples_to_run, config)
+
     benchmark_result = {
         "sharkmer_version": sharkmer_version,
+        "panel_versions": panel_versions,
         "git_commit": git_commit,
         "date": date_str,
         "machine": machine_info,

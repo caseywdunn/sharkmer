@@ -102,6 +102,7 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
         min_count,
         mismatches,
         trim,
+        expected_length: None,
         citation,
         notes,
         dedup_edit_threshold,

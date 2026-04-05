@@ -1,5 +1,17 @@
 name: angiospermae
+version: 1.0.0
 description: "Universal plant primers for chloroplast and ITS products"
+
+maintainers:
+  - name: "Samuel Church"
+    orcid: "https://orcid.org/0000-0002-8451-103X"
+
+changelog:
+  - version: 1.0.0
+    date: 2026-04-05
+    sharkmer_version: "3.0.0-dev"
+    changes: "Initial versioned schema."
+
 primers:
   - gene_name: "psbA-trnH"
     forward_seq: "GTTATGCATGAACGTAATGCTC"
@@ -110,3 +122,21 @@ primers:
     trim: 15
     citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
     notes: "ITS5a; ITS4"
+
+validation:
+  samples:
+    - accession: SRR25378184
+      taxonomy: "Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; Magnoliidae; Magnoliales; Magnoliaceae; Liriodendron"
+      max_reads: [1000000]
+
+    - accession: ERR14009273
+      taxonomy: "Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; rosids; malvids; Sapindales; Sapindaceae; Hippocastanoideae; Acereae; Acer"
+      max_reads: [1000000]
+
+    - accession: SRR26398994
+      taxonomy: "Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; Caryophyllales; Cactineae; Cactaceae; Opuntioideae; Opuntia"
+      max_reads: [1000000]
+
+    - accession: ERR14010214
+      taxonomy: "Viridiplantae; Streptophyta; Streptophytina; Embryophyta; Tracheophyta; Euphyllophyta; Spermatophyta; Magnoliopsida; Mesangiospermae; eudicotyledons; Gunneridae; Pentapetalae; rosids; fabids; Malpighiales; Euphorbiaceae; Euphorbioideae; Euphorbieae; Euphorbia; Euphorbia subgen. Esula; Euphorbia sect. Pithyusa; Euphorbia nicaeensis"
+      max_reads: [1000000]

@@ -1,12 +1,91 @@
 use anyhow::{Context, Result, bail};
+use std::collections::BTreeMap;
 
 use super::PCRParams;
 
 #[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 struct PanelFile {
     name: String,
+    /// Panel semver version. Optional during migration; populated for all in-tree panels.
+    #[serde(default)]
+    version: Option<String>,
     description: String,
+    #[serde(default)]
+    #[allow(dead_code)]
+    maintainers: Vec<Maintainer>,
+    #[serde(default)]
+    #[allow(dead_code)]
+    changelog: Vec<ChangelogEntry>,
     primers: Vec<PCRParams>,
+    #[serde(default)]
+    #[allow(dead_code)]
+    validation: Option<ValidationBlock>,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+#[allow(dead_code)]
+struct Maintainer {
+    name: String,
+    #[serde(default)]
+    orcid: Option<String>,
+    #[serde(default)]
+    contact: Option<String>,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+#[allow(dead_code)]
+struct ChangelogEntry {
+    version: String,
+    date: String,
+    #[serde(default)]
+    sharkmer_version: Option<String>,
+    changes: String,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+#[allow(dead_code)]
+struct ValidationBlock {
+    #[serde(default)]
+    last_validated: Option<LastValidated>,
+    #[serde(default)]
+    samples: Vec<ValidationSample>,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+#[allow(dead_code)]
+struct LastValidated {
+    sharkmer_version: String,
+    panel_version: String,
+    date: String,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+#[allow(dead_code)]
+struct ValidationSample {
+    accession: String,
+    #[serde(default)]
+    taxonomy: Option<String>,
+    max_reads: Vec<u64>,
+    #[serde(default)]
+    expected: BTreeMap<String, ExpectedGene>,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+#[allow(dead_code)]
+struct ExpectedGene {
+    #[serde(default)]
+    min_identity: Option<f64>,
+    #[serde(default)]
+    length: Option<usize>,
+    #[serde(default)]
+    length_tolerance: Option<usize>,
 }
 
 /// Parse a YAML string into a PanelFile.
@@ -169,6 +248,56 @@ mod tests {
     }
 
     #[test]
+    fn test_builtin_panels_load_and_are_versioned() {
+        // Every in-tree panel must parse and declare a version.
+        let panels = get_builtin_panels();
+        assert!(!panels.is_empty());
+        for panel in &panels {
+            assert!(
+                panel.version.is_some(),
+                "Panel '{}' missing version field",
+                panel.name
+            );
+        }
+    }
+
+    #[test]
+    fn test_deny_unknown_panel_field() {
+        // A typo at the panel level must be rejected by deny_unknown_fields.
+        let yaml = r#"
+name: typo_panel
+versoin: 1.0.0
+description: "typo in version field"
+primers:
+  - gene_name: "X"
+    forward_seq: "A"
+    reverse_seq: "T"
+"#;
+        let result = parse_panel_yaml(yaml);
+        assert!(result.is_err(), "expected rejection of unknown field");
+    }
+
+    #[test]
+    fn test_deny_unknown_primer_field() {
+        // A typo at the primer level must also be rejected.
+        let yaml = r#"
+name: typo_panel
+version: 1.0.0
+description: "typo in primer field"
+primers:
+  - gene_name: "X"
+    forward_seq: "A"
+    reverse_seq: "T"
+    forward_sqe: "oops"
+"#;
+        let result = parse_panel_yaml(yaml);
+        assert!(
+            result.is_err(),
+            "expected rejection of unknown primer field"
+        );
+    }
+
+    #[test]
     fn test_load_panel_source_bad_url() {
         let result = load_panel_source("https://localhost:1/nonexistent_panel.yaml");
         assert!(result.is_err());
@@ -183,9 +312,10 @@ pub fn print_pcr_panels() {
     for panel in &panels {
         let n = panel.primers.len();
         let noun = if n == 1 { "primer" } else { "primers" };
+        let version = panel.version.as_deref().unwrap_or("unversioned");
         println!(
-            "  {:<16} {} ({} {})",
-            panel.name, panel.description, n, noun
+            "  {:<16} v{:<8} {} ({} {})",
+            panel.name, version, panel.description, n, noun
         );
     }
 }

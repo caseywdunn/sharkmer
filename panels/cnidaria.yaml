@@ -1,71 +1,89 @@
 name: cnidaria
+version: 1.0.0
 description: "Universal and custom primers targeting mitochondrial and nuclear products."
+
+maintainers:
+  - name: "Samuel Church"
+    orcid: "https://orcid.org/0000-0002-8451-103X"
+
+changelog:
+  - version: 1.0.0
+    date: 2026-04-05
+    sharkmer_version: "3.0.0-dev"
+    changes: "Initial versioned schema."
+
 primers:
   - gene_name: "16S"
     forward_seq: "GRCTGTTTACCAAAAACATA"
     reverse_seq: "AATTCAACATMGAGG"
     min_length: 500
     max_length: 700
+    expected_length: 580
     min_count: 2
     mismatches: 2
     trim: 15
     citation: "Modified from Cunningham and Buss 1993 https://doi.org/10.1016/0305-1978(93)90009-G "
-    notes: "Amplifies portions of domains IV and V. Product is about 580bp"
+    notes: "Amplifies portions of domains IV and V."
 
   - gene_name: "CO1"
     forward_seq: "TCATAARGATATHGG"
     reverse_seq: "RTGNCCAAAAAACCA"
     min_length: 600
     max_length: 800
+    expected_length: 700
     min_count: 2
     mismatches: 2
     trim: 15
     citation: "Modified from Folmer et al. 1994"
-    notes: "Product is about 700bp long"
+    notes: ""
 
   - gene_name: "18S"
     forward_seq: "AACCTGGTTGATCCTGCCAGT"
     reverse_seq: "TGATCCTTCTGCAGGTTCACCTAC"
     min_length: 1600
     max_length: 2000
+    expected_length: 1790
     min_count: 2
     mismatches: 2
     trim: 15
     citation: "Medlin et al. 1988 https://doi.org/10.1016/0378-1119(88)90066-2"
-    notes: "Product is about 1790bp"
+    notes: ""
 
   - gene_name: "28S"
     forward_seq: "CCYYAGTAACGGCGAGT"
     reverse_seq: "SWACAGATGGTAGCTTCG"
     min_length: 2900
     max_length: 3500
+    expected_length: 3230
     min_count: 2
     mismatches: 2
     trim: 15
     citation: "Evans et al. 2008. https://doi.org/10.1186/1471-2148-8-139"
-    notes: "Forward primer is F97, reverse is R3238. Product is about 3230bp."
+    notes: "Forward primer is F97, reverse is R3238."
 
   - gene_name: "ITS"
     forward_seq: "TACACACCGCCCGTCGCTACTA"
     reverse_seq: "ACTCGCCGTTACTRRGG"
     min_length: 600
     max_length: 1000
+    expected_length: 825
     min_count: 2
     mismatches: 2
     trim: 15
     citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x"
-    notes: "Forward primer is CAS18SF1, position 1843, from Ji et al 2003. The reverse primer is the reverse complement of the 28S forward primer. Product is about 770-880bp."
+    notes: "Forward primer is CAS18SF1, position 1843, from Ji et al 2003. The reverse primer is the reverse complement of the 28S forward primer. Product range 770-880bp."
 
   - gene_name: "ITS-v2"
     forward_seq: "GTAGGTGAACCTGCAGAAGGATCA"
     reverse_seq: "ACTCGCCGTTACTRRGG"
     min_length: 600
     max_length: 1000
+    expected_length: 675
     min_count: 2
     mismatches: 2
     trim: 15
     citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x"
-    notes: "Forward primer is reverse complement of 18S reverse primer. The reverse primer is the reverse complement of the 28S forward primer. Product is about 620-730bp."
+    notes: "Forward primer is reverse complement of 18S reverse primer. The reverse primer is the reverse complement of the 28S forward primer. Product range 620-730bp."
 
   - gene_name: "EF1A"
     forward_seq: "AMGWGGHATGGTDGCTGGTG"
@@ -83,8 +101,31 @@ primers:
     reverse_seq: "TTGGTCCGTGTTTCAAGACG"
     min_length: 300
     max_length: 700
+    expected_length: 540
     min_count: 2
     mismatches: 2
     trim: 15
     citation: "McCartin et al 2024. https://doi.org/10.7717/peerj.18607"
-    notes: "Anth-28S-eDNA; Product is about 540bp"
+    notes: "Anth-28S-eDNA."
+
+validation:
+  samples:
+    - accession: SRR9278435
+      taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Xeniidae; Xenia; unclassified Xenia"
+      max_reads: [1000000, 2000000, 4000000, 8000000, 16000000]
+
+    - accession: ERR6745737
+      taxonomy: "Eumetazoa; Cnidaria; Staurozoa; Stauromedusae; Myostaurida; Haliclystidae; Haliclystus"
+      max_reads: [1000000, 2000000, 4000000, 8000000, 16000000]
+
+    - accession: SRR25099394
+      taxonomy: "Eumetazoa; Cnidaria; Hydrozoa; Hydroidolina; Siphonophorae; Physonectae; Agalmatidae; Agalma"
+      max_reads: [1000000, 2000000, 4000000, 8000000, 16000000]
+
+    - accession: SRR8617500
+      taxonomy: "Eumetazoa; Cnidaria; Scyphozoa; Rhizostomeae; Rhizostomatidae; Rhopilema"
+      max_reads: [1000000, 2000000, 4000000, 8000000, 16000000]
+
+    - accession: SRR25627438
+      taxonomy: "Eumetazoa; Cnidaria; Cubozoa; Carybdeida; Carukiidae; Morbakka"
+      max_reads: [1000000, 2000000, 4000000, 8000000, 16000000]

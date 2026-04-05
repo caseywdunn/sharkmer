@@ -1,5 +1,17 @@
 name: metazoa
+version: 1.0.0
 description: "Metazoa 18S metabarcoding primers"
+
+maintainers:
+  - name: "Samuel Church"
+    orcid: "https://orcid.org/0000-0002-8451-103X"
+
+changelog:
+  - version: 1.0.0
+    date: 2026-04-05
+    sharkmer_version: "3.0.0-dev"
+    changes: "Initial versioned schema."
+
 primers:
   - gene_name: "18S-V3"
     forward_seq: "AACGGCTACCACATCCAAGG"
@@ -77,3 +89,11 @@ primers:
     trim: 15
     citation: "From Amaral-Zettler 2009, https://doi.org/10.1371/journal.pone.0006372"
     notes: "1380F;1510R"
+
+validation:
+  samples:
+    - accession: SRR14670475
+      max_reads: [1000000]
+
+    - accession: SRR14670462
+      max_reads: [1000000]

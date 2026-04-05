@@ -510,6 +510,7 @@ mod tests {
             min_count: 1,
             mismatches: 0,
             trim: 0,
+            expected_length: None,
             citation: "".to_string(),
             notes: "".to_string(),
             dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,

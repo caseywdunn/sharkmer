@@ -150,6 +150,7 @@ pub struct DBEdge {
 }
 
 #[derive(Clone, Debug, serde::Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct PCRParams {
     pub forward_seq: String,
     pub reverse_seq: String,
@@ -164,6 +165,11 @@ pub struct PCRParams {
     pub mismatches: usize,
     #[serde(default = "default_trim")]
     pub trim: usize,
+    /// Canonical expected amplicon length. Distinct from min_length/max_length
+    /// search window. Provenance metadata; consumed by validate_panel.py.
+    #[serde(default)]
+    #[allow(dead_code)]
+    pub expected_length: Option<usize>,
     #[serde(default)]
     #[allow(dead_code)] // Deserialized from YAML panels and re-exported; not read by Rust code
     pub citation: String,
@@ -1446,6 +1452,7 @@ mod tests {
             min_count: 3,
             mismatches: 2,
             trim: 15,
+            expected_length: None,
             citation: "".to_string(),
             notes: "".to_string(),
             dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,

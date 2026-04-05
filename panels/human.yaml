@@ -1,5 +1,17 @@
 name: human
+version: 1.0.0
 description: "Human mitochondrial primers from Ramos et al. 2009. doi: 10.1002/elps.200800601"
+
+maintainers:
+  - name: "Samuel Church"
+    orcid: "https://orcid.org/0000-0002-8451-103X"
+
+changelog:
+  - version: 1.0.0
+    date: 2026-04-05
+    sharkmer_version: "3.0.0-dev"
+    changes: "Initial versioned schema."
+
 primers:
   - gene_name: "mt1404-3947"
     forward_seq: "ACTTAAGGGTCGAAGGTGGATT"
@@ -99,3 +111,9 @@ primers:
     trim: 15
     citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
     notes: "mt region"
+
+validation:
+  samples:
+    - accession: SRR17535371
+      taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Bilateria; Deuterostomia; Chordata; Craniata; Vertebrata; Gnathostomata; Teleostomi; Euteleostomi; Sarcopterygii; Dipnotetrapodomorpha; Tetrapoda; Amniota; Mammalia; Theria; Eutheria; Boreoeutheria; Euarchontoglires; Primates; Haplorrhini; Simiiformes; Catarrhini; Hominoidea; Hominidae; Homininae; Homo"
+      max_reads: [1000000]

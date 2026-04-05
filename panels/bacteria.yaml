@@ -1,5 +1,17 @@
 name: bacteria
+version: 1.0.0
 description: "Bacterial 16S metabarcoding primers"
+
+maintainers:
+  - name: "Samuel Church"
+    orcid: "https://orcid.org/0000-0002-8451-103X"
+
+changelog:
+  - version: 1.0.0
+    date: 2026-04-05
+    sharkmer_version: "3.0.0-dev"
+    changes: "Initial versioned schema."
+
 primers:
   - gene_name: "16S-27F-338R"
     forward_seq: "AGAGTTTGATCCTGGCTCAG"
@@ -154,3 +166,14 @@ primers:
     trim: 15
     citation: "Sakai et al., 2004, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
     notes: "V3-V4"
+
+validation:
+  samples:
+    - accession: SRR19418213
+      max_reads: [1000000]
+
+    - accession: SRR24806237
+      max_reads: [1000000]
+
+    - accession: ERR2596344
+      max_reads: [1000000]
