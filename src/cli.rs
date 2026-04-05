@@ -292,8 +292,10 @@ pub(crate) struct Args {
     pub(crate) node_budget_component: usize,
 
     /// Enable read-backed seed evaluation: retain primer-matching reads during
-    /// ingestion and use read divergence to reject off-target seeds
-    #[arg(long, help_heading = "PCR")]
+    /// ingestion and use read divergence to reject off-target seeds. Hidden
+    /// because initial benchmarks show no recovery benefit at 1M reads and a
+    /// 2.7× runtime cost (see dev_docs/DESIGN_DECISIONS.md). May be revisited.
+    #[arg(long, help_heading = "PCR", hide = true)]
     pub(crate) read_eval: bool,
 
     /// Enable read threading (Pass 2): re-read FASTQ to annotate graph edges with read support
