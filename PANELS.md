@@ -59,7 +59,7 @@ validation:
 **Panel-level:** `version`, `maintainers`, `changelog`, `validation`.
 
 **Per-primer:** `min_length`, `max_length`, `min_count`, `mismatches`,
-`trim`, `expected_length`, `citation`, `notes`.
+`trim`, `expected_length`, `dedup_edit_threshold`, `citation`, `notes`.
 
 ### Field semantics
 
@@ -72,6 +72,10 @@ validation:
   to accommodate biological variation.
 - `min_length`, `max_length`, `mismatches`, `trim`, and `min_count` are passed
   through to sharkmer's PCR engine. See the main README for their meanings.
+- `dedup_edit_threshold` controls the Levenshtein distance below which two
+  output products are collapsed into one (default 10). Lower it (e.g. 0–2)
+  for panels targeting complex samples where distinct but closely related
+  products should be retained separately.
 - `validation.samples[*].taxon` is the species (or lowest-rank identification)
   of the sample organism, e.g. `"Xenia sp."` or `"Homo sapiens"`. This is a
   short human-readable label, distinct from the full lineage in `taxonomy`.

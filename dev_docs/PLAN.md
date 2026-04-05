@@ -658,10 +658,20 @@ degenerate primers: same pattern.
   1M-16M sweep committed as `benchmarks/results/2026-04-04_sharkmer_3.0.0-dev_b373fed.yaml`
   (384/484 gene runs validated against NCBI nt).
 - [ ] Update integration tests for v3.0 behavior
-- [ ] Update documentation:
-  - [ ] README.md (user-facing changes, new flags, updated examples)
-  - [x] CLAUDE.md (module descriptions, line counts, constants)
-  - [ ] dev_docs/overview.md (architecture diagrams, data flow, design choices)
+- [x] Update documentation:
+  - [x] README.md (fixed FASTA filename pattern; documented `--pcr-stopping-criteria`,
+    `--read-threading` + `--paired`, `--ena` read caching flags; added
+    "Working with complex samples" guidance on combining stopping criteria,
+    read threading, and per-primer `dedup-edit-threshold`; added Panels section)
+  - [x] CLAUDE.md (module descriptions, line counts, constants; added
+    `components.rs` to pcr/ submodule listing, corrected pcr/ count 8 → 11,
+    corrected main.rs line count)
+  - [x] PANELS.md (added `dedup_edit_threshold` to per-primer optional fields
+    with field-semantics note for complex samples)
+  - [x] dev_docs/overview.md (verified accurate against current module layout
+    and flag set; no changes needed)
+  - [x] src/cli.rs --help after-text (fixed FASTA filename pattern to match
+    actual `{sample}_{gene}.fasta` output)
 - [ ] Update CHANGELOG.md
 - [ ] Update bioconda recipe for new dependencies (e.g., `dirs`)
 - [ ] Tag v3.0.0 release

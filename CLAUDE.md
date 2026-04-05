@@ -118,7 +118,7 @@ cargo build --features fxhashmap --no-default-features
 See [dev_docs/overview.md](dev_docs/overview.md) for a detailed
 architecture overview with data flow diagrams.
 
-### main.rs (~180 lines)
+### main.rs (~215 lines)
 
 Entry point. Parses CLI, delegates to helper modules, orchestrates the
 pipeline: init logging → collect primers → validate → pre-encode primer
@@ -161,7 +161,7 @@ New: `OligoFilter` (bloom filter + AHashSet for Pass 1 read retention),
 - `chunk.rs`: `Chunk` struct
 - `mod.rs`: re-exports and tests
 
-### pcr/ (8 submodules)
+### pcr/ (11 submodules)
 
 Pipeline: preprocess primers → find primer kmers → seed graph →
 evaluate seeds (with optional read divergence) → extend graph →
@@ -187,6 +187,9 @@ find paths → generate sequences → deduplicate
   during Pass 2 threading
 - `bubble.rs`: `resolve_bubbles()`. Detects simple bubbles, ranks
   branches by read support + phasing, returns edge preferences.
+- `components.rs`: `SeedComponent` identification, prioritization, and
+  per-component node budget allocation for multi-component exploration
+  under `--pcr-stopping-criteria` modes
 - `mod.rs`: `do_pcr()` orchestration, `PCRParams`, `PathScore`
   (with read-support fields), validation, constants
 - `preconfigured.rs`: YAML panel loading (built-in via `include_str!()`,

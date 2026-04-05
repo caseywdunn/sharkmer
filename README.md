@@ -118,7 +118,9 @@ The `--pcr-primers` argument takes a string with the format `key1=value1,key2=va
 
 The `--max-reads 1000000` argument indicates that the first million reads (individual reads, not read pairs) should be used. This is plenty for nuclear rRNA sequences 18s, 28s, and ITS, since they occur in many copies in the genome, and mitochondrial sequences 16s and co1. Single copy nuclear genes require more data.
 
-This analysis will generate one fasta file for each primer pair, named `{sample}_{panel}_{gene}.fasta` (e.g., `Stenogorgia_casta_cnidaria_18S.fasta`). If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found. A YAML stats file (`{sample}.stats.yaml`) is also produced with run statistics and per-gene PCR results.
+This analysis will generate one fasta file for each primer pair, named `{sample}_{gene}.fasta` (e.g., `Stenogorgia_casta_18S.fasta`). If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found. A YAML stats file (`{sample}.stats.yaml`) is also produced with run statistics and per-gene PCR results.
+
+Reads downloaded via `--ena` are cached (SHA-256 verified) under a shared cache directory so repeated runs on the same accession do not re-download. Use `--cache-dir` to override the location, `--no-cache` to stream directly without touching the cache, or `--clear-cache` to delete cached reads.
 
 You can see all the available built-in PCR panels with:
 
@@ -142,7 +144,7 @@ The things you should try first are:
 
 - Specify a reasonable value for the `--pcr-primers` parameter `max-length`, which is the maximum expected length of the amplified product, based on what is known about the gene. It does not need to be exact. It does need to be longer than the amplified product, but if it is much too long it may result in amplification of spurious products or runs that take too long without finding anything. Keep in mind that if there are introns, the amplified product can be much longer than the coding sequence.
 
-- Optimize your primer sequences. Make some multiple sequence alignments of the desired sequence region from several closely related species, and refine the primer sequences to be more specific to the target region. You can use [degenerate nucleotide symbols](https://en.wikipedia.org/wiki/Nucleic_acid_notation), such as R for A or G, a variable sites in the site where you would like the sequence to bind. Remember that, just as in real PCR, the forward and reverse primers bind opposite strands with their 3' ends pointing toward each other. The reverse primer sequence should be reverse complemented relative to the reference strand.
+- Optimize your primer sequences. Make some multiple sequence alignments of the desired sequence region from several closely related species, and refine the primer sequences to be more specific to the target region. You can use [degenerate nucleotide symbols](https://en.wikipedia.org/wiki/Nucleic_acid_notation), such as R for A or G, a variable sites in the site where you would like the sequence to bind. Remember that, just as in real PCR, the forward and reverse primers bind opposite strands with their 3' ends pointing toward each other. The reverse primer sequence should be reverse complemented relative to the reference strand. Adding more degeneracy broadens the taxonomic range a primer can hit, but at a cost: each ambiguous base expands the set of primer variants sharkmer must track, which slows runs down and increases the chance of off-target binding that can cause a run to fail on any particular sample. If your work is focused on a single clade, you will usually get better and faster results by building a panel tailored to that clade that uses only the minimum degeneracy needed to span it. See [PANELS.md](PANELS.md) for the panel file format and the development cycle for creating and validating a clade-specific panel.
 
 - Pick new primers that shorten the region you are trying to amplify, i.e. primers that are closer together in the genome sequence. Shorter amplification fragments tend to require fewer reads to assemble.
 
@@ -160,7 +162,39 @@ If these do not work, then you can try adjusting other parameters.
 
 - Adjust the `--pcr-primers` parameter `mismatches`. This defaults to 2. You can try raising it to 3 or 4 if you aren't getting the desired product. This reduces specificity, but this may increase the number of spurious paths that need to be traversed and bog down the run.
 
+By default, sharkmer stops searching as soon as the first connected primer-binding component yields a product (`--pcr-stopping-criteria first-product`). If a gene is producing the wrong product on a difficult sample, try `--pcr-stopping-criteria connected-only` (explores all promising seed components) or `all-components` (exhaustive, slowest but highest sensitivity) — this can surface the correct product when an off-target binding site wins the race at the default setting.
+
 Keep in mind that there is no way to assemble a sPCR product without kmer counts along its full length that meet or exceed the `min-count` parameter. The tool cannot output assembled sequences in the fasta file that are not in the input raw reads from the fastq file. If you are trying to amplify a single copy nuclear gene, that means your sequencing depth (average coverage) of the genome will need to be quite a bit higher than the `min-count` parameter, since there will be fluctuations in coverage along the length of the target region. If coverage at each site is independently distributed, then to have a 95% chance of coverage $\geq 2$ at each site in a region of length $n$, you would need a sequencing depth of 13x for a 1000bp region. That is on the order of 26 million 150 bp reads for a 300Mb genome. This may place single copy nuclear genes out of reach for some organisms with larger genomes, especially if computer RAM limits the number of reads that can be processed.
+
+### Read threading
+
+By default, sharkmer builds the de Bruijn graph from kmer counts alone and picks a path between primer binding sites based on graph topology and coverage. For samples where several similar templates are present — alleles, paralogs, related species in a metagenome — topology and coverage can be ambiguous, and the default path selection may collapse or mis-phase variants.
+
+`--read-threading` enables a second pass over the reads after the graph is built. Each read is mapped onto the graph as a maximal contiguous run of edges, and that read support is used to rank branches when resolving bubbles and to phase adjacent variants that a single read spans. This makes a meaningful difference when the thing you care about is the identity of the product rather than whether any product exists.
+
+When input is paired-end, `--paired` tells sharkmer to treat two input files as R1/R2 mates. This only has an effect in combination with `--read-threading` — the pair relationship is used to link graph regions that are farther apart than a single read, extending the effective range of read-based phasing. `--paired` requires exactly two local input files (it cannot be combined with `--ena` or stdin).
+
+```bash
+sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ \
+  --pcr-panel cnidaria --read-threading --paired \
+  data/SRR26955578_1.fastq.gz data/SRR26955578_2.fastq.gz
+```
+
+### Working with complex samples
+
+Some samples contain multiple similar templates that you want to recover as distinct products rather than collapse into a single consensus: metagenomic samples with several related taxa, heterozygous individuals where allelic variants matter, multi-copy gene families where paralogs differ by a handful of bases, or pooled samples. The defaults in sharkmer are tuned for the common "one sample, one product per gene" case and will actively work against you here — they stop at the first product and aggressively collapse near-identical paths.
+
+To pull multiple similar products out of a complex sample:
+
+- Change `--pcr-stopping-criteria` from the `first-product` default to `connected-only` or `all-components` so sharkmer does not bail out after the first successful primer-binding component. `all-components` is exhaustive and slowest but will explore every seed.
+- Enable `--read-threading` (and `--paired` if you have paired-end data) so that branches in the graph are ranked and phased by actual read support rather than coverage heuristics. Without read threading, genuinely distinct variants that share long stretches of sequence tend to be chosen against or merged.
+- Lower the per-primer `dedup-edit-threshold`. Sharkmer's final deduplication collapses any two output records within this many edits (Levenshtein distance) of each other; the default is 10, which is appropriate when you expect at most one true product per gene but discards closely related variants. Set it lower (e.g. `dedup-edit-threshold=2` or `dedup-edit-threshold=0`) to retain products that differ by only a few bases. For example:
+
+  ```
+  --pcr-primers "forward=...,reverse=...,name=CO1,max-length=800,dedup-edit-threshold=2"
+  ```
+
+These three settings work together: the stopping criterion decides how many seed regions are explored, read threading decides how paths through those regions are chosen and phased, and the dedup threshold decides how aggressively the final product set is collapsed. Changing any one of them alone is often not enough for complex samples.
 
 ## Incremental kmer counting
 
@@ -260,6 +294,15 @@ for completions to take effect. Completion scripts are a static snapshot of the
 available flags, so if you upgrade sharkmer you should regenerate them by
 re-running the same command above. Bioconda users don't need to worry about
 this — completions are updated automatically with each package upgrade.
+
+## Panels
+
+Primer panels are YAML files that bundle a set of primer pairs for a target
+clade (e.g. `cnidaria`, `insecta`, `teleostei`) so they can be run together
+with a single `--pcr-panel` flag. Built-in panels ship with sharkmer and can
+be listed with `sharkmer --list-panels`; custom panels can be loaded from a
+file with `--pcr-panel-file`. See [PANELS.md](PANELS.md) for the full panel
+file schema, validation workflow, and guidance on contributing new panels.
 
 ## Development
 

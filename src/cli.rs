@@ -139,7 +139,7 @@ Output files:\n  \
   {outdir}/{sample}.stats.yaml             Run statistics (always produced)\n\
 \n  \
   PCR:\n  \
-  {outdir}/{sample}_{panel}_{gene}.fasta   sPCR products per gene\n\
+  {outdir}/{sample}_{gene}.fasta           sPCR products per gene\n\
 \n  \
   Incremental counting (--chunks > 0):\n  \
   {outdir}/{sample}.histo                  All incremental histograms\n  \
