@@ -132,9 +132,7 @@ You can then edit the exported YAML to add genes, remove genes, or optimize prim
 
     sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr-panel-file octocorallia.yaml --ena SRR26955578
 
-If you have other primers that you would like to have added to the built-in panels, please submit them to the [issue tracker](https://github.com/caseywdunn/sharkmer/issues).
-
-See [PANELS.md](PANELS.md) for the full panel file schema (versioning, maintainers, changelog, validation block) and the panel development cycle, including how to validate a panel against declared ENA/SRA samples with `scripts/validate_panel.py`.
+See [PANELS.md](PANELS.md) for the full panel file schema (versioning, maintainers, changelog, validation block) and the panel development cycle, including how to validate a panel against declared ENA/SRA samples with `scripts/validate_panel.py`. Contributions of new panels and primer additions are welcome — PANELS.md describes the expected PR contents.
 
 ### Optimizing *in silico* PCR (sPCR)
 
