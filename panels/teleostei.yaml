@@ -3,84 +3,109 @@ version: 1.0.0
 description: "Universal fish primers for mitochondrial and nuclear products"
 
 maintainers:
-  - name: "Samuel Church"
-    orcid: "https://orcid.org/0000-0002-8451-103X"
+- name: "Samuel Church"
+  orcid: "https://orcid.org/0000-0002-8451-103X"
 
 changelog:
-  - version: 1.0.0
-    date: 2026-04-05
-    sharkmer_version: "3.0.0-dev"
-    changes: "Initial versioned schema."
+- version: 1.0.0
+  date: 2026-04-05
+  sharkmer_version: "3.0.0-dev"
+  changes: "Initial versioned schema."
 
 primers:
-  - gene_name: "18S"
-    forward_seq: "TAACATATGCTTGTCTCAAAG"
-    reverse_seq: "CCTGTATTGTTATTTTTCGTCAC"
-    min_length: 300
-    max_length: 700
-    min_count: 2
-    mismatches: 2
-    trim: 15
-    citation: "Karabanov et al 2014. https://doi.org/10.3390/w14030437"
-    notes: "if18S1"
+- gene_name: "18S"
+  forward_seq: "TAACATATGCTTGTCTCAAAG"
+  reverse_seq: "CCTGTATTGTTATTTTTCGTCAC"
+  min_length: 300
+  max_length: 700
+  min_count: 2
+  mismatches: 2
+  trim: 15
+  citation: "Karabanov et al 2014. https://doi.org/10.3390/w14030437"
+  notes: "if18S1"
 
-  - gene_name: "16S"
-    forward_seq: "CGCCTGTTTATCAAAAACAT"
-    reverse_seq: "CCGGTCTGAACTCAGATCACGT"
-    min_length: 400
-    max_length: 700
-    min_count: 2
-    mismatches: 2
-    trim: 15
-    citation: "Ivanova et al 2007. doi: 10.1111/j.1471-8286.2007.01748.x"
-    notes: "16Sar"
+- gene_name: "16S"
+  forward_seq: "CGCCTGTTTATCAAAAACAT"
+  reverse_seq: "CCGGTCTGAACTCAGATCACGT"
+  min_length: 400
+  max_length: 700
+  min_count: 2
+  mismatches: 2
+  trim: 15
+  citation: "Ivanova et al 2007. doi: 10.1111/j.1471-8286.2007.01748.x"
+  notes: "16Sar"
 
-  - gene_name: "CO1"
-    forward_seq: "TCAACCAACCACAAAGACATTGGCAC"
-    reverse_seq: "TAGACTTCTGGGTGGCCAAAGAATCA"
-    min_length: 500
-    max_length: 800
-    min_count: 2
-    mismatches: 2
-    trim: 15
-    citation: "Naz et al 2023. doi: 10.2478/aoas-2022-0073"
-    notes: "Fish-R1"
+- gene_name: "CO1"
+  forward_seq: "TCAACCAACCACAAAGACATTGGCAC"
+  reverse_seq: "TAGACTTCTGGGTGGCCAAAGAATCA"
+  min_length: 500
+  max_length: 800
+  min_count: 2
+  mismatches: 2
+  trim: 15
+  citation: "Naz et al 2023. doi: 10.2478/aoas-2022-0073"
+  notes: "Fish-R1"
 
-  - gene_name: "CytB"
-    forward_seq: "AAAGCTTCCATCCAACATCTCAGCATGATGAAA"
-    reverse_seq: "AAACTGCAGCCCCTCAGAATGATATTTGTCCTCA"
-    min_length: 300
-    max_length: 600
-    min_count: 2
-    mismatches: 2
-    trim: 15
-    citation: "Nugroho et al 2007. https://www.bioflux.com.ro/docs/2019.1074-1079.pdf"
-    notes: "L14841; H15149"
+- gene_name: "CytB"
+  forward_seq: "AAAGCTTCCATCCAACATCTCAGCATGATGAAA"
+  reverse_seq: "AAACTGCAGCCCCTCAGAATGATATTTGTCCTCA"
+  min_length: 300
+  max_length: 600
+  min_count: 2
+  mismatches: 2
+  trim: 15
+  citation: "Nugroho et al 2007. https://www.bioflux.com.ro/docs/2019.1074-1079.pdf"
+  notes: "L14841; H15149"
 
-  - gene_name: "12S"
-    forward_seq: "ACTGGGATTAGATACCCCACTATG"
-    reverse_seq: "GAGAGTGACGGGCGGTGT"
-    min_length: 200
-    max_length: 500
-    min_count: 2
-    mismatches: 2
-    trim: 15
-    citation: "Zhang et al 2020. doi: 10.1111/2041-210X.13485 "
-    notes: "Ac12S"
+- gene_name: "12S"
+  forward_seq: "ACTGGGATTAGATACCCCACTATG"
+  reverse_seq: "GAGAGTGACGGGCGGTGT"
+  min_length: 200
+  max_length: 500
+  min_count: 2
+  mismatches: 2
+  trim: 15
+  citation: "Zhang et al 2020. doi: 10.1111/2041-210X.13485 "
+  notes: "Ac12S"
 
 validation:
   samples:
-    - accession: SRR22396603
-      taxon: "Nomeus gronovii"
-      taxonomy: "Teleostei; Osteoglossocephalai; Clupeocephala; Euteleosteomorpha; Neoteleostei; Eurypterygia; Ctenosquamata; Acanthomorphata; Euacanthomorphacea; Percomorphaceae; Pelagiaria; Scombriformes; Nomeidae; Nomeus"
-      max_reads: [1000000]
+  - accession: SRR22396603
+    taxon: "Nomeus gronovii"
+    taxonomy: "Teleostei; Osteoglossocephalai; Clupeocephala; Euteleosteomorpha; Neoteleostei; Eurypterygia; Ctenosquamata; Acanthomorphata; Euacanthomorphacea; Percomorphaceae; Pelagiaria; Scombriformes; Nomeidae; Nomeus"
+    max_reads: [1000000]
 
-    - accession: SRR19434448
-      taxon: "Hirundichthys speculiger"
-      taxonomy: "Teleostei; Osteoglossocephalai; Clupeocephala; Euteleosteomorpha; Neoteleostei; Eurypterygia; Ctenosquamata; Acanthomorphata; Euacanthomorphacea; Percomorphaceae; Ovalentaria; Atherinomorphae; Beloniformes; Belonoidei; Exocoetidae; Hirundichthys"
-      max_reads: [1000000]
+  - accession: SRR19434448
+    taxon: "Hirundichthys speculiger"
+    taxonomy: "Teleostei; Osteoglossocephalai; Clupeocephala; Euteleosteomorpha; Neoteleostei; Eurypterygia; Ctenosquamata; Acanthomorphata; Euacanthomorphacea; Percomorphaceae; Ovalentaria; Atherinomorphae; Beloniformes; Belonoidei; Exocoetidae; Hirundichthys"
+    max_reads: [1000000]
 
-    - accession: SRR11679523
-      taxon: "Engraulis encrasicolus"
-      taxonomy: "Teleostei; Osteoglossocephalai; Clupeocephala; Otomorpha; Clupei; Clupeiformes; Clupeoidei; Engraulidae; Engraulinae; Engraulis"
-      max_reads: [1000000]
+  - accession: SRR11679523
+    taxon: "Engraulis encrasicolus"
+    taxonomy: "Teleostei; Osteoglossocephalai; Clupeocephala; Otomorpha; Clupei; Clupeiformes; Clupeoidei; Engraulidae; Engraulinae; Engraulis"
+    max_reads: [1000000]
+references:
+- gene_name: 18S
+  sequences:
+  - taxon: Hirundichthys speculiger
+    accession: OP088600.1
+    sequence: TAGCATATGCTTGTCTCAAAGATTAAGCCATGCAAGTCTAAGTACACACGGCCGGTACAGTGAAACTGCGAATGGCTCATTAAATCAGTTATGGTTCCTTTGATCGCTCTACCGTTACTTGGATAACTGTGGCAATTCTAGAGCTAATACATGCAAACGAGCGCTGACCTCCGGGGATGCGTGCATTTATCAGATCCAAAACCCATGCGGGGTGCTCCTCGTGGGCGCCCCGGCCGCTTTGGTGACTCTAGATAACCTCGAGCCGATCGCTGGCCCTCCGTGGCGGCGACGTCTCATTCGAATGTCTGCCCTATCAACTTTCGATGGTACTTTCTGTGCCTACCATGGTGACCACGGGTAACGGGGAATCAGGGTTCGATTCCGGAGAGGGAGCCTGAGAAACGGCTACCACATCCAAGGAAGGCAGCAGGCGCGCAAATTACCCACTCCCGACTCGGGGAGGTA
+  - taxon: Engraulis encrasicolus
+    accession: XR_010033285.1
+    sequence: TAACATATGCTTGTCTCAAAGATTAAGCCATGCAGGTCTAAGTGCACACGGTTCACAGTGAAACTGCGAATGGCTCATTAAATCAGTTATGGTTCCTTTGATCGCTCCCACCCGTACTTGGATAACTGTGGCAATTCCAGAGCTAATACATGCAAACGAGCGCCGACTCGGCCCCTTTCGGGGGGCTGCGGACGCGTGCATTTATCAGATCCAAAAACCCATCCGGCGGTCCCTTCGGGGTCCCCGGTCCGCTTTGGTGACTCTAGATAACCTCGGGCCGATCGCGCGCCCTCTGCGGCGGCGACGTGTCTTTCGAATGTCTGCCCTATCAACTTTCGATGGTACTTTCGGCGCCTACCATGGTGACCACGGGTAACGGGGAATCAGGGTTCGATTCCGGAGAGGGAGCCTGAGAAACGGCTACCACATCCAAGGAAGGCAGCAGGCGCGCAAATTACCCATTACCGACACGGTGAGGTA
+- gene_name: 16S
+  sequences:
+  - taxon: Nomeus gronovii
+    accession: PX704705.1
+    sequence: CGCCTGTTTACCAAAAACATCGCCTCTTGCAAAATCTAAGAATAAGAGGTCCAGCCTGCCCTGTGACTATATGTTTAACGGCCGCGGTATTTTAACCGTGCGAAGGTAGCGCAATCACTTGTCTTTTAAATGGAGACCTGTATGAATGGCATAACGAGGGCTTAACTGTCTCCTTTTTCCAGTCAATGAAATTGATCTCCCCGTGCAGAAGCGGGGATATAACCATAAGACGAGAAGACCCTATGGAGCTTTAGACACTAAGGCGTATCATGCTAAGTACCCCTAAACAAAGGACTAAGCCAAATGATTCATGCCCCTATGTCTTTGGTTGGGGCGACCGCGGGGAAATAAAAAACCCCCACGTGGAGTGGGAGCACTGCCTCCTACAACCAAGAGCTGCAGCTCTAATAAACAGAATTTCTGACCAATAAGATCCGGCAACGCCGATCAACGGACCGAGTTACCCTAGGGATAACAGCGCAATCCCCTTTTAGAGCCCATATCGACAAGGGGGTTTACGACCTCGATGTTGGATCAGGACATCCTAATGGTGCAGCCGCTATTGAGGGTTCGTTTGTTCAACGATTAAAGTCCT
+  - taxon: Hirundichthys speculiger
+    accession: OP035085.1
+    sequence: CGCCTGTTTACCAAAAACACCGCCTCTTGCTAAAAAAGTATAAGAGGTCCCGCCTGCCCTGTGACAAAAAGTTTAACGGCCGCGGTATCTTGACCGTGCGAAGGTAGCGCAATCACTTGTTTCTTAAATGGAGACCTGTATGAATGGCATAACGAGGGCCAACCTGTCTCCTTCTCCCAGTCAATGAAATTGATCTCCCCGTGCAGAAGCGGGGATAAGCACATAAGACGAGAAGACCCTTTGGAGCTTTAGACTGCAAGCAGACCATGCTAATTAGACCTAATTAAGGGAACTAAGCCAATTGGATACCTGCCCTAATGTCTTCGGTTGGGGCGACCACGGGGAAACAAAAAACCCCCATGAGGAGCAGGAGAACTTTTCTCCCAGAACTAAGACCGACAGGTCTAAGTACCAGAATTTCTGACCAAAAGATCCGGCCAAGCCGATCAACGGACCAAGTTACCCTAGGGATAACAGCGCAATCCCCTTTTAGAGCCCATATCGACAAGGGGGTTTACGACCTCGATGTTGGATCAGGACATCCTAATGGTGCAGCCGCTATTAAGGGTTCGTTTGTTCAACGATTAAAGTCCT
+  - taxon: Engraulis encrasicolus
+    accession: NC_009581.1
+    sequence: CGCCTGTTTACCAAAAACATCGCCTCTTGCATTCCAAAGTATAAGAGGTCCCACCTGCCCTGTGACTCTAAGTTTAACGGCCGCGGTATTCTAACCGTGCGAAGGTAGCGCAATCAATTGCCTTTTAAATGAAGGCCTGTATGAATGGTATAACGAGGGTCTAGCTGTCTCTTTTTTCTAGTCAGTTAAACTGATCTGTCCGTGCAGAAGCGGACATAAACATACAAGACGAGAAGACCCTATGGAGCTTTAGACACTAGCCAACTGTGATAAGCGACTGAACTGAACAAGTCCTAAATACCCGCAGCCTTATGGTAATGTAGTCTTAGGTTGGGGCGACCACGGGAGAAAGTAAAGCTCCCAAGCAGACCGGGAAAACCCTTAAGCCGAGAGTTGCAACTCTAAGCCGCAAAATTTTTGACTGATATGATCCGGTTGAAAAACCGATTAACGAACCAAGTTACCCTAGGGATAACAGCGCAATCCTCTCCCAGAGTCCCTATCGACGAGGGGGTTTACGACCTCGATGTTGGATCAGGACATCCTAATGGTGCAGCCGCTATTAAGGGTTCGTTTGTTCAACGATTAAAGTCCT
+- gene_name: 12S
+  sequences:
+  - taxon: Nomeus gronovii
+    accession: LC645327.1
+    sequence: ACTGGGATTAGATACCCCACTATGCTTAGCCGTAAACATTGATAGAATACTACACTCTCTATCCGCCTGGGAACTACGAGCATTAGCTTAAAACCCAAAGGACTTGGCGGTACTTTAGATCCCCCTAGAGGAGCCTGTTCTATAACCGATGACCCCCGTTCAACCTCACCCTCCCTTGTTTTTCCCGCCTATATACCGCCGTCGTCAGCTTACCCTGTGAGGGTTTAATAGTAAGCAAAATTGGCACCGCCCAGAACGTCAGGTCGAGGTGTAGCGCATGAGAGGGGAAGAAATGGGCTACATTCGCTAACATAGCGAATACGAACGATGTATTGAAAACGTACATCCGAAGGAGGATTTAGCAGTAAGTGGAAAATAGAGCGTTCCACTGAAATCGGCTCTGAAGTGCGTAC

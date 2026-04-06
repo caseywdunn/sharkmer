@@ -2,485 +2,222 @@
 """
 Regression benchmark for sharkmer.
 
-Downloads SRA datasets (if not cached), runs sharkmer at multiple coverage
-levels, and collects results into a YAML file for comparison across versions.
+Reads benchmarks/benchmark.yaml to determine which panel + accession + depth
+combinations to run. Sample metadata (taxon, taxonomy) is resolved from the
+panel YAML files. Produces per-panel result YAMLs and markdown reports, plus
+a combined cross-panel summary.
 
 Usage:
-    python benchmarks/run_benchmark.py [--samples SAMPLE1 SAMPLE2 ...]
-    python benchmarks/run_benchmark.py --all
+    python benchmarks/run_benchmark.py
+    python benchmarks/run_benchmark.py --samples Xenia_sp Agalma_elegans
+    python benchmarks/run_benchmark.py --panels cnidaria insecta
+    python benchmarks/run_benchmark.py --no-blast
 
-Run from the repo root directory.
+Run from the repo root directory with the sharkmer-bench conda environment.
 """
 
 import argparse
-import concurrent.futures
-import glob
-import os
-import platform
-import re
-import subprocess
+import shutil
 import sys
-import time
+import tempfile
 from datetime import datetime
 from pathlib import Path
 
 import yaml
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from blast_validate import validate_results
-from summarize import summarize
-
-
-# --- Configuration ---
-
+# Ensure sharkmer_validate package is importable.
 REPO_ROOT = Path(__file__).resolve().parent.parent
-CONFIG_PATH = REPO_ROOT / "benchmarks" / "config.yaml"
-SHARKMER_BIN = REPO_ROOT / "target" / "release" / "sharkmer"
-DATA_DIR = REPO_ROOT / "benchmarks" / "data"
-CACHE_DIR = REPO_ROOT / "benchmarks" / "data" / "cache"
-OUTPUT_DIR = REPO_ROOT / "benchmarks" / "output"
-RESULTS_DIR = REPO_ROOT / "benchmarks" / "results"
+sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
-K = 19  # Match sharkmer default; see dev_docs/DESIGN_DECISIONS.md for k sweep
-THREADS = 8
-DEFAULT_MAX_READS = [1_000_000]
+from sharkmer_validate import runner, blast_references, results, report  # noqa: E402
+
+BENCHMARK_CONFIG = REPO_ROOT / "benchmarks" / "benchmark.yaml"
+RUNS_DIR = REPO_ROOT / "panels" / "validation_runs"
 
 
-def load_config():
-    with open(CONFIG_PATH) as f:
-        config = yaml.safe_load(f)
-    return config["sample"]
+def load_benchmark_config(config_path: Path = BENCHMARK_CONFIG) -> list:
+    """Load benchmark.yaml and return the samples list."""
+    with open(config_path) as f:
+        data = yaml.safe_load(f)
+    return data.get("samples", [])
 
 
-def get_max_reads_for_sample(sample_config):
-    """Return the max_reads list for a sample, sorted descending."""
-    reads = sample_config.get("max_reads", DEFAULT_MAX_READS)
-    return sorted(reads, reverse=True)
+def resolve_sample_metadata(panel_data: dict, accession: str) -> dict | None:
+    """Look up a validation sample in panel_data by accession.
 
-
-def get_sharkmer_version():
-    result = subprocess.run(
-        [str(SHARKMER_BIN), "--version"],
-        capture_output=True, text=True
-    )
-    return result.stdout.strip()
-
-
-def get_git_commit():
-    result = subprocess.run(
-        ["git", "-C", str(REPO_ROOT), "rev-parse", "--short", "HEAD"],
-        capture_output=True, text=True
-    )
-    return result.stdout.strip()
-
-
-def get_panel_versions(samples_to_run, config):
-    """Return a dict mapping panel name -> panel version, for panels referenced
-    by the samples that will be run. Missing/unversioned panels get 'unknown'.
+    Returns the sample block (taxon, taxonomy, etc.) or None if not found.
     """
-    panel_dir = REPO_ROOT / "panels"
-    versions = {}
-    for sample_name in samples_to_run:
-        sample_cfg = config.get(sample_name, {})
-        arguments = sample_cfg.get("arguments", "")
-        for panel in re.findall(r"--pcr-panel\s+(\S+)", arguments):
-            if panel in versions:
-                continue
-            panel_file = panel_dir / f"{panel}.yaml"
-            if panel_file.exists():
-                try:
-                    with open(panel_file) as f:
-                        data = yaml.safe_load(f)
-                    versions[panel] = data.get("version", "unknown")
-                except Exception:
-                    versions[panel] = "unknown"
-            else:
-                versions[panel] = "unknown"
-    return versions
+    validation = panel_data.get("validation") or {}
+    for sample in validation.get("samples", []):
+        if sample.get("accession") == accession:
+            return sample
+    return None
 
 
-def get_rustc_version():
-    result = subprocess.run(
-        ["rustc", "--version"],
-        capture_output=True, text=True
-    )
-    return result.stdout.strip()
+def run_benchmark(
+    panel_filter: list | None = None,
+    sample_filter: list | None = None,
+    threads: int = runner.THREADS,
+    max_reads_override: list | None = None,
+    run_blast: bool = True,
+):
+    """Run the benchmark suite."""
+    runner.build_sharkmer()
 
-
-def get_machine_info():
-    info = {
-        "os": f"{platform.system()} {platform.release()}",
-        "cpu_model": platform.processor() or platform.machine(),
-        "cpu_cores": os.cpu_count(),
-    }
-    # Try to get total RAM
-    try:
-        if platform.system() == "Darwin":
-            result = subprocess.run(
-                ["sysctl", "-n", "hw.memsize"],
-                capture_output=True, text=True
-            )
-            info["total_ram_gb"] = round(int(result.stdout.strip()) / (1024**3), 1)
-        elif platform.system() == "Linux":
-            with open("/proc/meminfo") as f:
-                for line in f:
-                    if line.startswith("MemTotal"):
-                        kb = int(line.split()[1])
-                        info["total_ram_gb"] = round(kb / (1024**2), 1)
-                        break
-    except Exception:
-        info["total_ram_gb"] = None
-    return info
-
-
-def find_sample_data(sample_config):
-    """Find local data files for a sample.
-
-    Data files are named {accession}.fastq in benchmarks/data/.
-    Returns a list of FASTQ file paths, or None if any are missing.
-    """
-    accessions = sample_config.get("reads", [])
-    if not accessions:
-        return None
-
-    all_fastq_paths = []
-    for accession in accessions:
-        fastq_path = DATA_DIR / f"{accession}.fastq"
-        if fastq_path.exists():
-            all_fastq_paths.append(fastq_path)
-        else:
-            return None  # At least one file missing
-
-    return all_fastq_paths
-
-
-def run_sharkmer_local(sample_name, fastq_paths, arguments, max_reads,
-                       output_dir, threads=THREADS):
-    """Run sharkmer with local files and return wall time in seconds."""
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    k_reads = max_reads // 1000
-    sample_prefix = f"{sample_name}_{k_reads}k"
-
-    cmd = [
-        str(SHARKMER_BIN),
-        "-k", str(K),
-        "-t", str(threads),
-        "--max-reads", str(max_reads),
-        "--dump-graph",
-        "-o", str(output_dir) + "/",
-        "-s", sample_prefix,
-    ]
-
-    if arguments:
-        cmd.extend(arguments.split())
-
-    for fq in fastq_paths:
-        cmd.append(str(fq))
-
-    print(f"  Running: {' '.join(cmd)}")
-
-    start_time = time.time()
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    wall_time = time.time() - start_time
-
-    if result.returncode != 0:
-        print(f"  ERROR running sharkmer: {result.stderr[-500:]}")
-        return None, wall_time
-
-    log_path = output_dir / f"{sample_prefix}.log"
-    with open(log_path, "w") as f:
-        f.write(result.stdout)
-        f.write(result.stderr)
-
-    return sample_prefix, wall_time
-
-
-def run_sharkmer_ena(sample_name, accession, arguments, max_reads, output_dir,
-                     threads=THREADS):
-    """Run sharkmer with --ena and read caching, return wall time in seconds."""
-    output_dir.mkdir(parents=True, exist_ok=True)
-
-    k_reads = max_reads // 1000
-    sample_prefix = f"{sample_name}_{k_reads}k"
-
-    cmd = [
-        str(SHARKMER_BIN),
-        "-k", str(K),
-        "-t", str(threads),
-        "--max-reads", str(max_reads),
-        "--dump-graph",
-        "-o", str(output_dir) + "/",
-        "-s", sample_prefix,
-        "--ena", accession,
-        "--cache-dir", str(CACHE_DIR),
-    ]
-
-    if arguments:
-        cmd.extend(arguments.split())
-
-    print(f"  Running: {' '.join(cmd)}")
-
-    start_time = time.time()
-    result = subprocess.run(cmd, capture_output=True, text=True)
-    wall_time = time.time() - start_time
-
-    if result.returncode != 0:
-        print(f"  ERROR running sharkmer: {result.stderr[-500:]}")
-        return None, wall_time
-
-    # Save log
-    log_path = output_dir / f"{sample_prefix}.log"
-    with open(log_path, "w") as f:
-        f.write(result.stdout)
-        f.write(result.stderr)
-
-    return sample_prefix, wall_time
-
-
-def parse_stats_file(stats_path):
-    """Parse the current .stats format (key\tvalue per line)."""
-    stats = {}
-    if not stats_path.exists():
-        return stats
-    with open(stats_path) as f:
-        for line in f:
-            parts = line.strip().split("\t", 1)
-            if len(parts) == 2:
-                key, value = parts
-                try:
-                    stats[key] = int(value)
-                except ValueError:
-                    stats[key] = value
-    return stats
-
-
-def parse_fasta_products(sample_prefix, output_dir):
-    """Find and parse all FASTA output files for a sample."""
-    products = []
-    pattern = str(output_dir / f"{sample_prefix}_*.fasta")
-    for fasta_path in sorted(glob.glob(pattern)):
-        gene_name = Path(fasta_path).stem.replace(f"{sample_prefix}_", "")
-        sequences = []
-        current_header = None
-        current_seq = []
-
-        with open(fasta_path) as f:
-            for line in f:
-                line = line.strip()
-                if line.startswith(">"):
-                    if current_header is not None:
-                        sequences.append("".join(current_seq))
-                    current_header = line[1:]
-                    current_seq = []
-                else:
-                    current_seq.append(line)
-            if current_header is not None:
-                sequences.append("".join(current_seq))
-
-        # Parse kmer stats from header if available
-        kmer_count_median = None
-        if current_header:
-            median_match = re.search(r"median (\d+)", current_header)
-            if median_match:
-                kmer_count_median = int(median_match.group(1))
-
-        products.append({
-            "gene": gene_name,
-            "n_products": len(sequences),
-            "lengths": [len(s) for s in sequences],
-            "kmer_count_median": kmer_count_median,
-            "sequences": sequences,
-        })
-
-    return products
-
-
-def collect_sample_result(sample_name, sample_config, sample_prefix, wall_time,
-                          output_dir):
-    """Collect all results for a single sample."""
-    # Try YAML stats first (v2.0+), fall back to old TSV format
-    stats_yaml_path = output_dir / f"{sample_prefix}.stats.yaml"
-    stats_path = output_dir / f"{sample_prefix}.stats"
-    if stats_yaml_path.exists():
-        with open(stats_yaml_path) as f:
-            stats = yaml.safe_load(f) or {}
-    else:
-        stats = parse_stats_file(stats_path)
-    products = parse_fasta_products(sample_prefix, output_dir)
-
-    # Determine panel from arguments
-    arguments = sample_config.get("arguments", "")
-    panels = re.findall(r"--pcr-panel\s+(\S+)", arguments)
-    panel = ", ".join(panels) if panels else "none"
-
-    genes_amplified = len(products)
-
-    result = {
-        "sample": sample_name,
-        "panel": panel,
-        "wall_time_s": round(wall_time, 1),
-        "n_reads_read": stats.get("n_reads_read"),
-        "n_bases_read": stats.get("n_bases_read"),
-        "n_kmers": stats.get("n_kmers"),
-        "n_unique_kmers": None,  # Not in current stats format
-        "genes_amplified": genes_amplified,
-        "products": products,
-    }
-
-    return result
-
-
-def run_benchmark(samples_to_run=None, threads=THREADS, max_reads_override=None,
-                  run_blast=True):
-    """Run the full benchmark suite."""
-    config = load_config()
-
-    if samples_to_run is None:
-        samples_to_run = list(config.keys())
-
-    # Build sharkmer if needed
-    print("Building sharkmer (release)...")
-    result = subprocess.run(
-        ["cargo", "build", "--release"],
-        cwd=str(REPO_ROOT),
-        capture_output=True, text=True
-    )
-    if result.returncode != 0:
-        print(f"Build failed: {result.stderr}")
-        sys.exit(1)
-
-    sharkmer_version = get_sharkmer_version()
-    git_commit = get_git_commit()
-    machine_info = get_machine_info()
-
-    # Create a timestamped output subdirectory for this run
-    run_timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    run_output_dir = OUTPUT_DIR / run_timestamp
-    run_output_dir.mkdir(parents=True, exist_ok=True)
+    sharkmer_version = runner.clean_sharkmer_version(runner.get_sharkmer_version())
+    git_commit = runner.get_git_commit()
+    machine_info = runner.get_machine_info()
 
     print(f"sharkmer version: {sharkmer_version}")
     print(f"git commit: {git_commit}")
     print(f"machine: {machine_info}")
-    print(f"samples: {len(samples_to_run)}")
-    print(f"output: {run_output_dir}")
-    print()
 
-    results = []
-    for sample_name in samples_to_run:
-        if sample_name not in config:
-            print(f"WARNING: {sample_name} not found in config, skipping")
+    # Load benchmark config and resolve panel data.
+    bench_samples = load_benchmark_config()
+
+    # Load all referenced panels once.
+    panel_cache: dict[str, tuple[Path, dict]] = {}
+    for entry in bench_samples:
+        panel_name = entry["panel"]
+        if panel_name not in panel_cache:
+            panel_path = runner.PANELS_DIR / f"{panel_name}.yaml"
+            if not panel_path.exists():
+                print(f"WARNING: panel file not found: {panel_path}")
+                continue
+            panel_cache[panel_name] = (panel_path, runner.load_panel_yaml(panel_path))
+
+    # Filter and group by panel.
+    by_panel: dict[str, list] = {}
+    for entry in bench_samples:
+        panel_name = entry["panel"]
+        accession = entry["accession"]
+
+        if panel_filter and panel_name not in panel_filter:
             continue
 
-        sample_config = config[sample_name]
-
-        accessions = sample_config.get("reads", [])
-        if not accessions:
-            print(f"  WARNING: No reads defined for {sample_name}, skipping")
+        if panel_name not in panel_cache:
             continue
 
-        # Check for local data files; fall back to --ena with caching
-        fastq_paths = find_sample_data(sample_config)
-        if fastq_paths:
-            print(f"  Using local data files for {sample_name}")
-        else:
-            print(f"  No local data for {sample_name}, will use --ena with caching")
+        panel_path, panel_data = panel_cache[panel_name]
+        sample_meta = resolve_sample_metadata(panel_data, accession)
 
-        # Determine sweep levels
-        if max_reads_override is not None:
-            sample_reads = sorted(max_reads_override, reverse=True)
-        else:
-            sample_reads = get_max_reads_for_sample(sample_config)
-
-        for max_reads in sample_reads:
-            k_reads = max_reads // 1000
-            print(f"=== {sample_name} ({k_reads}k reads) ===")
-
-            # Run sharkmer: use local files if available, otherwise --ena
-            arguments = sample_config.get("arguments", "")
-            if fastq_paths:
-                sample_prefix, wall_time = run_sharkmer_local(
-                    sample_name, fastq_paths, arguments, max_reads,
-                    run_output_dir, threads=threads
-                )
-            else:
-                sample_prefix, wall_time = run_sharkmer_ena(
-                    sample_name, accessions[0], arguments, max_reads,
-                    run_output_dir, threads=threads
-                )
-            if sample_prefix is None:
-                print(f"  FAILED, skipping result collection")
-                results.append({
-                    "sample": sample_name,
-                    "max_reads": max_reads,
-                    "status": "failed",
-                    "wall_time_s": round(wall_time, 1),
-                })
+        # Allow filtering by taxon name (underscored) or accession.
+        if sample_filter:
+            taxon = (sample_meta or {}).get("taxon", accession)
+            sample_id = taxon.replace(" ", "_")
+            if accession not in sample_filter and sample_id not in sample_filter:
                 continue
 
-            # Collect results
-            sample_result = collect_sample_result(
-                sample_name, sample_config, sample_prefix, wall_time,
-                run_output_dir
+        max_reads = entry.get("max_reads", [1_000_000])
+
+        by_panel.setdefault(panel_name, []).append(
+            {
+                "panel_path": panel_path,
+                "panel_data": panel_data,
+                "accession": accession,
+                "max_reads": max_reads,
+                "sample_meta": sample_meta or {"accession": accession},
+                "notes": entry.get("notes"),
+            }
+        )
+
+    if not by_panel:
+        print("No benchmark samples matched the filters.")
+        sys.exit(1)
+
+    total = sum(len(items) for items in by_panel.values())
+    print(f"Panels: {len(by_panel)}, benchmark entries: {total}")
+    print()
+
+    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    all_panel_results = []
+
+    for panel_name, items in sorted(by_panel.items()):
+        panel_path = items[0]["panel_path"]
+        panel_data = items[0]["panel_data"]
+        panel_version = runner.get_panel_version(panel_data)
+
+        print(f"=== Panel: {panel_name} v{panel_version} ===")
+
+        # Build reference BLAST DB.
+        tmpdir = Path(tempfile.mkdtemp(prefix=f"sharkmer_refs_{panel_name}_"))
+        ref_db = None
+        if run_blast:
+            ref_db = blast_references.build_reference_db(panel_data, tmpdir)
+            if ref_db:
+                print(f"  Reference DB built: {ref_db}")
+        blast_mode = "references" if ref_db else "none"
+
+        run_dir = RUNS_DIR / f"benchmark_{panel_name}_{stamp}"
+
+        sample_results = []
+        for item in items:
+            accession = item["accession"]
+            sample_meta = item["sample_meta"]
+            taxon = sample_meta.get("taxon", "")
+            max_reads_list = max_reads_override or item["max_reads"]
+            max_reads_sorted = sorted(max_reads_list, reverse=True)
+
+            print(
+                f"\n--- {taxon or accession} ({len(max_reads_sorted)} depths) ---"
             )
-            sample_result["max_reads"] = max_reads
-            results.append(sample_result)
+            runs = []
+            for max_reads in max_reads_sorted:
+                run = runner.run_sharkmer(
+                    panel_path,
+                    panel_name,
+                    accession,
+                    max_reads,
+                    run_dir,
+                    threads=threads,
+                    dump_graph=True,
+                )
+                runs.append(run)
 
-            print(f"  Completed in {wall_time:.1f}s, {sample_result['genes_amplified']} genes amplified")
-            print()
+            # BLAST against references.
+            blast_references.blast_all_products(
+                runs,
+                ref_db,
+                sample_taxon=taxon,
+                skip_blast=not run_blast,
+            )
 
-    # Assemble the benchmark result
-    RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    date_str = datetime.now().strftime("%Y-%m-%d")
-    safe_version = sharkmer_version.split("(")[0].strip().replace(" ", "_")
-    filename = f"{date_str}_{safe_version}_{git_commit}.yaml"
-    result_path = RESULTS_DIR / filename
+            sample_results.append((sample_meta, runs))
 
-    panel_versions = get_panel_versions(samples_to_run, config)
+        # Build and write per-panel result YAML.
+        result = results.build_result(
+            panel_path,
+            panel_data,
+            sample_results,
+            sharkmer_version,
+            blast_mode=blast_mode,
+            machine_info=machine_info,
+        )
+        result_name = results.result_filename(panel_data, sharkmer_version, stamp)
+        result_path = results.RESULTS_DIR / result_name
+        results.write_result(result, result_path)
 
-    benchmark_result = {
-        "sharkmer_version": sharkmer_version,
-        "panel_versions": panel_versions,
-        "git_commit": git_commit,
-        "date": date_str,
-        "machine": machine_info,
-        "rustc_version": get_rustc_version(),
-        "hash_backend": "ahashmap",  # default feature flag
-        "build_profile": "release",
-        "parameters": {
-            "k": K,
-            "threads": threads,
-        },
-        "results": results,
-    }
+        # Write per-panel markdown report.
+        report_name = result_name.replace(".yaml", ".md")
+        report_path = results.RESULTS_DIR / report_name
+        report.write_panel_report(
+            result, panel_data, sample_results, report_path
+        )
 
-    with open(result_path, "w") as f:
-        yaml.dump(benchmark_result, f, default_flow_style=False, sort_keys=False)
+        all_panel_results.append(result)
 
-    print(f"Benchmark results written to: {result_path}")
-
-    # BLAST validation
-    if run_blast:
+        shutil.rmtree(tmpdir, ignore_errors=True)
         print()
-        print("Running BLAST validation...")
-        try:
-            validate_results(result_path)
-        except Exception as e:
-            print(f"BLAST validation failed: {e}")
-            print("Results saved without BLAST annotations. Run manually with:")
-            print(f"  python benchmarks/blast_validate.py {result_path}")
-    else:
-        print("Skipping BLAST validation (--no-blast). Run manually with:")
-        print(f"  python benchmarks/blast_validate.py {result_path}")
 
-    # Generate human-readable summary
-    summary_path = result_path.with_suffix(".summary.md")
-    try:
-        summarize(result_path, output_path=summary_path)
-    except Exception as e:
-        print(f"Summary generation failed: {e}")
+    # Write combined benchmark summary.
+    if all_panel_results:
+        summary_name = (
+            f"benchmark_{sharkmer_version}_{git_commit}_{stamp}.summary.md"
+        )
+        summary_path = results.RESULTS_DIR / summary_name
+        report.write_benchmark_summary(all_panel_results, summary_path)
 
-    return result_path
+    print("Benchmark complete.")
 
 
 def main():
@@ -488,35 +225,41 @@ def main():
         description="Run sharkmer regression benchmark"
     )
     parser.add_argument(
-        "--samples", nargs="+",
-        help="Specific samples to run (default: all)"
+        "--panels",
+        nargs="+",
+        help="Only run these panels (default: all in benchmark.yaml)",
     )
     parser.add_argument(
-        "--all", action="store_true",
-        help="Run all samples from config"
+        "--samples",
+        nargs="+",
+        help="Only run these samples (by taxon name or accession)",
     )
     parser.add_argument(
-        "--threads", type=int, default=THREADS,
-        help=f"Number of threads (default: {THREADS})"
+        "--threads",
+        type=int,
+        default=runner.THREADS,
+        help=f"Number of threads (default: {runner.THREADS})",
     )
     parser.add_argument(
-        "--max-reads", type=int, nargs="+",
-        help="Override max_reads for all samples (ignores per-sample config)"
+        "--max-reads",
+        type=int,
+        nargs="+",
+        help="Override max_reads for all samples",
     )
     parser.add_argument(
-        "--no-blast", action="store_true",
-        help="Skip BLAST validation of amplicons"
+        "--no-blast",
+        action="store_true",
+        help="Skip BLAST validation of amplicons",
     )
     args = parser.parse_args()
 
-    if args.samples:
-        run_benchmark(args.samples, threads=args.threads,
-                      max_reads_override=args.max_reads,
-                      run_blast=not args.no_blast)
-    else:
-        run_benchmark(threads=args.threads,
-                      max_reads_override=args.max_reads,
-                      run_blast=not args.no_blast)
+    run_benchmark(
+        panel_filter=args.panels,
+        sample_filter=args.samples,
+        threads=args.threads,
+        max_reads_override=args.max_reads,
+        run_blast=not args.no_blast,
+    )
 
 
 if __name__ == "__main__":

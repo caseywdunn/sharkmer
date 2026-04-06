@@ -1,0 +1,80 @@
+# Benchmark configuration for sharkmer regression testing.
+#
+# Each entry selects a validation sample (by panel + accession) and declares
+# the read depths to benchmark at. The sample must exist in the panel's
+# validation.samples block — taxonomy, taxon, etc. are read from there.
+#
+# Samples with single-copy nuclear gene panels get multi-level coverage
+# sweeps to measure sensitivity. All others run at 1M.
+#
+# Data files in benchmarks/data/ are named {accession}.fastq. The --max-reads
+# flag controls how many reads are used per run; files must contain at least
+# as many reads as the largest max_reads value.
+
+samples:
+
+  # -- cnidaria: coverage sweeps for nuclear gene sensitivity --
+
+  - panel: cnidaria
+    accession: SRR9278435     # Xenia sp.
+    max_reads: [16000000, 8000000, 4000000, 2000000, 1000000]
+    notes: "Octocoral, genome bioproject GCF_021976095.1"
+
+  - panel: cnidaria
+    accession: SRR25099394    # Agalma elegans
+    max_reads: [16000000, 8000000, 4000000, 2000000, 1000000]
+
+  - panel: cnidaria
+    accession: SRR8617500     # Rhopilema esculentum
+    max_reads: [16000000, 8000000, 4000000, 2000000, 1000000]
+    notes: "Also tested with bacteria panel"
+
+  # -- human --
+
+  - panel: human
+    accession: SRR17535371    # Homo sapiens
+    max_reads: [1000000]
+
+  # -- teleostei --
+
+  - panel: teleostei
+    accession: SRR22396603    # Nomeus gronovii
+    max_reads: [1000000]
+
+  # -- angiospermae --
+
+  - panel: angiospermae
+    accession: SRR25378184    # Liriodendron tulipifera
+    max_reads: [1000000]
+
+  - panel: angiospermae
+    accession: ERR14009273    # Acer monspessulanum
+    max_reads: [1000000]
+
+  # -- insecta: coverage sweeps --
+
+  - panel: insecta
+    accession: SRR31887760    # Drosophila melanogaster
+    max_reads: [8000000, 4000000, 2000000, 1000000]
+
+  - panel: insecta
+    accession: SRR1057608     # Heliconius pachinus
+    max_reads: [8000000, 4000000, 2000000, 1000000]
+
+  - panel: insecta
+    accession: SRR27962769    # Gryllus bimaculatus
+    max_reads: [8000000, 4000000, 2000000, 1000000]
+
+  # -- bacteria metagenomics --
+
+  - panel: bacteria
+    accession: SRR19418213    # Covercrop rhizosphere
+    max_reads: [1000000]
+
+  - panel: bacteria
+    accession: SRR24806237    # Coral metagenome
+    max_reads: [1000000]
+
+  - panel: bacteria
+    accession: ERR2596344     # Seawater metagenome
+    max_reads: [1000000]

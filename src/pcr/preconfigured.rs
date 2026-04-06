@@ -18,6 +18,11 @@ struct PanelFile {
     #[allow(dead_code)]
     changelog: Vec<ChangelogEntry>,
     primers: Vec<PCRParams>,
+    /// Gold-standard reference amplicon sequences for validation. Not used by
+    /// the Rust pipeline; consumed by the Python validation tooling.
+    #[serde(default)]
+    #[allow(dead_code)]
+    references: Option<Vec<ReferenceGene>>,
     #[serde(default)]
     #[allow(dead_code)]
     validation: Option<ValidationBlock>,
@@ -43,6 +48,24 @@ struct ChangelogEntry {
     #[serde(default)]
     sharkmer_version: Option<String>,
     changes: String,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+#[allow(dead_code)]
+struct ReferenceGene {
+    gene_name: String,
+    sequences: Vec<ReferenceSequence>,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+#[allow(dead_code)]
+struct ReferenceSequence {
+    taxon: String,
+    #[serde(default)]
+    accession: Option<String>,
+    sequence: String,
 }
 
 #[derive(serde::Deserialize)]
@@ -74,6 +97,8 @@ struct ValidationSample {
     #[serde(default)]
     taxonomy: Option<String>,
     max_reads: Vec<u64>,
+    /// Deprecated: validation thresholds formerly written by `--write`.
+    /// Kept for backward compatibility with existing panel YAMLs.
     #[serde(default)]
     expected: BTreeMap<String, ExpectedGene>,
 }
@@ -213,6 +238,7 @@ fn get_builtin_panel_sources() -> Vec<(&'static str, &'static str)> {
             include_str!("../../panels/angiospermae.yaml"),
         ),
         ("bacteria", include_str!("../../panels/bacteria.yaml")),
+        ("c_elegans", include_str!("../../panels/c_elegans.yaml")),
         ("cnidaria", include_str!("../../panels/cnidaria.yaml")),
         ("human", include_str!("../../panels/human.yaml")),
         ("insecta", include_str!("../../panels/insecta.yaml")),
