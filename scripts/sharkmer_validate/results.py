@@ -41,6 +41,9 @@ def build_result(
             "threads": runner.THREADS,
         },
         "blast_mode": blast_mode,
+        "rustc_version": runner.get_rustc_version(),
+        "hash_backend": "ahashmap",  # default feature flag
+        "build_profile": "release",
     }
 
     if machine_info is None:

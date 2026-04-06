@@ -246,7 +246,7 @@ This runs sharkmer against each declared sample at each declared read depth
 (using the shared cache under `benchmarks/data/cache/`), BLASTs the
 recovered amplicons for identity (using a local `/db` BLAST database if
 present, otherwise NCBI remote), compares recovery to any `expected`
-thresholds, and emits a markdown report to `panels/reports/`.
+thresholds, and emits a markdown report to `panels/validation_reports/`.
 
 On first run with empty `expected` blocks, every gene will be reported as
 unvalidated — that is the expected state. At the bottom of the report is a

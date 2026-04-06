@@ -11,6 +11,113 @@ from . import primer_analysis, runner
 
 
 # ---------------------------------------------------------------------------
+# Three-position scoring code
+# ---------------------------------------------------------------------------
+#
+# Each gene × sample is scored with a 3-character code:
+#
+#   Position 1 — Recovery:   `-` not recovered, `+` recovered
+#   Position 2 — Reference:  `-` no ref for this gene (any species),
+#                             `+` ref exists for other species only,
+#                             `*` ref exists for this species
+#   Position 3 — BLAST hit:  `-` no hit to same gene,
+#                             `+` hit same gene different species,
+#                             `*` hit same gene same species
+#
+# Possible codes:
+#   ---  not recovered, no references for this gene
+#   -+-  not recovered, refs exist for other species
+#   -*-  not recovered, ref exists for this species
+#   +--  recovered, no references for this gene
+#   ++-  recovered, refs for other species, no hit
+#   +++  recovered, refs for other species, hit same gene different species
+#   +*-  recovered, ref for this species, no hit (suspicious)
+#   +*+  recovered, ref for this species, hit different species (unexpected)
+#   +**  recovered, ref for this species, confirmed same gene same species
+
+
+SCORE_LEGEND = (
+    "**Scoring** — three positions: recovery / reference availability / BLAST result.\n"
+    "\n"
+    "| Code | Meaning |\n"
+    "|------|---------|\n"
+    "| `+**` | Recovered, confirmed: same gene, same species |\n"
+    "| `+*+` | Recovered, ref for this species exists but hit different species |\n"
+    "| `+*-` | Recovered, ref for this species exists but no BLAST hit (suspicious) |\n"
+    "| `+++` | Recovered, hit same gene in a different species |\n"
+    "| `++-` | Recovered, refs for other species exist but no BLAST hit |\n"
+    "| `+--` | Recovered, no references for this gene |\n"
+    "| `-*-` | Not recovered, ref exists for this species |\n"
+    "| `-+-` | Not recovered, refs exist for other species |\n"
+    "| `---` | Not recovered, no references for this gene |\n"
+    "\n"
+    "Position 1: `-` no product, `+` product recovered. "
+    "Position 2: `-` no reference for any species for this gene, "
+    "`+` reference for other species, `*` reference for this species. "
+    "Position 3: `-` no BLAST hit to same gene, "
+    "`+` hit same gene different species, `*` same gene same species.\n"
+)
+
+
+def _build_ref_availability(panel_data: dict) -> dict:
+    """Build a map of reference availability per gene.
+
+    Returns: {gene_name: {taxon1, taxon2, ...}} — set of taxa that have
+    a reference for each gene. Genes with no references are absent.
+    """
+    ref_map = {}
+    for ref_block in panel_data.get("references", []):
+        gene = ref_block["gene_name"]
+        taxa = set()
+        for seq_entry in ref_block.get("sequences", []):
+            taxa.add(seq_entry["taxon"])
+        if taxa:
+            ref_map[gene] = taxa
+    return ref_map
+
+
+def _score_gene(
+    recovered: bool,
+    gene: str,
+    sample_taxon: str,
+    ref_match: dict | None,
+    ref_availability: dict,
+) -> str:
+    """Compute the 3-position score for a gene × sample."""
+    # Position 1: recovery
+    if not recovered:
+        p1 = "-"
+    else:
+        p1 = "+"
+
+    # Position 2: reference availability for this gene
+    gene_refs = ref_availability.get(gene, set())
+    if not gene_refs:
+        p2 = "-"
+    elif sample_taxon in gene_refs:
+        p2 = "*"
+    else:
+        p2 = "+"
+
+    # Position 3: BLAST result (only meaningful if recovered)
+    if not recovered or ref_match is None:
+        p3 = "-"
+    elif ref_match.get("pct_identity") is None:
+        p3 = "-"
+    elif ref_match.get("on_target"):
+        # Same gene, same species
+        p3 = "*"
+    elif ref_match.get("matched_gene") is not None:
+        # Got a hit — it's same gene different species
+        # (we only BLAST against same-gene refs now)
+        p3 = "+"
+    else:
+        p3 = "-"
+
+    return f"{p1}{p2}{p3}"
+
+
+# ---------------------------------------------------------------------------
 # Per-panel report (used by both validation and benchmark)
 # ---------------------------------------------------------------------------
 
@@ -57,6 +164,8 @@ def write_panel_report(
     else:
         considered_genes = declared_genes
 
+    ref_availability = _build_ref_availability(panel_data)
+
     # Section 2: Depth-recovery matrix (one per sample)
     for sample_entry in result.get("samples", []):
         accession = sample_entry["accession"]
@@ -92,20 +201,10 @@ def write_panel_report(
                 gene = gene_result["gene"]
                 depth_data.setdefault(gene, {})[depth["max_reads"]] = gene_result
 
-        # Find best reference match per gene (from highest depth).
-        best_ref: dict[str, dict] = {}
-        for gene in considered_genes:
-            gene_depths = depth_data.get(gene, {})
-            for depth in reversed(successful):
-                gr = gene_depths.get(depth["max_reads"])
-                if gr and gr.get("recovered") and gr.get("reference_match"):
-                    best_ref[gene] = gr["reference_match"]
-                    break
-
         # Render table.
         depth_headers = [f"{d['max_reads'] // 1000}k" for d in successful]
-        header = "| Gene | " + " | ".join(depth_headers) + " | Best ref match |"
-        sep = "|------|" + "|".join(["---:"] * len(successful)) + "|----------------|"
+        header = "| Gene | " + " | ".join(depth_headers) + " | Score |"
+        sep = "|------|" + "|".join(["---:"] * len(successful)) + "|:-----:|"
         lines.append(header)
         lines.append(sep)
 
@@ -126,20 +225,21 @@ def write_panel_report(
                 else:
                     cells.append("---")
 
-            # Best ref match column.
-            ref = best_ref.get(gene)
-            if ref and ref.get("matched_taxon"):
-                pct = ref.get("pct_identity")
-                pct_str = f" {pct}%" if pct is not None else ""
-                target = " ON" if ref.get("on_target") else " OFF-TARGET"
-                ref_str = f"{ref['matched_taxon']}{pct_str}{target}"
-            elif ref and ref.get("error"):
-                ref_str = f"error: {ref['error'][:30]}"
+            # Score from highest successful depth.
+            best_depth = successful[-1]
+            gr = gene_depths.get(best_depth["max_reads"])
+            if gr and gr.get("recovered"):
+                score = _score_gene(
+                    True, gene, taxon,
+                    gr.get("reference_match"), ref_availability,
+                )
             else:
-                ref_str = "(no reference)"
+                score = _score_gene(
+                    False, gene, taxon, None, ref_availability,
+                )
 
             lines.append(
-                f"| {gene} | " + " | ".join(cells) + f" | {ref_str} |"
+                f"| {gene} | " + " | ".join(cells) + f" | `{score}` |"
             )
 
         lines.append("")
@@ -153,7 +253,7 @@ def write_panel_report(
         lines.append("")
 
     # Section 3: Cross-sample summary at highest depth.
-    lines.extend(_cross_sample_summary(result, considered_genes))
+    lines.extend(_cross_sample_summary(result, considered_genes, ref_availability))
 
     # Section 4: Primer binding analysis.
     if sample_results:
@@ -177,10 +277,12 @@ def write_panel_report(
 # ---------------------------------------------------------------------------
 
 
-def _cross_sample_summary(result: dict, considered_genes: list) -> list:
-    """Genes x samples pass/fail grid at highest depth."""
+def _cross_sample_summary(
+    result: dict, considered_genes: list, ref_availability: dict,
+) -> list:
+    """Genes x samples scoring grid at highest depth."""
     samples = result.get("samples", [])
-    if len(samples) < 2:
+    if not samples:
         return []
 
     lines = []
@@ -192,7 +294,6 @@ def _cross_sample_summary(result: dict, considered_genes: list) -> list:
     for s in samples:
         taxon = s.get("taxon", "")
         label = taxon if taxon else s["accession"]
-        # Truncate long taxon names.
         if len(label) > 20:
             label = label[:17] + "..."
         labels.append(label)
@@ -205,30 +306,30 @@ def _cross_sample_summary(result: dict, considered_genes: list) -> list:
     for gene in considered_genes:
         cells = []
         for s in samples:
+            taxon = s.get("taxon", "")
             depths = s.get("depths", [])
             successful = [d for d in depths if d.get("success", True)]
             if not successful:
-                cells.append("---")
+                score = _score_gene(False, gene, taxon, None, ref_availability)
+                cells.append(f"`{score}`")
                 continue
-            # Take highest depth.
             best = max(successful, key=lambda d: d["max_reads"])
             gene_results = {g["gene"]: g for g in best.get("genes", [])}
             gr = gene_results.get(gene)
             if gr and gr.get("recovered"):
-                ref = gr.get("reference_match")
-                if ref and ref.get("on_target"):
-                    cells.append("PASS")
-                elif ref and ref.get("pct_identity") is not None:
-                    if not ref.get("on_target"):
-                        cells.append("OFF-TARGET")
-                    else:
-                        cells.append("PASS")
-                else:
-                    cells.append("recovered")
+                score = _score_gene(
+                    True, gene, taxon,
+                    gr.get("reference_match"), ref_availability,
+                )
             else:
-                cells.append("---")
+                score = _score_gene(
+                    False, gene, taxon, None, ref_availability,
+                )
+            cells.append(f"`{score}`")
         lines.append(f"| {gene} | " + " | ".join(cells) + " |")
 
+    lines.append("")
+    lines.append(SCORE_LEGEND)
     lines.append("")
     return lines
 
@@ -318,6 +419,7 @@ def _reference_details(result: dict, considered_genes: list) -> list:
     rows = []
     for s in result.get("samples", []):
         accession = s["accession"]
+        taxon = s.get("taxon", "")
         depths = s.get("depths", [])
         successful = [d for d in depths if d.get("success", True)]
         if not successful:
@@ -335,6 +437,7 @@ def _reference_details(result: dict, considered_genes: list) -> list:
             rows.append(
                 {
                     "sample": accession,
+                    "sample_taxon": taxon,
                     "gene": gene,
                     "matched_taxon": ref.get("matched_taxon", "---"),
                     "matched_accession": ref.get("matched_accession", "---"),
@@ -351,20 +454,20 @@ def _reference_details(result: dict, considered_genes: list) -> list:
     lines.append("## Reference match details")
     lines.append("")
     lines.append(
-        "| Sample | Gene | Ref taxon | Ref accession | Identity | "
-        "Align len | On-target |"
+        "| Sample | Gene | Sample taxon | Ref taxon | Ref accession | Identity | "
+        "Align len |"
     )
     lines.append(
-        "|--------|------|-----------|---------------|----------|"
-        "-----------|-----------|"
+        "|--------|------|-------------|-----------|---------------|----------|"
+        "-----------|"
     )
     for r in rows:
         pct = f"{r['pct_identity']:.1f}%" if r["pct_identity"] is not None else "---"
         alen = str(r["align_length"]) if r["align_length"] is not None else "---"
-        target = "yes" if r["on_target"] else "NO"
+        same_sp = "**same**" if r["on_target"] else r["matched_taxon"]
         lines.append(
-            f"| {r['sample']} | {r['gene']} | {r['matched_taxon']} | "
-            f"{r['matched_accession']} | {pct} | {alen} | {target} |"
+            f"| {r['sample']} | {r['gene']} | {r['sample_taxon']} | "
+            f"{same_sp} | {r['matched_accession']} | {pct} | {alen} |"
         )
     lines.append("")
     return lines
@@ -378,10 +481,12 @@ def _reference_details(result: dict, considered_genes: list) -> list:
 def write_benchmark_summary(
     panel_results: list,
     summary_path: Path,
+    panel_data_map: dict | None = None,
 ):
     """Write a combined benchmark summary spanning multiple panels.
 
     panel_results is a list of result dicts (one per panel).
+    panel_data_map: optional {panel_name: panel_data} for ref availability.
     """
     lines = []
     lines.append("# Benchmark Summary")
@@ -401,7 +506,7 @@ def write_benchmark_summary(
             )
     lines.append("")
 
-    # One section per panel with a compact recovery matrix.
+    # One section per panel with a compact scoring matrix.
     for result in panel_results:
         panel_name = result.get("panel", "unknown")
         panel_version = result.get("panel_version", "?")
@@ -413,6 +518,11 @@ def write_benchmark_summary(
             lines.append("_No samples._")
             lines.append("")
             continue
+
+        # Get ref availability if we have panel data.
+        ref_availability = {}
+        if panel_data_map and panel_name in panel_data_map:
+            ref_availability = _build_ref_availability(panel_data_map[panel_name])
 
         # Collect all genes across samples.
         all_genes = []
@@ -430,6 +540,7 @@ def write_benchmark_summary(
 
         for s in samples:
             label = s.get("taxon") or s["accession"]
+            taxon = s.get("taxon", "")
             if len(label) > 20:
                 label = label[:17] + "..."
             for d in sorted(s.get("depths", []), key=lambda x: x["max_reads"]):
@@ -442,21 +553,23 @@ def write_benchmark_summary(
                     gr = gene_map.get(gene)
                     if gr and gr.get("recovered"):
                         length = gr.get("length", "?")
-                        ref = gr.get("reference_match")
-                        if ref and ref.get("on_target"):
-                            cells.append(f"{length}bp")
-                        elif ref and ref.get("pct_identity") is not None:
-                            cells.append(f"{length}bp*")
-                        else:
-                            cells.append(f"{length}bp?")
+                        score = _score_gene(
+                            True, gene, taxon,
+                            gr.get("reference_match"), ref_availability,
+                        )
+                        cells.append(f"{length}bp `{score}`")
                     else:
-                        cells.append("---")
+                        score = _score_gene(
+                            False, gene, taxon, None, ref_availability,
+                        )
+                        cells.append(f"`{score}`")
                 lines.append(
                     f"| {label} | {k_reads} | " + " | ".join(cells) + " |"
                 )
         lines.append("")
-        lines.append("Legend: `Nbp` = on-target, `Nbp*` = off-target, `Nbp?` = no reference, `---` = not recovered")
-        lines.append("")
+
+    lines.append(SCORE_LEGEND)
+    lines.append("")
 
     summary_path.parent.mkdir(parents=True, exist_ok=True)
     with open(summary_path, "w") as f:

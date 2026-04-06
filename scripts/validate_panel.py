@@ -31,7 +31,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from sharkmer_validate import runner, blast_references, results, report  # noqa: E402
 
-REPORTS_DIR = runner.REPO_ROOT / "panels" / "reports"
+REPORTS_DIR = runner.REPO_ROOT / "panels" / "validation_reports"
 RUNS_DIR = runner.REPO_ROOT / "panels" / "validation_runs"
 
 

@@ -18,6 +18,6 @@ tmp/
 target/
 debug/
 panels/validation_runs/
-panels/reports/
+panels/validation_reports/
 panels/bootstrap/
 .claude/settings.local.json
