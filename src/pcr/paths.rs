@@ -142,8 +142,10 @@ pub fn get_assembly_paths(
                 if child_stack.is_empty() {
                     break;
                 }
-                let backtrack_node = path.pop().unwrap();
-                *visit_counts.get_mut(&backtrack_node).unwrap() -= 1;
+                let backtrack_node = path.pop().expect("BUG: path empty during DFS backtrack");
+                *visit_counts
+                    .get_mut(&backtrack_node)
+                    .expect("BUG: backtrack node missing from visit_counts") -= 1;
             }
         }
     }

@@ -911,11 +911,16 @@ pub(super) fn extend_graph_reverse(
                                 new_node.index()
                             );
                         }
-                        Err(_) => {
+                        Err(e) => {
                             // Node has no outgoing path to end — this can happen when
                             // reverse extension creates a node whose only outgoing
                             // neighbor was already visited and is not an end node.
                             // Leave it non-terminal so it continues extending in reverse.
+                            trace!(
+                                "Reverse node {} has no path to end ({}), re-enqueuing.",
+                                new_node.index(),
+                                e
+                            );
                             frontier.push_back(new_node);
                         }
                     }

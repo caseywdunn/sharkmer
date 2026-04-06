@@ -58,7 +58,7 @@ fn main() -> Result<()> {
         p.min_component_budget = args.node_budget_component;
     }
 
-    // Handle --validate-panels (prints and exits)
+    // Handle --validate-panels early: pure primer check, no sample/output needed
     if args.validate_panels {
         cli::handle_validate_panels(&pcr_runs)?;
     }

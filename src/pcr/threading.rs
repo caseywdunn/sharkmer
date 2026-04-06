@@ -235,7 +235,7 @@ fn resolve_candidates(
     prev_edge: Option<EdgeIndex>,
     graph: &StableDiGraph<DBNode, DBEdge>,
 ) -> EdgeIndex {
-    assert!(!candidates.is_empty(), "lookup entry must be non-empty");
+    debug_assert!(!candidates.is_empty(), "lookup entry must be non-empty");
     if candidates.len() == 1 {
         return candidates[0];
     }
