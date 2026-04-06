@@ -1,12 +1,88 @@
-# Panels
+# PCR primers and panels
+
+This document covers primer design considerations for *in silico* PCR (sPCR)
+and the panel file format used to bundle primer pairs for sharkmer. For
+general tool usage, see [README.md](README.md).
+
+## Primer specificity
+
+The tradeoffs in designing primers for *in silico* PCR are the same as for
+benchtop PCR. More specific primers bind fewer off-target sites, producing
+faster and more reliable results on the taxa they were designed for — at the
+extreme, species-specific primers. But more specific primers work across a
+narrower phylogenetic range. A panel targeting a broad clade like Cnidaria
+needs enough non-specificity to accommodate sequence variation across the
+clade, while remaining specific enough that off-target hits do not overwhelm
+real ones. Ideally, primers are as specific as possible for the clade they
+will be used in, with just enough degeneracy to span its variation.
+
+### Measuring specificity in bits
+
+Primer specificity can be quantified in bits of information. Each position
+in a primer constrains the set of sequences it can bind to, and the amount
+of constraint is the specificity:
+
+| Position type | States | Bits of specificity |
+|---|---|---|
+| Fully resolved (A, C, G, T) | 1 of 4 | 2.00 |
+| 2-state degenerate (R, Y, S, W, K, M) | 2 of 4 | 1.00 |
+| 3-state degenerate (B, D, H, V) | 3 of 4 | 0.42 |
+| Unresolved (N) | 4 of 4 | 0.00 |
+
+A 15 bp fully resolved primer with no mismatches has 30 bits of specificity.
+Since sPCR requires both a forward and reverse primer to match, a fully
+resolved primer pair provides 60 bits of specificity total.
+
+By default sharkmer allows up to 2 mismatches at any position in each primer
+(see `sharkmer --help-pcr`). Each mismatch makes one position effectively
+unresolved, removing 2 bits of specificity per mismatch. Under default
+settings, a fully resolved 15 bp primer pair therefore has 60 − 2×4 = 52
+bits of effective specificity.
+
+### Increasing specificity
+
+There are three ways to add specificity to a primer:
+
+1. **Reduce mismatches.** Lower the `mismatches` parameter (see
+   `sharkmer --help-pcr`). Each mismatch removed adds 2 bits per primer.
+2. **Reduce degeneracy.** Replace a more degenerate base with a less
+   degenerate one — e.g. D (0.42 bits) → R (1 bit) → G (2 bits). This
+   narrows the taxonomic range the primer covers.
+3. **Lengthen the primer.** Increase the `trim` value (see
+   `sharkmer --help-pcr`; default is 15) and add more resolved positions.
+   Each fully resolved position adds 2 bits. Note that the effective primer
+   length cannot exceed *k* (default 19).
+
+These approaches are complementary. If you increase degeneracy to
+accommodate a broader clade (reducing specificity), consider lengthening
+the primer to recover some of the lost bits. Whether this is possible
+depends entirely on the sequence variation within the primer binding region
+— the same classic primer design challenge as in wet-lab PCR.
+
+### How much specificity is enough?
+
+The number of bits required depends on:
+
+- **Genome size.** Larger genomes have more potential off-target binding
+  sites, requiring more bits to discriminate.
+- **Genome complexity.** Repetitive regions can match primers at many
+  locations, requiring more bits to resolve.
+- **Target copy number.** High-copy targets (rRNA genes, mitochondrial
+  genes) are easier to recover because their signal stands out above
+  off-target noise. Single-copy nuclear genes require more specificity
+  (or more reads) to reliably assemble.
+
+The [node budget](README.md#node-budget) interacts with specificity: when
+primers are less specific, more off-target seeds survive and consume graph
+nodes. Raising the node budget can compensate to a point, but improving
+primer specificity is generally more effective than increasing the budget.
+
+## Panels
 
 A **panel** is a YAML file under `panels/` that declares a named set of primer
-pairs for in silico PCR. Panels are embedded into the sharkmer binary at
+pairs for *in silico* PCR. Panels are embedded into the sharkmer binary at
 compile time via `include_str!()`, and can also be loaded at runtime from a
 file via `--pcr-panel-file`.
-
-This document describes the panel file format and the development cycle for
-creating or modifying a panel. For tool usage, see [README.md](README.md).
 
 ## Panel file format
 

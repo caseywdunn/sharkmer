@@ -152,6 +152,29 @@ The things you should try first are:
 
 - Adjust the number of reads. If you are not getting a product, try increasing the number of reads. You can do this with the `--max-reads` argument. Likewise, if you are getting products and want to speed things up, or you are getting many products for a gene, reduce the number of reads.
 
+### Node budget
+
+The *node budget* (`--node-budget-global`) controls how many nodes the de Bruijn graph is allowed to grow before sharkmer stops extending and moves on. It is the main knob that trades sensitivity against runtime:
+
+- **Too low:** sharkmer gives up before it can bridge the full amplicon, so genes that are present in the data are missed.
+- **Too high:** when a gene is absent or primers bind off-target, sharkmer explores a large, fruitless graph before stopping, which wastes time.
+
+The optimal value depends on several factors. Primer specificity is the biggest: longer primers with less degeneracy produce fewer off-target seeds and need less budget. Genome size and complexity also matter — larger, more repetitive genomes generate more graph branches per seed.
+
+By default the budget is set dynamically based on the number of bases ingested, scaling linearly from 100,000 nodes (at ~1 M reads) to 500,000 nodes (at ~5 M reads or more). The auto-selected value is logged at the start of each run. You can override it:
+
+```bash
+# Raise the budget for a large, complex genome with degenerate primers
+sharkmer --node-budget-global 750000 ...
+
+# Lower it for a quick scan with specific primers on a small genome
+sharkmer --node-budget-global 50000 ...
+```
+
+If you find that runs are slow but not producing products, lowering the budget will make them fail faster. If runs succeed for some genes but miss others that you expect to be present, raising the budget (and possibly increasing `--max-reads`) is worth trying.
+
+### Other parameters
+
 If these do not work, then you can try adjusting other parameters.
 
 - Specify a reasonable `--pcr-primers` parameter `min-length`. This value defaults to 0, but raising it can get rid of small spurious products.
@@ -304,4 +327,6 @@ file schema, validation workflow, and guidance on contributing new panels.
 
 ## Development
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development and testing information.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for software development and testing information.
+
+See [PCR.md](PCR.md) for primer, and primer panel, development, testing, and troubleshooting information.
