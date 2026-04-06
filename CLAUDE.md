@@ -21,7 +21,7 @@ sharkmer/                  # Repo root
 ├── dev_docs/              # Development planning documents
 │   ├── PLAN.md            # v3.0 phased execution order with checkboxes
 │   ├── DESIGN_DECISIONS.md # Background analysis for design decisions
-│   └── overview.md        # Architecture overview with data flow diagrams
+│   └── OVERVIEW.md        # Architecture overview with data flow diagrams
 ├── ROADMAP.md             # Multi-version release plan with issue references
 ├── CHANGELOG.md           # Release history
 ├── CONTRIBUTING.md        # Branching model, quality gates, bioconda recipe
@@ -115,7 +115,7 @@ cargo build --features fxhashmap --no-default-features
 
 ## Module architecture
 
-See [dev_docs/overview.md](dev_docs/overview.md) for a detailed
+See [dev_docs/OVERVIEW.md](dev_docs/OVERVIEW.md) for a detailed
 architecture overview with data flow diagrams.
 
 ### main.rs (~215 lines)

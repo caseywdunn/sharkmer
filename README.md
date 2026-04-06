@@ -134,7 +134,7 @@ You can then edit the exported YAML to add genes, remove genes, or optimize prim
 
     sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr-panel-file octocorallia.yaml --ena SRR26955578
 
-See [PANELS.md](PANELS.md) for the full panel file schema (versioning, maintainers, changelog, validation block) and the panel development cycle, including how to validate a panel against declared ENA/SRA samples with `scripts/validate_panel.py`. Contributions of new panels and primer additions are welcome — PANELS.md describes the expected PR contents.
+See [PCR.md](PCR.md) for the full panel file schema (versioning, maintainers, changelog, validation block) and the panel development cycle, including how to validate a panel against declared ENA/SRA samples with `scripts/validate_panel.py`. Contributions of new panels and primer additions are welcome — PCR.md describes the expected PR contents.
 
 ### Optimizing *in silico* PCR (sPCR)
 
@@ -144,7 +144,7 @@ The things you should try first are:
 
 - Specify a reasonable value for the `--pcr-primers` parameter `max-length`, which is the maximum expected length of the amplified product, based on what is known about the gene. It does not need to be exact. It does need to be longer than the amplified product, but if it is much too long it may result in amplification of spurious products or runs that take too long without finding anything. Keep in mind that if there are introns, the amplified product can be much longer than the coding sequence.
 
-- Optimize your primer sequences. Make some multiple sequence alignments of the desired sequence region from several closely related species, and refine the primer sequences to be more specific to the target region. You can use [degenerate nucleotide symbols](https://en.wikipedia.org/wiki/Nucleic_acid_notation), such as R for A or G, a variable sites in the site where you would like the sequence to bind. Remember that, just as in real PCR, the forward and reverse primers bind opposite strands with their 3' ends pointing toward each other. The reverse primer sequence should be reverse complemented relative to the reference strand. Adding more degeneracy broadens the taxonomic range a primer can hit, but at a cost: each ambiguous base expands the set of primer variants sharkmer must track, which slows runs down and increases the chance of off-target binding that can cause a run to fail on any particular sample. If your work is focused on a single clade, you will usually get better and faster results by building a panel tailored to that clade that uses only the minimum degeneracy needed to span it. See [PANELS.md](PANELS.md) for the panel file format and the development cycle for creating and validating a clade-specific panel.
+- Optimize your primer sequences. Make some multiple sequence alignments of the desired sequence region from several closely related species, and refine the primer sequences to be more specific to the target region. You can use [degenerate nucleotide symbols](https://en.wikipedia.org/wiki/Nucleic_acid_notation), such as R for A or G, a variable sites in the site where you would like the sequence to bind. Remember that, just as in real PCR, the forward and reverse primers bind opposite strands with their 3' ends pointing toward each other. The reverse primer sequence should be reverse complemented relative to the reference strand. Adding more degeneracy broadens the taxonomic range a primer can hit, but at a cost: each ambiguous base expands the set of primer variants sharkmer must track, which slows runs down and increases the chance of off-target binding that can cause a run to fail on any particular sample. If your work is focused on a single clade, you will usually get better and faster results by building a panel tailored to that clade that uses only the minimum degeneracy needed to span it. See [PCR.md](PCR.md) for the panel file format and the development cycle for creating and validating a clade-specific panel.
 
 - Pick new primers that shorten the region you are trying to amplify, i.e. primers that are closer together in the genome sequence. Shorter amplification fragments tend to require fewer reads to assemble.
 
@@ -299,7 +299,7 @@ Primer panels are YAML files that bundle a set of primer pairs for a target
 clade (e.g. `cnidaria`, `insecta`, `teleostei`) so they can be run together
 with a single `--pcr-panel` flag. Built-in panels ship with sharkmer and can
 be listed with `sharkmer --list-panels`; custom panels can be loaded from a
-file with `--pcr-panel-file`. See [PANELS.md](PANELS.md) for the full panel
+file with `--pcr-panel-file`. See [PCR.md](PCR.md) for the full panel
 file schema, validation workflow, and guidance on contributing new panels.
 
 ## Development

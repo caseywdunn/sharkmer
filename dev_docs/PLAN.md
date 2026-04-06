@@ -94,7 +94,7 @@ reducing hash table memory per entry. Benchmark output now uses timestamped
 subdirectories to preserve results across runs. Added local BLAST support
 to `blast_validate.py` (discovers databases in `/db/`, falls back to NCBI
 remote API). Added `benchmarks/environment.yaml` conda env with blastn.
-Added `dev_docs/overview.md` architecture overview. All 55 tests pass,
+Added `dev_docs/OVERVIEW.md` architecture overview. All 55 tests pass,
 no regressions expected (internal-only changes).
 
 **2026-03-28 — Phase 0 sweep benchmarks and BLAST validation**
@@ -583,7 +583,7 @@ so they can be adjusted without recompiling. Same pattern as
 `--max-nodes`. Then benchmark systematically to find better defaults.
 
 **Highest priority:** seed eval threshold — root cause of remaining
-perfect-match failures (see failure_analysis.md). All Drosophila 16S
+perfect-match failures (see FAILURE_ANALYSIS.md). All Drosophila 16S
 seeds abandoned at "1 node" because threshold derived from max primer
 kmer count is too high for real amplicon coverage.
 
@@ -676,9 +676,9 @@ degenerate primers: same pattern.
   - [x] CLAUDE.md (module descriptions, line counts, constants; added
     `components.rs` to pcr/ submodule listing, corrected pcr/ count 8 → 11,
     corrected main.rs line count)
-  - [x] PANELS.md (added `dedup_edit_threshold` to per-primer optional fields
+  - [x] PCR.md (added `dedup_edit_threshold` to per-primer optional fields
     with field-semantics note for complex samples)
-  - [x] dev_docs/overview.md (verified accurate against current module layout
+  - [x] dev_docs/OVERVIEW.md (verified accurate against current module layout
     and flag set; no changes needed)
   - [x] src/cli.rs --help after-text (fixed FASTA filename pattern to match
     actual `{sample}_{gene}.fasta` output)

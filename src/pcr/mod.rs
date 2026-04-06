@@ -171,7 +171,7 @@ pub struct PCRParams {
     #[allow(dead_code)]
     pub expected_length: Option<usize>,
     // `citation` and `notes` are accepted by the panel YAML schema (see
-    // PANELS.md) and appear in every in-tree panel file. They are
+    // PCR.md) and appear in every in-tree panel file. They are
     // provenance metadata for human readers and downstream tools (e.g.
     // scripts/validate_panel.py); the Rust binary never consumes them.
     // We still keep them as struct fields because PCRParams uses

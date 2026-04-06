@@ -145,8 +145,8 @@ fn load_panel_file(path: &str) -> Result<Vec<PCRParams>> {
 /// Log the loaded panel's name and version at info level. A missing
 /// `version` field produces a warning because versioning is expected for
 /// reproducibility and a versionless panel breaks the panel development
-/// cycle documented in PANELS.md. Panel versions are deliberately *not*
-/// checked against sharkmer's own version — PANELS.md specifies they are
+/// cycle documented in PCR.md. Panel versions are deliberately *not*
+/// checked against sharkmer's own version — PCR.md specifies they are
 /// independent — but the values are surfaced so users can cross-reference
 /// a run against the panel's changelog.
 fn log_panel_version(panel: &PanelFile, source: &str) {
@@ -160,7 +160,7 @@ fn log_panel_version(panel: &PanelFile, source: &str) {
         ),
         None => log::warn!(
             "Panel '{}' from {} has no `version` field. Versioning is \
-             recommended for reproducibility; see PANELS.md.",
+             recommended for reproducibility; see PCR.md.",
             panel.name,
             source
         ),

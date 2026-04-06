@@ -797,7 +797,7 @@ primer count statistics:
   matches that inflate the max far above real amplicon coverage. Using
   max for seed eval makes the threshold too stringent: real seeds cannot
   extend even a single node, and every seed is falsely abandoned. The
-  median is robust to these outliers. See `failure_analysis.md` "Root
+  median is robust to these outliers. See `FAILURE_ANALYSIS.md` "Root
   cause: seed eval threshold" for the diagnostic evidence.
 
 This split was validated by benchmark regression: using median for both
