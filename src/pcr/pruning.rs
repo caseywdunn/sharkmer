@@ -218,3 +218,133 @@ pub fn reachability_pruning(graph: &mut StableDiGraph<DBNode, DBEdge>) {
         graph.remove_node(node);
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::{DBEdge, DBNode};
+    use super::*;
+
+    fn mk_node(is_start: bool, is_end: bool) -> DBNode {
+        DBNode {
+            sub_kmer: 0,
+            is_start,
+            is_end,
+            is_terminal: false,
+            visited: false,
+        }
+    }
+
+    fn mk_edge(count: u32) -> DBEdge {
+        DBEdge {
+            count,
+            coverage_ratio: 1.0,
+        }
+    }
+
+    #[test]
+    fn test_global_median_edge_count_empty() {
+        let graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+        assert!(global_median_edge_count(&graph).is_none());
+    }
+
+    #[test]
+    fn test_global_median_edge_count_odd() {
+        let mut graph = StableDiGraph::new();
+        let a = graph.add_node(mk_node(true, false));
+        let b = graph.add_node(mk_node(false, false));
+        let c = graph.add_node(mk_node(false, true));
+        graph.add_edge(a, b, mk_edge(10));
+        graph.add_edge(b, c, mk_edge(20));
+        graph.add_edge(a, c, mk_edge(30));
+        assert_eq!(global_median_edge_count(&graph).unwrap(), 20.0);
+    }
+
+    #[test]
+    fn test_remove_low_coverage_tip_forward() {
+        // start -> a -> b -> end
+        //               \-> tip (low coverage, dead end)
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(true, false));
+        let a = graph.add_node(mk_node(false, false));
+        let b = graph.add_node(mk_node(false, false));
+        let end = graph.add_node(mk_node(false, true));
+        let tip = graph.add_node(mk_node(false, false)); // dead end, not end node
+
+        graph.add_edge(start, a, mk_edge(100));
+        graph.add_edge(a, b, mk_edge(100));
+        graph.add_edge(b, end, mk_edge(100));
+        graph.add_edge(b, tip, mk_edge(1)); // low coverage tip
+
+        let k = 3;
+        remove_low_coverage_tips(&mut graph, &k, 0.1);
+
+        // tip should be removed (short, low coverage), 4 nodes remain
+        assert_eq!(graph.node_count(), 4);
+    }
+
+    #[test]
+    fn test_preserve_high_coverage_tip() {
+        // Same structure but tip has high coverage — should be preserved
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(true, false));
+        let a = graph.add_node(mk_node(false, false));
+        let end = graph.add_node(mk_node(false, true));
+        let tip = graph.add_node(mk_node(false, false));
+
+        graph.add_edge(start, a, mk_edge(10));
+        graph.add_edge(a, end, mk_edge(10));
+        graph.add_edge(a, tip, mk_edge(10)); // same coverage as main path
+
+        let k = 3;
+        remove_low_coverage_tips(&mut graph, &k, 0.1);
+
+        // tip should be preserved (high coverage)
+        assert_eq!(graph.node_count(), 4);
+    }
+
+    #[test]
+    fn test_reachability_pruning_removes_orphan() {
+        // start -> a -> end, plus orphan disconnected node
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(true, false));
+        let a = graph.add_node(mk_node(false, false));
+        let end = graph.add_node(mk_node(false, true));
+        let orphan = graph.add_node(mk_node(false, false));
+
+        graph.add_edge(start, a, mk_edge(10));
+        graph.add_edge(a, end, mk_edge(10));
+        // orphan has no edges
+
+        reachability_pruning(&mut graph);
+        assert_eq!(graph.node_count(), 3);
+        assert!(graph.contains_node(start));
+        assert!(!graph.contains_node(orphan));
+    }
+
+    #[test]
+    fn test_reachability_pruning_removes_dead_branch() {
+        // start -> a -> end
+        // start -> b (dead end, no path to end)
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(true, false));
+        let a = graph.add_node(mk_node(false, false));
+        let end = graph.add_node(mk_node(false, true));
+        let b = graph.add_node(mk_node(false, false));
+
+        graph.add_edge(start, a, mk_edge(10));
+        graph.add_edge(a, end, mk_edge(10));
+        graph.add_edge(start, b, mk_edge(10));
+        // b has no path to end
+
+        reachability_pruning(&mut graph);
+        assert_eq!(graph.node_count(), 3);
+        assert!(!graph.contains_node(b));
+    }
+
+    #[test]
+    fn test_reachability_pruning_empty_graph() {
+        let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+        reachability_pruning(&mut graph);
+        assert_eq!(graph.node_count(), 0);
+    }
+}

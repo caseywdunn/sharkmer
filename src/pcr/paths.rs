@@ -394,3 +394,182 @@ pub(super) fn sort_and_deduplicate(
 
     records
 }
+
+#[cfg(test)]
+mod tests {
+    use super::super::{
+        DBEdge, DBNode, DEFAULT_DEDUP_EDIT_THRESHOLD, DEFAULT_HIGH_COVERAGE_RATIO,
+        DEFAULT_MAX_DFS_STATES, DEFAULT_MAX_NODE_VISITS, DEFAULT_MAX_NUM_PRIMER_KMERS,
+        DEFAULT_MAX_PATHS_PER_PAIR, DEFAULT_MAX_SEED_NODES, DEFAULT_MIN_COMPONENT_BUDGET,
+        DEFAULT_TIP_COVERAGE_FRACTION, StoppingCriteria,
+    };
+    use super::*;
+
+    fn mk_node(sub_kmer: u64, is_start: bool, is_end: bool) -> DBNode {
+        DBNode {
+            sub_kmer,
+            is_start,
+            is_end,
+            is_terminal: false,
+            visited: false,
+        }
+    }
+
+    fn mk_edge(count: u32) -> DBEdge {
+        DBEdge {
+            count,
+            coverage_ratio: 1.0,
+        }
+    }
+
+    fn test_params(min_length: usize, max_length: usize) -> PCRParams {
+        PCRParams {
+            forward_seq: "ACGT".to_string(),
+            reverse_seq: "TGCA".to_string(),
+            min_length,
+            max_length,
+            gene_name: "test".to_string(),
+            min_count: 2,
+            mismatches: 0,
+            trim: 0,
+            expected_length: None,
+            citation: String::new(),
+            notes: String::new(),
+            dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
+            source: "test".to_string(),
+            max_dfs_states: DEFAULT_MAX_DFS_STATES,
+            max_paths_per_pair: DEFAULT_MAX_PATHS_PER_PAIR,
+            max_node_visits: DEFAULT_MAX_NODE_VISITS,
+            max_primer_kmers: DEFAULT_MAX_NUM_PRIMER_KMERS,
+            max_seed_nodes: DEFAULT_MAX_SEED_NODES,
+            high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
+            tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
+            stopping_criteria: StoppingCriteria::AllComponents,
+            min_component_budget: DEFAULT_MIN_COMPONENT_BUDGET,
+        }
+    }
+
+    /// Linear graph: start -> a -> b -> end. Should find exactly one path.
+    #[test]
+    fn test_linear_path() {
+        let mut graph = StableDiGraph::new();
+        let s = graph.add_node(mk_node(0, true, false));
+        let a = graph.add_node(mk_node(1, false, false));
+        let b = graph.add_node(mk_node(2, false, false));
+        let e = graph.add_node(mk_node(3, false, true));
+        graph.add_edge(s, a, mk_edge(10));
+        graph.add_edge(a, b, mk_edge(10));
+        graph.add_edge(b, e, mk_edge(10));
+
+        // k=3, path of 4 nodes = 4 + 3 - 2 = 5 bases
+        let mut kc = crate::kmer::KmerCounts::new(&3);
+        kc.insert(&0, &10);
+        let fkc = kc.filtered_view(1);
+
+        let params = test_params(0, 100);
+        let paths = get_assembly_paths(&graph, &fkc, &params, None);
+
+        assert_eq!(paths.len(), 1);
+        assert_eq!(paths[0], vec![s, a, b, e]);
+    }
+
+    /// Diamond graph: start -> {a, b} -> end. Should find two paths.
+    #[test]
+    fn test_diamond_finds_both_paths() {
+        let mut graph = StableDiGraph::new();
+        let s = graph.add_node(mk_node(0, true, false));
+        let a = graph.add_node(mk_node(1, false, false));
+        let b = graph.add_node(mk_node(2, false, false));
+        let e = graph.add_node(mk_node(3, false, true));
+        graph.add_edge(s, a, mk_edge(10));
+        graph.add_edge(s, b, mk_edge(5));
+        graph.add_edge(a, e, mk_edge(10));
+        graph.add_edge(b, e, mk_edge(5));
+
+        let mut kc = crate::kmer::KmerCounts::new(&3);
+        kc.insert(&0, &10);
+        let fkc = kc.filtered_view(1);
+
+        let params = test_params(0, 100);
+        let paths = get_assembly_paths(&graph, &fkc, &params, None);
+
+        assert_eq!(paths.len(), 2);
+    }
+
+    /// Empty graph should produce no paths.
+    #[test]
+    fn test_no_start_nodes_gives_empty() {
+        let graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+        let mut kc = crate::kmer::KmerCounts::new(&3);
+        kc.insert(&0, &10);
+        let fkc = kc.filtered_view(1);
+
+        let params = test_params(0, 100);
+        let paths = get_assembly_paths(&graph, &fkc, &params, None);
+
+        assert!(paths.is_empty());
+    }
+
+    /// max_path_nodes caps path length correctly.
+    #[test]
+    fn test_max_length_caps_paths() {
+        let mut graph = StableDiGraph::new();
+        let s = graph.add_node(mk_node(0, true, false));
+        let a = graph.add_node(mk_node(1, false, false));
+        let b = graph.add_node(mk_node(2, false, false));
+        let c = graph.add_node(mk_node(3, false, false));
+        let e = graph.add_node(mk_node(4, false, true));
+        graph.add_edge(s, a, mk_edge(10));
+        graph.add_edge(a, b, mk_edge(10));
+        graph.add_edge(b, c, mk_edge(10));
+        graph.add_edge(c, e, mk_edge(10));
+
+        let mut kc = crate::kmer::KmerCounts::new(&3);
+        kc.insert(&0, &10);
+        let fkc = kc.filtered_view(1);
+
+        // 5 nodes = 5 + 3 - 2 = 6 bases. Set max_length to 5 (too short).
+        // max_path_nodes = 5 - 3 + 2 = 4. Path needs 5 nodes, so no paths found.
+        let params = test_params(0, 5);
+        let paths = get_assembly_paths(&graph, &fkc, &params, None);
+
+        assert!(paths.is_empty());
+    }
+
+    /// DFS state budget limits exploration.
+    #[test]
+    fn test_dfs_budget_limits_exploration() {
+        let mut graph = StableDiGraph::new();
+        let s = graph.add_node(mk_node(0, true, false));
+        let a = graph.add_node(mk_node(1, false, false));
+        let e = graph.add_node(mk_node(2, false, true));
+        graph.add_edge(s, a, mk_edge(10));
+        graph.add_edge(a, e, mk_edge(10));
+
+        let mut kc = crate::kmer::KmerCounts::new(&3);
+        kc.insert(&0, &10);
+        let fkc = kc.filtered_view(1);
+
+        let mut params = test_params(0, 100);
+        params.max_dfs_states = 0; // no exploration allowed
+        let paths = get_assembly_paths(&graph, &fkc, &params, None);
+        assert!(paths.is_empty());
+    }
+
+    /// sorted_children returns edges in ascending score order (so pop gives highest).
+    #[test]
+    fn test_sorted_children_order() {
+        let mut graph = StableDiGraph::new();
+        let s = graph.add_node(mk_node(0, true, false));
+        let lo = graph.add_node(mk_node(1, false, false));
+        let hi = graph.add_node(mk_node(2, false, false));
+        graph.add_edge(s, lo, mk_edge(1));
+        graph.add_edge(s, hi, mk_edge(100));
+
+        let children = sorted_children(&graph, s, None);
+        assert_eq!(children.len(), 2);
+        // Ascending: low first, high second (so pop gives high)
+        assert_eq!(children[0].0, lo);
+        assert_eq!(children[1].0, hi);
+    }
+}

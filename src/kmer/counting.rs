@@ -372,3 +372,154 @@ impl Clone for KmerCounts {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_new_and_basic_ops() {
+        let kc = KmerCounts::new(&5);
+        assert_eq!(kc.get_k(), 5);
+        assert!(kc.is_empty());
+        assert_eq!(kc.len(), 0);
+        assert_eq!(kc.get_n_kmers(), 0);
+    }
+
+    #[test]
+    fn test_insert_and_get() {
+        let mut kc = KmerCounts::new(&5);
+        kc.insert(&42, &3);
+        assert!(!kc.is_empty());
+        assert_eq!(kc.get_count(&42), 3);
+        assert!(kc.contains(&42));
+        assert!(!kc.contains(&99));
+    }
+
+    #[test]
+    fn test_insert_accumulates() {
+        let mut kc = KmerCounts::new(&5);
+        kc.insert(&42, &3);
+        kc.insert(&42, &7);
+        assert_eq!(kc.get_count(&42), 10);
+        assert_eq!(kc.len(), 1);
+    }
+
+    #[test]
+    fn test_saturating_add() {
+        let mut kc = KmerCounts::new(&5);
+        kc.insert(&1, &u32::MAX);
+        kc.insert(&1, &1);
+        assert_eq!(kc.get_count(&1), u32::MAX);
+    }
+
+    #[test]
+    fn test_extend_merges() {
+        let mut a = KmerCounts::new(&5);
+        a.insert(&1, &10);
+        a.insert(&2, &20);
+
+        let mut b = KmerCounts::new(&5);
+        b.insert(&2, &5);
+        b.insert(&3, &15);
+
+        a.extend(&b).unwrap();
+        assert_eq!(a.get_count(&1), 10);
+        assert_eq!(a.get_count(&2), 25);
+        assert_eq!(a.get_count(&3), 15);
+    }
+
+    #[test]
+    fn test_extend_different_k_fails() {
+        let mut a = KmerCounts::new(&5);
+        let b = KmerCounts::new(&7);
+        assert!(a.extend(&b).is_err());
+    }
+
+    #[test]
+    fn test_median_odd() {
+        let mut kc = KmerCounts::new(&5);
+        kc.insert(&1, &10);
+        kc.insert(&2, &20);
+        kc.insert(&3, &30);
+        assert_eq!(kc.get_median_count(), 20);
+    }
+
+    #[test]
+    fn test_median_even() {
+        let mut kc = KmerCounts::new(&5);
+        kc.insert(&1, &10);
+        kc.insert(&2, &20);
+        // Median of [10, 20] = (10/2 + 20/2) = 15
+        assert_eq!(kc.get_median_count(), 15);
+    }
+
+    #[test]
+    fn test_median_empty() {
+        let kc = KmerCounts::new(&5);
+        assert_eq!(kc.get_median_count(), 0);
+    }
+
+    #[test]
+    fn test_get_max_count() {
+        let mut kc = KmerCounts::new(&5);
+        kc.insert(&1, &5);
+        kc.insert(&2, &100);
+        kc.insert(&3, &50);
+        assert_eq!(kc.get_max_count(), 100);
+    }
+
+    #[test]
+    fn test_remove_low_count_kmers() {
+        let mut kc = KmerCounts::new(&5);
+        kc.insert(&1, &1);
+        kc.insert(&2, &5);
+        kc.insert(&3, &10);
+        kc.remove_low_count_kmers(&5);
+        assert!(!kc.contains(&1));
+        assert!(kc.contains(&2));
+        assert!(kc.contains(&3));
+    }
+
+    #[test]
+    fn test_filtered_view_hides_low_counts() {
+        let mut kc = KmerCounts::new(&5);
+        kc.insert(&1, &2);
+        kc.insert(&2, &10);
+
+        let fv = kc.filtered_view(5);
+        assert!(fv.get_canonical(&1).is_none());
+        assert_eq!(fv.get_canonical(&2), Some(10));
+        assert_eq!(fv.get_canonical_count(&1), 0);
+        assert_eq!(fv.get_canonical_count(&2), 10);
+    }
+
+    #[test]
+    fn test_ingest_seq() {
+        let mut kc = KmerCounts::new(&3);
+        // ACGT has 2 3-mers: ACG and CGT. These are reverse complements
+        // of each other, so canonical storage keeps only 1 entry with count 2.
+        kc.ingest_seq("ACGT").unwrap();
+        assert_eq!(kc.get_n_unique_kmers(), 1);
+        assert_eq!(kc.get_n_kmers(), 2);
+    }
+
+    #[test]
+    fn test_extend_with_histogram() {
+        let mut a = KmerCounts::new(&5);
+        a.insert(&1, &3);
+
+        let mut b = KmerCounts::new(&5);
+        b.insert(&1, &2);
+        b.insert(&2, &5);
+
+        let histo_max: u64 = 100;
+        let mut histo = Histogram::new(&histo_max);
+        // Pre-populate histogram to match a's state
+        histo.move_count(0, 3); // kmer 1 has count 3
+        a.extend_with_histogram(&b, &mut histo).unwrap();
+
+        assert_eq!(a.get_count(&1), 5);
+        assert_eq!(a.get_count(&2), 5);
+    }
+}

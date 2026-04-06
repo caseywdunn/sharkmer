@@ -1410,6 +1410,62 @@ mod tests {
     use super::*;
     use crate::pcr::{Oligo, PrimerOligoSet};
 
+    #[test]
+    fn test_bloom_insert_and_contains() {
+        let mut bits = vec![0u64; BLOOM_WORDS];
+        let val = 0xDEAD_BEEF_u64;
+
+        assert!(!bloom_contains(&bits, val));
+        bloom_insert(&mut bits, val);
+        assert!(bloom_contains(&bits, val));
+    }
+
+    #[test]
+    fn test_bloom_no_false_negatives() {
+        let mut bits = vec![0u64; BLOOM_WORDS];
+        let values: Vec<u64> = (0..1000).collect();
+        for &v in &values {
+            bloom_insert(&mut bits, v);
+        }
+        for &v in &values {
+            assert!(
+                bloom_contains(&bits, v),
+                "bloom must not have false negatives for {}",
+                v
+            );
+        }
+    }
+
+    #[test]
+    fn test_oligo_filter_empty() {
+        let filter = OligoFilter::new(&[], 19);
+        // Empty filter should never match
+        assert!(!filter.check_kmer(0));
+        assert!(!filter.check_kmer(u64::MAX));
+    }
+
+    #[test]
+    fn test_oligo_filter_verify_read_eliminates_bloom_false_positive() {
+        // Build a filter with a known oligo
+        let oligo_val: u64 = 0b1001_1000; // "GCGA" in 2-bit encoding, length 4
+        let set = PrimerOligoSet {
+            gene_name: "test".to_string(),
+            forward_oligos: vec![Oligo {
+                length: 4,
+                kmer: oligo_val,
+            }],
+            reverse_oligos: Vec::new(),
+            forward_oligo_length: 4,
+            reverse_oligo_length: 0,
+        };
+        let k = 5;
+        let filter = OligoFilter::new(&[set], k);
+
+        // A read that does NOT contain "GCGA" should fail exact verification
+        // even if bloom is a false positive
+        assert!(!filter.verify_read("AAAAA", k));
+    }
+
     /// When a panel mixes genes with different trim lengths, the filter must
     /// detect oligos from BOTH lengths, not just whichever gene was iterated
     /// last. Prior to the fix, check_kmer only matched the last gene's

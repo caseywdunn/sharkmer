@@ -44,3 +44,55 @@ pub(crate) fn format_duration(d: std::time::Duration) -> String {
         format!("{}h {}m", hours, mins)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::Duration;
+
+    #[test]
+    fn test_format_count_zero() {
+        assert_eq!(format_count(0), "0");
+    }
+
+    #[test]
+    fn test_format_count_no_commas() {
+        assert_eq!(format_count(999), "999");
+    }
+
+    #[test]
+    fn test_format_count_with_commas() {
+        assert_eq!(format_count(1_000), "1,000");
+        assert_eq!(format_count(1_234_567), "1,234,567");
+        assert_eq!(format_count(1_000_000_000), "1,000,000,000");
+    }
+
+    #[test]
+    fn test_format_bytes_small() {
+        assert_eq!(format_bytes(0), "0 B");
+        assert_eq!(format_bytes(512), "512 B");
+    }
+
+    #[test]
+    fn test_format_bytes_units() {
+        assert_eq!(format_bytes(1024), "1.0 KB");
+        assert_eq!(format_bytes(1024 * 1024), "1.0 MB");
+        assert_eq!(format_bytes(1024 * 1024 * 1024), "1.0 GB");
+    }
+
+    #[test]
+    fn test_format_duration_seconds() {
+        assert_eq!(format_duration(Duration::from_secs_f64(0.5)), "0.5s");
+        assert_eq!(format_duration(Duration::from_secs_f64(59.9)), "59.9s");
+    }
+
+    #[test]
+    fn test_format_duration_minutes() {
+        assert_eq!(format_duration(Duration::from_secs(90)), "1m 30s");
+    }
+
+    #[test]
+    fn test_format_duration_hours() {
+        assert_eq!(format_duration(Duration::from_secs(3661)), "1h 1m");
+    }
+}

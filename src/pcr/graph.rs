@@ -1202,4 +1202,75 @@ mod tests {
 
         assert!(get_path_length(&graph, c).expect("no error").is_none());
     }
+
+    #[test]
+    fn test_compute_node_budget_low() {
+        // Below low threshold: returns minimum budget
+        assert_eq!(compute_node_budget(0), MIN_NODE_BUDGET);
+        assert_eq!(compute_node_budget(BUDGET_LERP_LOW_BP), MIN_NODE_BUDGET);
+    }
+
+    #[test]
+    fn test_compute_node_budget_high() {
+        // Above high threshold: returns maximum budget
+        assert_eq!(
+            compute_node_budget(BUDGET_LERP_HIGH_BP),
+            DEFAULT_MAX_NUM_NODES
+        );
+        assert_eq!(compute_node_budget(u64::MAX), DEFAULT_MAX_NUM_NODES);
+    }
+
+    #[test]
+    fn test_compute_node_budget_interpolates() {
+        let mid = (BUDGET_LERP_LOW_BP + BUDGET_LERP_HIGH_BP) / 2;
+        let budget = compute_node_budget(mid);
+        assert!(budget > MIN_NODE_BUDGET);
+        assert!(budget < DEFAULT_MAX_NUM_NODES);
+    }
+
+    #[test]
+    fn test_get_suffix_mask_values() {
+        // k=3: mask for 2 nucleotides = 0b1111
+        assert_eq!(get_suffix_mask(&3), 0b1111);
+        // k=2: mask for 1 nucleotide = 0b11
+        assert_eq!(get_suffix_mask(&2), 0b11);
+    }
+
+    #[test]
+    fn test_n_nonterminal_nodes() {
+        let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+        let a = graph.add_node(mk_node(0, true, false));
+        let b = graph.add_node(DBNode {
+            sub_kmer: 1,
+            is_start: false,
+            is_end: false,
+            is_terminal: true,
+            visited: false,
+        });
+        let c = graph.add_node(mk_node(2, false, true));
+        graph.add_edge(a, b, mk_edge(5));
+        graph.add_edge(b, c, mk_edge(5));
+
+        // a=start (not terminal), b=terminal, c=end (not terminal)
+        assert_eq!(n_nonterminal_nodes_in_graph(&graph), 2);
+    }
+
+    #[test]
+    fn test_compute_median_edge_count_empty() {
+        let graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+        assert_eq!(compute_median_edge_count(&graph, 42.0), 42.0);
+    }
+
+    #[test]
+    fn test_compute_median_edge_count_values() {
+        let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
+        let a = graph.add_node(mk_node(0, true, false));
+        let b = graph.add_node(mk_node(1, false, false));
+        let c = graph.add_node(mk_node(2, false, true));
+        graph.add_edge(a, b, mk_edge(5));
+        graph.add_edge(b, c, mk_edge(15));
+        graph.add_edge(a, c, mk_edge(10));
+        // Sorted: [5, 10, 15], median = 10
+        assert_eq!(compute_median_edge_count(&graph, 0.0), 10.0);
+    }
 }
