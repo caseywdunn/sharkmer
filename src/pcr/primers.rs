@@ -1,6 +1,6 @@
 // pcr/primers.rs — primer preprocessing functions
 
-use anyhow::{Result, bail};
+use anyhow::{Result, bail, ensure};
 use log::debug;
 use std::collections::HashSet;
 
@@ -31,6 +31,11 @@ pub(super) fn is_valid_nucleotide(c: char) -> bool {
 
 // Given an oligo sequence, return a Oligo struct representing it
 pub fn string_to_oligo(seq: &str) -> Result<Oligo> {
+    ensure!(
+        seq.len() <= 32,
+        "Oligo sequence length {} exceeds maximum of 32 bases",
+        seq.len()
+    );
     let mut kmer: u64 = 0;
     let mut length: usize = 0;
     for c in seq.chars() {

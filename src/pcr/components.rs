@@ -67,14 +67,20 @@ impl UnionFind {
     }
 
     fn find(&mut self, x: NodeIndex) -> NodeIndex {
-        let p = self.parent[&x];
-        if p != x {
-            let root = self.find(p);
-            self.parent.insert(x, root);
-            root
-        } else {
-            x
+        // Iterative path find: walk to root, then compress
+        let mut current = x;
+        while self.parent[&current] != current {
+            current = self.parent[&current];
         }
+        let root = current;
+        // Path compression: point all nodes on the path directly to root
+        current = x;
+        while self.parent[&current] != root {
+            let next = self.parent[&current];
+            self.parent.insert(current, root);
+            current = next;
+        }
+        root
     }
 
     fn union(&mut self, x: NodeIndex, y: NodeIndex) {

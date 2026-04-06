@@ -63,6 +63,7 @@ pub fn compute_node_budget(n_bases_ingested: u64) -> usize {
 
 // A mask that can be used to isolate the last k-1 nucleotides of a kmer
 pub(super) fn get_suffix_mask(k: &usize) -> u64 {
+    debug_assert!(*k > 0 && *k <= 32, "k must be in 1..=32, got {}", k);
     (1 << (2 * (*k - 1))) - 1
 }
 
@@ -721,6 +722,7 @@ pub(super) fn extend_graph_reverse(
     component_budget: Option<usize>,
 ) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>)> {
     let k = kmer_counts.get_k();
+    debug_assert!(k > 0 && k <= 32, "k must be in 1..=32, got {}", k);
     let prefix_shift = 2 * (k - 1);
     let nodes_at_start = graph.node_count();
 
