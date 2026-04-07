@@ -32,7 +32,8 @@ sys.path.insert(0, str(REPO_ROOT / "scripts"))
 from sharkmer_validate import runner, blast_references, results, report  # noqa: E402
 
 BENCHMARK_CONFIG = REPO_ROOT / "benchmarks" / "benchmark.yaml"
-RUNS_DIR = REPO_ROOT / "panels" / "validation_runs"
+RUNS_DIR = REPO_ROOT / "benchmarks" / "benchmark_runs"
+BENCHMARK_RESULTS_DIR = REPO_ROOT / "benchmarks" / "benchmark_results"
 
 
 def load_benchmark_config(config_path: Path = BENCHMARK_CONFIG) -> list:
@@ -194,12 +195,12 @@ def run_benchmark(
             machine_info=machine_info,
         )
         result_name = results.result_filename(panel_data, sharkmer_version, stamp)
-        result_path = results.RESULTS_DIR / result_name
+        result_path = BENCHMARK_RESULTS_DIR / result_name
         results.write_result(result, result_path)
 
         # Write per-panel markdown report.
         report_name = result_name.replace(".yaml", ".md")
-        report_path = results.RESULTS_DIR / report_name
+        report_path = BENCHMARK_RESULTS_DIR / report_name
         report.write_panel_report(
             result, panel_data, sample_results, report_path
         )
@@ -214,7 +215,7 @@ def run_benchmark(
         summary_name = (
             f"benchmark_{sharkmer_version}_{git_commit}_{stamp}.summary.md"
         )
-        summary_path = results.RESULTS_DIR / summary_name
+        summary_path = BENCHMARK_RESULTS_DIR / summary_name
         report.write_benchmark_summary(all_panel_results, summary_path)
 
     print("Benchmark complete.")

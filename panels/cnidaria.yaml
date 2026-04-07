@@ -27,7 +27,7 @@ primers:
   mismatches: 2
   trim: 15
   citation: "Modified from Cunningham and Buss 1993 https://doi.org/10.1016/0305-1978(93)90009-G "
-  notes: "Amplifies portions of domains IV and V."
+  notes: "Amplifies portions of domains IV and V. These binding sites are variable in Cnidaria and it is challenging to make primers that work well across all Cnidaria."
 
 - gene_name: "CO1"
   forward_seq: "WAAYCATAAAGATAT"
@@ -88,17 +88,6 @@ primers:
   trim: 15
   citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x"
   notes: "Forward primer is reverse complement of 18S reverse primer. The reverse primer is the reverse complement of the 28S forward primer. Product range 620-730bp."
-
-- gene_name: "EF1A"
-  forward_seq: "AMGWGGHATGGTDGCTGGTG"
-  reverse_seq: "YTTRATNAYDCCAACAGCWAC"
-  min_length: 200
-  max_length: 3000
-  min_count: 2
-  mismatches: 2
-  trim: 15
-  citation: ""
-  notes: ""
 
 - gene_name: "28S-v2"
   forward_seq: "CGTGAAACCGYTRRAAGGG"

@@ -310,8 +310,10 @@ pub(crate) struct Args {
     #[arg(long, help_heading = "PCR", hide = true)]
     pub(crate) read_eval: bool,
 
-    /// Enable read threading (Pass 2): re-read FASTQ to annotate graph edges with read support
-    #[arg(long, help_heading = "PCR")]
+    /// Enable read threading (Pass 2): re-read FASTQ to annotate graph edges with read support.
+    /// Hidden: works but loads all reads into RAM before sPCR; needs to be
+    /// moved into do_pcr() for per-gene streaming before public exposure.
+    #[arg(long, help_heading = "PCR", hide = true)]
     pub(crate) read_threading: bool,
 
     /// Treat input as paired-end reads (exactly 2 files required: R1, R2).

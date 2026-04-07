@@ -85,14 +85,16 @@ def build_result(
                         }
                     )
 
-            depths.append(
-                {
-                    "max_reads": run["max_reads"],
-                    "wall_time_s": run.get("wall_time_s"),
-                    "success": run.get("success", False),
-                    "genes": gene_results,
-                }
-            )
+            depth_entry = {
+                "max_reads": run["max_reads"],
+                "wall_time_s": run.get("wall_time_s"),
+                "success": run.get("success", False),
+                "genes": gene_results,
+            }
+            run_stats = run.get("run_stats")
+            if run_stats:
+                depth_entry["run_stats"] = run_stats
+            depths.append(depth_entry)
 
         samples.append(
             {

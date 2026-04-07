@@ -17,16 +17,16 @@ samples:
 
   - panel: cnidaria
     accession: SRR9278435     # Xenia sp.
-    max_reads: [16000000, 8000000, 4000000, 2000000, 1000000]
+    max_reads: [8000000, 4000000, 2000000, 1000000]
     notes: "Octocoral, genome bioproject GCF_021976095.1"
 
   - panel: cnidaria
     accession: SRR25099394    # Agalma elegans
-    max_reads: [16000000, 8000000, 4000000, 2000000, 1000000]
+    max_reads: [8000000, 4000000, 2000000, 1000000]
 
   - panel: cnidaria
     accession: SRR8617500     # Rhopilema esculentum
-    max_reads: [16000000, 8000000, 4000000, 2000000, 1000000]
+    max_reads: [8000000, 4000000, 2000000, 1000000]
     notes: "Also tested with bacteria panel"
 
   # -- human --

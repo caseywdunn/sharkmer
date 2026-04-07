@@ -266,6 +266,9 @@ def write_panel_report(
     # Section 5: Reference match details.
     lines.extend(_reference_details(result, considered_genes))
 
+    # Section 6: Performance summary.
+    lines.extend(_performance_summary(result))
+
     report_path.parent.mkdir(parents=True, exist_ok=True)
     with open(report_path, "w") as f:
         f.write("\n".join(lines))
@@ -468,6 +471,83 @@ def _reference_details(result: dict, considered_genes: list) -> list:
         lines.append(
             f"| {r['sample']} | {r['gene']} | {r['sample_taxon']} | "
             f"{same_sp} | {r['matched_accession']} | {pct} | {alen} |"
+        )
+    lines.append("")
+    return lines
+
+
+# ---------------------------------------------------------------------------
+# Performance summary
+# ---------------------------------------------------------------------------
+
+
+def _format_bytes(n: int | None) -> str:
+    """Format bytes as a human-readable string."""
+    if n is None:
+        return "---"
+    if n < 1024:
+        return f"{n} B"
+    elif n < 1024 ** 2:
+        return f"{n / 1024:.0f} KB"
+    elif n < 1024 ** 3:
+        return f"{n / 1024 ** 2:.0f} MB"
+    else:
+        return f"{n / 1024 ** 3:.1f} GB"
+
+
+def _format_count(n: int | None) -> str:
+    """Format a large number with commas."""
+    if n is None:
+        return "---"
+    return f"{n:,}"
+
+
+def _performance_summary(result: dict) -> list:
+    """Performance table: wall time, peak memory, reads, bases, kmers per run."""
+    rows = []
+    for s in result.get("samples", []):
+        accession = s["accession"]
+        taxon = s.get("taxon", "")
+        label = taxon if taxon else accession
+        if len(label) > 25:
+            label = label[:22] + "..."
+        for d in s.get("depths", []):
+            if not d.get("success", True):
+                continue
+            stats = d.get("run_stats", {})
+            rows.append({
+                "sample": label,
+                "reads": d["max_reads"],
+                "wall_time_s": d.get("wall_time_s"),
+                "peak_mem": stats.get("peak_memory_bytes"),
+                "n_reads": stats.get("n_reads_read"),
+                "n_bases": stats.get("n_bases_read"),
+                "n_kmers": stats.get("n_kmers"),
+            })
+
+    if not rows:
+        return []
+
+    lines = []
+    lines.append("## Performance")
+    lines.append("")
+    lines.append(
+        "| Sample | Max reads | Wall time | Peak memory | "
+        "Reads ingested | Bases ingested | Distinct kmers |"
+    )
+    lines.append(
+        "|--------|----------:|----------:|------------:|"
+        "---------------:|---------------:|---------------:|"
+    )
+    for r in rows:
+        k_reads = f"{r['reads'] // 1000}k"
+        wall = f"{r['wall_time_s']}s" if r["wall_time_s"] is not None else "---"
+        lines.append(
+            f"| {r['sample']} | {k_reads} | {wall} | "
+            f"{_format_bytes(r['peak_mem'])} | "
+            f"{_format_count(r['n_reads'])} | "
+            f"{_format_count(r['n_bases'])} | "
+            f"{_format_count(r['n_kmers'])} |"
         )
     lines.append("")
     return lines

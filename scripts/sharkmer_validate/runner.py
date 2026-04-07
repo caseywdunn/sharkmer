@@ -201,6 +201,23 @@ def parse_stats_file(stats_path: Path) -> dict:
     return stats
 
 
+def _parse_stats_yaml(stats_path: Path) -> dict:
+    """Parse the sharkmer .stats.yaml file for performance metrics."""
+    if not stats_path.exists():
+        return {}
+    try:
+        with open(stats_path) as f:
+            data = yaml.safe_load(f) or {}
+        return {
+            "n_reads_read": data.get("n_reads_read"),
+            "n_bases_read": data.get("n_bases_read"),
+            "n_kmers": data.get("n_kmers"),
+            "peak_memory_bytes": data.get("peak_memory_bytes"),
+        }
+    except Exception:
+        return {}
+
+
 # ---------------------------------------------------------------------------
 # Sharkmer execution
 # ---------------------------------------------------------------------------
@@ -292,6 +309,10 @@ def run_sharkmer(
             gene = gene[len(prefix_to_strip) :]
         stripped.append({**p, "gene": gene})
 
+    # Parse stats YAML for performance data.
+    stats_path = output_dir / f"{sample_prefix}.stats.yaml"
+    run_stats = _parse_stats_yaml(stats_path)
+
     print(f"  completed in {wall:.1f}s, {len(stripped)} genes amplified")
     return {
         "sample_prefix": sample_prefix,
@@ -300,4 +321,5 @@ def run_sharkmer(
         "wall_time_s": round(wall, 1),
         "success": True,
         "genes": stripped,
+        "run_stats": run_stats,
     }

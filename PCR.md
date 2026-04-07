@@ -18,6 +18,8 @@ will be used in, with just enough degeneracy to span its variation.
 
 ### Measuring specificity in bits
 
+Primer optimization is largely about tuning specificity. Increase specificity for a given taxon, and it works faster, more reliably, and with lower read coverage, but it will work less well for other taxa. Decrease specificity, and you can increase the phylogenetic breadth at which the primers return a product, but it will take longer (since there are more off target hits to evaluate), may drop out for some species, and will become more sensitive to coverage (often requiring more data).
+
 Primer specificity can be quantified in bits of information. Each position
 in a primer constrains the set of sequences it can bind to, and the amount
 of constraint is the specificity:
@@ -46,8 +48,7 @@ There are three ways to add specificity to a primer:
 1. **Reduce mismatches.** Lower the `mismatches` parameter (see
    `sharkmer --help-pcr`). Each mismatch removed adds 2 bits per primer.
 2. **Reduce degeneracy.** Replace a more degenerate base with a less
-   degenerate one — e.g. D (0.42 bits) → R (1 bit) → G (2 bits). This
-   narrows the taxonomic range the primer covers.
+   degenerate one — e.g. D (0.42 bits) → R (1 bit) → G (2 bits). 
 3. **Lengthen the primer.** Increase the `trim` value (see
    `sharkmer --help-pcr`; default is 15) and add more resolved positions.
    Each fully resolved position adds 2 bits. Note that the effective primer
@@ -229,6 +230,12 @@ Then activate and run:
 ```bash
 conda activate sharkmer-bench
 python scripts/validate_panel.py panels/my_panel.yaml
+
+# Or validate all panels at once:
+scripts/validate_all_panels.sh
+
+# Skip BLAST (faster, just checks recovery):
+scripts/validate_all_panels.sh --no-blast
 ```
 
 If `conda activate` errors with *"Run 'conda init' before 'conda
@@ -316,7 +323,11 @@ when it does, that is information we want.
 
 ## Contributing a panel
 
-External panel contributions are welcome. Open a PR that adds a new file
+External panel contributions are welcome. 
+
+Contributed panels must include a `validation:` block with samples for validating the primers, and a `references:` block with expected results. All primers in the panel should return at least some correct targets. If during development you find that some primers return no products, off-target products (according to BLAST), or are highly unreliable, remove them from the panel before submitting. Dead primers slow down runs (often by a lot) and confuse the user about what their expected results should be.
+
+Open a PR that adds a new file
 under `panels/`. The PR should include:
 
 - The panel file with `version`, at least one `maintainers` entry, an

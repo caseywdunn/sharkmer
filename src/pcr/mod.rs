@@ -432,10 +432,19 @@ pub fn do_pcr(
     let (forward_primer_kmers, reverse_primer_kmers) =
         primers::get_primer_kmers(params, kmer_counts)?;
 
-    if forward_primer_kmers.is_empty() {
+    let fwd_missing = forward_primer_kmers.is_empty();
+    let rev_missing = reverse_primer_kmers.is_empty();
+    if fwd_missing || rev_missing {
+        let which = match (fwd_missing, rev_missing) {
+            (true, true) => "forward and reverse primers",
+            (true, false) => "forward primer",
+            (false, true) => "reverse primer",
+            _ => unreachable!(),
+        };
         gene_info!(
             params.gene_name,
-            "Binding sites were not found for the forward primer. Abandoning PCR."
+            "Binding sites were not found for the {}. Abandoning PCR.",
+            which
         );
         gene_info!(
             params.gene_name,
@@ -443,22 +452,7 @@ pub fn do_pcr(
         );
         return Ok(PcrOutcome {
             records: Vec::new(),
-            failure_reason: Some("forward primer not found".to_string()),
-        });
-    }
-
-    if reverse_primer_kmers.is_empty() {
-        gene_info!(
-            params.gene_name,
-            "Binding sites were not found for the reverse primer. Abandoning PCR."
-        );
-        gene_info!(
-            params.gene_name,
-            "Suggested actions: optimize primer sequence, or increase the number of reads."
-        );
-        return Ok(PcrOutcome {
-            records: Vec::new(),
-            failure_reason: Some("reverse primer not found".to_string()),
+            failure_reason: Some(format!("{} not found", which)),
         });
     }
 
@@ -487,6 +481,19 @@ pub fn do_pcr(
         gene_info!(
             params.gene_name,
             "Forward primer kmer {} (count {})",
+            crate::kmer::kmer_to_seq(kmer, &kmer_counts.get_k()),
+            count
+        );
+    }
+
+    // Log reverse primer kmers for diagnostics
+    let mut sorted_reverse: Vec<(u64, u32)> =
+        reverse_primer_kmers.iter().map(|(&k, &v)| (k, v)).collect();
+    sorted_reverse.sort();
+    for (kmer, count) in sorted_reverse.iter() {
+        gene_info!(
+            params.gene_name,
+            "Reverse primer kmer {} (count {})",
             crate::kmer::kmer_to_seq(kmer, &kmer_counts.get_k()),
             count
         );

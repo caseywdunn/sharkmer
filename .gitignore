@@ -19,5 +19,8 @@ target/
 debug/
 panels/validation_runs/
 panels/validation_reports/
+panels/validation_results/
 panels/bootstrap/
+benchmarks/benchmark_runs/
+benchmarks/benchmark_results/
 .claude/settings.local.json

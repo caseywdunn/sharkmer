@@ -110,7 +110,6 @@ This is equivalent to specifying the primer pairs manually with `--pcr-primers`:
       --pcr-primers "forward=CCYYAGTAACGGCGAGT,reverse=SWACAGATGGTAGCTTCG,max-length=3500,name=28S,min-length=2900" \
       --pcr-primers "forward=TACACACCGCCCGTCGCTACTA,reverse=ACTCGCCGTTACTRRGG,max-length=1000,name=ITS,min-length=600" \
       --pcr-primers "forward=GTAGGTGAACCTGCAGAAGGATCA,reverse=ACTCGCCGTTACTRRGG,max-length=1000,name=ITS-v2,min-length=600" \
-      --pcr-primers "forward=AMGWGGHATGGTDGCTGGTG,reverse=YTTRATNAYDCCAACAGCWAC,max-length=3000,name=EF1A,min-length=200" \
       --pcr-primers "forward=CGTGAAACCGYTRRAAGGG,reverse=TTGGTCCGTGTTTCAAGACG,max-length=700,name=28S-v2,min-length=300" \
       --ena SRR26955578
 
