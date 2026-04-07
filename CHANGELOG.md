@@ -11,8 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 This release replaces the ad-hoc graph extension and pruning heuristics with
 principled algorithms from the assembler literature. Results change but CLI
-usage and output format are largely unchanged. Gene recovery improves
-substantially, especially for single-copy nuclear genes at lower coverage.
+usage and output format are largely unchanged.
 
 ### Added
 

@@ -358,7 +358,7 @@ fn check_read_divergence(
 /// throwaway local exploration for evaluation only. Checks the main
 /// graph's node_lookup to detect convergence with opposite-direction seeds.
 #[allow(clippy::too_many_arguments)]
-/// Returns (SeedMetrics, Vec<NodeIndex>) where the Vec contains the main-graph
+/// Returns `(SeedMetrics, Vec<NodeIndex>)` where the Vec contains the main-graph
 /// node indices of opposite-direction seeds that were reached.
 fn bounded_extend(
     seed_sub_kmer: u64,
@@ -551,7 +551,7 @@ mod tests {
         let mut node_lookup: HashMap<u64, NodeIndex> = HashMap::new();
 
         // First kmer's prefix (first k-1 bases) is the start node's sub_kmer
-        let first_kmer = crate::kmer::seq_to_kmer(&seq[..k].to_string()).unwrap();
+        let first_kmer = crate::kmer::seq_to_kmer(&seq[..k]).unwrap();
         let prefix = first_kmer >> 2;
 
         let node = graph.add_node(DBNode {

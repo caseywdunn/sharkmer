@@ -309,6 +309,20 @@ pub fn export_panel_yaml(panel_name: &str) -> Result<String> {
     )
 }
 
+pub fn print_pcr_panels() {
+    let panels = get_preconfigured_panels();
+    println!("Available PCR panels (use --export-panel <name> for details):\n");
+    for panel in &panels {
+        let n = panel.primers.len();
+        let noun = if n == 1 { "primer" } else { "primers" };
+        let version = panel.version.as_deref().unwrap_or("unversioned");
+        println!(
+            "  {:<16} v{:<8} {} ({} {})",
+            panel.name, version, panel.description, n, noun
+        );
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -392,19 +406,5 @@ primers:
         assert!(result.is_err());
         let err_msg = format!("{}", result.unwrap_err());
         assert!(err_msg.contains("Failed to download panel from URL"));
-    }
-}
-
-pub fn print_pcr_panels() {
-    let panels = get_preconfigured_panels();
-    println!("Available PCR panels (use --export-panel <name> for details):\n");
-    for panel in &panels {
-        let n = panel.primers.len();
-        let noun = if n == 1 { "primer" } else { "primers" };
-        let version = panel.version.as_deref().unwrap_or("unversioned");
-        println!(
-            "  {:<16} v{:<8} {} ({} {})",
-            panel.name, version, panel.description, n, noun
-        );
     }
 }

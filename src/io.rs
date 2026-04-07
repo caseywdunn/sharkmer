@@ -1479,8 +1479,8 @@ mod tests {
         // match the other: oligo_a's top 12 bases differ from oligo_b,
         // and oligo_b as a suffix of oligo_a's bit pattern would require
         // specific alignment that doesn't occur here.
-        let oligo_a_value: u64 = 0x2A_F3B1_C9; // 30 bits, length-15
-        let oligo_b_value: u64 = 0x00_AB_CDEF; // 24 bits, length-12
+        let oligo_a_value: u64 = 0x2AF3_B1C9; // 30 bits, length-15
+        let oligo_b_value: u64 = 0x00AB_CDEF; // 24 bits, length-12
 
         // Set A declared FIRST, set B declared LAST. Under the old code,
         // only set_b's (mask, shift) would be retained and oligo_a at its

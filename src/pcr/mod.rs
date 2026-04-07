@@ -12,14 +12,14 @@ use crate::kmer::FilteredKmerCounts;
 #[cfg(test)]
 use crate::kmer::KmerCounts;
 
-/// Log at info level with a [gene_name] prefix for attribution in parallel runs.
+/// Log at info level with a `[gene_name]` prefix for attribution in parallel runs.
 macro_rules! gene_info {
     ($gene:expr_2021, $($arg:tt)*) => {
         log::info!("[{}] {}", $gene, format!($($arg)*))
     };
 }
 
-/// Log at warn level with a [gene_name] prefix for attribution in parallel runs.
+/// Log at warn level with a `[gene_name]` prefix for attribution in parallel runs.
 macro_rules! gene_warn {
     ($gene:expr_2021, $($arg:tt)*) => {
         log::warn!("[{}] {}", $gene, format!($($arg)*))
@@ -1338,7 +1338,7 @@ mod tests {
             let r: usize = 2;
             let n: usize = 3;
 
-            let bases = vec!['A', 'C', 'G', 'T'];
+            let bases = ['A', 'C', 'G', 'T'];
             let mut expected: HashSet<String> = HashSet::new();
             for i in 0..4 {
                 for j in 0..4 {
@@ -1365,7 +1365,7 @@ mod tests {
             let r: usize = 2;
             let n: usize = 4;
 
-            let bases = vec!['A', 'C', 'G', 'T'];
+            let bases = ['A', 'C', 'G', 'T'];
             let mut expected: HashSet<String> = HashSet::new();
             for i in 0..4 {
                 for j in 0..4 {

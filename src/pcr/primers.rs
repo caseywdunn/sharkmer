@@ -568,7 +568,7 @@ mod tests {
         // Forward match (starts with ACG): ACGTA
         // RC match: reverse complement of a kmer ending with CGT (=ACG rc)
         assert!(
-            result.len() > 0,
+            !result.is_empty(),
             "Should find at least one kmer matching oligo ACG"
         );
     }
@@ -619,7 +619,7 @@ mod tests {
         let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
 
         assert!(
-            result.len() > 0,
+            !result.is_empty(),
             "Should find RC match: oligo AAA should match kmers in all-T sequence"
         );
         // The matched kmer should be stored in the forward-oligo orientation (AAAAA)
@@ -640,7 +640,7 @@ mod tests {
         let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
 
         assert!(
-            result.len() > 0,
+            !result.is_empty(),
             "Full-length oligo (length == k) should match the exact kmer"
         );
     }

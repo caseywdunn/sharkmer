@@ -367,7 +367,7 @@ mod tests {
         };
 
         // Give branch 1 (through n1) more read support
-        let e0 = graph.edge_indices().nth(0).unwrap();
+        let e0 = graph.edge_indices().next().unwrap();
         let e1 = graph.edge_indices().nth(1).unwrap();
         let e2 = graph.edge_indices().nth(2).unwrap();
         let e3 = graph.edge_indices().nth(3).unwrap();

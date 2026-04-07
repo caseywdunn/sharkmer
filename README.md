@@ -105,7 +105,7 @@ This is equivalent to specifying the primer pairs manually with `--pcr-primers`:
       --max-reads 1000000 \
       -s Stenogorgia_casta -o output/ \
       --pcr-primers "forward=GRCTGTTTACCAAAAACATA,reverse=AATTCAACATMGAGG,max-length=700,name=16S,min-length=500" \
-      --pcr-primers "forward=TCATAARGATATHGG,reverse=RTGNCCAAAAAACCA,max-length=800,name=CO1,min-length=600" \
+      --pcr-primers "forward=WAAYCATAAAGATAT,reverse=GGRTGMCCAAAAAACCARA,max-length=800,name=CO1,min-length=600" \
       --pcr-primers "forward=AACCTGGTTGATCCTGCCAGT,reverse=TGATCCTTCTGCAGGTTCACCTAC,max-length=2000,name=18S,min-length=1600" \
       --pcr-primers "forward=CCYYAGTAACGGCGAGT,reverse=SWACAGATGGTAGCTTCG,max-length=3500,name=28S,min-length=2900" \
       --pcr-primers "forward=TACACACCGCCCGTCGCTACTA,reverse=ACTCGCCGTTACTRRGG,max-length=1000,name=ITS,min-length=600" \

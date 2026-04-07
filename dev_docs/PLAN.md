@@ -652,7 +652,7 @@ degenerate primers: same pattern.
 - [x] Final benchmark comparison across all phases. BLAST-validated
   1M-16M sweep committed as `benchmarks/results/2026-04-04_sharkmer_3.0.0-dev_b373fed.yaml`
   (384/484 gene runs validated against NCBI nt).
-- [ ] Update integration tests for v3.0 behavior
+- [x] Update integration tests for v3.0 behavior
 - [x] Update documentation:
   - [x] README.md (fixed FASTA filename pattern; documented `--pcr-stopping-criteria`,
     `--read-threading` + `--paired`, `--ena` read caching flags; added
@@ -667,8 +667,8 @@ degenerate primers: same pattern.
     and flag set; no changes needed)
   - [x] src/cli.rs --help after-text (fixed FASTA filename pattern to match
     actual `{sample}_{gene}.fasta` output)
-- [ ] Update CHANGELOG.md
-- [ ] Update bioconda recipe for new dependencies (e.g., `dirs`)
+- [x] Update CHANGELOG.md
+- [x] Update bioconda recipe for new dependencies (e.g., `dirs`)
 - [ ] Tag v3.0.0 release
 
 ## Open questions
