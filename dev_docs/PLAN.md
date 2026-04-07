@@ -427,24 +427,9 @@ separate from the scoring/decision logic so both phases reuse it.
 - [x] #100 Read-aware bubble resolution: use branch-point phasing to
   determine which bubble arms connect to which — resolves cases where
   kmer coverage alone is ambiguous
-- [ ] #101 Paired-end phasing: when both mates of a pair map to the same
-  amplicon graph in correct orientation (forward on one strand, reverse
-  on the other), use the pair as a phasing link across the spanned
-  region. Insert size is not known a priori and amplicons are only on
-  the kb scale, so rather than estimating insert size distribution,
-  simply require both mates to map to the same amplicon in valid
-  orientation. This provides longer-range phasing than single reads
-  without needing insert size calibration.
-  **Status (2026-04-05): incomplete.** The infrastructure was built —
-  `PairedEndLink` struct, `thread_reads_paired()` populates it, and
-  `do_pcr` logs its length — but no consumer in `bubble::rank_branches`
-  or `paths::get_assembly_paths` ever reads the data. The pre-threading
-  read filter in `read_filter.rs` also independently drops pair mates
-  whose own sequence lacks a primer kmer, so even if scoring were
-  wired up, the mates that would carry long-range phasing information
-  would not survive to threading. `--paired` has been hidden from
-  `--help` and the README pending completion; see issue #101 for the
-  full remaining work.
+- [ ] #101 Paired-end phasing — **deferred to v4.0**. Infrastructure was
+  built (`PairedEndLink`, `thread_reads_paired()`) but no downstream
+  consumer wires it into scoring. See issue #101 for remaining work.
 - [x] Run benchmarks, compare to Phase 3 and Phase 5 results.
   All 14 samples at 1M reads: identical gene counts to Phase 3 baseline.
   Three samples have minor sequence changes from threading-informed

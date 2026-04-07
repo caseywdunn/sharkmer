@@ -41,10 +41,9 @@ graph construction. Threading reads back through the graph enables:
 - **Coverage estimation per path**: Read threading gives per-edge coverage
   that reflects actual read support, not just kmer frequency. This is more
   informative for path scoring than raw kmer counts.
-- **Paired-end constraints**: When mate pairs are available, the insert size
-  distribution constrains which paths are physically plausible. A read pair
-  where R1 maps to one branch and R2 maps to another implies those branches
-  are linked within the insert distance.
+- **Paired-end constraints** (#101): Deferred to v4.0. Infrastructure built
+  in v3.0 (`PairedEndLink`, `thread_reads_paired()`) but downstream
+  consumption not yet wired. See issue #101.
 
 Implementation approach: two-pass over input data. Pass 1 counts kmers and
 builds the graph (as now). Pass 2 re-reads the FASTQ and threads each read
@@ -52,11 +51,6 @@ through the graph, annotating edges with read support. For `--ena` input,
 the second pass re-streams from ENA. For file input, seeks back to the
 start. For stdin, either buffer reads in memory or require file input when
 read threading is enabled.
-
-Paired-end awareness requires knowing which files are R1 vs R2. The v2.0
-convention (positional files in R1, R2 order; `--ena` downloads in order)
-is sufficient — v3.0 can infer pairing from file order, with a `--paired`
-flag to explicitly enable pair-aware refinement.
 
 ### Graph construction efficiency
 
@@ -88,6 +82,10 @@ samples.
 
 Target improvements:
 
+- Paired-end phasing (#101): wire `PairedEndLink` data into bubble
+  resolution and path scoring (infrastructure built in v3.0)
+- Read-supported graph pruning (#99): prune edges/nodes lacking read
+  support to reduce chimeric joins
 - Deconvolution of mixed-organism samples based on coverage profiles
 - Support for reporting multiple distinct amplicons per gene
 - Per-product coverage profiles to distinguish true variants from assembly
