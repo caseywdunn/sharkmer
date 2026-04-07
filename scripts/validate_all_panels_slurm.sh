@@ -47,6 +47,14 @@ echo ""
 
 for panel in "${panels[@]}"; do
     name="$(basename "$panel" .yaml)"
+    tmpscript=$(mktemp /tmp/val_${name}.XXXXXX.sh)
+    cat > "$tmpscript" <<EOF
+#!/bin/bash
+module reset
+module load miniconda
+conda activate sharkmer-bench
+python $SCRIPT $panel ${EXTRA_ARGS[*]:-}
+EOF
     sbatch \
         --job-name="val_${name}" \
         --partition=day \
@@ -54,12 +62,7 @@ for panel in "${panels[@]}"; do
         --cpus-per-task=8 \
         --mem-per-cpu=5G \
         --output="$LOGS_DIR/validate_${name}_%j.out" \
-        --wrap="
-module purge
-module load miniconda
-conda activate sharkmer-bench
-python $SCRIPT $panel ${EXTRA_ARGS[*]:-}
-"
+        "$tmpscript"
     echo "  Submitted: $name"
 done
 
