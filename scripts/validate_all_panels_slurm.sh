@@ -9,6 +9,12 @@
 #   - sharkmer-bench conda environment exists
 #   - sharkmer binary is built (cargo build --release)
 #   - logs/ directory is created (script does this automatically)
+#
+# Build note (Bouchet):
+#   module load GCC/13.3.0 Rust
+#   cargo build --release
+# GCC/13.3.0 provides a modern assembler (--gdwarf-5 support) needed
+# by the ring crate. The default system assembler is too old.
 
 set -euo pipefail
 

@@ -545,11 +545,11 @@ pub(super) fn extend_graph(
 
                 // If the kmer is in the kmer_counts hash (either orientation)
                 // and has count >= min_count, add it to the candidate kmers
-                if let Some(count) = kmer_counts.get_canonical(&kmer)
-                    && count >= *min_count
-                {
-                    candidate_kmers[n_candidates] = Some(kmer);
-                    n_candidates += 1;
+                if let Some(count) = kmer_counts.get_canonical(&kmer) {
+                    if count >= *min_count {
+                        candidate_kmers[n_candidates] = Some(kmer);
+                        n_candidates += 1;
+                    }
                 }
             }
 
@@ -805,11 +805,11 @@ pub(super) fn extend_graph_reverse(
             for base in 0u64..4 {
                 let kmer = (base << prefix_shift) | sub_kmer;
 
-                if let Some(count) = kmer_counts.get_canonical(&kmer)
-                    && count >= *min_count
-                {
-                    candidate_kmers[n_candidates] = Some(kmer);
-                    n_candidates += 1;
+                if let Some(count) = kmer_counts.get_canonical(&kmer) {
+                    if count >= *min_count {
+                        candidate_kmers[n_candidates] = Some(kmer);
+                        n_candidates += 1;
+                    }
                 }
             }
 
