@@ -157,18 +157,6 @@ primers:
   citation: "O'Grady et al https://doi.org/10.1016/j.ympev.2010.11.022 "
   notes: ""
 
-- gene_name: "EF1g"
-  forward_seq: "GCTTWTGAGACCGCTGATGG"
-  reverse_seq: "ATCTTRTCGAGACGCTGGAA"
-  min_length: 700
-  max_length: 1000
-  expected_length: 856
-  min_count: 2
-  mismatches: 2
-  trim: 15
-  citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014"
-  notes: ""
-
 - gene_name: "Fz4"
   forward_seq: "GCGTCTTTCTATTGCGCTACTAT"
   reverse_seq: "GCTTGTACGGACTGCTGATTATT"
@@ -250,18 +238,6 @@ primers:
   trim: 15
   citation: "Medlin et al. 1988 https://doi.org/10.1016/0378-1119(88)90066-2"
   notes: ""
-
-- gene_name: "28S-v2"
-  forward_seq: "CCYYAGTAACGGCGAGT"
-  reverse_seq: "SWACAGATGGTAGCTTCG"
-  min_length: 2900
-  max_length: 3500
-  expected_length: 3230
-  min_count: 2
-  mismatches: 2
-  trim: 15
-  citation: "Evans et al. 2008. https://doi.org/10.1186/1471-2148-8-139"
-  notes: "Forward primer is F97, reverse is R3238."
 
 - gene_name: "ITS-v2"
   forward_seq: "TACACACCGCCCGTCGCTACTA"
