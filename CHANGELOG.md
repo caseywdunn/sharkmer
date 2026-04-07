@@ -7,6 +7,97 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.0.0] - Unreleased
+
+This release replaces the ad-hoc graph extension and pruning heuristics with
+principled algorithms from the assembler literature. Results change but CLI
+usage and output format are largely unchanged. Gene recovery improves
+substantially, especially for single-copy nuclear genes at lower coverage.
+
+### Added
+
+- **Reverse primer seeding**: Both forward and reverse primer kmers now seed
+  the graph, enabling bidirectional extension that dramatically improves
+  recovery when forward-only extension stalls in repetitive regions (#107).
+- **Reverse extension**: When forward extension does not reach reverse primer
+  nodes, a new reverse pass extends inward from end nodes (#107).
+- **Bounded seed evaluation**: Each primer-matching seed is explored locally
+  (up to 500 nodes) before full graph extension. Seeds with excessive
+  branching or dead ends are abandoned early, preventing off-target seeds
+  from consuming the node budget (#105).
+- **Component-aware node budgets**: Surviving seeds are grouped into
+  connected components via union-find and ranked by coverage, connectivity,
+  and branching. The global node budget is allocated proportionally,
+  preventing a single off-target component from starving real targets (#112).
+- **Dynamic global node budget**: The global node budget now scales with data
+  volume (100K nodes at 150M bp up to 500K nodes at 750M bp), replacing the
+  fixed 50K default (#113).
+- **`--pcr-stopping-criteria`**: Controls search exhaustiveness.
+  `first-product` (default) stops after any product is found;
+  `connected-only` tries all connected-seed components;
+  `all-components` is fully exhaustive (#112).
+- **Coverage-aware extension**: Edges with counts exceeding a configurable
+  multiple of the local median (default 10x) are skipped during graph
+  extension to avoid entering repetitive regions.
+- **Frontier queue extension**: Graph extension uses a frontier queue instead
+  of scanning all nodes each pass, eliminating O(n^2) scaling (#112).
+- **Reachability pruning**: Forward BFS from start nodes and backward BFS
+  from end nodes; any node not in both reachable sets is removed. Replaces
+  the old orphan-removal and dead-branch heuristics with a single principled
+  pass.
+- **Coverage-aware tip clipping**: Dead-end tips are removed only if both
+  short (fewer than k nodes) and low coverage (below 10% of graph median).
+  High-coverage tips are preserved as potential real variants.
+- **DFS state budget**: Explicit budget (default 100K states) and per-start
+  path cap (default 20) prevent runaway exploration on complex graphs.
+- **PCR failure reasons**: Per-gene stats YAML now reports why a gene failed:
+  primer not found, all seeds abandoned, node budget exceeded, or no valid
+  path found.
+- **Read caching**: Downloaded ENA reads are cached locally with SHA-256
+  verification. Managed with `--cache-dir`, `--no-cache`, `--clear-cache`.
+- **Panel versioning**: Primer panels now carry `name`, `version`,
+  `description`, `maintainers`, and `changelog` metadata.
+- **Panel validation blocks**: Panels include `validation` sections with
+  sample accessions, read-depth sweeps, and reference sequences for
+  systematic BLAST-based validation.
+- **`expected_length` field**: Per-primer expected amplicon length for
+  validation reporting.
+- **New panel**: `c_elegans` primer panel.
+- **Validation scripts**: `validate_panel.py` and SLURM batch scripts for
+  systematic panel validation across taxa and read depths.
+- Hidden CLI arguments for advanced tuning: `--node-budget-global`,
+  `--node-budget-component`, `--max-seed-nodes`, `--high-coverage-ratio`,
+  `--tip-coverage-fraction`, `--max-dfs-states`, `--max-paths-per-pair`,
+  `--max-node-visits`, `--max-primer-kmers`.
+
+### Changed
+
+- **Default k changed from 21 to 19**. This allows primers up to 19 bp to be
+  fully represented as single kmers, matching redesigned primer lengths.
+- **Cnidaria CO1 primer redesigned** from 161 cnidarian mitogenomes: degeneracy
+  reduced (48 to 32 kmer variants per pair), reverse primer extended to
+  19 bp. Recovery improved from 5/15 to 13/15 benchmark runs at 99.6%+
+  identity.
+- **Panel cleanup**: Removed underperforming primer pairs from bacteria (8
+  pairs removed) and insecta (2 pairs removed) panels based on validation
+  results.
+- **BFS path length**: Graph path length calculation now uses BFS for correct
+  shortest-path distances in graphs with merges and bubbles.
+- **Path scoring**: Composite metric using median kmer count, coverage
+  variance penalty, repeat-edge penalty, and (when available) read-support
+  factor.
+- **DFS edge ordering**: Branch points explored in descending coverage order
+  so the best-coverage path is found first.
+- **Deduplication scoring**: Paths sorted by composite score rather than raw
+  kmer count.
+- Replaced `serde_yml` with `serde_yaml_ng` to resolve security advisory (#88).
+
+### Performance
+
+- Frontier queue in graph extension eliminates O(n^2) node scanning (#112).
+- DFS uses explicit stack with incremental push/pop instead of path cloning.
+- Pre-allocated data structures throughout PCR pipeline.
+
 ## [2.0.0] - 2026-03-22
 
 This is a breaking release. CLI arguments, output file formats, and default
@@ -134,6 +225,7 @@ details.
 - Bioconda recipe for binary distribution
 - sharkmer_viewer Python tool for histogram visualization
 
+[3.0.0]: https://github.com/caseywdunn/sharkmer/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/caseywdunn/sharkmer/compare/v1.0.1...v2.0.0
 [1.0.1]: https://github.com/caseywdunn/sharkmer/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/caseywdunn/sharkmer/releases/tag/v1.0.0

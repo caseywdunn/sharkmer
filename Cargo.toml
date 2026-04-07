@@ -1,6 +1,6 @@
 [package]
 name = "sharkmer"
-version = "3.0.0-dev"
+version = "3.0.0-rc"
 authors = ["Casey Dunn <casey.dunn@yale.edu>"]
 description = "In silico PCR (sPCR) and incremental kmer counting from whole-genome shotgun reads"
 edition = "2024"
