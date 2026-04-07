@@ -3,7 +3,14 @@
 # Each job runs validate_panel.py for a single panel.
 #
 # Usage (from repo root, on Bouchet login node):
-#   scripts/validate_all_panels_slurm.sh [--no-blast]
+#   conda activate sharkmer-bench
+#   bash scripts/validate_all_panels_slurm.sh [--no-blast]
+#
+# Use tmux so job monitoring survives SSH disconnects:
+#   tmux new -s validate
+#   bash scripts/validate_all_panels_slurm.sh [--no-blast]
+#   bash scripts/validate_all_panels_slurm.sh
+#   # Ctrl-b d to detach; tmux attach -t validate to reconnect
 #
 # Prerequisites:
 #   - sharkmer-bench conda environment exists

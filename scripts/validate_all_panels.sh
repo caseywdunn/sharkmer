@@ -3,7 +3,8 @@
 # Requires the sharkmer-bench conda environment to be active.
 #
 # Usage:
-#   scripts/validate_all_panels.sh [--no-blast]
+#   conda activate sharkmer-bench
+#   bash scripts/validate_all_panels.sh [--no-blast]
 
 set -euo pipefail
 
