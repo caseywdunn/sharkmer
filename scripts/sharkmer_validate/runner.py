@@ -232,13 +232,19 @@ def run_sharkmer(
     threads: int = THREADS,
     dump_graph: bool = False,
     extra_args: list = None,
+    k: int | None = None,
 ) -> dict:
     """Run sharkmer once for a (panel, accession, max_reads) combination.
 
     Returns a dict with:
       sample_prefix, accession, max_reads, wall_time_s, success, genes
     Gene names are returned without the panel prefix.
+
+    `k` defaults to the module-level `K` (so existing callers are unchanged).
+    Sweep callers pass an explicit value to override.
     """
+    if k is None:
+        k = K
     k_reads = max_reads // 1000
     sample_prefix = f"{panel_name}_{accession}_{k_reads}k"
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -246,7 +252,7 @@ def run_sharkmer(
     cmd = [
         str(SHARKMER_BIN),
         "-k",
-        str(K),
+        str(k),
         "-t",
         str(threads),
         "--max-reads",

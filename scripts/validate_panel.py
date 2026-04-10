@@ -10,15 +10,26 @@ a detailed YAML result file to panels/validation_results/.
 With --genes, only runs the specified gene(s). Useful when iterating on
 a single primer pair without re-running the whole panel.
 
+Sweep mode: pass `-k`, `--extra-args`, and `--label` to forward extra
+sharkmer CLI arguments and tag the resulting output files. Combined with
+`--max-reads-tier highest` this is the per-cell entry point used by
+scripts/validate_all_panels_slurm.sh --sweep.
+
 Requires the sharkmer-bench conda environment (for makeblastdb/blastn).
 
 Usage:
     python scripts/validate_panel.py panels/cnidaria.yaml
     python scripts/validate_panel.py panels/cnidaria.yaml --genes 16S CO1
     python scripts/validate_panel.py panels/cnidaria.yaml --no-blast
+    python scripts/validate_panel.py panels/cnidaria.yaml \\
+        -k 21 --label sweep_k_21 --max-reads-tier highest
+    python scripts/validate_panel.py panels/cnidaria.yaml \\
+        --extra-args "--max-primer-kmers 40" \\
+        --label sweep_max_primer_kmers_40 --max-reads-tier highest
 """
 
 import argparse
+import shlex
 import sys
 import tempfile
 from datetime import datetime
@@ -104,12 +115,63 @@ def main():
         default=REPORTS_DIR,
         help=f"Directory for markdown reports (default: {REPORTS_DIR})",
     )
+    parser.add_argument(
+        "-k",
+        type=int,
+        default=runner.K,
+        help=(
+            f"Kmer length passed to sharkmer (default: {runner.K}). "
+            "Override for parameter sweeps."
+        ),
+    )
+    parser.add_argument(
+        "--extra-args",
+        type=str,
+        default="",
+        help=(
+            "Additional CLI arguments forwarded to sharkmer, as a single "
+            "shell-quoted string. Parsed with shlex. Example: "
+            '--extra-args "--max-primer-kmers 40 --high-coverage-ratio 5.0".'
+        ),
+    )
+    parser.add_argument(
+        "--label",
+        type=str,
+        default=None,
+        help=(
+            "Sweep tag prepended to result/report filenames and stored in "
+            "the result YAML so sweep_summary.py can group runs. Example: "
+            "--label sweep_max_primer_kmers_40."
+        ),
+    )
+    parser.add_argument(
+        "--max-reads-tier",
+        choices=["all", "highest", "lowest"],
+        default="all",
+        help=(
+            "Which max_reads tier(s) to run per sample. Default 'all' runs "
+            "every depth declared in the panel; 'highest' and 'lowest' run "
+            "only the corresponding tier (used by sweep mode to reduce job "
+            "count)."
+        ),
+    )
     args = parser.parse_args()
 
     panel_path = Path(args.panel).resolve()
     if not panel_path.exists():
         print(f"Panel file not found: {panel_path}")
         sys.exit(1)
+
+    # Parse extra_args once at the top so a malformed string fails fast.
+    extra_args = shlex.split(args.extra_args) if args.extra_args else []
+
+    # Override the module-level default k so all consumers
+    # (run_sharkmer cmd, results.parameters.k, primer_analysis trim cap)
+    # see the swept value. validate_panel.py is the only entry point that
+    # uses this code per process invocation, so the global mutation is
+    # safe and confined.
+    if args.k != runner.K:
+        runner.K = args.k
 
     runner.build_sharkmer()
 
@@ -170,9 +232,17 @@ def main():
         sample_results = []
         for sample_block in samples:
             accession = sample_block["accession"]
-            max_reads_list = sorted(
+            declared_reads = sorted(
                 sample_block.get("max_reads", [1_000_000]), reverse=True
             )
+            # Filter by tier. `highest` and `lowest` keep just one tier each;
+            # `all` keeps every declared depth (the existing behavior).
+            if args.max_reads_tier == "highest":
+                max_reads_list = [declared_reads[0]]
+            elif args.max_reads_tier == "lowest":
+                max_reads_list = [declared_reads[-1]]
+            else:
+                max_reads_list = declared_reads
             print(f"=== {accession} ({len(max_reads_list)} depths) ===")
             runs = []
             for max_reads in max_reads_list:
@@ -182,6 +252,8 @@ def main():
                     accession,
                     max_reads,
                     run_dir,
+                    extra_args=extra_args or None,
+                    k=args.k,
                 )
                 runs.append(run)
 
@@ -201,8 +273,12 @@ def main():
             sample_results,
             sharkmer_version,
             blast_mode=blast_mode,
+            extra_args=extra_args or None,
+            sweep_label=args.label,
         )
-        result_name = results.result_filename(panel_data, sharkmer_version, stamp)
+        result_name = results.result_filename(
+            panel_data, sharkmer_version, stamp, label=args.label
+        )
         result_path = results.RESULTS_DIR / result_name
         results.write_result(result, result_path)
 
