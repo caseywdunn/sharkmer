@@ -3,7 +3,7 @@
 // Filters reads to only those containing primer-derived kmers,
 // reducing the read set per gene before threading.
 
-use std::collections::HashSet;
+use ahash::AHashSet;
 
 use crate::io::ReadRecord;
 use crate::kmer::KmerCounts;
@@ -15,7 +15,7 @@ use crate::kmer::encoding::kmers_from_ascii;
 /// full graph exists.
 pub struct PrimerReadFilter {
     /// Union of all primer-derived canonical kmers
-    primer_kmers: HashSet<u64>,
+    primer_kmers: AHashSet<u64>,
     k: usize,
 }
 
@@ -26,7 +26,7 @@ impl PrimerReadFilter {
         reverse_primer_kmers: &KmerCounts,
         k: usize,
     ) -> Self {
-        let mut primer_kmers = HashSet::new();
+        let mut primer_kmers = AHashSet::new();
 
         for (&kmer, _) in forward_primer_kmers.iter() {
             // KmerCounts stores canonical kmers

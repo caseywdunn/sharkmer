@@ -1016,7 +1016,7 @@ pub(crate) fn consolidate_and_histogram(
     if args.chunks > 0 {
         // Incremental histogram mode: update histogram as chunks are merged.
         // Snapshot only the Vec<u64> at each step (not the full Histogram struct
-        // with its FxHashMap).
+        // with its `histo_large` AHashMap tail).
         let mut histo_vecs: Vec<Vec<u64>> = Vec::with_capacity(args.chunks);
         let mut running_histo = kmer::Histogram::new(&args.histo_max);
 
