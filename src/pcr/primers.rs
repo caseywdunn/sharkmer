@@ -308,9 +308,9 @@ pub(super) fn preprocess_primer_by_mismatch(
     Ok(levels)
 }
 
-/// Convenience wrapper: returns all primer variants as a flat set (all mismatch
-/// levels combined). Used by `preprocess_primer_oligos()` for read retention,
-/// where mismatch-level ordering is not needed.
+/// Convenience wrapper: returns all primer variants as a flat set (all
+/// mismatch levels combined). Used by tests.
+#[cfg(test)]
 pub(super) fn preprocess_primer(
     params: &PCRParams,
     dir: PrimerDirection,
@@ -468,58 +468,6 @@ pub(super) fn get_primer_kmers(
     )?;
 
     Ok((forward_primer_kmers, reverse_primer_kmers))
-}
-
-/// Pre-encoded primer Oligos for a single gene, used for read retention
-/// during Pass 1 before the kmer table is available.
-#[allow(dead_code)]
-pub struct PrimerOligoSet {
-    /// Gene name for attribution
-    pub gene_name: String,
-    /// 2-bit encoded forward primer Oligos (all variants after trim/ambiguity/mismatch)
-    pub forward_oligos: Vec<Oligo>,
-    /// 2-bit encoded reverse primer Oligos
-    pub reverse_oligos: Vec<Oligo>,
-    /// Oligo length (all Oligos in a set have the same length per direction)
-    pub forward_oligo_length: usize,
-    pub reverse_oligo_length: usize,
-}
-
-/// Pre-encode primer Oligos for all genes before read ingestion.
-/// This runs the text-only portion of primer preprocessing (trim,
-/// ambiguity resolution, mismatch permutation) and encodes each
-/// variant as a 2-bit Oligo. No kmer table access.
-#[allow(dead_code)]
-pub fn preprocess_primer_oligos(pcr_runs: &[PCRParams], k: usize) -> Result<Vec<PrimerOligoSet>> {
-    let mut result = Vec::new();
-
-    for params in pcr_runs {
-        let forward_variants = preprocess_primer(params, PrimerDirection::Forward, &k)?;
-        let reverse_variants = preprocess_primer(params, PrimerDirection::Reverse, &k)?;
-
-        let forward_oligos: Vec<Oligo> = forward_variants
-            .iter()
-            .map(|v| string_to_oligo(v))
-            .collect::<Result<Vec<_>>>()?;
-
-        let reverse_oligos: Vec<Oligo> = reverse_variants
-            .iter()
-            .map(|v| string_to_oligo(v))
-            .collect::<Result<Vec<_>>>()?;
-
-        let forward_oligo_length = forward_oligos.first().map_or(0, |o| o.length);
-        let reverse_oligo_length = reverse_oligos.first().map_or(0, |o| o.length);
-
-        result.push(PrimerOligoSet {
-            gene_name: params.gene_name.clone(),
-            forward_oligos,
-            reverse_oligos,
-            forward_oligo_length,
-            reverse_oligo_length,
-        });
-    }
-
-    Ok(result)
 }
 
 #[cfg(test)]

@@ -51,205 +51,6 @@ pub(crate) enum Mate {
     R2,
 }
 
-/// A read retained during Pass 1 because it matched a primer Oligo.
-pub(crate) struct RetainedRead {
-    /// Raw sequence (ASCII ACGT)
-    pub(crate) sequence: String,
-}
-
-/// Collects reads retained during Pass 1 primer Oligo matching.
-pub(crate) struct RetainedReads {
-    pub(crate) reads: Vec<RetainedRead>,
-}
-
-/// Two-stage primer Oligo filter for Pass 1 read retention.
-///
-/// Stage 1 (bloom filter): fast approximate check during kmer ingestion.
-/// Uses a bloom filter with two hash functions for O(1) lookup with no
-/// hash table overhead. May produce false positives, never false negatives.
-///
-/// Stage 2 (exact set): after ingestion, bloom-positive reads are verified
-/// against an exact AHashSet to eliminate false positives.
-///
-/// When a panel mixes genes with different trim lengths (e.g. 15 for most
-/// genes but 12 for a trimmed primer), the filter stores a separate
-/// (mask, shift) pair per distinct trim length. `check_kmer` tries every
-/// pair against the incoming kmer — previously only the last gene's pair
-/// was retained, silently dropping reads matching earlier genes.
-pub(crate) struct OligoFilter {
-    /// Bloom filter for high-bit matching (oligo at kmer start).
-    /// Entries are keyed by raw oligo kmer values (shift removed at
-    /// insertion time), so a single bloom serves all trim lengths.
-    high_bits: Vec<u64>,
-    /// Bloom filter for low-bit matching (RC oligo at kmer end).
-    /// Entries are keyed by raw rc oligo values.
-    low_bits: Vec<u64>,
-    /// One (mask, shift) pair per distinct trim length seen across genes.
-    /// Typical panels have 1-3 entries here.
-    high_masks: Vec<(u64, u32)>,
-    /// One low-bit mask per distinct trim length seen across genes.
-    /// Shift is always 0 for the low-bit side.
-    low_masks: Vec<u64>,
-    /// Exact set for high-bit verification, keyed by raw oligo values.
-    high_exact: ahash::AHashSet<u64>,
-    /// Exact set for low-bit verification, keyed by raw rc oligo values.
-    low_exact: ahash::AHashSet<u64>,
-}
-
-/// Number of bits used for bloom filter indexing. 2^24 = 16M entries = 2MB per bitset.
-/// Two hash functions reduce false positive rate. With ~50K Oligo variants,
-/// occupancy is ~0.3%, giving FP rate ~(0.003)^2 ≈ 0.001%.
-const BLOOM_BITS: u32 = 24;
-const BLOOM_SIZE: usize = 1 << BLOOM_BITS;
-#[allow(dead_code)]
-const BLOOM_WORDS: usize = BLOOM_SIZE / 64;
-
-impl OligoFilter {
-    /// Build a filter from pre-encoded primer Oligo sets for all genes.
-    ///
-    /// Each oligo length seen across the input contributes one entry to
-    /// `high_masks` and `low_masks`; duplicate lengths are deduplicated.
-    /// The bloom filters and exact sets store raw oligo values (shift
-    /// removed), so a single shared set of each covers all trim lengths.
-    #[allow(dead_code)]
-    pub(crate) fn new(oligo_sets: &[crate::pcr::PrimerOligoSet], k: usize) -> Self {
-        let mut high_bits = vec![0u64; BLOOM_WORDS];
-        let mut low_bits = vec![0u64; BLOOM_WORDS];
-        let mut high_exact = ahash::AHashSet::new();
-        let mut low_exact = ahash::AHashSet::new();
-        let mut seen_lengths: std::collections::HashSet<usize> = std::collections::HashSet::new();
-        let mut high_masks: Vec<(u64, u32)> = Vec::new();
-        let mut low_masks: Vec<u64> = Vec::new();
-
-        let register_length = |len: usize,
-                               seen: &mut std::collections::HashSet<usize>,
-                               high: &mut Vec<(u64, u32)>,
-                               low: &mut Vec<u64>| {
-            if len == 0 || !seen.insert(len) {
-                return;
-            }
-            let shift = 2 * (k - len);
-            let size_mask = (1u64 << (2 * len)) - 1;
-            high.push((size_mask << shift, shift as u32));
-            low.push(size_mask);
-        };
-
-        for set in oligo_sets {
-            let fwd_len = set.forward_oligo_length;
-            if fwd_len > 0 {
-                register_length(fwd_len, &mut seen_lengths, &mut high_masks, &mut low_masks);
-                for oligo in &set.forward_oligos {
-                    // Bloom and exact sets are keyed by the raw oligo value
-                    // (no shift baked in), so the same entry is checked at
-                    // any trim length via the corresponding (mask, shift).
-                    bloom_insert(&mut high_bits, oligo.kmer);
-                    high_exact.insert(oligo.kmer);
-                    let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &fwd_len);
-                    bloom_insert(&mut low_bits, rc);
-                    low_exact.insert(rc);
-                }
-            }
-
-            let rev_len = set.reverse_oligo_length;
-            if rev_len > 0 {
-                register_length(rev_len, &mut seen_lengths, &mut high_masks, &mut low_masks);
-                for oligo in &set.reverse_oligos {
-                    bloom_insert(&mut high_bits, oligo.kmer);
-                    high_exact.insert(oligo.kmer);
-                    let rc = crate::kmer::revcomp_kmer(&oligo.kmer, &rev_len);
-                    bloom_insert(&mut low_bits, rc);
-                    low_exact.insert(rc);
-                }
-            }
-        }
-
-        OligoFilter {
-            high_bits,
-            low_bits,
-            high_masks,
-            low_masks,
-            high_exact,
-            low_exact,
-        }
-    }
-
-    /// Fast approximate check during kmer ingestion (bloom filter).
-    /// May return false positives, never false negatives. Tries every
-    /// registered trim-length mask; early-exits on the first hit.
-    #[inline]
-    pub(crate) fn check_kmer(&self, kmer: u64) -> bool {
-        for &(mask, shift) in &self.high_masks {
-            let high_val = (kmer & mask) >> shift;
-            if bloom_contains(&self.high_bits, high_val) {
-                return true;
-            }
-        }
-        for &mask in &self.low_masks {
-            if bloom_contains(&self.low_bits, kmer & mask) {
-                return true;
-            }
-        }
-        false
-    }
-
-    /// Exact verification of a read against the Oligo set (AHashSet).
-    /// Called on bloom-positive reads to eliminate false positives.
-    pub(crate) fn verify_read(&self, sequence: &str, k: usize) -> bool {
-        let kmers = match crate::kmer::encoding::kmers_from_ascii(sequence, k) {
-            Ok(k) => k,
-            Err(_) => return false,
-        };
-        for kmer in &kmers {
-            for &(mask, shift) in &self.high_masks {
-                if self.high_exact.contains(&((kmer & mask) >> shift)) {
-                    return true;
-                }
-            }
-            for &mask in &self.low_masks {
-                if self.low_exact.contains(&(kmer & mask)) {
-                    return true;
-                }
-            }
-        }
-        false
-    }
-}
-
-/// Two hash functions for the bloom filter. Both derived from the same
-/// u64 value using different bit mixing to produce independent indices.
-#[inline]
-fn bloom_h1(val: u64) -> usize {
-    (val as usize) & (BLOOM_SIZE - 1)
-}
-
-#[inline]
-fn bloom_h2(val: u64) -> usize {
-    // Rotate bits and XOR to get a second independent hash
-    let mixed = (val >> 17) ^ (val.wrapping_mul(0x9E3779B97F4A7C15));
-    (mixed as usize) & (BLOOM_SIZE - 1)
-}
-
-/// Insert a value into the bloom filter using two hash functions.
-#[inline]
-#[allow(dead_code)]
-fn bloom_insert(bits: &mut [u64], val: u64) {
-    let i1 = bloom_h1(val);
-    bits[i1 / 64] |= 1u64 << (i1 % 64);
-    let i2 = bloom_h2(val);
-    bits[i2 / 64] |= 1u64 << (i2 % 64);
-}
-
-/// Check if a value may be in the bloom filter (both bits must be set).
-#[inline]
-fn bloom_contains(bits: &[u64], val: u64) -> bool {
-    let i1 = bloom_h1(val);
-    if (bits[i1 / 64] & (1u64 << (i1 % 64))) == 0 {
-        return false;
-    }
-    let i2 = bloom_h2(val);
-    (bits[i2 / 64] & (1u64 << (i2 % 64))) != 0
-}
-
 /// Result of querying ENA for an accession.
 pub(crate) struct EnaResult {
     pub(crate) urls: Vec<String>,
@@ -403,8 +204,6 @@ pub(crate) struct FastqReadState {
     pub(crate) seqs: Vec<String>,
     pub(crate) n_reads_read: u64,
     pub(crate) n_bases_read: u64,
-    /// Reads retained during Pass 1 because they matched a primer Oligo
-    pub(crate) retained_reads: RetainedReads,
 }
 
 /// Build a context-rich error message for an I/O error that occurred mid-stream
@@ -469,7 +268,6 @@ fn stream_io_error(
 ///
 /// Reads 4 lines at a time (header, sequence, separator, quality) and validates
 /// the format. Returns true if max_reads was reached.
-#[allow(clippy::too_many_arguments)]
 fn read_fastq<R: BufRead>(
     reader: R,
     state: &mut FastqReadState,
@@ -477,7 +275,6 @@ fn read_fastq<R: BufRead>(
     validate_every: u64,
     source_name: &str,
     progress: &ProgressBar,
-    oligo_filter: Option<&OligoFilter>,
 ) -> Result<bool> {
     let mut lines = reader.lines();
     let n_chunks = state.chunks.len();
@@ -541,7 +338,7 @@ fn read_fastq<R: BufRead>(
 
         // If we have read enough reads, ingest them into current chunk
         if state.n_reads_read % N_READS_PER_BATCH == 0 {
-            drain_batch(state, oligo_filter, n_chunks)?;
+            drain_batch(state, n_chunks)?;
             progress.set_position(state.n_reads_read);
         }
 
@@ -554,28 +351,10 @@ fn read_fastq<R: BufRead>(
     Ok(false) // did not reach max reads (EOF)
 }
 
-/// Drain accumulated sequences into the current chunk, optionally checking
-/// each kmer against the Oligo filter during ingestion. Matching reads
-/// are retained for seed evaluation.
-fn drain_batch(
-    state: &mut FastqReadState,
-    oligo_filter: Option<&OligoFilter>,
-    n_chunks: usize,
-) -> Result<()> {
-    if let Some(filter) = oligo_filter {
-        for seq in state.seqs.drain(..) {
-            let matched = state.chunks[state.chunk_index].ingest_seq_with_filter(&seq, filter)?;
-            if matched {
-                state
-                    .retained_reads
-                    .reads
-                    .push(RetainedRead { sequence: seq });
-            }
-        }
-    } else {
-        for seq in state.seqs.drain(..) {
-            state.chunks[state.chunk_index].ingest_seq(&seq)?;
-        }
+/// Drain accumulated sequences into the current chunk.
+fn drain_batch(state: &mut FastqReadState, n_chunks: usize) -> Result<()> {
+    for seq in state.seqs.drain(..) {
+        state.chunks[state.chunk_index].ingest_seq(&seq)?;
     }
     state.chunk_index = (state.chunk_index + 1) % n_chunks;
     Ok(())
@@ -590,8 +369,8 @@ pub(crate) fn ingest_reads(
     mut cached_ena_result: Option<EnaResult>,
     cache_config: Option<&crate::cache::CacheConfig>,
     show_progress: bool,
-    oligo_filter: Option<&OligoFilter>,
 ) -> Result<(FastqReadState, u64, u64, u64, ReadPlan)> {
+    let _ = k;
     let start = std::time::Instant::now();
     info!("Ingesting reads...");
 
@@ -605,7 +384,6 @@ pub(crate) fn ingest_reads(
         seqs: Vec::new(),
         n_reads_read: 0,
         n_bases_read: 0,
-        retained_reads: RetainedReads { reads: Vec::new() },
     };
 
     let mut max_reads = args.max_reads.unwrap_or(0);
@@ -678,7 +456,6 @@ pub(crate) fn ingest_reads(
                 args.validate_every,
                 url,
                 &progress,
-                oligo_filter,
             )?;
             if reached_max {
                 break;
@@ -715,7 +492,6 @@ pub(crate) fn ingest_reads(
                 &name1,
                 &name2,
                 &progress,
-                oligo_filter,
             )?;
         } else {
             // Read from one or more files sequentially
@@ -729,7 +505,6 @@ pub(crate) fn ingest_reads(
                     args.validate_every,
                     &file_name,
                     &progress,
-                    oligo_filter,
                 )?;
                 if reached_max {
                     break;
@@ -757,16 +532,15 @@ pub(crate) fn ingest_reads(
             args.validate_every,
             "stdin",
             &progress,
-            oligo_filter,
         )?;
         // read_source_plan remains Unavailable for stdin
     }
 
     progress.finish_and_clear();
 
-    // Ingest any remaining sequences (with Oligo filter check if active)
+    // Ingest any remaining sequences
     let n_chunks = state.chunks.len();
-    drain_batch(&mut state, oligo_filter, n_chunks)?;
+    drain_batch(&mut state, n_chunks)?;
 
     let mut n_reads_ingested: u64 = 0;
     let mut n_bases_ingested: u64 = 0;
@@ -798,27 +572,6 @@ pub(crate) fn ingest_reads(
             "Only {} reads ingested. sPCR typically needs many more reads to produce results.",
             state.n_reads_read
         );
-    }
-    // Verify bloom-positive reads against exact AHashSet and report counts
-    if !state.retained_reads.reads.is_empty() {
-        let bloom_count = state.retained_reads.reads.len();
-        if let Some(filter) = oligo_filter {
-            state
-                .retained_reads
-                .reads
-                .retain(|r| filter.verify_read(&r.sequence, k));
-            let verified_count = state.retained_reads.reads.len();
-            info!(
-                "Retained reads for seed evaluation: {} bloom hits, {} verified",
-                format_count(bloom_count as u64),
-                format_count(verified_count as u64)
-            );
-        } else {
-            info!(
-                "Retained {} reads for seed evaluation",
-                format_count(bloom_count as u64)
-            );
-        }
     }
     info!("Time to ingest reads: {}", format_duration(start.elapsed()));
 
@@ -883,7 +636,6 @@ fn read_fastq_paired<R1: BufRead, R2: BufRead>(
     source1_name: &str,
     source2_name: &str,
     progress: &ProgressBar,
-    oligo_filter: Option<&OligoFilter>,
 ) -> Result<bool> {
     let mut lines1 = reader1.lines();
     let mut lines2 = reader2.lines();
@@ -907,7 +659,7 @@ fn read_fastq_paired<R1: BufRead, R2: BufRead>(
         }
         r1_records += 1;
         if state.n_reads_read % N_READS_PER_BATCH == 0 {
-            drain_batch(state, oligo_filter, n_chunks)?;
+            drain_batch(state, n_chunks)?;
             progress.set_position(state.n_reads_read);
         }
         if max_reads > 0 && state.n_reads_read >= max_reads {
@@ -924,7 +676,7 @@ fn read_fastq_paired<R1: BufRead, R2: BufRead>(
         }
         r2_records += 1;
         if state.n_reads_read % N_READS_PER_BATCH == 0 {
-            drain_batch(state, oligo_filter, n_chunks)?;
+            drain_batch(state, n_chunks)?;
             progress.set_position(state.n_reads_read);
         }
         if max_reads > 0 && state.n_reads_read >= max_reads {
@@ -1406,133 +1158,4 @@ pub(crate) fn consolidate_and_histogram(
     }
 
     Ok((kmer_counts, n_singleton_kmers))
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::pcr::{Oligo, PrimerOligoSet};
-
-    #[test]
-    fn test_bloom_insert_and_contains() {
-        let mut bits = vec![0u64; BLOOM_WORDS];
-        let val = 0xDEAD_BEEF_u64;
-
-        assert!(!bloom_contains(&bits, val));
-        bloom_insert(&mut bits, val);
-        assert!(bloom_contains(&bits, val));
-    }
-
-    #[test]
-    fn test_bloom_no_false_negatives() {
-        let mut bits = vec![0u64; BLOOM_WORDS];
-        let values: Vec<u64> = (0..1000).collect();
-        for &v in &values {
-            bloom_insert(&mut bits, v);
-        }
-        for &v in &values {
-            assert!(
-                bloom_contains(&bits, v),
-                "bloom must not have false negatives for {}",
-                v
-            );
-        }
-    }
-
-    #[test]
-    fn test_oligo_filter_empty() {
-        let filter = OligoFilter::new(&[], 19);
-        // Empty filter should never match
-        assert!(!filter.check_kmer(0));
-        assert!(!filter.check_kmer(u64::MAX));
-    }
-
-    #[test]
-    fn test_oligo_filter_verify_read_eliminates_bloom_false_positive() {
-        // Build a filter with a known oligo
-        let oligo_val: u64 = 0b1001_1000; // "GCGA" in 2-bit encoding, length 4
-        let set = PrimerOligoSet {
-            gene_name: "test".to_string(),
-            forward_oligos: vec![Oligo {
-                length: 4,
-                kmer: oligo_val,
-            }],
-            reverse_oligos: Vec::new(),
-            forward_oligo_length: 4,
-            reverse_oligo_length: 0,
-        };
-        let k = 5;
-        let filter = OligoFilter::new(&[set], k);
-
-        // A read that does NOT contain "GCGA" should fail exact verification
-        // even if bloom is a false positive
-        assert!(!filter.verify_read("AAAAA", k));
-    }
-
-    /// When a panel mixes genes with different trim lengths, the filter must
-    /// detect oligos from BOTH lengths, not just whichever gene was iterated
-    /// last. Prior to the fix, check_kmer only matched the last gene's
-    /// trim length; kmers placed at any other position silently missed.
-    #[test]
-    fn test_oligo_filter_mixed_trim_lengths() {
-        let k: usize = 19;
-
-        // Two distinct non-trivial oligos at different trim lengths. The
-        // bit patterns are chosen so that a truncation of either cannot
-        // match the other: oligo_a's top 12 bases differ from oligo_b,
-        // and oligo_b as a suffix of oligo_a's bit pattern would require
-        // specific alignment that doesn't occur here.
-        let oligo_a_value: u64 = 0x2AF3_B1C9; // 30 bits, length-15
-        let oligo_b_value: u64 = 0x00AB_CDEF; // 24 bits, length-12
-
-        // Set A declared FIRST, set B declared LAST. Under the old code,
-        // only set_b's (mask, shift) would be retained and oligo_a at its
-        // length-15 position would be unreachable from check_kmer.
-        let set_a = PrimerOligoSet {
-            gene_name: "A".to_string(),
-            forward_oligos: vec![Oligo {
-                length: 15,
-                kmer: oligo_a_value,
-            }],
-            reverse_oligos: Vec::new(),
-            forward_oligo_length: 15,
-            reverse_oligo_length: 0,
-        };
-        let set_b = PrimerOligoSet {
-            gene_name: "B".to_string(),
-            forward_oligos: vec![Oligo {
-                length: 12,
-                kmer: oligo_b_value,
-            }],
-            reverse_oligos: Vec::new(),
-            forward_oligo_length: 12,
-            reverse_oligo_length: 0,
-        };
-
-        let filter = OligoFilter::new(&[set_a, set_b], k);
-
-        // Two distinct trim lengths must be registered, not one.
-        assert_eq!(
-            filter.high_masks.len(),
-            2,
-            "filter must retain a mask per distinct trim length"
-        );
-
-        // A kmer with oligo_a at the length-15 position (high 30 bits),
-        // arbitrary bits elsewhere. check_kmer must find it via the
-        // length-15 mask; the old code silently missed this.
-        let kmer_with_a = (oligo_a_value << (2 * (k - 15))) | 0b01;
-        assert!(
-            filter.check_kmer(kmer_with_a),
-            "oligo_a at its length-15 position must match (old code missed \
-             this when set_b's trim length overwrote set_a's mask)"
-        );
-
-        // And oligo_b at its length-12 position still works.
-        let kmer_with_b = (oligo_b_value << (2 * (k - 12))) | 0b10;
-        assert!(
-            filter.check_kmer(kmer_with_b),
-            "oligo_b at its length-12 position must match"
-        );
-    }
 }

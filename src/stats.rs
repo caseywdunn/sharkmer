@@ -55,7 +55,6 @@ pub(crate) fn run_pcr(
     dump_graph: bool,
     show_progress: bool,
     reads: Option<&[crate::io::ReadRecord]>,
-    retained_reads: &crate::io::RetainedReads,
     max_nodes: usize,
 ) -> Result<Vec<PcrGeneResult>> {
     let mut pcr_results: Vec<PcrGeneResult> = Vec::new();
@@ -81,14 +80,6 @@ pub(crate) fn run_pcr(
     info!("Filtering kmers with count < {} before PCR", min_kmer_count);
     let kmer_counts_pcr = kmer_counts.filtered_view(min_kmer_count);
 
-    // Collect all retained read sequences (shared across genes — each gene's
-    // divergence check filters to reads matching its own seed sub_kmers)
-    let all_retained: Vec<&str> = retained_reads
-        .reads
-        .iter()
-        .map(|r| r.sequence.as_str())
-        .collect();
-
     // Run PCR for each gene in parallel; kmer_counts_pcr and reads are read-only and shared
     let pcr_fasta_results: Vec<_> = pcr_runs
         .par_iter()
@@ -100,7 +91,6 @@ pub(crate) fn run_pcr(
                 dump_graph,
                 directory,
                 reads,
-                &all_retained,
                 max_nodes,
             );
             (pcr_params, fasta)

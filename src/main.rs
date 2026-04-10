@@ -99,9 +99,6 @@ fn main() -> Result<()> {
 
     let show_progress = std::io::stderr().is_terminal();
 
-    // No oligo filter — read-backed seed evaluation has been removed
-    let oligo_filter: Option<io::OligoFilter> = None;
-
     // Set up read cache for remote downloads
     let cache_config = if !args.no_cache && args.ena.is_some() {
         let cc = cache::CacheConfig::new(args.cache_dir.as_deref())?;
@@ -111,7 +108,7 @@ fn main() -> Result<()> {
         None
     };
 
-    // Ingest FASTQ reads from all input sources (Pass 1: kmer counting + read retention)
+    // Ingest FASTQ reads from all input sources (Pass 1: kmer counting)
     let (state, n_reads_ingested, n_bases_ingested, n_kmers_ingested, read_plan) =
         io::ingest_reads(
             &args,
@@ -119,7 +116,6 @@ fn main() -> Result<()> {
             cached_ena_result,
             cache_config.as_ref(),
             show_progress,
-            oligo_filter.as_ref(),
         )?;
 
     // Consolidate chunks and optionally write histograms
@@ -178,7 +174,6 @@ fn main() -> Result<()> {
         args.dump_graph,
         show_progress,
         threading_reads.as_deref(),
-        &state.retained_reads,
         node_budget_global,
     )?;
 

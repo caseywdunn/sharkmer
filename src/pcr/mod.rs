@@ -36,7 +36,6 @@ mod primers;
 mod pruning;
 
 pub use graph::compute_node_budget;
-pub use primers::PrimerOligoSet;
 pub(crate) mod read_filter;
 pub(crate) mod threading;
 
@@ -389,7 +388,6 @@ fn compute_coverage_thresholds(primer_count: u32, min_count: u32) -> Vec<u32> {
 }
 
 // The primary function for PCR
-#[allow(clippy::too_many_arguments)]
 pub fn do_pcr(
     kmer_counts: &FilteredKmerCounts,
     sample_name: &str,
@@ -397,7 +395,6 @@ pub fn do_pcr(
     dump_graph: bool,
     output_directory: &str,
     reads: Option<&[crate::io::ReadRecord]>,
-    _retained_reads: &[&str],
     max_num_nodes: usize,
 ) -> Result<PcrOutcome> {
     gene_info!(params.gene_name, "Running PCR");
