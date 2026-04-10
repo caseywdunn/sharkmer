@@ -125,8 +125,6 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
         max_primer_kmers: pcr::DEFAULT_MAX_NUM_PRIMER_KMERS,
         high_coverage_ratio: pcr::DEFAULT_HIGH_COVERAGE_RATIO,
         tip_coverage_fraction: pcr::DEFAULT_TIP_COVERAGE_FRACTION,
-        stopping_criteria: pcr::StoppingCriteria::FirstProduct,
-        min_component_budget: pcr::DEFAULT_MIN_COMPONENT_BUDGET,
     };
 
     Ok(pcr_params)
@@ -284,19 +282,6 @@ pub(crate) struct Args {
     /// Tip coverage fraction below which a dead-end tip is pruned
     #[arg(long, default_value_t = crate::pcr::DEFAULT_TIP_COVERAGE_FRACTION, help_heading = "PCR", hide = true)]
     pub(crate) tip_coverage_fraction: f64,
-
-    /// When to stop searching for PCR products
-    #[arg(
-        long,
-        default_value = "first-product",
-        value_enum,
-        help_heading = "PCR"
-    )]
-    pub(crate) pcr_stopping_criteria: crate::pcr::StoppingCriteria,
-
-    /// Per-component node budget: minimum nodes allocated to each seed component
-    #[arg(long, default_value_t = crate::pcr::DEFAULT_MIN_COMPONENT_BUDGET, help_heading = "PCR", hide = true)]
-    pub(crate) node_budget_component: usize,
 
     /// Enable read threading (Pass 2): re-read FASTQ to annotate graph edges with read support.
     /// Hidden: works but loads all reads into RAM before sPCR; needs to be

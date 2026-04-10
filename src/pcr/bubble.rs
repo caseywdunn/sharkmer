@@ -287,25 +287,21 @@ mod tests {
             sub_kmer: 0,
             is_start: true,
             is_end: false,
-            is_terminal: false,
         });
         let n1 = graph.add_node(DBNode {
             sub_kmer: 1,
             is_start: false,
             is_end: false,
-            is_terminal: false,
         });
         let n2 = graph.add_node(DBNode {
             sub_kmer: 2,
             is_start: false,
             is_end: false,
-            is_terminal: false,
         });
         let n3 = graph.add_node(DBNode {
             sub_kmer: 3,
             is_start: false,
             is_end: true,
-            is_terminal: false,
         });
 
         graph.add_edge(
@@ -412,13 +408,11 @@ mod tests {
             sub_kmer: 0,
             is_start: true,
             is_end: false,
-            is_terminal: false,
         });
         let n1 = graph.add_node(DBNode {
             sub_kmer: 1,
             is_start: false,
             is_end: true,
-            is_terminal: false,
         });
         graph.add_edge(
             n0,
@@ -448,7 +442,6 @@ mod tests {
             sub_kmer: 0,
             is_start: true,
             is_end: false,
-            is_terminal: false,
         });
         let mk_chain = |graph: &mut StableDiGraph<DBNode, DBEdge>, base: u64| -> NodeIndex {
             let mut prev = source;
@@ -457,7 +450,6 @@ mod tests {
                     sub_kmer: base + i + 1,
                     is_start: false,
                     is_end: false,
-                    is_terminal: true,
                 });
                 graph.add_edge(
                     prev,

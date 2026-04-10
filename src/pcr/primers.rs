@@ -821,8 +821,6 @@ mod tests {
             max_node_visits: DEFAULT_MAX_NODE_VISITS,
             high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
             tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
-            stopping_criteria: StoppingCriteria::FirstProduct,
-            min_component_budget: DEFAULT_MIN_COMPONENT_BUDGET,
             citation: String::new(),
             notes: String::new(),
             expected_length: None,

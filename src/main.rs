@@ -53,8 +53,6 @@ fn main() -> Result<()> {
         p.max_primer_kmers = args.max_primer_kmers;
         p.high_coverage_ratio = args.high_coverage_ratio;
         p.tip_coverage_fraction = args.tip_coverage_fraction;
-        p.stopping_criteria = args.pcr_stopping_criteria.clone();
-        p.min_component_budget = args.node_budget_component;
     }
 
     // Handle --validate-panels early: pure primer check, no sample/output needed

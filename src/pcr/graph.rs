@@ -2,7 +2,6 @@
 
 use anyhow::Result;
 use log::debug;
-use petgraph::Direction;
 // Used only by `summarize_extension` for a single debug-level diagnostic
 // about whether the extended graph contains cycles. Not load-bearing for
 // correctness — if this import ever becomes unused again, the summarize
@@ -10,7 +9,6 @@ use petgraph::Direction;
 use petgraph::algo::is_cyclic_directed;
 use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
-use petgraph::visit::EdgeRef;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::collections::VecDeque;
@@ -65,14 +63,6 @@ pub fn compute_node_budget(n_bases_ingested: u64) -> usize {
 pub(super) fn get_suffix_mask(k: &usize) -> u64 {
     debug_assert!(*k > 0 && *k <= 32, "k must be in 1..=32, got {}", k);
     (1 << (2 * (*k - 1))) - 1
-}
-
-#[cfg(test)]
-pub fn n_nonterminal_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize {
-    graph
-        .node_indices()
-        .filter(|&node| !graph[node].is_terminal)
-        .count()
 }
 
 fn compute_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>, default: f64) -> f64 {
@@ -153,34 +143,6 @@ pub(super) fn descendants(
     descendants
 }
 
-// Get a vector of edge counts by traversing the graph backwards from the focal node
-#[allow(dead_code)]
-pub(super) fn get_backward_edge_counts(
-    graph: &StableDiGraph<DBNode, DBEdge>,
-    focal_node: NodeIndex,
-    depth: usize,
-) -> Vec<u32> {
-    let mut edge_counts = Vec::new();
-    let mut current_node = focal_node;
-    let mut current_depth = 0;
-
-    while current_depth < depth {
-        if let Some(edge) = graph
-            .edges_directed(current_node, Direction::Incoming)
-            .next()
-        {
-            edge_counts.push(edge.weight().count);
-            current_node = edge.source();
-        } else {
-            break;
-        }
-
-        current_depth += 1;
-    }
-
-    edge_counts
-}
-
 pub fn compute_mean(numbers: &[u64]) -> f64 {
     if numbers.is_empty() {
         return 0.0;
@@ -254,7 +216,6 @@ pub(super) fn create_seed_graph(
                 sub_kmer,
                 is_start: true,
                 is_end: false,
-                is_terminal: false,
             });
             node_lookup.insert(sub_kmer, node);
         }
@@ -274,7 +235,6 @@ pub(super) fn create_seed_graph(
                 sub_kmer,
                 is_start: false,
                 is_end: true,
-                is_terminal: false,
             });
             node_lookup.insert(sub_kmer, node);
         }
@@ -510,7 +470,6 @@ pub(super) fn extend_graph(
                     sub_kmer: new_sub_kmer,
                     is_start: false,
                     is_end: false,
-                    is_terminal: false,
                 });
                 node_lookup.insert(new_sub_kmer, new_node);
 
@@ -656,49 +615,6 @@ pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     );
 }
 
-/// Log debug diagnostics about start/end nodes in the extended graph.
-#[allow(dead_code)]
-pub(super) fn log_extended_graph_diagnostics(
-    graph: &StableDiGraph<DBNode, DBEdge>,
-    kmer_counts: &FilteredKmerCounts,
-) {
-    let mut start_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
-    let mut end_nodes_map: HashMap<NodeIndex, usize> = HashMap::new();
-
-    for node in graph.node_indices() {
-        if graph[node].is_start {
-            start_nodes_map.insert(
-                node,
-                graph.neighbors_directed(node, Direction::Outgoing).count(),
-            );
-        }
-        if graph[node].is_end {
-            end_nodes_map.insert(
-                node,
-                graph.neighbors_directed(node, Direction::Incoming).count(),
-            );
-        }
-    }
-
-    for (node, edge_count) in &start_nodes_map {
-        debug!(
-            "  Start node {} with subkmer {} has {} edges",
-            node.index(),
-            crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(kmer_counts.get_k() - 1)),
-            edge_count
-        );
-    }
-
-    for (node, edge_count) in &end_nodes_map {
-        debug!(
-            "  End node {} with subkmer {} has {} edges",
-            node.index(),
-            crate::kmer::kmer_to_seq(&graph[*node].sub_kmer, &(kmer_counts.get_k() - 1)),
-            edge_count
-        );
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -708,7 +624,6 @@ mod tests {
             sub_kmer,
             is_start,
             is_end,
-            is_terminal: false,
         }
     }
 
@@ -750,24 +665,6 @@ mod tests {
         assert_eq!(get_suffix_mask(&3), 0b1111);
         // k=2: mask for 1 nucleotide = 0b11
         assert_eq!(get_suffix_mask(&2), 0b11);
-    }
-
-    #[test]
-    fn test_n_nonterminal_nodes() {
-        let mut graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
-        let a = graph.add_node(mk_node(0, true, false));
-        let b = graph.add_node(DBNode {
-            sub_kmer: 1,
-            is_start: false,
-            is_end: false,
-            is_terminal: true,
-        });
-        let c = graph.add_node(mk_node(2, false, true));
-        graph.add_edge(a, b, mk_edge(5));
-        graph.add_edge(b, c, mk_edge(5));
-
-        // a=start (not terminal), b=terminal, c=end (not terminal)
-        assert_eq!(n_nonterminal_nodes_in_graph(&graph), 2);
     }
 
     #[test]

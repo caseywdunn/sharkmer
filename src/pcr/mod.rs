@@ -135,10 +135,9 @@ enum PrimerDirection {
 // De Bruijn graph node
 #[derive(Debug, Clone)]
 pub struct DBNode {
-    pub sub_kmer: u64,     // k-1 mer that contains overlap between kmers
-    pub is_start: bool,    // Contains the forward primer
-    pub is_end: bool,      // Contains the reverse primer
-    pub is_terminal: bool, // Is a terminal node
+    pub sub_kmer: u64,  // k-1 mer that contains overlap between kmers
+    pub is_start: bool, // Contains the forward primer
+    pub is_end: bool,   // Contains the reverse primer
 }
 
 #[derive(Debug, Clone)]
@@ -200,10 +199,6 @@ pub struct PCRParams {
     pub high_coverage_ratio: f64,
     #[serde(default = "default_tip_coverage_fraction")]
     pub tip_coverage_fraction: f64,
-    #[serde(skip)]
-    pub stopping_criteria: StoppingCriteria,
-    #[serde(skip)]
-    pub min_component_budget: usize,
 }
 
 fn default_max_length() -> usize {
@@ -239,11 +234,6 @@ fn default_high_coverage_ratio() -> f64 {
 fn default_tip_coverage_fraction() -> f64 {
     DEFAULT_TIP_COVERAGE_FRACTION
 }
-// default_min_component_budget will be used once PCRParams gets serde support for this field
-#[allow(dead_code)]
-fn default_min_component_budget() -> usize {
-    DEFAULT_MIN_COMPONENT_BUDGET
-}
 
 // Default values for tuning constants (exposed as hidden CLI arguments)
 pub const DEFAULT_MAX_DFS_STATES: usize = 100_000;
@@ -252,19 +242,6 @@ pub const DEFAULT_MAX_NODE_VISITS: usize = 2;
 pub const DEFAULT_MAX_NUM_PRIMER_KMERS: usize = 20;
 pub const DEFAULT_HIGH_COVERAGE_RATIO: f64 = 10.0;
 pub const DEFAULT_TIP_COVERAGE_FRACTION: f64 = 0.1;
-pub const DEFAULT_MIN_COMPONENT_BUDGET: usize = 10_000;
-
-/// Controls when to stop searching for PCR products.
-#[derive(Clone, Debug, Default, clap::ValueEnum, PartialEq)]
-pub enum StoppingCriteria {
-    /// Stop as soon as a product is found for each gene (fastest)
-    #[default]
-    FirstProduct,
-    /// Try all promising primer binding regions, skip unpromising ones (moderate)
-    ConnectedOnly,
-    /// Try all primer binding regions exhaustively (slowest, maximum sensitivity)
-    AllComponents,
-}
 
 /// Result of running in silico PCR for a single gene.
 pub struct PcrOutcome {
@@ -523,7 +500,6 @@ pub fn do_pcr(
         );
         trace!("  is_start: {}", seed_graph[node].is_start);
         trace!("  is_end: {}", seed_graph[node].is_end);
-        trace!("  is_terminal: {}", seed_graph[node].is_terminal);
     }
 
     let max_forward_count = forward_primer_kmers.get_max_count();
@@ -807,7 +783,7 @@ pub fn do_pcr(
 
 /// Write an annotated DOT file with node and edge attributes for visualization.
 ///
-/// Node attributes: sub_kmer sequence, is_start, is_end, is_terminal.
+/// Node attributes: sub_kmer sequence, is_start, is_end.
 /// Edge attributes: kmer sequence, kmer count from the graph.
 fn write_annotated_dot(
     graph: &petgraph::stable_graph::StableDiGraph<DBNode, DBEdge>,
@@ -836,10 +812,6 @@ fn write_annotated_dot(
             attrs.push("shape=doublecircle".to_string());
         } else if node.is_end {
             attrs.push("shape=box".to_string());
-        }
-
-        if node.is_terminal {
-            attrs.push("style=dashed".to_string());
         }
 
         writeln!(dot, "  {} [{}];", node_idx.index(), attrs.join(", ")).unwrap();
@@ -920,7 +892,6 @@ mod tests {
                 sub_kmer: 0,
                 is_start: true,
                 is_end: false,
-                is_terminal: false,
             }),
         );
         nodes.insert(
@@ -929,7 +900,6 @@ mod tests {
                 sub_kmer: 1,
                 is_start: false,
                 is_end: false,
-                is_terminal: false,
             }),
         );
         nodes.insert(
@@ -938,7 +908,6 @@ mod tests {
                 sub_kmer: 2,
                 is_start: false,
                 is_end: false,
-                is_terminal: false,
             }),
         );
         nodes.insert(
@@ -947,7 +916,6 @@ mod tests {
                 sub_kmer: 3,
                 is_start: false,
                 is_end: true,
-                is_terminal: false,
             }),
         );
         nodes.insert(
@@ -956,7 +924,6 @@ mod tests {
                 sub_kmer: 4,
                 is_start: false,
                 is_end: true,
-                is_terminal: false,
             }),
         );
 
@@ -1007,38 +974,6 @@ mod tests {
         assert_eq!(graph::descendants(&graph, nodes["a"], 3).len(), 4); // All nodes reachable from a within 3 steps
         assert_eq!(graph::descendants(&graph, nodes["a"], 4).len(), 4); // All nodes reachable from a within 4 steps
         assert_eq!(graph::descendants(&graph, nodes["b"], 2).len(), 3);
-    }
-
-    #[test]
-    fn test_get_backward_edge_counts() {
-        let (graph, nodes) = create_test_graph();
-
-        // Testing using the node indices from the HashMap
-        assert_eq!(
-            graph::get_backward_edge_counts(&graph, nodes["a"], 3).len(),
-            0
-        );
-        assert_eq!(graph::get_backward_edge_counts(&graph, nodes["b"], 3), [5]);
-        assert_eq!(
-            graph::get_backward_edge_counts(&graph, nodes["c"], 3),
-            [10, 5]
-        );
-        assert_eq!(
-            graph::get_backward_edge_counts(&graph, nodes["d"], 3),
-            [4, 10, 5]
-        );
-        assert_eq!(
-            graph::get_backward_edge_counts(&graph, nodes["e"], 3),
-            [1, 10, 5]
-        );
-    }
-
-    #[test]
-    fn test_get_backward_node_degrees() {
-        let (_graph, _nodes) = create_test_graph();
-
-        // get_backward_node_degrees is now private to graph module;
-        // tested indirectly through integration tests
     }
 
     #[test]
@@ -1297,8 +1232,6 @@ mod tests {
             max_primer_kmers: DEFAULT_MAX_NUM_PRIMER_KMERS,
             high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
             tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
-            stopping_criteria: StoppingCriteria::AllComponents,
-            min_component_budget: DEFAULT_MIN_COMPONENT_BUDGET,
         };
 
         (read_string, k, replicates, kmer_counts, params)

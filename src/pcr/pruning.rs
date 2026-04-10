@@ -166,7 +166,7 @@ fn global_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64
 /// A node is reachable from start if a forward BFS from any start node visits
 /// it. A node can reach an end if a backward BFS from any end node visits it.
 /// Nodes that fail either criterion are removed. This also removes
-/// disconnected components and subsumes `remove_orphan_nodes` behavior.
+/// disconnected subgraphs and orphan branches in one pass.
 pub fn reachability_pruning(graph: &mut StableDiGraph<DBNode, DBEdge>) {
     use std::collections::HashSet;
 
@@ -229,7 +229,6 @@ mod tests {
             sub_kmer: 0,
             is_start,
             is_end,
-            is_terminal: false,
         }
     }
 
