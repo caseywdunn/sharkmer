@@ -400,8 +400,8 @@ mod tests {
     use super::super::{
         DBEdge, DBNode, DEFAULT_DEDUP_EDIT_THRESHOLD, DEFAULT_HIGH_COVERAGE_RATIO,
         DEFAULT_MAX_DFS_STATES, DEFAULT_MAX_NODE_VISITS, DEFAULT_MAX_NUM_PRIMER_KMERS,
-        DEFAULT_MAX_PATHS_PER_PAIR, DEFAULT_MAX_SEED_NODES, DEFAULT_MIN_COMPONENT_BUDGET,
-        DEFAULT_TIP_COVERAGE_FRACTION, StoppingCriteria,
+        DEFAULT_MAX_PATHS_PER_PAIR, DEFAULT_MIN_COMPONENT_BUDGET, DEFAULT_TIP_COVERAGE_FRACTION,
+        StoppingCriteria,
     };
     use super::*;
 
@@ -441,7 +441,6 @@ mod tests {
             max_paths_per_pair: DEFAULT_MAX_PATHS_PER_PAIR,
             max_node_visits: DEFAULT_MAX_NODE_VISITS,
             max_primer_kmers: DEFAULT_MAX_NUM_PRIMER_KMERS,
-            max_seed_nodes: DEFAULT_MAX_SEED_NODES,
             high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
             tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
             stopping_criteria: StoppingCriteria::AllComponents,

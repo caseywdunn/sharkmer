@@ -123,7 +123,6 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
         max_paths_per_pair: pcr::DEFAULT_MAX_PATHS_PER_PAIR,
         max_node_visits: pcr::DEFAULT_MAX_NODE_VISITS,
         max_primer_kmers: pcr::DEFAULT_MAX_NUM_PRIMER_KMERS,
-        max_seed_nodes: pcr::DEFAULT_MAX_SEED_NODES,
         high_coverage_ratio: pcr::DEFAULT_HIGH_COVERAGE_RATIO,
         tip_coverage_fraction: pcr::DEFAULT_TIP_COVERAGE_FRACTION,
         stopping_criteria: pcr::StoppingCriteria::FirstProduct,
@@ -278,10 +277,6 @@ pub(crate) struct Args {
     #[arg(long, default_value_t = crate::pcr::DEFAULT_MAX_NUM_PRIMER_KMERS, help_heading = "PCR", hide = true)]
     pub(crate) max_primer_kmers: usize,
 
-    /// Maximum nodes to explore per seed during seed evaluation
-    #[arg(long, default_value_t = crate::pcr::DEFAULT_MAX_SEED_NODES, help_heading = "PCR", hide = true)]
-    pub(crate) max_seed_nodes: usize,
-
     /// Skip edges during extension whose count exceeds this multiple of the median
     #[arg(long, default_value_t = crate::pcr::DEFAULT_HIGH_COVERAGE_RATIO, help_heading = "PCR", hide = true)]
     pub(crate) high_coverage_ratio: f64,
@@ -302,13 +297,6 @@ pub(crate) struct Args {
     /// Per-component node budget: minimum nodes allocated to each seed component
     #[arg(long, default_value_t = crate::pcr::DEFAULT_MIN_COMPONENT_BUDGET, help_heading = "PCR", hide = true)]
     pub(crate) node_budget_component: usize,
-
-    /// Enable read-backed seed evaluation: retain primer-matching reads during
-    /// ingestion and use read divergence to reject off-target seeds. Hidden
-    /// because initial benchmarks show no recovery benefit at 1M reads and a
-    /// 2.7× runtime cost (see dev_docs/DESIGN_DECISIONS.md). May be revisited.
-    #[arg(long, help_heading = "PCR", hide = true)]
-    pub(crate) read_eval: bool,
 
     /// Enable read threading (Pass 2): re-read FASTQ to annotate graph edges with read support.
     /// Hidden: works but loads all reads into RAM before sPCR; needs to be

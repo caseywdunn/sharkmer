@@ -51,7 +51,6 @@ fn main() -> Result<()> {
         p.max_paths_per_pair = args.max_paths_per_pair;
         p.max_node_visits = args.max_node_visits;
         p.max_primer_kmers = args.max_primer_kmers;
-        p.max_seed_nodes = args.max_seed_nodes;
         p.high_coverage_ratio = args.high_coverage_ratio;
         p.tip_coverage_fraction = args.tip_coverage_fraction;
         p.stopping_criteria = args.pcr_stopping_criteria.clone();
@@ -102,17 +101,8 @@ fn main() -> Result<()> {
 
     let show_progress = std::io::stderr().is_terminal();
 
-    // Pre-encode primer Oligos for Pass 1 read retention (opt-in via --read-eval)
-    let oligo_filter = if args.read_eval && !pcr_runs.is_empty() {
-        let sets = pcr::preprocess_primer_oligos(&pcr_runs, k)?;
-        info!(
-            "Read-backed seed evaluation enabled: pre-encoded primer Oligos for {} gene(s)",
-            sets.len()
-        );
-        Some(io::OligoFilter::new(&sets, k))
-    } else {
-        None
-    };
+    // No oligo filter — read-backed seed evaluation has been removed
+    let oligo_filter: Option<io::OligoFilter> = None;
 
     // Set up read cache for remote downloads
     let cache_config = if !args.no_cache && args.ena.is_some() {

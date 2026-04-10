@@ -489,6 +489,7 @@ pub struct PrimerOligoSet {
 /// This runs the text-only portion of primer preprocessing (trim,
 /// ambiguity resolution, mismatch permutation) and encodes each
 /// variant as a 2-bit Oligo. No kmer table access.
+#[allow(dead_code)]
 pub fn preprocess_primer_oligos(pcr_runs: &[PCRParams], k: usize) -> Result<Vec<PrimerOligoSet>> {
     let mut result = Vec::new();
 
@@ -818,7 +819,6 @@ mod tests {
             max_dfs_states: DEFAULT_MAX_DFS_STATES,
             max_paths_per_pair: DEFAULT_MAX_PATHS_PER_PAIR,
             max_node_visits: DEFAULT_MAX_NODE_VISITS,
-            max_seed_nodes: DEFAULT_MAX_SEED_NODES,
             high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
             tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
             stopping_criteria: StoppingCriteria::FirstProduct,

@@ -369,86 +369,15 @@ pub(super) fn create_seed_graph(
 // - The prefix of the kmer of the node is the sub_kmer of the parent node in the graph
 // - The suffix of the kmer of the node is the sub_kmer of the new node in the graph
 // - If a node with the sub_kmer already exists, add a new edge to the existing node
-/// Reset terminal and visited flags on nodes that may have new successors or
-/// predecessors at a lower count threshold. Nodes that are both start AND end
-/// (overlapping primers) stay terminal. Nodes at max-length from their
-/// respective direction's seed stay terminal. All other terminal nodes are
-/// un-terminaled and un-visited so extension can retry them.
-pub(super) fn prepare_for_lower_threshold(
-    graph: &mut StableDiGraph<DBNode, DBEdge>,
-    kmer_counts: &FilteredKmerCounts,
-    params: &PCRParams,
-) {
-    // Collect nodes to reset (cannot mutate graph while iterating)
-    let nodes_to_reset: Vec<NodeIndex> = graph
-        .node_indices()
-        .filter(|&node| {
-            let data = &graph[node];
-            if !data.is_terminal {
-                return false;
-            }
-            // Nodes that are both start and end (overlapping primers) stay terminal
-            if data.is_start && data.is_end {
-                return false;
-            }
-            // Keep terminal if at max-length from start (forward direction)
-            if !data.is_end {
-                if let Ok(Some(path_length)) = get_path_length(graph, node) {
-                    if path_length + kmer_counts.get_k() > params.max_length {
-                        return false;
-                    }
-                }
-            }
-            // Keep terminal if at max-length from end (reverse direction)
-            if !data.is_start {
-                if let Ok(Some(path_length)) = get_path_length_from_end(graph, node) {
-                    if path_length + kmer_counts.get_k() > params.max_length {
-                        return false;
-                    }
-                }
-            }
-            true
-        })
-        .collect();
-
-    for node in nodes_to_reset {
-        graph[node].is_terminal = false;
-        graph[node].visited = false;
-    }
-}
-
-/// Mask all seed nodes NOT in the given component set by marking them
-/// visited and terminal. Returns saved states for later restoration.
-pub(super) fn mask_other_components(
-    graph: &mut StableDiGraph<DBNode, DBEdge>,
-    component_seeds: &std::collections::HashSet<NodeIndex>,
-) -> Vec<(NodeIndex, bool, bool)> {
-    let mut saved = Vec::new();
-    for node in graph.node_indices().collect::<Vec<_>>() {
-        let data = &graph[node];
-        if (data.is_start || data.is_end) && !component_seeds.contains(&node) {
-            saved.push((node, data.visited, data.is_terminal));
-            graph[node].visited = true;
-            graph[node].is_terminal = true;
-        }
-    }
-    saved
-}
-
-/// Restore seed node states that were masked by `mask_other_components`.
-pub(super) fn unmask_nodes(
-    graph: &mut StableDiGraph<DBNode, DBEdge>,
-    saved: &[(NodeIndex, bool, bool)],
-) {
-    for &(node, visited, is_terminal) in saved {
-        if graph.contains_node(node) {
-            graph[node].visited = visited;
-            graph[node].is_terminal = is_terminal;
-        }
-    }
-}
-
 #[allow(clippy::type_complexity)]
+/// Forward extension from explicit starting nodes. The caller provides the
+/// initial frontier — typically a single seed node for per-seed extension.
+/// New nodes added during extension are added to the frontier.
+///
+/// Returns `(graph, node_lookup, found_end_node)`. `found_end_node` is true
+/// if extension reached or added an edge to any node with `is_end=true`,
+/// indicating that a forward-to-reverse path may exist.
+#[allow(clippy::too_many_arguments)]
 pub(super) fn extend_graph(
     mut graph: StableDiGraph<DBNode, DBEdge>,
     mut node_lookup: HashMap<u64, NodeIndex>,
@@ -457,28 +386,18 @@ pub(super) fn extend_graph(
     params: &PCRParams,
     max_num_nodes: usize,
     component_budget: Option<usize>,
+    initial_frontier: Vec<NodeIndex>,
 ) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>, bool)> {
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
     let mut found_end_node = false;
     let nodes_at_start = graph.node_count();
 
-    // Mark end-only nodes as visited so forward extension skips them.
-    // They will be un-visited by reverse extension.
-    for node in graph.node_indices().collect::<Vec<_>>() {
-        if graph[node].is_end && !graph[node].is_start {
-            graph[node].visited = true;
-        }
-    }
-
     let mut last_check: usize = 0;
     let mut median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
     let mut last_median_check: usize = 0;
 
-    // Frontier queue: only unvisited nodes, avoids O(n) scan each iteration
-    let mut frontier: std::collections::VecDeque<NodeIndex> = graph
-        .node_indices()
-        .filter(|&n| !graph[n].visited)
-        .collect();
+    // Frontier queue: explicitly provided by the caller
+    let mut frontier: std::collections::VecDeque<NodeIndex> = initial_frontier.into();
 
     while let Some(node) = frontier.pop_front() {
         // Node may have been visited since it was added to the frontier
@@ -712,6 +631,14 @@ pub fn get_path_length_from_end(
 /// Extend graph in reverse from end nodes by adding predecessor edges/nodes.
 /// Mirrors `extend_graph` but extends leftward: for each unvisited end node,
 /// finds candidate predecessor kmers and adds them to the graph.
+/// Reverse extension from explicit starting nodes. The caller provides the
+/// initial frontier — typically a single end-seed node for per-seed extension.
+///
+/// Returns `(graph, node_lookup, found_start_node)`. `found_start_node` is true
+/// if extension reached or added an edge to any node with `is_start=true`,
+/// indicating that a forward-to-reverse path may exist.
+#[allow(clippy::type_complexity)]
+#[allow(clippy::too_many_arguments)]
 pub(super) fn extend_graph_reverse(
     mut graph: StableDiGraph<DBNode, DBEdge>,
     mut node_lookup: HashMap<u64, NodeIndex>,
@@ -720,29 +647,20 @@ pub(super) fn extend_graph_reverse(
     params: &PCRParams,
     max_num_nodes: usize,
     component_budget: Option<usize>,
-) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>)> {
+    initial_frontier: Vec<NodeIndex>,
+) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>, bool)> {
     let k = kmer_counts.get_k();
     debug_assert!(k > 0 && k <= 32, "k must be in 1..=32, got {}", k);
     let prefix_shift = 2 * (k - 1);
+    let mut found_start_node = false;
     let nodes_at_start = graph.node_count();
 
     let mut last_check: usize = 0;
     let mut median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
     let mut last_median_check: usize = 0;
 
-    // Un-visit end-only nodes so reverse extension processes them.
-    // Forward extension marked them visited to skip them.
-    for node in graph.node_indices().collect::<Vec<_>>() {
-        if graph[node].is_end && !graph[node].is_start && !graph[node].is_terminal {
-            graph[node].visited = false;
-        }
-    }
-
-    // Frontier queue: only unvisited nodes, avoids O(n) scan each iteration
-    let mut frontier: std::collections::VecDeque<NodeIndex> = graph
-        .node_indices()
-        .filter(|&n| !graph[n].visited)
-        .collect();
+    // Frontier queue: explicitly provided by the caller
+    let mut frontier: std::collections::VecDeque<NodeIndex> = initial_frontier.into();
 
     while let Some(node) = frontier.pop_front() {
         // Node may have been visited since it was added to the frontier
@@ -846,6 +764,7 @@ pub(super) fn extend_graph_reverse(
                         let edge = get_dbedge(kmer, kmer_counts);
                         graph.add_edge(existing_node, node, edge);
                         if graph[existing_node].is_start {
+                            found_start_node = true;
                             gene_info!(
                                 params.gene_name,
                                 "Start node reached from end, reverse extension convergence."
@@ -935,7 +854,7 @@ pub(super) fn extend_graph_reverse(
         }
     }
 
-    Ok((graph, node_lookup))
+    Ok((graph, node_lookup, found_start_node))
 }
 
 /// Annotate each edge with its coverage ratio: count / global median.
@@ -1057,6 +976,7 @@ pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
 }
 
 /// Log debug diagnostics about start/end nodes in the extended graph.
+#[allow(dead_code)]
 pub(super) fn log_extended_graph_diagnostics(
     graph: &StableDiGraph<DBNode, DBEdge>,
     kmer_counts: &FilteredKmerCounts,

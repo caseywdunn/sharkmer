@@ -101,6 +101,7 @@ pub(crate) struct OligoFilter {
 /// occupancy is ~0.3%, giving FP rate ~(0.003)^2 ≈ 0.001%.
 const BLOOM_BITS: u32 = 24;
 const BLOOM_SIZE: usize = 1 << BLOOM_BITS;
+#[allow(dead_code)]
 const BLOOM_WORDS: usize = BLOOM_SIZE / 64;
 
 impl OligoFilter {
@@ -110,6 +111,7 @@ impl OligoFilter {
     /// `high_masks` and `low_masks`; duplicate lengths are deduplicated.
     /// The bloom filters and exact sets store raw oligo values (shift
     /// removed), so a single shared set of each covers all trim lengths.
+    #[allow(dead_code)]
     pub(crate) fn new(oligo_sets: &[crate::pcr::PrimerOligoSet], k: usize) -> Self {
         let mut high_bits = vec![0u64; BLOOM_WORDS];
         let mut low_bits = vec![0u64; BLOOM_WORDS];
@@ -229,6 +231,7 @@ fn bloom_h2(val: u64) -> usize {
 
 /// Insert a value into the bloom filter using two hash functions.
 #[inline]
+#[allow(dead_code)]
 fn bloom_insert(bits: &mut [u64], val: u64) {
     let i1 = bloom_h1(val);
     bits[i1 / 64] |= 1u64 << (i1 % 64);
