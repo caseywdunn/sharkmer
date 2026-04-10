@@ -1,5 +1,6 @@
 // pcr/paths.rs — path finding, sequence extraction, dedup
 
+use ahash::{AHashMap, AHashSet};
 use anyhow::{Context, Result};
 use bio::alignment::distance::simd::*;
 use bio::io::fasta;
@@ -41,7 +42,7 @@ type ChildFrame = SmallVec<[(NodeIndex, EdgeIndex, f64); 4]>;
 fn sorted_children(
     graph: &StableDiGraph<DBNode, DBEdge>,
     node: NodeIndex,
-    edge_preferences: Option<&std::collections::HashMap<EdgeIndex, f64>>,
+    edge_preferences: Option<&AHashMap<EdgeIndex, f64>>,
 ) -> ChildFrame {
     let mut outgoing: ChildFrame = graph
         .edges_directed(node, Direction::Outgoing)
@@ -78,7 +79,7 @@ pub fn get_assembly_paths(
     graph: &StableDiGraph<DBNode, DBEdge>,
     kmer_counts: &FilteredKmerCounts,
     params: &PCRParams,
-    edge_preferences: Option<&std::collections::HashMap<EdgeIndex, f64>>,
+    edge_preferences: Option<&AHashMap<EdgeIndex, f64>>,
 ) -> Vec<Vec<PathStep>> {
     // A path of N nodes produces a sequence of (k-1) + (N-1) = N+k-2 bases
     // (first node contributes k-1 bases via its sub_kmer, each subsequent
@@ -104,8 +105,7 @@ pub fn get_assembly_paths(
         params.max_length - k + 2
     };
 
-    let end_nodes: std::collections::HashSet<NodeIndex> =
-        get_end_nodes(graph).into_iter().collect();
+    let end_nodes: AHashSet<NodeIndex> = get_end_nodes(graph).into_iter().collect();
     let mut all_paths = Vec::new();
 
     for start in get_start_nodes(graph) {
@@ -118,8 +118,7 @@ pub fn get_assembly_paths(
         // The starting step has edge = None; all subsequent steps record
         // the edge that connects the previous node to this one.
         let mut path: Vec<PathStep> = vec![(start, None)];
-        let mut visit_counts: std::collections::HashMap<NodeIndex, usize> =
-            std::collections::HashMap::new();
+        let mut visit_counts: AHashMap<NodeIndex, usize> = AHashMap::new();
         visit_counts.insert(start, 1);
 
         // Compute sorted children for the start node

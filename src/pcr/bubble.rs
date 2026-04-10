@@ -4,11 +4,11 @@
 // converge at another) and ranks alternative branches using read-support
 // and branch-point phasing data from threading annotations.
 
+use ahash::{AHashMap, AHashSet};
 use petgraph::Direction;
 use petgraph::graph::{EdgeIndex, NodeIndex};
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::visit::EdgeRef;
-use std::collections::{HashMap, HashSet};
 
 use super::threading::{BranchLink, ThreadingAnnotations};
 use super::{DBEdge, DBNode};
@@ -52,8 +52,8 @@ pub struct BranchRanking {
 pub fn resolve_bubbles(
     graph: &StableDiGraph<DBNode, DBEdge>,
     annotations: &ThreadingAnnotations,
-) -> HashMap<EdgeIndex, f64> {
-    let mut edge_preferences: HashMap<EdgeIndex, f64> = HashMap::new();
+) -> AHashMap<EdgeIndex, f64> {
+    let mut edge_preferences: AHashMap<EdgeIndex, f64> = AHashMap::new();
 
     let bubbles = detect_simple_bubbles(graph);
 
@@ -114,13 +114,13 @@ fn detect_simple_bubbles(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<Bubble> {
         // past the horizon, and pretending their current position is a
         // bubble sink would fabricate a bubble from two unrelated paths
         // that happen to land on the same node at the depth cutoff.
-        let mut branch_endpoints: HashMap<NodeIndex, Vec<Vec<EdgeIndex>>> = HashMap::new();
+        let mut branch_endpoints: AHashMap<NodeIndex, Vec<Vec<EdgeIndex>>> = AHashMap::new();
 
         for edge_ref in &outgoing {
             let first_edge = edge_ref.id();
             let mut current = edge_ref.target();
             let mut branch_edges = vec![first_edge];
-            let mut visited = HashSet::new();
+            let mut visited: AHashSet<NodeIndex> = AHashSet::new();
             visited.insert(source);
             let mut depth = 0;
             let mut terminated_naturally = false;
@@ -353,8 +353,8 @@ mod tests {
         let graph = make_bubble_graph();
 
         let mut annotations = ThreadingAnnotations {
-            edge_support: HashMap::new(),
-            branch_links: HashMap::new(),
+            edge_support: AHashMap::new(),
+            branch_links: AHashMap::new(),
             paired_links: Vec::new(),
         };
 
@@ -482,8 +482,8 @@ mod tests {
         // Both branches get identical support — the tie is resolved by
         // the content-derived branch_sort_key.
         let mut annotations = ThreadingAnnotations {
-            edge_support: HashMap::new(),
-            branch_links: HashMap::new(),
+            edge_support: AHashMap::new(),
+            branch_links: AHashMap::new(),
             paired_links: Vec::new(),
         };
         for e in graph.edge_indices() {

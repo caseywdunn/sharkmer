@@ -4,12 +4,12 @@
 // graph kmers. Annotates edges with read support counts and records
 // branch-point phasing links.
 
+use ahash::AHashMap;
 use petgraph::Direction;
 use petgraph::graph::EdgeIndex;
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::visit::{EdgeRef, IntoEdgeReferences};
 use smallvec::{SmallVec, smallvec};
-use std::collections::HashMap;
 
 use super::{DBEdge, DBNode};
 use crate::io::{Mate, ReadRecord};
@@ -54,9 +54,9 @@ pub struct PairedEndLink {
 #[derive(Debug, Clone)]
 pub struct ThreadingAnnotations {
     /// Per-edge read support counts
-    pub edge_support: HashMap<EdgeIndex, EdgeReadSupport>,
+    pub edge_support: AHashMap<EdgeIndex, EdgeReadSupport>,
     /// Branch-point phasing: (incoming, outgoing) -> count
-    pub branch_links: HashMap<BranchLink, u32>,
+    pub branch_links: AHashMap<BranchLink, u32>,
     /// Paired-end links connecting distant regions of the graph
     pub paired_links: Vec<PairedEndLink>,
 }
@@ -64,8 +64,8 @@ pub struct ThreadingAnnotations {
 impl ThreadingAnnotations {
     fn new() -> Self {
         ThreadingAnnotations {
-            edge_support: HashMap::new(),
-            branch_links: HashMap::new(),
+            edge_support: AHashMap::new(),
+            branch_links: AHashMap::new(),
             paired_links: Vec::new(),
         }
     }
@@ -135,7 +135,7 @@ pub fn thread_reads_paired(
 
     // Group reads by pair index for paired-end phasing
     // Pair index = read_index / 2 for alternating R1/R2 reads
-    let mut pair_runs: HashMap<u64, (Vec<EdgeIndex>, Vec<EdgeIndex>)> = HashMap::new();
+    let mut pair_runs: AHashMap<u64, (Vec<EdgeIndex>, Vec<EdgeIndex>)> = AHashMap::new();
 
     for read in reads {
         let kmers = match kmers_from_ascii(&read.sequence, k) {
@@ -203,8 +203,8 @@ pub fn thread_reads_paired(
 fn build_edge_lookup(
     graph: &StableDiGraph<DBNode, DBEdge>,
     k: usize,
-) -> HashMap<u64, EdgeCandidates> {
-    let mut lookup: HashMap<u64, EdgeCandidates> = HashMap::new();
+) -> AHashMap<u64, EdgeCandidates> {
+    let mut lookup: AHashMap<u64, EdgeCandidates> = AHashMap::new();
 
     for edge_ref in graph.edge_references() {
         let kmer = super::graph::reconstruct_edge_kmer(graph, edge_ref.id());
@@ -260,7 +260,7 @@ fn resolve_candidates(
 /// adjacency to handle inverted-repeat canonical collisions.
 fn find_contiguous_runs(
     kmers: &[u64],
-    edge_lookup: &HashMap<u64, EdgeCandidates>,
+    edge_lookup: &AHashMap<u64, EdgeCandidates>,
     graph: &StableDiGraph<DBNode, DBEdge>,
 ) -> Vec<ReadRun> {
     let mut runs: Vec<ReadRun> = Vec::new();
@@ -341,7 +341,7 @@ fn is_run_unambiguous(graph: &StableDiGraph<DBNode, DBEdge>, edges: &[EdgeIndex]
 fn record_branch_links(
     graph: &StableDiGraph<DBNode, DBEdge>,
     edges: &[EdgeIndex],
-    branch_links: &mut HashMap<BranchLink, u32>,
+    branch_links: &mut AHashMap<BranchLink, u32>,
 ) {
     for window in edges.windows(2) {
         let incoming = window[0];
@@ -622,7 +622,7 @@ mod tests {
         assert!(!is_run_unambiguous(&graph, &[e0, e1]));
 
         // Should record a branch link
-        let mut branch_links = HashMap::new();
+        let mut branch_links = AHashMap::new();
         record_branch_links(&graph, &[e0, e1], &mut branch_links);
         assert_eq!(branch_links.len(), 1);
     }
