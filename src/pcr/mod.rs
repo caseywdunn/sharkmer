@@ -404,6 +404,11 @@ fn compute_coverage_thresholds(primer_count: u32, min_count: u32) -> Vec<u32> {
             .expect("coverage_thresholds is non-empty") = min_count;
     }
 
+    // Deduplicate consecutive identical thresholds (e.g. [4, 4, 4, 2] -> [4, 2]).
+    // When step_size rounds to 0 the loop above produces repeats, which would
+    // make the threshold sweep redo identical work.
+    thresholds.dedup();
+
     thresholds
 }
 
