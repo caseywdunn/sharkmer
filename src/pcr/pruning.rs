@@ -159,33 +159,37 @@ fn global_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64
 /// it. A node can reach an end if a backward BFS from any end node visits it.
 /// Nodes that fail either criterion are removed. This also removes
 /// disconnected subgraphs and orphan branches in one pass.
+///
+/// Both BFS passes are run as a single union BFS — all start nodes are
+/// pushed onto one shared stack before the loop begins, instead of running
+/// a separate per-start BFS that restarted the stack each time. This is
+/// equivalent to the previous behavior (each start's reachable set is
+/// still merged into `forward_reachable`) but does one full sweep instead
+/// of N starts × restart overhead, and reads more directly. Same shape
+/// for the backward BFS over end nodes.
 pub fn reachability_pruning(graph: &mut StableDiGraph<DBNode, DBEdge>) {
-    // Forward reachability from all start nodes
+    // Forward reachability: union BFS from all start nodes at once.
     let mut forward_reachable: AHashSet<NodeIndex> = AHashSet::new();
-    for node in graph.node_indices() {
-        if graph[node].is_start {
-            let mut stack = vec![node];
-            while let Some(n) = stack.pop() {
-                if forward_reachable.insert(n) {
-                    for neighbor in graph.neighbors_directed(n, Direction::Outgoing) {
-                        stack.push(neighbor);
-                    }
-                }
+    let mut stack: Vec<NodeIndex> = graph
+        .node_indices()
+        .filter(|&n| graph[n].is_start)
+        .collect();
+    while let Some(n) = stack.pop() {
+        if forward_reachable.insert(n) {
+            for neighbor in graph.neighbors_directed(n, Direction::Outgoing) {
+                stack.push(neighbor);
             }
         }
     }
 
-    // Backward reachability from all end nodes
+    // Backward reachability: union BFS from all end nodes at once.
     let mut backward_reachable: AHashSet<NodeIndex> = AHashSet::new();
-    for node in graph.node_indices() {
-        if graph[node].is_end {
-            let mut stack = vec![node];
-            while let Some(n) = stack.pop() {
-                if backward_reachable.insert(n) {
-                    for neighbor in graph.neighbors_directed(n, Direction::Incoming) {
-                        stack.push(neighbor);
-                    }
-                }
+    stack.clear();
+    stack.extend(graph.node_indices().filter(|&n| graph[n].is_end));
+    while let Some(n) = stack.pop() {
+        if backward_reachable.insert(n) {
+            for neighbor in graph.neighbors_directed(n, Direction::Incoming) {
+                stack.push(neighbor);
             }
         }
     }

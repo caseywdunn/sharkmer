@@ -8,6 +8,7 @@ use petgraph::Direction;
 use petgraph::graph::{EdgeIndex, NodeIndex};
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::visit::EdgeRef;
+use smallvec::SmallVec;
 
 use crate::kmer::FilteredKmerCounts;
 
@@ -26,6 +27,14 @@ const MAX_NUM_AMPLICONS: usize = 20;
 /// and was previously called three times per edge per path.
 pub type PathStep = (NodeIndex, Option<EdgeIndex>);
 
+/// Children-of-a-node, sorted by score, used as a DFS frame in `child_stack`.
+/// In a de Bruijn graph each node's outgoing edge set is bounded by ≤4 (one
+/// per possible 2-bit suffix base), so the inline capacity exactly matches
+/// the worst case and the SmallVec never spills to the heap. This replaces
+/// a per-call `Vec` heap allocation that fired at every visited node during
+/// DFS — up to `max_dfs_states = 100K` times per gene.
+type ChildFrame = SmallVec<[(NodeIndex, EdgeIndex, f64); 4]>;
+
 /// Get outgoing edges sorted by score (ascending so pop gives highest first).
 /// Each entry carries `(target, edge_id, score)` so the DFS can record the
 /// edge directly into the path without re-finding it later.
@@ -33,8 +42,8 @@ fn sorted_children(
     graph: &StableDiGraph<DBNode, DBEdge>,
     node: NodeIndex,
     edge_preferences: Option<&std::collections::HashMap<EdgeIndex, f64>>,
-) -> Vec<(NodeIndex, EdgeIndex, f64)> {
-    let mut outgoing: Vec<(NodeIndex, EdgeIndex, f64)> = graph
+) -> ChildFrame {
+    let mut outgoing: ChildFrame = graph
         .edges_directed(node, Direction::Outgoing)
         .map(|e| {
             let base_score = e.weight().count as f64;
@@ -115,7 +124,7 @@ pub fn get_assembly_paths(
 
         // Compute sorted children for the start node
         let children = sorted_children(graph, start, edge_preferences);
-        let mut child_stack: Vec<Vec<(NodeIndex, EdgeIndex, f64)>> = vec![children];
+        let mut child_stack: Vec<ChildFrame> = vec![children];
 
         loop {
             if paths_from_start >= params.max_paths_per_pair
