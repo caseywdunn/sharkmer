@@ -1,6 +1,7 @@
 // kmer/histogram.rs
 //! Histogram of kmer count frequencies.
 
+use ahash::AHashMap;
 use anyhow::{Context, Result};
 
 use super::counting::KmerCounts;
@@ -10,7 +11,7 @@ use super::counting::KmerCounts;
 #[derive(Debug, Clone)]
 pub struct Histogram {
     histo: Vec<u64>, // for 0 through histo_max, the number of kmers with that count. 0 isn't actually expected to have a value.
-    histo_large: rustc_hash::FxHashMap<u64, u64>, // for counts larger than histo_max, the number of kmers with that count
+    histo_large: AHashMap<u64, u64>, // for counts larger than histo_max, the number of kmers with that count
     histo_max: u64,
 }
 
@@ -18,7 +19,7 @@ impl Histogram {
     pub fn new(histo_max: &u64) -> Histogram {
         let length = *histo_max as usize + 2;
         let histo: Vec<u64> = vec![0; length];
-        let histo_large: rustc_hash::FxHashMap<u64, u64> = rustc_hash::FxHashMap::default();
+        let histo_large: AHashMap<u64, u64> = AHashMap::default();
         Histogram {
             histo,
             histo_large,

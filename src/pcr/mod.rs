@@ -1,10 +1,10 @@
 // pcr/mod.rs
 
+use ahash::AHashMap;
 use anyhow::{Context, Result};
 use bio::io::fasta;
 use log::{debug, trace};
 use petgraph::graph::NodeIndex;
-use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
 
@@ -553,7 +553,7 @@ pub fn do_pcr(
 
         // Start fresh from the seed graph at each threshold step
         let fresh_graph = seed_graph.clone();
-        let fresh_lookup: HashMap<u64, NodeIndex> = fresh_graph
+        let fresh_lookup: AHashMap<u64, NodeIndex> = fresh_graph
             .node_indices()
             .map(|n| (fresh_graph[n].sub_kmer, n))
             .collect();

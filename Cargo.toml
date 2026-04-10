@@ -10,10 +10,13 @@ repository = "https://github.com/caseywdunn/sharkmer"
 
 # Hash map backend for kmer counting. ahashmap (default) uses AES-NI hardware
 # acceleration and is significantly faster than fxhashmap on modern CPUs.
+# ahash is also used unconditionally in pcr/graph.rs and pcr/pruning.rs as
+# the hot-path hash backend for graph traversal data structures, so it is
+# always pulled in regardless of which kmer-counting backend is selected.
 [features]
 default = ["ahashmap"]
-fxhashmap = []
-ahashmap = ["dep:ahash"]
+fxhashmap = ["dep:rustc-hash"]
+ahashmap = []
 
 
 
@@ -25,8 +28,8 @@ rand = { version = "0.8.5"}
 rayon = { version = "1.7.0"}
 petgraph = { version = "0.6.4"}
 bio = { version = "1.4.0"}
-rustc-hash = { version = "1.1" }
-ahash = { version = "0.8", optional = true }
+rustc-hash = { version = "1.1", optional = true }
+ahash = { version = "0.8" }
 anyhow = { version = "1" }
 serde = { version = "1", features = ["derive"] }
 serde_yaml_ng = { version = "0.10" }

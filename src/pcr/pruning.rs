@@ -1,5 +1,6 @@
 // pcr/pruning.rs — graph cleanup
 
+use ahash::AHashSet;
 use log::{debug, trace};
 use petgraph::Direction;
 use petgraph::graph::NodeIndex;
@@ -168,10 +169,8 @@ fn global_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64
 /// Nodes that fail either criterion are removed. This also removes
 /// disconnected subgraphs and orphan branches in one pass.
 pub fn reachability_pruning(graph: &mut StableDiGraph<DBNode, DBEdge>) {
-    use std::collections::HashSet;
-
     // Forward reachability from all start nodes
-    let mut forward_reachable: HashSet<NodeIndex> = HashSet::new();
+    let mut forward_reachable: AHashSet<NodeIndex> = AHashSet::new();
     for node in graph.node_indices() {
         if graph[node].is_start {
             let mut stack = vec![node];
@@ -186,7 +185,7 @@ pub fn reachability_pruning(graph: &mut StableDiGraph<DBNode, DBEdge>) {
     }
 
     // Backward reachability from all end nodes
-    let mut backward_reachable: HashSet<NodeIndex> = HashSet::new();
+    let mut backward_reachable: AHashSet<NodeIndex> = AHashSet::new();
     for node in graph.node_indices() {
         if graph[node].is_end {
             let mut stack = vec![node];

@@ -1,5 +1,6 @@
 // pcr/graph.rs — graph data structures and construction
 
+use ahash::{AHashMap, AHashSet};
 use anyhow::Result;
 use log::debug;
 // Used only by `summarize_extension` for a single debug-level diagnostic
@@ -9,8 +10,6 @@ use log::debug;
 use petgraph::algo::is_cyclic_directed;
 use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
-use std::collections::HashMap;
-use std::collections::HashSet;
 use std::collections::VecDeque;
 
 use crate::kmer::FilteredKmerCounts;
@@ -117,14 +116,14 @@ pub(super) fn descendants(
     graph: &StableDiGraph<DBNode, DBEdge>,
     node: NodeIndex,
     depth: usize,
-) -> HashSet<NodeIndex> {
-    let mut visited: HashSet<NodeIndex> = HashSet::new();
+) -> AHashSet<NodeIndex> {
+    let mut visited: AHashSet<NodeIndex> = AHashSet::new();
     let mut queue = VecDeque::new();
 
     queue.push_back((node, 0));
     visited.insert(node);
 
-    let mut descendants: HashSet<NodeIndex> = HashSet::new();
+    let mut descendants: AHashSet<NodeIndex> = AHashSet::new();
 
     while let Some((current_node, current_depth)) = queue.pop_front() {
         if current_depth >= depth {
@@ -171,9 +170,9 @@ pub(super) fn create_seed_graph(
     forward_primer_kmers: &KmerCounts,
     reverse_primer_kmers: &KmerCounts,
     kmer_counts: &FilteredKmerCounts,
-) -> (StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>) {
+) -> (StableDiGraph<DBNode, DBEdge>, AHashMap<u64, NodeIndex>) {
     let mut seed_graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
-    let mut node_lookup: HashMap<u64, NodeIndex> = HashMap::new();
+    let mut node_lookup: AHashMap<u64, NodeIndex> = AHashMap::new();
 
     let k = kmer_counts.get_k();
     let suffix_mask = get_suffix_mask(&k);
@@ -294,12 +293,16 @@ enum ExtDir {
 #[allow(clippy::type_complexity)]
 pub(super) fn extend_graph(
     mut graph: StableDiGraph<DBNode, DBEdge>,
-    mut node_lookup: HashMap<u64, NodeIndex>,
+    mut node_lookup: AHashMap<u64, NodeIndex>,
     kmer_counts: &FilteredKmerCounts,
     min_count: &u32,
     params: &PCRParams,
     max_num_nodes: usize,
-) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>, bool)> {
+) -> Result<(
+    StableDiGraph<DBNode, DBEdge>,
+    AHashMap<u64, NodeIndex>,
+    bool,
+)> {
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
     let k = kmer_counts.get_k();
     let prefix_shift = 2 * (k - 1);
@@ -325,16 +328,16 @@ pub(super) fn extend_graph(
 
     // Track per-direction processing. The DBNode visited flag is single-bit
     // and can't distinguish direction, so we use side tables here.
-    let mut processed_fwd: HashSet<NodeIndex> = HashSet::new();
-    let mut processed_rev: HashSet<NodeIndex> = HashSet::new();
+    let mut processed_fwd: AHashSet<NodeIndex> = AHashSet::new();
+    let mut processed_rev: AHashSet<NodeIndex> = AHashSet::new();
 
     // Track which direction added each node. Seeds are tagged by their type
     // (is_start = Forward, is_end = Reverse, dual = both). New nodes inherit
     // their parent's direction. When forward extension reaches a node in the
     // Reverse set (or vice versa), the extensions have met in the middle and
     // a path is potentially complete.
-    let mut added_by_fwd: HashSet<NodeIndex> = HashSet::new();
-    let mut added_by_rev: HashSet<NodeIndex> = HashSet::new();
+    let mut added_by_fwd: AHashSet<NodeIndex> = AHashSet::new();
+    let mut added_by_rev: AHashSet<NodeIndex> = AHashSet::new();
     for node in graph.node_indices() {
         if graph[node].is_start {
             added_by_fwd.insert(node);
