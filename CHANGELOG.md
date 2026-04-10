@@ -15,43 +15,42 @@ usage and output format are largely unchanged.
 
 ### Added
 
-- **Reverse primer seeding**: Both forward and reverse primer kmers now seed
-  the graph, enabling bidirectional extension that dramatically improves
-  recovery when forward-only extension stalls in repetitive regions (#107).
-- **Reverse extension**: When forward extension does not reach reverse primer
-  nodes, a new reverse pass extends inward from end nodes (#107).
-- **Bounded seed evaluation**: Each primer-matching seed is explored locally
-  (up to 500 nodes) before full graph extension. Seeds with excessive
-  branching or dead ends are abandoned early, preventing off-target seeds
-  from consuming the node budget (#105).
-- **Component-aware node budgets**: Surviving seeds are grouped into
-  connected components via union-find and ranked by coverage, connectivity,
-  and branching. The global node budget is allocated proportionally,
-  preventing a single off-target component from starving real targets (#112).
-- **Dynamic global node budget**: The global node budget now scales with data
-  volume (100K nodes at 150M bp up to 500K nodes at 750M bp), replacing the
-  fixed 50K default (#113).
-- **`--pcr-stopping-criteria`**: Controls search exhaustiveness.
-  `first-product` (default) stops after any product is found;
-  `connected-only` tries all connected-seed components;
-  `all-components` is fully exhaustive (#112).
+- **Bidirectional graph extension**: Both forward and reverse primer kmers
+  seed the graph, and a single unified extension pass interleaves forward
+  extension from start seeds with reverse extension from end seeds on a
+  shared frontier. The two directions share one global node budget and one
+  graph; a path is detected the moment forward and reverse extensions meet
+  in the middle. This replaces the v2 forward-only extension that stalled
+  in repetitive regions (#107).
+- **Coverage threshold sweep**: PCR extension sweeps a small ladder of
+  decreasing minimum-count thresholds (high coverage first, falling to the
+  user's `--min-count`), starting fresh from the seed graph at each step
+  and stopping as soon as a complete amplicon path is found. Strict
+  thresholds get a chance to find a clean product before relaxed
+  thresholds let in noisier extensions.
+- **Mismatch-aware primer kmer discovery**: Primer-matching kmers are
+  enumerated with up to `--mismatches` mismatches, then capped at
+  `--max-primer-kmers` to bound seed count. Replaces the v2 exact-match
+  primer kmer discovery (#118).
+- **Dynamic global node budget**: The global node budget scales with data
+  volume — 100K nodes at ≤150M bp, lerping up to 500K nodes at ≥750M bp —
+  instead of the v2 fixed 50K default (#113).
 - **Coverage-aware extension**: Edges with counts exceeding a configurable
-  multiple of the local median (default 10x) are skipped during graph
+  multiple of the local median (default 10×) are skipped during graph
   extension to avoid entering repetitive regions.
-- **Frontier queue extension**: Graph extension uses a frontier queue instead
-  of scanning all nodes each pass, eliminating O(n^2) scaling (#112).
+- **Frontier queue extension**: Graph extension uses a frontier queue
+  instead of scanning all nodes each pass, eliminating O(n²) scaling.
 - **Reachability pruning**: Forward BFS from start nodes and backward BFS
   from end nodes; any node not in both reachable sets is removed. Replaces
-  the old orphan-removal and dead-branch heuristics with a single principled
+  the v2 orphan-removal and dead-branch heuristics with a single principled
   pass.
 - **Coverage-aware tip clipping**: Dead-end tips are removed only if both
   short (fewer than k nodes) and low coverage (below 10% of graph median).
   High-coverage tips are preserved as potential real variants.
 - **DFS state budget**: Explicit budget (default 100K states) and per-start
   path cap (default 20) prevent runaway exploration on complex graphs.
-- **PCR failure reasons**: Per-gene stats YAML now reports why a gene failed:
-  primer not found, all seeds abandoned, node budget exceeded, or no valid
-  path found.
+- **PCR failure reasons**: Per-gene stats YAML now reports why a gene
+  failed: primer not found, node budget exceeded, or no valid path found.
 - **Read caching**: Downloaded ENA reads are cached locally with SHA-256
   verification. Managed with `--cache-dir`, `--no-cache`, `--clear-cache`.
 - **Panel versioning**: Primer panels now carry `name`, `version`,
@@ -65,37 +64,57 @@ usage and output format are largely unchanged.
 - **Validation scripts**: `validate_panel.py` and SLURM batch scripts for
   systematic panel validation across taxa and read depths.
 - Hidden CLI arguments for advanced tuning: `--node-budget-global`,
-  `--node-budget-component`, `--max-seed-nodes`, `--high-coverage-ratio`,
-  `--tip-coverage-fraction`, `--max-dfs-states`, `--max-paths-per-pair`,
-  `--max-node-visits`, `--max-primer-kmers`.
+  `--high-coverage-ratio`, `--tip-coverage-fraction`, `--max-dfs-states`,
+  `--max-paths-per-pair`, `--max-node-visits`, `--max-primer-kmers`.
 
 ### Changed
 
 - **Default k changed from 21 to 19**. This allows primers up to 19 bp to be
   fully represented as single kmers, matching redesigned primer lengths.
-- **Cnidaria CO1 primer redesigned** from 161 cnidarian mitogenomes: degeneracy
-  reduced (48 to 32 kmer variants per pair), reverse primer extended to
-  19 bp. Recovery improved from 5/15 to 13/15 benchmark runs at 99.6%+
-  identity.
+- **Cnidaria CO1 primer redesigned** from 161 cnidarian mitogenomes:
+  degeneracy reduced (48 → 32 kmer variants per pair), reverse primer
+  extended to 19 bp. Recovery improved from 5/15 to 13/15 benchmark runs
+  at 99.6%+ identity.
 - **Panel cleanup**: Removed underperforming primer pairs from bacteria (8
   pairs removed) and insecta (2 pairs removed) panels based on validation
   results.
-- **BFS path length**: Graph path length calculation now uses BFS for correct
-  shortest-path distances in graphs with merges and bubbles.
 - **Path scoring**: Composite metric using median kmer count, coverage
   variance penalty, repeat-edge penalty, and (when available) read-support
   factor.
 - **DFS edge ordering**: Branch points explored in descending coverage order
   so the best-coverage path is found first.
-- **Deduplication scoring**: Paths sorted by composite score rather than raw
-  kmer count.
-- Replaced `serde_yml` with `serde_yaml_ng` to resolve security advisory (#88).
+- **Deduplication scoring**: Paths sorted by composite score rather than
+  raw kmer count.
+- **Updated citation**: `--cite` and README now point to Dunn & Church
+  (2026) Bioinformatics, btag163, the published sharkmer paper.
+- Replaced `serde_yml` with `serde_yaml_ng` to resolve security advisory
+  (#88).
 
 ### Performance
 
-- Frontier queue in graph extension eliminates O(n^2) node scanning (#112).
-- DFS uses explicit stack with incremental push/pop instead of path cloning.
-- Pre-allocated data structures throughout PCR pipeline.
+- **ahash for graph traversal**: Hot HashMap/HashSet data structures across
+  graph extension, reachability pruning, DFS path finding, read threading,
+  bubble resolution, and the histogram large-count tail are now ahash-backed
+  instead of std SipHash. ahash is unconditionally pulled in; the
+  `rustc-hash` dep is now optional, gated behind the `fxhashmap` feature.
+- **Median computation in linear time**: The edge-count median recomputed
+  every 1K nodes during extension now uses `select_nth_unstable` (expected
+  O(E)) instead of `sort()` (O(E log E)). Same partition core is reused
+  for all median callsites in `pcr/graph.rs` and `pcr/pruning.rs`.
+- **EdgeIndex carried through DFS**: `get_assembly_paths` now records the
+  `EdgeIndex` of each step alongside the node, eliminating three
+  `find_edge` calls per edge per path in `generate_sequences_from_paths`.
+- **SmallVec child frame**: The DFS child frame in `sorted_children` is a
+  `SmallVec<[T; 4]>` instead of a `Vec`. De Bruijn out-degree is bounded
+  by 4, so the SmallVec never spills and the per-call heap allocation
+  is gone.
+- **Frontier queue in graph extension** eliminates O(n²) node scanning.
+- **Single-pass reachability BFS**: Forward and backward BFS in
+  `reachability_pruning` each push all start/end nodes onto one shared
+  stack instead of restarting per start.
+- **DFS uses explicit stack** with incremental push/pop instead of path
+  cloning.
+- **Pre-allocated data structures** throughout the PCR pipeline.
 
 ## [2.0.0] - 2026-03-22
 
