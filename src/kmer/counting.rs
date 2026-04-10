@@ -262,6 +262,7 @@ impl KmerCounts {
         self.kmers.len()
     }
 
+    #[allow(dead_code)]
     pub fn get_k(&self) -> usize {
         self.k
     }
@@ -275,6 +276,7 @@ impl KmerCounts {
         self.kmers.len() as u64
     }
 
+    #[allow(dead_code)]
     pub fn counts(&self) -> Vec<u32> {
         self.kmers.values().copied().collect()
     }
