@@ -139,7 +139,6 @@ pub struct DBNode {
     pub is_start: bool,    // Contains the forward primer
     pub is_end: bool,      // Contains the reverse primer
     pub is_terminal: bool, // Is a terminal node
-    pub visited: bool,     // Has been visited during graph traversal
 }
 
 #[derive(Debug, Clone)]
@@ -586,8 +585,10 @@ pub fn do_pcr(
             .map(|n| (fresh_graph[n].sub_kmer, n))
             .collect();
 
-        // Forward extension
-        let (g, l, fwd_found) = graph::extend_graph(
+        // Unified bidirectional extension: processes forward and reverse
+        // seeds in one pass with an interleaved frontier. Symmetric — swapping
+        // forward/reverse primer labels doesn't change behavior.
+        let (final_graph, _final_lookup, found) = graph::extend_graph(
             fresh_graph,
             fresh_lookup,
             kmer_counts,
@@ -596,16 +597,9 @@ pub fn do_pcr(
             max_num_nodes,
         )?;
 
-        // Reverse extension (only if forward didn't reach end)
-        let (final_graph, _final_lookup, rev_found) = if fwd_found {
-            (g, l, false)
-        } else {
-            graph::extend_graph_reverse(g, l, kmer_counts, min_count, params, max_num_nodes)?
-        };
-
         current_graph = final_graph;
 
-        if fwd_found || rev_found {
+        if found {
             found_path_signal = true;
             break 'threshold_loop;
         }
@@ -927,7 +921,6 @@ mod tests {
                 is_start: true,
                 is_end: false,
                 is_terminal: false,
-                visited: false,
             }),
         );
         nodes.insert(
@@ -937,7 +930,6 @@ mod tests {
                 is_start: false,
                 is_end: false,
                 is_terminal: false,
-                visited: false,
             }),
         );
         nodes.insert(
@@ -947,7 +939,6 @@ mod tests {
                 is_start: false,
                 is_end: false,
                 is_terminal: false,
-                visited: false,
             }),
         );
         nodes.insert(
@@ -957,7 +948,6 @@ mod tests {
                 is_start: false,
                 is_end: true,
                 is_terminal: false,
-                visited: false,
             }),
         );
         nodes.insert(
@@ -967,7 +957,6 @@ mod tests {
                 is_start: false,
                 is_end: true,
                 is_terminal: false,
-                visited: false,
             }),
         );
 
@@ -1392,19 +1381,9 @@ mod tests {
         assert_eq!(get_start_nodes(&seed_graph).len(), 1);
         assert_eq!(get_end_nodes(&seed_graph).len(), 1);
 
-        let (graph_after_fwd, node_lookup_after_fwd, _fwd_found_end) = graph::extend_graph(
+        let (mut graph_result, _node_lookup_final, _found) = graph::extend_graph(
             seed_graph,
             node_lookup,
-            &filtered,
-            &min_count,
-            &params,
-            graph::DEFAULT_MAX_NUM_NODES,
-        )
-        .unwrap();
-
-        let (mut graph_result, _node_lookup_final, _rev_found_start) = graph::extend_graph_reverse(
-            graph_after_fwd,
-            node_lookup_after_fwd,
             &filtered,
             &min_count,
             &params,

@@ -1,7 +1,7 @@
 // pcr/graph.rs — graph data structures and construction
 
 use anyhow::{Context, Result};
-use log::{debug, trace};
+use log::debug;
 use petgraph::Direction;
 // Used only by `summarize_extension` for a single debug-level diagnostic
 // about whether the extended graph contains cycles. Not load-bearing for
@@ -67,17 +67,11 @@ pub(super) fn get_suffix_mask(k: &usize) -> u64 {
     (1 << (2 * (*k - 1))) - 1
 }
 
+#[cfg(test)]
 pub fn n_nonterminal_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize {
     graph
         .node_indices()
         .filter(|&node| !graph[node].is_terminal)
-        .count()
-}
-
-pub fn n_unvisited_nodes_in_graph(graph: &StableDiGraph<DBNode, DBEdge>) -> usize {
-    graph
-        .node_indices()
-        .filter(|&node| !graph[node].visited)
         .count()
 }
 
@@ -153,6 +147,43 @@ pub fn get_dbedge(kmer: &u64, kmer_counts: &FilteredKmerCounts) -> DBEdge {
         count: kmer_counts.get_canonical_count(kmer),
         coverage_ratio: 0.0, // set during annotation pass
     }
+}
+
+/// Trace forward (outgoing edges) from a node to find the shortest path to an
+/// end node. Returns `None` if a cycle is encountered before reaching an end.
+/// Mirror of `get_path_length` walking forward along outgoing edges to
+/// the nearest end node. BFS for the same reason as the forward version.
+pub fn get_path_length_from_end(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    new_node: NodeIndex,
+) -> Result<Option<usize>> {
+    let start_data = graph
+        .node_weight(new_node)
+        .context("Node not found in graph during path length calculation")?;
+    if start_data.is_end {
+        return Ok(Some(0));
+    }
+
+    let mut visited: HashSet<NodeIndex> = HashSet::new();
+    let mut queue: VecDeque<(NodeIndex, usize)> = VecDeque::new();
+    visited.insert(new_node);
+    queue.push_back((new_node, 0));
+
+    while let Some((node, dist)) = queue.pop_front() {
+        for neighbor in graph.neighbors_directed(node, Direction::Outgoing) {
+            if !visited.insert(neighbor) {
+                continue;
+            }
+            let neighbor_data = graph
+                .node_weight(neighbor)
+                .context("Node not found in graph during path length calculation")?;
+            if neighbor_data.is_end {
+                return Ok(Some(dist + 1));
+            }
+            queue.push_back((neighbor, dist + 1));
+        }
+    }
+    Ok(None)
 }
 
 /// Reconstruct the full kmer for an edge from its source and target node sub_kmers.
@@ -313,7 +344,6 @@ pub(super) fn create_seed_graph(
                 is_start: true,
                 is_end: false,
                 is_terminal: false,
-                visited: false,
             });
             node_lookup.insert(sub_kmer, node);
         }
@@ -334,7 +364,6 @@ pub(super) fn create_seed_graph(
                 is_start: false,
                 is_end: true,
                 is_terminal: false,
-                visited: false,
             });
             node_lookup.insert(sub_kmer, node);
         }
@@ -370,13 +399,28 @@ pub(super) fn create_seed_graph(
 // - The suffix of the kmer of the node is the sub_kmer of the new node in the graph
 // - If a node with the sub_kmer already exists, add a new edge to the existing node
 
-#[allow(clippy::type_complexity)]
-/// Forward extension. Builds the initial frontier from all unvisited nodes
-/// in the graph. Marks end-only nodes as visited so they're skipped (forward
-/// extension shouldn't proceed FROM end nodes; reverse extension handles them).
+/// Direction tag for entries in the unified bidirectional frontier.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+enum ExtDir {
+    Forward,
+    Reverse,
+}
+
+/// Unified bidirectional graph extension. Processes forward and reverse seeds
+/// in a single pass with an interleaved frontier. Each frontier entry is
+/// tagged with its extension direction; new nodes inherit the direction of
+/// their parent. Forward and reverse extension share the same global node
+/// budget and operate on the same shared graph.
 ///
-/// Returns `(graph, node_lookup, found_end_node)`. `found_end_node` is true
-/// if extension reached or added an edge to any node with `is_end=true`.
+/// Returns `(graph, node_lookup, found_path)`. `found_path` is true when
+/// forward and reverse extensions meet — i.e., a forward extension reaches a
+/// node previously added by reverse extension (including `is_end` seed nodes),
+/// or vice versa. When this happens, the graph contains a potential
+/// start-to-end path.
+///
+/// Symmetric: swapping the "forward" and "reverse" labels on a primer pair
+/// does not change behavior — both directions extend in lockstep.
+#[allow(clippy::type_complexity)]
 pub(super) fn extend_graph(
     mut graph: StableDiGraph<DBNode, DBEdge>,
     mut node_lookup: HashMap<u64, NodeIndex>,
@@ -386,30 +430,56 @@ pub(super) fn extend_graph(
     max_num_nodes: usize,
 ) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>, bool)> {
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
-    let mut found_end_node = false;
-    let nodes_at_start = graph.node_count();
-
-    // Mark end-only nodes as visited so forward extension skips them.
-    // (They will be un-visited by reverse extension.)
-    for node in graph.node_indices().collect::<Vec<_>>() {
-        if graph[node].is_end && !graph[node].is_start {
-            graph[node].visited = true;
-        }
-    }
+    let k = kmer_counts.get_k();
+    let prefix_shift = 2 * (k - 1);
+    let mut found_path = false;
 
     let mut last_check: usize = 0;
     let mut median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
     let mut last_median_check: usize = 0;
 
-    // Frontier queue: all unvisited nodes
-    let mut frontier: std::collections::VecDeque<NodeIndex> = graph
-        .node_indices()
-        .filter(|&n| !graph[n].visited)
-        .collect();
+    // Build the initial frontier from all seeds. Forward seeds get a Forward
+    // entry; reverse seeds get a Reverse entry. Dual-role nodes (overlapping
+    // primers, both is_start and is_end) get both entries so they can be
+    // extended in both directions.
+    let mut frontier: VecDeque<(NodeIndex, ExtDir)> = VecDeque::new();
+    for node in graph.node_indices().collect::<Vec<_>>() {
+        if graph[node].is_start {
+            frontier.push_back((node, ExtDir::Forward));
+        }
+        if graph[node].is_end {
+            frontier.push_back((node, ExtDir::Reverse));
+        }
+    }
 
-    while let Some(node) = frontier.pop_front() {
-        // Node may have been visited since it was added to the frontier
-        if graph[node].visited {
+    // Track per-direction processing. The DBNode visited flag is single-bit
+    // and can't distinguish direction, so we use side tables here.
+    let mut processed_fwd: HashSet<NodeIndex> = HashSet::new();
+    let mut processed_rev: HashSet<NodeIndex> = HashSet::new();
+
+    // Track which direction added each node. Seeds are tagged by their type
+    // (is_start = Forward, is_end = Reverse, dual = both). New nodes inherit
+    // their parent's direction. When forward extension reaches a node in the
+    // Reverse set (or vice versa), the extensions have met in the middle and
+    // a path is potentially complete.
+    let mut added_by_fwd: HashSet<NodeIndex> = HashSet::new();
+    let mut added_by_rev: HashSet<NodeIndex> = HashSet::new();
+    for node in graph.node_indices() {
+        if graph[node].is_start {
+            added_by_fwd.insert(node);
+        }
+        if graph[node].is_end {
+            added_by_rev.insert(node);
+        }
+    }
+
+    while let Some((node, dir)) = frontier.pop_front() {
+        // Skip if already processed in this direction
+        let already_processed = match dir {
+            ExtDir::Forward => !processed_fwd.insert(node),
+            ExtDir::Reverse => !processed_rev.insert(node),
+        };
+        if already_processed {
             continue;
         }
 
@@ -425,8 +495,6 @@ pub(super) fn extend_graph(
             break;
         }
 
-        let _ = nodes_at_start;
-
         // Recompute cached median edge count periodically
         if n_nodes > last_median_check
             && (n_nodes - last_median_check) > EXTENSION_EVALUATION_FREQUENCY
@@ -438,417 +506,144 @@ pub(super) fn extend_graph(
         // Periodically log extension progress
         if (n_nodes > last_check) && ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
             last_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
-
-            gene_info!(params.gene_name, "Evaluating extension:");
+            gene_info!(params.gene_name, "Evaluating bidirectional extension:");
             summarize_extension(&graph, "    ");
         }
 
-        {
-            // Get the suffix of the kmer of the node
-            let sub_kmer = graph[node].sub_kmer;
+        let sub_kmer = graph[node].sub_kmer;
 
-            trace!(
-                "  {} sub_kmer being extended for node {}.",
-                crate::kmer::kmer_to_seq(&sub_kmer, &(kmer_counts.get_k() - 1)),
-                node.index()
-            );
-
-            // Get the kmers that could extend the node (at most 4, one per base)
-            let mut candidate_kmers: [Option<u64>; 4] = [None; 4];
-            let mut n_candidates = 0;
-
-            for base in 0..4u64 {
-                let kmer = (sub_kmer << 2) | base;
-
-                // If the kmer is in the kmer_counts hash (either orientation)
-                // and has count >= min_count, add it to the candidate kmers
-                if let Some(count) = kmer_counts.get_canonical(&kmer) {
-                    if count >= *min_count {
-                        candidate_kmers[n_candidates] = Some(kmer);
-                        n_candidates += 1;
-                    }
+        // Find candidate kmers based on direction
+        let mut candidate_kmers: [Option<u64>; 4] = [None; 4];
+        let mut n_candidates = 0;
+        for base in 0..4u64 {
+            let kmer = match dir {
+                ExtDir::Forward => (sub_kmer << 2) | base,
+                ExtDir::Reverse => (base << prefix_shift) | sub_kmer,
+            };
+            if let Some(count) = kmer_counts.get_canonical(&kmer) {
+                if count >= *min_count {
+                    candidate_kmers[n_candidates] = Some(kmer);
+                    n_candidates += 1;
                 }
             }
-
-            trace!("There are {} candidate kmers for extension.", n_candidates);
-
-            // If there are no candidate kmers, the node is terminal
-            if n_candidates == 0 {
-                trace!("Marking node as terminal because there are no candidates for extension.");
-                graph[node].is_terminal = true;
-                graph[node].visited = true;
-                continue;
-            }
-
-            // Add new nodes if needed, and new edges
-            for kmer in candidate_kmers.iter().flatten() {
-                let suffix = kmer & suffix_mask;
-
-                // Check if the node extends by itself and mark it as terminal if it does
-                if suffix == sub_kmer {
-                    graph[node].is_terminal = true;
-                    graph[node].visited = true;
-                    trace!("Node {} extends itself. Marking as terminal.", node.index());
-                    break;
-                }
-
-                // If the node with sub_kmer == suffix already exists, add an edge to the existing node
-                // Otherwise, create a new node with sub_kmer == suffix, and add an edge to the new node
-
-                if let Some(&existing_node) = node_lookup.get(&suffix) {
-                    // Allow edges that would form cycles — cycles are
-                    // handled during path finding via bounded revisitation.
-                    // Only add the edge if it doesn't already exist.
-                    if graph.find_edge(node, existing_node).is_none() {
-                        let edge = get_dbedge(kmer, kmer_counts);
-                        graph.add_edge(node, existing_node, edge);
-                        if graph[existing_node].is_end {
-                            found_end_node = true;
-                            gene_info!(
-                                params.gene_name,
-                                "End node incorporated into graph, complete PCR product found."
-                            );
-                        }
-                    }
-                } else {
-                    let edge = get_dbedge(kmer, kmer_counts);
-                    let edge_count = edge.count;
-
-                    // Skip edges with count far above the median — they
-                    // likely lead into repetitive regions
-                    if (edge_count as f64) > (median_edge_count * params.high_coverage_ratio) {
-                        trace!(
-                            "Skipping high-coverage edge (count {} > {:.0} × {:.0} median). kmer {}",
-                            edge_count,
-                            params.high_coverage_ratio,
-                            median_edge_count,
-                            crate::kmer::kmer_to_seq(kmer, &kmer_counts.get_k()),
-                        );
-                        continue;
-                    }
-
-                    let new_node = graph.add_node(DBNode {
-                        sub_kmer: suffix,
-                        is_start: false,
-                        is_end: false,
-                        is_terminal: false,
-                        visited: false,
-                    });
-                    node_lookup.insert(suffix, new_node);
-
-                    graph.add_edge(node, new_node, edge);
-
-                    trace!(
-                        "Added sub_kmer {} for new node {} with edge kmer count {}.",
-                        crate::kmer::kmer_to_seq(&suffix, &(kmer_counts.get_k() - 1)),
-                        new_node.index(),
-                        edge_count
-                    );
-
-                    // Check if the new node is max-length - k + 1 from a start node
-                    // If so, mark the new node as terminal
-                    let path_length = get_path_length(&graph, new_node)?;
-
-                    // If the path length is None, the node is part of a cycle and is marked terminal.
-                    // If the path length is Some, is marked terminal if the path length is >= max-length - k + 1
-                    if let Some(path_length) = path_length {
-                        trace!("Path length is {}.", path_length);
-
-                        if path_length + kmer_counts.get_k() > params.max_length {
-                            graph[new_node].is_terminal = true;
-                            graph[new_node].visited = true;
-                            trace!(
-                                "Marking new node {} as terminal because it exceeds max-length from start.",
-                                new_node.index()
-                            );
-                        } else {
-                            frontier.push_back(new_node);
-                        }
-                    } else {
-                        graph[new_node].is_terminal = true;
-                        trace!(
-                            "Marking new node {} as terminal because it is part of a cycle.",
-                            new_node.index()
-                        );
-                    }
-                }
-            }
-            graph[node].visited = true;
-
-            trace!(
-                "There are now {} unvisited and {} non-terminal nodes in the graph.",
-                n_unvisited_nodes_in_graph(&graph),
-                n_nonterminal_nodes_in_graph(&graph)
-            );
         }
-    }
 
-    Ok((graph, node_lookup, found_end_node))
-}
-
-/// Trace forward (outgoing edges) from a node to find the shortest path to an
-/// end node. Returns `None` if a cycle is encountered before reaching an end.
-/// Mirror of `get_path_length` walking forward along outgoing edges to
-/// the nearest end node. BFS for the same reason as the forward version:
-/// a first-outgoing-neighbor walk would over-estimate distance on graphs
-/// with outgoing merges, causing premature terminal marking of nodes
-/// that are in fact within `max_length` of an end via the shortest path.
-pub fn get_path_length_from_end(
-    graph: &StableDiGraph<DBNode, DBEdge>,
-    new_node: NodeIndex,
-) -> Result<Option<usize>> {
-    let start_data = graph
-        .node_weight(new_node)
-        .context("Node not found in graph during path length calculation")?;
-    if start_data.is_end {
-        return Ok(Some(0));
-    }
-
-    let mut visited: HashSet<NodeIndex> = HashSet::new();
-    let mut queue: VecDeque<(NodeIndex, usize)> = VecDeque::new();
-    visited.insert(new_node);
-    queue.push_back((new_node, 0));
-
-    while let Some((node, dist)) = queue.pop_front() {
-        for neighbor in graph.neighbors_directed(node, Direction::Outgoing) {
-            if !visited.insert(neighbor) {
-                continue;
-            }
-            let neighbor_data = graph
-                .node_weight(neighbor)
-                .context("Node not found in graph during path length calculation")?;
-            if neighbor_data.is_end {
-                return Ok(Some(dist + 1));
-            }
-            queue.push_back((neighbor, dist + 1));
-        }
-    }
-    Ok(None)
-}
-
-/// Extend graph in reverse from end nodes by adding predecessor edges/nodes.
-/// Mirrors `extend_graph` but extends leftward: for each unvisited end node,
-/// finds candidate predecessor kmers and adds them to the graph.
-/// Reverse extension from explicit starting nodes. The caller provides the
-/// initial frontier — typically a single end-seed node for per-seed extension.
-///
-/// Returns `(graph, node_lookup, found_start_node)`. `found_start_node` is true
-/// if extension reached or added an edge to any node with `is_start=true`,
-/// indicating that a forward-to-reverse path may exist.
-#[allow(clippy::type_complexity)]
-#[allow(clippy::too_many_arguments)]
-pub(super) fn extend_graph_reverse(
-    mut graph: StableDiGraph<DBNode, DBEdge>,
-    mut node_lookup: HashMap<u64, NodeIndex>,
-    kmer_counts: &FilteredKmerCounts,
-    min_count: &u32,
-    params: &PCRParams,
-    max_num_nodes: usize,
-) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>, bool)> {
-    let k = kmer_counts.get_k();
-    debug_assert!(k > 0 && k <= 32, "k must be in 1..=32, got {}", k);
-    let prefix_shift = 2 * (k - 1);
-    let mut found_start_node = false;
-
-    // Un-visit end-only nodes that aren't terminal so reverse extension
-    // can process them (forward extension marked them visited).
-    for node in graph.node_indices().collect::<Vec<_>>() {
-        if graph[node].is_end && !graph[node].is_start && !graph[node].is_terminal {
-            graph[node].visited = false;
-        }
-    }
-
-    let mut last_check: usize = 0;
-    let mut median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
-    let mut last_median_check: usize = 0;
-
-    // Frontier queue: all unvisited nodes
-    let mut frontier: std::collections::VecDeque<NodeIndex> = graph
-        .node_indices()
-        .filter(|&n| !graph[n].visited)
-        .collect();
-
-    while let Some(node) = frontier.pop_front() {
-        // Node may have been visited since it was added to the frontier
-        if graph[node].visited {
+        if n_candidates == 0 {
+            // Dead end in this direction; the node may still extend in the
+            // other direction (if it's a dual-role seed) so we don't mark
+            // is_terminal here. The visited side-table prevents reprocessing
+            // in this direction.
             continue;
         }
 
-        let n_nodes = graph.node_count();
+        for kmer in candidate_kmers.iter().flatten() {
+            let new_sub_kmer = match dir {
+                ExtDir::Forward => kmer & suffix_mask,
+                ExtDir::Reverse => kmer >> 2,
+            };
 
-        if n_nodes > max_num_nodes {
-            gene_info!(
-                params.gene_name,
-                "Reverse extension: {} nodes exceeds maximum of {}, stopping.",
-                n_nodes,
-                max_num_nodes
-            );
-            break;
-        }
-
-        // Recompute cached median edge count periodically
-        if n_nodes > last_median_check
-            && (n_nodes - last_median_check) > EXTENSION_EVALUATION_FREQUENCY
-        {
-            median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
-            last_median_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
-        }
-
-        // Periodically log extension progress
-        if (n_nodes > last_check) && ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
-            last_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
-            gene_info!(params.gene_name, "Evaluating reverse extension:");
-            summarize_extension(&graph, "    ");
-        }
-
-        {
-            let sub_kmer = graph[node].sub_kmer;
-
-            trace!(
-                "  Reverse extending node {} with sub_kmer {}.",
-                node.index(),
-                crate::kmer::kmer_to_seq(&sub_kmer, &(k - 1)),
-            );
-
-            // Find candidate predecessor kmers: (base << prefix_shift) | sub_kmer
-            let mut candidate_kmers: [Option<u64>; 4] = [None; 4];
-            let mut n_candidates = 0;
-
-            for base in 0u64..4 {
-                let kmer = (base << prefix_shift) | sub_kmer;
-
-                if let Some(count) = kmer_counts.get_canonical(&kmer) {
-                    if count >= *min_count {
-                        candidate_kmers[n_candidates] = Some(kmer);
-                        n_candidates += 1;
-                    }
-                }
-            }
-
-            trace!("There are {} candidate predecessor kmers.", n_candidates);
-
-            // If there are no candidates, the node is terminal
-            if n_candidates == 0 {
-                trace!(
-                    "Marking node {} as terminal (no reverse candidates).",
-                    node.index()
-                );
-                graph[node].is_terminal = true;
-                graph[node].visited = true;
+            // Self-loop: node would extend to itself
+            if new_sub_kmer == sub_kmer {
                 continue;
             }
 
-            for kmer in candidate_kmers.iter().flatten() {
-                let prefix = kmer >> 2;
-
-                // Self-loop detection
-                if prefix == sub_kmer {
-                    graph[node].is_terminal = true;
-                    graph[node].visited = true;
-                    trace!(
-                        "Node {} reverse-extends to itself. Marking as terminal.",
-                        node.index()
-                    );
-                    break;
-                }
-
-                if let Some(&existing_node) = node_lookup.get(&prefix) {
-                    // Add edge from existing predecessor TO current node
-                    if graph.find_edge(existing_node, node).is_none() {
-                        let edge = get_dbedge(kmer, kmer_counts);
-                        graph.add_edge(existing_node, node, edge);
-                        if graph[existing_node].is_start {
-                            found_start_node = true;
-                            gene_info!(
-                                params.gene_name,
-                                "Start node reached from end, reverse extension convergence."
-                            );
-                        }
-                    }
-                } else {
+            if let Some(&existing_node) = node_lookup.get(&new_sub_kmer) {
+                // Connect to existing node. Edge direction depends on extension dir.
+                let edge_check = match dir {
+                    ExtDir::Forward => graph.find_edge(node, existing_node).is_none(),
+                    ExtDir::Reverse => graph.find_edge(existing_node, node).is_none(),
+                };
+                if edge_check {
                     let edge = get_dbedge(kmer, kmer_counts);
-                    let edge_count = edge.count;
-
-                    // Skip edges with count far above the median
-                    if (edge_count as f64) > (median_edge_count * params.high_coverage_ratio) {
-                        trace!(
-                            "Skipping high-coverage reverse edge (count {} > {:.0} x {:.0} median). kmer {}",
-                            edge_count,
-                            params.high_coverage_ratio,
-                            median_edge_count,
-                            crate::kmer::kmer_to_seq(kmer, &k),
-                        );
-                        continue;
-                    }
-
-                    let new_node = graph.add_node(DBNode {
-                        sub_kmer: prefix,
-                        is_start: false,
-                        is_end: false,
-                        is_terminal: false,
-                        visited: false,
-                    });
-                    node_lookup.insert(prefix, new_node);
-
-                    // Edge goes from new predecessor TO current node
-                    graph.add_edge(new_node, node, edge);
-
-                    trace!(
-                        "Added reverse sub_kmer {} for new node {} with edge kmer count {}.",
-                        crate::kmer::kmer_to_seq(&prefix, &(k - 1)),
-                        new_node.index(),
-                        edge_count
-                    );
-
-                    // Check max-length from end node
-                    let path_length = get_path_length_from_end(&graph, new_node);
-
-                    match path_length {
-                        Ok(Some(path_length)) => {
-                            trace!("Reverse path length to end is {}.", path_length);
-                            if path_length + k > params.max_length {
-                                graph[new_node].is_terminal = true;
-                                graph[new_node].visited = true;
-                                trace!(
-                                    "Marking new reverse node {} as terminal (exceeds max-length from end).",
-                                    new_node.index()
-                                );
-                            } else {
-                                frontier.push_back(new_node);
+                    match dir {
+                        ExtDir::Forward => {
+                            graph.add_edge(node, existing_node, edge);
+                            // Path found if forward extension reaches any node
+                            // that was added by reverse extension (or is_end seed)
+                            if added_by_rev.contains(&existing_node) {
+                                if !found_path {
+                                    gene_info!(
+                                        params.gene_name,
+                                        "Forward and reverse extensions met (forward reached a reverse-added node)."
+                                    );
+                                }
+                                found_path = true;
                             }
                         }
-                        Ok(None) => {
+                        ExtDir::Reverse => {
+                            graph.add_edge(existing_node, node, edge);
+                            // Path found if reverse extension reaches any node
+                            // that was added by forward extension (or is_start seed)
+                            if added_by_fwd.contains(&existing_node) {
+                                if !found_path {
+                                    gene_info!(
+                                        params.gene_name,
+                                        "Forward and reverse extensions met (reverse reached a forward-added node)."
+                                    );
+                                }
+                                found_path = true;
+                            }
+                        }
+                    }
+                }
+            } else {
+                let edge = get_dbedge(kmer, kmer_counts);
+                let edge_count = edge.count;
+
+                // Skip high-coverage edges (likely repetitive)
+                if (edge_count as f64) > (median_edge_count * params.high_coverage_ratio) {
+                    continue;
+                }
+
+                let new_node = graph.add_node(DBNode {
+                    sub_kmer: new_sub_kmer,
+                    is_start: false,
+                    is_end: false,
+                    is_terminal: false,
+                });
+                node_lookup.insert(new_sub_kmer, new_node);
+
+                // Tag the new node with the direction that added it
+                match dir {
+                    ExtDir::Forward => {
+                        added_by_fwd.insert(new_node);
+                        graph.add_edge(node, new_node, edge);
+                    }
+                    ExtDir::Reverse => {
+                        added_by_rev.insert(new_node);
+                        graph.add_edge(new_node, node, edge);
+                    }
+                }
+
+                // Check max-length from the appropriate seed end
+                let path_length = match dir {
+                    ExtDir::Forward => get_path_length(&graph, new_node),
+                    ExtDir::Reverse => get_path_length_from_end(&graph, new_node),
+                };
+
+                match path_length {
+                    Ok(Some(len)) => {
+                        if len + k > params.max_length {
                             graph[new_node].is_terminal = true;
-                            trace!(
-                                "Marking new reverse node {} as terminal (cycle detected).",
-                                new_node.index()
-                            );
+                        } else {
+                            // New node inherits parent direction; add to frontier
+                            frontier.push_back((new_node, dir));
                         }
-                        Err(e) => {
-                            // Node has no outgoing path to end — this can happen when
-                            // reverse extension creates a node whose only outgoing
-                            // neighbor was already visited and is not an end node.
-                            // Leave it non-terminal so it continues extending in reverse.
-                            trace!(
-                                "Reverse node {} has no path to end ({}), re-enqueuing.",
-                                new_node.index(),
-                                e
-                            );
-                            frontier.push_back(new_node);
-                        }
+                    }
+                    Ok(None) => {
+                        // Cycle detected
+                        graph[new_node].is_terminal = true;
+                    }
+                    Err(_) => {
+                        // No path to start/end yet; re-enqueue to keep extending
+                        frontier.push_back((new_node, dir));
                     }
                 }
             }
-            graph[node].visited = true;
-
-            trace!(
-                "Reverse extension: {} unvisited nodes remaining.",
-                n_unvisited_nodes_in_graph(&graph),
-            );
         }
     }
 
-    Ok((graph, node_lookup, found_start_node))
+    Ok((graph, node_lookup, found_path))
 }
 
 /// Annotate each edge with its coverage ratio: count / global median.
@@ -1022,7 +817,6 @@ mod tests {
             is_start,
             is_end,
             is_terminal: false,
-            visited: false,
         }
     }
 
@@ -1159,7 +953,6 @@ mod tests {
             is_start: false,
             is_end: false,
             is_terminal: true,
-            visited: false,
         });
         let c = graph.add_node(mk_node(2, false, true));
         graph.add_edge(a, b, mk_edge(5));

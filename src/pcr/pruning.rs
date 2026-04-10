@@ -230,7 +230,6 @@ mod tests {
             is_start,
             is_end,
             is_terminal: false,
-            visited: false,
         }
     }
 

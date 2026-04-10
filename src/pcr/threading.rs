@@ -376,21 +376,18 @@ mod tests {
             is_start: true,
             is_end: false,
             is_terminal: false,
-            visited: false,
         });
         let n1 = graph.add_node(DBNode {
             sub_kmer: 0b0001, // AC
             is_start: false,
             is_end: false,
             is_terminal: false,
-            visited: false,
         });
         let n2 = graph.add_node(DBNode {
             sub_kmer: 0b0110, // CG
             is_start: false,
             is_end: true,
             is_terminal: false,
-            visited: false,
         });
 
         // Edge e0: kmer AAC (0b000001), connects n0->n1
@@ -505,28 +502,24 @@ mod tests {
             is_start: true,
             is_end: false,
             is_terminal: false,
-            visited: false,
         });
         let n_b = graph.add_node(DBNode {
             sub_kmer: 0b0001, // AC
             is_start: false,
             is_end: false,
             is_terminal: false,
-            visited: false,
         });
         let n_c = graph.add_node(DBNode {
             sub_kmer: 0b1011, // GT
             is_start: false,
             is_end: false,
             is_terminal: false,
-            visited: false,
         });
         let n_d = graph.add_node(DBNode {
             sub_kmer: 0b1111, // TT
             is_start: false,
             is_end: true,
             is_terminal: false,
-            visited: false,
         });
 
         // Edge e_x: AAC, n_a -> n_b
@@ -620,7 +613,6 @@ mod tests {
             is_start: false,
             is_end: false,
             is_terminal: true,
-            visited: false,
         });
         let _e2 = graph.add_edge(
             petgraph::graph::NodeIndex::new(1), // n1
