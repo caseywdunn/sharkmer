@@ -17,13 +17,24 @@ use super::{AssemblyRecord, DBEdge, DBNode, PCRParams};
 /// The maximum number of fasta records to return
 const MAX_NUM_AMPLICONS: usize = 20;
 
+/// One step along a found path: the node visited, and the edge that brought
+/// us into it. The starting node of a path has `edge = None`; every other
+/// step records the `EdgeIndex` of the edge that connects it to the previous
+/// step. Carrying the edge alongside the node lets `generate_sequences_from_paths`
+/// look up edge weights directly via `graph.edge_weight()` instead of calling
+/// `graph.find_edge(parent, node)`, which is O(out_degree(parent)) per step
+/// and was previously called three times per edge per path.
+pub type PathStep = (NodeIndex, Option<EdgeIndex>);
+
 /// Get outgoing edges sorted by score (ascending so pop gives highest first).
+/// Each entry carries `(target, edge_id, score)` so the DFS can record the
+/// edge directly into the path without re-finding it later.
 fn sorted_children(
     graph: &StableDiGraph<DBNode, DBEdge>,
     node: NodeIndex,
     edge_preferences: Option<&std::collections::HashMap<EdgeIndex, f64>>,
-) -> Vec<(NodeIndex, f64)> {
-    let mut outgoing: Vec<(NodeIndex, f64)> = graph
+) -> Vec<(NodeIndex, EdgeIndex, f64)> {
+    let mut outgoing: Vec<(NodeIndex, EdgeIndex, f64)> = graph
         .edges_directed(node, Direction::Outgoing)
         .map(|e| {
             let base_score = e.weight().count as f64;
@@ -31,10 +42,10 @@ fn sorted_children(
                 .and_then(|prefs| prefs.get(&e.id()))
                 .copied()
                 .unwrap_or(1.0);
-            (e.target(), base_score * pref)
+            (e.target(), e.id(), base_score * pref)
         })
         .collect();
-    outgoing.sort_by(|a, b| a.1.partial_cmp(&b.1).unwrap_or(std::cmp::Ordering::Equal));
+    outgoing.sort_by(|a, b| a.2.partial_cmp(&b.2).unwrap_or(std::cmp::Ordering::Equal));
     outgoing
 }
 
@@ -43,12 +54,19 @@ fn sorted_children(
 /// of edge count, so the highest-coverage paths are found first.
 /// When `edge_preferences` are provided (from bubble resolution), they
 /// boost the ordering of read-supported edges at branch points.
+///
+/// Each returned path is a list of `PathStep`s. The first step's
+/// `edge` is `None` (the start node has no incoming edge in the path);
+/// every subsequent step's `edge` is `Some(EdgeIndex)` of the edge that
+/// connects the previous node to this one. Recording the edge alongside
+/// the node lets downstream code skip three `find_edge` calls per edge
+/// per path in `generate_sequences_from_paths`.
 pub fn get_assembly_paths(
     graph: &StableDiGraph<DBNode, DBEdge>,
     kmer_counts: &FilteredKmerCounts,
     params: &PCRParams,
     edge_preferences: Option<&std::collections::HashMap<EdgeIndex, f64>>,
-) -> Vec<Vec<NodeIndex>> {
+) -> Vec<Vec<PathStep>> {
     // A path of N nodes produces a sequence of (k-1) + (N-1) = N+k-2 bases
     // (first node contributes k-1 bases via its sub_kmer, each subsequent
     // node extends by one base). Inverting: N = seq_length - k + 2.
@@ -84,14 +102,16 @@ pub fn get_assembly_paths(
         // Stack-based DFS with push/pop backtracking instead of cloning.
         // `path` and `visit_counts` are maintained incrementally.
         // `child_stack` holds remaining children to explore at each depth.
-        let mut path: Vec<NodeIndex> = vec![start];
+        // The starting step has edge = None; all subsequent steps record
+        // the edge that connects the previous node to this one.
+        let mut path: Vec<PathStep> = vec![(start, None)];
         let mut visit_counts: std::collections::HashMap<NodeIndex, usize> =
             std::collections::HashMap::new();
         visit_counts.insert(start, 1);
 
         // Compute sorted children for the start node
         let children = sorted_children(graph, start, edge_preferences);
-        let mut child_stack: Vec<Vec<(NodeIndex, f64)>> = vec![children];
+        let mut child_stack: Vec<Vec<(NodeIndex, EdgeIndex, f64)>> = vec![children];
 
         loop {
             if paths_from_start >= params.max_paths_per_pair
@@ -102,7 +122,7 @@ pub fn get_assembly_paths(
 
             let depth = child_stack.len() - 1;
 
-            if let Some((neighbor, _score)) = child_stack[depth].pop() {
+            if let Some((neighbor, edge_id, _score)) = child_stack[depth].pop() {
                 states_explored += 1;
 
                 let current_visits = visit_counts.get(&neighbor).copied().unwrap_or(0);
@@ -110,8 +130,8 @@ pub fn get_assembly_paths(
                     continue;
                 }
 
-                // Push neighbor onto path
-                path.push(neighbor);
+                // Push neighbor onto path with the edge that connects to it
+                path.push((neighbor, Some(edge_id)));
                 *visit_counts.entry(neighbor).or_insert(0) += 1;
 
                 let path_len = path.len();
@@ -142,7 +162,7 @@ pub fn get_assembly_paths(
                 if child_stack.is_empty() {
                     break;
                 }
-                let backtrack_node = path.pop().expect("BUG: path empty during DFS backtrack");
+                let (backtrack_node, _) = path.pop().expect("BUG: path empty during DFS backtrack");
                 *visit_counts
                     .get_mut(&backtrack_node)
                     .expect("BUG: backtrack node missing from visit_counts") -= 1;
@@ -157,7 +177,7 @@ pub fn get_assembly_paths(
 /// Returns the generated records and the updated amplicon index.
 pub(super) fn generate_sequences_from_paths(
     graph: &StableDiGraph<DBNode, DBEdge>,
-    all_paths: Vec<Vec<NodeIndex>>,
+    all_paths: Vec<Vec<PathStep>>,
     kmer_counts: &FilteredKmerCounts,
     sample_name: &str,
     params: &PCRParams,
@@ -169,24 +189,30 @@ pub(super) fn generate_sequences_from_paths(
     for path in all_paths.into_iter() {
         let mut sequence = String::new();
         let mut edge_counts: Vec<u64> = Vec::new(); // u64 for compute_mean/median compatibility
-        let mut parent_node: NodeIndex = NodeIndex::new(0);
-        for node in path.iter() {
+        // Edges traversed by this path, in order. Recorded once during the
+        // sequence-extraction loop and reused for max_coverage_ratio and
+        // threading-support metrics below — replaces three find_edge passes.
+        let mut path_edges: Vec<EdgeIndex> = Vec::with_capacity(path.len().saturating_sub(1));
+        for &(node, edge_opt) in path.iter() {
             let node_data = graph
-                .node_weight(*node)
+                .node_weight(node)
                 .context("Node not found in graph during sequence generation")?;
             if sequence.is_empty() {
                 sequence =
                     crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(kmer_counts.get_k() - 1));
-                parent_node = *node;
+                debug_assert!(
+                    edge_opt.is_none(),
+                    "first PathStep must have edge = None (this is the start node)"
+                );
             } else {
                 sequence.push(crate::kmer::kmer_last_base(&node_data.sub_kmer));
-
-                let edge = graph
-                    .find_edge(parent_node, *node)
-                    .context("Edge not found between path nodes")?;
-                let edge_data = graph.edge_weight(edge).context("Edge weight not found")?;
+                let edge_idx =
+                    edge_opt.context("Non-start PathStep is missing its edge index (DFS bug)")?;
+                let edge_data = graph
+                    .edge_weight(edge_idx)
+                    .context("Edge weight not found")?;
                 edge_counts.push(edge_data.count as u64);
-                parent_node = *node;
+                path_edges.push(edge_idx);
             }
         }
 
@@ -229,25 +255,20 @@ pub(super) fn generate_sequences_from_paths(
             0.0
         };
 
-        // Compute max coverage ratio from edge annotations
-        let max_coverage_ratio = {
-            let mut max_ratio: f64 = 0.0;
-            let mut parent = path[0];
-            for &node in &path[1..] {
-                if let Some(edge_idx) = graph.find_edge(parent, node) {
-                    let ratio = graph
-                        .edge_weight(edge_idx)
-                        .map_or(0.0, |e| e.coverage_ratio);
-                    if ratio > max_ratio {
-                        max_ratio = ratio;
-                    }
-                }
-                parent = node;
-            }
-            max_ratio
-        };
+        // Compute max coverage ratio from edge annotations.
+        // Reuses the path_edges list captured during sequence extraction.
+        let max_coverage_ratio = path_edges
+            .iter()
+            .map(|&edge_idx| {
+                graph
+                    .edge_weight(edge_idx)
+                    .map_or(0.0, |e| e.coverage_ratio)
+            })
+            .fold(0.0_f64, f64::max);
 
-        // Compute read-support metrics from threading annotations
+        // Compute read-support metrics from threading annotations.
+        // Reuses path_edges; threading.edge_support is keyed by EdgeIndex
+        // so a direct hash lookup replaces the previous find_edge probe.
         let (zero_support_edges, median_unambiguous_support, edge_support_fraction) =
             if let Some(ann) = threading {
                 let mut total_edges = 0u32;
@@ -255,22 +276,18 @@ pub(super) fn generate_sequences_from_paths(
                 let mut zero_count = 0u32;
                 let mut unambiguous_counts: Vec<u64> = Vec::new();
 
-                let mut parent = path[0];
-                for &node in &path[1..] {
-                    if let Some(edge_idx) = graph.find_edge(parent, node) {
-                        total_edges += 1;
-                        match ann.edge_support.get(&edge_idx) {
-                            Some(s) if s.read_support_total > 0 => {
-                                supported_edges += 1;
-                                unambiguous_counts.push(s.read_support_unambiguous as u64);
-                            }
-                            _ => {
-                                zero_count += 1;
-                                unambiguous_counts.push(0);
-                            }
+                for &edge_idx in &path_edges {
+                    total_edges += 1;
+                    match ann.edge_support.get(&edge_idx) {
+                        Some(s) if s.read_support_total > 0 => {
+                            supported_edges += 1;
+                            unambiguous_counts.push(s.read_support_unambiguous as u64);
+                        }
+                        _ => {
+                            zero_count += 1;
+                            unambiguous_counts.push(0);
                         }
                     }
-                    parent = node;
                 }
 
                 let frac = if total_edges > 0 {
@@ -464,7 +481,11 @@ mod tests {
         let paths = get_assembly_paths(&graph, &fkc, &params, None);
 
         assert_eq!(paths.len(), 1);
-        assert_eq!(paths[0], vec![s, a, b, e]);
+        let nodes: Vec<NodeIndex> = paths[0].iter().map(|&(n, _)| n).collect();
+        assert_eq!(nodes, vec![s, a, b, e]);
+        // First step's edge is None (start node), the rest are Some.
+        assert!(paths[0][0].1.is_none());
+        assert!(paths[0][1..].iter().all(|&(_, e)| e.is_some()));
     }
 
     /// Diamond graph: start -> {a, b} -> end. Should find two paths.
@@ -557,13 +578,15 @@ mod tests {
         let s = graph.add_node(mk_node(0, true, false));
         let lo = graph.add_node(mk_node(1, false, false));
         let hi = graph.add_node(mk_node(2, false, false));
-        graph.add_edge(s, lo, mk_edge(1));
-        graph.add_edge(s, hi, mk_edge(100));
+        let lo_edge = graph.add_edge(s, lo, mk_edge(1));
+        let hi_edge = graph.add_edge(s, hi, mk_edge(100));
 
         let children = sorted_children(&graph, s, None);
         assert_eq!(children.len(), 2);
         // Ascending: low first, high second (so pop gives high)
         assert_eq!(children[0].0, lo);
+        assert_eq!(children[0].1, lo_edge);
         assert_eq!(children[1].0, hi);
+        assert_eq!(children[1].1, hi_edge);
     }
 }
