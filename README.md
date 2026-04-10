@@ -12,11 +12,11 @@
 
 ## Citing
 
-We are working on a paper that describes sharkmer. In the meantime, please cite the two papers below. We wrote the tool for these projects, though we don't describe it in detail in these prior publications.
+If you use sharkmer in published work, please cite:
 
 For *in silico* PCR:
 
-> Church et al. (2025) Population genomics of a sailing siphonophore reveals genetic structure in the open ocean. Current Biology, 35(15), 3556-3569.e6. [doi:10.1016/j.cub.2025.05.066](https://doi.org/10.1016/j.cub.2025.05.066)
+> Dunn CW, Church SH (2026) Sharkmer: repurposing PCR primers for targeted genome assembly using in silico PCR. Bioinformatics, btag163. [doi:10.1093/bioinformatics/btag163](https://doi.org/10.1093/bioinformatics/btag163)
 
 For incremental kmer counting:
 
