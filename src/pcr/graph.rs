@@ -64,19 +64,39 @@ pub(super) fn get_suffix_mask(k: &usize) -> u64 {
     (1 << (2 * (*k - 1))) - 1
 }
 
-fn compute_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>, default: f64) -> f64 {
-    let mut counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
+/// Compute the median of `counts` as an f64, using `select_nth_unstable`.
+///
+/// This is expected-linear time, vs `sort()`'s O(n log n) — a measurable
+/// difference because `compute_median_edge_count` runs every
+/// `EXTENSION_EVALUATION_FREQUENCY` nodes during graph extension, where
+/// `counts.len()` grows with the edge count of the working graph (up to
+/// hundreds of thousands of edges on dense panels).
+///
+/// Returns `None` if `counts` is empty. The even-length case avoids the
+/// extra full sort: after partitioning at `mid`, the smaller half is
+/// `counts[..mid]` (any order, but bounded above by `counts[mid]`), so a
+/// single linear scan over that half finds the (mid-1)-th order statistic.
+pub(super) fn median_u32_f64(mut counts: Vec<u32>) -> Option<f64> {
     if counts.is_empty() {
-        default
-    } else {
-        counts.sort();
-        let mid = counts.len() / 2;
-        if counts.len() % 2 == 0 {
-            (counts[mid - 1] as f64 + counts[mid] as f64) / 2.0
-        } else {
-            counts[mid] as f64
-        }
+        return None;
     }
+    let mid = counts.len() / 2;
+    if counts.len() % 2 == 0 {
+        counts.select_nth_unstable(mid);
+        let upper_min = counts[mid] as f64;
+        let lower_max = *counts[..mid]
+            .iter()
+            .max()
+            .expect("non-empty lower half when len >= 2") as f64;
+        Some((lower_max + upper_min) / 2.0)
+    } else {
+        Some(*counts.select_nth_unstable(mid).1 as f64)
+    }
+}
+
+fn compute_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>, default: f64) -> f64 {
+    let counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
+    median_u32_f64(counts).unwrap_or(default)
 }
 
 pub fn get_dbedge(kmer: &u64, kmer_counts: &FilteredKmerCounts) -> DBEdge {
@@ -504,18 +524,10 @@ pub(super) fn extend_graph(
 /// High ratios (>> 1.0) indicate potentially repetitive edges.
 /// Low ratios (<< 1.0) indicate potential sequencing errors.
 pub(super) fn annotate_coverage_ratios(graph: &mut StableDiGraph<DBNode, DBEdge>) {
-    let mut counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
-    if counts.is_empty() {
+    let counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
+    let Some(median) = median_u32_f64(counts) else {
         return;
-    }
-    counts.sort();
-    let mid = counts.len() / 2;
-    let median = if counts.len() % 2 == 0 {
-        (counts[mid - 1] as f64 + counts[mid] as f64) / 2.0
-    } else {
-        counts[mid] as f64
     };
-
     if median <= 0.0 {
         return;
     }
@@ -687,5 +699,45 @@ mod tests {
         graph.add_edge(a, c, mk_edge(10));
         // Sorted: [5, 10, 15], median = 10
         assert_eq!(compute_median_edge_count(&graph, 0.0), 10.0);
+    }
+
+    #[test]
+    fn test_median_u32_f64_empty() {
+        assert_eq!(median_u32_f64(vec![]), None);
+    }
+
+    #[test]
+    fn test_median_u32_f64_single() {
+        assert_eq!(median_u32_f64(vec![42]), Some(42.0));
+    }
+
+    #[test]
+    fn test_median_u32_f64_odd() {
+        // Sorted: [1, 5, 9] → median 5
+        assert_eq!(median_u32_f64(vec![9, 1, 5]), Some(5.0));
+    }
+
+    #[test]
+    fn test_median_u32_f64_even() {
+        // Sorted: [1, 5, 9, 11] → median (5 + 9) / 2 = 7
+        assert_eq!(median_u32_f64(vec![11, 1, 9, 5]), Some(7.0));
+    }
+
+    #[test]
+    fn test_median_u32_f64_even_two() {
+        // Smallest even case: [3, 7] → median 5
+        assert_eq!(median_u32_f64(vec![7, 3]), Some(5.0));
+    }
+
+    #[test]
+    fn test_median_u32_f64_large_values_no_overflow() {
+        // u32::MAX-adjacent values whose pairwise sum would overflow u32
+        // — verify we never wrap (the helper casts to f64 before adding).
+        let large = u32::MAX - 1;
+        let huge = u32::MAX;
+        let m = median_u32_f64(vec![large, huge]).unwrap();
+        // (large + huge) / 2 in f64 — within fp precision of (large+huge)/2.
+        let expected = (large as f64 + huge as f64) / 2.0;
+        assert!((m - expected).abs() < 1.0);
     }
 }
