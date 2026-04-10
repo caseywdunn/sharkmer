@@ -369,15 +369,14 @@ pub(super) fn create_seed_graph(
 // - The prefix of the kmer of the node is the sub_kmer of the parent node in the graph
 // - The suffix of the kmer of the node is the sub_kmer of the new node in the graph
 // - If a node with the sub_kmer already exists, add a new edge to the existing node
+
 #[allow(clippy::type_complexity)]
-/// Forward extension from explicit starting nodes. The caller provides the
-/// initial frontier — typically a single seed node for per-seed extension.
-/// New nodes added during extension are added to the frontier.
+/// Forward extension. Builds the initial frontier from all unvisited nodes
+/// in the graph. Marks end-only nodes as visited so they're skipped (forward
+/// extension shouldn't proceed FROM end nodes; reverse extension handles them).
 ///
 /// Returns `(graph, node_lookup, found_end_node)`. `found_end_node` is true
-/// if extension reached or added an edge to any node with `is_end=true`,
-/// indicating that a forward-to-reverse path may exist.
-#[allow(clippy::too_many_arguments)]
+/// if extension reached or added an edge to any node with `is_end=true`.
 pub(super) fn extend_graph(
     mut graph: StableDiGraph<DBNode, DBEdge>,
     mut node_lookup: HashMap<u64, NodeIndex>,
@@ -385,19 +384,28 @@ pub(super) fn extend_graph(
     min_count: &u32,
     params: &PCRParams,
     max_num_nodes: usize,
-    component_budget: Option<usize>,
-    initial_frontier: Vec<NodeIndex>,
 ) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>, bool)> {
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
     let mut found_end_node = false;
     let nodes_at_start = graph.node_count();
 
+    // Mark end-only nodes as visited so forward extension skips them.
+    // (They will be un-visited by reverse extension.)
+    for node in graph.node_indices().collect::<Vec<_>>() {
+        if graph[node].is_end && !graph[node].is_start {
+            graph[node].visited = true;
+        }
+    }
+
     let mut last_check: usize = 0;
     let mut median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
     let mut last_median_check: usize = 0;
 
-    // Frontier queue: explicitly provided by the caller
-    let mut frontier: std::collections::VecDeque<NodeIndex> = initial_frontier.into();
+    // Frontier queue: all unvisited nodes
+    let mut frontier: std::collections::VecDeque<NodeIndex> = graph
+        .node_indices()
+        .filter(|&n| !graph[n].visited)
+        .collect();
 
     while let Some(node) = frontier.pop_front() {
         // Node may have been visited since it was added to the frontier
@@ -417,17 +425,7 @@ pub(super) fn extend_graph(
             break;
         }
 
-        if let Some(budget) = component_budget {
-            if n_nodes.saturating_sub(nodes_at_start) >= budget {
-                gene_info!(
-                    params.gene_name,
-                    "Component budget exhausted ({} nodes added, budget {}), moving to next component.",
-                    n_nodes - nodes_at_start,
-                    budget
-                );
-                break;
-            }
-        }
+        let _ = nodes_at_start;
 
         // Recompute cached median edge count periodically
         if n_nodes > last_median_check
@@ -646,21 +644,29 @@ pub(super) fn extend_graph_reverse(
     min_count: &u32,
     params: &PCRParams,
     max_num_nodes: usize,
-    component_budget: Option<usize>,
-    initial_frontier: Vec<NodeIndex>,
 ) -> Result<(StableDiGraph<DBNode, DBEdge>, HashMap<u64, NodeIndex>, bool)> {
     let k = kmer_counts.get_k();
     debug_assert!(k > 0 && k <= 32, "k must be in 1..=32, got {}", k);
     let prefix_shift = 2 * (k - 1);
     let mut found_start_node = false;
-    let nodes_at_start = graph.node_count();
+
+    // Un-visit end-only nodes that aren't terminal so reverse extension
+    // can process them (forward extension marked them visited).
+    for node in graph.node_indices().collect::<Vec<_>>() {
+        if graph[node].is_end && !graph[node].is_start && !graph[node].is_terminal {
+            graph[node].visited = false;
+        }
+    }
 
     let mut last_check: usize = 0;
     let mut median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
     let mut last_median_check: usize = 0;
 
-    // Frontier queue: explicitly provided by the caller
-    let mut frontier: std::collections::VecDeque<NodeIndex> = initial_frontier.into();
+    // Frontier queue: all unvisited nodes
+    let mut frontier: std::collections::VecDeque<NodeIndex> = graph
+        .node_indices()
+        .filter(|&n| !graph[n].visited)
+        .collect();
 
     while let Some(node) = frontier.pop_front() {
         // Node may have been visited since it was added to the frontier
@@ -678,18 +684,6 @@ pub(super) fn extend_graph_reverse(
                 max_num_nodes
             );
             break;
-        }
-
-        if let Some(budget) = component_budget {
-            if n_nodes.saturating_sub(nodes_at_start) >= budget {
-                gene_info!(
-                    params.gene_name,
-                    "Reverse extension: component budget exhausted ({} nodes added, budget {}), moving to next component.",
-                    n_nodes - nodes_at_start,
-                    budget
-                );
-                break;
-            }
         }
 
         // Recompute cached median edge count periodically

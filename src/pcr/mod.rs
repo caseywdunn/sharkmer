@@ -4,6 +4,7 @@ use anyhow::{Context, Result};
 use bio::io::fasta;
 use log::{debug, trace};
 use petgraph::graph::NodeIndex;
+use std::collections::HashMap;
 use std::fs::File;
 use std::io::Write;
 
@@ -545,261 +546,191 @@ pub fn do_pcr(
     debug!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
     let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
-    let mut amplicon_index: usize = 0;
+    let amplicon_index: usize = 0;
     let mut failure_reason: Option<String> = Some("no path found".to_string());
 
-    // The graph is shared across all seed extensions. Each seed adds nodes
-    // to the same graph. When a seed's extension reaches a node already in
-    // the graph (added by another seed), an edge is added — meeting in the
-    // middle happens for free via node_lookup.
-    let mut current_graph = seed_graph;
-    let mut current_node_lookup = node_lookup;
+    // Coverage threshold sweep: at each min_count, clone the seed graph fresh
+    // and extend at that threshold. Pruning + path-finding happens after each
+    // step. If a product is found, stop. This matches v2's approach: each
+    // threshold step is independent — no incremental state across steps.
+    gene_info!(
+        params.gene_name,
+        "Extending graph with thresholds {:?} (global budget {})",
+        coverage_thresholds,
+        max_num_nodes
+    );
 
-    // Build a prioritized list of seeds. Each seed gets a turn at extension.
-    // Priority = max kmer count of the matching primer kmer (higher = more
-    // likely on-target).
-    let suffix_mask: u64 = (1u64 << (2 * (kmer_counts.get_k() - 1))) - 1;
-    let mut seeds: Vec<(NodeIndex, f64, bool)> = Vec::new(); // (node, priority, is_forward)
-    for node in current_graph.node_indices() {
-        let data = &current_graph[node];
-        if !data.is_start && !data.is_end {
-            continue;
-        }
+    let extend_start = std::time::Instant::now();
+    let mut found_path_signal = false;
+    let mut current_graph = seed_graph.clone();
+    let _ = node_lookup;
 
-        let mut priority = 0.0f64;
-        if data.is_start {
-            for (kmer, count) in forward_primer_kmers.iter() {
-                if (kmer >> 2) == data.sub_kmer {
-                    priority = priority.max(*count as f64);
-                }
-            }
-            seeds.push((node, priority, true));
-        }
-        if data.is_end {
-            let mut rev_priority = 0.0f64;
-            for (kmer, count) in reverse_primer_kmers.iter() {
-                let rc = crate::kmer::revcomp_kmer(kmer, &kmer_counts.get_k());
-                if (rc & suffix_mask) == data.sub_kmer {
-                    rev_priority = rev_priority.max(*count as f64);
-                }
-            }
-            seeds.push((node, rev_priority, false));
+    'threshold_loop: for (step_idx, min_count) in coverage_thresholds.iter().enumerate() {
+        gene_info!(
+            params.gene_name,
+            "Threshold step {}/{} (min_count={})",
+            step_idx + 1,
+            coverage_thresholds.len(),
+            min_count
+        );
+
+        // Start fresh from the seed graph at each threshold step
+        let fresh_graph = seed_graph.clone();
+        let fresh_lookup: HashMap<u64, NodeIndex> = fresh_graph
+            .node_indices()
+            .map(|n| (fresh_graph[n].sub_kmer, n))
+            .collect();
+
+        // Forward extension
+        let (g, l, fwd_found) = graph::extend_graph(
+            fresh_graph,
+            fresh_lookup,
+            kmer_counts,
+            min_count,
+            params,
+            max_num_nodes,
+        )?;
+
+        // Reverse extension (only if forward didn't reach end)
+        let (final_graph, _final_lookup, rev_found) = if fwd_found {
+            (g, l, false)
+        } else {
+            graph::extend_graph_reverse(g, l, kmer_counts, min_count, params, max_num_nodes)?
+        };
+
+        current_graph = final_graph;
+
+        if fwd_found || rev_found {
+            found_path_signal = true;
+            break 'threshold_loop;
         }
     }
-    // Sort by priority descending
-    seeds.sort_by(|a, b| b.1.partial_cmp(&a.1).unwrap_or(std::cmp::Ordering::Equal));
+
+    if current_graph.node_count() >= max_num_nodes {
+        failure_reason = Some("node budget exceeded".to_string());
+    }
 
     gene_info!(
         params.gene_name,
-        "Extending {} seeds in priority order (per-seed budget {})",
-        seeds.len(),
-        params.min_component_budget
+        "Done. Time to extend graph: {}",
+        format_duration(extend_start.elapsed())
     );
 
-    // Per-seed budget. This is the cap on nodes added by each seed's extension.
-    let per_seed_budget = Some(params.min_component_budget);
+    if found_path_signal {
+        // Prune and find paths on a copy
+        let mut pruned_graph = current_graph.clone();
+        let prune_start = std::time::Instant::now();
+        gene_info!(params.gene_name, "Pruning the assembly graph...");
 
-    let mut found_any_product = false;
+        pruning::remove_low_coverage_tips(
+            &mut pruned_graph,
+            &kmer_counts.get_k(),
+            params.tip_coverage_fraction,
+        );
+        pruning::reachability_pruning(&mut pruned_graph);
+        graph::annotate_coverage_ratios(&mut pruned_graph);
 
-    'seed_loop: for (seed_idx, (seed_node, priority, is_forward)) in seeds.iter().enumerate() {
         gene_info!(
             params.gene_name,
-            "Seed {} ({}, priority {:.0}): extending",
-            seed_idx,
-            if *is_forward { "forward" } else { "reverse" },
-            priority
+            "Done. Time to prune graph: {}",
+            format_duration(prune_start.elapsed())
         );
 
-        // Extend this seed once at the user's min_count.
-        // No threshold sweep — that complicates per-seed extension because
-        // leaves added at higher thresholds aren't in the next step's
-        // frontier. Per-seed extension uses min_count directly.
-        let mut seed_found_path = false;
-        let extend_start = std::time::Instant::now();
-
-        // Reset visited/terminal on the seed so it can be processed.
-        // It may have been marked by another seed's extension reaching it.
-        current_graph[*seed_node].visited = false;
-        current_graph[*seed_node].is_terminal = false;
-
-        // Build the initial frontier with just this one seed
-        let initial_frontier = vec![*seed_node];
-
-        let (extended_graph, extended_node_lookup, found_opposite) = if *is_forward {
-            let (g, l, found_end) = graph::extend_graph(
-                current_graph,
-                current_node_lookup,
-                kmer_counts,
-                &params.min_count,
-                params,
-                max_num_nodes,
-                per_seed_budget,
-                initial_frontier,
-            )?;
-            (g, l, found_end)
-        } else {
-            let (g, l, found_start) = graph::extend_graph_reverse(
-                current_graph,
-                current_node_lookup,
-                kmer_counts,
-                &params.min_count,
-                params,
-                max_num_nodes,
-                per_seed_budget,
-                initial_frontier,
-            )?;
-            (g, l, found_start)
-        };
-
-        current_graph = extended_graph;
-        current_node_lookup = extended_node_lookup;
-
-        // Track if budget was the limiting factor
-        if current_graph.node_count() >= max_num_nodes {
-            failure_reason = Some("node budget exceeded".to_string());
+        if dump_graph || log::log_enabled!(log::Level::Trace) {
+            let dot_string = write_annotated_dot(&pruned_graph, kmer_counts);
+            let file_name = format!(
+                "{}{}_{}_{}.dot",
+                output_directory, sample_name, params.gene_name, params.min_count
+            );
+            trace!("Writing dot file {}", file_name);
+            let mut file = File::create(&file_name).context("Unable to create dot file")?;
+            file.write_all(dot_string.as_bytes())
+                .context("Unable to write dot file")?;
         }
 
-        gene_info!(
-            params.gene_name,
-            "  Done. Time to extend graph: {}",
-            format_duration(extend_start.elapsed())
-        );
-
-        // Only attempt path finding if extension reached an opposite seed
-        // (forward reaching is_end, or reverse reaching is_start)
-        if found_opposite {
-            // Prune and find paths on a copy — the original graph is kept
-            // for the next threshold step or next seed
-            let mut pruned_graph = current_graph.clone();
-            let prune_start = std::time::Instant::now();
-            gene_info!(
-                params.gene_name,
-                "  Opposite seed reached, pruning the assembly graph..."
-            );
-
-            pruning::remove_low_coverage_tips(
-                &mut pruned_graph,
-                &kmer_counts.get_k(),
-                params.tip_coverage_fraction,
-            );
-            pruning::reachability_pruning(&mut pruned_graph);
-            graph::annotate_coverage_ratios(&mut pruned_graph);
-
-            gene_info!(
-                params.gene_name,
-                "  Done. Time to prune graph: {}",
-                format_duration(prune_start.elapsed())
-            );
-
-            if dump_graph || log::log_enabled!(log::Level::Trace) {
-                let dot_string = write_annotated_dot(&pruned_graph, kmer_counts);
-                let file_name = format!(
-                    "{}{}_{}_{}.dot",
-                    output_directory, sample_name, params.gene_name, params.min_count
+        // Thread reads through the pruned graph (if available)
+        let threading_annotations = if let Some(ref reads) = gene_reads {
+            if !reads.is_empty() {
+                let start = std::time::Instant::now();
+                gene_info!(
+                    params.gene_name,
+                    "Threading reads through assembly graph..."
                 );
-                trace!("Writing dot file {}", file_name);
-                let mut file = File::create(&file_name).context("Unable to create dot file")?;
-                file.write_all(dot_string.as_bytes())
-                    .context("Unable to write dot file")?;
-            }
-
-            // Thread reads through the pruned graph (if available)
-            let threading_annotations = if let Some(ref reads) = gene_reads {
-                if !reads.is_empty() {
-                    let start = std::time::Instant::now();
-                    gene_info!(
-                        params.gene_name,
-                        "  Threading reads through assembly graph..."
-                    );
-                    let has_paired = reads.iter().any(|r| r.mate != crate::io::Mate::Unpaired);
-                    let ann = if has_paired {
-                        threading::thread_reads_paired(&pruned_graph, reads, kmer_counts.get_k())
-                    } else {
-                        threading::thread_reads(&pruned_graph, reads, kmer_counts.get_k())
-                    };
-                    let supported_edges = ann
-                        .edge_support
-                        .values()
-                        .filter(|s| s.read_support_total > 0)
-                        .count();
-                    gene_info!(
-                        params.gene_name,
-                        "  Threading: {}/{} edges have read support, {} branch links, {} paired links. Time: {}",
-                        supported_edges,
-                        pruned_graph.edge_count(),
-                        ann.branch_links.len(),
-                        ann.paired_links.len(),
-                        format_duration(start.elapsed())
-                    );
-                    Some(ann)
+                let has_paired = reads.iter().any(|r| r.mate != crate::io::Mate::Unpaired);
+                let ann = if has_paired {
+                    threading::thread_reads_paired(&pruned_graph, reads, kmer_counts.get_k())
                 } else {
-                    None
-                }
+                    threading::thread_reads(&pruned_graph, reads, kmer_counts.get_k())
+                };
+                let supported_edges = ann
+                    .edge_support
+                    .values()
+                    .filter(|s| s.read_support_total > 0)
+                    .count();
+                gene_info!(
+                    params.gene_name,
+                    "Threading: {}/{} edges have read support, {} branch links, {} paired links. Time: {}",
+                    supported_edges,
+                    pruned_graph.edge_count(),
+                    ann.branch_links.len(),
+                    ann.paired_links.len(),
+                    format_duration(start.elapsed())
+                );
+                Some(ann)
             } else {
                 None
-            };
-
-            let path_start = std::time::Instant::now();
-            gene_info!(
-                params.gene_name,
-                "  Traversing the assembly graph to find paths from forward to reverse primers..."
-            );
-
-            let edge_preferences = threading_annotations
-                .as_ref()
-                .map(|ann| bubble::resolve_bubbles(&pruned_graph, ann));
-
-            let all_paths = paths::get_assembly_paths(
-                &pruned_graph,
-                kmer_counts,
-                params,
-                edge_preferences.as_ref(),
-            );
-
-            gene_info!(
-                params.gene_name,
-                "  Found {} paths. Time: {}",
-                all_paths.len(),
-                format_duration(path_start.elapsed())
-            );
-
-            if !all_paths.is_empty() {
-                let (records, new_index) = paths::generate_sequences_from_paths(
-                    &pruned_graph,
-                    all_paths,
-                    kmer_counts,
-                    sample_name,
-                    params,
-                    amplicon_index,
-                    threading_annotations.as_ref(),
-                )?;
-                amplicon_index = new_index;
-
-                if !records.is_empty() {
-                    gene_info!(
-                        params.gene_name,
-                        "  Obtained {} PCR product(s).",
-                        records.len()
-                    );
-                    assembly_records_all.extend(records);
-                    seed_found_path = true;
-                    found_any_product = true;
-                    failure_reason = None;
-                }
             }
-        } // end if found_opposite
+        } else {
+            None
+        };
 
-        // Stopping criteria check
-        if seed_found_path && params.stopping_criteria == StoppingCriteria::FirstProduct {
-            gene_info!(
-                params.gene_name,
-                "Product found, stopping (--pcr-stopping-criteria first-product)"
-            );
-            break 'seed_loop;
+        let path_start = std::time::Instant::now();
+        gene_info!(
+            params.gene_name,
+            "Traversing the assembly graph to find paths from forward to reverse primers..."
+        );
+
+        let edge_preferences = threading_annotations
+            .as_ref()
+            .map(|ann| bubble::resolve_bubbles(&pruned_graph, ann));
+
+        let all_paths = paths::get_assembly_paths(
+            &pruned_graph,
+            kmer_counts,
+            params,
+            edge_preferences.as_ref(),
+        );
+
+        gene_info!(
+            params.gene_name,
+            "Found {} paths. Time: {}",
+            all_paths.len(),
+            format_duration(path_start.elapsed())
+        );
+
+        if !all_paths.is_empty() {
+            let (records, new_index) = paths::generate_sequences_from_paths(
+                &pruned_graph,
+                all_paths,
+                kmer_counts,
+                sample_name,
+                params,
+                amplicon_index,
+                threading_annotations.as_ref(),
+            )?;
+            let _ = new_index;
+
+            if !records.is_empty() {
+                gene_info!(
+                    params.gene_name,
+                    "Obtained {} PCR product(s).",
+                    records.len()
+                );
+                assembly_records_all.extend(records);
+                failure_reason = None;
+            }
         }
-    } // end seed loop
-
-    let _ = found_any_product; // future use for v4 multi-product
+    }
 
     debug!(
         "      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large differences in value can indicate non-specific binding of one of the primers.",
@@ -1456,10 +1387,6 @@ mod tests {
         assert_eq!(get_start_nodes(&seed_graph).len(), 1);
         assert_eq!(get_end_nodes(&seed_graph).len(), 1);
 
-        // Build a frontier of all forward seed nodes for forward extension
-        let fwd_frontier: Vec<petgraph::graph::NodeIndex> = graph::get_start_nodes(&seed_graph);
-        let rev_frontier: Vec<petgraph::graph::NodeIndex> = graph::get_end_nodes(&seed_graph);
-
         let (graph_after_fwd, node_lookup_after_fwd, _fwd_found_end) = graph::extend_graph(
             seed_graph,
             node_lookup,
@@ -1467,8 +1394,6 @@ mod tests {
             &min_count,
             &params,
             graph::DEFAULT_MAX_NUM_NODES,
-            None,
-            fwd_frontier,
         )
         .unwrap();
 
@@ -1479,8 +1404,6 @@ mod tests {
             &min_count,
             &params,
             graph::DEFAULT_MAX_NUM_NODES,
-            None,
-            rev_frontier,
         )
         .unwrap();
 
