@@ -163,25 +163,20 @@ New: `OligoFilter` (bloom filter + AHashSet for Pass 1 read retention),
 - `chunk.rs`: `Chunk` struct
 - `mod.rs`: re-exports and tests
 
-### pcr/ (11 submodules)
+### pcr/ (9 submodules)
 
 Pipeline: preprocess primers → find primer kmers → seed graph →
-evaluate seeds (with optional read divergence) → extend graph →
-prune → thread reads (if `--read-threading`) → resolve bubbles →
-find paths → generate sequences → deduplicate
+extend graph → prune → thread reads (if `--read-threading`) →
+resolve bubbles → find paths → generate sequences → deduplicate
 
 - `primers.rs`: Primer preprocessing, ambiguity resolution, mismatch
-  permutation, kmer extraction. New: `PrimerOligoSet`,
-  `preprocess_primer_oligos()` for Pass 1 Oligo encoding
-- `graph.rs`: `DBNode`, `DBEdge`, seed graph, `extend_graph()`,
-  `extend_graph_reverse()`, diagnostics.
+  permutation, kmer extraction.
+- `graph.rs`: `DBNode`, `DBEdge`, seed graph, unified bidirectional
+  `extend_graph()`, diagnostics.
   Graph: `petgraph::StableDiGraph<DBNode, DBEdge>`
 - `pruning.rs`: `remove_low_coverage_tips()`, `reachability_pruning()`
 - `paths.rs`: `get_assembly_paths()`, sequence extraction, deduplication.
   Edge ordering uses bubble resolution preferences when available.
-- `seed_eval.rs`: `evaluate_seeds()`, `bounded_extend()`,
-  `check_read_divergence()`. Bounded local exploration to filter
-  off-target seeds before full graph extension.
 - `threading.rs`: `thread_reads()`, `thread_reads_paired()`. Maps reads
   to graph edges via maximal contiguous runs. Graph-agnostic API.
   `EdgeReadSupport`, `BranchLink`, `ThreadingAnnotations`. Note:
@@ -189,26 +184,24 @@ find paths → generate sequences → deduplicate
   data, but nothing downstream consumes it yet — see issue #101 for
   what needs to happen to complete paired-end phasing.
 - `read_filter.rs`: `PrimerReadFilter` for per-gene read filtering
-  during Pass 2 threading
+  during read threading.
 - `bubble.rs`: `resolve_bubbles()`. Detects simple bubbles, ranks
   branches by read support + phasing, returns edge preferences.
-- `components.rs`: `SeedComponent` identification, prioritization, and
-  per-component node budget allocation for multi-component exploration
-  under `--pcr-stopping-criteria` modes
 - `mod.rs`: `do_pcr()` orchestration, `PCRParams`, `PathScore`
   (with read-support fields), validation, constants
 - `preconfigured.rs`: YAML panel loading (built-in via `include_str!()`,
   user via `--pcr-panel-file`)
 
-Key constants (all exposed as hidden CLI arguments via PCRParams):
+Key constants (all exposed as hidden CLI arguments via PCRParams unless
+noted):
 - `COVERAGE_MULTIPLIER = 2`: High coverage definition
 - `COVERAGE_STEPS = 4`: Threshold reduction steps
-- `DEFAULT_MAX_NUM_NODES = 50_000`: Graph size limit (`--max-nodes`)
+- `DEFAULT_MAX_NUM_NODES = 500_000`: Graph size limit (computed from
+  data volume by `compute_node_budget`, no CLI override)
 - `DEFAULT_MAX_DFS_STATES = 100_000`: DFS state budget (`--max-dfs-states`)
 - `DEFAULT_MAX_PATHS_PER_PAIR = 20`: Path enumeration limit (`--max-paths-per-pair`)
 - `DEFAULT_MAX_NODE_VISITS = 2`: Cycle tolerance (`--max-node-visits`)
 - `DEFAULT_MAX_NUM_PRIMER_KMERS = 20`: Primer variant cap (`--max-primer-kmers`)
-- `DEFAULT_MAX_SEED_NODES = 500`: Seed eval budget (`--max-seed-nodes`)
 - `DEFAULT_HIGH_COVERAGE_RATIO = 10.0`: Repeat edge filter (`--high-coverage-ratio`)
 - `DEFAULT_TIP_COVERAGE_FRACTION = 0.1`: Tip pruning (`--tip-coverage-fraction`)
 - `MAX_NUM_AMPLICONS = 20`: Output sequence limit

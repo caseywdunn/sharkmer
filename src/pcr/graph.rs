@@ -3,11 +3,6 @@
 use ahash::{AHashMap, AHashSet};
 use anyhow::Result;
 use log::debug;
-// Used only by `summarize_extension` for a single debug-level diagnostic
-// about whether the extended graph contains cycles. Not load-bearing for
-// correctness — if this import ever becomes unused again, the summarize
-// call has been removed and both can go.
-use petgraph::algo::is_cyclic_directed;
 use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
 use std::collections::VecDeque;
@@ -64,34 +59,55 @@ pub(super) fn get_suffix_mask(k: &usize) -> u64 {
     (1 << (2 * (*k - 1))) - 1
 }
 
-/// Compute the median of `counts` as an f64, using `select_nth_unstable`.
+/// Generic median core: compute the median of `counts` as an f64, using
+/// `select_nth_unstable`.
 ///
-/// This is expected-linear time, vs `sort()`'s O(n log n) — a measurable
-/// difference because `compute_median_edge_count` runs every
+/// Expected-linear time, vs `sort()`'s O(n log n) — a measurable difference
+/// because `compute_median_edge_count` runs every
 /// `EXTENSION_EVALUATION_FREQUENCY` nodes during graph extension, where
 /// `counts.len()` grows with the edge count of the working graph (up to
 /// hundreds of thousands of edges on dense panels).
 ///
+/// `to_f64` lets the caller convert each element to f64 with their own cast
+/// (`x as f64`). This is necessary because `f64::From<u64>` does not exist
+/// — `u64` is not losslessly convertible to f64 — so we can't just bound
+/// `T: Into<f64>`. The cast is the same one the dedicated wrappers used to
+/// inline; pulling it through a callback lets `median_u32_f64` and
+/// `median_u64_f64` share the partition logic.
+///
 /// Returns `None` if `counts` is empty. The even-length case avoids the
-/// extra full sort: after partitioning at `mid`, the smaller half is
+/// extra full sort: after partitioning at `mid`, the lower half is
 /// `counts[..mid]` (any order, but bounded above by `counts[mid]`), so a
 /// single linear scan over that half finds the (mid-1)-th order statistic.
-pub(super) fn median_u32_f64(mut counts: Vec<u32>) -> Option<f64> {
+fn median_via_select<T>(mut counts: Vec<T>, to_f64: impl Fn(T) -> f64) -> Option<f64>
+where
+    T: Copy + Ord,
+{
     if counts.is_empty() {
         return None;
     }
     let mid = counts.len() / 2;
     if counts.len() % 2 == 0 {
         counts.select_nth_unstable(mid);
-        let upper_min = counts[mid] as f64;
-        let lower_max = *counts[..mid]
-            .iter()
-            .max()
-            .expect("non-empty lower half when len >= 2") as f64;
+        let upper_min = to_f64(counts[mid]);
+        let lower_max = to_f64(
+            *counts[..mid]
+                .iter()
+                .max()
+                .expect("non-empty lower half when len >= 2"),
+        );
         Some((lower_max + upper_min) / 2.0)
     } else {
-        Some(*counts.select_nth_unstable(mid).1 as f64)
+        Some(to_f64(*counts.select_nth_unstable(mid).1))
     }
+}
+
+pub(super) fn median_u32_f64(counts: Vec<u32>) -> Option<f64> {
+    median_via_select(counts, |x| x as f64)
+}
+
+pub(super) fn median_u64_f64(counts: Vec<u64>) -> Option<f64> {
+    median_via_select(counts, |x| x as f64)
 }
 
 fn compute_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>, default: f64) -> f64 {
@@ -171,19 +187,10 @@ pub fn compute_mean(numbers: &[u64]) -> f64 {
 }
 
 pub fn compute_median(numbers: &[u64]) -> f64 {
-    if numbers.is_empty() {
-        return 0.0;
-    }
-    let mut sorted = numbers.to_vec();
-    sorted.sort();
-
-    let mid = sorted.len() / 2;
-
-    if sorted.len() % 2 == 0 {
-        (sorted[mid - 1] + sorted[mid]) as f64 / 2.0
-    } else {
-        sorted[mid] as f64
-    }
+    // Empty input returns 0.0 (preserved from the previous behavior — callers
+    // in path scoring and `summarize_extension` rely on a sentinel rather than
+    // an Option).
+    median_u64_f64(numbers.to_vec()).unwrap_or(0.0)
 }
 
 pub(super) fn create_seed_graph(
@@ -547,13 +554,6 @@ pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     debug!("{}There are {} nodes in the graph", pad, graph.node_count());
     debug!("{}There are {} edges in the graph", pad, graph.edge_count());
 
-    let has_cycles = is_cyclic_directed(graph);
-    if has_cycles {
-        debug!("{}The graph has cycles", pad);
-    } else {
-        debug!("{}The graph does not have cycles", pad);
-    }
-
     // Print the mean, median, and max degree of all nodes
     let degrees: Vec<usize> = graph
         .node_indices()
@@ -739,5 +739,27 @@ mod tests {
         // (large + huge) / 2 in f64 — within fp precision of (large+huge)/2.
         let expected = (large as f64 + huge as f64) / 2.0;
         assert!((m - expected).abs() < 1.0);
+    }
+
+    #[test]
+    fn test_median_u64_f64_smoke() {
+        assert_eq!(median_u64_f64(vec![]), None);
+        assert_eq!(median_u64_f64(vec![42]), Some(42.0));
+        // Odd: sorted [1, 5, 9] → 5
+        assert_eq!(median_u64_f64(vec![9, 1, 5]), Some(5.0));
+        // Even: sorted [1, 5, 9, 11] → (5+9)/2 = 7
+        assert_eq!(median_u64_f64(vec![11, 1, 9, 5]), Some(7.0));
+    }
+
+    #[test]
+    fn test_compute_median_matches_helper() {
+        // compute_median is the legacy entry point used from path scoring
+        // and summarize_extension; verify it still produces the same value
+        // as the helper after the rewire.
+        let v: Vec<u64> = vec![3, 1, 4, 1, 5, 9, 2, 6];
+        // Sorted: [1, 1, 2, 3, 4, 5, 6, 9] → median (3+4)/2 = 3.5
+        assert_eq!(compute_median(&v), 3.5);
+        // Empty stays 0.0 (sentinel).
+        assert_eq!(compute_median(&[]), 0.0);
     }
 }

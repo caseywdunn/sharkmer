@@ -45,7 +45,11 @@ fn sorted_children(
             (e.target(), e.id(), base_score * pref)
         })
         .collect();
-    outgoing.sort_by(|a, b| a.2.partial_cmp(&b.2).unwrap_or(std::cmp::Ordering::Equal));
+    // total_cmp gives a total order on f64 (NaN sorts to the end) instead of
+    // partial_cmp's Option<Ordering>. Inputs here are u32 → f64 multiplied by
+    // a finite preference, so NaN is impossible — total_cmp simply removes
+    // the unwrap_or(Equal) papering over an "impossible" case.
+    outgoing.sort_by(|a, b| a.2.total_cmp(&b.2));
     outgoing
 }
 
@@ -351,10 +355,12 @@ pub(super) fn sort_and_deduplicate(
 ) -> Vec<fasta::Record> {
     let mut sorted = assembly_records;
     sorted.sort_by(|a, b| {
+        // total_cmp is a total order on f64; composite() multiplies finite
+        // u32/u64-derived values, so NaN is impossible here and total_cmp
+        // is strictly better than partial_cmp().unwrap_or(Equal).
         b.score
             .composite()
-            .partial_cmp(&a.score.composite())
-            .unwrap_or(std::cmp::Ordering::Equal)
+            .total_cmp(&a.score.composite())
             // Byte-level sequence comparison as a deterministic tiebreaker
             // when two records tie on composite score. Not biologically
             // meaningful — its only purpose is to make dedup order stable
