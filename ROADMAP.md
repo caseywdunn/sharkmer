@@ -8,72 +8,20 @@ for detailed specifications.
 
 Released. See [CHANGELOG.md](CHANGELOG.md) for details.
 
-## v3.0 — Graph traversal
+## v3.0 — Graph traversal (released)
 
-The goal of v3.0 is to replace the current ad-hoc graph extension and pruning
-heuristics with principled algorithms from the assembler literature. This will
-change results but should have minimal impact on CLI usage or output format.
+Released. See [CHANGELOG.md](CHANGELOG.md) for details.
 
-Target improvements:
+Key improvements: bidirectional graph extension, frontier-queue extension
+eliminating O(n²) node scanning, reachability pruning replacing ad-hoc
+heuristics, coverage-aware tip clipping, read threading with bubble
+resolution, composite path scoring, mismatch-aware primer kmer cap,
+dynamic node budget, read caching, and panel versioning and validation
+infrastructure. New `c_elegans` panel.
 
-- Better recovery of single-copy nuclear genes at lower coverage
-- Replace heuristic ballooning detection with coverage-aware graph
-  simplification (tip clipping, bubble popping)
-- Replace backward-degree-based termination with principled traversal
-- Improved handling of repeats (current cycle avoidance is too aggressive)
-- Coverage-weighted best-path algorithm to replace `all_simple_paths`
-  enumeration
-- Better path scoring beyond `kmer_min_count` ordering
-- Preparation for v4.0 metagenomics support
-
-### Read-based graph refinement
-
-Use reads (not just kmers) to improve the assembly graph. Currently reads
-are discarded after kmer extraction — only the kmer count table is used for
-graph construction. Threading reads back through the graph enables:
-
-- **Graph pruning**: Edges and nodes not supported by any full read path are
-  likely artifacts. Read support can distinguish real low-frequency paths
-  from chimeric joins, improving results at shallow coverage.
-- **Bubble resolution**: When two paths diverge and reconverge (heterozygous
-  sites, sequencing errors), reads that span the bubble can resolve which
-  path(s) are real.
-- **Coverage estimation per path**: Read threading gives per-edge coverage
-  that reflects actual read support, not just kmer frequency. This is more
-  informative for path scoring than raw kmer counts.
-- **Paired-end constraints** (#101): Deferred to v4.0. Infrastructure built
-  in v3.0 (`PairedEndLink`, `thread_reads_paired()`) but downstream
-  consumption not yet wired. See issue #101.
-
-Implementation approach: two-pass over input data. Pass 1 counts kmers and
-builds the graph (as now). Pass 2 re-reads the FASTQ and threads each read
-through the graph, annotating edges with read support. For `--ena` input,
-the second pass re-streams from ENA. For file input, seeks back to the
-start. For stdin, either buffer reads in memory or require file input when
-read threading is enabled.
-
-### Graph construction efficiency
-
-- Build a single graph seeded with all forward primer kmers simultaneously,
-  instead of building a separate graph per forward primer kmer. Currently
-  10 forward primer kmers means 10 nearly-identical graphs built from
-  scratch — the largest performance waste in the tool.
-- Extend graphs incrementally across coverage threshold steps instead of
-  rebuilding from scratch at each threshold. The lower-threshold graph is a
-  strict superset of the higher-threshold one.
-- Incremental histogram updates after each chunk merge, instead of
-  reiterating the full consolidated kmer table each time.
-
-### Kmer pipeline optimizations (deferred from v2.0)
-
-- Extract kmers directly from ASCII sequence in a single pass, eliminating
-  the Read struct encoding/decoding round-trip. The 2-bit `Read` encoding was
-  designed for storing reads in memory, but reads are not stored — kmers are
-  extracted and the read is discarded. A direct ASCII-to-kmer sliding window
-  avoids the intermediate encoding step entirely.
-- Use `u32` for kmer counts instead of `u64` — counts rarely exceed 4 billion,
-  and this saves ~33% memory in the hash table. Important for low-coverage
-  work where every byte of hash table capacity matters.
+Paired-end phasing (#101) is deferred to v4.0: the infrastructure
+(`PairedEndLink`, `thread_reads_paired()`) is built but downstream
+consumption is not yet wired.
 
 ## v4.0 — Metagenomics
 

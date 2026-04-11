@@ -9,11 +9,11 @@ maintainers:
 changelog:
 - version: 1.1.0
   date: 2026-04-05
-  sharkmer_version: "3.0.0-dev"
+  sharkmer_version: "3.0.0"
   changes: "CO1 primer redesigned from 161 cnidarian mitogenomes. New primers reduce degeneracy (48 → 32 kmer variants per pair) and extend reverse primer to 19 bp for specificity. Validated against Xenia, Agalma, Rhopilema benchmarks: 13/15 runs recover real CO1 at 99.6-100% identity (vs 5/15 with v1.0.0 primer). See tmp/CO1/primer_design_report.md."
 - version: 1.0.0
   date: 2026-04-05
-  sharkmer_version: "3.0.0-dev"
+  sharkmer_version: "3.0.0"
   changes: "Initial versioned schema."
 
 primers:

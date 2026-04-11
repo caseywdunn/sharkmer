@@ -8,7 +8,7 @@ maintainers:
 changelog:
 - version: 1.0.0
   date: 2026-04-05
-  sharkmer_version: "3.0.0-dev"
+  sharkmer_version: "3.0.0"
   changes: "Initial panel. Exact 0mm primers extracted from N2 reference sequences at binding sites of established universal/phylogenetic primers."
 
 primers:
@@ -192,7 +192,7 @@ validation:
         length: 358
         length_tolerance: 20
   last_validated:
-    sharkmer_version: 3.0.0-dev
+    sharkmer_version: 3.0.0
     panel_version: 1.0.0
     date: '2026-04-05'
 

@@ -62,7 +62,7 @@ depends entirely on the sequence variation within the primer binding region
 
 ### How much specificity is enough?
 
-The number of bits required depends on:
+The number of bits of specificity required depends on:
 
 - **Genome size.** Larger genomes have more potential off-target binding
   sites, requiring more bits to discriminate.

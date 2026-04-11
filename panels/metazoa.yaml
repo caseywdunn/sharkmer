@@ -9,7 +9,7 @@ maintainers:
 changelog:
   - version: 1.0.0
     date: 2026-04-05
-    sharkmer_version: "3.0.0-dev"
+    sharkmer_version: "3.0.0"
     changes: "Initial versioned schema."
 
 primers:

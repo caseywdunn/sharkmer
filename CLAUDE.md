@@ -29,7 +29,7 @@ sharkmer/                  # Repo root
 ├── meta.yaml              # Bioconda recipe
 ├── build.sh               # Bioconda build script
 ├── src/
-│   ├── main.rs            # Entry point, main() orchestration (~145 lines)
+│   ├── main.rs            # Entry point, main() orchestration (~210 lines)
 │   ├── cache.rs           # Read cache for remote downloads (SHA-256 verified)
 │   ├── cli.rs             # Args struct, CLI parsing, validation, early exits
 │   ├── io.rs              # FASTQ reading, ENA streaming, FASTA writing
@@ -45,10 +45,13 @@ sharkmer/                  # Repo root
 │       ├── mod.rs         # do_pcr() orchestration, PCRParams, validation
 │       ├── primers.rs     # Primer preprocessing, ambiguity, mismatch permutation
 │       ├── graph.rs       # De Bruijn graph construction, extension, diagnostics
-│       ├── pruning.rs     # Graph pruning (balloons, side branches, orphans)
+│       ├── pruning.rs     # Reachability pruning, coverage-aware tip clipping
 │       ├── paths.rs       # Path finding, sequence extraction, deduplication
+│       ├── threading.rs   # Read threading, edge read-support annotation
+│       ├── bubble.rs      # Bubble detection and resolution
+│       ├── read_filter.rs # Per-gene read filtering for threading
 │       └── preconfigured.rs  # YAML panel loading (built-in + sideloaded)
-├── panels/                # Built-in primer panel YAML files (7 panels)
+├── panels/                # Built-in primer panel YAML files (8 panels)
 ├── tests/
 │   ├── fixtures/          # ERR571460 100k reads (gzipped) for integration tests
 │   └── spcr_18s.rs        # Integration test: 18S recovery from ERR571460
@@ -118,7 +121,7 @@ cargo build --features fxhashmap --no-default-features
 See [dev_docs/OVERVIEW.md](dev_docs/OVERVIEW.md) for a detailed
 architecture overview with data flow diagrams.
 
-### main.rs (~215 lines)
+### main.rs (~210 lines)
 
 Entry point. Parses CLI, delegates to helper modules, orchestrates the
 pipeline: init logging → collect primers → validate → pre-encode primer
@@ -126,29 +129,28 @@ Oligos (if `--read-eval`) → build Oligo filter → ingest reads (Pass 1)
 → consolidate → re-read sequences (if `--read-threading`, Pass 2) →
 run PCR → write stats → print summary.
 
-### cli.rs (~770 lines)
+### cli.rs (~850 lines)
 
 `Args` struct (clap), `ColorMode`, `parse_pcr_primers_string()`,
 `init_logging()`, early exits, validation, `--dry-run`. New flags:
-`--read-eval` (Pass 1 read retention for seed eval), `--read-threading`
-(Pass 2 re-read for graph annotation), `--max-nodes` (hidden, graph
-node budget). `--paired` exists but is hidden — paired-end R1/R2
-reading works, but the paired-end phasing feature it is meant to
-unlock is not yet wired into branch ranking; see issue #101.
+`--read-threading` (Pass 2 re-read for graph annotation),
+`--node-budget-global` (hidden, graph node budget). `--paired` exists
+but is hidden — paired-end R1/R2 reading works, but the paired-end
+phasing feature it is meant to unlock is not yet wired into branch
+ranking; see issue #101.
 
-### io.rs (~1260 lines)
+### io.rs (~1160 lines)
 
 `read_fastq()`, `validate_fastq_record()`, `get_ena_fastq_urls()`,
 `write_fasta_record()`, `ingest_reads()`, `consolidate_and_histogram()`.
-New: `OligoFilter` (bloom filter + AHashSet for Pass 1 read retention),
-`RetainedRead`/`RetainedReads`, `ReadRecord`/`ReadPlan`/`ReadSourcePlan`
-(Pass 2 re-reading), `reread_sequences()`, `read_fastq_paired()`.
+Pass 2 re-reading: `ReadRecord`/`ReadPlan`/`ReadSourcePlan`,
+`reread_sequences()`, `read_fastq_paired()`.
 
 ### format.rs (~45 lines)
 
 `format_count()`, `format_bytes()`, `format_duration()`.
 
-### stats.rs (~235 lines)
+### stats.rs (~255 lines)
 
 `RunStats`, `PcrGeneResult`, `run_pcr()`, `write_stats()`, `print_summary()`.
 
@@ -209,15 +211,14 @@ noted):
 
 ### panels/ directory
 
-YAML files defining built-in primer panels (7 panels). Embedded at
+YAML files defining built-in primer panels (8 panels). Embedded at
 compile time via `include_str!()`.
 
 ## Current known issues
 
-- **Seed eval threshold (fixed in Phase 8)**: Changed from max to median
-  primer kmer count. Degenerate primers with off-target matches previously
-  inflated the threshold too high. Needs benchmark validation with
-  Drosophila 16S/28S to confirm the fix works in practice.
+- **Paired-end phasing (#101)**: `thread_reads_paired()` builds
+  `PairedEndLink` data but nothing downstream consumes it yet. Paired-end
+  R1/R2 ingestion works; the phasing signal is deferred to v4.0.
 
 ## Git workflow
 
@@ -235,5 +236,5 @@ gates, and patching workflow. Key points:
 
 ## Current development
 
-Version is `3.0.0-dev` on `dev` branch. See dev_docs/PLAN.md for the phased
+Version is `3.0.0-rc` on `dev` branch. See dev_docs/PLAN.md for the phased
 execution order and ROADMAP.md for scope and rationale.

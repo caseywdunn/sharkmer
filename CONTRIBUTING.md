@@ -106,11 +106,13 @@ proceeding. Commit the benchmark results to `dev`:
 
 ### 2. Prepare the release
 
-- Verify `version` in `Cargo.toml` matches the intended release (e.g. `2.0.0`).
+- Verify `version` in `Cargo.toml` matches the intended release (e.g. `3.0.0`).
 - Verify `CHANGELOG.md` has an entry for this version with the correct date.
 - Verify `meta.yaml` version and sha256 are updated (sha256 can only be
   finalized after the GitHub release tarball exists — use `PLACEHOLDER` until
   then).
+- Update `sharkmer_version` in all `panels/*.yaml` changelog entries to match
+  the release version.
 
 ### 3. Merge to master and push
 
@@ -120,8 +122,8 @@ proceeding. Commit the benchmark results to `dev`:
 
 ### 4. Tag the release
 
-    git tag -a v2.0.0 -m "v2.0.0"
-    git push origin v2.0.0
+    git tag -a vX.Y.Z -m "vX.Y.Z"
+    git push origin vX.Y.Z
 
 ### 5. Create the GitHub release
 
@@ -129,23 +131,24 @@ Go to <https://github.com/caseywdunn/sharkmer/releases/new>, select the tag
 you just pushed, and create a release. Use the CHANGELOG entry as the release
 notes.
 
-Alternatively, use the CLI:
+Alternatively, use the CLI (replace `X.Y.Z` with the version number):
 
-    gh release create v2.0.0 --title "v2.0.0" --notes-file - <<< "$(sed -n '/^## \[2\.0\.0\]/,/^## \[/{ /^## \[2\.0\.0\]/d; /^## \[/d; p; }' CHANGELOG.md)"
+    VERSION=X.Y.Z
+    gh release create "v${VERSION}" --title "v${VERSION}" --notes-file - <<< "$(sed -n "/^## \[${VERSION}\]/,/^## \[/{ /^## \[${VERSION}\]/d; /^## \[/d; p; }" CHANGELOG.md)"
 
 ### 6. Create the release maintenance branch
 
-    git checkout -b v2 v2.0.0
-    git push origin v2
+    git checkout -b vN vX.Y.Z   # e.g. git checkout -b v3 v3.0.0
+    git push origin vN
 
-This branch is used for future patch releases (v2.0.1, etc.) without
+This branch is used for future patch releases (vX.Y.1, etc.) without
 pulling in unreleased work from `dev`.
 
 ### 7. Update the bioconda recipe
 
 After the GitHub release is created, get the sha256 of the source tarball:
 
-    curl -sL https://github.com/caseywdunn/sharkmer/archive/refs/tags/v2.0.0.tar.gz | sha256sum
+    curl -sL https://github.com/caseywdunn/sharkmer/archive/refs/tags/vX.Y.Z.tar.gz | sha256sum
 
 Update `meta.yaml` with the real sha256, then follow the bioconda submission
 steps in the Bioconda section below.
@@ -154,7 +157,7 @@ steps in the Bioconda section below.
 
     git checkout dev
 
-Update `Cargo.toml` version to the next development version (e.g. `2.1.0-dev`)
+Update `Cargo.toml` version to the next development version (e.g. `3.1.0-dev`)
 and add an `[Unreleased]` section to `CHANGELOG.md`.
 
 ## Regression benchmarks
