@@ -238,7 +238,7 @@ fn default_tip_coverage_fraction() -> f64 {
 pub const DEFAULT_MAX_DFS_STATES: usize = 100_000;
 pub const DEFAULT_MAX_PATHS_PER_PAIR: usize = 20;
 pub const DEFAULT_MAX_NODE_VISITS: usize = 2;
-pub const DEFAULT_MAX_NUM_PRIMER_KMERS: usize = 20;
+pub const DEFAULT_MAX_NUM_PRIMER_KMERS: usize = 40;
 pub const DEFAULT_HIGH_COVERAGE_RATIO: f64 = 10.0;
 pub const DEFAULT_TIP_COVERAGE_FRACTION: f64 = 0.1;
 

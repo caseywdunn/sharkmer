@@ -201,7 +201,7 @@ noted):
 - `DEFAULT_MAX_DFS_STATES = 100_000`: DFS state budget (`--max-dfs-states`)
 - `DEFAULT_MAX_PATHS_PER_PAIR = 20`: Path enumeration limit (`--max-paths-per-pair`)
 - `DEFAULT_MAX_NODE_VISITS = 2`: Cycle tolerance (`--max-node-visits`)
-- `DEFAULT_MAX_NUM_PRIMER_KMERS = 20`: Primer variant cap (`--max-primer-kmers`)
+- `DEFAULT_MAX_NUM_PRIMER_KMERS = 40`: Primer variant cap (`--max-primer-kmers`)
 - `DEFAULT_HIGH_COVERAGE_RATIO = 10.0`: Repeat edge filter (`--high-coverage-ratio`)
 - `DEFAULT_TIP_COVERAGE_FRACTION = 0.1`: Tip pruning (`--tip-coverage-fraction`)
 - `MAX_NUM_AMPLICONS = 20`: Output sequence limit

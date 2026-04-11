@@ -949,3 +949,135 @@ and never worst at any level. All k values converge at high coverage
 coverage range. Users working with AT-rich organisms or low coverage
 can try k=17. Users needing maximum specificity at very high coverage
 can use k=25 or k=31.
+
+## v3.0-rc tuning sweep: k, max-primer-kmers, high-coverage-ratio, tip-coverage-fraction
+
+### Context
+
+The v1-era defaults for the four main PCR tuning knobs were carried
+forward into v3 without systematic revalidation against the full panel
+suite. With the v3 graph traversal, bidirectional extension, and read
+threading in place, we re-swept each knob against the complete 8-panel
+validation set (angiospermae, bacteria, c_elegans, cnidaria, human,
+insecta, metazoa, teleostei) to confirm or update the defaults.
+
+### Sweep design
+
+One job per (panel, knob, value) cell, with each cell running every
+`max_reads` tier the panel declares (1M–16M for cnidaria and insecta;
+lower ceilings for the rest). Recovery was scored using the existing
+3-position code (`+**` / `+++` / `+--` / other) converted to 3/2/1/0
+points at the deepest declared tier per panel, to avoid multi-depth
+panels dominating the cross-panel totals. Runtime was recorded as Python
+wall-clock per sharkmer invocation. Both tables are rendered by
+`scripts/sweep_summary.py` against the YAML outputs in
+`panels/validation_results/sweep_*.yaml`.
+
+The sweep matrix (from `scripts/validate_all_panels_slurm.sh`):
+
+| Knob | Values swept | Old default |
+|---|---|---|
+| `k` | 17, 19, 21, 23 | 19 |
+| `max-primer-kmers` | 10, 20, 40, 80 | 20 |
+| `high-coverage-ratio` | 3.0, 5.0, 10.0, 20.0 | 10.0 |
+| `tip-coverage-fraction` | 0.05, 0.1, 0.2, 0.4 | 0.1 |
+
+**Sweeps are one-variable-at-a-time.** Interactions are not tested;
+each cell varies one knob with the others at their default.
+
+### Recovery results (total points across 8 panels, deepest tier)
+
+| Knob | Winner | Runners-up | Δ vs old default |
+|---|---|---|---|
+| `k` | **19** (337) | 17:282, 21:328, 23:320 | no change |
+| `max-primer-kmers` | **80** (344) | 10:305, 20:315, 40:330 | +15 at 40, +29 at 80 |
+| `high-coverage-ratio` | **20.0** (323) | 3.0:224, 5.0:289, 10.0:321 | +2 at 20.0 |
+| `tip-coverage-fraction` | **0.05** (335) | 0.1/0.2/0.4 all 314 | +21 at 0.05 |
+
+**`max-primer-kmers` improves monotonically** across the 10 → 80 range
+with no saturation in-range. Gains are concentrated on insecta (107 →
+111 → 120 → 130) and cnidaria (74 → 77 → 83 → 86). This knob caps the
+number of primer kmer variants tested after ambiguity expansion and
+mismatch permutation; more variants means more seeds can anchor the
+graph in regions where the canonical primer kmers are low-coverage.
+
+**`high-coverage-ratio` has a cliff at 3.0 and is flat from 10.0
+upward.** At 3.0 the edge filter eats legitimate high-coverage edges and
+angiospermae (15), bacteria (0), and human (0) collapse. 10.0 → 20.0 is
+only +2 points (well within per-cell noise) but 20.0 is much slower —
+see runtime below.
+
+**`tip-coverage-fraction=0.05` is an insecta-specific win** (+18 points:
+110 → 128, almost all from Gryllus bimaculatus and Drosophila 16S).
+Cnidaria gains +3, everything else is flat. The 0.1/0.2/0.4 values are
+statistically indistinguishable.
+
+**`k=19`** is re-validated as the best single value — matches the
+earlier 1M-16M sweep recorded above.
+
+**`c_elegans` scored 0 across every knob × value.** This is not a
+tuning issue: the panel's BLAST references are tagged `N2_585` while
+the samples are `N2_531`, so the strict same-species match fails
+universally. Every c_elegans cell in the detail grids shows the same
+`+*-` pattern (recovered, hits the right gene in the wrong strain).
+Fixing the reference labeling is tracked separately.
+
+### Runtime results
+
+Averaged across the 5 cnidaria samples at 16M reads (the heaviest
+cells in the sweep):
+
+| Knob | Value range | Runtime range | Slowest vs fastest |
+|---|---|---|---|
+| `k` | 17 → 23 | ~180s flat | ±6% (within noise) |
+| `max-primer-kmers` | 10 → 80 | 181 → 185s | **flat** |
+| `high-coverage-ratio` | 3.0 → 20.0 | 195 / 202 / 189 / **244s** | +29% at 20.0 |
+| `tip-coverage-fraction` | 0.05 → 0.4 | **218** / 202 / 187 / 184s | +18% at 0.05 |
+
+These are consistent with the expected cost model:
+
+- **`max-primer-kmers` is runtime-free**: more primer variants means
+  more seed lookups but does not change graph size after extension.
+  This is why it's the best tradeoff in the sweep — pure recovery gain.
+- **`high-coverage-ratio=20.0` is slower** because a laxer repeat-edge
+  filter lets more high-coverage edges survive extension, bloating the
+  graph through pruning and path finding.
+- **`tip-coverage-fraction=0.05` is slower** because fewer tips get
+  clipped, leaving a larger graph for downstream stages.
+
+Single-run measurements have ~5% noise at the day-partition level, so
+differences under ~10% should be read as ties.
+
+### Decisions
+
+**1. `max-primer-kmers`: 20 → 40.** Captures most of the recovery gain
+(315 → 330 out of the 344 ceiling at 80) at zero runtime cost. Going
+to 80 would be even better for recovery but commits to a value that
+is still the far edge of the sweep range — 40 is the conservative
+sweet-spot. If a future sweep extends the range to 160 and 80 does
+not saturate, revisit this decision.
+
+**2. `high-coverage-ratio`: 10.0 (unchanged).** 20.0 gains +2 points
+for +29% runtime on heavy cells — not worth it. The 3.0 cliff rules
+out anything more aggressive.
+
+**3. `tip-coverage-fraction`: 0.1 (unchanged).** The 0.05 gain is
+insecta-specific and costs 10-20% runtime on heavy cells. Better to
+investigate *why* insecta benefits (likely a primer or coverage quirk
+in the Gryllus/Drosophila samples) and address it at the panel level
+than to pay the runtime penalty globally.
+
+**4. `k`: 19 (unchanged).** Validated across the full panel suite;
+matches the earlier 1M-16M sweep.
+
+### Why bump `max-primer-kmers` and not pursue the others
+
+The four knobs tell a consistent story: knobs that change which kmers
+are *tested* (primer variants) are cheap wins; knobs that change which
+edges are *retained* in the graph (coverage ratio, tip fraction) cost
+runtime proportional to their relaxation. That's the key tradeoff when
+considering future tuning: anything that widens the graph has a
+measurable wall-clock cost at 16M depths, but anything that widens the
+seed set does not. This suggests future defensive effort should focus
+on improving seed robustness (variant generation, mismatch tolerance)
+rather than on relaxing graph filters.
