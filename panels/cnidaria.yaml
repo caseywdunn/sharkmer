@@ -106,27 +106,27 @@ validation:
   - accession: SRR9278435
     taxon: "Xenia sp."
     taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Xeniidae; Xenia; unclassified Xenia"
-    max_reads: [1000000, 2000000, 4000000]
+    max_reads: [1000000, 2000000, 4000000, 8000000, 16000000]
 
   - accession: ERR6745737
     taxon: "Haliclystus octoradiatus"
     taxonomy: "Eumetazoa; Cnidaria; Staurozoa; Stauromedusae; Myostaurida; Haliclystidae; Haliclystus"
-    max_reads: [1000000, 2000000, 4000000]
+    max_reads: [1000000, 2000000, 4000000, 8000000, 16000000]
 
   - accession: SRR25099394
     taxon: "Agalma elegans"
     taxonomy: "Eumetazoa; Cnidaria; Hydrozoa; Hydroidolina; Siphonophorae; Physonectae; Agalmatidae; Agalma"
-    max_reads: [1000000, 2000000, 4000000]
+    max_reads: [1000000, 2000000, 4000000, 8000000, 16000000]
 
   - accession: SRR8617500
     taxon: "Rhopilema esculentum"
     taxonomy: "Eumetazoa; Cnidaria; Scyphozoa; Rhizostomeae; Rhizostomatidae; Rhopilema"
-    max_reads: [1000000, 2000000, 4000000]
+    max_reads: [1000000, 2000000, 4000000, 8000000, 16000000]
 
   - accession: SRR25627438
     taxon: "Morbakka sp. ZRC CNI 1418"
     taxonomy: "Eumetazoa; Cnidaria; Cubozoa; Carybdeida; Carukiidae; Morbakka"
-    max_reads: [1000000, 2000000, 4000000]
+    max_reads: [1000000, 2000000, 4000000, 8000000, 16000000]
 
 references:
 - gene_name: 16S

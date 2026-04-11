@@ -62,17 +62,52 @@ SWEEPS=(
 # -----------------------------------------------------------------------------
 # Mode parsing
 # -----------------------------------------------------------------------------
+#
+# Supported flags:
+#   --sweep                 Sweep mode (see comments near the top).
+#   --panels <a> <b> ...    Restrict to the named panels (basenames without
+#                           .yaml, space-separated). Consumes all following
+#                           tokens until the next flag or end of args. Useful
+#                           for re-running only the panels whose max_reads
+#                           matrices have changed, without resubmitting the
+#                           full 128-cell sweep every time.
+#   anything else           Forwarded to validate_panel.py in default mode.
 SWEEP_MODE=0
 PASSTHROUGH_ARGS=()
-for arg in "$@"; do
-    if [ "$arg" = "--sweep" ]; then
-        SWEEP_MODE=1
-    else
-        PASSTHROUGH_ARGS+=("$arg")
-    fi
+PANEL_FILTER=()
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --sweep)
+            SWEEP_MODE=1
+            shift
+            ;;
+        --panels)
+            shift
+            while [ $# -gt 0 ] && [[ "$1" != --* ]]; do
+                PANEL_FILTER+=("$1")
+                shift
+            done
+            ;;
+        *)
+            PASSTHROUGH_ARGS+=("$1")
+            shift
+            ;;
+    esac
 done
 
-panels=("$PANELS_DIR"/*.yaml)
+if [ ${#PANEL_FILTER[@]} -gt 0 ]; then
+    panels=()
+    for name in "${PANEL_FILTER[@]}"; do
+        candidate="$PANELS_DIR/${name}.yaml"
+        if [ ! -f "$candidate" ]; then
+            echo "--panels: no such file $candidate"
+            exit 1
+        fi
+        panels+=("$candidate")
+    done
+else
+    panels=("$PANELS_DIR"/*.yaml)
+fi
 if [ ${#panels[@]} -eq 0 ]; then
     echo "No panel YAML files found in $PANELS_DIR"
     exit 1
@@ -90,6 +125,8 @@ submit_job() {
     local panel_path="$1"
     local job_name="$2"
     local validate_args="$3"
+    local sbatch_mem="${4:-40G}"
+    local sbatch_time="${5:-4:00:00}"
 
     local tmpscript
     tmpscript=$(mktemp "/tmp/val_${job_name}.XXXXXX.sh")
@@ -103,12 +140,30 @@ EOF
     sbatch \
         --job-name="$job_name" \
         --partition=day \
-        --time=4:00:00 \
+        --time="$sbatch_time" \
         --cpus-per-task=8 \
-        --mem-per-cpu=5G \
+        --mem="$sbatch_mem" \
         --output="$LOGS_DIR/${job_name}_%j.out" \
         "$tmpscript" >/dev/null
-    echo "  Submitted: $job_name"
+    echo "  Submitted: $job_name ($sbatch_mem, $sbatch_time)"
+}
+
+# Per-panel resource overrides. Panels declaring max_reads up to 16M (see
+# panels/cnidaria.yaml, panels/insecta.yaml) need ~60-80 GB for kmer counting
+# at the largest depth, and the 5-depth sweep cells take appreciably longer
+# than the single-depth cells. Panels not listed here fall back to the
+# submit_job defaults (40G / 4:00:00).
+panel_mem() {
+    case "$1" in
+        cnidaria|insecta) echo "96G" ;;
+        *) echo "40G" ;;
+    esac
+}
+panel_time() {
+    case "$1" in
+        cnidaria|insecta) echo "8:00:00" ;;
+        *) echo "4:00:00" ;;
+    esac
 }
 
 if [ "$SWEEP_MODE" -eq 0 ]; then
@@ -120,16 +175,19 @@ if [ "$SWEEP_MODE" -eq 0 ]; then
     echo ""
     for panel in "${panels[@]}"; do
         name="$(basename "$panel" .yaml)"
-        submit_job "$panel" "val_${name}" "${PASSTHROUGH_ARGS[*]:-}"
+        submit_job "$panel" "val_${name}" "${PASSTHROUGH_ARGS[*]:-}" \
+            "$(panel_mem "$name")" "$(panel_time "$name")"
     done
 else
     # -------------------------------------------------------------------------
-    # Sweep mode: one job per (panel, knob, value) cell. Each cell runs the
-    # panel's samples at the highest declared depth tier only, with the
-    # swept knob added via --extra-args (or via -k for the kmer length).
-    # BLAST against the panel's reference DB stays on by default — it is
-    # fast against the small in-panel reference DB and gives the on-target
-    # signal that the sweep summary uses to pick winners.
+    # Sweep mode: one job per (panel, knob, value) cell. Each cell runs every
+    # max_reads tier declared for the panel (so panels that want a
+    # depth-stability view at knob x value = specific cell get it by
+    # declaring multiple max_reads values in their YAML), with the swept
+    # knob added via --extra-args (or via -k for the kmer length). BLAST
+    # against the panel's reference DB stays on by default — it is fast
+    # against the small in-panel reference DB and gives the on-target signal
+    # that the sweep summary uses to pick winners.
     # -------------------------------------------------------------------------
     n_jobs=0
     for sweep in "${SWEEPS[@]}"; do
@@ -140,13 +198,15 @@ else
             if [ "$knob" = "k" ]; then
                 # `-k` is plumbed as a first-class arg in validate_panel.py,
                 # not via --extra-args.
-                cell_args="-k $value --label $label --max-reads-tier highest"
+                cell_args="-k $value --label $label --max-reads-tier all"
             else
-                cell_args="--extra-args \"--$knob $value\" --label $label --max-reads-tier highest"
+                cell_args="--extra-args \"--$knob $value\" --label $label --max-reads-tier all"
             fi
             for panel in "${panels[@]}"; do
                 pname="$(basename "$panel" .yaml)"
-                submit_job "$panel" "sw_${pname}_${knob//-/_}_${value}" "$cell_args"
+                submit_job "$panel" "sw_${pname}_${knob//-/_}_${value}" \
+                    "$cell_args" \
+                    "$(panel_mem "$pname")" "$(panel_time "$pname")"
                 n_jobs=$((n_jobs + 1))
             done
         done

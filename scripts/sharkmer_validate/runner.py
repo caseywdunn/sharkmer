@@ -59,7 +59,12 @@ def get_git_commit() -> str:
 
 
 def get_rustc_version() -> str:
-    result = subprocess.run(["rustc", "--version"], capture_output=True, text=True)
+    try:
+        result = subprocess.run(
+            ["rustc", "--version"], capture_output=True, text=True
+        )
+    except FileNotFoundError:
+        return "unavailable"
     return result.stdout.strip()
 
 

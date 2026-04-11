@@ -188,9 +188,18 @@ def load_panel_data(panel_name: str) -> dict | None:
 
 
 def score_result(result: dict, panel_data: dict | None) -> list[dict]:
-    """Score every (sample, gene, depth) row in a result dict.
+    """Score every (sample, gene) row at the panel's deepest declared depth.
 
-    Returns a flat list of {sample, taxon, gene, depth, score, recovered, points}.
+    Returns a flat list of {accession, taxon, gene, max_reads, score,
+    recovered, points}. When a panel declares multiple `max_reads` tiers
+    (e.g. cnidaria/insecta now run [1M..16M]), only the highest tier is
+    used for cross-panel scoring: otherwise multi-depth panels would get
+    their point totals multiplied by the number of tiers and dominate the
+    sweep winners table unfairly. Depth-stability is still visible in each
+    panel's own per-panel validation report.
+
+    `results.build_result` sorts each sample's `depths` list by ascending
+    max_reads, so the last element is the deepest tier.
     """
     if panel_data is None:
         ref_availability = {}
@@ -201,30 +210,33 @@ def score_result(result: dict, panel_data: dict | None) -> list[dict]:
     for sample in result.get("samples", []):
         accession = sample.get("accession", "?")
         taxon = sample.get("taxon", "")
-        for depth in sample.get("depths", []):
-            max_reads = depth.get("max_reads")
-            for gene_entry in depth.get("genes", []):
-                gene = gene_entry.get("gene", "?")
-                recovered = gene_entry.get("recovered", False)
-                ref_match = gene_entry.get("reference_match")
-                score = _score_gene(
-                    recovered=recovered,
-                    gene=gene,
-                    sample_taxon=taxon,
-                    ref_match=ref_match,
-                    ref_availability=ref_availability,
-                )
-                rows.append(
-                    {
-                        "accession": accession,
-                        "taxon": taxon,
-                        "gene": gene,
-                        "max_reads": max_reads,
-                        "score": score,
-                        "recovered": recovered,
-                        "points": points_for_score(score),
-                    }
-                )
+        depths = sample.get("depths", [])
+        if not depths:
+            continue
+        depth = depths[-1]
+        max_reads = depth.get("max_reads")
+        for gene_entry in depth.get("genes", []):
+            gene = gene_entry.get("gene", "?")
+            recovered = gene_entry.get("recovered", False)
+            ref_match = gene_entry.get("reference_match")
+            score = _score_gene(
+                recovered=recovered,
+                gene=gene,
+                sample_taxon=taxon,
+                ref_match=ref_match,
+                ref_availability=ref_availability,
+            )
+            rows.append(
+                {
+                    "accession": accession,
+                    "taxon": taxon,
+                    "gene": gene,
+                    "max_reads": max_reads,
+                    "score": score,
+                    "recovered": recovered,
+                    "points": points_for_score(score),
+                }
+            )
     return rows
 
 
@@ -348,6 +360,70 @@ def render_panel_detail_table(
     return lines
 
 
+def render_runtime_table(
+    knob: str,
+    panel: str,
+    by_value: dict[str, dict],
+    sorted_values: list[str],
+) -> list[str]:
+    """Render the per-(sample, depth) wall-clock runtime grid for one (knob, panel).
+
+    Rows are (sample, max_reads) pairs — no aggregation across samples, so
+    every individual sharkmer run shows up. Columns are the swept knob
+    values. Cells are wall_time_s formatted as "74.2s", or "—" when the run
+    is missing or failed (no wall_time_s recorded).
+    """
+
+    def _fmt_depth(max_reads) -> str:
+        if max_reads is None:
+            return "?"
+        if max_reads >= 1_000_000:
+            return f"{max_reads // 1_000_000}M"
+        return f"{max_reads // 1_000}k"
+
+    lines: list[str] = []
+
+    # Build the grid: row key = (accession, taxon, max_reads), col key = value.
+    grid: dict[tuple[str, str, int], dict[str, float]] = defaultdict(dict)
+    for value in sorted_values:
+        result = by_value.get(value)
+        if result is None:
+            continue
+        for sample in result.get("samples", []):
+            accession = sample.get("accession", "?")
+            taxon = sample.get("taxon", "")
+            for depth in sample.get("depths", []):
+                wall = depth.get("wall_time_s")
+                if wall is None:
+                    continue
+                key = (accession, taxon, depth.get("max_reads"))
+                grid[key][value] = wall
+
+    if not grid:
+        lines.append("_No runtime data._")
+        return lines
+
+    # Stable row ordering: sort by sample (taxon, falling back to accession),
+    # then ascending max_reads so depth tiers read top-to-bottom per sample.
+    sorted_keys = sorted(
+        grid.keys(), key=lambda k: (k[1] or k[0], k[2] if k[2] is not None else -1)
+    )
+
+    header = ["Sample", "Depth"] + [f"`{v}`" for v in sorted_values]
+    lines.append("| " + " | ".join(header) + " |")
+    lines.append("|" + "|".join(["---"] * len(header)) + "|")
+    for accession, taxon, max_reads in sorted_keys:
+        cells: list[str] = []
+        for value in sorted_values:
+            wall = grid[(accession, taxon, max_reads)].get(value)
+            cells.append(f"{wall:.1f}s" if wall is not None else "—")
+        sample_label = taxon or accession
+        lines.append(
+            f"| {sample_label} | {_fmt_depth(max_reads)} | " + " | ".join(cells) + " |"
+        )
+    return lines
+
+
 def render_summary(
     grouped: dict[str, dict[str, dict[str, dict]]],
     n_files: int,
@@ -409,6 +485,14 @@ def render_summary(
             out.extend(
                 render_panel_detail_table(
                     knob, panel, by_panel_value[panel], sorted_values, panel_data
+                )
+            )
+            out.append("")
+            out.append("##### Runtime (wall-clock seconds)")
+            out.append("")
+            out.extend(
+                render_runtime_table(
+                    knob, panel, by_panel_value[panel], sorted_values
                 )
             )
             out.append("")
