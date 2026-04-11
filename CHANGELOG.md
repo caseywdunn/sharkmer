@@ -20,18 +20,17 @@ usage and output format are largely unchanged.
   extension from start seeds with reverse extension from end seeds on a
   shared frontier. The two directions share one global node budget and one
   graph; a path is detected the moment forward and reverse extensions meet
-  in the middle. This replaces the v2 forward-only extension that stalled
-  in repetitive regions (#107).
-- **Coverage threshold sweep**: PCR extension sweeps a small ladder of
-  decreasing minimum-count thresholds (high coverage first, falling to the
-  user's `--min-count`), starting fresh from the seed graph at each step
-  and stopping as soon as a complete amplicon path is found. Strict
-  thresholds get a chance to find a clean product before relaxed
-  thresholds let in noisier extensions.
-- **Mismatch-aware primer kmer discovery**: Primer-matching kmers are
-  enumerated with up to `--mismatches` mismatches, then capped at
-  `--max-primer-kmers` to bound seed count. Replaces the v2 exact-match
-  primer kmer discovery (#118).
+  in the middle. Primer roles are symmetric — swapping the forward and
+  reverse labels on a pair does not change the result, only the strand
+  orientation of the product. This replaces the v2 forward-only extension
+  that stalled in repetitive regions (#107).
+- **Mismatch-aware primer kmer cap**: The `--max-primer-kmers` cap is now
+  filled round by round, one mismatch level at a time. Exact-match kmers
+  (0 mismatches) are added first; higher mismatch levels only contribute
+  if capacity remains. Within each round, kmers are ranked by count
+  (descending) then by kmer value (deterministic tiebreaker). Replaces the
+  v2 count-threshold filter that filled the cap without regard to mismatch
+  level (#118).
 - **Dynamic global node budget**: The global node budget scales with data
   volume — 100K nodes at ≤150M bp, lerping up to 500K nodes at ≥750M bp —
   instead of the v2 fixed 50K default (#113).
@@ -108,7 +107,6 @@ usage and output format are largely unchanged.
   `SmallVec<[T; 4]>` instead of a `Vec`. De Bruijn out-degree is bounded
   by 4, so the SmallVec never spills and the per-call heap allocation
   is gone.
-- **Frontier queue in graph extension** eliminates O(n²) node scanning.
 - **Single-pass reachability BFS**: Forward and backward BFS in
   `reachability_pruning` each push all start/end nodes onto one shared
   stack instead of restarting per start.
