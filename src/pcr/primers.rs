@@ -179,8 +179,8 @@ fn find_oligos_in_kmers(
         k
     );
     assert!(
-        oligo_length > 0 && oligo_length <= k,
-        "oligo length {} out of range for k={} (must be 1..=k)",
+        oligo_length > 0 && oligo_length < k,
+        "oligo length {} out of range for k={} (must be 1..k-1); trim must be < k",
         oligo_length,
         k
     );
@@ -242,15 +242,20 @@ pub(super) fn preprocess_primer_by_mismatch(
     }
 
     let mut trim = params.trim;
-    if trim > *k {
+    // The seed node sub_kmer is the PREFIX of the primer k-mer (kmer >> 2),
+    // which drops the last base of the k-mer.  When the trimmed primer is
+    // exactly k bases it IS the k-mer, so its 3' terminal base is dropped
+    // from the seed node and the assembled amplicon.  Clamping to k-1
+    // ensures all trimmed primer bases are captured in the seed node.
+    if trim >= *k {
         gene_warn!(
             params.gene_name,
-            "Trim length ({}) exceeds k ({}), adjusting trim to {}",
+            "Trim length ({}) must be less than k ({}); adjusting trim to k-1 = {}",
             trim,
             k,
-            k
+            k - 1
         );
-        trim = *k;
+        trim = k - 1;
     }
 
     // Check if either is longer than trim, if so retain only the last trim nucleotides
@@ -671,19 +676,22 @@ mod tests {
     }
 
     #[test]
-    fn test_find_oligos_oligo_equals_k() {
-        // Edge case: oligo_length == k (shift = 0, mask covers all bits)
+    fn test_find_oligos_oligo_equals_k_minus_1() {
+        // Maximum valid oligo length is k-1: the seed node is the PREFIX of
+        // the primer k-mer (kmer >> 2), which drops the last base, so trim
+        // is clamped to k-1 to ensure all primer bases reach the seed node.
         let k = 5;
         let kmer_counts = build_kmer_counts("ACGTACGT", k);
         let filtered = kmer_counts.filtered_view(1);
 
-        let oligo = string_to_oligo("ACGTA").unwrap();
-        assert_eq!(oligo.length, k);
+        // oligo length = k-1 = 4: matches any kmer starting with "ACGT"
+        let oligo = string_to_oligo("ACGT").unwrap();
+        assert_eq!(oligo.length, k - 1);
         let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
 
         assert!(
             !result.is_empty(),
-            "Full-length oligo (length == k) should match the exact kmer"
+            "Oligo of length k-1 should match kmers starting with the primer"
         );
     }
 
@@ -761,7 +769,7 @@ mod tests {
             max_length: 500,
             min_count: 2,
             mismatches: 2,
-            trim: 8,
+            trim: 7, // k-1: maximum valid trim for k=8
             dedup_edit_threshold: DEFAULT_DEDUP_EDIT_THRESHOLD,
             max_primer_kmers: DEFAULT_MAX_NUM_PRIMER_KMERS,
             max_dfs_states: DEFAULT_MAX_DFS_STATES,
@@ -778,10 +786,10 @@ mod tests {
         let levels = preprocess_primer_by_mismatch(&params, PrimerDirection::Forward, &k).unwrap();
         assert_eq!(levels.len(), 3); // 0, 1, 2 mismatches
 
-        // Level 0 should contain exact match
+        // Level 0 should contain exact match (primer trimmed to last 7 bp = k-1)
         assert!(
-            levels[0].contains("ACGTACGT"),
-            "Level 0 should contain the exact primer"
+            levels[0].contains("CGTACGT"),
+            "Level 0 should contain the trimmed primer (last k-1 bases)"
         );
 
         // Levels should be non-overlapping

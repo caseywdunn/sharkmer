@@ -52,7 +52,10 @@ There are three ways to add specificity to a primer:
 3. **Lengthen the primer.** Increase the `trim` value (see
    `sharkmer --help-pcr`; default is 15) and add more resolved positions.
    Each fully resolved position adds 2 bits. Note that the effective primer
-   length cannot exceed *k* (default 19).
+   length cannot exceed *k*−1 (default 18): the seed node for a primer of
+   length *k* would only capture the first *k*−1 bases, silently dropping
+   the 3' terminal base from the assembled amplicon. `trim` is automatically
+   clamped to *k*−1 with a warning if set higher.
 
 These approaches are complementary. If you increase degeneracy to
 accommodate a broader clade (reducing specificity), consider lengthening

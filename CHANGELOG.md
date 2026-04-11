@@ -68,8 +68,10 @@ usage and output format are largely unchanged.
 
 ### Changed
 
-- **Default k changed from 21 to 19**. This allows primers up to 19 bp to be
-  fully represented as single kmers, matching redesigned primer lengths.
+- **Default k changed from 21 to 19**. This allows primers up to 18 bp
+  (k−1) to be fully captured in the seed node. A primer trimmed to exactly
+  k bases would lose its 3' terminal base from the seed; `trim` is now
+  clamped to k−1 with a warning.
 - **Cnidaria CO1 primer redesigned** from 161 cnidarian mitogenomes:
   degeneracy reduced (48 → 32 kmer variants per pair), reverse primer
   extended to 19 bp. Recovery improved from 5/15 to 13/15 benchmark runs

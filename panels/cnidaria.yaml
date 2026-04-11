@@ -37,9 +37,9 @@ primers:
   expected_length: 693
   min_count: 2
   mismatches: 2
-  trim: 19
+  trim: 18
   citation: "Redesigned from Folmer et al. 1994 using 161 cnidarian mitogenomes (2026-04)"
-  notes: "Forward is 15 bp, reverse is 19 bp (the maximum at default k=19). Generates 4 × 8 = 32 kmer variants per pair (vs 48 for previous panel). Expected amplicon ~693 bp. Validated against Xenia, Agalma, Rhopilema: 13/15 runs across 1M-16M read sweeps recover real CO1 at 99.6-100% BLAST identity. Predicted coverage across 161 cnidarian mt genomes: 92% Scyphozoa, 72% Octocorallia, 52% Hexacorallia, 35% Hydrozoa. Siphonophores and sea anemones often need specialized primers."
+  notes: "Forward is 15 bp, reverse is 19 bp; trim=18 keeps the 3'-most 18 bases of the reverse primer (the maximum at default k=19; trim must be ≤ k-1 so all trimmed bases are captured in the seed node). Generates 4 × 8 = 32 kmer variants per pair (vs 48 for previous panel). Expected amplicon ~693 bp. Validated against Xenia, Agalma, Rhopilema: 13/15 runs across 1M-16M read sweeps recover real CO1 at 99.6-100% BLAST identity. Predicted coverage across 161 cnidarian mt genomes: 92% Scyphozoa, 72% Octocorallia, 52% Hexacorallia, 35% Hydrozoa. Siphonophores and sea anemones often need specialized primers."
 
 - gene_name: "18S"
   forward_seq: "AACCTGGTTGATCCTGCCAGT"
