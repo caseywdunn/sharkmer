@@ -102,8 +102,8 @@ python benchmarks/run_benchmark.py                # all samples, with BLAST
 
 Benchmarks use local FASTQ files from `benchmarks/data/` when present.
 If local files are absent, they fall back to `--ena` with read caching
-(cached in `benchmarks/data/cache/`). A local BLAST database in `/db/`
-is used if `blastn` is available; otherwise falls back to NCBI remote API.
+(cached in `benchmarks/data/cache/`). BLAST validation builds a small
+reference DB from panel sequences at runtime; no local nt database is needed.
 
 ## Feature flags
 

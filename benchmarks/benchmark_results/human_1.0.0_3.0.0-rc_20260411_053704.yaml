@@ -1,0 +1,108 @@
+panel: human
+panel_version: 1.0.0
+sharkmer_version: 3.0.0-rc
+git_commit: 22ddf27
+date: '2026-04-11'
+parameters:
+  k: 19
+  threads: 8
+blast_mode: references
+rustc_version: rustc 1.94.1 (e408947bf 2026-03-25)
+hash_backend: ahashmap
+build_profile: release
+machine:
+  os: Linux 6.12.76-linuxkit
+  cpu_model: aarch64
+  cpu_cores: 12
+  total_ram_gb: 47.0
+samples:
+- accession: SRR17535371
+  taxon: Homo sapiens
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 0.1
+    success: true
+    genes:
+    - gene: mt10360-12226
+      recovered: true
+      length: 1853
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: mt10360-12226
+        matched_taxon: Homo sapiens
+        matched_accession: NC 012920.1
+        pct_identity: 99.6
+        align_length: 1838
+        on_target: true
+    - gene: mt11977-13830
+      recovered: true
+      length: 1837
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: mt11977-13830
+        matched_taxon: Homo sapiens
+        matched_accession: NC 012920.1
+        pct_identity: 99.9
+        align_length: 1822
+        on_target: true
+    - gene: mt14898-151
+      recovered: true
+      length: 1808
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: mt14898-151
+        matched_taxon: Homo sapiens
+        matched_accession: NC 012920.1
+        pct_identity: 99.3
+        align_length: 1794
+        on_target: true
+    - gene: mt3734-6739
+      recovered: true
+      length: 2990
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: mt3734-6739
+        matched_taxon: Homo sapiens
+        matched_accession: NC 012920.1
+        pct_identity: 99.9
+        align_length: 2975
+        on_target: true
+    - gene: mt6511-9220
+      recovered: true
+      length: 2694
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: mt6511-9220
+        matched_taxon: Homo sapiens
+        matched_accession: NC 012920.1
+        pct_identity: 99.9
+        align_length: 2679
+        on_target: true
+    - gene: mt8910-10648
+      recovered: true
+      length: 1725
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: mt8910-10648
+        matched_taxon: Homo sapiens
+        matched_accession: NC 012920.1
+        pct_identity: 99.7
+        align_length: 1710
+        on_target: true
+    - gene: mt1404-3947
+      recovered: false
+    - gene: mt13477-15349
+      recovered: false
+    - gene: mt16488-1677
+      recovered: false
+    run_stats:
+      n_reads_read: 30024
+      n_bases_read: 6395186
+      n_kmers: 5852957
+      peak_memory_bytes: 5584433

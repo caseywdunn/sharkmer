@@ -1,0 +1,202 @@
+panel: angiospermae
+panel_version: 1.0.0
+sharkmer_version: 3.0.0-rc
+git_commit: 22ddf27
+date: '2026-04-11'
+parameters:
+  k: 19
+  threads: 8
+blast_mode: references
+rustc_version: rustc 1.94.1 (e408947bf 2026-03-25)
+hash_backend: ahashmap
+build_profile: release
+machine:
+  os: Linux 6.12.76-linuxkit
+  cpu_model: aarch64
+  cpu_cores: 12
+  total_ram_gb: 47.0
+samples:
+- accession: SRR25378184
+  taxon: Liriodendron tulipifera
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 10.2
+    success: true
+    genes:
+    - gene: atpB-rbcL
+      recovered: true
+      length: 812
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: atpB-rbcL
+        matched_taxon: Euphorbia nicaeensis subsp. nicaeensis
+        matched_accession: OR400606
+        pct_identity: 79.0
+        align_length: 861
+        on_target: false
+    - gene: psbM-trnD
+      recovered: true
+      length: 1287
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: psbM-trnD
+        matched_taxon: Liriodendron tulipifera
+        matched_accession: NC 008326
+        pct_identity: 100.0
+        align_length: 1287
+        on_target: true
+    - gene: rpl36-infA-rps8
+      recovered: true
+      length: 552
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: rpl36-infA-rps8
+        matched_taxon: Liriodendron tulipifera
+        matched_accession: NC 008326
+        pct_identity: 100.0
+        align_length: 552
+        on_target: true
+    - gene: trnC-ycf6
+      recovered: true
+      length: 1099
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: trnC-ycf6
+        matched_taxon: Liriodendron tulipifera
+        matched_accession: NC 008326
+        pct_identity: 100.0
+        align_length: 1099
+        on_target: true
+    - gene: trnL-F
+      recovered: true
+      length: 434
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: trnL-F
+        matched_taxon: Liriodendron tulipifera
+        matched_accession: NC 008326
+        pct_identity: 100.0
+        align_length: 434
+        on_target: true
+    - gene: ycf6-psbM
+      recovered: true
+      length: 927
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ycf6-psbM
+        matched_taxon: Liriodendron tulipifera
+        matched_accession: NC 008326
+        pct_identity: 100.0
+        align_length: 927
+        on_target: true
+    - gene: psbA-trnH
+      recovered: false
+    - gene: trnK-rps16
+      recovered: false
+    - gene: trnV-atpE
+      recovered: false
+    - gene: ITS
+      recovered: false
+    run_stats:
+      n_reads_read: 656431
+      n_bases_read: 99121081
+      n_kmers: 87286422
+      peak_memory_bytes: 2281797018
+- accession: ERR14009273
+  taxon: Acer monspessulanum
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 9.0
+    success: true
+    genes:
+    - gene: ITS
+      recovered: true
+      length: 753
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS
+        matched_taxon: Acer monspessulanum
+        matched_accession: MW070149
+        pct_identity: 100.0
+        align_length: 753
+        on_target: true
+    - gene: atpB-rbcL
+      recovered: true
+      length: 812
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: atpB-rbcL
+        matched_taxon: Acer monspessulanum
+        matched_accession: NC 056221
+        pct_identity: 100.0
+        align_length: 812
+        on_target: true
+    - gene: psbA-trnH
+      recovered: true
+      length: 508
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: psbA-trnH
+        matched_taxon: Acer monspessulanum
+        matched_accession: NC 056221
+        pct_identity: 100.0
+        align_length: 508
+        on_target: true
+    - gene: psbM-trnD
+      recovered: true
+      length: 699
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: psbM-trnD
+        matched_taxon: Liriodendron tulipifera
+        matched_accession: NC 008326
+        pct_identity: 86.3
+        align_length: 299
+        on_target: false
+    - gene: trnC-ycf6
+      recovered: true
+      length: 593
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: trnC-ycf6
+        matched_taxon: Acer monspessulanum
+        matched_accession: NC 056221
+        pct_identity: 100.0
+        align_length: 593
+        on_target: true
+    - gene: ycf6-psbM
+      recovered: true
+      length: 937
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ycf6-psbM
+        matched_taxon: Acer monspessulanum
+        matched_accession: NC 056221
+        pct_identity: 100.0
+        align_length: 937
+        on_target: true
+    - gene: rpl36-infA-rps8
+      recovered: false
+    - gene: trnK-rps16
+      recovered: false
+    - gene: trnV-atpE
+      recovered: false
+    - gene: trnL-F
+      recovered: false
+    run_stats:
+      n_reads_read: 1000000
+      n_bases_read: 99211896
+      n_kmers: 81206414
+      peak_memory_bytes: 2281797018

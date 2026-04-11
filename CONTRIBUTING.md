@@ -97,11 +97,11 @@ and commit the results:
     conda activate sharkmer-bench
     python benchmarks/run_benchmark.py
 
-Review the results in `benchmarks/results/` and compare against prior versions
+Review the results in `benchmarks/benchmark_results/` and compare against prior versions
 with `benchmarks/compare.py`. If there are regressions, fix them before
 proceeding. Commit the benchmark results to `dev`:
 
-    git add benchmarks/results/
+    git add benchmarks/benchmark_results/
     git commit -m "Add benchmark results for vX.Y.Z release"
 
 ### 2. Prepare the release
@@ -168,6 +168,11 @@ before a release to check for regressions.
 
 Set up the benchmark conda environment (first time only):
 
+    conda init zsh      # or bash — writes conda hooks to your shell rc file
+    # Restart your shell (or open a new terminal) for the hooks to take effect.
+    # In a fresh shell that has not yet been restarted you can source the hooks
+    # directly instead:
+    #   source /opt/conda/etc/profile.d/conda.sh
     conda env create -f benchmarks/environment.yaml
 
 Then activate it before running benchmarks:
@@ -183,7 +188,7 @@ Then activate it before running benchmarks:
     # Pre-download all sample data without running benchmarks
     python benchmarks/run_benchmark.py --download-only
 
-Results are written as YAML to `benchmarks/results/` with the date, version,
+Results are written as YAML to `benchmarks/benchmark_results/` with the date, version,
 and git commit in the filename. Use `benchmarks/compare.py` to diff results
 across versions.
 
@@ -191,19 +196,6 @@ Sample data (~1M reads each) is cached in `benchmarks/data/` and downloaded
 from ENA on first run. The download streams and truncates early, so it does
 not fetch full runs. Configuration (samples, panels, read counts) is in
 `benchmarks/config.yaml`.
-
-## Local BLAST database
-
-The devcontainer mounts `~/db/` (read-only) to `/db` inside the container.
-This directory must exist on the host machine — create it if it doesn't:
-
-    mkdir -p ~/db
-
-If you have a local BLAST database (e.g., NCBI `core_nt`), place it in
-`~/db/`. For example, `~/db/core_nt.83/` will be accessible at
-`/db/core_nt.83/` in the container. The benchmark BLAST validation will
-use a local database if found, and fall back to the NCBI remote API
-otherwise.
 
 ## Bioconda recipe
 

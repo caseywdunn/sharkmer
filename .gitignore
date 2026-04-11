@@ -22,6 +22,5 @@ panels/validation_reports/
 panels/validation_results/
 panels/bootstrap/
 benchmarks/benchmark_runs/
-benchmarks/benchmark_results/
 logs/
 .claude/settings.local.json
