@@ -147,8 +147,41 @@ Get confirmation before proceeding.
 
 ## Step 3 — Validation samples
 
-Search NCBI SRA for 4–10 samples that span the diversity of the clade as
-broadly as possible (different orders/families if available).
+### 3a. Map the major phylogenetic groups before searching
+
+Before searching SRA, establish what sub-clades need to be represented.
+**Do not rely solely on NCBI taxonomy** — it reflects administrative
+classification and contains non-phylogenetic nodes that do not need sampling:
+
+- Nodes named "environmental samples", "unclassified X", "X sp.",
+  "metagenomes", or "other X" are not phylogenetic groups. Skip them.
+- NCBI sometimes splits or lumps clades in ways that do not match current
+  phylogenetic consensus.
+
+Instead, do a brief web search for the phylogenetic literature on the focal
+clade (e.g. "Anthozoa phylogeny", "Mollusca higher-level phylogeny") to
+identify the major crown-group lineages that span the root of the clade.
+These are the groups that must each have at least one sample for the panel
+to be considered broadly validated.
+
+**Example — Anthozoa:** Phylogenetics recognises two major clades:
+Hexacorallia (stony corals, sea anemones, zoanthids) and Octocorallia
+(soft corals, sea fans, sea pens). NCBI Taxonomy also lists "unclassified
+Anthozoa" and "environmental samples Anthozoa" — those are not phylogenetic
+groups and do not need representation. A valid Anthozoa validation set
+needs at least one Hexacorallia and one Octocorallia sample.
+
+Build a target group list before searching, e.g.:
+
+```
+Target groups for Anthozoa panel:
+  [x] Hexacorallia
+  [ ] Octocorallia   ← must find a sample
+```
+
+### 3b. Search for samples
+
+Search NCBI SRA for 4–10 samples, aiming for one or more per target group.
 
 **Required criteria for each sample:**
 - Platform: Illumina (preferably NovaSeq 6000 or NovaSeq X)
@@ -164,16 +197,39 @@ Search SRA with queries like:
 "PAIRED"[Layout]
 ```
 
-For each candidate accession, check: the taxonomy (does it represent a distinct
-part of the clade?), the number of spots, and whether the library metadata
-matches WGS/GENOMIC/RANDOM.
+For each candidate accession, check: the taxonomy (does it represent a
+distinct part of the clade?), the number of spots, and whether the library
+metadata matches WGS/GENOMIC/RANDOM.
+
+### 3c. Check breadth and alert on gaps
+
+After assembling the candidate list, map each sample back to the target
+groups from §3a. If any major phylogenetic group has no sample:
+
+1. **Search specifically for that group.** Use the group name directly as
+   the Organism filter. Accept a genus or family-level accession if a
+   species-level one is unavailable.
+
+2. **If no WGS data exists for a group**, tell the user explicitly:
+
+   > "No WGS data is available in SRA for `<group>`. The panel cannot be
+   > validated for this lineage and its primers may not perform there.
+   > Consider either: (a) narrowing the stated scope of the panel to exclude
+   > `<group>` until data become available, or (b) keeping the broad scope
+   > but documenting in the panel `notes:` that `<group>` is unvalidated."
+
+   Ask the user which they prefer before proceeding.
+
+3. **Annotate the proposed sample table** with which target group each
+   sample represents, so the breadth is visible at a glance.
 
 Set `max_reads: [1000000, 2000000, 4000000]` as the default depth sweep for
 each sample. If a sample has a very large genome (> 2 Gb), note that 4 million
 reads may be insufficient coverage — suggest increasing to 8 million.
 
 Present the proposed sample list to the user before writing it into the panel,
-including taxon, accession, spots, and why it was chosen. Get confirmation.
+including taxon, accession, spots, target group represented, and why it was
+chosen. Get confirmation.
 
 ---
 
@@ -323,6 +379,51 @@ high-copy or single-copy:
   The default 1–4 M sweep is almost never sufficient for single-copy nuclear
   genes in animals. Tell the user and suggest either higher `max_reads` tiers
   (8–32 M) or switching to a WGS dataset with more spots.
+
+### Poor-performing samples
+
+After reviewing the validation report, look across all genes for each sample
+and compute a rough per-sample gene recovery rate (number of genes with a
+product ÷ total genes in the panel). If a sample recovers considerably fewer
+genes than the others — a useful threshold is recovering fewer than half the
+genes that pass for the median sample, or failing on every gene that succeeds
+for all other samples — treat it as a potential technical outlier before
+concluding it is a biological signal.
+
+**Step 1 — Find an alternative sample.**
+Search SRA for a second accession from the same species, or from the most
+closely related taxon with available WGS data, using the same criteria as
+Step 3 (Illumina, PAIRED, ≥ 20 M spots, WGS/GENOMIC/RANDOM). Add it to the
+validation block temporarily alongside the original.
+
+**Step 2 — Re-run the validator.**
+```bash
+python scripts/validate_panel.py panels/<panel>.yaml
+```
+
+**Step 3 — Compare recovery between the two accessions.**
+
+- **Alternative performs markedly better** (recovers most genes that the
+  original missed): the original dataset likely has a technical problem —
+  low base quality, heavy contamination, high duplicate rate, or an unusual
+  library prep. Tell the user:
+
+  > "Sample `<accession>` (`<taxon>`) recovered `N` of `M` genes, while
+  > `<alternative>` from the same taxon recovered `N'` of `M`. The original
+  > sample may have a technical issue. Should I remove it and keep the
+  > alternative, or keep both? Keeping the original is reasonable if it
+  > represents a biologically distinct population or a divergent specimen —
+  > in that case add a `notes:` field explaining the known limitation."
+
+- **Alternative also performs poorly**: the low recovery is probably
+  biological, not a data quality problem. The primers may not match this
+  lineage well. Continue with §6b (No products from some samples) for the
+  affected genes. Remove the temporary alternative sample if it does not add
+  taxonomic breadth.
+
+- **Both perform similarly and reasonably well**: the original sample is
+  fine; the low recovery for specific genes is a primer issue, not a data
+  issue. Remove the temporary alternative and proceed with §6b.
 
 ### Primer changes
 
