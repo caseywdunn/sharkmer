@@ -1,0 +1,35 @@
+name: arachnida
+description: "Primers for arachnid phylogenetics and barcoding."
+version: 1.0.0
+
+maintainers:
+  - name: "Test User"
+
+changelog:
+  - version: 1.0.0
+    date: 2026-04-11
+    sharkmer_version: "3.0.0"
+    changes: "Initial panel."
+
+primers:
+  - gene_name: "CO1"
+    forward_seq: "GGTCAACAAATCATAAAGATATTGG"
+    reverse_seq: "TAAACTTCAGGGTGACCAAAAAATCA"
+    min_length: 600
+    max_length: 800
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "Folmer et al. 1994"
+    notes: "Universal LCO1490/HCO2198 primers"
+
+  - gene_name: "16S"
+    forward_seq: "CGCCTGTTTAYCAAAAAC"
+    reverse_seq: "CTCCGGTTTGAAC"
+    min_length: 400
+    max_length: 700
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "Masta et al. 2009"
+    notes: ""

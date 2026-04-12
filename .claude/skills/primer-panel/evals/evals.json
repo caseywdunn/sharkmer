@@ -1,0 +1,46 @@
+{
+  "skill_name": "primer-panel",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "I want to build a new primer panel for freshwater snails (Gastropoda) for phylogenetics. Create panels/gastropoda.yaml for me.",
+      "expected_output": "The skill scaffolds a complete panel YAML with name/description/version/maintainers/changelog, mines literature for common gastropod barcoding primers (CO1, 16S, 18S at minimum), assesses each for specificity bits, sets appropriate trim values, proposes SRA validation samples spanning gastropod diversity, and asks for user confirmation at key steps.",
+      "files": [],
+      "assertions": [
+        "The skill asks for maintainer name before writing the file",
+        "The skill calculates or mentions specificity bits for at least one primer",
+        "The skill flags any primer shorter than 15 bp or any trim value > 18",
+        "The skill proposes SRA validation samples with accessions and explains the selection criteria (WGS/GENOMIC/RANDOM, 150bp Illumina, >=20M spots)",
+        "The skill keeps original published primer sequences as YAML comments when modifying them",
+        "The resulting panel file has required fields: name, description, version, maintainers, changelog, primers",
+        "The skill fetches at least one citation DOI to verify it resolves, and records the verification outcome"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I have a panel at evals/files/bare_panel.yaml with arachnida primers. Assess the primers and tell me if there are any problems before I run validation.",
+      "expected_output": "The skill reads the panel, calculates specificity for both primer pairs, flags that the 16S reverse primer (CTCCGGTTTGAAC) is only 13 bp which is shorter than the default trim=15, and suggests a fix. It should also calculate total effective specificity for each pair.",
+      "files": ["evals/files/bare_panel.yaml"],
+      "assertions": [
+        "The skill reads the provided panel file",
+        "The skill identifies that the 16S reverse primer CTCCGGTTTGAAC is 13 bp, which is shorter than trim=15",
+        "The skill recommends setting trim to 12 (len-1) or finding a longer primer",
+        "The skill computes or estimates specificity bits for the CO1 pair",
+        "The skill does not just summarize the primers but actively flags the problem and explains why it matters"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I ran validate_panel.py on my teleostei panel and CO1 got '+ / - / -' for two samples and '- / - / -' for one sample. How do I diagnose this?",
+      "expected_output": "The skill explains that '+/-/-' means product recovered but no reference to confirm it is on-target, and '-/-/-' means no product and no reference. It guides the user to (1) remote BLAST the recovered CO1 product to check if it hits real CO1, (2) check if there are reference sequences available for the failing taxon, (3) examine primer binding sites in references to find mismatches, and (4) consider whether coverage is sufficient given genome size.",
+      "files": [],
+      "assertions": [
+        "The skill correctly interprets the '+/-/-' code as product recovered but no reference",
+        "The skill correctly interprets '-/-/-' as no product and no reference",
+        "The skill provides a blastn remote command or equivalent to check if the product is on-target",
+        "The skill mentions checking genome size as a possible cause of missing products",
+        "The skill suggests looking at primer binding sites in reference sequences to find mismatches causing non-recovery"
+      ]
+    }
+  ]
+}
