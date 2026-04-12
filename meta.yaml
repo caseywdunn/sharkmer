@@ -17,6 +17,7 @@ build:
 requirements:
   build:
     - {{ compiler('rust') }}
+    - {{ compiler('c') }}
 
 test:
   commands:
@@ -37,3 +38,5 @@ extra:
     - osx-arm64
   recipe-maintainers:
     - caseywdunn
+  skip-lints:
+    - compiler_needs_stdlib_c
