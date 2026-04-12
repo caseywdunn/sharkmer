@@ -14,9 +14,11 @@
 
 If you use sharkmer in published work, please cite:
 
-For *in silico* PCR:
-
 > Dunn CW, Church SH (2026) Sharkmer: repurposing PCR primers for targeted genome assembly using in silico PCR. Bioinformatics, btag163. [doi:10.1093/bioinformatics/btag163](https://doi.org/10.1093/bioinformatics/btag163)
+
+*in silico* PCR was first used in:
+
+> Church et al. (2024) Global genomics of the man-o’-war (Physalia) reveals biodiversity at the ocean surface. [doi:10.1101/2024.07.10.602499](https://doi.org/10.1101/2024.07.10.602499)
 
 For incremental kmer counting:
 
