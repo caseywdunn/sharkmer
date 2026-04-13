@@ -7,10 +7,51 @@ use super::PCRParams;
 #[serde(deny_unknown_fields)]
 struct PanelFile {
     name: String,
-    /// Panel semver version. Optional during migration; populated for all in-tree panels.
+    /// Schema version. Absent = v1 (legacy). "2" = current schema.
     #[serde(default)]
-    version: Option<String>,
+    #[allow(dead_code)]
+    schema_version: Option<String>,
+    /// Panel version (semver). Required in schema v2.
+    #[serde(default)]
+    panel_version: Option<String>,
     description: String,
+    /// NCBI-preferred taxon name for the clade this panel targets.
+    #[serde(default)]
+    #[allow(dead_code)]
+    clade: Option<String>,
+    /// NCBI Taxonomy ID for the clade.
+    #[serde(default)]
+    #[allow(dead_code)]
+    taxon_id: Option<u32>,
+    /// Optional override for the prefix prepended to gene names in output.
+    /// Falls back to `name` when absent.
+    #[serde(default)]
+    gene_prefix: Option<String>,
+    /// Lifecycle status: "experimental", "stable", or "deprecated".
+    #[serde(default)]
+    #[allow(dead_code)]
+    status: Option<String>,
+    /// URL where this panel file can be obtained (for externally distributed panels).
+    #[serde(default)]
+    #[allow(dead_code)]
+    source_url: Option<String>,
+    /// SPDX license identifier (e.g. "CC-BY-4.0").
+    #[serde(default)]
+    #[allow(dead_code)]
+    license: Option<String>,
+    /// Citation for the panel itself (distinct from per-primer citations).
+    #[serde(default)]
+    #[allow(dead_code)]
+    citation: Option<String>,
+    /// Free-text notes about the panel.
+    #[serde(default)]
+    #[allow(dead_code)]
+    notes: Option<String>,
+    /// JSON Schema URL for editor validation (e.g. VS Code YAML extension).
+    #[serde(rename = "$schema")]
+    #[serde(default)]
+    #[allow(dead_code)]
+    json_schema: Option<String>,
     #[serde(default)]
     #[allow(dead_code)]
     maintainers: Vec<Maintainer>,
@@ -37,24 +78,28 @@ struct Maintainer {
     orcid: Option<String>,
     #[serde(default)]
     contact: Option<String>,
+    #[serde(default)]
+    notes: Option<String>,
 }
 
 #[derive(serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 #[allow(dead_code)]
 struct ChangelogEntry {
-    version: String,
+    panel_version: String,
     date: String,
     #[serde(default)]
     sharkmer_version: Option<String>,
     changes: String,
+    #[serde(default)]
+    notes: Option<String>,
 }
 
 #[derive(serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 #[allow(dead_code)]
 struct ReferenceGene {
-    gene_name: String,
+    gene: String,
     sequences: Vec<ReferenceSequence>,
 }
 
@@ -101,6 +146,8 @@ struct ValidationSample {
     /// Kept for backward compatibility with existing panel YAMLs.
     #[serde(default)]
     expected: BTreeMap<String, ExpectedGene>,
+    #[serde(default)]
+    notes: Option<String>,
 }
 
 #[derive(serde::Deserialize)]
@@ -120,6 +167,107 @@ fn parse_panel_yaml(yaml_str: &str) -> Result<PanelFile> {
     serde_yaml_ng::from_str(yaml_str).context("Failed to parse panel YAML")
 }
 
+/// Derive the internal `gene_name` identifier from `gene`, optional `region`,
+/// and optional `index`. Format: `{gene}[-{region}][_{index}]`.
+fn derive_gene_name(gene: &str, region: Option<&str>, index: Option<u32>) -> String {
+    match (region, index) {
+        (Some(r), Some(i)) => format!("{}-{}_{}", gene, r, i),
+        (Some(r), None) => format!("{}-{}", gene, r),
+        (None, Some(i)) => format!("{}_{}", gene, i),
+        (None, None) => gene.to_string(),
+    }
+}
+
+/// Validate character constraints on `gene`.
+///
+/// `_` is always forbidden (index delimiter).
+/// `-` is forbidden only when `region` is also set, because the derived name
+/// `{gene}-{region}` becomes ambiguous if `gene` itself contains `-`.
+/// When no `region` is set, dashes in `gene` are unambiguous (e.g. `psbA-trnH`).
+fn validate_gene_chars(gene: &str, has_region: bool) -> Result<()> {
+    if gene.contains('_') {
+        bail!(
+            "gene '{}' must not contain '_' (reserved as index delimiter in output names).",
+            gene
+        );
+    }
+    if has_region && gene.contains('-') {
+        bail!(
+            "gene '{}' must not contain '-' when a `region` is also set, because the derived \
+             output name `{{gene}}-{{region}}` would be ambiguous. Use alphanumeric characters \
+             only for `gene` when pairing it with a `region` (e.g. 'CytB' not 'Cyt-b').",
+            gene
+        );
+    }
+    Ok(())
+}
+
+/// Validate that a `region` value contains no `_` characters.
+fn validate_region_chars(region: &str) -> Result<()> {
+    if region.contains('_') {
+        bail!(
+            "region '{}' must not contain '_' (reserved as index delimiter in output names).",
+            region
+        );
+    }
+    Ok(())
+}
+
+/// Validate that all (gene, region, index) combinations are unique within a panel.
+fn validate_primer_uniqueness(primers: &[super::PCRParams], panel_name: &str) -> Result<()> {
+    use std::collections::HashMap;
+    let mut seen: HashMap<(String, Option<String>, Option<u32>), usize> = HashMap::new();
+    for (i, p) in primers.iter().enumerate() {
+        if let Some(gene) = &p.gene {
+            let key = (gene.clone(), p.region.clone(), p.index);
+            if let Some(prev) = seen.insert(key.clone(), i) {
+                bail!(
+                    "Panel '{}': duplicate primer entries for (gene={:?}, region={:?}, index={:?}) \
+                     at positions {} and {}. Add an `index:` field to distinguish them.",
+                    panel_name,
+                    key.0,
+                    key.1,
+                    key.2,
+                    prev,
+                    i
+                );
+            }
+        }
+    }
+    Ok(())
+}
+
+/// Post-process primers loaded from a panel YAML:
+/// - Validate character constraints on `gene` and `region`
+/// - Validate uniqueness of (gene, region, index) within the panel
+/// - Derive `gene_name` from structured fields (required in schema v2)
+/// - Warn when index is absent on a primer that shares (gene, region) with another
+fn resolve_primer_gene_names(primers: &mut [super::PCRParams], panel_name: &str) -> Result<()> {
+    // Validate characters and count (gene, region) groups
+    for p in primers.iter() {
+        if let Some(gene) = &p.gene {
+            validate_gene_chars(gene, p.region.is_some())?;
+        }
+        if let Some(region) = &p.region {
+            validate_region_chars(region)?;
+        }
+    }
+
+    // Validate uniqueness
+    validate_primer_uniqueness(primers, panel_name)?;
+
+    // Derive gene_name for each primer that uses the structured fields
+    for p in primers.iter_mut() {
+        if let Some(gene) = &p.gene.clone() {
+            p.gene_name = derive_gene_name(gene, p.region.as_deref(), p.index);
+        }
+        // If gene is absent the entry was loaded via CLI path and gene_name
+        // is already set directly — leave it untouched.
+    }
+
+    Ok(())
+}
+
 /// Check whether a string looks like a URL.
 pub fn is_url(source: &str) -> bool {
     source.starts_with("http://") || source.starts_with("https://")
@@ -133,24 +281,30 @@ fn load_panel_file(path: &str) -> Result<Vec<PCRParams>> {
         .with_context(|| format!("Failed to parse panel file '{}'. Check for YAML syntax errors and ensure all primer fields are valid.", path))?;
 
     log_panel_version(&panel, path);
+    require_clade_for_v2(&panel, path)?;
 
-    // Prepend panel name to gene names
+    resolve_primer_gene_names(&mut panel.primers, &panel.name)
+        .with_context(|| format!("Invalid primer specification in panel file '{}'", path))?;
+
+    let prefix = panel.gene_prefix.as_deref().unwrap_or(&panel.name);
     for param in panel.primers.iter_mut() {
-        param.gene_name = format!("{}_{}", panel.name, param.gene_name);
+        param.gene_name = format!("{}_{}", prefix, param.gene_name);
     }
 
-    Ok(panel.primers)
+    Ok(filter_deprecated_primers(panel.primers, &panel.name))
 }
 
-/// Log the loaded panel's name and version at info level. A missing
-/// `version` field produces a warning because versioning is expected for
-/// reproducibility and a versionless panel breaks the panel development
-/// cycle documented in PCR.md. Panel versions are deliberately *not*
-/// checked against sharkmer's own version — PCR.md specifies they are
-/// independent — but the values are surfaced so users can cross-reference
-/// a run against the panel's changelog.
+/// Log the loaded panel's name and version at info level. Warns on missing
+/// `panel_version` and on `status: "deprecated"`.
 fn log_panel_version(panel: &PanelFile, source: &str) {
-    match panel.version.as_deref() {
+    if panel.status.as_deref() == Some("deprecated") {
+        log::warn!(
+            "Panel '{}' from {} has status 'deprecated'. Consider switching to a newer panel.",
+            panel.name,
+            source
+        );
+    }
+    match panel.panel_version.as_deref() {
         Some(v) => log::info!(
             "Loaded panel '{}' v{} from {} ({} primer pair(s))",
             panel.name,
@@ -159,12 +313,51 @@ fn log_panel_version(panel: &PanelFile, source: &str) {
             panel.primers.len()
         ),
         None => log::warn!(
-            "Panel '{}' from {} has no `version` field. Versioning is \
+            "Panel '{}' from {} has no `panel_version` field. Versioning is \
              recommended for reproducibility; see PCR.md.",
             panel.name,
             source
         ),
     }
+}
+
+/// For schema v2 panels, require that `clade` is set.
+fn require_clade_for_v2(panel: &PanelFile, source: &str) -> Result<()> {
+    if panel.schema_version.as_deref() == Some("2") && panel.clade.is_none() {
+        bail!(
+            "Panel '{}' from {} declares schema_version: \"2\" but is missing the required \
+             `clade` field. Set `clade` to the NCBI-preferred taxon name for the target clade \
+             (e.g. `clade: \"Cnidaria\"`).",
+            panel.name,
+            source
+        );
+    }
+    Ok(())
+}
+
+/// Remove deprecated primers from the list, emitting a warning for each one
+/// skipped. Called after gene names are fully resolved and prefixed so that
+/// the warning message uses the final output name.
+fn filter_deprecated_primers(primers: Vec<PCRParams>, panel_name: &str) -> Vec<PCRParams> {
+    let mut active = Vec::with_capacity(primers.len());
+    for p in primers {
+        if p.deprecated {
+            let mut msg = format!(
+                "Panel '{}': skipping deprecated primer '{}'.",
+                panel_name, p.gene_name
+            );
+            if let Some(ref by) = p.deprecated_by {
+                msg.push_str(&format!(" Use '{}' instead.", by));
+            }
+            if let Some(ref reason) = p.deprecated_reason {
+                msg.push_str(&format!(" Reason: {}", reason));
+            }
+            log::warn!("{}", msg);
+        } else {
+            active.push(p);
+        }
+    }
+    active
 }
 
 /// Maximum size of a panel YAML file fetched over the network. Real panels
@@ -212,13 +405,21 @@ fn load_panel_url(url: &str) -> Result<Vec<PCRParams>> {
         .with_context(|| format!("Downloaded panel from {} but failed to parse as YAML", url))?;
 
     log_panel_version(&panel, url);
+    require_clade_for_v2(&panel, url)?;
 
-    // Prepend panel name to gene names
+    resolve_primer_gene_names(&mut panel.primers, &panel.name).with_context(|| {
+        format!(
+            "Invalid primer specification in panel downloaded from '{}'",
+            url
+        )
+    })?;
+
+    let prefix = panel.gene_prefix.as_deref().unwrap_or(&panel.name);
     for param in panel.primers.iter_mut() {
-        param.gene_name = format!("{}_{}", panel.name, param.gene_name);
+        param.gene_name = format!("{}_{}", prefix, param.gene_name);
     }
 
-    Ok(panel.primers)
+    Ok(filter_deprecated_primers(panel.primers, &panel.name))
 }
 
 /// Load a panel from a file path or URL.
@@ -259,10 +460,16 @@ fn get_builtin_panels() -> Vec<PanelFile> {
 fn get_preconfigured_panels() -> Vec<PanelFile> {
     let mut panels = get_builtin_panels();
 
-    // Prepend panel name to gene names
     for panel in panels.iter_mut() {
+        require_clade_for_v2(panel, &format!("built-in panel '{}'", panel.name))
+            .unwrap_or_else(|e| panic!("{}", e));
+        resolve_primer_gene_names(&mut panel.primers, &panel.name).unwrap_or_else(|e| {
+            panic!("Built-in panel '{}' has invalid primers: {}", panel.name, e)
+        });
+        let prefix = panel.gene_prefix.as_deref().unwrap_or(&panel.name);
+        let prefix = prefix.to_string();
         for param in panel.primers.iter_mut() {
-            param.gene_name = format!("{}_{}", panel.name, param.gene_name);
+            param.gene_name = format!("{}_{}", prefix, param.gene_name);
         }
     }
 
@@ -276,8 +483,12 @@ pub fn get_panel(panel_name: &str) -> Result<Vec<PCRParams>, String> {
 
     match panels.iter().find(|panel| panel.name == panel_name) {
         Some(panel) => {
-            log_panel_version(panel, &format!("built-in panel '{}'", panel_name));
-            Ok(panel.primers.clone())
+            let source = format!("built-in panel '{}'", panel_name);
+            log_panel_version(panel, &source);
+            Ok(filter_deprecated_primers(
+                panel.primers.clone(),
+                &panel.name,
+            ))
         }
         None => {
             let available: Vec<&str> = panels.iter().map(|p| p.name.as_str()).collect();
@@ -315,7 +526,7 @@ pub fn print_pcr_panels() {
     for panel in &panels {
         let n = panel.primers.len();
         let noun = if n == 1 { "primer" } else { "primers" };
-        let version = panel.version.as_deref().unwrap_or("unversioned");
+        let version = panel.panel_version.as_deref().unwrap_or("unversioned");
         println!(
             "  {:<16} v{:<8} {} ({} {})",
             panel.name, version, panel.description, n, noun
@@ -352,16 +563,51 @@ mod tests {
 
     #[test]
     fn test_builtin_panels_load_and_are_versioned() {
-        // Every in-tree panel must parse and declare a version.
+        // Every in-tree panel must parse, declare panel_version, and — if
+        // schema_version is "2" — declare clade.
         let panels = get_builtin_panels();
         assert!(!panels.is_empty());
         for panel in &panels {
             assert!(
-                panel.version.is_some(),
-                "Panel '{}' missing version field",
+                panel.panel_version.is_some(),
+                "Panel '{}' missing panel_version field",
                 panel.name
             );
+            if panel.schema_version.as_deref() == Some("2") {
+                assert!(
+                    panel.clade.is_some(),
+                    "Panel '{}' has schema_version \"2\" but is missing required `clade` field",
+                    panel.name
+                );
+            }
         }
+    }
+
+    #[test]
+    fn test_v2_panel_missing_clade_is_rejected() {
+        let yaml = r#"
+name: no_clade_panel
+schema_version: "2"
+panel_version: "1.0.0"
+description: "v2 panel without clade"
+primers:
+  - gene: "X"
+    forward_seq: "AAAA"
+    reverse_seq: "TTTT"
+    min_length: 100
+    max_length: 500
+    min_count: 2
+    mismatches: 2
+    trim: 15
+"#;
+        let mut panel = parse_panel_yaml(yaml).unwrap();
+        resolve_primer_gene_names(&mut panel.primers, &panel.name).unwrap();
+        let result = require_clade_for_v2(&panel, "test");
+        assert!(result.is_err(), "expected error for v2 panel missing clade");
+        assert!(
+            result.unwrap_err().to_string().contains("clade"),
+            "error message should mention clade"
+        );
     }
 
     #[test]
@@ -372,7 +618,7 @@ name: typo_panel
 versoin: 1.0.0
 description: "typo in version field"
 primers:
-  - gene_name: "X"
+  - gene: "X"
     forward_seq: "A"
     reverse_seq: "T"
 "#;
@@ -385,10 +631,10 @@ primers:
         // A typo at the primer level must also be rejected.
         let yaml = r#"
 name: typo_panel
-version: 1.0.0
+panel_version: 1.0.0
 description: "typo in primer field"
 primers:
-  - gene_name: "X"
+  - gene: "X"
     forward_seq: "A"
     reverse_seq: "T"
     forward_sqe: "oops"
@@ -398,6 +644,77 @@ primers:
             result.is_err(),
             "expected rejection of unknown primer field"
         );
+    }
+
+    #[test]
+    fn test_derive_gene_name() {
+        assert_eq!(derive_gene_name("CO1", None, None), "CO1");
+        assert_eq!(derive_gene_name("18S", Some("V9"), None), "18S-V9");
+        assert_eq!(derive_gene_name("CO1", None, Some(2)), "CO1_2");
+        assert_eq!(
+            derive_gene_name("18S", Some("V5-V7"), Some(1)),
+            "18S-V5-V7_1"
+        );
+    }
+
+    #[test]
+    fn test_validate_gene_chars_rejects_dash_with_region() {
+        // Dash in gene is only an error when region is also set
+        assert!(validate_gene_chars("Cyt-b", true).is_err());
+        assert!(validate_gene_chars("CO-1", true).is_err());
+    }
+
+    #[test]
+    fn test_validate_gene_chars_allows_dash_without_region() {
+        // Established names like psbA-trnH are fine when no region is set
+        assert!(validate_gene_chars("psbA-trnH", false).is_ok());
+        assert!(validate_gene_chars("trnL-F", false).is_ok());
+        assert!(validate_gene_chars("Cyt-b", false).is_ok());
+    }
+
+    #[test]
+    fn test_validate_gene_chars_rejects_underscore() {
+        assert!(validate_gene_chars("18S_rRNA", false).is_err());
+        assert!(validate_gene_chars("18S_rRNA", true).is_err());
+    }
+
+    #[test]
+    fn test_validate_gene_chars_accepts_valid() {
+        assert!(validate_gene_chars("CO1", false).is_ok());
+        assert!(validate_gene_chars("18S", false).is_ok());
+        assert!(validate_gene_chars("5.8S", false).is_ok());
+    }
+
+    #[test]
+    fn test_validate_region_chars_rejects_underscore() {
+        assert!(validate_region_chars("V5_V7").is_err());
+    }
+
+    #[test]
+    fn test_validate_region_chars_accepts_dash() {
+        assert!(validate_region_chars("V5-V7").is_ok());
+        assert!(validate_region_chars("V9").is_ok());
+    }
+
+    #[test]
+    fn test_primer_uniqueness_conflict() {
+        let yaml = r#"
+name: dup_panel
+panel_version: "1.0.0"
+description: "duplicate primer test"
+primers:
+  - gene: "CO1"
+    forward_seq: "AAAA"
+    reverse_seq: "TTTT"
+  - gene: "CO1"
+    forward_seq: "CCCC"
+    reverse_seq: "GGGG"
+"#;
+        let mut panel = parse_panel_yaml(yaml).unwrap();
+        let result = resolve_primer_gene_names(&mut panel.primers, &panel.name);
+        assert!(result.is_err(), "expected uniqueness conflict error");
+        let msg = format!("{}", result.unwrap_err());
+        assert!(msg.contains("duplicate"), "error should mention duplicate");
     }
 
     #[test]

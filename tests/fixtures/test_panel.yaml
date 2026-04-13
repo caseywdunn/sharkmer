@@ -1,7 +1,7 @@
 name: test_panel
 description: "Test panel for URL loading (copy of teleostei 18S)"
 primers:
-  - gene_name: "18S"
+  - gene: "18S"
     forward_seq: "TAACATATGCTTGTCTCAAAG"
     reverse_seq: "CCTGTATTGTTATTTTTCGTCAC"
     min_length: 300

@@ -1,0 +1,255 @@
+# sharkmer panel YAML — schema v2 reference panel
+#
+# This file is a documentation panel. It demonstrates every supported field
+# in the panel schema and is NOT embedded into sharkmer as a built-in panel.
+#
+# Load it with:  sharkmer --pcr-panel-file panels/examples/reference.yaml ...
+# Validate with: sharkmer --validate-panels panels/examples/reference.yaml
+
+# ---------------------------------------------------------------------------
+# Panel-level metadata
+# ---------------------------------------------------------------------------
+
+$schema: "https://raw.githubusercontent.com/caseywdunn/sharkmer/main/schemas/panel/v2.json"
+                                  # Optional. Points YAML editors (VS Code +
+                                  # YAML extension, JetBrains) to the JSON
+                                  # Schema for inline validation and autocomplete.
+
+name: reference_hydrozoa         # Required. Machine-readable panel identifier.
+                                  # Used as output filename prefix unless
+                                  # gene_prefix is set. No spaces.
+
+schema_version: "2"               # Required in v2 panels. Must be the string "2".
+
+panel_version: 0.1.0              # Recommended. Semantic version (MAJOR.MINOR.PATCH).
+                                  # Increment PATCH for primer tweaks, MINOR for new
+                                  # primers, MAJOR for breaking changes.
+
+description: "Reference documentation panel: Hydrozoa mitochondrial and
+  nuclear markers. Demonstrates all schema v2 fields. NOT for production use."
+
+clade: "Hydrozoa"                 # NCBI-preferred taxon name for the target clade.
+
+taxon_id: 6074                    # NCBI Taxonomy ID for the clade.
+                                  # https://www.ncbi.nlm.nih.gov/taxonomy
+
+gene_prefix: "hydrozoa"           # Optional. Overrides `name` as the prefix in
+                                  # output filenames. Useful when the panel name
+                                  # is long or contains underscores.
+
+status: "experimental"            # "experimental" | "stable" | "deprecated"
+
+source_url: "https://example.com/panels/reference_hydrozoa.yaml"
+                                  # Where this panel file can be obtained.
+
+license: "CC-BY-4.0"              # SPDX license identifier.
+
+citation: "Dunn et al. 2026 (example)"
+                                  # Panel-level citation (distinct from per-primer
+                                  # citations). Cite the paper that validated
+                                  # this panel's performance, if applicable.
+
+notes: "Documentation panel — every field populated. Uses Hydrozoa as the
+  example clade because primer design for Hydrozoa is non-trivial and
+  illustrates the per-primer metadata fields well."
+
+maintainers:
+  - name: "Casey Dunn"
+    orcid: "https://orcid.org/0000-0003-0876-9390"
+    contact: "casey.dunn@yale.edu"
+    notes: "Primary contact for panel questions."
+
+changelog:
+  - panel_version: 0.1.0
+    date: 2026-04-12
+    sharkmer_version: "3.0.0"
+    changes: "Initial documentation panel. All schema v2 fields populated."
+
+# ---------------------------------------------------------------------------
+# Primer entries
+# ---------------------------------------------------------------------------
+# Required fields per primer:
+#   gene            — gene identifier (no underscores; no dash when region set)
+#   forward_seq     — 5'-to-3' forward primer sequence (IUPAC allowed)
+#   reverse_seq     — 5'-to-3' reverse primer sequence (IUPAC allowed)
+#   min_length      — minimum acceptable amplicon length (bp)
+#   max_length      — maximum acceptable amplicon length (bp)
+#   min_count       — minimum kmer count to seed graph
+#   mismatches      — allowed mismatches per primer during kmer expansion
+#   trim            — bases to trim from each primer end (≤ k−1)
+#
+# Optional per-primer fields:
+#   region          — sub-region of the gene (no underscores)
+#   index           — integer distinguishing multiple primer pairs for the
+#                     same (gene, region). Required when two primers share the
+#                     same (gene, region). Sequential but not consecutive.
+#   compartment     — INSDC /organelle vocabulary. Absent = nuclear.
+#                     "mitochondrion" | "plastid:chloroplast" | etc.
+#   gene_type       — NCBI RefSeq gene_biotype + extensions:
+#                     "protein_coding" | "rRNA" | "tRNA" | "rRNA_SSU" |
+#                     "rRNA_LSU" | "rRNA_5S" | "ITS"
+#   copy_number     — "single_copy" | "low_copy" | "high_copy"
+#   deprecated      — true to soft-deprecate (still runs, warns). Default: false.
+#   deprecated_by   — name of replacement primer entry
+#   deprecated_reason — human-readable reason for deprecation
+#   expected_length — expected amplicon length (used in validation output)
+#   citation        — primer-level citation (distinct from panel citation)
+#   notes           — free-text notes about this primer pair
+#   dedup_edit_threshold, max_dfs_states, max_paths_per_pair,
+#   max_node_visits, max_primer_kmers, high_coverage_ratio,
+#   tip_coverage_fraction — advanced graph-traversal tuning (expert use)
+
+primers:
+
+  # --- Mitochondrial markers ---
+
+  - gene: "16S"
+    compartment: "mitochondrion"
+    gene_type: "rRNA_LSU"
+    copy_number: "high_copy"
+    forward_seq: "GRCTGTTTACCAAAAACATA"
+    reverse_seq: "AATTCAACATMGAGG"
+    min_length: 400
+    max_length: 700
+    expected_length: 550
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "Modified from Cunningham and Buss 1993 https://doi.org/10.1016/0305-1978(93)90009-G"
+    notes: "Amplifies domains IV-V. Degenerate primers; check cnidaria panel for Hydrozoa-optimized version."
+
+  - gene: "CO1"
+    index: 1
+    compartment: "mitochondrion"
+    gene_type: "protein_coding"
+    copy_number: "high_copy"
+    forward_seq: "WAAYCATAAAGATAT"
+    reverse_seq: "GGRTGMCCAAAAAACCARA"
+    min_length: 600
+    max_length: 800
+    expected_length: 693
+    min_count: 2
+    mismatches: 2
+    trim: 18
+    citation: "Redesigned from Folmer et al. 1994 using 161 cnidarian mitogenomes (2026-04)"
+    notes: "Primary CO1 primer pair. See index: 2 for an alternative amplifying a different region."
+
+  - gene: "CO1"
+    index: 2
+    compartment: "mitochondrion"
+    gene_type: "protein_coding"
+    copy_number: "high_copy"
+    forward_seq: "TCAACCAACCACAAAGACATTGGCAC"
+    reverse_seq: "TAGACTTCTGGGTGGCCAAAGAATCA"
+    min_length: 500
+    max_length: 800
+    expected_length: 650
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "Naz et al 2023. doi: 10.2478/aoas-2022-0073"
+    notes: "Alternative CO1 primer pair targeting a different portion of the gene."
+
+  # --- Nuclear markers ---
+
+  - gene: "18S"
+    gene_type: "rRNA_SSU"
+    copy_number: "high_copy"
+    forward_seq: "AACCTGGTTGATCCTGCCAGT"
+    reverse_seq: "TGATCCTTCTGCAGGTTCACCTAC"
+    min_length: 1600
+    max_length: 2000
+    expected_length: 1790
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "Medlin et al. 1988 https://doi.org/10.1016/0378-1119(88)90066-2"
+    notes: "Near full-length 18S."
+
+  - gene: "ITS"
+    index: 1
+    gene_type: "ITS"
+    copy_number: "high_copy"
+    forward_seq: "TACACACCGCCCGTCGCTACTA"
+    reverse_seq: "ACTCGCCGTTACTRRGG"
+    min_length: 600
+    max_length: 1000
+    expected_length: 825
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x"
+    notes: "ITS1+5.8S+ITS2. Forward = CAS18SF1 anchored in 18S 3'-end."
+
+  - gene: "ITS"
+    index: 2
+    gene_type: "ITS"
+    copy_number: "high_copy"
+    forward_seq: "GTAGGTGAACCTGCAGAAGGATCA"
+    reverse_seq: "ACTCGCCGTTACTRRGG"
+    min_length: 600
+    max_length: 1000
+    expected_length: 675
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x"
+    notes: "Alternative ITS primer pair. Forward = RC of 18S reverse primer."
+
+  # --- Example of a deprecated primer entry ---
+
+  - gene: "28S"
+    index: 1
+    gene_type: "rRNA_LSU"
+    copy_number: "high_copy"
+    forward_seq: "CCYYAGTAACGGCGAGT"
+    reverse_seq: "SWACAGATGGTAGCTTCG"
+    min_length: 2900
+    max_length: 3500
+    expected_length: 3230
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "Evans et al. 2008 https://doi.org/10.1186/1471-2148-8-139"
+    notes: "Full-length 28S. F97/R3238 primers."
+
+  - gene: "28S"
+    index: 2
+    gene_type: "rRNA_LSU"
+    copy_number: "high_copy"
+    deprecated: true
+    deprecated_by: "28S_1"
+    deprecated_reason: "Shorter amplicon; use 28S_1 for better phylogenetic resolution."
+    forward_seq: "CGTGAAACCGYTRRAAGGG"
+    reverse_seq: "TTGGTCCGTGTTTCAAGACG"
+    min_length: 300
+    max_length: 700
+    expected_length: 540
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "McCartin et al 2024 https://doi.org/10.7717/peerj.18607"
+    notes: "Anthozoa-targeted 28S eDNA primer (Anth-28S-eDNA). Deprecated in favour of full-length 28S_1."
+
+# ---------------------------------------------------------------------------
+# Validation block (consumed by Python validate_panel.py tooling, not Rust)
+# ---------------------------------------------------------------------------
+validation:
+  samples:
+    - accession: SRR9278435
+      taxon: "Xenia sp."
+      taxonomy: "Eumetazoa; Cnidaria; Hydrozoa; Hydroidolina"
+      max_reads: [1000000]
+      notes: "Closest available to Hydrozoa in SRA; validate 16S and CO1 recovery."
+
+# ---------------------------------------------------------------------------
+# Reference sequences (consumed by validate_panel.py for BLAST identity checks)
+# ---------------------------------------------------------------------------
+# `gene` must match the derived output name produced by sharkmer for the
+# corresponding primer entry. See "Output naming" in PCR.md.
+references:
+  - gene: "16S"
+    sequences:
+      - taxon: "Xenia sp."
+        accession: "XM_047005986"
+        sequence: "TTTACCAAAAACATAGCTCTCTGCTAAAGGTTACTGAAGTATAGAGGGTGAATTCTGCCCAATGGTTGTATAGTGAAACTAAGGACTAACGTCTAAAGCGAAACCCAACTGAATGGCCGCGGTAACTCTGACCGTGATAATGTAGCACAATAAATAGCCAATTAATTGTTGGCGGGTATGAATGGAACCACGAGGGTCTTACTGTCTCAAGAGG"

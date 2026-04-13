@@ -12,6 +12,8 @@ import xml.etree.ElementTree as ET
 from dataclasses import dataclass
 from pathlib import Path
 
+from . import runner
+
 
 @dataclass
 class RefBlastResult:
@@ -55,7 +57,7 @@ def extract_references(panel_data: dict) -> list:
     """
     refs = []
     for gene_block in panel_data.get("references", []):
-        gene_name = gene_block["gene_name"]
+        gene_name = runner.derive_gene_name(gene_block)
         for seq_entry in gene_block.get("sequences", []):
             refs.append(
                 {

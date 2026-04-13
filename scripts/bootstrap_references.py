@@ -28,6 +28,17 @@ import yaml
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 
+def derive_gene_name(primer: dict) -> str:
+    """Derive output gene name from structured primer fields (mirrors Rust logic)."""
+    gene = primer["gene"]
+    region = primer.get("region")
+    index = primer.get("index")
+    name = f"{gene}-{region}" if region is not None else gene
+    if index is not None:
+        name = f"{name}_{index}"
+    return name
+
+
 # ---------------------------------------------------------------------------
 # IUPAC primer matching
 # ---------------------------------------------------------------------------
@@ -301,14 +312,15 @@ def bootstrap_panel(panel_path: Path, gene_filter: list | None = None):
 
     print(f"Panel: {panel_name}")
     print(f"Taxa: {', '.join(taxa)}")
-    print(f"Genes: {', '.join(p['gene_name'] for p in primers)}")
+    print(f"Genes: {', '.join(derive_gene_name(p) for p in primers)}")
     print()
 
     # Build references structure.
-    references: dict[str, list] = {}  # gene_name -> [{taxon, accession, sequence}]
+    # Keys are derived names (for dedup); values carry structured fields + sequences.
+    references: dict[str, dict] = {}
 
     for primer in primers:
-        gene = primer["gene_name"]
+        gene = derive_gene_name(primer)
         if gene_filter and gene not in gene_filter:
             continue
 
@@ -342,7 +354,7 @@ def format_references_yaml(references: dict) -> str:
     """Format references dict as YAML text for the references: block."""
     lines = ["references:"]
     for gene, refs in references.items():
-        lines.append(f"  - gene_name: \"{gene}\"")
+        lines.append(f"  - gene: \"{gene}\"")
         lines.append(f"    sequences:")
         for ref in refs:
             lines.append(f"      - taxon: \"{ref['taxon']}\"")
@@ -367,13 +379,13 @@ def write_references_to_panel(panel_path: Path, references: dict):
     refs_list = CommentedSeq()
     for gene, entries in references.items():
         gene_block = CommentedMap()
-        gene_block["gene_name"] = gene
+        gene_block["gene"] = gene
         seqs = CommentedSeq()
-        for entry in entries:
+        for seq_entry in entries:
             seq_block = CommentedMap()
-            seq_block["taxon"] = entry["taxon"]
-            seq_block["accession"] = entry["accession"]
-            seq_block["sequence"] = entry["sequence"]
+            seq_block["taxon"] = seq_entry["taxon"]
+            seq_block["accession"] = seq_entry["accession"]
+            seq_block["sequence"] = seq_entry["sequence"]
             seqs.append(seq_block)
         gene_block["sequences"] = seqs
         refs_list.append(gene_block)

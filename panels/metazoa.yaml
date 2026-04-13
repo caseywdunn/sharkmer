@@ -1,19 +1,25 @@
 name: metazoa
-version: 1.0.0
+schema_version: "2"
+panel_version: 1.0.0
 description: "Metazoa 18S metabarcoding primers"
+clade: "Metazoa"
+taxon_id: 33208
 
 maintainers:
   - name: "Samuel Church"
     orcid: "https://orcid.org/0000-0002-8451-103X"
 
 changelog:
-  - version: 1.0.0
+  - panel_version: 1.0.0
     date: 2026-04-05
     sharkmer_version: "3.0.0"
     changes: "Initial versioned schema."
 
 primers:
-  - gene_name: "18S-V3"
+  - gene: "18S"
+    region: "V3"
+    gene_type: "rRNA_SSU"
+    copy_number: "high_copy"
     forward_seq: "AACGGCTACCACATCCAAGG"
     reverse_seq: "CACCAGACTTGCCCTCCAAT"
     min_length: 50
@@ -24,7 +30,10 @@ primers:
     citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
     notes: "Within V3"
 
-  - gene_name: "18S-V5-V7S"
+  - gene: "18S"
+    region: "V5-V7S"
+    gene_type: "rRNA_SSU"
+    copy_number: "high_copy"
     forward_seq: "TGACGGAAGGGCACCACCAG"
     reverse_seq: "TCCACCAACTAAGAACGGCC"
     min_length: 50
@@ -35,7 +44,10 @@ primers:
     citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
     notes: "Between V5 and beginning of V7 (short amplicon)"
 
-  - gene_name: "18S-V5-V7L"
+  - gene: "18S"
+    region: "V5-V7L"
+    gene_type: "rRNA_SSU"
+    copy_number: "high_copy"
     forward_seq: "AAACGATGCCGACTAGCGAT"
     reverse_seq: "TCCACCAACTAAGAACGGCC"
     min_length: 50
@@ -46,7 +58,10 @@ primers:
     citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
     notes: "Between V5 and beginning of V7 (long amplicon)"
 
-  - gene_name: "18S-V7"
+  - gene: "18S"
+    region: "V7"
+    gene_type: "rRNA_SSU"
+    copy_number: "high_copy"
     forward_seq: "GGCCGTTCTTAGTTGGTGGA"
     reverse_seq: "TGCGGCCCAGAACATCTAAG"
     min_length: 50
@@ -57,7 +72,10 @@ primers:
     citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
     notes: "Within V7"
 
-  - gene_name: "18S-V7p-V8"
+  - gene: "18S"
+    region: "V7p-V8"
+    gene_type: "rRNA_SSU"
+    copy_number: "high_copy"
     forward_seq: "AACAGGTCTGTGATGCCCTT"
     reverse_seq: "TGTGTACAAAGGGCAGGGAC"
     min_length: 50
@@ -68,7 +86,11 @@ primers:
     citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
     notes: "Part of V7 and most of V8"
 
-  - gene_name: "18S-V9"
+  - gene: "18S"
+    region: "V9"
+    index: 1
+    gene_type: "rRNA_SSU"
+    copy_number: "high_copy"
     forward_seq: "CTTTGTACACACCGCCCGTC"
     reverse_seq: "CCTTGTTACGACTTTTACTTCCTCT"
     min_length: 50
@@ -79,7 +101,11 @@ primers:
     citation: "Damian-Serrano et al. 2022 https://doi.org/10.1371/journal.pone.0267761"
     notes: "Within V9"
 
-  - gene_name: "18S-V9-v2"
+  - gene: "18S"
+    region: "V9"
+    index: 2
+    gene_type: "rRNA_SSU"
+    copy_number: "high_copy"
     forward_seq: "CCCTGCCHTTTGTACACAC"
     reverse_seq: "CCTTCYGCAGGTTCACCTAC"
     min_length: 1

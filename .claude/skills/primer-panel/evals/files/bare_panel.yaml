@@ -1,18 +1,22 @@
 name: arachnida
+schema_version: "2"
 description: "Primers for arachnid phylogenetics and barcoding."
-version: 1.0.0
+panel_version: 1.0.0
+clade: "Arachnida"
 
 maintainers:
   - name: "Test User"
 
 changelog:
-  - version: 1.0.0
+  - panel_version: 1.0.0
     date: 2026-04-11
     sharkmer_version: "3.0.0"
     changes: "Initial panel."
 
 primers:
-  - gene_name: "CO1"
+  - gene: "CO1"
+    compartment: "mitochondrion"
+    gene_type: "protein_coding"
     forward_seq: "GGTCAACAAATCATAAAGATATTGG"
     reverse_seq: "TAAACTTCAGGGTGACCAAAAAATCA"
     min_length: 600
@@ -23,7 +27,9 @@ primers:
     citation: "Folmer et al. 1994"
     notes: "Universal LCO1490/HCO2198 primers"
 
-  - gene_name: "16S"
+  - gene: "16S"
+    compartment: "mitochondrion"
+    gene_type: "rRNA_LSU"
     forward_seq: "CGCCTGTTTAYCAAAAAC"
     reverse_seq: "CTCCGGTTTGAAC"
     min_length: 400

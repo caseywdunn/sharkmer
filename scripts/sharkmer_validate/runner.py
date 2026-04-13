@@ -119,8 +119,26 @@ def load_panel_yaml(panel_path: Path) -> dict:
         return yaml.safe_load(f)
 
 
+def derive_gene_name(primer: dict) -> str:
+    """Derive the output gene name from structured primer fields.
+
+    Mirrors the Rust ``derive_gene_name`` logic in preconfigured.rs:
+    - gene only          → gene
+    - gene + region      → gene-region
+    - gene + index       → gene_index
+    - gene + region + index → gene-region_index
+    """
+    gene = primer["gene"]
+    region = primer.get("region")
+    index = primer.get("index")
+    name = f"{gene}-{region}" if region is not None else gene
+    if index is not None:
+        name = f"{name}_{index}"
+    return name
+
+
 def panel_gene_names(panel_data: dict) -> list:
-    return [p["gene_name"] for p in panel_data.get("primers", [])]
+    return [derive_gene_name(p) for p in panel_data.get("primers", [])]
 
 
 def discover_panels(panels_dir: Path = None) -> list:

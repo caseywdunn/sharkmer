@@ -763,6 +763,15 @@ mod tests {
         use super::*;
         let params = PCRParams {
             gene_name: "test".to_string(),
+            gene: None,
+            region: None,
+            index: None,
+            compartment: None,
+            gene_type: None,
+            copy_number: None,
+            deprecated: false,
+            deprecated_by: None,
+            deprecated_reason: None,
             forward_seq: "ACGTACGT".to_string(),
             reverse_seq: "TGCATGCA".to_string(),
             min_length: 100,

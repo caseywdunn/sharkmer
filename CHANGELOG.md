@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **JSON Schema for panel v2**: `schemas/panel/v2.json` validates the full panel
+  YAML structure. Panels may include a `$schema:` key pointing at this URL to
+  enable inline validation and autocomplete in VS Code (YAML extension) and
+  JetBrains IDEs.
+- **JSON Schema validation in `validate_panel.py`**: When the `jsonschema`
+  Python package is available, `validate_panel.py` automatically checks v2
+  panels against `schemas/panel/v2.json` before running any benchmarks.
+- **Deprecated panel warning**: Loading a panel whose top-level `status` field
+  is `"deprecated"` now emits a `log::warn` so the user knows to switch.
+- **Deprecated primers skipped**: Primer entries with `deprecated: true` are
+  skipped entirely (with a warning) rather than run. The warning includes the
+  `deprecated_by` and `deprecated_reason` fields when present.
+- **`clade` required for schema v2 panels**: A panel declaring
+  `schema_version: "2"` without a `clade` field is now rejected at load time
+  with an error message.
+
+### Changed
+
+- **`gene_name` → `gene` in `references` blocks**: The key identifying a
+  reference entry's gene was renamed from `gene_name:` to `gene:` to match
+  the simpler v2 model where a single derived output name (e.g. `"CO1_1"`,
+  `"16S"`) is sufficient.
+
 ## [3.0.0] - 2026-04-11
 
 This release replaces the ad-hoc graph extension and pruning heuristics with

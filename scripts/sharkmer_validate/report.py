@@ -67,7 +67,7 @@ def _build_ref_availability(panel_data: dict) -> dict:
     """
     ref_map = {}
     for ref_block in panel_data.get("references", []):
-        gene = ref_block["gene_name"]
+        gene = runner.derive_gene_name(ref_block)
         taxa = set()
         for seq_entry in ref_block.get("sequences", []):
             taxa.add(seq_entry["taxon"])

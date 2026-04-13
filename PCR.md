@@ -90,23 +90,33 @@ file via `--pcr-panel-file`.
 
 ## Panel file format
 
+Panel files use **schema version 2**. A fully annotated example covering
+every supported field is at [`panels/examples/reference.yaml`](panels/examples/reference.yaml).
+A minimal working example:
+
 ```yaml
-name: cnidaria
-version: 1.0.0
-description: "Universal and custom primers targeting mitochondrial and nuclear products."
+name: my_panel
+schema_version: "2"
+panel_version: 1.0.0
+description: "Example panel."
+clade: "Cnidaria"
+taxon_id: 6073
 
 maintainers:
   - name: "Samuel Church"
     orcid: "https://orcid.org/0000-0002-8451-103X"
 
 changelog:
-  - version: 1.0.0
+  - panel_version: 1.0.0
     date: 2026-04-05
-    sharkmer_version: "3.0.0-dev"
-    changes: "Initial versioned schema."
+    sharkmer_version: "3.0.0"
+    changes: "Initial panel."
 
 primers:
-  - gene_name: "16S"
+  - gene: "16S"
+    compartment: "mitochondrion"
+    gene_type: "rRNA_LSU"
+    copy_number: "high_copy"
     forward_seq: "GRCTGTTTACCAAAAACATA"
     reverse_seq: "AATTCAACATMGAGG"
     min_length: 500
@@ -122,43 +132,90 @@ validation:
   samples:
     - accession: SRR9278435
       taxon: "Xenia sp."
-      taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Cnidaria; Anthozoa; Octocorallia; Malacalcyonacea; Xeniidae; Xenia; unclassified Xenia"
-      max_reads: [1000000, 2000000, 4000000, 8000000, 16000000]
+      taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Cnidaria; Anthozoa; Octocorallia"
+      max_reads: [1000000]
       expected:
-        "16S": { min_identity: 0.97, length: 578, length_tolerance: 30 }
+        "my_panel_16S": { min_identity: 0.97, length: 578, length_tolerance: 30 }
 ```
 
 ### Required fields
 
 **Panel-level:** `name`, `description`, `primers`.
 
-**Per-primer:** `gene_name`, `forward_seq`, `reverse_seq`.
+**Per-primer:** `gene`, `forward_seq`, `reverse_seq`.
 
-### Optional fields
+### Optional panel-level fields
 
-**Panel-level:** `version`, `maintainers`, `changelog`, `validation`.
+| Field | Description |
+|---|---|
+| `$schema` | JSON Schema URL for editor tooling. Set to `https://raw.githubusercontent.com/caseywdunn/sharkmer/main/schemas/panel/v2.json` to enable inline validation and autocomplete in VS Code (YAML extension) and JetBrains IDEs. |
+| `schema_version` | Must be `"2"` for schema v2 panels. |
+| `panel_version` | Semver string (e.g. `1.0.0`). Independent of sharkmer's version. |
+| `clade` | NCBI-preferred name for the target taxon (e.g. `"Cnidaria"`). |
+| `taxon_id` | NCBI Taxonomy ID for the clade. |
+| `gene_prefix` | Overrides `name` as the output filename prefix. |
+| `status` | `"experimental"` \| `"stable"` \| `"deprecated"`. |
+| `source_url` | URL where this panel file can be obtained. |
+| `license` | SPDX license identifier (e.g. `"CC-BY-4.0"`). |
+| `citation` | Panel-level citation. |
+| `notes` | Free-text notes about the panel. |
+| `maintainers` | List of `{name, orcid, contact, notes}`. |
+| `changelog` | List of `{panel_version, date, sharkmer_version, changes, notes}`. |
+| `validation` | Validation block (see below). |
+| `references` | Reference sequences for BLAST-identity validation. |
 
-**Per-primer:** `min_length`, `max_length`, `min_count`, `mismatches`,
-`trim`, `expected_length`, `dedup_edit_threshold`, `citation`, `notes`.
+### Optional per-primer fields
+
+| Field | Description |
+|---|---|
+| `region` | Sub-region of the gene (no `_`). Combined with `gene` to form `gene-region` in output names. |
+| `index` | Integer (≥ 1) distinguishing multiple primer pairs for the same `(gene, region)`. Required when two entries share the same gene+region. Output name becomes `gene_index` or `gene-region_index`. |
+| `compartment` | INSDC /organelle value. Absent = nuclear. `"mitochondrion"` \| `"plastid:chloroplast"` \| etc. |
+| `gene_type` | `"protein_coding"` \| `"rRNA"` \| `"tRNA"` \| `"rRNA_SSU"` \| `"rRNA_LSU"` \| `"rRNA_5S"` \| `"ITS"`. |
+| `copy_number` | `"single_copy"` \| `"low_copy"` \| `"high_copy"`. |
+| `deprecated` | `true` to soft-deprecate (runs, warns). Default `false`. |
+| `deprecated_by` | Name of the replacement entry. |
+| `deprecated_reason` | Human-readable reason for deprecation. |
+| `min_length`, `max_length` | Amplicon length search window (bp). |
+| `min_count` | Minimum kmer count to seed the graph. |
+| `mismatches` | Allowed mismatches per primer during kmer expansion. |
+| `trim` | Bases to trim from each primer end (≤ k−1, default k=19). |
+| `expected_length` | Expected amplicon length for reporting. |
+| `citation` | Primer-level citation. |
+| `notes` | Free-text notes about this primer pair. |
+| `dedup_edit_threshold` | Levenshtein distance below which two products are merged (default 10). |
+
+### Output naming
+
+The output filename for each amplicon is `{prefix}_{gene_name}` where:
+
+- `prefix` = `gene_prefix` if set, otherwise `name`.
+- `gene_name` is derived from structured fields:
+  - `gene` only → `gene` (e.g., `18S`)
+  - `gene` + `region` → `gene-region` (e.g., `16S-V3`)
+  - `gene` + `index` → `gene_index` (e.g., `CO1_1`)
+  - `gene` + `region` + `index` → `gene-region_index` (e.g., `18S-V9_2`)
+
+Character constraints: `gene` must not contain `_` (index delimiter); `gene`
+must not contain `-` when `region` is also set (ambiguity); `region` must not
+contain `_`.
 
 ### Field semantics
 
-- `version` is a semver string and is **independent of sharkmer's version**.
+- `panel_version` is a semver string and is **independent of sharkmer's version**.
   Bump the patch digit for notes/citation/validation edits, the minor digit
   for new primers or changed expectations, and the major digit for breaking
   changes (renamed or removed genes).
 - `expected_length` is the canonical expected amplicon length. It is distinct
   from the `min_length`/`max_length` *search* window, which should be wider
   to accommodate biological variation.
-- `min_length`, `max_length`, `mismatches`, `trim`, and `min_count` are passed
-  through to sharkmer's PCR engine. See the main README for their meanings.
 - `dedup_edit_threshold` controls the Levenshtein distance below which two
   output products are collapsed into one (default 10). Lower it (e.g. 0–2)
   for panels targeting complex samples where distinct but closely related
   products should be retained separately.
 - `validation.samples[*].taxon` is the species (or lowest-rank identification)
-  of the sample organism, e.g. `"Xenia sp."` or `"Homo sapiens"`. This is a
-  short human-readable label, distinct from the full lineage in `taxonomy`.
+  of the sample organism. This is a short human-readable label, distinct from
+  the full lineage in `taxonomy`.
 - `validation.samples[*].taxonomy` should be the NCBI lineage string for the
   sample organism (when the sample is not a metagenome). This makes it easy
   to see at a glance how much taxonomic diversity a panel has been tested
@@ -166,6 +223,8 @@ validation:
 - `validation.samples[*].max_reads` is a list of read counts to run sharkmer
   at, processed in descending order. A single-element list (e.g.
   `[1000000]`) is fine; multiple values provide a sensitivity sweep.
+- `validation.samples[*].expected` keys must match the **prefixed** gene
+  names as they appear in output files (i.e., `{prefix}_{gene_name}`).
 - Unknown fields are rejected at load time. If the Rust loader complains
   about a field, check for typos.
 
@@ -188,11 +247,12 @@ tuned for sharkmer's graph assembly and are a reasonable starting point.
 
 ### 2. Edit primers
 
-Add, remove, or tweak primers. Keep `gene_name` stable across edits if you
-can — the validation block keys on it.
+Add, remove, or tweak primers. Keep `gene` (and `region`/`index` if set)
+stable across edits — the validation block's `expected:` keys derive from
+these. If you rename a gene, update the `expected:` keys to match.
 
-Bump `version` in the panel header. Add a `changelog` entry describing what
-you changed and why. Dates are in `YYYY-MM-DD`.
+Bump `panel_version` in the panel header. Add a `changelog` entry describing
+what you changed and why. Dates are in `YYYY-MM-DD`.
 
 ### 3. Declare validation samples
 
@@ -278,6 +338,23 @@ and sets thresholds slightly below observed values so normal run-to-run
 variation does not cause false failures. It also updates
 `validation.last_validated` with the current sharkmer version, panel
 version, and date.
+
+The validator writes reports to `panels/validation_reports/` by default. If
+your panel lives outside the repo (e.g. a private panel under development),
+use `--output-dir` to redirect reports to a directory of your choice:
+
+```bash
+python scripts/validate_panel.py ~/my_panels/arachnida.yaml \
+    --output-dir ~/my_panels/reports/
+```
+
+This also works with `--write`, which edits the panel file in place regardless
+of where it lives:
+
+```bash
+python scripts/validate_panel.py ~/my_panels/arachnida.yaml \
+    --output-dir ~/my_panels/reports/ --write
+```
 
 ### 5. Iterate on a single primer
 

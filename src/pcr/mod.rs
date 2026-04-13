@@ -154,7 +154,51 @@ pub struct PCRParams {
     pub min_length: usize,
     #[serde(default = "default_max_length")]
     pub max_length: usize,
+
+    // --- Schema v2 target identification (panel YAML) ---
+    // gene_name is the internal derived identifier (never in YAML; set by
+    // preconfigured.rs after load, or directly by parse_pcr_primers_string).
+    #[serde(skip, default)]
     pub gene_name: String,
+    /// Gene being targeted (e.g. "CO1", "18S"). Required in panel YAML.
+    /// Must not contain '-' or '_'.
+    #[serde(default)]
+    pub gene: Option<String>,
+    /// Optional sub-region label (e.g. "V9", "V5-V7"). Must not contain '_'.
+    #[serde(default)]
+    pub region: Option<String>,
+    /// Optional integer index distinguishing multiple primer pairs for the
+    /// same (gene, region). Appears in output naming when set.
+    #[serde(default)]
+    pub index: Option<u32>,
+
+    // --- Schema v2 target metadata ---
+    /// Cellular compartment. Use INSDC /organelle vocabulary; absent = nuclear.
+    #[serde(default)]
+    #[allow(dead_code)]
+    pub compartment: Option<String>,
+    /// Gene/transcript type. Use NCBI RefSeq gene_biotype values plus
+    /// rRNA_SSU, rRNA_LSU, rRNA_5S, ITS extensions.
+    #[serde(default)]
+    #[allow(dead_code)]
+    pub gene_type: Option<String>,
+    /// Approximate copy number per cell. One of: single_copy, low_copy,
+    /// high_copy.
+    #[serde(default)]
+    #[allow(dead_code)]
+    pub copy_number: Option<String>,
+
+    // --- Deprecation ---
+    #[serde(default)]
+    #[allow(dead_code)]
+    pub deprecated: bool,
+    #[serde(default)]
+    #[allow(dead_code)]
+    pub deprecated_by: Option<String>,
+    #[serde(default)]
+    #[allow(dead_code)]
+    pub deprecated_reason: Option<String>,
+
     #[serde(default = "default_min_count")]
     pub min_count: u32,
     #[serde(default = "default_mismatches")]
@@ -166,13 +210,9 @@ pub struct PCRParams {
     #[serde(default)]
     #[allow(dead_code)]
     pub expected_length: Option<usize>,
-    // `citation` and `notes` are accepted by the panel YAML schema (see
-    // PCR.md) and appear in every in-tree panel file. They are
-    // provenance metadata for human readers and downstream tools (e.g.
-    // scripts/validate_panel.py); the Rust binary never consumes them.
-    // We still keep them as struct fields because PCRParams uses
-    // #[serde(deny_unknown_fields)], so any field present in a panel
-    // YAML must also be declared here or loading fails.
+    // Provenance metadata for human readers and downstream tools.
+    // Never consumed by the Rust binary; kept here because deny_unknown_fields
+    // requires all YAML fields to be declared.
     #[serde(default)]
     #[allow(dead_code)]
     pub citation: String,
@@ -1215,6 +1255,15 @@ mod tests {
             min_length: 0,
             max_length: 2500,
             gene_name: "18s".to_string(),
+            gene: None,
+            region: None,
+            index: None,
+            compartment: None,
+            gene_type: None,
+            copy_number: None,
+            deprecated: false,
+            deprecated_by: None,
+            deprecated_reason: None,
             min_count: 3,
             mismatches: 2,
             trim: 15,

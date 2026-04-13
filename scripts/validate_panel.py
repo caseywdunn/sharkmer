@@ -29,10 +29,11 @@ Usage:
 """
 
 import argparse
+import datetime
+import json
 import shlex
 import sys
 import tempfile
-from datetime import datetime
 from pathlib import Path
 
 from ruamel.yaml import YAML
@@ -76,7 +77,9 @@ def build_filtered_panel(panel_path: Path, gene_filter):
             f"--genes filter references genes not in panel: {missing}\n"
             f"Available: {all_genes}"
         )
-    data["primers"] = [p for p in data["primers"] if p["gene_name"] in gene_filter]
+    data["primers"] = [
+        p for p in data["primers"] if runner.derive_gene_name(p) in gene_filter
+    ]
 
     RUNS_DIR.mkdir(parents=True, exist_ok=True)
     import tempfile as _tf
@@ -87,6 +90,71 @@ def build_filtered_panel(panel_path: Path, gene_filter):
     yaml.dump(data, tmp)
     tmp.close()
     return Path(tmp.name), Path(tmp.name)
+
+
+# ---------------------------------------------------------------------------
+# JSON Schema validation
+# ---------------------------------------------------------------------------
+
+_SCHEMA_PATH = runner.REPO_ROOT / "schemas" / "panel" / "v2.json"
+
+
+def _to_json_compat(obj):
+    """Recursively convert YAML-deserialized values to JSON-compatible types.
+
+    PyYAML parses bare dates (e.g. 2026-04-05) as datetime.date objects.
+    The JSON Schema expects strings, so we convert them to ISO format strings
+    before validation.
+    """
+    if isinstance(obj, dict):
+        return {str(k): _to_json_compat(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_to_json_compat(v) for v in obj]
+    if isinstance(obj, (datetime.date, datetime.datetime)):
+        return obj.isoformat()
+    return obj
+
+
+def check_json_schema(panel_data: dict, panel_path: Path) -> None:
+    """Validate panel_data against the v2 JSON Schema.
+
+    Only runs for schema_version "2" panels. Skips silently if the jsonschema
+    package is not installed or if the schema file is missing.
+    Exits with a non-zero status if validation fails.
+    """
+    if str(panel_data.get("schema_version")) != "2":
+        return
+
+    try:
+        import jsonschema
+    except ImportError:
+        print(
+            "  [schema] jsonschema package not installed — skipping JSON Schema check.\n"
+            "  Install with: conda install jsonschema  (or pip install jsonschema)"
+        )
+        return
+
+    if not _SCHEMA_PATH.exists():
+        print(f"  [schema] Schema file not found at {_SCHEMA_PATH} — skipping check.")
+        return
+
+    with open(_SCHEMA_PATH) as f:
+        schema = json.load(f)
+
+    # Normalize date objects to ISO strings before validation (PyYAML parses
+    # bare YAML dates such as 2026-04-05 as datetime.date, not str).
+    panel_normalized = _to_json_compat(panel_data)
+
+    try:
+        jsonschema.validate(instance=panel_normalized, schema=schema)
+        print("  [schema] JSON Schema validation passed.")
+    except jsonschema.ValidationError as e:
+        location = " → ".join(str(p) for p in e.absolute_path) or "(root)"
+        raise SystemExit(
+            f"Panel {panel_path.name} fails JSON Schema validation:\n"
+            f"  Location: {location}\n"
+            f"  {e.message}"
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -182,6 +250,8 @@ def main():
         print(f"Panel file missing required 'name' field: {panel_path}")
         sys.exit(1)
 
+    check_json_schema(panel_data, panel_path)
+
     validation = panel_data.get("validation") or {}
     samples = validation.get("samples") or []
     if not samples:
@@ -211,7 +281,7 @@ def main():
             print(f"gene filter: {', '.join(gene_filter)}")
         print()
 
-        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         run_dir = RUNS_DIR / f"{panel_name}_{stamp}"
 
         # Build reference BLAST DB (if references exist in panel).

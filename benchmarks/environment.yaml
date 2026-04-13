@@ -6,4 +6,5 @@ dependencies:
   - python>=3.9
   - pyyaml
   - ruamel.yaml
+  - jsonschema
   - blast>=2.16

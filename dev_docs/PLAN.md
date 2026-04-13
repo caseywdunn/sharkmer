@@ -12,6 +12,19 @@ for detailed specifications.
 Brief notes after each phase/session for cold-start context. Most recent
 first.
 
+**2026-04-12 — Post-3.0.0 panel schema v2 hardening (issues 121-124)**
+JSON Schema created at `schemas/panel/v2.json` (draft-07, `additionalProperties: false`
+throughout). `validate_panel.py` now validates v2 panels against the schema via
+`jsonschema`; `benchmarks/environment.yaml` updated to include it. Deprecated panel
+status (`status: "deprecated"`) emits a `log::warn` at load time. Deprecated primer
+entries (`deprecated: true`) are skipped entirely with a warning instead of run.
+`clade` is now required for `schema_version: "2"` panels (hard error). All 8 built-in
+panel `references:` blocks renamed `gene_name:` → `gene:`. `panels/examples/reference.yaml`
+gained a `$schema:` pointer to the new schema URL. Python helper scripts
+(`validate_panel.py`, `bootstrap_references.py`, `sharkmer_validate/`) updated to
+use `derive_gene_name()` everywhere. `SKILL.md` references section updated: `gene_name:`
+→ `gene:`.
+
 **2026-04-01 — Phase 7 implementation (read-backed seed evaluation)**
 Pass 1 primer Oligo matching via two-stage filter: bloom filter (24-bit,
 4MB) for fast approximate check during kmer ingestion, then AHashSet

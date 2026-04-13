@@ -678,7 +678,7 @@ fn test_validate_panel_valid() {
 name: test_panel
 description: A test panel
 primers:
-  - gene_name: test_gene
+  - gene: TestGene
     forward_seq: ACGTACGTACGT
     reverse_seq: TGCATGCATGCA
     min_length: 100
@@ -705,7 +705,7 @@ fn test_validate_panel_invalid_nucleotide() {
 name: bad_panel
 description: Panel with invalid bases
 primers:
-  - gene_name: bad_gene
+  - gene: BadGene
     forward_seq: ACGTXZQP
     reverse_seq: TGCATGCA
     min_length: 100
@@ -735,7 +735,7 @@ fn test_validate_panel_min_exceeds_max() {
 name: bad_panel
 description: Panel with inverted lengths
 primers:
-  - gene_name: bad_gene
+  - gene: BadGene
     forward_seq: ACGTACGTACGT
     reverse_seq: TGCATGCATGCA
     min_length: 1000
@@ -774,7 +774,7 @@ fn test_validate_panel_missing_fields() {
 name: incomplete_panel
 description: Missing primer fields
 primers:
-  - gene_name: no_seqs
+  - gene: NoSeqs
 ";
     let output = run_validate_panel(yaml);
 

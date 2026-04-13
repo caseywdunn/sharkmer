@@ -66,7 +66,7 @@ def analyze_primer_bindings(
     sample_results is a list of (sample_block, runs) tuples.
     Returns a list of per-gene analysis dicts.
     """
-    primers = {p["gene_name"]: p for p in panel_data.get("primers", [])}
+    primers = {runner.derive_gene_name(p): p for p in panel_data.get("primers", [])}
     analyses = []
 
     for gene in considered_genes:

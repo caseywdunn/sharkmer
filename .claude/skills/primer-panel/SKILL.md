@@ -36,8 +36,16 @@ if you need information you don't have:
 **`description`** — one sentence describing what the panel targets. Ask the
 user if absent.
 
-**`version`** — set to `1.0.0` if absent. This is the panel's own version,
-independent of sharkmer's version.
+**`schema_version`** — set to `"2"`.
+
+**`panel_version`** — set to `1.0.0` if absent. This is the panel's own
+version, independent of sharkmer's version.
+
+**`clade`** — NCBI-preferred name for the target taxon (e.g. `"Cnidaria"`).
+Ask the user if absent.
+
+**`taxon_id`** — NCBI Taxonomy ID for the clade. Look it up at
+https://www.ncbi.nlm.nih.gov/taxonomy if needed.
 
 **`maintainers`** — at least one entry with `name`. Ask for the user's name
 and ORCID (ORCID is optional).
@@ -45,7 +53,7 @@ and ORCID (ORCID is optional).
 **`changelog`** — initial entry:
 ```yaml
 changelog:
-  - version: 1.0.0
+  - panel_version: 1.0.0
     date: <today>
     sharkmer_version: "3.0.0"
     changes: "Initial panel."
@@ -235,16 +243,16 @@ chosen. Get confirmation.
 
 ## Step 4 — Reference sequences
 
-For each primer pair (`gene_name`) and each validation sample taxon, search
-NCBI for a reference sequence to use for BLAST validation. A reference is a
-known-good sequence for that gene from that species (or a close relative).
+For each primer pair and each validation sample taxon, search NCBI for a
+reference sequence to use for BLAST validation. A reference is a known-good
+sequence for that gene from that species (or a close relative).
 
 Good sources: NCBI Nucleotide, RefSeq (mitochondrial genomes for mt genes,
 rRNA databases for 18S/28S/ITS), BOLD for CO1.
 
 Search strategy per gene:
 ```
-"<taxon>" [Organism] AND "<gene_name>" [Gene Name]
+"<taxon>" [Organism] AND "<gene>" [Gene Name]
 ```
 Or for mitochondrial genes:
 ```
@@ -254,11 +262,18 @@ Or for mitochondrial genes:
 For each found sequence, extract the relevant amplicon region (the stretch
 between the forward and reverse primer binding sites). Write the references
 directly into the panel YAML file under a top-level `references:` block —
-**not in `notes:` fields**. The format is:
+**not in `notes:` fields**. The `gene:` key in each reference entry must
+match the derived output name for that primer:
+- `gene` only → `gene` (e.g., `"CO1"`)
+- `gene` + `index` → `gene_index` (e.g., `"CO1_1"`)
+- `gene` + `region` → `gene-region` (e.g., `"16S-V3"`)
+- `gene` + `region` + `index` → `gene-region_index` (e.g., `"18S-V9_2"`)
+
+The format is:
 
 ```yaml
 references:
-  - gene_name: "CO1"
+  - gene: "CO1"
     sequences:
       - taxon: Lymnaea stagnalis
         accession: AY382548
@@ -266,15 +281,14 @@ references:
       - taxon: Biomphalaria glabrata
         accession: AF317857
         sequence: GGTCAACAAATCATAAAGATATTGG...TAAACTTCAGGGTGACCAAAAAATCA
-  - gene_name: "16S"
+  - gene: "16S"
     sequences:
       - taxon: Lymnaea stagnalis
         accession: AJ390977
         sequence: CGCCTGTTTAYCAAAAACAT...CCGGTCTGAACTCAGATCACGT
 ```
 
-Include only the amplicon sequence between the primer binding sites (primer
-sequences themselves are not included). It is OK if not all taxa have a
+It is OK if not all taxa have a
 reference for all genes — aim for at least one reference per gene, and at
 least partial coverage across taxa.
 
@@ -429,7 +443,7 @@ python scripts/validate_panel.py panels/<panel>.yaml
 
 When modifying a primer sequence:
 - Keep the original sequence as a YAML comment: `# original: ORIGINAL_SEQ`
-- Bump the panel `version` patch digit (e.g. 1.0.0 → 1.0.1)
+- Bump the `panel_version` patch digit (e.g. 1.0.0 → 1.0.1)
 - Add a `changelog` entry describing what changed and why
 - Re-run the validator to confirm improvement
 
@@ -454,7 +468,7 @@ matches at the depths you care about):
    ```bash
    python scripts/validate_panel.py panels/<panel>.yaml --write
    ```
-2. Confirm `version`, `changelog`, and `maintainers` are up to date.
+2. Confirm `panel_version`, `changelog`, and `maintainers` are up to date.
 3. Summarize what the panel covers and any known limitations to the user.
 
 ---

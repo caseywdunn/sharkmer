@@ -1,0 +1,358 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/caseywdunn/sharkmer/main/schemas/panel/v2.json",
+  "title": "sharkmer panel",
+  "description": "Schema for sharkmer primer panel YAML files (schema_version: \"2\").",
+  "type": "object",
+  "required": ["name", "schema_version", "description", "primers"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "format": "uri",
+      "description": "JSON Schema URL. Enables inline validation and autocomplete in editors such as VS Code (with the YAML extension) and JetBrains IDEs."
+    },
+    "name": {
+      "type": "string",
+      "description": "Machine-readable panel identifier. Used as the output filename prefix unless gene_prefix is set. No spaces."
+    },
+    "schema_version": {
+      "type": "string",
+      "enum": ["2"],
+      "description": "Panel schema version. Must be the string \"2\" for v2 panels."
+    },
+    "panel_version": {
+      "type": "string",
+      "description": "Semantic version of the panel (MAJOR.MINOR.PATCH). Increment PATCH for primer tweaks, MINOR for new primers, MAJOR for breaking changes.",
+      "examples": ["1.0.0", "0.2.1"]
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of the panel and its intended use."
+    },
+    "clade": {
+      "type": "string",
+      "description": "NCBI-preferred taxon name for the target clade (e.g. \"Cnidaria\", \"Insecta\")."
+    },
+    "taxon_id": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "NCBI Taxonomy ID for the clade. See https://www.ncbi.nlm.nih.gov/taxonomy"
+    },
+    "gene_prefix": {
+      "type": "string",
+      "description": "Optional override for the prefix prepended to gene names in output filenames. Falls back to `name` when absent."
+    },
+    "status": {
+      "type": "string",
+      "enum": ["experimental", "stable", "deprecated"],
+      "description": "Panel lifecycle status. sharkmer warns when a deprecated panel is loaded."
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL where this panel file can be obtained. Logged at load time for reproducibility."
+    },
+    "license": {
+      "type": "string",
+      "description": "SPDX license identifier (e.g. \"CC-BY-4.0\")."
+    },
+    "citation": {
+      "type": "string",
+      "description": "Citation for the panel itself (distinct from per-primer citations). Cite the paper that validated this panel's performance."
+    },
+    "notes": {
+      "type": "string",
+      "description": "Free-text notes about the panel."
+    },
+    "maintainers": {
+      "type": "array",
+      "description": "List of panel maintainers.",
+      "items": { "$ref": "#/$defs/Maintainer" }
+    },
+    "changelog": {
+      "type": "array",
+      "description": "Ordered list of panel changes, most recent first.",
+      "items": { "$ref": "#/$defs/ChangelogEntry" }
+    },
+    "primers": {
+      "type": "array",
+      "description": "Primer pairs in this panel. All entries run independently; there is no priority ordering.",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/PrimerEntry" }
+    },
+    "references": {
+      "type": "array",
+      "description": "Gold-standard reference amplicon sequences for validation. Consumed by validate_panel.py, not by the Rust binary.",
+      "items": { "$ref": "#/$defs/ReferenceGene" }
+    },
+    "validation": {
+      "$ref": "#/$defs/ValidationBlock",
+      "description": "Validation configuration. Consumed by validate_panel.py, not by the Rust binary."
+    }
+  },
+
+  "$defs": {
+
+    "Maintainer": {
+      "type": "object",
+      "required": ["name"],
+      "additionalProperties": false,
+      "properties": {
+        "name":    { "type": "string", "description": "Full name of the maintainer." },
+        "orcid":   { "type": "string", "format": "uri", "description": "ORCID iD URL (e.g. \"https://orcid.org/0000-0000-0000-0000\")." },
+        "contact": { "type": "string", "description": "Contact email or URL." },
+        "notes":   { "type": "string" }
+      }
+    },
+
+    "ChangelogEntry": {
+      "type": "object",
+      "required": ["panel_version", "date", "changes"],
+      "additionalProperties": false,
+      "properties": {
+        "panel_version":    { "type": "string", "description": "Panel version this entry describes." },
+        "date":             { "type": "string", "description": "ISO 8601 date (YYYY-MM-DD)." },
+        "sharkmer_version": { "type": "string", "description": "sharkmer version used when this panel version was tested." },
+        "changes":          { "type": "string", "description": "Human-readable summary of changes." },
+        "notes":            { "type": "string" }
+      }
+    },
+
+    "PrimerEntry": {
+      "type": "object",
+      "required": ["gene", "forward_seq", "reverse_seq", "min_length", "max_length", "min_count", "mismatches", "trim"],
+      "additionalProperties": false,
+      "properties": {
+
+        "gene": {
+          "type": "string",
+          "description": "Gene being targeted (e.g. \"CO1\", \"18S\"). Must not contain '_'. Must not contain '-' when `region` is also set."
+        },
+        "region": {
+          "type": "string",
+          "description": "Optional sub-region label (e.g. \"V9\", \"V5-V7\"). Must not contain '_'."
+        },
+        "index": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Optional positive integer distinguishing multiple primer pairs for the same (gene, region). Required when two primer entries share the same (gene, region)."
+        },
+
+        "forward_seq": {
+          "type": "string",
+          "pattern": "^[ACGTRYSWKMBDHVNacgtryswkmbdhvn]+$",
+          "description": "5'-to-3' forward primer sequence (IUPAC nucleotide codes allowed)."
+        },
+        "reverse_seq": {
+          "type": "string",
+          "pattern": "^[ACGTRYSWKMBDHVNacgtryswkmbdhvn]+$",
+          "description": "5'-to-3' reverse primer sequence (IUPAC nucleotide codes allowed)."
+        },
+        "min_length": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Minimum acceptable amplicon length (bp), inclusive."
+        },
+        "max_length": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum acceptable amplicon length (bp), inclusive. Must be >= min_length."
+        },
+        "min_count": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Minimum kmer count required to seed the De Bruijn graph. Default: 2."
+        },
+        "mismatches": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of mismatches allowed per primer end during kmer expansion. Default: 2."
+        },
+        "trim": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Bases to trim from each primer end when seeding the graph (must be ≤ k−1 = 18). Default: 15."
+        },
+
+        "compartment": {
+          "type": "string",
+          "description": "Cellular compartment using INSDC /organelle vocabulary. Absent implies nuclear.",
+          "examples": ["mitochondrion", "plastid:chloroplast", "plastid:apicoplast", "plastid", "hydrogenosome", "nucleomorph", "chromatophore"]
+        },
+        "gene_type": {
+          "type": "string",
+          "enum": ["protein_coding", "rRNA", "rRNA_SSU", "rRNA_LSU", "rRNA_5S", "ITS", "tRNA", "noncoding"],
+          "description": "Gene/transcript type. Uses NCBI RefSeq gene_biotype values with rRNA_SSU, rRNA_LSU, rRNA_5S, and ITS extensions."
+        },
+        "copy_number": {
+          "type": "string",
+          "enum": ["single_copy", "low_copy", "high_copy"],
+          "description": "Approximate copy number per cell/genome."
+        },
+
+        "deprecated": {
+          "type": "boolean",
+          "default": false,
+          "description": "If true, sharkmer warns when this primer is used but still runs it. Default: false."
+        },
+        "deprecated_by": {
+          "type": "string",
+          "description": "Derived output name of the replacement primer entry (e.g. \"CO1_2\")."
+        },
+        "deprecated_reason": {
+          "type": "string",
+          "description": "Human-readable reason for deprecation."
+        },
+
+        "expected_length": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Expected amplicon length (bp). Informational; used in validation reports."
+        },
+        "citation": {
+          "type": "string",
+          "description": "Source citation for these primer sequences."
+        },
+        "notes": {
+          "type": "string",
+          "description": "Free-text notes about this primer pair."
+        },
+
+        "dedup_edit_threshold": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Expert tuning: Levenshtein edit distance below which near-duplicate amplicons are merged. Default: 10."
+        },
+        "max_dfs_states": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Expert tuning: Maximum DFS state budget during path enumeration. Default: 100000."
+        },
+        "max_paths_per_pair": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Expert tuning: Maximum paths returned per primer pair before truncation. Default: 20."
+        },
+        "max_node_visits": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Expert tuning: Maximum times a node may be revisited during DFS (cycle tolerance). Default: 2."
+        },
+        "max_primer_kmers": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Expert tuning: Maximum primer kmer variants after ambiguity/mismatch expansion. Default: 40."
+        },
+        "high_coverage_ratio": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Expert tuning: Coverage ratio above which an edge is treated as a repeat and filtered. Default: 10.0."
+        },
+        "tip_coverage_fraction": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1,
+          "description": "Expert tuning: Coverage fraction below which a tip edge is pruned. Default: 0.1."
+        }
+      }
+    },
+
+    "ReferenceGene": {
+      "type": "object",
+      "required": ["gene", "sequences"],
+      "additionalProperties": false,
+      "properties": {
+        "gene": {
+          "type": "string",
+          "description": "Derived output name for this gene (e.g. \"CO1\", \"18S-V9\", \"CO1_1\"). Must match the name sharkmer writes to the output FASTA filename."
+        },
+        "sequences": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/ReferenceSequence" }
+        }
+      }
+    },
+
+    "ReferenceSequence": {
+      "type": "object",
+      "required": ["taxon", "sequence"],
+      "additionalProperties": false,
+      "properties": {
+        "taxon":     { "type": "string", "description": "Species or sample name." },
+        "accession": { "type": "string", "description": "GenBank/SRA accession for provenance." },
+        "sequence":  {
+          "type": "string",
+          "pattern": "^[ACGTRYSWKMBDHVNacgtryswkmbdhvn]+$",
+          "description": "Expected amplicon sequence (IUPAC nucleotides)."
+        }
+      }
+    },
+
+    "ValidationBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "last_validated": { "$ref": "#/$defs/LastValidated" },
+        "samples": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/ValidationSample" }
+        }
+      }
+    },
+
+    "LastValidated": {
+      "type": "object",
+      "required": ["sharkmer_version", "panel_version", "date"],
+      "additionalProperties": false,
+      "properties": {
+        "sharkmer_version": { "type": "string" },
+        "panel_version":    { "type": "string" },
+        "date":             { "type": "string", "description": "ISO 8601 date (YYYY-MM-DD)." }
+      }
+    },
+
+    "ValidationSample": {
+      "type": "object",
+      "required": ["accession", "max_reads"],
+      "additionalProperties": false,
+      "properties": {
+        "accession": {
+          "type": "string",
+          "description": "SRA run accession (e.g. \"SRR9278435\")."
+        },
+        "taxon": {
+          "type": "string",
+          "description": "Species or sample name."
+        },
+        "taxonomy": {
+          "type": "string",
+          "description": "Semicolon-separated higher taxonomy string."
+        },
+        "max_reads": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "integer", "minimum": 1 },
+          "description": "Read depth tiers to validate at (e.g. [1000000, 4000000, 16000000])."
+        },
+        "expected": {
+          "type": "object",
+          "description": "Deprecated: expected gene recovery thresholds from older runs. Kept for backward compatibility.",
+          "additionalProperties": { "$ref": "#/$defs/ExpectedGene" }
+        },
+        "notes": { "type": "string" }
+      }
+    },
+
+    "ExpectedGene": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "min_identity":      { "type": "number", "minimum": 0, "maximum": 100 },
+        "length":            { "type": "integer", "minimum": 1 },
+        "length_tolerance":  { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}
