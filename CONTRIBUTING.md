@@ -115,6 +115,8 @@ On a local machine:
 
 On the Bouchet HPC cluster (submits one SLURM job per panel):
 
+    ml Rust GCC
+    cargo build --release
     bash scripts/validate_all_panels_slurm.sh
 
 If any panel fails, fix the discrepancy before proceeding. Pass `--no-blast`
