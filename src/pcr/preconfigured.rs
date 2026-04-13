@@ -442,6 +442,7 @@ fn get_builtin_panel_sources() -> Vec<(&'static str, &'static str)> {
         ("c_elegans", include_str!("../../panels/c_elegans.yaml")),
         ("cnidaria", include_str!("../../panels/cnidaria.yaml")),
         ("human", include_str!("../../panels/human.yaml")),
+        ("hydrozoa", include_str!("../../panels/hydrozoa.yaml")),
         ("insecta", include_str!("../../panels/insecta.yaml")),
         ("metazoa", include_str!("../../panels/metazoa.yaml")),
         ("teleostei", include_str!("../../panels/teleostei.yaml")),
