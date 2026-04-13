@@ -1,0 +1,1063 @@
+panel: cnidaria
+panel_version: 1.1.0
+sharkmer_version: 3.0.0
+git_commit: fb4bcd5
+date: '2026-04-13'
+parameters:
+  k: 19
+  threads: 8
+blast_mode: references
+rustc_version: rustc 1.94.1 (e408947bf 2026-03-25)
+hash_backend: ahashmap
+build_profile: release
+machine:
+  os: Linux 6.12.76-linuxkit
+  cpu_model: aarch64
+  cpu_cores: 12
+  total_ram_gb: 47.0
+samples:
+- accession: SRR9278435
+  taxon: Xenia sp.
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 22.5
+    success: true
+    genes:
+    - gene: 16S
+      recovered: true
+      length: 621
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S
+        matched_taxon: Xenia sp.
+        matched_accession: XM 047005986
+        pct_identity: 100.0
+        align_length: 621
+        on_target: true
+    - gene: 18S
+      recovered: true
+      length: 1807
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S
+        matched_taxon: Xenia sp.
+        matched_accession: XR 006952126
+        pct_identity: 100.0
+        align_length: 1807
+        on_target: true
+    - gene: 28S_1
+      recovered: true
+      length: 3234
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Xenia sp.
+        matched_accession: XR 006952137
+        pct_identity: 100.0
+        align_length: 3234
+        on_target: true
+    - gene: 28S_2
+      recovered: true
+      length: 414
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_2
+        matched_taxon: Xenia sp.
+        matched_accession: XR 006952139
+        pct_identity: 100.0
+        align_length: 414
+        on_target: true
+    - gene: CO1
+      recovered: true
+      length: 692
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1
+        matched_taxon: Xenia sp.
+        matched_accession: HG999760
+        pct_identity: 100.0
+        align_length: 692
+        on_target: true
+    - gene: ITS_1
+      recovered: true
+      length: 899
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_1
+        matched_taxon: Xenia sp.
+        matched_accession: KC864852
+        pct_identity: 99.9
+        align_length: 899
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 748
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_2
+        matched_taxon: Xenia sp.
+        matched_accession: KY442629
+        pct_identity: 99.9
+        align_length: 748
+        on_target: true
+    run_stats:
+      n_reads_read: 1000000
+      n_bases_read: 150000000
+      n_kmers: 131779117
+      peak_memory_bytes: 4563531990
+  - max_reads: 2000000
+    wall_time_s: 41.0
+    success: true
+    genes:
+    - gene: 16S
+      recovered: true
+      length: 621
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S
+        matched_taxon: Xenia sp.
+        matched_accession: XM 047005986
+        pct_identity: 100.0
+        align_length: 621
+        on_target: true
+    - gene: 18S
+      recovered: true
+      length: 1807
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S
+        matched_taxon: Xenia sp.
+        matched_accession: XR 006952126
+        pct_identity: 100.0
+        align_length: 1807
+        on_target: true
+    - gene: 28S_1
+      recovered: true
+      length: 3234
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Xenia sp.
+        matched_accession: XR 006952137
+        pct_identity: 100.0
+        align_length: 3234
+        on_target: true
+    - gene: 28S_2
+      recovered: true
+      length: 414
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_2
+        matched_taxon: Xenia sp.
+        matched_accession: XR 006952139
+        pct_identity: 100.0
+        align_length: 414
+        on_target: true
+    - gene: CO1
+      recovered: true
+      length: 692
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1
+        matched_taxon: Xenia sp.
+        matched_accession: HG999760
+        pct_identity: 100.0
+        align_length: 692
+        on_target: true
+    - gene: ITS_1
+      recovered: true
+      length: 899
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_1
+        matched_taxon: Xenia sp.
+        matched_accession: KC864852
+        pct_identity: 99.8
+        align_length: 899
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 748
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_2
+        matched_taxon: Xenia sp.
+        matched_accession: KY442629
+        pct_identity: 100.0
+        align_length: 748
+        on_target: true
+    run_stats:
+      n_reads_read: 2000000
+      n_bases_read: 300000000
+      n_kmers: 263603227
+      peak_memory_bytes: 9126934742
+  - max_reads: 4000000
+    wall_time_s: 66.5
+    success: true
+    genes:
+    - gene: 16S
+      recovered: true
+      length: 621
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S
+        matched_taxon: Xenia sp.
+        matched_accession: XM 047005986
+        pct_identity: 100.0
+        align_length: 621
+        on_target: true
+    - gene: 18S
+      recovered: true
+      length: 1807
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S
+        matched_taxon: Xenia sp.
+        matched_accession: XR 006952126
+        pct_identity: 100.0
+        align_length: 1807
+        on_target: true
+    - gene: 28S_1
+      recovered: true
+      length: 3234
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Xenia sp.
+        matched_accession: XR 006952137
+        pct_identity: 100.0
+        align_length: 3234
+        on_target: true
+    - gene: 28S_2
+      recovered: true
+      length: 414
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_2
+        matched_taxon: Xenia sp.
+        matched_accession: XR 006952139
+        pct_identity: 100.0
+        align_length: 414
+        on_target: true
+    - gene: CO1
+      recovered: true
+      length: 692
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1
+        matched_taxon: Xenia sp.
+        matched_accession: HG999760
+        pct_identity: 100.0
+        align_length: 692
+        on_target: true
+    - gene: ITS_1
+      recovered: true
+      length: 899
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_1
+        matched_taxon: Xenia sp.
+        matched_accession: KC864852
+        pct_identity: 99.8
+        align_length: 899
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 748
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_2
+        matched_taxon: Xenia sp.
+        matched_accession: KY442629
+        pct_identity: 100.0
+        align_length: 748
+        on_target: true
+    run_stats:
+      n_reads_read: 4000000
+      n_bases_read: 600000000
+      n_kmers: 527231543
+      peak_memory_bytes: 9126934742
+  - max_reads: 8000000
+    wall_time_s: 169.1
+    success: true
+    genes:
+    - gene: 16S
+      recovered: true
+      length: 621
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S
+        matched_taxon: Xenia sp.
+        matched_accession: XM 047005986
+        pct_identity: 100.0
+        align_length: 621
+        on_target: true
+    - gene: 18S
+      recovered: true
+      length: 1807
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S
+        matched_taxon: Xenia sp.
+        matched_accession: XR 006952126
+        pct_identity: 100.0
+        align_length: 1807
+        on_target: true
+    - gene: 28S_1
+      recovered: true
+      length: 3234
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Xenia sp.
+        matched_accession: XR 006952137
+        pct_identity: 100.0
+        align_length: 3234
+        on_target: true
+    - gene: 28S_2
+      recovered: true
+      length: 414
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_2
+        matched_taxon: Xenia sp.
+        matched_accession: XR 006952139
+        pct_identity: 100.0
+        align_length: 414
+        on_target: true
+    - gene: CO1
+      recovered: true
+      length: 692
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1
+        matched_taxon: Xenia sp.
+        matched_accession: HG999760
+        pct_identity: 100.0
+        align_length: 692
+        on_target: true
+    - gene: ITS_1
+      recovered: true
+      length: 899
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_1
+        matched_taxon: Xenia sp.
+        matched_accession: KC864852
+        pct_identity: 99.8
+        align_length: 899
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 748
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_2
+        matched_taxon: Xenia sp.
+        matched_accession: KY442629
+        pct_identity: 100.0
+        align_length: 748
+        on_target: true
+    run_stats:
+      n_reads_read: 8000000
+      n_bases_read: 1200000000
+      n_kmers: 1054598174
+      peak_memory_bytes: 18253740246
+- accession: SRR25099394
+  taxon: Agalma elegans
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 13.9
+    success: true
+    genes:
+    - gene: 18S
+      recovered: true
+      length: 1785
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S
+        matched_taxon: Agalma elegans
+        matched_accession: AY937313
+        pct_identity: 100.0
+        align_length: 1785
+        on_target: true
+    - gene: 28S_1
+      recovered: true
+      length: 3230
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Agalma elegans
+        matched_accession: EU272542
+        pct_identity: 100.0
+        align_length: 3230
+        on_target: true
+    - gene: 28S_2
+      recovered: true
+      length: 417
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Agalma elegans
+        matched_accession: EU272542
+        pct_identity: 100.0
+        align_length: 417
+        on_target: false
+    - gene: ITS_1
+      recovered: true
+      length: 817
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_1
+        matched_taxon: Agalma elegans
+        matched_accession: AY937313
+        pct_identity: 100.0
+        align_length: 817
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 671
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_1
+        matched_taxon: Agalma elegans
+        matched_accession: AY937313
+        pct_identity: 100.0
+        align_length: 671
+        on_target: false
+    - gene: 16S
+      recovered: false
+    - gene: CO1
+      recovered: false
+    run_stats:
+      n_reads_read: 1000000
+      n_bases_read: 151000000
+      n_kmers: 132986604
+      peak_memory_bytes: 4563499482
+  - max_reads: 2000000
+    wall_time_s: 30.8
+    success: true
+    genes:
+    - gene: 18S
+      recovered: true
+      length: 1785
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S
+        matched_taxon: Agalma elegans
+        matched_accession: AY937313
+        pct_identity: 100.0
+        align_length: 1785
+        on_target: true
+    - gene: 28S_1
+      recovered: true
+      length: 3230
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Agalma elegans
+        matched_accession: EU272542
+        pct_identity: 100.0
+        align_length: 3230
+        on_target: true
+    - gene: 28S_2
+      recovered: true
+      length: 417
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Agalma elegans
+        matched_accession: EU272542
+        pct_identity: 100.0
+        align_length: 417
+        on_target: false
+    - gene: CO1
+      recovered: true
+      length: 798
+      n_products: 2
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ITS_1
+      recovered: true
+      length: 817
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_1
+        matched_taxon: Agalma elegans
+        matched_accession: AY937313
+        pct_identity: 100.0
+        align_length: 817
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 671
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_1
+        matched_taxon: Agalma elegans
+        matched_accession: AY937313
+        pct_identity: 100.0
+        align_length: 671
+        on_target: false
+    - gene: 16S
+      recovered: false
+    run_stats:
+      n_reads_read: 2000000
+      n_bases_read: 302000000
+      n_kmers: 265974355
+      peak_memory_bytes: 9126902234
+  - max_reads: 4000000
+    wall_time_s: 61.4
+    success: true
+    genes:
+    - gene: 16S
+      recovered: true
+      length: 542
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S
+        matched_taxon: Agalma elegans
+        matched_accession: OQ957203
+        pct_identity: 100.0
+        align_length: 542
+        on_target: true
+    - gene: 18S
+      recovered: true
+      length: 1785
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S
+        matched_taxon: Agalma elegans
+        matched_accession: AY937313
+        pct_identity: 100.0
+        align_length: 1785
+        on_target: true
+    - gene: 28S_1
+      recovered: true
+      length: 3230
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Agalma elegans
+        matched_accession: EU272542
+        pct_identity: 100.0
+        align_length: 3230
+        on_target: true
+    - gene: 28S_2
+      recovered: true
+      length: 417
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Agalma elegans
+        matched_accession: EU272542
+        pct_identity: 100.0
+        align_length: 417
+        on_target: false
+    - gene: CO1
+      recovered: true
+      length: 692
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1
+        matched_taxon: Agalma elegans
+        matched_accession: OQ957203
+        pct_identity: 100.0
+        align_length: 692
+        on_target: true
+    - gene: ITS_1
+      recovered: true
+      length: 817
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_1
+        matched_taxon: Agalma elegans
+        matched_accession: AY937313
+        pct_identity: 100.0
+        align_length: 817
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 671
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_1
+        matched_taxon: Agalma elegans
+        matched_accession: AY937313
+        pct_identity: 100.0
+        align_length: 671
+        on_target: false
+    run_stats:
+      n_reads_read: 4000000
+      n_bases_read: 604000000
+      n_kmers: 531942944
+      peak_memory_bytes: 18253707738
+  - max_reads: 8000000
+    wall_time_s: 139.1
+    success: true
+    genes:
+    - gene: 16S
+      recovered: true
+      length: 542
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S
+        matched_taxon: Agalma elegans
+        matched_accession: OQ957203
+        pct_identity: 100.0
+        align_length: 542
+        on_target: true
+    - gene: 18S
+      recovered: true
+      length: 1785
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S
+        matched_taxon: Agalma elegans
+        matched_accession: AY937313
+        pct_identity: 100.0
+        align_length: 1785
+        on_target: true
+    - gene: 28S_1
+      recovered: true
+      length: 3230
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Agalma elegans
+        matched_accession: EU272542
+        pct_identity: 100.0
+        align_length: 3230
+        on_target: true
+    - gene: 28S_2
+      recovered: true
+      length: 417
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Agalma elegans
+        matched_accession: EU272542
+        pct_identity: 100.0
+        align_length: 417
+        on_target: false
+    - gene: CO1
+      recovered: true
+      length: 692
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1
+        matched_taxon: Agalma elegans
+        matched_accession: OQ957203
+        pct_identity: 100.0
+        align_length: 692
+        on_target: true
+    - gene: ITS_1
+      recovered: true
+      length: 817
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_1
+        matched_taxon: Agalma elegans
+        matched_accession: AY937313
+        pct_identity: 100.0
+        align_length: 817
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 671
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_1
+        matched_taxon: Agalma elegans
+        matched_accession: AY937313
+        pct_identity: 100.0
+        align_length: 671
+        on_target: false
+    run_stats:
+      n_reads_read: 8000000
+      n_bases_read: 1208000000
+      n_kmers: 1063887262
+      peak_memory_bytes: 18253707738
+- accession: SRR8617500
+  taxon: Rhopilema esculentum
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 15.1
+    success: true
+    genes:
+    - gene: 18S
+      recovered: true
+      length: 1796
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S
+        matched_taxon: Rhopilema esculentum
+        matched_accession: XR 010517292
+        pct_identity: 100.0
+        align_length: 1796
+        on_target: true
+    - gene: 28S_1
+      recovered: true
+      length: 3258
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Rhopilema esculentum
+        matched_accession: XR 010517322
+        pct_identity: 100.0
+        align_length: 3258
+        on_target: true
+    - gene: 28S_2
+      recovered: true
+      length: 426
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_2
+        matched_taxon: Rhopilema esculentum
+        matched_accession: XR 010517322
+        pct_identity: 100.0
+        align_length: 426
+        on_target: true
+    - gene: CO1
+      recovered: true
+      length: 692
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1
+        matched_taxon: Rhopilema esculentum
+        matched_accession: NC 035741
+        pct_identity: 100.0
+        align_length: 692
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 929
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_2
+        matched_taxon: Rhopilema esculentum
+        matched_accession: KR338966
+        pct_identity: 100.0
+        align_length: 929
+        on_target: true
+    - gene: 16S
+      recovered: false
+    - gene: ITS_1
+      recovered: false
+    run_stats:
+      n_reads_read: 1000000
+      n_bases_read: 150000000
+      n_kmers: 131979520
+      peak_memory_bytes: 4563499478
+  - max_reads: 2000000
+    wall_time_s: 32.0
+    success: true
+    genes:
+    - gene: 16S
+      recovered: true
+      length: 563
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S
+        matched_taxon: Rhopilema esculentum
+        matched_accession: NC 035741
+        pct_identity: 100.0
+        align_length: 563
+        on_target: true
+    - gene: 18S
+      recovered: true
+      length: 1796
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S
+        matched_taxon: Rhopilema esculentum
+        matched_accession: XR 010517292
+        pct_identity: 100.0
+        align_length: 1796
+        on_target: true
+    - gene: 28S_1
+      recovered: true
+      length: 3258
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Rhopilema esculentum
+        matched_accession: XR 010517322
+        pct_identity: 100.0
+        align_length: 3258
+        on_target: true
+    - gene: 28S_2
+      recovered: true
+      length: 426
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_2
+        matched_taxon: Rhopilema esculentum
+        matched_accession: XR 010517322
+        pct_identity: 100.0
+        align_length: 426
+        on_target: true
+    - gene: CO1
+      recovered: true
+      length: 692
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1
+        matched_taxon: Rhopilema esculentum
+        matched_accession: NC 035741
+        pct_identity: 100.0
+        align_length: 692
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 929
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_2
+        matched_taxon: Rhopilema esculentum
+        matched_accession: KR338966
+        pct_identity: 100.0
+        align_length: 929
+        on_target: true
+    - gene: ITS_1
+      recovered: false
+    run_stats:
+      n_reads_read: 2000000
+      n_bases_read: 300000000
+      n_kmers: 263969663
+      peak_memory_bytes: 9126902230
+  - max_reads: 4000000
+    wall_time_s: 58.9
+    success: true
+    genes:
+    - gene: 16S
+      recovered: true
+      length: 563
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S
+        matched_taxon: Rhopilema esculentum
+        matched_accession: NC 035741
+        pct_identity: 100.0
+        align_length: 563
+        on_target: true
+    - gene: 18S
+      recovered: true
+      length: 1796
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S
+        matched_taxon: Rhopilema esculentum
+        matched_accession: XR 010517292
+        pct_identity: 100.0
+        align_length: 1796
+        on_target: true
+    - gene: 28S_1
+      recovered: true
+      length: 3258
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Rhopilema esculentum
+        matched_accession: XR 010517322
+        pct_identity: 100.0
+        align_length: 3258
+        on_target: true
+    - gene: 28S_2
+      recovered: true
+      length: 426
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_2
+        matched_taxon: Rhopilema esculentum
+        matched_accession: XR 010517322
+        pct_identity: 100.0
+        align_length: 426
+        on_target: true
+    - gene: CO1
+      recovered: true
+      length: 692
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1
+        matched_taxon: Rhopilema esculentum
+        matched_accession: NC 035741
+        pct_identity: 100.0
+        align_length: 692
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 929
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_2
+        matched_taxon: Rhopilema esculentum
+        matched_accession: KR338966
+        pct_identity: 100.0
+        align_length: 929
+        on_target: true
+    - gene: ITS_1
+      recovered: false
+    run_stats:
+      n_reads_read: 4000000
+      n_bases_read: 600000000
+      n_kmers: 527945714
+      peak_memory_bytes: 9126902230
+  - max_reads: 8000000
+    wall_time_s: 107.4
+    success: true
+    genes:
+    - gene: 16S
+      recovered: true
+      length: 563
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S
+        matched_taxon: Rhopilema esculentum
+        matched_accession: NC 035741
+        pct_identity: 100.0
+        align_length: 563
+        on_target: true
+    - gene: 18S
+      recovered: true
+      length: 1796
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S
+        matched_taxon: Rhopilema esculentum
+        matched_accession: XR 010517292
+        pct_identity: 100.0
+        align_length: 1796
+        on_target: true
+    - gene: 28S_1
+      recovered: true
+      length: 3258
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_1
+        matched_taxon: Rhopilema esculentum
+        matched_accession: XR 010517322
+        pct_identity: 100.0
+        align_length: 3258
+        on_target: true
+    - gene: 28S_2
+      recovered: true
+      length: 426
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S_2
+        matched_taxon: Rhopilema esculentum
+        matched_accession: XR 010517322
+        pct_identity: 100.0
+        align_length: 426
+        on_target: true
+    - gene: CO1
+      recovered: true
+      length: 692
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1
+        matched_taxon: Rhopilema esculentum
+        matched_accession: NC 035741
+        pct_identity: 100.0
+        align_length: 692
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 929
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_2
+        matched_taxon: Rhopilema esculentum
+        matched_accession: KR338966
+        pct_identity: 100.0
+        align_length: 929
+        on_target: true
+    - gene: ITS_1
+      recovered: false
+    run_stats:
+      n_reads_read: 8000000
+      n_bases_read: 1200000000
+      n_kmers: 1055890972
+      peak_memory_bytes: 18253707734

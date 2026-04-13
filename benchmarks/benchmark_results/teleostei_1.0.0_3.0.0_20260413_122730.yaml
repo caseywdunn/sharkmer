@@ -1,0 +1,80 @@
+panel: teleostei
+panel_version: 1.0.0
+sharkmer_version: 3.0.0
+git_commit: fb4bcd5
+date: '2026-04-13'
+parameters:
+  k: 19
+  threads: 8
+blast_mode: references
+rustc_version: rustc 1.94.1 (e408947bf 2026-03-25)
+hash_backend: ahashmap
+build_profile: release
+machine:
+  os: Linux 6.12.76-linuxkit
+  cpu_model: aarch64
+  cpu_cores: 12
+  total_ram_gb: 47.0
+samples:
+- accession: SRR22396603
+  taxon: Nomeus gronovii
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 13.5
+    success: true
+    genes:
+    - gene: 12S
+      recovered: true
+      length: 419
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 12S
+        matched_taxon: Nomeus gronovii
+        matched_accession: NC 082547
+        pct_identity: 100.0
+        align_length: 419
+        on_target: true
+    - gene: 16S
+      recovered: true
+      length: 605
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S
+        matched_taxon: Nomeus gronovii
+        matched_accession: NC 082547
+        pct_identity: 100.0
+        align_length: 605
+        on_target: true
+    - gene: 18S
+      recovered: true
+      length: 472
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S
+        matched_taxon: Hirundichthys speculiger
+        matched_accession: OP088600
+        pct_identity: 98.5
+        align_length: 474
+        on_target: false
+    - gene: CO1
+      recovered: true
+      length: 685
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1
+        matched_taxon: Nomeus gronovii
+        matched_accession: NC 082547
+        pct_identity: 100.0
+        align_length: 685
+        on_target: true
+    - gene: CytB
+      recovered: false
+    run_stats:
+      n_reads_read: 1000000
+      n_bases_read: 151000000
+      n_kmers: 132972251
+      peak_memory_bytes: 4563497216

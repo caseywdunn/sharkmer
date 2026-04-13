@@ -1,0 +1,2159 @@
+panel: insecta
+panel_version: 1.0.0
+sharkmer_version: 3.0.0
+git_commit: fb4bcd5
+date: '2026-04-13'
+parameters:
+  k: 19
+  threads: 8
+blast_mode: references
+rustc_version: rustc 1.94.1 (e408947bf 2026-03-25)
+hash_backend: ahashmap
+build_profile: release
+machine:
+  os: Linux 6.12.76-linuxkit
+  cpu_model: aarch64
+  cpu_cores: 12
+  total_ram_gb: 47.0
+samples:
+- accession: SRR31887760
+  taxon: Drosophila melanogaster
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 17.8
+    success: true
+    genes:
+    - gene: 12S
+      recovered: true
+      length: 499
+      n_products: 3
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 16S_2
+      recovered: true
+      length: 590
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 18S_1
+      recovered: true
+      length: 661
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: NR 133554
+        pct_identity: 100.0
+        align_length: 661
+        on_target: false
+    - gene: 18S_2
+      recovered: true
+      length: 1977
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: NR 133554
+        pct_identity: 100.0
+        align_length: 1977
+        on_target: true
+    - gene: CO1_1
+      recovered: true
+      length: 352
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_1
+        matched_taxon: Drosophila tanythrix
+        matched_accession: OM754561
+        pct_identity: 85.5
+        align_length: 351
+        on_target: false
+    - gene: CO1_2
+      recovered: true
+      length: 859
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: PP764096
+        pct_identity: 100.0
+        align_length: 859
+        on_target: true
+    - gene: CO2_1
+      recovered: true
+      length: 291
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO2_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: MW376578
+        pct_identity: 100.0
+        align_length: 291
+        on_target: false
+    - gene: CO2_2
+      recovered: true
+      length: 777
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO2_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: MW376578
+        pct_identity: 100.0
+        align_length: 777
+        on_target: true
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CytB
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 78.4
+        align_length: 408
+        on_target: false
+    - gene: ND4
+      recovered: true
+      length: 241
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND4
+        matched_taxon: Drosophila tanythrix
+        matched_accession: MK659833
+        pct_identity: 92.9
+        align_length: 240
+        on_target: false
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 16S_1
+      recovered: false
+    - gene: ND1
+      recovered: false
+    - gene: NADH
+      recovered: false
+    - gene: Fz4
+      recovered: false
+    - gene: Gpdh
+      recovered: false
+    - gene: Pgi
+      recovered: false
+    - gene: Yp2
+      recovered: false
+    - gene: 28S
+      recovered: false
+    - gene: ITS_1
+      recovered: false
+    - gene: ITS_2
+      recovered: false
+    run_stats:
+      n_reads_read: 1000000
+      n_bases_read: 101000000
+      n_kmers: 82921365
+      peak_memory_bytes: 2281806183
+  - max_reads: 2000000
+    wall_time_s: 40.4
+    success: true
+    genes:
+    - gene: 12S
+      recovered: true
+      length: 466
+      n_products: 2
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 12S
+        matched_taxon: Drosophila tanythrix
+        matched_accession: EU494495
+        pct_identity: 97.0
+        align_length: 132
+        on_target: false
+    - gene: 16S_2
+      recovered: true
+      length: 595
+      n_products: 4
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 18S_1
+      recovered: true
+      length: 661
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: NR 133554
+        pct_identity: 100.0
+        align_length: 661
+        on_target: false
+    - gene: 18S_2
+      recovered: true
+      length: 1977
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: NR 133554
+        pct_identity: 100.0
+        align_length: 1977
+        on_target: true
+    - gene: CO1_1
+      recovered: true
+      length: 352
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_1
+        matched_taxon: Drosophila tanythrix
+        matched_accession: OM754561
+        pct_identity: 85.5
+        align_length: 351
+        on_target: false
+    - gene: CO1_2
+      recovered: true
+      length: 859
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: PP764096
+        pct_identity: 100.0
+        align_length: 859
+        on_target: true
+    - gene: CO2_1
+      recovered: true
+      length: 291
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO2_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: MW376578
+        pct_identity: 100.0
+        align_length: 291
+        on_target: false
+    - gene: CO2_2
+      recovered: true
+      length: 777
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO2_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: MW376578
+        pct_identity: 100.0
+        align_length: 777
+        on_target: true
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CytB
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 78.4
+        align_length: 408
+        on_target: false
+    - gene: Fz4
+      recovered: true
+      length: 1089
+      n_products: 7
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: Gpdh
+      recovered: true
+      length: 1198
+      n_products: 3
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: NADH
+      recovered: true
+      length: 596
+      n_products: 7
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ND1
+      recovered: true
+      length: 240
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND1
+        matched_taxon: Drosophila sechellia
+        matched_accession: NC 005780
+        pct_identity: 96.2
+        align_length: 240
+        on_target: false
+    - gene: ND4
+      recovered: true
+      length: 241
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND4
+        matched_taxon: Drosophila tanythrix
+        matched_accession: MK659833
+        pct_identity: 92.9
+        align_length: 240
+        on_target: false
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: Pgi
+      recovered: true
+      length: 637
+      n_products: 6
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 16S_1
+      recovered: false
+    - gene: Yp2
+      recovered: false
+    - gene: 28S
+      recovered: false
+    - gene: ITS_1
+      recovered: false
+    - gene: ITS_2
+      recovered: false
+    run_stats:
+      n_reads_read: 2000000
+      n_bases_read: 202000000
+      n_kmers: 165840824
+      peak_memory_bytes: 4563507559
+  - max_reads: 4000000
+    wall_time_s: 67.7
+    success: true
+    genes:
+    - gene: 12S
+      recovered: true
+      length: 419
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 12S
+        matched_taxon: Drosophila tanythrix
+        matched_accession: EU494495
+        pct_identity: 95.5
+        align_length: 421
+        on_target: false
+    - gene: 16S_2
+      recovered: true
+      length: 409
+      n_products: 14
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 18S_1
+      recovered: true
+      length: 661
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: NR 133554
+        pct_identity: 100.0
+        align_length: 661
+        on_target: false
+    - gene: 18S_2
+      recovered: true
+      length: 1977
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: NR 133554
+        pct_identity: 100.0
+        align_length: 1977
+        on_target: true
+    - gene: CO1_1
+      recovered: true
+      length: 352
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_1
+        matched_taxon: Drosophila tanythrix
+        matched_accession: OM754561
+        pct_identity: 85.5
+        align_length: 351
+        on_target: false
+    - gene: CO1_2
+      recovered: true
+      length: 859
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: PP764096
+        pct_identity: 100.0
+        align_length: 859
+        on_target: true
+    - gene: CO2_1
+      recovered: true
+      length: 291
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO2_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: MW376578
+        pct_identity: 100.0
+        align_length: 291
+        on_target: false
+    - gene: CO2_2
+      recovered: true
+      length: 777
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO2_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: MW376578
+        pct_identity: 100.0
+        align_length: 777
+        on_target: true
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CytB
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 78.4
+        align_length: 408
+        on_target: false
+    - gene: Fz4
+      recovered: true
+      length: 1084
+      n_products: 2
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: Gpdh
+      recovered: true
+      length: 921
+      n_products: 5
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ITS_2
+      recovered: true
+      length: 903
+      n_products: 4
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ND1
+      recovered: true
+      length: 240
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND1
+        matched_taxon: Drosophila sechellia
+        matched_accession: NC 005780
+        pct_identity: 96.2
+        align_length: 240
+        on_target: false
+    - gene: ND4
+      recovered: true
+      length: 241
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND4
+        matched_taxon: Drosophila tanythrix
+        matched_accession: MK659833
+        pct_identity: 92.9
+        align_length: 240
+        on_target: false
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: Pgi
+      recovered: true
+      length: 798
+      n_products: 7
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: Yp2
+      recovered: true
+      length: 763
+      n_products: 3
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 16S_1
+      recovered: false
+    - gene: NADH
+      recovered: false
+    - gene: 28S
+      recovered: false
+    - gene: ITS_1
+      recovered: false
+    run_stats:
+      n_reads_read: 4000000
+      n_bases_read: 404000000
+      n_kmers: 331642869
+      peak_memory_bytes: 4563507559
+  - max_reads: 8000000
+    wall_time_s: 102.2
+    success: true
+    genes:
+    - gene: 12S
+      recovered: true
+      length: 419
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 12S
+        matched_taxon: Drosophila tanythrix
+        matched_accession: EU494495
+        pct_identity: 95.5
+        align_length: 421
+        on_target: false
+    - gene: 16S_2
+      recovered: true
+      length: 588
+      n_products: 9
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 18S_1
+      recovered: true
+      length: 661
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: NR 133554
+        pct_identity: 100.0
+        align_length: 661
+        on_target: false
+    - gene: 18S_2
+      recovered: true
+      length: 1977
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: NR 133554
+        pct_identity: 100.0
+        align_length: 1977
+        on_target: true
+    - gene: CO1_1
+      recovered: true
+      length: 352
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_1
+        matched_taxon: Drosophila tanythrix
+        matched_accession: OM754561
+        pct_identity: 85.5
+        align_length: 351
+        on_target: false
+    - gene: CO1_2
+      recovered: true
+      length: 859
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: PP764096
+        pct_identity: 100.0
+        align_length: 859
+        on_target: true
+    - gene: CO2_1
+      recovered: true
+      length: 291
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO2_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: MW376578
+        pct_identity: 100.0
+        align_length: 291
+        on_target: false
+    - gene: CO2_2
+      recovered: true
+      length: 777
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO2_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: MW376578
+        pct_identity: 100.0
+        align_length: 777
+        on_target: true
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CytB
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 78.4
+        align_length: 408
+        on_target: false
+    - gene: Fz4
+      recovered: true
+      length: 893
+      n_products: 13
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: NADH
+      recovered: true
+      length: 407
+      n_products: 13
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ND1
+      recovered: true
+      length: 240
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND1
+        matched_taxon: Drosophila sechellia
+        matched_accession: NC 005780
+        pct_identity: 96.2
+        align_length: 240
+        on_target: false
+    - gene: ND4
+      recovered: true
+      length: 241
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND4
+        matched_taxon: Drosophila tanythrix
+        matched_accession: MK659833
+        pct_identity: 92.9
+        align_length: 240
+        on_target: false
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: Yp2
+      recovered: true
+      length: 898
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 16S_1
+      recovered: false
+    - gene: Gpdh
+      recovered: false
+    - gene: Pgi
+      recovered: false
+    - gene: 28S
+      recovered: false
+    - gene: ITS_1
+      recovered: false
+    - gene: ITS_2
+      recovered: false
+    run_stats:
+      n_reads_read: 8000000
+      n_bases_read: 808000000
+      n_kmers: 663344718
+      peak_memory_bytes: 9126910311
+- accession: SRR1057608
+  taxon: Heliconius pachinus
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 13.6
+    success: true
+    genes:
+    - gene: CO1_1
+      recovered: true
+      length: 304
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_1
+        matched_taxon: Heliconius pachinus
+        matched_accession: KJ174812
+        pct_identity: 100.0
+        align_length: 304
+        on_target: true
+    - gene: CO1_2
+      recovered: true
+      length: 855
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_2
+        matched_taxon: Heliconius pachinus
+        matched_accession: KP074829
+        pct_identity: 100.0
+        align_length: 855
+        on_target: true
+    - gene: CO2_1
+      recovered: true
+      length: 288
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO2_1
+        matched_taxon: Heliconius pachinus
+        matched_accession: GQ398183
+        pct_identity: 100.0
+        align_length: 288
+        on_target: true
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CytB
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024741
+        pct_identity: 100.0
+        align_length: 403
+        on_target: true
+    - gene: ND1
+      recovered: true
+      length: 263
+      n_products: 2
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND5
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024864
+        pct_identity: 100.0
+        align_length: 301
+        on_target: true
+    - gene: 12S
+      recovered: false
+    - gene: 16S_1
+      recovered: false
+    - gene: ND4
+      recovered: false
+    - gene: 16S_2
+      recovered: false
+    - gene: CO2_2
+      recovered: false
+    - gene: NADH
+      recovered: false
+    - gene: Fz4
+      recovered: false
+    - gene: Gpdh
+      recovered: false
+    - gene: Pgi
+      recovered: false
+    - gene: Yp2
+      recovered: false
+    - gene: 18S_1
+      recovered: false
+    - gene: 28S
+      recovered: false
+    - gene: 18S_2
+      recovered: false
+    - gene: ITS_1
+      recovered: false
+    - gene: ITS_2
+      recovered: false
+    run_stats:
+      n_reads_read: 1000000
+      n_bases_read: 89994628
+      n_kmers: 71966368
+      peak_memory_bytes: 2281806179
+  - max_reads: 2000000
+    wall_time_s: 28.3
+    success: true
+    genes:
+    - gene: 12S
+      recovered: true
+      length: 417
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: CO1_1
+      recovered: true
+      length: 352
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_1
+        matched_taxon: Heliconius pachinus
+        matched_accession: KJ174812
+        pct_identity: 100.0
+        align_length: 304
+        on_target: true
+    - gene: CO1_2
+      recovered: true
+      length: 855
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_2
+        matched_taxon: Heliconius pachinus
+        matched_accession: KP074829
+        pct_identity: 100.0
+        align_length: 855
+        on_target: true
+    - gene: CO2_1
+      recovered: true
+      length: 288
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO2_1
+        matched_taxon: Heliconius pachinus
+        matched_accession: GQ398183
+        pct_identity: 100.0
+        align_length: 288
+        on_target: true
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CytB
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024741
+        pct_identity: 100.0
+        align_length: 403
+        on_target: true
+    - gene: ND1
+      recovered: true
+      length: 240
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ND4
+      recovered: true
+      length: 241
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND5
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024864
+        pct_identity: 100.0
+        align_length: 301
+        on_target: true
+    - gene: 16S_1
+      recovered: false
+    - gene: 16S_2
+      recovered: false
+    - gene: CO2_2
+      recovered: false
+    - gene: NADH
+      recovered: false
+    - gene: Fz4
+      recovered: false
+    - gene: Gpdh
+      recovered: false
+    - gene: Pgi
+      recovered: false
+    - gene: Yp2
+      recovered: false
+    - gene: 18S_1
+      recovered: false
+    - gene: 28S
+      recovered: false
+    - gene: 18S_2
+      recovered: false
+    - gene: ITS_1
+      recovered: false
+    - gene: ITS_2
+      recovered: false
+    run_stats:
+      n_reads_read: 2000000
+      n_bases_read: 179988194
+      n_kmers: 143933060
+      peak_memory_bytes: 4563507555
+  - max_reads: 4000000
+    wall_time_s: 64.6
+    success: true
+    genes:
+    - gene: 12S
+      recovered: true
+      length: 417
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 18S_1
+      recovered: true
+      length: 630
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila tanythrix
+        matched_accession: XR 006246778
+        pct_identity: 82.8
+        align_length: 430
+        on_target: false
+    - gene: 18S_2
+      recovered: true
+      length: 1885
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila tanythrix
+        matched_accession: XR 006246778
+        pct_identity: 86.3
+        align_length: 665
+        on_target: false
+    - gene: CO1_1
+      recovered: true
+      length: 352
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_1
+        matched_taxon: Heliconius pachinus
+        matched_accession: KJ174812
+        pct_identity: 100.0
+        align_length: 304
+        on_target: true
+    - gene: CO1_2
+      recovered: true
+      length: 855
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_2
+        matched_taxon: Heliconius pachinus
+        matched_accession: KP074829
+        pct_identity: 100.0
+        align_length: 855
+        on_target: true
+    - gene: CO2_1
+      recovered: true
+      length: 288
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO2_1
+        matched_taxon: Heliconius pachinus
+        matched_accession: GQ398183
+        pct_identity: 100.0
+        align_length: 288
+        on_target: true
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CytB
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024741
+        pct_identity: 100.0
+        align_length: 403
+        on_target: true
+    - gene: ND1
+      recovered: true
+      length: 240
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND5
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024864
+        pct_identity: 100.0
+        align_length: 301
+        on_target: true
+    - gene: 16S_1
+      recovered: false
+    - gene: ND4
+      recovered: false
+    - gene: 16S_2
+      recovered: false
+    - gene: CO2_2
+      recovered: false
+    - gene: NADH
+      recovered: false
+    - gene: Fz4
+      recovered: false
+    - gene: Gpdh
+      recovered: false
+    - gene: Pgi
+      recovered: false
+    - gene: Yp2
+      recovered: false
+    - gene: 28S
+      recovered: false
+    - gene: ITS_1
+      recovered: false
+    - gene: ITS_2
+      recovered: false
+    run_stats:
+      n_reads_read: 4000000
+      n_bases_read: 359972261
+      n_kmers: 287869455
+      peak_memory_bytes: 9126910307
+  - max_reads: 8000000
+    wall_time_s: 131.8
+    success: true
+    genes:
+    - gene: 12S
+      recovered: true
+      length: 417
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: CO1_1
+      recovered: true
+      length: 352
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_1
+        matched_taxon: Heliconius pachinus
+        matched_accession: KJ174812
+        pct_identity: 100.0
+        align_length: 304
+        on_target: true
+    - gene: CO1_2
+      recovered: true
+      length: 855
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_2
+        matched_taxon: Heliconius pachinus
+        matched_accession: KP074829
+        pct_identity: 100.0
+        align_length: 855
+        on_target: true
+    - gene: CO2_1
+      recovered: true
+      length: 288
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO2_1
+        matched_taxon: Heliconius pachinus
+        matched_accession: GQ398183
+        pct_identity: 100.0
+        align_length: 288
+        on_target: true
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CytB
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024741
+        pct_identity: 100.0
+        align_length: 403
+        on_target: true
+    - gene: Fz4
+      recovered: true
+      length: 841
+      n_products: 7
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ND1
+      recovered: true
+      length: 240
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND5
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024864
+        pct_identity: 100.0
+        align_length: 301
+        on_target: true
+    - gene: 16S_1
+      recovered: false
+    - gene: ND4
+      recovered: false
+    - gene: 16S_2
+      recovered: false
+    - gene: CO2_2
+      recovered: false
+    - gene: NADH
+      recovered: false
+    - gene: Gpdh
+      recovered: false
+    - gene: Pgi
+      recovered: false
+    - gene: Yp2
+      recovered: false
+    - gene: 18S_1
+      recovered: false
+    - gene: 28S
+      recovered: false
+    - gene: 18S_2
+      recovered: false
+    - gene: ITS_1
+      recovered: false
+    - gene: ITS_2
+      recovered: false
+    run_stats:
+      n_reads_read: 8000000
+      n_bases_read: 719945978
+      n_kmers: 575782865
+      peak_memory_bytes: 18253715811
+- accession: SRR27962769
+  taxon: Gryllus bimaculatus
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 26.9
+    success: true
+    genes:
+    - gene: 12S
+      recovered: true
+      length: 423
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 16S_1
+      recovered: true
+      length: 376
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 376
+        on_target: false
+    - gene: 16S_2
+      recovered: true
+      length: 534
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 534
+        on_target: true
+    - gene: CO1_1
+      recovered: true
+      length: 352
+      n_products: 2
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_1
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 304
+        on_target: true
+    - gene: CO1_2
+      recovered: true
+      length: 855
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_2
+        matched_taxon: Drosophila tanythrix
+        matched_accession: KM252239
+        pct_identity: 82.1
+        align_length: 862
+        on_target: false
+    - gene: CO2_1
+      recovered: true
+      length: 288
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CytB
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 403
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 978
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: AK281180
+        pct_identity: 100.0
+        align_length: 978
+        on_target: true
+    - gene: NADH
+      recovered: true
+      length: 544
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: NADH
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 544
+        on_target: true
+    - gene: ND1
+      recovered: true
+      length: 240
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ND4
+      recovered: true
+      length: 241
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND4
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 241
+        on_target: true
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND5
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024864
+        pct_identity: 81.4
+        align_length: 301
+        on_target: false
+    - gene: Yp2
+      recovered: true
+      length: 617
+      n_products: 15
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: CO2_2
+      recovered: false
+    - gene: Fz4
+      recovered: false
+    - gene: Gpdh
+      recovered: false
+    - gene: Pgi
+      recovered: false
+    - gene: 18S_1
+      recovered: false
+    - gene: 28S
+      recovered: false
+    - gene: 18S_2
+      recovered: false
+    - gene: ITS_1
+      recovered: false
+    run_stats:
+      n_reads_read: 1000000
+      n_bases_read: 150000000
+      n_kmers: 131993167
+      peak_memory_bytes: 4563507559
+  - max_reads: 2000000
+    wall_time_s: 55.4
+    success: true
+    genes:
+    - gene: 12S
+      recovered: true
+      length: 423
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 16S_1
+      recovered: true
+      length: 376
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 376
+        on_target: false
+    - gene: 16S_2
+      recovered: true
+      length: 534
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 534
+        on_target: true
+    - gene: 18S_2
+      recovered: true
+      length: 1935
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila sechellia
+        matched_accession: XR 004459988
+        pct_identity: 83.4
+        align_length: 657
+        on_target: false
+    - gene: 28S
+      recovered: true
+      length: 636
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: AK281049
+        pct_identity: 100.0
+        align_length: 636
+        on_target: true
+    - gene: CO1_1
+      recovered: true
+      length: 367
+      n_products: 4
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_1
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 304
+        on_target: true
+    - gene: CO1_2
+      recovered: true
+      length: 855
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_2
+        matched_taxon: Drosophila tanythrix
+        matched_accession: KM252239
+        pct_identity: 82.1
+        align_length: 862
+        on_target: false
+    - gene: CO2_1
+      recovered: true
+      length: 288
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: CO2_2
+      recovered: true
+      length: 818
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CytB
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 403
+        on_target: true
+    - gene: Gpdh
+      recovered: true
+      length: 1103
+      n_products: 6
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ITS_2
+      recovered: true
+      length: 978
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: AK281180
+        pct_identity: 99.9
+        align_length: 978
+        on_target: true
+    - gene: NADH
+      recovered: true
+      length: 544
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: NADH
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 544
+        on_target: true
+    - gene: ND1
+      recovered: true
+      length: 240
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ND4
+      recovered: true
+      length: 241
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND4
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 241
+        on_target: true
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND5
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024864
+        pct_identity: 81.4
+        align_length: 301
+        on_target: false
+    - gene: Fz4
+      recovered: false
+    - gene: Pgi
+      recovered: false
+    - gene: Yp2
+      recovered: false
+    - gene: 18S_1
+      recovered: false
+    - gene: ITS_1
+      recovered: false
+    run_stats:
+      n_reads_read: 2000000
+      n_bases_read: 300000000
+      n_kmers: 263988736
+      peak_memory_bytes: 9126910311
+  - max_reads: 4000000
+    wall_time_s: 113.4
+    success: true
+    genes:
+    - gene: 12S
+      recovered: true
+      length: 423
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 16S_1
+      recovered: true
+      length: 376
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 376
+        on_target: false
+    - gene: 16S_2
+      recovered: true
+      length: 534
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 534
+        on_target: true
+    - gene: 18S_1
+      recovered: true
+      length: 709
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila sechellia
+        matched_accession: XR 004459988
+        pct_identity: 82.2
+        align_length: 449
+        on_target: false
+    - gene: 18S_2
+      recovered: true
+      length: 1935
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila sechellia
+        matched_accession: XR 004459988
+        pct_identity: 83.4
+        align_length: 657
+        on_target: false
+    - gene: 28S
+      recovered: true
+      length: 636
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: AK281049
+        pct_identity: 100.0
+        align_length: 636
+        on_target: true
+    - gene: CO1_1
+      recovered: true
+      length: 352
+      n_products: 2
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_1
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 304
+        on_target: true
+    - gene: CO1_2
+      recovered: true
+      length: 855
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_2
+        matched_taxon: Drosophila tanythrix
+        matched_accession: KM252239
+        pct_identity: 82.1
+        align_length: 862
+        on_target: false
+    - gene: CO2_1
+      recovered: true
+      length: 288
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CytB
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 403
+        on_target: true
+    - gene: Gpdh
+      recovered: true
+      length: 1049
+      n_products: 9
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ITS_2
+      recovered: true
+      length: 978
+      n_products: 2
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: AK281180
+        pct_identity: 99.7
+        align_length: 978
+        on_target: true
+    - gene: NADH
+      recovered: true
+      length: 544
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: NADH
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 544
+        on_target: true
+    - gene: ND1
+      recovered: true
+      length: 240
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ND4
+      recovered: true
+      length: 241
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND4
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 241
+        on_target: true
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND5
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024864
+        pct_identity: 81.4
+        align_length: 301
+        on_target: false
+    - gene: Pgi
+      recovered: true
+      length: 569
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: Yp2
+      recovered: true
+      length: 900
+      n_products: 2
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: CO2_2
+      recovered: false
+    - gene: Fz4
+      recovered: false
+    - gene: ITS_1
+      recovered: false
+    run_stats:
+      n_reads_read: 4000000
+      n_bases_read: 600000000
+      n_kmers: 527973363
+      peak_memory_bytes: 18253715815
+  - max_reads: 8000000
+    wall_time_s: 257.7
+    success: true
+    genes:
+    - gene: 12S
+      recovered: true
+      length: 423
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: 16S_1
+      recovered: true
+      length: 376
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 376
+        on_target: false
+    - gene: 16S_2
+      recovered: true
+      length: 534
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 16S_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 534
+        on_target: true
+    - gene: 18S_1
+      recovered: true
+      length: 709
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila sechellia
+        matched_accession: XR 004459988
+        pct_identity: 82.2
+        align_length: 449
+        on_target: false
+    - gene: 18S_2
+      recovered: true
+      length: 1935
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 18S_2
+        matched_taxon: Drosophila sechellia
+        matched_accession: XR 004459988
+        pct_identity: 83.4
+        align_length: 657
+        on_target: false
+    - gene: 28S
+      recovered: true
+      length: 636
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: 28S
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: AK281049
+        pct_identity: 100.0
+        align_length: 636
+        on_target: true
+    - gene: CO1_1
+      recovered: true
+      length: 352
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_1
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 304
+        on_target: true
+    - gene: CO1_2
+      recovered: true
+      length: 855
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CO1_2
+        matched_taxon: Drosophila tanythrix
+        matched_accession: KM252239
+        pct_identity: 82.1
+        align_length: 862
+        on_target: false
+    - gene: CO2_1
+      recovered: true
+      length: 288
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: CytB
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 403
+        on_target: true
+    - gene: ITS_2
+      recovered: true
+      length: 967
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ITS_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: AK281180
+        pct_identity: 98.5
+        align_length: 979
+        on_target: true
+    - gene: NADH
+      recovered: true
+      length: 544
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: NADH
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 544
+        on_target: true
+    - gene: ND1
+      recovered: true
+      length: 240
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        on_target: false
+    - gene: ND4
+      recovered: true
+      length: 241
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND4
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 241
+        on_target: true
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: null
+      reference_match:
+        matched_gene: ND5
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024864
+        pct_identity: 81.4
+        align_length: 301
+        on_target: false
+    - gene: CO2_2
+      recovered: false
+    - gene: Fz4
+      recovered: false
+    - gene: Gpdh
+      recovered: false
+    - gene: Pgi
+      recovered: false
+    - gene: Yp2
+      recovered: false
+    - gene: ITS_1
+      recovered: false
+    run_stats:
+      n_reads_read: 7209861
+      n_bases_read: 1081479150
+      n_kmers: 951647048
+      peak_memory_bytes: 36507326823

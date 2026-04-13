@@ -1,0 +1,117 @@
+panel: bacteria
+panel_version: 1.0.0
+sharkmer_version: 3.0.0
+git_commit: fb4bcd5
+date: '2026-04-13'
+parameters:
+  k: 19
+  threads: 8
+blast_mode: none
+rustc_version: rustc 1.94.1 (e408947bf 2026-03-25)
+hash_backend: ahashmap
+build_profile: release
+machine:
+  os: Linux 6.12.76-linuxkit
+  cpu_model: aarch64
+  cpu_cores: 12
+  total_ram_gb: 47.0
+samples:
+- accession: SRR19418213
+  taxon: rhizosphere metagenome
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 2.2
+    success: true
+    genes:
+    - gene: 16S-515F-806R
+      recovered: true
+      length: 283
+      n_products: 1
+      kmer_count_median: null
+    - gene: 16S-515F-806RB
+      recovered: true
+      length: 283
+      n_products: 1
+      kmer_count_median: null
+    - gene: 16S-68F-783Rabc
+      recovered: true
+      length: 208
+      n_products: 7
+      kmer_count_median: null
+    - gene: 16S-PRK341F-PRK806R
+      recovered: true
+      length: 268
+      n_products: 2
+      kmer_count_median: null
+    - gene: 16S-341F-785R
+      recovered: false
+    - gene: 16S-341F-783Rabc
+      recovered: false
+    run_stats:
+      n_reads_read: 262991
+      n_bases_read: 79160291
+      n_kmers: 74411239
+      peak_memory_bytes: 285307701
+- accession: SRR24806237
+  taxon: coral metagenome
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 0.6
+    success: true
+    genes:
+    - gene: 16S-341F-783Rabc
+      recovered: true
+      length: 265
+      n_products: 14
+      kmer_count_median: null
+    - gene: 16S-341F-785R
+      recovered: true
+      length: 435
+      n_products: 12
+      kmer_count_median: null
+    - gene: 16S-515F-806R
+      recovered: true
+      length: 283
+      n_products: 1
+      kmer_count_median: null
+    - gene: 16S-515F-806RB
+      recovered: true
+      length: 283
+      n_products: 1
+      kmer_count_median: null
+    - gene: 16S-PRK341F-PRK806R
+      recovered: true
+      length: 437
+      n_products: 11
+      kmer_count_median: null
+    - gene: 16S-68F-783Rabc
+      recovered: false
+    run_stats:
+      n_reads_read: 83843
+      n_bases_read: 20964921
+      n_kmers: 19455591
+      peak_memory_bytes: 70248633
+- accession: ERR2596344
+  taxon: seawater metagenome
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 0.4
+    success: true
+    genes:
+    - gene: 16S-341F-785R
+      recovered: false
+    - gene: 16S-PRK341F-PRK806R
+      recovered: false
+    - gene: 16S-515F-806R
+      recovered: false
+    - gene: 16S-515F-806RB
+      recovered: false
+    - gene: 16S-68F-783Rabc
+      recovered: false
+    - gene: 16S-341F-783Rabc
+      recovered: false
+    run_stats:
+      n_reads_read: 29852
+      n_bases_read: 8836192
+      n_kmers: 8298856
+      peak_memory_bytes: 71398193
