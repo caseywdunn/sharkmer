@@ -1,6 +1,6 @@
 name: human
 schema_version: "2"
-panel_version: 1.0.0
+panel_version: 1.0.1
 description: "Human mitochondrial primers from Ramos et al. 2009. doi: 10.1002/elps.200800601"
 clade: "Homo sapiens"
 taxon_id: 9606
@@ -9,7 +9,29 @@ maintainers:
 - name: "Samuel Church"
   orcid: "https://orcid.org/0000-0002-8451-103X"
 
+notes: >
+  Primers from Ramos et al. 2009 were designed to amplify the complete human
+  mitochondrial genome in nine overlapping fragments while specifically
+  excluding nuclear copies of mtDNA (NUMTs). The anti-NUMT design requires
+  high primer specificity; adding degeneracy undermines this property and
+  causes off-target amplification from NUMTs in the large human nuclear genome.
+  Performance is haplogroup-dependent and is best for individuals whose
+  mitochondrial haplotype is close to the revised Cambridge Reference Sequence
+  (rCRS, haplogroup H). Individuals carrying deeply divergent haplogroups
+  (e.g. African L-class) may exhaust the mismatches=2 tolerance at multiple
+  primer binding sites simultaneously. When both primers in a pair are at the
+  mismatch limit, the de Bruijn graph assembly can produce oversized artifacts
+  (~150 bp excess) with no BLAST match rather than a genuine amplicon; such
+  products should be treated as assembly artifacts, not valid sequences.
+  Validation sample ERR4049009 is an example of this: it carries a highly
+  divergent haplogroup and shows this artifact pattern for mt-3734-6739,
+  mt-11977-13830, and mt-14898-151.
+
 changelog:
+- panel_version: 1.0.1
+  date: 2026-04-13
+  sharkmer_version: "3.0.0"
+  changes: "Expanded validation samples; added panel and primer notes documenting haplogroup-dependent performance and NUMT anti-coamplification constraint."
 - panel_version: 1.0.0
   date: 2026-04-05
   sharkmer_version: "3.0.0"
@@ -40,7 +62,10 @@ primers:
   mismatches: 2
   trim: 15
   citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
-  notes: "mt region"
+  notes: "Haplogroup-dependent. Both primers exhaust the 2-mismatch budget in
+    divergent haplogroups (e.g. ERR4049009), producing an oversized assembly
+    artifact (~3125 bp, no BLAST match) rather than the expected ~2990 bp
+    amplicon. Fails entirely in ERR4583142."
 
 - gene: "mt"
   region: "6511-9220"
@@ -53,7 +78,10 @@ primers:
   mismatches: 2
   trim: 15
   citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
-  notes: "mt region"
+  notes: "Fails in 2/3 validation samples (ERR4049009 and ERR4583142); likely
+    exceeds the 2-mismatch tolerance at one or both binding sites in those
+    haplogroups. Primer binding sites fall in the COX1 and COIII coding genes
+    and show perfect matches in ERR4583136 (haplogroup H-like)."
 
 - gene: "mt"
   region: "8910-10648"
@@ -79,7 +107,8 @@ primers:
   mismatches: 2
   trim: 15
   citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
-  notes: "mt region"
+  notes: "Fails in ERR4049009 (1/3 samples); likely exceeds mismatch tolerance
+    at one or both binding sites in that haplogroup."
 
 - gene: "mt"
   region: "11977-13830"
@@ -92,7 +121,9 @@ primers:
   mismatches: 2
   trim: 15
   citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
-  notes: "mt region"
+  notes: "Both primers exhaust the 2-mismatch budget in divergent haplogroups
+    (e.g. ERR4049009), producing an oversized assembly artifact (~1995 bp, no
+    BLAST match) rather than the expected ~1837 bp amplicon."
 
 - gene: "mt"
   region: "13477-15349"
@@ -118,7 +149,9 @@ primers:
   mismatches: 2
   trim: 15
   citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
-  notes: "mt region"
+  notes: "Both primers exhaust the 2-mismatch budget in divergent haplogroups
+    (e.g. ERR4049009), producing an oversized assembly artifact (~1965 bp, no
+    BLAST match) rather than the expected ~1809 bp amplicon."
 
 - gene: "mt"
   region: "16488-1677"
@@ -131,14 +164,50 @@ primers:
   mismatches: 2
   trim: 15
   citation: "Ramos et al 2009. doi: 10.1002/elps.200800601"
-  notes: "mt region"
+  notes: "Amplicon spans the hypervariable D-loop control region. Forward
+    primer binding site (pos 16488-16509) flanks HVR1, which accumulates high
+    inter-individual variation. Fails in ERR4583136 and ERR4049009; recovers
+    in ERR4583142 with perfect primer matches."
 
 validation:
   samples:
-  - accession: SRR17535371
+  - accession: ERR4583136
     taxon: "Homo sapiens"
     taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Bilateria; Deuterostomia; Chordata; Craniata; Vertebrata; Gnathostomata; Teleostomi; Euteleostomi; Sarcopterygii; Dipnotetrapodomorpha; Tetrapoda; Amniota; Mammalia; Theria; Eutheria; Boreoeutheria; Euarchontoglires; Primates; Haplorrhini; Simiiformes; Catarrhini; Hominoidea; Hominidae; Homininae; Homo"
     max_reads: [1000000]
+    expected:
+      "mt-1404-3947":   { min_identity: 0.993, length: 2529, length_tolerance: 126 }
+      "mt-3734-6739":   { min_identity: 0.995, length: 2990, length_tolerance: 150 }
+      "mt-6511-9220":   { min_identity: 0.994, length: 2694, length_tolerance: 135 }
+      "mt-8910-10648":  { min_identity: 0.994, length: 1725, length_tolerance: 86 }
+      "mt-10360-12226": { min_identity: 0.994, length: 1853, length_tolerance: 93 }
+      "mt-11977-13830": { min_identity: 0.993, length: 1837, length_tolerance: 92 }
+      "mt-13477-15349": { min_identity: 0.992, length: 1859, length_tolerance: 93 }
+      "mt-14898-151":   { min_identity: 0.990, length: 1809, length_tolerance: 90 }
+  - accession: ERR4049009
+    taxon: "Homo sapiens"
+    taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Bilateria; Deuterostomia; Chordata; Craniata; Vertebrata; Gnathostomata; Teleostomi; Euteleostomi; Sarcopterygii; Dipnotetrapodomorpha; Tetrapoda; Amniota; Mammalia; Theria; Eutheria; Boreoeutheria; Euarchontoglires; Primates; Haplorrhini; Simiiformes; Catarrhini; Hominoidea; Hominidae; Homininae; Homo"
+    max_reads: [1000000]
+    expected:
+      "mt-1404-3947":  { min_identity: 0.994, length: 2529, length_tolerance: 126 }
+      "mt-8910-10648": { min_identity: 0.995, length: 1725, length_tolerance: 86 }
+      "mt-13477-15349": { min_identity: 0.994, length: 1859, length_tolerance: 93 }
+  - accession: ERR4583142
+    taxon: "Homo sapiens"
+    taxonomy: "Eukaryota; Opisthokonta; Metazoa; Eumetazoa; Bilateria; Deuterostomia; Chordata; Craniata; Vertebrata; Gnathostomata; Teleostomi; Euteleostomi; Sarcopterygii; Dipnotetrapodomorpha; Tetrapoda; Amniota; Mammalia; Theria; Eutheria; Boreoeutheria; Euarchontoglires; Primates; Haplorrhini; Simiiformes; Catarrhini; Hominoidea; Hominidae; Homininae; Homo"
+    max_reads: [1000000]
+    expected:
+      "mt-1404-3947":   { min_identity: 0.993, length: 2529, length_tolerance: 126 }
+      "mt-8910-10648":  { min_identity: 0.994, length: 1725, length_tolerance: 86 }
+      "mt-10360-12226": { min_identity: 0.994, length: 1853, length_tolerance: 93 }
+      "mt-11977-13830": { min_identity: 0.993, length: 1837, length_tolerance: 92 }
+      "mt-13477-15349": { min_identity: 0.992, length: 1859, length_tolerance: 93 }
+      "mt-14898-151":   { min_identity: 0.990, length: 1809, length_tolerance: 90 }
+      "mt-16488-1677":  { min_identity: 0.991, length: 1747, length_tolerance: 87 }
+  last_validated:
+    sharkmer_version: "3.0.0"
+    panel_version: "1.0.1"
+    date: '2026-04-13'
 
 references:
 - gene: "mt-1404-3947"
