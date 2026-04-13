@@ -90,8 +90,10 @@ file via `--pcr-panel-file`.
 
 ## Panel file format
 
-Panel files use **schema version 2**. A fully annotated example covering
-every supported field is at [`panels/examples/reference.yaml`](panels/examples/reference.yaml).
+Panel files use **schema version 2**. The formal JSON Schema specification
+is at [`schemas/panel/v2.json`](schemas/panel/v2.json). A fully annotated
+example covering every supported field is at
+[`panels/examples/reference.yaml`](panels/examples/reference.yaml).
 A minimal working example:
 
 ```yaml
@@ -280,8 +282,7 @@ of read depths so you can see the sensitivity floor.
 ### 4. Run the validator
 
 The validator reuses the `sharkmer-bench` conda environment, which
-provides `blastn` (for amplicon identity validation), `ruamel.yaml` (for
-round-tripping panel YAML in `--write` mode), and the other Python
+provides `blastn` (for amplicon identity validation) and the other Python
 dependencies shared with `benchmarks/`. If you have not created it yet:
 
 ```bash
@@ -314,30 +315,14 @@ conda activate sharkmer-bench
 
 This runs sharkmer against each declared sample at each declared read depth
 (using the shared cache under `benchmarks/data/cache/`), BLASTs the
-recovered amplicons for identity (using a local `/db` BLAST database if
-present, otherwise NCBI remote), compares recovery to any `expected`
-thresholds, and emits a markdown report to `panels/validation_reports/`.
+recovered amplicons against the sequences in the panel's `references:` block,
+and emits two output files:
 
-On first run with empty `expected` blocks, every gene will be reported as
-unvalidated — that is the expected state. At the bottom of the report is a
-**Suggested validation block**: a ready-to-paste YAML fragment containing
-the observed identity, length, and tolerances.
-
-Read the report. If the numbers look reasonable for your target taxon,
-either paste the suggested block into the panel file by hand, or rerun
-with `--write` to have the validator do it for you:
-
-```bash
-python scripts/validate_panel.py panels/my_panel.yaml --write
-git diff panels/my_panel.yaml
-```
-
-`--write` only updates `expected` entries for samples already declared in
-the panel — it will not add new samples. It rounds identities to 3 decimals
-and sets thresholds slightly below observed values so normal run-to-run
-variation does not cause false failures. It also updates
-`validation.last_validated` with the current sharkmer version, panel
-version, and date.
+- A markdown report to `panels/validation_reports/` — human-readable,
+  with per-sample recovery tables, BLAST identity scores, and a primer
+  binding analysis section.
+- A YAML result file to `panels/validation_results/` — machine-readable
+  record of the same run, useful for diffing across panel versions.
 
 The validator writes reports to `panels/validation_reports/` by default. If
 your panel lives outside the repo (e.g. a private panel under development),
@@ -348,14 +333,6 @@ python scripts/validate_panel.py ~/my_panels/arachnida.yaml \
     --output-dir ~/my_panels/reports/
 ```
 
-This also works with `--write`, which edits the panel file in place regardless
-of where it lives:
-
-```bash
-python scripts/validate_panel.py ~/my_panels/arachnida.yaml \
-    --output-dir ~/my_panels/reports/ --write
-```
-
 ### 5. Iterate on a single primer
 
 When you are tuning one primer pair and do not want to rerun the whole
@@ -363,13 +340,11 @@ panel, use `--genes`:
 
 ```bash
 python scripts/validate_panel.py panels/my_panel.yaml --genes 16S
-python scripts/validate_panel.py panels/my_panel.yaml --genes 16S --write
 ```
 
 The validator writes a temporary panel file containing only the requested
-genes, runs sharkmer against that, and then updates only those genes in the
-main panel file (for `--write`). Other genes' existing `expected` entries
-are left untouched.
+genes and runs sharkmer against that. This is much faster than a full panel
+run when you are iterating on a single primer pair.
 
 ### 6. Commit
 
@@ -387,8 +362,6 @@ expense.
 
 To keep panels robust across these changes:
 
-- `validate_panel.py --write` deliberately sets thresholds **below**
-  observed values, absorbing small shifts.
 - Validation reports record the exact sharkmer version they were produced
   with. When a panel that used to pass starts failing on a newer sharkmer,
   comparing reports pins down what moved.
@@ -405,12 +378,18 @@ when it does, that is information we want.
 
 External panel contributions are welcome. 
 
-Contributed panels must include a `validation:` block with samples for validating the primers, and a `references:` block with expected results. All primers in the panel should return at least some correct targets. If during development you find that some primers return no products, off-target products (according to BLAST), or are highly unreliable, remove them from the panel before submitting. Dead primers slow down runs (often by a lot) and confuse the user about what their expected results should be.
+Contributed panels must include a `validation:` block with samples for
+validating the primers, and a `references:` block with reference sequences
+for BLAST identity checking. All primers in the panel should return at least
+some correct targets. If during development you find that some primers return
+no products, off-target products (according to BLAST), or are highly
+unreliable, remove them from the panel before submitting. Dead primers slow
+down runs (often by a lot) and confuse the user about what their expected
+results should be.
 
-Open a PR that adds a new file
-under `panels/`. The PR should include:
+Open a PR that adds a new file under `panels/`. The PR should include:
 
-- The panel file with `version`, at least one `maintainers` entry, an
+- The panel file with `panel_version`, at least one `maintainers` entry, an
   initial `changelog` entry, and a populated `validation` block.
 - The validation report generated by `validate_panel.py` for that panel.
 

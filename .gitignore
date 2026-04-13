@@ -25,3 +25,4 @@ benchmarks/benchmark_runs/
 logs/
 .claude/settings.local.json
 .claude/skills/*-workspace/
+scheduled_tasks.lock

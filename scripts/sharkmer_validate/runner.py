@@ -157,7 +157,7 @@ def discover_panels(panels_dir: Path = None) -> list:
 
 
 def get_panel_version(panel_data: dict) -> str:
-    return str(panel_data.get("version", "unversioned"))
+    return str(panel_data.get("panel_version", "unversioned"))
 
 
 # ---------------------------------------------------------------------------
