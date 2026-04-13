@@ -1,4 +1,4 @@
-{% set version = "3.0.0" %}
+{% set version = "3.1.0" %}
 
 package:
   name: sharkmer
@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/caseywdunn/sharkmer/archive/refs/tags/v{{ version }}.tar.gz
-  # sha256 will be set when v3.0.0 is tagged and the tarball is available
+  # sha256 will be set when v3.1.0 is tagged and the tarball is available
   sha256: PLACEHOLDER
 
 build:
