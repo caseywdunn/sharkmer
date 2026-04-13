@@ -17,6 +17,11 @@
 # For the default Tier 1 matrix (4 knobs x 4 values) across 8 panels that
 # is 128 jobs.
 #
+# Can also be submitted as a SLURM job itself (it will then submit child jobs):
+#   sbatch scripts/validate_all_panels_slurm.sh [--no-blast]
+# or from within the scripts/ directory:
+#   sbatch validate_all_panels_slurm.sh [--no-blast]
+#
 # Use tmux so job monitoring survives SSH disconnects:
 #   tmux new -s validate
 #   bash scripts/validate_all_panels_slurm.sh --sweep
@@ -35,7 +40,19 @@
 
 set -euo pipefail
 
-REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+# Resolve repo root robustly for both `bash scripts/…` and `sbatch …` invocations.
+# When run via sbatch, SLURM copies the script to a temp path in /var/spool/slurmd/
+# so dirname "$0" is wrong.  SLURM_SUBMIT_DIR is the directory where sbatch was
+# called, which is either the repo root or the scripts/ subdirectory.
+if [ -n "${SLURM_SUBMIT_DIR:-}" ]; then
+    if [ -f "${SLURM_SUBMIT_DIR}/Cargo.toml" ]; then
+        REPO_ROOT="${SLURM_SUBMIT_DIR}"
+    else
+        REPO_ROOT="$(cd "${SLURM_SUBMIT_DIR}/.." && pwd)"
+    fi
+else
+    REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+fi
 PANELS_DIR="$REPO_ROOT/panels"
 SCRIPT="$REPO_ROOT/scripts/validate_panel.py"
 LOGS_DIR="$REPO_ROOT/logs"
