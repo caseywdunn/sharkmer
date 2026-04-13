@@ -142,8 +142,6 @@ or documentation is out of sync. Fix the discrepancy before proceeding.
 - Verify `meta.yaml` version and sha256 are updated (sha256 can only be
   finalized after the GitHub release tarball exists — use `PLACEHOLDER` until
   then).
-- Update `sharkmer_version` in all `panels/*.yaml` changelog entries to match
-  the release version.
 
 ### 5. Merge to master and push
 
