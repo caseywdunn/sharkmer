@@ -104,7 +104,23 @@ proceeding. Commit the benchmark results to `dev`:
     git add benchmarks/benchmark_results/
     git commit -m "Add benchmark results for vX.Y.Z release"
 
-### 2. Validate the reference panel
+### 2. Validate all built-in panels
+
+Run the full panel validation suite to confirm all built-in panels load,
+parse, and produce amplicons against their declared validation samples.
+On a local machine:
+
+    conda activate sharkmer-bench
+    bash scripts/validate_all_panels.sh
+
+On the Bouchet HPC cluster (submits one SLURM job per panel):
+
+    bash scripts/validate_all_panels_slurm.sh
+
+If any panel fails, fix the discrepancy before proceeding. Pass `--no-blast`
+to skip BLAST validation if a local BLAST database is unavailable.
+
+### 3. Validate the reference panel
 
 `panels/examples/reference.yaml` is a documentation panel that exercises
 every schema v2 feature — multiple primer indices, deprecated entries,
@@ -117,7 +133,7 @@ in the binary but must parse and validate cleanly before every release:
 If the reference panel fails to load or validate, the schema implementation
 or documentation is out of sync. Fix the discrepancy before proceeding.
 
-### 3. Prepare the release
+### 4. Prepare the release
 
 - Verify `version` in `Cargo.toml` matches the intended release (e.g. `3.0.0`).
 - Verify `CHANGELOG.md` has an entry for this version with the correct date.
@@ -127,18 +143,18 @@ or documentation is out of sync. Fix the discrepancy before proceeding.
 - Update `sharkmer_version` in all `panels/*.yaml` changelog entries to match
   the release version.
 
-### 4. Merge to master and push
+### 5. Merge to master and push
 
     git checkout master
     git merge dev
     git push origin master
 
-### 5. Tag the release
+### 6. Tag the release
 
     git tag -a vX.Y.Z -m "vX.Y.Z"
     git push origin vX.Y.Z
 
-### 6. Create the GitHub release
+### 7. Create the GitHub release
 
 Go to <https://github.com/caseywdunn/sharkmer/releases/new>, select the tag
 you just pushed, and create a release. Use the CHANGELOG entry as the release
@@ -149,7 +165,7 @@ Alternatively, use the CLI (replace `X.Y.Z` with the version number):
     VERSION=X.Y.Z
     gh release create "v${VERSION}" --title "v${VERSION}" --notes-file - <<< "$(sed -n "/^## \[${VERSION}\]/,/^## \[/{ /^## \[${VERSION}\]/d; /^## \[/d; p; }" CHANGELOG.md)"
 
-### 7. Create the release maintenance branch
+### 8. Create the release maintenance branch
 
     git checkout -b vN vX.Y.Z   # e.g. git checkout -b v3 v3.0.0
     git push origin vN
@@ -157,7 +173,7 @@ Alternatively, use the CLI (replace `X.Y.Z` with the version number):
 This branch is used for future patch releases (vX.Y.1, etc.) without
 pulling in unreleased work from `dev`.
 
-### 8. Update the bioconda recipe
+### 9. Update the bioconda recipe
 
 After the GitHub release is created, get the sha256 of the source tarball:
 
@@ -166,7 +182,7 @@ After the GitHub release is created, get the sha256 of the source tarball:
 Update `meta.yaml` with the real sha256, then follow the bioconda submission
 steps in the Bioconda section below.
 
-### 9. Resume development
+### 10. Resume development
 
     git checkout dev
 
