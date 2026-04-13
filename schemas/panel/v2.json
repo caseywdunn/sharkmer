@@ -151,7 +151,7 @@
         },
         "min_length": {
           "type": "integer",
-          "minimum": 1,
+          "minimum": 0,
           "description": "Minimum acceptable amplicon length (bp), inclusive."
         },
         "max_length": {

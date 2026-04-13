@@ -26,7 +26,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Karabanov et al 2014. https://doi.org/10.3390/w14030437"
+  citation: "Karabanov et al 2022. https://doi.org/10.3390/w14030437"
   notes: "if18S1"
 
 - gene: "16S"
@@ -68,7 +68,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Nugroho et al 2007. https://www.bioflux.com.ro/docs/2019.1074-1079.pdf"
+  citation: "Nugroho et al 2019. https://www.bioflux.com.ro/docs/2019.1074-1079.pdf"
   notes: "L14841; H15149"
 
 - gene: "12S"

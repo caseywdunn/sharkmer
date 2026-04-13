@@ -25,7 +25,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.0503123102"
   notes: "psbA3'f; trnHf"
 
 - gene: "rpl36-infA-rps8"
@@ -37,7 +37,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.0503123102"
   notes: "rpl36f; rps8r"
 
 - gene: "trnK-rps16"
@@ -49,7 +49,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.0503123102"
   notes: "trnK5'r; rps16-4546mod"
 
 - gene: "trnV-atpE"
@@ -61,7 +61,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.0503123102"
   notes: "trnV5f; S1022"
 
 - gene: "trnC-ycf6"
@@ -73,7 +73,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.0503123102"
   notes: "trnC; petN1r"
 
 - gene: "ycf6-psbM"
@@ -85,7 +85,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.0503123102"
   notes: "petN1; psbM2r"
 
 - gene: "psbM-trnD"
@@ -97,7 +97,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.0503123102"
   notes: "psbMA1; trnD"
 
 - gene: "atpB-rbcL"
@@ -109,7 +109,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.0503123102"
   notes: "S2r; RBCL1"
 
 - gene: "trnL-F"
@@ -121,7 +121,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.0503123102"
   notes: "e; f"
 
 - gene: "ITS"
@@ -134,7 +134,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.050312310"
+  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.0503123102"
   notes: "ITS5a; ITS4"
 
 validation:

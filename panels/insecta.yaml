@@ -28,7 +28,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+  citation: "Marquina et al 2019. doi: 10.1111/1755-0998.12942"
   notes: "Hex12SF2-Hex12SR2"
 
 - gene: "16S"
@@ -44,7 +44,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+  citation: "Marquina et al 2019. doi: 10.1111/1755-0998.12942"
   notes: "Chiar16SF-Chiar16SR"
 
 - gene: "CO1"
@@ -60,7 +60,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Modified from Marquina et al doi: 10.1111/1755-0998.12942"
+  citation: "Modified from Marquina et al 2019. doi: 10.1111/1755-0998.12942"
   notes: "HexCOIF4-HexCOIR4"
 
 - gene: "CO2"
@@ -76,7 +76,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+  citation: "Marquina et al 2019. doi: 10.1111/1755-0998.12942"
   notes: "HexCOX2F3-HexCOX2R3"
 
 - gene: "CytB"
@@ -91,7 +91,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+  citation: "Marquina et al 2019. doi: 10.1111/1755-0998.12942"
   notes: "HexCytBF3-HexCytBR3"
 
 - gene: "ND1"
@@ -106,7 +106,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+  citation: "Marquina et al 2019. doi: 10.1111/1755-0998.12942"
   notes: "HexND1F4-HexND1R4"
 
 - gene: "ND4"
@@ -121,7 +121,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+  citation: "Marquina et al 2019. doi: 10.1111/1755-0998.12942"
   notes: "HexND4F4-HexND4R4"
 
 - gene: "ND5"
@@ -136,7 +136,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Marquina et al doi: 10.1111/1755-0998.12942"
+  citation: "Marquina et al 2019. doi: 10.1111/1755-0998.12942"
   notes: "HexND5F3-HexND5R3"
 
 - gene: "16S"
@@ -152,7 +152,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "O'Grady et al https://doi.org/10.1016/j.ympev.2010.11.022 "
+  citation: "O'Grady et al 2011. https://doi.org/10.1016/j.ympev.2010.11.022"
   notes: ""
 
 - gene: "CO1"
@@ -168,7 +168,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "O'Grady et al https://doi.org/10.1016/j.ympev.2010.11.022 "
+  citation: "O'Grady et al 2011. https://doi.org/10.1016/j.ympev.2010.11.022"
   notes: ""
 
 - gene: "CO2"
@@ -184,7 +184,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "O'Grady et al https://doi.org/10.1016/j.ympev.2010.11.022 "
+  citation: "O'Grady et al 2011. https://doi.org/10.1016/j.ympev.2010.11.022"
   notes: ""
 
 - gene: "NADH"
@@ -199,7 +199,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "O'Grady et al https://doi.org/10.1016/j.ympev.2010.11.022 "
+  citation: "O'Grady et al 2011. https://doi.org/10.1016/j.ympev.2010.11.022"
   notes: ""
 
 - gene: "Fz4"
@@ -213,7 +213,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014"
+  citation: "Magnacca and Price 2015. https://doi.org/10.1016/j.ympev.2015.06.014"
   notes: ""
 
 - gene: "Gpdh"
@@ -227,7 +227,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014"
+  citation: "Magnacca and Price 2015. https://doi.org/10.1016/j.ympev.2015.06.014"
   notes: ""
 
 - gene: "Pgi"
@@ -241,7 +241,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014"
+  citation: "Magnacca and Price 2015. https://doi.org/10.1016/j.ympev.2015.06.014"
   notes: ""
 
 - gene: "Yp2"
@@ -255,7 +255,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Magnacca et al https://doi.org/10.1016/j.ympev.2015.06.014"
+  citation: "Magnacca and Price 2015. https://doi.org/10.1016/j.ympev.2015.06.014"
   notes: ""
 
 - gene: "18S"
@@ -269,7 +269,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Machida et al https://doi.org/10.1371/journal.pone.0134314"
+  citation: "Machida and Knowlton 2012. https://doi.org/10.1371/journal.pone.0046180"
   notes: ""
 
 - gene: "28S"
@@ -282,7 +282,7 @@ primers:
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Machida et al https://doi.org/10.1371/journal.pone.0134314"
+  citation: "Machida and Knowlton 2012. https://doi.org/10.1371/journal.pone.0046180"
   notes: ""
 
 - gene: "18S"
