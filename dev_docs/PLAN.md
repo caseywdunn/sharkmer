@@ -1,706 +1,301 @@
-# v3.0 Development Plan
-
-Execution order for v3.0 issues. Check off as completed. Run regression
-benchmarks after each phase.
-
-See ROADMAP.md for the full scope and rationale. See individual issues in the
-[issue tracker](https://github.com/caseywdunn/sharkmer/issues?q=label%3Av3.0)
-for detailed specifications.
-
-## Session log
-
-Brief notes after each phase/session for cold-start context. Most recent
-first.
-
-**2026-04-12 — Post-3.0.0 panel schema v2 hardening (issues 121-124)**
-JSON Schema created at `schemas/panel/v2.json` (draft-07, `additionalProperties: false`
-throughout). `validate_panel.py` now validates v2 panels against the schema via
-`jsonschema`; `benchmarks/environment.yaml` updated to include it. Deprecated panel
-status (`status: "deprecated"`) emits a `log::warn` at load time. Deprecated primer
-entries (`deprecated: true`) are skipped entirely with a warning instead of run.
-`clade` is now required for `schema_version: "2"` panels (hard error). All 8 built-in
-panel `references:` blocks renamed `gene_name:` → `gene:`. `panels/examples/reference.yaml`
-gained a `$schema:` pointer to the new schema URL. Python helper scripts
-(`validate_panel.py`, `bootstrap_references.py`, `sharkmer_validate/`) updated to
-use `derive_gene_name()` everywhere. `SKILL.md` references section updated: `gene_name:`
-→ `gene:`.
-
-**2026-04-01 — Phase 7 implementation (read-backed seed evaluation)**
-Pass 1 primer Oligo matching via two-stage filter: bloom filter (24-bit,
-4MB) for fast approximate check during kmer ingestion, then AHashSet
-for exact verification. `preprocess_primer_oligos()` encodes primer
-variants as 2-bit Oligos before ingestion. Opt-in via `--read-eval`.
-Read divergence detection in `check_read_divergence()`: traces retained
-reads from seed sub_kmer, rejects seeds where majority of reads diverge
-immediately. `--read-eval` uniquely enables Drosophila ITS recovery at
-4M reads. Updated failure analysis: 5/10 perfect-match failures now
-recovered (Phase 3 improvements did most of the work). Remaining
-failures (Drosophila 16S, 28S) diagnosed as seed eval threshold issue
-(#109), not node budget — all seeds abandoned at "1 node" because
-threshold derived from inflated max primer kmer count. Runway subgraph
-construction deferred until #109 threshold tuning opens up new seeds
-that could benefit from pre-built subgraphs.
-
-**2026-03-31 — Phases 4-6 implementation (read threading)**
-Two-pass read backend: Pass 1 counts kmers (unchanged), Pass 2 re-reads
-FASTQ for read threading. New CLI flags: `--no-read-threading` (skip Pass 2),
-`--paired` (paired-end R1/R2 alternating ingestion). `ReadSourcePlan` tracks
-input sources for Pass 2 re-reading (local files, cached remote, uncached
-remote, stdin=unavailable). `reread_sequences()` collects reads into
-`ReadRecord` structs. Paired ingestion via `read_fastq_paired()` alternates
-R1/R2 reads with `--max-reads` rounded up to even.
-
-Read threading (#98): `threading.rs` module maps reads to graph edges via
-maximal contiguous runs of adjacent graph kmers. Per-edge annotations:
-`read_support_total` and `read_support_unambiguous` (single unbranched path).
-Branch-point phasing records (incoming_edge, outgoing_edge) links at
-branch points. `PrimerReadFilter` (`read_filter.rs`) filters reads per-gene
-using primer kmer matching before threading. Threading is graph-agnostic
-(accepts any `StableDiGraph<DBNode, DBEdge>`), designed for Phase 7 reuse.
-
-Threading-dependent scoring (#99): `PathScore` extended with
-`zero_support_edges`, `median_unambiguous_support`, `edge_support_fraction`.
-`composite()` penalizes zero-support edges (0.5^n) and rewards high support
-fraction. Bubble resolution (#100): `bubble.rs` detects simple bubbles
-(diverge/converge patterns), ranks branches by read support + phasing,
-returns edge preferences that boost DFS edge ordering. Paired-end phasing
-(#101): `thread_reads_paired()` groups reads by pair index, creates
-`PairedEndLink` when both mates map to the same graph.
-
-All 83 tests pass (61 unit + 22 integration). 11 new unit tests added
-(5 threading, 3 bubble, 1 read_filter, 2 existing updated).
-
-**2026-03-29 — Phase 3 implementation (graph traversal)**
-Replaced ad-hoc graph heuristics with principled algorithms. Graph
-construction: single graph per gene seeded with all forward primer kmers
-(#94), incremental threshold extension across coverage steps (#95).
-Structural cleanup: coverage-aware tip removal (#89), reachability pruning
-(bidirectional BFS from start/end nodes), removed topology-based termination
-heuristics (#91). Retained coverage-ratio filtering during extension (10×
-median guard). Path finding: coverage-ratio edge annotations, pluggable
-composite scoring (median count, coverage CV, coverage-ratio penalty) (#90),
-coverage-weighted DFS replacing `all_simple_paths` (#93), bounded repeat
-traversal with `MAX_NODE_VISITS=2` per path (#92), O(N) dedup memory (#76).
-Removed: `pop_balloons`, `remove_side_branches`, backward-degree checks,
-`would_form_cycle`, pairwise distance matrix. All 65 tests pass (43 unit +
-22 integration). Added design decisions section on graph traversal analyzing
-v1 shortcomings, assembler literature, and Phase 3 approach.
-
-**2026-03-29 — Phase 2 implementation (remote read caching)**
-Added persistent local cache for reads downloaded from remote URLs (ENA).
-New `src/cache.rs` module with `CacheConfig`: lookup by SHA-256(URL) key,
-download-then-read strategy (full gzipped file cached, `--max-reads` applied
-at read time), SHA-256 checksum verification on cache hit, YAML sidecar
-metadata (via `serde_yml`). Three new CLI flags: `--cache-dir` (override
-cache location), `--no-cache` (stream directly as before), `--clear-cache`
-(delete cache and exit). New deps: `dirs` (platform cache dir), `sha2`
-(checksums). Benchmark `run_benchmark.py` switched entirely to `--ena --cache-dir
-benchmarks/data/cache`, removing local file lookup (`find_sample_data` and
-`run_sharkmer` removed; only `run_sharkmer_ena` remains).
-All 66 tests pass, no code changes to existing logic.
-
-**2026-03-29 — Phase 1 completion (kmer pipeline optimizations)**
-Replaced Read struct encode/decode round-trip with `kmers_from_ascii()` —
-single-pass kmer extraction directly from ASCII sequence bytes (commit
-602236b). Switched kmer counts from u64 to u32 with `saturating_add`,
-reducing hash table memory per entry. Benchmark output now uses timestamped
-subdirectories to preserve results across runs. Added local BLAST support
-to `blast_validate.py` (discovers databases in `/db/`, falls back to NCBI
-remote API). Added `benchmarks/environment.yaml` conda env with blastn.
-Added `dev_docs/OVERVIEW.md` architecture overview. All 55 tests pass,
-no regressions expected (internal-only changes).
-
-**2026-03-28 — Phase 0 sweep benchmarks and BLAST validation**
-Full coverage sweep completed (commit b9a9835). 34/38 runs succeeded; 4 OOM
-failures at highest read counts (Porites 8M/16M, Agalma 8M/16M, Gryllus 16M
-— all exceed 32GB RAM). 289 amplicons BLAST-validated against NCBI nt.
-Results: `benchmarks/results/2026-03-28_sharkmer_3.0.0-dev_b9a9835.yaml`.
-
-Key sweep findings for nuclear gene recovery:
-- **cnidaria EF1A**: Porites recovered at 1M–2M (not at 4M — likely graph
-  complexity at higher coverage); Agalma not recovered at any level; Rhopilema
-  recovered at 4M and 16M (intermittent).
-- **insecta Yp2**: Drosophila recovered at 16M only. No other insect nuclear
-  genes (EF1g, Fz4, Gpdh, Pgi) recovered at any level.
-- **More genes at higher coverage**: Drosophila goes 8→9 genes (1M→16M);
-  Heliconius 7→10; Gryllus 13→15 (1M→4M). Diminishing returns above 4M
-  for mitochondrial/rRNA genes.
-
-**2026-03-28 — Phase 0 completion (infrastructure)**
-Ran 1M baseline benchmark for all 14 samples with BLAST validation (commit
-7944499). Results: `benchmarks/results/2026-03-28_sharkmer_3.0.0-dev_7944499.yaml`.
-Restructured benchmark infrastructure: sweep levels are now per-sample in
-config.yaml (cnidaria/insecta get 16M/8M/4M/2M/1M, others get 1M only). Data
-files renamed to `{accession}.fastq` — one file per accession, `--max-reads`
-controls coverage level. BLAST validation (product 0 per gene) is now a default
-step in `run_benchmark.py` (skip with `--no-blast`). Coverage sweep benchmarks
-(2M+) require >=16GB RAM — run on local machine with
-`python benchmarks/run_benchmark.py`. Defined Phase 3 success targets
-based on 1M baseline with sweep-dependent placeholders to fill after sweep.
-
-**2026-03-28 — Phase 0 implementation (code + infrastructure)**
-Implemented `--dump-graph` CLI flag with annotated DOT output (node shapes for
-start/end/terminal, edge labels with kmer sequence and count). Added per-sample
-multi-read-count sweeps to benchmark config (16M/8M/4M/2M/1M for insect and
-cnidarian samples, high-to-low ordering). Updated `run_benchmark.py` to support
-per-sample `max_reads` overrides and pass `--dump-graph` to all benchmark runs.
-Enhanced `compare.py` to handle (sample, max_reads) pairs and report per-product
-sequence fingerprint diffs. Added `blast_validate.py` for optional NCBI BLAST
-validation of amplicons.
-
-## Phase 0 — Benchmarks
-
-Enhance benchmark infrastructure before any code changes. Capture v2.0.0
-baseline at multiple coverage levels to measure the impact of later phases.
-
-- [x] Add multi-read-count sweep to benchmark suite (per-sample `max_reads`
-  in config.yaml). Insect and cnidarian samples sweep at 16M, 8M, 4M, 2M,
-  1M — these panels have single-copy nuclear genes (EF1A, EF1g, Fz4,
-  Gpdh, Pgi, Yp2) that are the key targets for coverage sensitivity
-  analysis. All other samples run at 1M only. Sweeps run largest-first.
-  Data files are `{accession}.fastq`; `--max-reads` controls coverage.
-- [x] Ensure benchmark comparison detects changes in recovered amplicon
-  sequences across runs (regression testing against previous results)
-- [x] #102 BLAST validation: batch-submit all amplicons to NCBI blastn
-  against nt, parse per-amplicon e-value, identity, top hit accession,
-  gene name, and taxon into benchmark results. E-value threshold 1e-50.
-  Uses `git config user.email` for NCBI API. Runs by default as the final
-  step of `run_benchmark.py`; skip with `--no-blast`.
-- [x] Implement `--dump-graph` flag: write per-gene annotated assembly graphs
-  as DOT files (Graphviz) with kmer coverage, start/end status, terminal
-  status per node/edge. Phase 5 adds read support and phasing annotations.
-- [x] Enable `--dump-graph` in benchmark runs to capture baseline graphs
-- [x] Capture baseline benchmarks at 1M reads for all 14 samples with BLAST
-  validation. Full coverage sweeps (4M/2M/1M) completed for all sweep
-  samples; 8M/16M completed for Rhopilema, Drosophila, Heliconius;
-  8M/16M OOM-killed for Porites, Agalma (both levels) and Gryllus
-  (16M only — 1.67GB genome). 289 amplicons BLAST-validated.
-  Results: `benchmarks/results/2026-03-28_sharkmer_3.0.0-dev_b9a9835.yaml`
-- [x] Define measurable success targets for Phase 3:
-  - **No regressions at 1M** (baseline: 2026-03-28 commit 7944499):
-    - Porites_lutea: 18S, 28S, 28S-v2, ITS, ITS-v2, EF1A (6 genes)
-    - Agalma_elegans: 18S, 28S, 28S-v2, CO1, ITS, ITS-v2 (6 genes)
-    - Rhopilema_esculentum: 16S, 18S, 28S, 28S-v2, CO1, ITS-v2 + 9 bacteria (15 genes)
-    - Drosophila_melanogaster: 12S, 18S, 18S-v2, CO1-v2, CO2-v2, CO2, ND1, ND5 (8 genes)
-    - Heliconius_pachinus: 12S, CO1-v2, CO1, CO2, CytB, ND1, ND5 (7 genes)
-    - Gryllus_bimaculatus: 12S, 16S, 16S-v2, 18S-v2, 28S, CO1-v2, CO1, CO2,
-      CytB, NADH, ND1, ND4, ND5 (13 genes)
-    - All other samples: gene counts and identities must match baseline
-  - **Single-copy nuclear gene recovery** (baseline from sweep):
-    - cnidaria_EF1A: Porites recovered at 1M–2M (BLAST: no significant hit
-      — may be divergent or misassembled); not recovered at 4M (graph
-      complexity?). Agalma not recovered at any level (up to 4M tested).
-      Rhopilema recovered intermittently (4M, 16M but not 8M).
-    - insecta_Yp2: Drosophila recovered at 16M only (9 genes vs 8 at 1M).
-      Not recovered for Heliconius or Gryllus at any level.
-    - insecta nuclear genes (EF1g, Fz4, Gpdh, Pgi): not recovered at any
-      level for any insect sample (up to 16M tested).
-    - Phase 3 target: recover EF1A and Yp2 at the same or fewer reads than
-      baseline; attempt recovery of currently-unrecovered nuclear genes
-  - **Sequence stability**: product sequences for rRNA and mitochondrial
-    genes should be identical (same MD5 fingerprints) after Phase 3 changes
-
-## Phase 1 — Kmer pipeline optimizations
-
-Internal changes deferred from v2.0. No result changes expected — benchmark
-to confirm.
-
-- [x] Extract kmers directly from ASCII sequence in a single pass, eliminating
-  the `Read` struct encoding/decoding round-trip
-- [x] Use `u32` for kmer counts instead of `u64` (~33% hash table memory
-  savings). Saturate at u32::MAX.
-- [x] Run benchmarks, confirm identical results with performance improvement
-
-## Phase 2 — Remote read caching
-
-Cache reads downloaded from remote sources (currently ENA, other archives
-may be added in the future). Reduces server load and enables reuse across
-multiple runs on the same dataset. Internals should use generic terminology
-(e.g., "URL read source") rather than ENA-specific naming, to support
-additional archives later.
-
-- [x] Local cache for reads fetched from remote URLs (always cache by default).
-  Default location: `dirs::cache_dir()/sharkmer/reads/` (e.g.,
-  `~/.cache/sharkmer/reads/` on Linux, `~/Library/Caches/sharkmer/reads/`
-  on macOS). Overridable with `--cache-dir`. Add `dirs` crate dependency.
-- [x] Cache metadata per entry (sidecar file): whether the
-  download was complete, and SHA-256 checksum of the cached file. Verify
-  checksum on cache hit; treat mismatch as cache miss and re-download.
-  Add `sha2` crate. Sidecar format: YAML (via existing `serde_yml`).
-  Cache hit logic:
-  - Complete cached file: always a hit, regardless of `--max-reads` requested
-    (there are no more reads to get)
-  - No cache entry: download
-  - Checksum mismatch: re-download
-- [x] Cache flags: `--no-cache` (skip reading from and writing to cache),
-  `--clear-cache` (delete cache directory and exit)
-- [x] Log cache activity at info level: cache location, cache hit/miss per
-  file, download vs reuse
-- [x] Run benchmarks, confirm no result changes (1M baseline: all 14
-  samples match Phase 0 gene counts exactly)
-- [x] Switch benchmark suite to support `--ena` with cached reads as
-  fallback when local data files are absent. Local files in `data/` are
-  preferred when present (faster). Cache stored in `benchmarks/data/cache/`.
-
-## Phase 3 — Graph traversal
-
-Replace ad-hoc graph heuristics with principled algorithms from the assembler
-literature. All work in this phase is independent of read threading. See
-[DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#graph-traversal-v1-shortcomings-and-phase-3-approach)
-for detailed analysis of v1 shortcomings and the new approach.
-
-Key design change: adopt annotation-only model (see
-[DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#graph-annotation-model-preserve-structure-defer-decisions)).
-Replace destructive pruning with light structural cleanup + annotation-informed
-path selection. Bubbles and variants are preserved until sequence emission.
-
-Implementation order: graph construction changes first (they simplify
-everything downstream), then structural cleanup, then path finding.
-
-### Step 1: Graph construction efficiency
-
-- [x] #94 Build a single graph per gene seeded with all forward primer kmers
-  simultaneously, instead of one graph per forward primer kmer (see
-  [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#single-graph-seeded-with-all-forward-primer-kmers)).
-  Refactor `do_pcr()` to pass the full `forward_primer_kmers` to
-  `create_seed_graph()` instead of looping. Path finding runs from each
-  start node to each end node within the single graph.
-- [x] #95 Extend graphs incrementally across coverage threshold steps instead
-  of rebuilding from scratch at each threshold. Build graph once at the
-  highest threshold; at each subsequent (lower) threshold, add only newly
-  qualifying edges to the existing graph. `break` on first product retained
-  for now — will be removed when cross-threshold scoring (#90) matures.
-
-### Step 2: Light structural cleanup (replaces destructive pruning)
-
-- [x] #89 Replace heuristic ballooning detection with coverage-aware tip
-  removal: remove dead-end tips shorter than k with coverage below a
-  fraction of the local median (< 0.1× global median). Preserve
-  all bubbles and meaningful branching. Removed `pop_balloons()`,
-  backward-degree checks from `extend_graph()`. Retained
-  `HIGH_COVERAGE_RATIO_THRESHOLD` (10× median) during extension as
-  coverage-based guard against repeat regions.
-- [x] Reachability pruning: after pruning, remove nodes and edges that
-  cannot be part of any start-to-end path. Bidirectional BFS from start
-  and end nodes; remove nodes not in the intersection. Subsumes
-  `remove_orphan_nodes()`.
-- [x] Remove disconnected components not reachable from any start node
-  (subsumed by reachability pruning above).
-- [x] #91 Replace backward-degree-based termination in `extend_graph()`
-  with coverage-based decisions. Removed topology-based heuristics.
-  Extension termination is now: end node reached, no qualifying
-  successors, max-length exceeded, or MAX_NUM_NODES exceeded.
-- [x] Coverage-ratio annotation: annotate each edge with count / global
-  median. High ratios flag potentially repetitive edges; low ratios flag
-  potential errors. Annotations feed into the scoring interface (#90).
-
-### Step 3: Annotation-informed path finding
-
-- [x] #90 Pluggable scoring interface for path selection. `PathScore`
-  struct with kmer min/median count, coverage CV, max coverage ratio.
-  `composite()` method combines signals. Phase 6 adds read support and
-  phasing signals without restructuring.
-- [x] #93 Coverage-weighted best-path algorithm to replace `all_simple_paths`
-  enumeration. Iterative DFS exploring highest-count edges first. First
-  paths found are highest-quality. Budget: `MAX_NUM_PATHS_PER_PAIR`
-  paths per start node.
-- [x] #92 Improved handling of repeats: replaced absolute cycle ban
-  (`would_form_cycle()` BFS) with bounded repeat traversal during path
-  finding. `MAX_NODE_VISITS = 2` per node per path. Cycles allowed in
-  graph structure.
-- [x] #76 Fix O(N^2) dedup memory: greedy clustering computes
-  `bounded_levenshtein` on-the-fly against kept records only.
-- [x] Evaluate #12 (duplicate product 0) — resolved by greedy
-  Levenshtein dedup (#76) and sequential product re-numbering after
-  dedup. No duplicate product IDs in any benchmark output.
-- [x] #108 Unify forward and reverse primer handling. Remove the
-  asymmetric reverse-complement step during preprocessing; both
-  primers are processed identically (trim → expand → permute) and
-  matched at the START of their respective kmers. Nodes are annotated
-  as forward or reverse, paths emitted only from forward to reverse.
-  Prerequisite refactor for #107 — makes reverse extension
-  fall out naturally (forward seeds extend rightward, reverse seeds
-  extend leftward).
-- [x] #107 Reverse graph extension from forward and reverse primer
-  seeds. Extend graph from both directions simultaneously; frontiers
-  converge at the amplicon region and off-target seeds never meet.
-  Naturally provides seed coherence, reduces path length through
-  complex regions (exponential branching cut in half), and focuses
-  the graph on the amplicon subgraph. Depends on #108. Benchmark
-  results: gained 3 genes (Drosophila CO1, Gryllus 18S-v2, Covercrop
-  16S-PRK341F) but lost 2 (Rhopilema CO1 and 16S-515F-Y-926R — both
-  marginal cases near 50K node budget or DFS state limits). See
-  diagnostic evidence in `tmp/porites_tests/ANALYSIS_16M.md`.
-- [x] #105 Bounded seed evaluation before full graph extension. Two
-  goals: (1) avoid wasted compute when no product exists; (2) avoid
-  polluting the graph with spurious extensions that obscure the real
-  product and exhaust node/DFS budgets. Approach: before full
-  extension, give each seed a bounded local exploration (proportional
-  to max_length), then evaluate structural signatures — local graph
-  linearity, edge count consistency with primer kmer count. Seeds
-  that fail are abandoned early, keeping their nodes out of the
-  shared graph. If bounded exploration completes a full path to an
-  opposite-direction seed, retain it but still evaluate remaining
-  seeds (paralogs, alleles).
-
-### Validation
-
-- [x] Run benchmarks, compare to Phase 2 baseline (v2.0.0, bcb7818):
-  14 new genes gained, 8 lost. Major gains: Drosophila 8→11, Gryllus
-  13→15, Homo_sapiens 3→9. Losses: Agalma CO1 (pre-existing from DFS
-  budget), Rhopilema -3 (16S pre-existing, CO1 and 16S-515F-Y from
-  #107 shared node budget), Seawater 4→0 (pre-existing from Phase 3
-  graph rewrite).
-- [x] Evaluate against Phase 0 success targets: 4/6 target samples
-  pass (Porites, Drosophila, Heliconius, Gryllus). Agalma misses CO1
-  (pre-existing regression). Rhopilema misses 3 genes (1 pre-existing,
-  2 from #107). Seawater regression is pre-existing. Nuclear gene
-  recovery improved: Drosophila gains CO1+CytB+ITS at 1M reads.
-  Sweep-level evaluation (2M/4M/8M/16M) not yet run on this branch.
-
-## Phase 4 — Read backend
-
-Two-pass architecture for read threading (see
-[DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#single-pass-vs-two-pass-read-ingestion-for-read-threading)
-for analysis). Pass 1 counts kmers and builds graphs (unchanged). Pass 2
-re-reads FASTQ to thread reads through the completed graphs. No graph
-algorithm changes in this phase — just infrastructure. Remote reads are
-already cached locally (Phase 2), so the second pass reads from cache.
-Benchmark first to snapshot pre-threading state. The second pass is only
-needed when sPCR is requested — if the run is histogram-only
-(`--chunks >= 1` with no PCR), skip read retention entirely.
-
-Read threading behavior by input source:
-- **Local files**: two-pass, seek back to start for second pass
-- **Remote URLs, cache enabled (default)**: download once to cache, read
-  cache for both passes
-- **Remote URLs, `--no-cache`**: download twice, log warning that reads
-  will be fetched from server twice
-- **stdin**: implies `--no-read-threading`, log info message explaining why
-
-**Design note for Phase 7 (runway):** Phase 7 needs primer-matching
-reads available at seed evaluation time — before the full graph exists
-and before Pass 2 runs. This requires retaining primer-matching reads
-during Pass 1 ingestion via bitwise Oligo matching (see Phase 7 for
-details). Pass 2 re-reading serves a separate purpose: threading reads
-through the completed graph for edge annotations and phasing.
-
-- [x] #96 Two-pass architecture: Pass 1 counts kmers (as now), Pass 2
-  re-reads FASTQ for threading. `--no-read-threading` flag to skip second
-  pass. File input seeks back; remote input reads from cache (Phase 2);
-  `--no-cache` re-downloads with warning; stdin implies `--no-read-threading`.
-- [x] #97 `--paired` flag: first file is R1, second is R2. Errors if not
-  exactly 2 input files (local or remote). Errors if used with stdin. When
-  set, reads are ingested alternately from R1 and R2 so graph is built from
-  the same balanced read set that will later be threaded and analyzed as
-  pairs. `--max-reads` applies to the total (e.g., 1000 = 500 from each;
-  if odd, round up to next even). Not implicit for `--ena` since some
-  accessions are single-end. Without `--paired`, multiple files are read
-  sequentially as in v2.0 (no pairing assumed).
-
-## Phase 5 — Read threading
-
-Thread reads through the assembled graph. Annotation only — no graph
-structure changes. See
-[DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#read-retention-and-threading-mechanics-phases-4-5)
-for full mechanics and
-[DESIGN_DECISIONS.md](DESIGN_DECISIONS.md#graph-annotation-model-preserve-structure-defer-decisions)
-for the annotation-only model.
-
-**Design note for Phase 7 (runway) reuse:** The threading API is
-graph-agnostic — it accepts any `StableDiGraph<DBNode, DBEdge>` plus
-reads and returns annotations. Phase 7 reuses this to thread
-Pass 1-retained reads through bounded seed subgraphs during seed
-evaluation (before the full graph exists).
-
-- [x] #98 Map reads to graph edges via maximal contiguous runs of adjacent
-  graph kmers. Annotate per edge:
-  - `read_support_total` — every read whose run includes this edge
-  - `read_support_unambiguous` — only reads mapping to a single
-    unbranched path
-- [x] Branch-point phasing: when a contiguous run passes through a branch
-  point (in-degree > 1 or out-degree > 1), record (incoming_edge,
-  outgoing_edge) link with count. This captures read-scale haplotype
-  structure.
-
-## Phase 6 — Threading-dependent path selection
-
-Use read-support and phasing annotations to improve path scoring via the
-pluggable interface designed in Phase 3 (#90). No graph structure edits.
-
-**Design note for Phase 7 (runway) reuse:** The read-support signals
-(read count, consistency, unambiguous support) are the same signals
-Phase 7 uses to evaluate seeds. Phase 7 asks "does this seed have
-consistent read support?" rather than "which path has the best read
-support?" — same data, different question. Signal computation is
-separate from the scoring/decision logic so both phases reuse it.
-
-- [x] #99 Add read-support signal to path scoring: penalize edges with
-  zero read support, prefer edges with high unambiguous support
-- [x] #100 Read-aware bubble resolution: use branch-point phasing to
-  determine which bubble arms connect to which — resolves cases where
-  kmer coverage alone is ambiguous
-- [ ] #101 Paired-end phasing — **deferred to v4.0**. Infrastructure was
-  built (`PairedEndLink`, `thread_reads_paired()`) but no downstream
-  consumer wires it into scoring. See issue #101 for remaining work.
-- [x] Run benchmarks, compare to Phase 3 and Phase 5 results.
-  All 14 samples at 1M reads: identical gene counts to Phase 3 baseline.
-  Three samples have minor sequence changes from threading-informed
-  edge ordering (Covercrop 16S reordering, Gryllus ITS 4→2 products,
-  Porites ITS 1bp). Wall time ~50-70% higher due to Pass 2 re-reading.
-  Results: `benchmarks/results/2026-03-31_sharkmer_3.0.0-dev_a834cab.yaml`
-
-## Phase 7 — Read-backed runway for seed evaluation
-
-Augment the existing kmer-only seed evaluation (#105) with read-backed
-evidence. For each seed, actual reads containing the primer provide
-direct evidence of whether the seed is real. The kmer-only heuristics
-remain as a first-pass filter; read-backed evaluation provides
-additional signal to improve seed keep/abandon decisions.
-
-**Key timing constraint:** Seed evaluation happens *before* full graph
-extension, so reads must be available before Pass 2 threading (which
-runs after the graph is complete). This requires retaining
-primer-matching reads during Pass 1 ingestion, not during Pass 2.
-
-**Two-tier read design:**
-- **Pass 1 retention**: While ingesting reads and counting kmers,
-  identify reads containing primer sequences via bitwise matching.
-  Retain these reads in memory (tiny fraction of total — ~200 reads
-  per amplicon). Available for seed evaluation before graph extension.
-- **Pass 2 threading**: After graph extension/pruning/path finding,
-  re-read all sequences and thread through completed graphs for edge
-  annotations, bubble resolution, and paired-end phasing (Phases 4-6,
-  unchanged).
-
-**Pass 1 primer Oligo matching:** Primer Oligos are 2-bit encoded
-representations of the primer sequence itself (not full k-mers — those
-require the kmer table, which isn't available until after Pass 1).
-Oligos are derived purely from the primer text sequences provided via
-CLI/panels: trim → resolve ambiguity → permute mismatches → encode
-as 2-bit `Oligo`. This can run before `ingest_reads()`.
-
-During Pass 1, for each kmer extracted by `kmers_from_ascii`, check
-whether the high-order bits match any forward primer Oligo or the
-low-order bits match any reverse primer Oligo (bitwise mask + compare).
-A match means the read contains the primer sequence — retain it.
-One comparison per Oligo variant per kmer. Retained reads stored as
-raw ASCII sequences, indexed by which primer(s) they matched.
-
-- [x] #110 Read-backed runway:
-  - [x] Move primer text preprocessing (trim, ambiguity resolution,
-    mismatch permutation, Oligo encoding) to run before `ingest_reads()`,
-    producing a set of 2-bit Oligos per gene. These are primer Oligos
-    (the primer sequence only), not primer kmers (which also include
-    flanking genomic nucleotides and require the kmer table).
-    New: `preprocess_primer_oligos()` in primers.rs, `PrimerOligoSet`.
-  - [x] During Pass 1 kmer extraction, bitwise-match each kmer against
-    primer Oligos. Retain reads that contain any primer Oligo (store
-    sequence + which primer matched). Memory cost: negligible
-    (~200 reads/amplicon). New: `OligoMatcher` in io.rs,
-    `RetainedRead`/`RetainedReads`, `retain_primer_reads()`.
-  - [x] During seed evaluation, thread retained primer-matching reads
-    through each seed's bounded local subgraph. Two signals:
-    - **Read coherence**: multiple reads extend consistently in the
-      same direction, sharing overlapping kmers — positive evidence
-      a seed is real. Noted but not used for filtering (would reject
-      good seeds at low coverage where only 1-2 reads exist).
-    - **Read divergence**: reads branch within k bases of the primer
-      — negative evidence, seed is likely off-target. Off-target
-      primer matches in repetitive/high-copy regions tend to produce
-      many divergent reads even at low coverage.
-    New: `check_read_divergence()` in seed_eval.rs.
-  - [x] Use read divergence to reject seeds. Seeds without divergence
-    (including seeds with zero or one retained read) pass through to
-    existing kmer-only evaluation (#105) unchanged. Read coherence is
-    logged for diagnostics but does not affect filtering.
-- [x] Run benchmarks, compare to Phase 6 results.
-  With `--read-eval`: ~15-25% overhead vs default (bloom filter + AHashSet
-  verification). Without `--read-eval`: no overhead. `--read-eval`
-  uniquely enables Drosophila ITS recovery at 4M. Failure analysis
-  updated: remaining perfect-match failures (16S, 28S) are seed eval
-  threshold issues (#109), not node budget — increasing `--max-nodes`
-  to 500K recovers zero additional genes.
-  Results: `benchmarks/results/2026-04-01_sharkmer_3.0.0-dev_df4269e.yaml`
-- Runway subgraph construction deferred: retained reads currently used
-  only for divergence rejection. Pre-building subgraphs from retained
-  reads and incorporating them into the main graph would help seeds
-  that survive evaluation but struggle during extension. Deferred until
-  #109 threshold tuning opens up new seeds that could benefit.
-
-## Phase 8 — Performance optimizations
-
-Hot-path performance improvements identified by code review. No behavioral
-changes — benchmark to confirm identical results. See #103 for full analysis
-and rationale.
-
-### Easy wins (items 1–6 from #103)
-
-- [x] #103 Use entry API in `extend_with_histogram` to eliminate double
-  hash lookup per kmer during chunk consolidation
-- [x] #103 Cache median edge count in `extend_graph` — recompute every N
-  nodes instead of every iteration
-- [x] #103 Guard `summarize_extension` BFS descendants computation behind
-  `log::log_enabled!(Level::Debug)` check
-- [x] #103 Replace `HashSet<u64>` with `[Option<u64>; 4]` stack array for
-  candidate kmers in graph extension inner loop
-- [x] #103 Pre-allocate `KmerCounts` capacity from sum of chunk sizes
-  before consolidation
-- [x] #103 Replace `get_path_length` per-call HashSet with bounded depth
-  counter for cycle detection
-- [x] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
-
-### Larger refactors (items 7–9 from #103)
-
-- [x] #103 DFS path finding: replace path/visit_counts cloning with
-  stack-based backtracking (push/pop instead of clone per state)
-- [N/A] #103 Avoid full graph clone for pruning — StableDiGraph node
-  indices cannot be restored after removal; clone is O(N+E) and fast
-- [x] #103 Implement byte-level lookup table for `revcomp_kmer` to reduce
-  from O(k) to O(k/4) bit operations
-- [x] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
-
-### Memory reductions (#104)
-
-- [x] #104 Remove `DBEdge._kmer` field — reconstruct from node pair
-  via `reconstruct_edge_kmer()` (saves 8 bytes per edge)
-- [N/A] #104 Drop `node_lookup` HashMap after graph extension completes —
-  needed across threshold steps; goes out of scope naturally at fn end
-- [x] #104 Add `kmer_last_base()` helper to avoid `kmer_to_seq()` String
-  allocation per node during path assembly
-- [x] #104 Clone only histogram `Vec<u64>` instead of full `Histogram`
-  struct (skip `FxHashMap` clone) in incremental counting
-- [x] #104 Stream histogram rows during output — subsumed by histogram
-  Vec snapshot (3.4); intermediate `histo_vecs` eliminated
-- [x] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
-
-### Parameter tuning (#109)
-
-Expose all tunable constants as hidden CLI arguments (`hide = true`)
-so they can be adjusted without recompiling. Same pattern as
-`--max-nodes`. Then benchmark systematically to find better defaults.
-
-**Highest priority:** seed eval threshold — root cause of remaining
-perfect-match failures (see FAILURE_ANALYSIS.md). All Drosophila 16S
-seeds abandoned at "1 node" because threshold derived from max primer
-kmer count is too high for real amplicon coverage.
-
-- [x] #109 Expose constants as hidden CLI arguments:
-  - `--max-nodes` (done, DEFAULT_MAX_NUM_NODES = 50K)
-  - `--max-dfs-states` (DEFAULT_MAX_DFS_STATES = 100K)
-  - `--max-paths-per-pair` (DEFAULT_MAX_PATHS_PER_PAIR = 20)
-  - `--max-node-visits` (DEFAULT_MAX_NODE_VISITS = 2)
-  - `--max-primer-kmers` (DEFAULT_MAX_NUM_PRIMER_KMERS = 100)
-  - `--max-seed-nodes` (DEFAULT_MAX_SEED_NODES = 500)
-  - `--high-coverage-ratio` (DEFAULT_HIGH_COVERAGE_RATIO = 10.0)
-  - `--tip-coverage-fraction` (DEFAULT_TIP_COVERAGE_FRACTION = 0.1)
-- [x] #109 Fix seed eval threshold: changed from max to median primer
-  kmer count. The median is robust to off-target matches inflating the
-  count with degenerate primers.
-- [x] #109 Benchmark with adjusted parameters, compare to current
-  defaults. Sweeps documented in `dev_docs/DESIGN_DECISIONS.md`:
-  k sweep (1M-16M), per-component budget sweep, global budget sweep,
-  --read-eval comparison. Default k changed from 21 to 19; component
-  budget set to 10K; global budget made dynamic (#113).
-- [x] Run benchmarks: `python benchmarks/run_benchmark.py --max-reads 1000000 --no-blast`
-
-### Component-prioritized graph extension (#112)
-
-The current `extend_graph()` extends all seeds breadth-first in each
-iteration — every unvisited node is extended one step before looping.
-Off-target seeds consume the node budget before on-target seeds can
-connect. Four related changes, implemented as ordered subtasks:
-
-1. **Per-component node budgets.** Allocate node budgets per connected
-   component rather than a single global budget. Multiple seeds in the
-   same component (e.g., forward and reverse primer variants for the
-   same amplicon) share one budget. The global `--max-nodes` becomes a
-   backstop that can be raised since individual components are bounded.
-
-2. **Depth-first per-component extension.** Refactor `extend_graph()`
-   to extend each connected component to completion (terminal or
-   per-component budget) before starting the next.
-
-3. **Component prioritization.** After seed eval, rank components:
-   connected-seed components first (seeds that "reached opposite-
-   direction seed" during bounded exploration), then by component-level
-   metrics (total seed extension size, lowest branching ratio). Feed
-   the ranked order into the depth-first extension.
-
-4. **Configurable stopping criteria.** After each component's extension
-   completes, attempt path finding. If a product is found, apply the
-   stopping criterion. Exposed as `--stopping-criteria` with presets:
-   - `first-product` (new default): stop after first product found
-   - `all-components`: extend all components (current behavior, for
-     benchmarking/debugging)
-   - `connected-only`: extend connected-seed components only, skip
-     the rest if product found
-
-**Rationale:** Benchmark analysis shows that seed eval correctly
-identifies connected seeds ("early product recovery") but full
-extension ignores this signal. Heliconius ND4 at k=21/8M: seeds find
-each other during eval, but off-target seeds exhaust the 50K node
-budget during breadth-first extension. Drosophila ND4 at 1M with
-degenerate primers: same pattern.
-
-- [x] Implement per-component node budgets
-- [x] Implement depth-first per-component extension
-- [x] Implement component ranking after seed eval
-- [x] Implement `--pcr-stopping-criteria` with `first-product` default
-  (renamed from `--stopping-criteria` for user clarity)
-- [x] Run benchmarks: compare recovery and runtime vs current behavior
-  (see `benchmarks/results/2026-04-04_sharkmer_3.0.0-dev_b373fed.yaml`:
-  116 genes at 1M vs 99 pre-refactor)
-
-### Validation
-
-- [x] Run benchmarks: 116 genes recovered at 1M reads (vs 99 baseline).
-  Full sweep with BLAST validation at commit b373fed.
-- [x] Profile before/after to quantify gains. Key finding: O(n²)
-  extension scan replaced with O(n) frontier queue (commit bfea426);
-  Agalma with 200K budget: 347s → 65s (5.3× speedup).
-
-## Phase 9 — Cleanup and validation
-
-- [x] Final benchmark comparison across all phases. BLAST-validated
-  1M-16M sweep committed as `benchmarks/results/2026-04-04_sharkmer_3.0.0-dev_b373fed.yaml`
-  (384/484 gene runs validated against NCBI nt).
-- [x] Update integration tests for v3.0 behavior
-- [x] Update documentation:
-  - [x] README.md (fixed FASTA filename pattern; documented `--pcr-stopping-criteria`,
-    `--read-threading` + `--paired`, `--ena` read caching flags; added
-    "Working with complex samples" guidance on combining stopping criteria,
-    read threading, and per-primer `dedup-edit-threshold`; added Panels section)
-  - [x] CLAUDE.md (module descriptions, line counts, constants; added
-    `components.rs` to pcr/ submodule listing, corrected pcr/ count 8 → 11,
-    corrected main.rs line count)
-  - [x] PCR.md (added `dedup_edit_threshold` to per-primer optional fields
-    with field-semantics note for complex samples)
-  - [x] dev_docs/OVERVIEW.md (verified accurate against current module layout
-    and flag set; no changes needed)
-  - [x] src/cli.rs --help after-text (fixed FASTA filename pattern to match
-    actual `{sample}_{gene}.fasta` output)
-- [x] Update CHANGELOG.md
-- [x] Update bioconda recipe for new dependencies (e.g., `dirs`)
-- [ ] Tag v3.0.0 release
-
-## Open questions
-
-- **Read retention filtering**: During Pass 2, should all reads matching
-  any graph edge kmer be retained, or should highly abundant (repetitive/
-  low-complexity) kmers be excluded from the matching to avoid retaining
-  irrelevant reads? The graph itself filters out most repeat kmers, but
-  some may survive into the graph within amplicon regions. Assess with
-  real results — if retained read counts are reasonable without filtering,
-  no extra logic needed.
-
-- **Traversal/threading coupling**: How much will Phase 3 pruning and scoring
-  designs need to change once read threading is available in Phase 6? The
-  plan assumes pluggable scoring is sufficient — if it turns out the
-  algorithm structure itself needs to change, Phase 6 scope could grow
-  significantly.
-
-## Notes
-
-- Run benchmarks after every phase. Commit results to `benchmarks/`.
-- See [CONTRIBUTING.md](../CONTRIBUTING.md) for branching model and quality gates.
+# Development plan: scalable, reliable sPCR
+
+Status: planned work following the 2026-09-08 review of `5a66468`
+(Sharkmer 3.1.0). Tracking issue: [#152](https://github.com/caseywdunn/sharkmer/issues/152).
+
+This is the active execution plan. [ROADMAP.md](../ROADMAP.md) describes the
+release sequence; [PLAN_v3.md](PLAN_v3.md) preserves the historical v3 plan.
+Check items off only when code, validation, documentation, and acceptance
+criteria are complete. Issue bodies carry implementation scope and dependencies.
+
+## Release strategy
+
+Ship several independently useful releases rather than hold correctness fixes
+until metagenomic inference is finished. Version numbers are planning targets,
+not promised dates. Opt-in additions can ship as v4.x minor releases; reassess
+the major version if an implementation requires incompatible behavior or formats.
+
+| Release | Primary result | Boundary |
+| --- | --- | --- |
+| v3.2 | Correct existing sPCR behavior and establish trustworthy validation | No new assembly accuracy claims based only on more FASTA products |
+| v4.0 | Faster exact counting and complete bounded-memory ingestion/lookup | Existing standard sPCR remains the biological baseline |
+| v4.1 | Read-supported low-coverage nuclear recovery | Explicit partial/ambiguous outcomes; optional local multi-k remains experimental until validated |
+| v4.2 | Recovery of supported metagenomic template diversity | Rare-template retention, phase uncertainty, and defensible abundance reporting |
+| v5.0+ | Additional targeting modes | Single oligos, restriction sites, UCE probes, reference/profile seeds; separate future scope |
+
+Increasing input capacity in v4.0 should already help some nuclear targets.
+The new low-coverage policy and linkage-dependent sensitivity belong in v4.1.
+Do not delay v3.2 waiting for a custom counter, unitigs, or a new inference model.
+
+## Incremental k-mer counting decision
+
+**Retain the feature as an isolated legacy analysis path through v4.x.
+Remove its machinery from the normal sPCR counting path.**
+
+- Preserve explicit `--chunks > 0` use, existing histogram formats, and the
+  existing viewer workflow. Maintenance and correctness fixes continue;
+  new rarefaction features are outside this program.
+- `--chunks 0` must create one logical exact count store, without chunk
+  distribution, incremental histogram snapshots, or copying a sole table.
+- Share byte parsing/encoding where useful, but do not require every counter
+  backend to support incremental snapshots or legacy chunk merging.
+- Preserve combined legacy histogram/PCR invocation through an adapter to the
+  finalized counts. Document unsupported new-backend/legacy combinations
+  explicitly rather than silently changing their semantics or resource limits.
+- A final count histogram is distinct from incremental rarefaction and may be
+  supported by the new counter without reintroducing incremental machinery.
+- Removing incremental counting entirely is not authorized by this plan.
+  Any later removal needs an explicit decision, migration/deprecation plan,
+  and treatment of `sharkmer_viewer`.
+
+## Architecture and resource contracts
+
+Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/139) before independent implementations.
+
+1. **Exact counts and membership.** Preserve canonical identity, all observed
+   accepted k-mers, and abundance through ingestion/finalization. Specify the
+   maximum exact count and observable overflow behavior. Do not default to
+   saturating u8 counts or probabilistic membership. Packed u16 with exact
+   overflow storage is a benchmark candidate, not a predetermined winner.
+2. **Canonical keys versus oriented identities.** Count keys and directional
+   primer/graph identities are separate concepts and should have explicit
+   APIs/types. The current graph uses (k-1)-mer nodes and k-mer edges.
+3. **One pass over original input.** Counting must support non-replayable
+   sources. Optional local spooling/replay for evidence and external counting
+   does not violate this contract. Never require a second remote download.
+4. **Bounded end-to-end resources.** Budget count-table growth/resizing, queues,
+   concurrent target graphs, evidence, and lookup caches together. An external
+   counter followed by a full in-memory final table is not a bounded-memory
+   solution.
+5. **Hardware baseline.** Use a 16 GB laptop as the initial target, reserving
+   operating-system headroom; validate larger jobs with disk-backed storage.
+   A 32–64 GB machine is an additional benchmark class, not a prerequisite for
+   the architecture. Record SSD/temp-space requirements and peak RSS.
+6. **Replay and evidence.** Preserve the exact selected read subset, mate
+   identity, read orientation, base positions, qualities, and invalid-base
+   discontinuities. Stream against bounded batches of target graphs and keep
+   compact evidence rather than all reads in RAM.
+7. **Target-local graph work.** Benchmark unitigs and neighbor caching on
+   target graphs first. Avoid constructing global background topology merely
+   to answer a small panel.
+8. **Explicit uncertainty.** No-data, contradictory evidence, unresolved
+   phase/repeats, partial sequence, and exhausted search are different
+   outcomes. Observed k-mers do not prove an observed full-length haplotype.
+9. **Reproducible storage and execution.** Persist k, count precision,
+   canonicalization, preprocessing, input/subset identity, and schema version.
+   Fingerprint tested binaries and record actual parameters.
+
+## v3.2 — Correctness and reliable evaluation
+
+- [ ] [#129](https://github.com/caseywdunn/sharkmer/issues/129) — Make sPCR validation and benchmark provenance trustworthy.
+- [ ] [#130](https://github.com/caseywdunn/sharkmer/issues/130) — Read every member of concatenated gzip FASTQ inputs.
+- [ ] [#131](https://github.com/caseywdunn/sharkmer/issues/131) — Continue coverage thresholds until a valid amplicon is recovered.
+- [ ] [#132](https://github.com/caseywdunn/sharkmer/issues/132) — Prevent confident amplicon output with collapsed homopolymer lengths.
+- [ ] [#133](https://github.com/caseywdunn/sharkmer/issues/133) — Correct read selection, strand handling, and gap continuity in threading.
+- [ ] [#134](https://github.com/caseywdunn/sharkmer/issues/134) — Publish current-run amplicons and stats without stale FASTA results.
+- [ ] [#135](https://github.com/caseywdunn/sharkmer/issues/135) — Bound primer ambiguity and mismatch expansion before allocation.
+- [ ] [#136](https://github.com/caseywdunn/sharkmer/issues/136) — Fix integer median rounding for even-sized k-mer count sets.
+- [ ] [#137](https://github.com/caseywdunn/sharkmer/issues/137) — Make cache publication concurrent-safe and clearing ownership-aware.
+- [ ] [#138](https://github.com/caseywdunn/sharkmer/issues/138) — Align sPCR documentation and diagnostics with current behavior.
+
+Start with the benchmark/provenance issue and independent correctness fixes.
+For homopolymers, v3.2 can conservatively withhold a falsely complete product;
+full read-supported repeat reconstruction is a v4.1 task.
+
+### Review evidence to preserve
+
+The existing suite passed: 145 unit tests and 22 integration tests. Additional
+temporary probes found gaps that must become durable regression fixtures:
+
+| Case | Observed at review | Required behavior |
+| --- | --- | --- |
+| Two concatenated gzip members, one record each | One read counted, exit success | Both records counted |
+| Shared primer ends; 400 bp at count 100 plus 180 bp at count 4; allowed 170–210 bp | No valid product; rare target succeeds alone | Recover the supported in-range target |
+| 160 bp error-free target containing a long A run, k=19 | 137 bp product reported | Supported length or explicit uncertainty |
+| Oriented primer seed TTTGA, k=5 | Its matching read rejected by canonical filter | Orientation-independent membership |
+| AACGATTCCG versus reverse complement CGGAATCGTT | Different phasing evidence | Equivalent oriented graph evidence |
+| AACGANACGAT on adjacent AACGA/ACGAT graph edges | False link across N | No continuity across the gap |
+| Successful run followed by failed rerun at same output prefix | Old FASTA remains | Current-run manifest cannot report stale success |
+| Counts [3,5] | Integer median 3 | Median 4 |
+
+The fixture-only counting measurement was 100,000 reads, 10,698,337 distinct
+k-mers, 1.4 s ingestion, 1.1 s redundant consolidation, 2.52 s total, and
+562,688 KiB peak RSS on the review environment. Treat this as motivation,
+not a portable performance target or a measured improvement.
+
+### Release gate
+
+- All reproduced correctness failures have regression coverage.
+- Validate all products, including negative controls and whole-product
+  alignment coverage; wrong-gene/short-fragment matches cannot validate a
+  product.
+- Existing high-copy recovery remains correct; intentional removal of
+  previously incorrect products is documented rather than scored as a loss
+  to undo.
+- CLI examples, stats, failure reasons, cache ownership, and rerun semantics
+  agree with the executable.
+
+## v4.0 — Scalable exact counting and replay
+
+- [ ] [#139](https://github.com/caseywdunn/sharkmer/issues/139) — Define exact count-store, replay-source, and assembly evidence interfaces.
+- [ ] [#140](https://github.com/caseywdunn/sharkmer/issues/140) — Remove redundant table consolidation and per-read allocations from sPCR counting.
+- [ ] [#141](https://github.com/caseywdunn/sharkmer/issues/141) — Parallelize ingestion with bounded queues and measured shard ownership.
+- [ ] [#142](https://github.com/caseywdunn/sharkmer/issues/142) — Benchmark packed k-mer tables while retaining exact abundance.
+- [ ] [#143](https://github.com/caseywdunn/sharkmer/issues/143) — Count non-replayable datasets exactly within a memory budget.
+- [ ] [#144](https://github.com/caseywdunn/sharkmer/issues/144) — Provide exact bounded-memory random lookup over external k-mer counts.
+- [ ] [#145](https://github.com/caseywdunn/sharkmer/issues/145) — Add bounded replay/spooling with consistent paired input semantics.
+
+Sequence: contracts → simple counter → bounded parallelism → packed-table
+evaluation. External counting and replay can progress independently after their
+declared prerequisites. Final disk lookup depends on external counts.
+The packed-table experiment is not a dependency of the first external backend.
+
+Compare existing ahash/Fx configurations, owner-managed shards, bounded local
+aggregation, and a specialized shared table on representative workloads.
+Do not allocate a complete per-thread map without measuring duplication.
+Jellyfish is a relevant exact-counting comparator; KMC is a relevant external
+counter. Their existence does not prescribe Sharkmer's internal design.
+
+Start external storage with the simplest measured design. Minimizer/signature
+partitioning and super-k-mers are candidates for reducing temporary I/O;
+partition skew, exact global counts, and final random access remain required.
+
+### Release gate
+
+- Exact count and product agreement across supported threads and backends.
+- Standard `--chunks 0` has no incremental counting overhead; legacy
+  histogram/combined-PCR compatibility remains tested separately.
+- Record stage throughput, table bytes per distinct k-mer, resize/finalization
+  peaks, RSS, disk use, and lookup latency. Freeze quantitative performance
+  gates against the repaired baseline before choosing production designs.
+- Demonstrate a one-shot dataset whose global count store exceeds the chosen
+  RAM budget completing counting **and sPCR**, using disk-backed lookup.
+- Verify limits, paired selection, malformed gzip, interruption, and disk-full
+  behavior without losing previously accepted counts or exposing partial files.
+- Standard sPCR accuracy does not regress while counting implementation changes.
+
+## v4.1 — Read evidence and low-coverage nuclear recovery
+
+- [ ] [#146](https://github.com/caseywdunn/sharkmer/issues/146) — Batch primer discovery without combinatorial variant enumeration.
+- [ ] [#147](https://github.com/caseywdunn/sharkmer/issues/147) — Build length-bounded target graphs and compact nonbranching paths.
+- [ ] [#148](https://github.com/caseywdunn/sharkmer/issues/148) — Use read-spanning branch histories to resolve repeats and constrain paths.
+- [ ] [#149](https://github.com/caseywdunn/sharkmer/issues/149) — Add evidence-based low-coverage nuclear recovery and partial outcomes.
+- [ ] [#116](https://github.com/caseywdunn/sharkmer/issues/116) — Stream reads through bounded batches of target graphs; replace the
+  old per-gene full-input scan proposal and all-read RAM vector.
+- [ ] [#101](https://github.com/caseywdunn/sharkmer/issues/101) — Apply mate orientation and insert-size constraints to paths.
+- [ ] [#99](https://github.com/caseywdunn/sharkmer/issues/99) — Use conservative evidence-aware pruning; lack of evidence is not
+  automatically evidence of an erroneous edge.
+- [ ] [#106](https://github.com/caseywdunn/sharkmer/issues/106) — Add explicit primer alternatives with current CLI/schema semantics
+  and selection that does not erase minority alternatives.
+- [ ] [#127](https://github.com/caseywdunn/sharkmer/issues/127) — Expose suggested-k guidance without silently switching global k.
+- [ ] [#114](https://github.com/caseywdunn/sharkmer/issues/114) — Re-profile the proposed scoring optimization; implement only if
+  it remains material after graph changes.
+
+Dependency order: seeding/target graphs and replay → [#116](https://github.com/caseywdunn/sharkmer/issues/116) and [#101](https://github.com/caseywdunn/sharkmer/issues/101) →
+linked-path evidence → low-coverage policy and [#99](https://github.com/caseywdunn/sharkmer/issues/99). [#106](https://github.com/caseywdunn/sharkmer/issues/106) and [#127](https://github.com/caseywdunn/sharkmer/issues/127) support
+primer usability; [#114](https://github.com/caseywdunn/sharkmer/issues/114) is an optional measured optimization.
+
+Maintain an explicit standard policy and add an opt-in low-coverage policy.
+Use per-target/per-haplotype coverage, realistic intron spans, and
+paralog/orthology evaluation. Admit singletons only under a specified evidence
+model, not by globally relaxing all pruning. Return partial assemblies where
+useful, with an explicit distinction from complete amplicons.
+
+Evaluate local multi-k assembly on recruited/replayed reads after single-k
+behavior is validated. Smaller k can restore overlap and larger k can resolve
+some repeats; neither establishes unobserved bases or unsupported phase.
+Do not make this experiment a requirement for shipping proven v4.1 gains.
+
+### Release gate
+
+- Interior reads and both strands contribute equivalent valid evidence.
+- Evidence buffering is independent of total input length, with graph batch
+  size and retained links bounded or spilled explicitly.
+- Repeat lengths require read/fragment evidence; insufficient linkage yields
+  ambiguity rather than a fabricated complete product.
+- Publish held-out callable recall and sequence precision across nuclear depth,
+  heterozygosity, intron length, and paralog similarity.
+- Demonstrate that singleton rescue improves recall without an unreviewed
+  increase in false products; physical gaps remain partial/unknown.
+- Standard high-copy behavior remains a protected benchmark class.
+
+## v4.2 — Metagenomic diversity
+
+- [ ] [#150](https://github.com/caseywdunn/sharkmer/issues/150) — Preserve rare templates through sPCR seed, threshold, and path search.
+- [ ] [#151](https://github.com/caseywdunn/sharkmer/issues/151) — Report supported haplotypes, uncertainty, and defensible target abundance.
+- [ ] [#68](https://github.com/caseywdunn/sharkmer/issues/68) — Document downstream classifier/workflow integration using current
+  flags and explicit limitations on marker resolution and organism abundance.
+
+Add an explicit diversity policy. Explore plausible components and coverage
+levels after a dominant product is found. Preserve exact distinct sequences by
+default; optional similarity clustering is separate from assembly.
+
+Use branch histories and mate constraints to preserve supported linkage.
+If two distant variants have no distinguishing read/fragment evidence, report
+phase blocks or ambiguity instead of enumerating possible combinations as
+observed haplotypes. Estimate abundance from discriminating sequence and
+compatible reads; do not equate shared marker coverage with organism counts.
+
+### Release gate
+
+- Recover both supported products in the 100:4 mixture with common primer ends.
+- Evaluate 1 bp differences, indels, multiple similar templates, >40 seed
+  candidates, and >20 genuine products under configured limits.
+- Publish precision, rare-template recall, chimera rate, phasing accuracy, and
+  abundance error stratified by target coverage and divergence.
+- Every product carries evidence/completeness information; truncation is visible.
+- No confident organism count or full haplotype is claimed when the marker or
+  linkage is uninformative.
+
+## Benchmark matrix and acceptance policy
+
+Keep calibration and held-out evaluation separate. Freeze fixture identities,
+truth, and target-specific tolerances before parameter sweeps.
+
+- Existing rRNA/organelle successes, repetitive/AT-rich targets, and known
+  failures; compare whole products rather than FASTA counts.
+- Nuclear per-target/per-haplotype depths such as 1, 2, 3, 5, 10, 20, and 40x,
+  including heterozygosity, introns, paralogs, and absent targets.
+- Known metagenomic mixtures spanning abundance ratios and sequence divergence;
+  vary absolute minority depth separately from abundance ratio.
+- Error-free controls, realistic quality/error profiles, primer mismatches,
+  physical gaps, and deliberately unresolvable repeat/phase cases.
+- Plain/gzip/multi-member gzip, paired/interleaved/single-end, local/replayed/
+  one-shot inputs; multiple k values and 1/2/4/8 threads where supported.
+- Small exact-oracle tests, the included fixture, approximately 1M-read common
+  workloads, and deep datasets that exceed the in-memory budget.
+
+Record decompression/parsing, emission, table updates, merge/finalization,
+seed discovery, graph building, threading, search, total wall time, peak RSS,
+allocator heap separately, disk usage, and count-store lookup performance.
+Benchmark without graph dumps for ordinary runtime; measure diagnostics
+separately. Do not promise a speedup before the relevant measurements exist.
+
+Required correctness gates are absolute. Biological improvements need reviewed
+precision/recall thresholds on callable truth sets; sequencing depth alone
+cannot guarantee complete recovery. Performance changes require reproducible
+end-to-end improvement, not just a faster isolated hash benchmark.
+
+## Implementation handoff
+
+- Begin with v3.2 evaluation/correctness issues. Do not launch a whole rewrite
+  before regression fixtures and interface decisions exist.
+- An issue is complete only when its acceptance criteria, focused tests,
+  affected documentation, and release benchmark evidence are satisfied.
+- Follow [CONTRIBUTING.md](../CONTRIBUTING.md) for implementation branches,
+  commits, quality gates, and release process.
+- Update this plan and the associated issue in the same implementation change.
+  Do not infer completion from a similarly named historical closed issue.
+- Existing [#121](https://github.com/caseywdunn/sharkmer/issues/121)–[#127](https://github.com/caseywdunn/sharkmer/issues/127) and [#76](https://github.com/caseywdunn/sharkmer/issues/76) include stale or overlapping status; audit them
+  against code before closing or duplicating panel/cleanup work.
+- This program does not remove incremental counting or implement v5 targeting.
+
+## Design references
+
+These are comparison/design references, not dependencies on their software.
+
+- [Jellyfish: exact parallel counting with a specialized shared table](https://pmc.ncbi.nlm.nih.gov/articles/PMC3051319/).
+- [KMC 3: counting and manipulating k-mer statistics](https://academic.oup.com/bioinformatics/article/33/17/2759/3796399).
+- [Linked de Bruijn graphs: retaining read-scale connectivity](https://pubmed.ncbi.nlm.nih.gov/29554215/).
+- [Bifrost: compacted graph construction and indexing](https://pmc.ncbi.nlm.nih.gov/articles/PMC7499882/).
+- [metaSPAdes: local coverage and metagenomic assembly challenges](https://pmc.ncbi.nlm.nih.gov/articles/PMC5411777/).

@@ -1,8 +1,9 @@
 # Roadmap
 
 This document describes the planned development of sharkmer across upcoming
-major releases. See the [issue tracker](https://github.com/caseywdunn/sharkmer/issues)
-for detailed specifications.
+releases. See [dev_docs/PLAN.md](dev_docs/PLAN.md) for execution order, linked
+issues, architecture decisions, and acceptance gates. Version numbers below
+are planning targets, not promised dates.
 
 ## v2.0 — Cleanup and polish (released)
 
@@ -19,28 +20,46 @@ resolution, composite path scoring, mismatch-aware primer kmer cap,
 dynamic node budget, read caching, and panel versioning and validation
 infrastructure. New `c_elegans` panel.
 
-Paired-end phasing (#101) is deferred to v4.0: the infrastructure
+Paired-end phasing (#101) is deferred to the read-evidence release: the infrastructure
 (`PairedEndLink`, `thread_reads_paired()`) is built but downstream
 consumption is not yet wired.
 
-## v4.0 — Metagenomics
+## v3.2 — Correctness and trustworthy validation
 
-The goal of v4.0 is to reliably produce multiple distinct products from mixed
-samples.
+Fix gzip truncation, premature threshold stopping, collapsed-repeat output,
+threading orientation/gap/selection errors, stale outputs, primer allocation
+bounds, and cache ownership/concurrency. Repair all-product validation and
+benchmark provenance before using them to select new algorithms.
 
-Target improvements:
+## v4.0 — Scalable exact counting
 
-- Paired-end phasing (#101): wire `PairedEndLink` data into bubble
-  resolution and path scoring (infrastructure built in v3.0)
-- Read-supported graph pruning (#99): prune edges/nodes lacking read
-  support to reduce chimeric joins
-- Deconvolution of mixed-organism samples based on coverage profiles
-- Support for reporting multiple distinct amplicons per gene
-- Per-product coverage profiles to distinguish true variants from assembly
-  artifacts
-- Configurable limits for number of amplicons per gene
-- Validation against known metabarcoding datasets
-- Document QIIME2/SILVA workflow and consider convenience flags (#68)
+Build a one-pass-over-original-input, allocation-light, parallel exact counter.
+Benchmark compact tables while preserving abundance. Add external counting,
+bounded-memory final random lookup, and streaming replay/spooling so deeper
+datasets can run on a 16 GB laptop with appropriate temporary storage.
+
+Retain incremental k-mer counting as an isolated legacy analysis path through
+v4.x, including explicit `--chunks` use and histogram compatibility. Remove its
+chunk/snapshot/merge overhead from normal sPCR. Full removal would require a
+separate decision and migration plan.
+
+## v4.1 — Low-coverage nuclear recovery
+
+Improve primer discovery and bounded target graphs; compact nonbranching paths
+where measurements justify it. Stream evidence against batches of target
+graphs (#116), consume paired-end constraints (#101), and use conservative
+read-supported pruning (#99). Add evidence-based singleton rescue and explicit
+partial/ambiguous outcomes. Evaluate local multi-k reconstruction as an
+experiment after the single-k baseline is sound.
+
+## v4.2 — Metagenomic diversity
+
+Preserve rare templates through seed, threshold, and path search; use exact
+deduplication by default in an explicit diversity mode. Report supported
+haplotypes, phase uncertainty, search truncation, and defensible abundance.
+Validate every product against known mixtures and negative controls, measuring
+rare-template recall and chimeras as well as sequence precision. Document
+downstream classification workflows (#68).
 
 ## v5.0 — New targeting paradigms
 
@@ -75,6 +94,6 @@ assembly:
 - The targeting mode (paired-primer, single-oligo, restriction site, UCE probe)
   should be a parameter of the panel/primer YAML format introduced in v2.0,
   not a separate code path — the seeded assembly engine is shared
-- v3.0 graph traversal improvements and v4.0 multi-product support are
+- v3.0 graph traversal improvements and v4.2 supported multi-product recovery are
   prerequisites — single-primer extension and UCE enrichment both produce
   variable-length products that need robust graph handling
