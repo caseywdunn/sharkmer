@@ -115,6 +115,14 @@ fn compute_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>, default: f64
     median_u32_f64(counts).unwrap_or(default)
 }
 
+fn high_coverage_limit(
+    median_edge_count: f64,
+    high_coverage_ratio: f64,
+    coverage_count_floor: u32,
+) -> f64 {
+    (median_edge_count * high_coverage_ratio).max(coverage_count_floor as f64)
+}
+
 pub fn get_dbedge(kmer: &u64, kmer_counts: &FilteredKmerCounts) -> DBEdge {
     DBEdge {
         count: kmer_counts.get_canonical_count(kmer),
@@ -324,6 +332,7 @@ pub(super) fn extend_graph(
     kmer_counts: &FilteredKmerCounts,
     min_count: &u32,
     params: &PCRParams,
+    coverage_count_floor: u32,
     max_num_nodes: usize,
 ) -> Result<(
     StableDiGraph<DBNode, DBEdge>,
@@ -492,7 +501,13 @@ pub(super) fn extend_graph(
                 let edge_count = edge.count;
 
                 // Skip high-coverage edges (likely repetitive)
-                if (edge_count as f64) > (median_edge_count * params.high_coverage_ratio) {
+                if (edge_count as f64)
+                    > high_coverage_limit(
+                        median_edge_count,
+                        params.high_coverage_ratio,
+                        coverage_count_floor,
+                    )
+                {
                     continue;
                 }
 
@@ -672,6 +687,13 @@ mod tests {
         let budget = compute_node_budget(mid);
         assert!(budget > MIN_NODE_BUDGET);
         assert!(budget < DEFAULT_MAX_NUM_NODES);
+    }
+
+    #[test]
+    fn test_high_coverage_limit_uses_absolute_floor() {
+        assert_eq!(high_coverage_limit(2.0, 10.0, 104), 104.0);
+        assert_eq!(high_coverage_limit(100.0, 10.0, 104), 1000.0);
+        assert_eq!(high_coverage_limit(100.0, 2.0, 104), 200.0);
     }
 
     #[test]

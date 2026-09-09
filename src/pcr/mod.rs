@@ -34,6 +34,8 @@ mod graph;
 mod paths;
 mod primers;
 mod pruning;
+#[cfg(test)]
+mod threshold_tests;
 
 pub use graph::compute_node_budget;
 pub(crate) mod read_filter;
@@ -427,6 +429,165 @@ fn compute_coverage_thresholds(primer_count: u32, min_count: u32) -> Vec<u32> {
     thresholds
 }
 
+struct ThresholdEvaluation {
+    records: Vec<AssemblyRecord>,
+    failure_reason: Option<String>,
+}
+
+#[allow(clippy::too_many_arguments)]
+fn evaluate_threshold_graph(
+    mut pruned_graph: petgraph::stable_graph::StableDiGraph<DBNode, DBEdge>,
+    min_count: u32,
+    kmer_counts: &FilteredKmerCounts,
+    sample_name: &str,
+    params: &PCRParams,
+    dump_graph: bool,
+    output_directory: &str,
+    gene_reads: Option<&[&crate::io::ReadRecord]>,
+) -> Result<ThresholdEvaluation> {
+    let prune_start = std::time::Instant::now();
+    gene_info!(params.gene_name, "Pruning the assembly graph...");
+
+    pruning::remove_low_coverage_tips(
+        &mut pruned_graph,
+        &kmer_counts.get_k(),
+        params.tip_coverage_fraction,
+    );
+    pruning::reachability_pruning(&mut pruned_graph);
+    graph::annotate_coverage_ratios(&mut pruned_graph);
+
+    gene_info!(
+        params.gene_name,
+        "Done. Time to prune graph: {}",
+        format_duration(prune_start.elapsed())
+    );
+
+    if dump_graph || log::log_enabled!(log::Level::Trace) {
+        let dot_string = write_annotated_dot(&pruned_graph, kmer_counts);
+        let file_name = format!(
+            "{}{}_{}_{}.dot",
+            output_directory, sample_name, params.gene_name, min_count
+        );
+        trace!("Writing dot file {}", file_name);
+        let mut file = File::create(&file_name).context("Unable to create dot file")?;
+        file.write_all(dot_string.as_bytes())
+            .context("Unable to write dot file")?;
+    }
+
+    let threading_annotations = if let Some(reads) = gene_reads {
+        if !reads.is_empty() {
+            let threading_start = std::time::Instant::now();
+            gene_info!(
+                params.gene_name,
+                "Threading reads through assembly graph..."
+            );
+            let has_paired = reads
+                .iter()
+                .any(|read| read.mate != crate::io::Mate::Unpaired);
+            let annotations = if has_paired {
+                threading::thread_reads_paired(&pruned_graph, reads, kmer_counts.get_k())
+            } else {
+                threading::thread_reads(&pruned_graph, reads, kmer_counts.get_k())
+            };
+            let supported_edges = annotations
+                .edge_support
+                .values()
+                .filter(|support| support.read_support_total > 0)
+                .count();
+            gene_info!(
+                params.gene_name,
+                "Threading: {}/{} edges have read support, {} branch links, {} paired links. Time: {}",
+                supported_edges,
+                pruned_graph.edge_count(),
+                annotations.branch_links.len(),
+                annotations.paired_links.len(),
+                format_duration(threading_start.elapsed())
+            );
+            Some(annotations)
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+
+    let path_start = std::time::Instant::now();
+    gene_info!(
+        params.gene_name,
+        "Traversing the assembly graph to find paths from forward to reverse primers..."
+    );
+
+    let edge_preferences = threading_annotations
+        .as_ref()
+        .map(|annotations| bubble::resolve_bubbles(&pruned_graph, annotations));
+    let path_search = paths::search_assembly_paths(
+        &pruned_graph,
+        kmer_counts,
+        params,
+        edge_preferences.as_ref(),
+    );
+
+    gene_info!(
+        params.gene_name,
+        "Found {} paths. Time: {}",
+        path_search.paths.len(),
+        format_duration(path_start.elapsed())
+    );
+
+    if path_search.dfs_limit_reached {
+        gene_warn!(
+            params.gene_name,
+            "Path search reached the DFS state limit of {} at threshold {}.",
+            params.max_dfs_states,
+            min_count
+        );
+    }
+    if path_search.path_limit_reached {
+        gene_warn!(
+            params.gene_name,
+            "Path search reached the per-primer-pair path limit of {} at threshold {}.",
+            params.max_paths_per_pair,
+            min_count
+        );
+    }
+
+    if path_search.paths.is_empty() {
+        let failure_reason = if path_search.dfs_limit_reached {
+            "DFS state limit reached before a valid amplicon was found"
+        } else if path_search.path_limit_reached {
+            "path limit reached before a valid amplicon was found"
+        } else if path_search.end_below_min_length || path_search.max_length_reached {
+            "connectivity found but no path satisfied the requested length range"
+        } else {
+            "connectivity found but no start-to-end path remained after pruning"
+        };
+        return Ok(ThresholdEvaluation {
+            records: Vec::new(),
+            failure_reason: Some(failure_reason.to_string()),
+        });
+    }
+
+    let (records, _) = paths::generate_sequences_from_paths(
+        &pruned_graph,
+        path_search.paths,
+        kmer_counts,
+        sample_name,
+        params,
+        0,
+        threading_annotations.as_ref(),
+    )?;
+
+    let failure_reason = if records.is_empty() {
+        Some("connectivity found but no path produced a valid-length amplicon".to_string())
+    } else {
+        None
+    };
+    Ok(ThresholdEvaluation {
+        records,
+        failure_reason,
+    })
+}
+
 // The primary function for PCR
 pub fn do_pcr(
     kmer_counts: &FilteredKmerCounts,
@@ -438,6 +599,17 @@ pub fn do_pcr(
     max_num_nodes: usize,
 ) -> Result<PcrOutcome> {
     gene_info!(params.gene_name, "Running PCR");
+
+    if params.max_length < kmer_counts.get_k() {
+        return Ok(PcrOutcome {
+            records: Vec::new(),
+            failure_reason: Some(format!(
+                "max-length {} is shorter than k-mer length {}",
+                params.max_length,
+                kmer_counts.get_k()
+            )),
+        });
+    }
 
     gene_info!(params.gene_name, "Preprocessing primers");
     let (forward_primer_kmers, reverse_primer_kmers) =
@@ -563,7 +735,6 @@ pub fn do_pcr(
     debug!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
     let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
-    let amplicon_index: usize = 0;
     let mut failure_reason: Option<String> = Some("no path found".to_string());
 
     // Coverage threshold sweep: at each min_count, clone the seed graph fresh
@@ -572,14 +743,13 @@ pub fn do_pcr(
     // threshold step is independent — no incremental state across steps.
     gene_info!(
         params.gene_name,
-        "Extending graph with thresholds {:?} (global budget {})",
+        "Extending graph with thresholds {:?} (global budget {}, repeat edge count floor {})",
         coverage_thresholds,
-        max_num_nodes
+        max_num_nodes,
+        max_primer_count
     );
 
     let extend_start = std::time::Instant::now();
-    let mut found_path_signal = false;
-    let mut current_graph = seed_graph.clone();
     let _ = node_lookup;
 
     'threshold_loop: for (step_idx, min_count) in coverage_thresholds.iter().enumerate() {
@@ -607,142 +777,57 @@ pub fn do_pcr(
             kmer_counts,
             min_count,
             params,
+            max_primer_count,
             max_num_nodes,
         )?;
 
-        current_graph = final_graph;
+        let node_budget_reached = final_graph.node_count() >= max_num_nodes;
+        if node_budget_reached {
+            failure_reason = Some("node budget exceeded".to_string());
+        }
 
-        if found {
-            found_path_signal = true;
+        if !found {
+            continue;
+        }
+
+        let evaluation = evaluate_threshold_graph(
+            final_graph,
+            *min_count,
+            kmer_counts,
+            sample_name,
+            params,
+            dump_graph,
+            output_directory,
+            gene_reads.as_deref(),
+        )?;
+
+        if !evaluation.records.is_empty() {
+            gene_info!(
+                params.gene_name,
+                "Obtained {} PCR product(s) at threshold {}.",
+                evaluation.records.len(),
+                min_count
+            );
+            assembly_records_all.extend(evaluation.records);
+            failure_reason = None;
             break 'threshold_loop;
         }
-    }
 
-    if current_graph.node_count() >= max_num_nodes {
-        failure_reason = Some("node budget exceeded".to_string());
+        let evaluation_failure = evaluation
+            .failure_reason
+            .unwrap_or_else(|| "connectivity found but no valid amplicon was produced".to_string());
+        failure_reason = Some(if node_budget_reached {
+            format!("node budget exceeded; {}", evaluation_failure)
+        } else {
+            evaluation_failure
+        });
     }
 
     gene_info!(
         params.gene_name,
-        "Done. Time to extend graph: {}",
+        "Done. Time to extend and evaluate graphs: {}",
         format_duration(extend_start.elapsed())
     );
-
-    if found_path_signal {
-        // Prune and find paths on a copy
-        let mut pruned_graph = current_graph.clone();
-        let prune_start = std::time::Instant::now();
-        gene_info!(params.gene_name, "Pruning the assembly graph...");
-
-        pruning::remove_low_coverage_tips(
-            &mut pruned_graph,
-            &kmer_counts.get_k(),
-            params.tip_coverage_fraction,
-        );
-        pruning::reachability_pruning(&mut pruned_graph);
-        graph::annotate_coverage_ratios(&mut pruned_graph);
-
-        gene_info!(
-            params.gene_name,
-            "Done. Time to prune graph: {}",
-            format_duration(prune_start.elapsed())
-        );
-
-        if dump_graph || log::log_enabled!(log::Level::Trace) {
-            let dot_string = write_annotated_dot(&pruned_graph, kmer_counts);
-            let file_name = format!(
-                "{}{}_{}_{}.dot",
-                output_directory, sample_name, params.gene_name, params.min_count
-            );
-            trace!("Writing dot file {}", file_name);
-            let mut file = File::create(&file_name).context("Unable to create dot file")?;
-            file.write_all(dot_string.as_bytes())
-                .context("Unable to write dot file")?;
-        }
-
-        // Thread reads through the pruned graph (if available)
-        let threading_annotations = if let Some(ref reads) = gene_reads {
-            if !reads.is_empty() {
-                let start = std::time::Instant::now();
-                gene_info!(
-                    params.gene_name,
-                    "Threading reads through assembly graph..."
-                );
-                let has_paired = reads.iter().any(|r| r.mate != crate::io::Mate::Unpaired);
-                let ann = if has_paired {
-                    threading::thread_reads_paired(&pruned_graph, reads, kmer_counts.get_k())
-                } else {
-                    threading::thread_reads(&pruned_graph, reads, kmer_counts.get_k())
-                };
-                let supported_edges = ann
-                    .edge_support
-                    .values()
-                    .filter(|s| s.read_support_total > 0)
-                    .count();
-                gene_info!(
-                    params.gene_name,
-                    "Threading: {}/{} edges have read support, {} branch links, {} paired links. Time: {}",
-                    supported_edges,
-                    pruned_graph.edge_count(),
-                    ann.branch_links.len(),
-                    ann.paired_links.len(),
-                    format_duration(start.elapsed())
-                );
-                Some(ann)
-            } else {
-                None
-            }
-        } else {
-            None
-        };
-
-        let path_start = std::time::Instant::now();
-        gene_info!(
-            params.gene_name,
-            "Traversing the assembly graph to find paths from forward to reverse primers..."
-        );
-
-        let edge_preferences = threading_annotations
-            .as_ref()
-            .map(|ann| bubble::resolve_bubbles(&pruned_graph, ann));
-
-        let all_paths = paths::get_assembly_paths(
-            &pruned_graph,
-            kmer_counts,
-            params,
-            edge_preferences.as_ref(),
-        );
-
-        gene_info!(
-            params.gene_name,
-            "Found {} paths. Time: {}",
-            all_paths.len(),
-            format_duration(path_start.elapsed())
-        );
-
-        if !all_paths.is_empty() {
-            let (records, new_index) = paths::generate_sequences_from_paths(
-                &pruned_graph,
-                all_paths,
-                kmer_counts,
-                sample_name,
-                params,
-                amplicon_index,
-                threading_annotations.as_ref(),
-            )?;
-            let _ = new_index;
-
-            if !records.is_empty() {
-                gene_info!(
-                    params.gene_name,
-                    "Obtained {} PCR product(s).",
-                    records.len()
-                );
-                assembly_records_all.extend(records);
-                failure_reason = None;
-            }
-        }
-    }
 
     debug!(
         "      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large differences in value can indicate non-specific binding of one of the primers.",
@@ -761,9 +846,11 @@ pub fn do_pcr(
     gene_info!(params.gene_name, "Done.");
 
     if assembly_records_all.is_empty() {
+        let reported_failure = failure_reason.as_deref().unwrap_or("no path found");
         gene_info!(
             params.gene_name,
-            "No path was found from a forward primer binding site to a reverse primer binding site. Abandoning PCR."
+            "No valid PCR product was recovered: {}. Abandoning PCR.",
+            reported_failure
         );
         gene_info!(params.gene_name, "Suggested actions:");
         gene_info!(
@@ -1366,6 +1453,7 @@ mod tests {
             &filtered,
             &min_count,
             &params,
+            0,
             graph::DEFAULT_MAX_NUM_NODES,
         )
         .unwrap();

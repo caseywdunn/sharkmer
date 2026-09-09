@@ -28,6 +28,14 @@ const MAX_NUM_AMPLICONS: usize = 20;
 /// and was previously called three times per edge per path.
 pub type PathStep = (NodeIndex, Option<EdgeIndex>);
 
+pub(super) struct PathSearchResult {
+    pub paths: Vec<Vec<PathStep>>,
+    pub dfs_limit_reached: bool,
+    pub path_limit_reached: bool,
+    pub end_below_min_length: bool,
+    pub max_length_reached: bool,
+}
+
 /// Children-of-a-node, sorted by score, used as a DFS frame in `child_stack`.
 /// In a de Bruijn graph each node's outgoing edge set is bounded by ≤4 (one
 /// per possible 2-bit suffix base), so the inline capacity exactly matches
@@ -75,12 +83,22 @@ fn sorted_children(
 /// connects the previous node to this one. Recording the edge alongside
 /// the node lets downstream code skip three `find_edge` calls per edge
 /// per path in `generate_sequences_from_paths`.
+#[cfg(test)]
 pub fn get_assembly_paths(
     graph: &StableDiGraph<DBNode, DBEdge>,
     kmer_counts: &FilteredKmerCounts,
     params: &PCRParams,
     edge_preferences: Option<&AHashMap<EdgeIndex, f64>>,
 ) -> Vec<Vec<PathStep>> {
+    search_assembly_paths(graph, kmer_counts, params, edge_preferences).paths
+}
+
+pub(super) fn search_assembly_paths(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    kmer_counts: &FilteredKmerCounts,
+    params: &PCRParams,
+    edge_preferences: Option<&AHashMap<EdgeIndex, f64>>,
+) -> PathSearchResult {
     // A path of N nodes produces a sequence of (k-1) + (N-1) = N+k-2 bases
     // (first node contributes k-1 bases via its sub_kmer, each subsequent
     // node extends by one base). Inverting: N = seq_length - k + 2.
@@ -94,19 +112,18 @@ pub fn get_assembly_paths(
     // off-by-one here directly rejects valid amplicons at the user's
     // declared max-length.
     let k = kmer_counts.get_k();
-    let min_path_nodes = if params.min_length <= k {
-        1
-    } else {
-        params.min_length - k + 2
-    };
-    let max_path_nodes = if params.max_length <= k {
-        1
-    } else {
-        params.max_length - k + 2
-    };
+    let node_length_offset = k.saturating_sub(2);
+    let min_path_nodes = params.min_length.saturating_sub(node_length_offset).max(1);
+    let max_path_nodes = params.max_length.saturating_sub(node_length_offset).max(1);
 
     let end_nodes: AHashSet<NodeIndex> = get_end_nodes(graph).into_iter().collect();
-    let mut all_paths = Vec::new();
+    let mut result = PathSearchResult {
+        paths: Vec::new(),
+        dfs_limit_reached: false,
+        path_limit_reached: false,
+        end_below_min_length: false,
+        max_length_reached: false,
+    };
 
     for start in get_start_nodes(graph) {
         let mut paths_from_start = 0;
@@ -126,9 +143,12 @@ pub fn get_assembly_paths(
         let mut child_stack: Vec<ChildFrame> = vec![children];
 
         loop {
-            if paths_from_start >= params.max_paths_per_pair
-                || states_explored >= params.max_dfs_states
-            {
+            if paths_from_start >= params.max_paths_per_pair {
+                result.path_limit_reached = true;
+                break;
+            }
+            if states_explored >= params.max_dfs_states {
+                result.dfs_limit_reached = true;
                 break;
             }
 
@@ -149,17 +169,24 @@ pub fn get_assembly_paths(
                 let path_len = path.len();
 
                 // Check if we reached an end node with valid length
-                if end_nodes.contains(&neighbor) && path_len >= min_path_nodes {
-                    all_paths.push(path.clone());
-                    paths_from_start += 1;
-                    // Backtrack: undo push
-                    *visit_counts.get_mut(&neighbor).unwrap() -= 1;
-                    path.pop();
-                    continue;
+                if end_nodes.contains(&neighbor) {
+                    if path_len >= min_path_nodes && path_len <= max_path_nodes {
+                        result.paths.push(path.clone());
+                        paths_from_start += 1;
+                        *visit_counts.get_mut(&neighbor).unwrap() -= 1;
+                        path.pop();
+                        continue;
+                    }
+                    if path_len < min_path_nodes {
+                        result.end_below_min_length = true;
+                    } else {
+                        result.max_length_reached = true;
+                    }
                 }
 
                 // Don't extend past max length
                 if path_len >= max_path_nodes {
+                    result.max_length_reached = true;
                     *visit_counts.get_mut(&neighbor).unwrap() -= 1;
                     path.pop();
                     continue;
@@ -182,7 +209,7 @@ pub fn get_assembly_paths(
         }
     }
 
-    all_paths
+    result
 }
 
 /// Extract sequences from graph paths, producing FASTA assembly records.
@@ -228,11 +255,12 @@ pub(super) fn generate_sequences_from_paths(
             }
         }
 
-        if sequence.len() < params.min_length {
+        if sequence.len() < params.min_length || sequence.len() > params.max_length {
             debug!(
-                "  Path length is {} bp, shorter than min-length {}. Skipping.",
+                "  Path length is {} bp, outside requested range {}-{}. Skipping.",
                 sequence.len(),
-                params.min_length
+                params.min_length,
+                params.max_length
             );
             continue;
         }
@@ -590,8 +618,138 @@ mod tests {
 
         let mut params = test_params(0, 100);
         params.max_dfs_states = 0; // no exploration allowed
-        let paths = get_assembly_paths(&graph, &fkc, &params, None);
-        assert!(paths.is_empty());
+        let result = search_assembly_paths(&graph, &fkc, &params, None);
+        assert!(result.paths.is_empty());
+        assert!(result.dfs_limit_reached);
+        assert!(!result.path_limit_reached);
+    }
+
+    #[test]
+    fn test_path_budget_limits_exploration() {
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(0, true, false));
+        let end = graph.add_node(mk_node(2, false, true));
+        graph.add_edge(start, end, mk_edge(10));
+
+        let mut counts = crate::kmer::KmerCounts::new(&3);
+        counts.insert(&0, &10);
+        let filtered = counts.filtered_view(1);
+
+        let mut params = test_params(0, 100);
+        params.max_paths_per_pair = 0;
+        let result = search_assembly_paths(&graph, &filtered, &params, None);
+        assert!(result.paths.is_empty());
+        assert!(!result.dfs_limit_reached);
+        assert!(result.path_limit_reached);
+    }
+
+    #[test]
+    fn test_length_search_diagnostics() {
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(0, true, false));
+        let middle = graph.add_node(mk_node(1, false, false));
+        let end = graph.add_node(mk_node(2, false, true));
+        graph.add_edge(start, middle, mk_edge(10));
+        graph.add_edge(middle, end, mk_edge(10));
+
+        let mut counts = crate::kmer::KmerCounts::new(&3);
+        counts.insert(&0, &10);
+        let filtered = counts.filtered_view(1);
+
+        let too_short = search_assembly_paths(&graph, &filtered, &test_params(5, 10), None);
+        assert!(too_short.paths.is_empty());
+        assert!(too_short.end_below_min_length);
+
+        let too_long = search_assembly_paths(&graph, &filtered, &test_params(0, 3), None);
+        assert!(too_long.paths.is_empty());
+        assert!(too_long.max_length_reached);
+    }
+
+    #[test]
+    fn test_sequence_lengths_at_k_boundary_are_valid() {
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(0, true, false));
+        let middle = graph.add_node(mk_node(1, false, false));
+        let end = graph.add_node(mk_node(2, false, true));
+        graph.add_edge(start, middle, mk_edge(10));
+        graph.add_edge(middle, end, mk_edge(10));
+        graph.add_edge(start, end, mk_edge(10));
+
+        let mut counts = crate::kmer::KmerCounts::new(&3);
+        counts.insert(&0, &10);
+        let filtered = counts.filtered_view(1);
+        let length_k = search_assembly_paths(&graph, &filtered, &test_params(3, 3), None);
+        let length_k_plus_one = search_assembly_paths(&graph, &filtered, &test_params(4, 4), None);
+
+        assert_eq!(length_k.paths.len(), 1);
+        assert_eq!(length_k_plus_one.paths.len(), 1);
+    }
+
+    #[test]
+    fn test_sequence_generation_rejects_length_above_max() {
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(0, true, false));
+        let middle = graph.add_node(mk_node(1, false, false));
+        let end = graph.add_node(mk_node(2, false, true));
+        let first_edge = graph.add_edge(start, middle, mk_edge(10));
+        let second_edge = graph.add_edge(middle, end, mk_edge(10));
+
+        let mut counts = crate::kmer::KmerCounts::new(&3);
+        counts.insert(&0, &10);
+        let filtered = counts.filtered_view(1);
+        let path = vec![
+            (start, None),
+            (middle, Some(first_edge)),
+            (end, Some(second_edge)),
+        ];
+
+        let (records, _) = generate_sequences_from_paths(
+            &graph,
+            vec![path],
+            &filtered,
+            "test",
+            &test_params(0, 3),
+            0,
+            None,
+        )
+        .unwrap();
+
+        assert!(records.is_empty());
+    }
+
+    #[test]
+    fn test_end_above_max_is_not_returned_by_search() {
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(0, true, false));
+        let end = graph.add_node(mk_node(1, false, true));
+        graph.add_edge(start, end, mk_edge(10));
+
+        let mut counts = crate::kmer::KmerCounts::new(&3);
+        counts.insert(&0, &10);
+        let filtered = counts.filtered_view(1);
+        let result = search_assembly_paths(&graph, &filtered, &test_params(0, 2), None);
+
+        assert!(result.paths.is_empty());
+        assert!(result.max_length_reached);
+    }
+
+    #[test]
+    fn test_end_below_min_does_not_stop_longer_valid_path() {
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(0, true, false));
+        let short_end = graph.add_node(mk_node(1, false, true));
+        let valid_end = graph.add_node(mk_node(2, false, true));
+        graph.add_edge(start, short_end, mk_edge(10));
+        graph.add_edge(short_end, valid_end, mk_edge(10));
+
+        let mut counts = crate::kmer::KmerCounts::new(&3);
+        counts.insert(&0, &10);
+        let filtered = counts.filtered_view(1);
+        let result = search_assembly_paths(&graph, &filtered, &test_params(4, 4), None);
+
+        assert_eq!(result.paths.len(), 1);
+        assert!(result.end_below_min_length);
+        assert_eq!(result.paths[0].last().unwrap().0, valid_end);
     }
 
     /// sorted_children returns edges in ascending score order (so pop gives highest).
