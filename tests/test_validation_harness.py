@@ -11,6 +11,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 from sharkmer_validate import blast_references, report, results, runner
+import bootstrap_from_runs
 
 
 class BlastClassificationTests(unittest.TestCase):
@@ -228,6 +229,177 @@ class CurrentRunManifestTests(unittest.TestCase):
                 )
             self.assertFalse(run["success"])
             self.assertIn("input-source provenance", run["failure"]["message"])
+
+
+class OutputTransactionTests(unittest.TestCase):
+    def write_transaction(self, directory, sample="sample", successful=True):
+        stats = {
+            "sharkmer_version": "3.2.0-dev",
+            "sample": sample,
+            "kmer_length": 19,
+            "run_id": "unique-current-run",
+            "run_status": "complete",
+            "output_manifest": f"{sample}.manifest.yaml",
+            "pcr_results": [],
+        }
+        files = []
+        if successful:
+            fasta_name = f"{sample}_panel_gene.fasta"
+            (directory / fasta_name).write_text(">record gene=panel_gene product=0\nACGT\n")
+            files.append(fasta_name)
+            stats["pcr_results"].append({
+                "gene_name": "panel_gene", "status": "success", "n_products": 1,
+                "product_lengths": [4], "output_file": fasta_name,
+            })
+        stats_name = f"{sample}.stats.yaml"
+        (directory / stats_name).write_text(yaml.safe_dump(stats))
+        files.append(stats_name)
+        manifest = {
+            "schema_version": 1, "producer": "sharkmer", "sample": sample,
+            "run_id": stats["run_id"], "status": "complete",
+            "files": [
+                {"path": file_name, "sha256": runner._sha256_file(directory / file_name)}
+                for file_name in files
+            ],
+        }
+        (directory / stats["output_manifest"]).write_text(yaml.safe_dump(manifest))
+        return stats, manifest
+
+    def test_complete_transaction_excludes_unrelated_stale_products(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.write_transaction(root)
+            stale = root / "sample_panel_stale.fasta"
+            stale.write_text(">stale\nAAAA\n")
+            products = runner.parse_fasta_products("sample", root)
+            self.assertEqual([product["gene"] for product in products], ["panel_gene"])
+            self.assertTrue(stale.exists())
+
+    def test_interrupted_and_failed_transactions_are_not_success(self):
+        for status in ("in_progress", "publishing", "failed"):
+            with self.subTest(status=status), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                stats, manifest = self.write_transaction(root)
+                manifest["status"] = status
+                (root / stats["output_manifest"]).write_text(yaml.safe_dump(manifest))
+                with self.assertRaisesRegex(ValueError, "not complete"):
+                    runner.parse_fasta_products("sample", root)
+                with self.assertRaisesRegex(ValueError, "not complete"):
+                    runner.parse_fasta_products("sample", root, ["sample_panel_gene.fasta"])
+
+    def test_matching_completed_run_identity_is_required(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            stats, manifest = self.write_transaction(root)
+            manifest["run_id"] = "previous-run"
+            (root / stats["output_manifest"]).write_text(yaml.safe_dump(manifest))
+            with self.assertRaisesRegex(ValueError, "different or incomplete"):
+                runner._validate_output_manifest(stats, "sample", root)
+
+    def test_current_stats_and_products_are_checksummed(self):
+        for file_name in ("sample.stats.yaml", "sample_panel_gene.fasta"):
+            with self.subTest(file_name=file_name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                stats, _ = self.write_transaction(root)
+                with (root / file_name).open("a") as artifact:
+                    artifact.write("\n")
+                with self.assertRaisesRegex(ValueError, "checksum mismatch"):
+                    runner._validate_output_manifest(stats, "sample", root)
+
+    def test_receipt_set_must_match_current_stats_exactly(self):
+        for mutation in ("missing", "extra", "duplicate", "traversal"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                stats, manifest = self.write_transaction(root)
+                if mutation == "missing":
+                    manifest["files"].pop()
+                elif mutation == "extra":
+                    manifest["files"].append({"path": "unrelated.txt", "sha256": "0" * 64})
+                elif mutation == "duplicate":
+                    manifest["files"].append(manifest["files"][0])
+                else:
+                    manifest["files"][0]["path"] = "../outside.fasta"
+                (root / stats["output_manifest"]).write_text(yaml.safe_dump(manifest))
+                with self.assertRaises(ValueError):
+                    runner._validate_output_manifest(stats, "sample", root)
+
+    def test_successful_output_path_must_belong_to_its_sample_and_gene(self):
+        for file_name in ("foreign.txt", "other_panel_gene.fasta", "sample_other.fasta"):
+            with self.subTest(file_name=file_name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                stats, manifest = self.write_transaction(root)
+                (root / "sample_panel_gene.fasta").rename(root / file_name)
+                stats["pcr_results"][0]["output_file"] = file_name
+                (root / "sample.stats.yaml").write_text(yaml.safe_dump(stats))
+                manifest["files"][0]["path"] = file_name
+                manifest["files"][1]["sha256"] = runner._sha256_file(root / "sample.stats.yaml")
+                (root / stats["output_manifest"]).write_text(yaml.safe_dump(manifest))
+                with self.assertRaisesRegex(ValueError, "sample and gene"):
+                    runner._validate_output_manifest(stats, "sample", root)
+
+    def test_symlinks_are_not_owned_output_files(self):
+        for file_name in ("sample.manifest.yaml", "sample.stats.yaml", "sample_panel_gene.fasta"):
+            with self.subTest(file_name=file_name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                stats, _ = self.write_transaction(root)
+                original = root / file_name
+                target = root / "unrelated-preserved"
+                original.rename(target)
+                original.symlink_to(target)
+                with self.assertRaises(ValueError):
+                    runner._validate_output_manifest(stats, "sample", root)
+                self.assertTrue(target.exists())
+
+    def test_new_versions_require_a_transaction_and_old_snapshots_remain_readable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            stats = {"sharkmer_version": "3.2.0-dev", "sample": "sample"}
+            with self.assertRaisesRegex(ValueError, "manifest is missing"):
+                runner._validate_output_manifest(stats, "sample", root)
+            stats["sharkmer_version"] = "3.1.0"
+            self.assertIsNone(runner._validate_output_manifest(stats, "sample", root))
+
+    def test_counting_only_transaction_has_only_stats_receipt(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            stats, manifest = self.write_transaction(root, successful=False)
+            self.assertEqual(runner._validate_output_manifest(stats, "sample", root), manifest)
+            self.assertEqual(runner.parse_fasta_products("sample", root), [])
+
+    def test_bootstrap_does_not_prefer_old_root_fasta_over_interrupted_invocation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            prefix = "panel_accession_1k"
+            (root / f"{prefix}_panel_gene.fasta").write_text(">stale\nAAAA\n")
+            invocation = root / f"{prefix}_new"
+            invocation.mkdir()
+            stats, manifest = self.write_transaction(invocation, sample=prefix)
+            manifest["status"] = "publishing"
+            (invocation / stats["output_manifest"]).write_text(yaml.safe_dump(manifest))
+            panel = {
+                "name": "panel", "primers": [],
+                "validation": {"samples": [{"accession": "accession", "max_reads": [1000]}]},
+            }
+            with self.assertRaisesRegex(ValueError, "not complete"):
+                bootstrap_from_runs.collect_amplicons_from_runs(panel, root, "panel")
+
+    def test_non_mapping_stats_are_rejected_cleanly(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "sample.stats.yaml"
+            path.write_text("- not-a-stats-mapping\n")
+            with self.assertRaisesRegex(ValueError, "must be a mapping"):
+                runner._parse_stats_yaml(path)
+
+    def test_transaction_change_during_product_reading_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            _, manifest = self.write_transaction(root)
+            changed_manifest = {**manifest, "run_id": "a-new-run"}
+            with mock.patch.object(
+                runner, "_validate_output_manifest", side_effect=[manifest, changed_manifest]
+            ):
+                with self.assertRaisesRegex(ValueError, "changed while products"):
+                    runner.parse_fasta_products("sample", root)
 
 
 class ExecutableProvenanceTests(unittest.TestCase):

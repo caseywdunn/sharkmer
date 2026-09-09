@@ -121,6 +121,22 @@ The `--max-reads 1000000` argument indicates that the first million reads (indiv
 
 This analysis will generate one fasta file for each primer pair, named `{sample}_{gene}.fasta` (e.g., `Stenogorgia_casta_18S.fasta`). If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found. A YAML stats file (`{sample}.stats.yaml`) is also produced with run statistics and per-gene PCR results.
 
+The unreleased v3.2 development version also writes `{sample}.manifest.yaml`.
+Only a manifest with `status: complete`, a matching stats `run_id`, and valid
+SHA-256 receipts identifies a completed current run. A completed run can still
+report failed genes. Do not infer success by globbing FASTA files after an
+interruption: `in_progress`, `publishing`, and `failed` runs are not complete.
+
+Rerunning the same sample/output directory invalidates its previous owned
+FASTA and stats files, including products from genes no longer selected.
+Modified, unowned, legacy, and symlink collisions are preserved and rejected
+rather than overwritten; use a fresh directory to retain previous results or
+when upgrading an old output directory. Concurrent runs with the same output
+identity are serialized. Histograms and diagnostic DOT files are outside this
+transaction and are not covered by its completion or cleanup guarantees.
+Argument-validation failures occur before a new transaction starts and leave
+previous results untouched; always check the command's exit status.
+
 Reads downloaded via `--ena` are cached (SHA-256 verified) under a shared cache directory so repeated runs on the same accession do not re-download. Use `--cache-dir` to override the location, `--no-cache` to stream directly without touching the cache, or `--clear-cache` to delete cached reads.
 
 You can see all the available built-in PCR panels with:

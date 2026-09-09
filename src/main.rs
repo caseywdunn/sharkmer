@@ -11,6 +11,7 @@ mod cli;
 mod format;
 mod io;
 mod kmer;
+mod output;
 mod pcr;
 mod stats;
 
@@ -90,6 +91,7 @@ fn main() -> Result<()> {
     // Create the output directory now that we know this is not a dry run
     std::fs::create_dir_all(&directory)
         .with_context(|| format!("Failed to create output directory: {}", directory))?;
+    let mut output_transaction = output::OutputTransaction::begin(&args.outdir, &sample)?;
 
     // Set the number of threads for Rayon to use
     rayon::ThreadPoolBuilder::new()
@@ -211,6 +213,7 @@ fn main() -> Result<()> {
         show_progress,
         threading_reads.as_deref(),
         node_budget_global,
+        &mut output_transaction,
     )?;
     let pcr_s = pcr_start.elapsed().as_secs_f64();
 
@@ -220,6 +223,9 @@ fn main() -> Result<()> {
         sharkmer_version: env!("CARGO_PKG_VERSION").to_string(),
         command,
         sample: sample.clone(),
+        run_id: output_transaction.run_id().to_string(),
+        output_manifest: output_transaction.manifest_basename().to_string(),
+        run_status: "complete".to_string(),
         input_source,
         kmer_length: args.k,
         chunks: args.chunks,
@@ -242,7 +248,8 @@ fn main() -> Result<()> {
         pcr_results,
     };
 
-    stats::write_stats(&run_stats, &directory, &sample)?;
+    stats::write_stats(&run_stats, &mut output_transaction)?;
+    output_transaction.commit()?;
 
     // Print final summary
     stats::print_summary(&run_stats, start_run.elapsed());

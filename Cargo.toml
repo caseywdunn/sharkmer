@@ -40,6 +40,7 @@ indicatif = { version = "0.17" }
 ureq = { version = "2" }
 peak_alloc = { version = "0.3" }
 dirs = { version = "6" }
+fs2 = { version = "0.4" }
 sha2 = { version = "0.10" }
 tempfile = { version = "3" }
 smallvec = { version = "1" }

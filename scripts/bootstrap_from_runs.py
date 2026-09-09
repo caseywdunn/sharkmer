@@ -199,24 +199,19 @@ def collect_amplicons_from_runs(
             if current_run is not None:
                 products = current_run.get("genes", []) if current_run.get("success") else []
             else:
-                root_products = runner.parse_fasta_products(prefix, run_dir)
                 manifest_paths = sorted(
-                    run_dir.glob(f"{prefix}_*/{prefix}.stats.yaml"),
+                    [
+                        *run_dir.glob(f"{prefix}_*/{prefix}.stats.yaml"),
+                        *run_dir.glob(f"{prefix}_*/{prefix}.manifest.yaml"),
+                    ],
                     key=lambda path: path.stat().st_mtime,
                     reverse=True,
                 )
-                if root_products or not manifest_paths:
-                    products = root_products
+                if not manifest_paths:
+                    products = runner.parse_fasta_products(prefix, run_dir)
                 else:
-                    manifest_path = manifest_paths[0]
-                    manifest = runner._parse_stats_yaml(manifest_path)
-                    output_files = [
-                        entry["output_file"]
-                        for entry in manifest.get("pcr_results", [])
-                        if entry.get("status") == "success" and entry.get("output_file")
-                    ]
                     products = runner.parse_fasta_products(
-                        prefix, manifest_path.parent, output_files
+                        prefix, manifest_paths[0].parent
                     )
             if not products:
                 continue

@@ -1,6 +1,7 @@
 use crate::format::{format_bytes, format_count, format_duration};
-use crate::io::{warn_if_exists, write_fasta_record};
+use crate::io::write_fasta_record;
 use crate::kmer::KmerCounts;
+use crate::output::OutputTransaction;
 use crate::pcr;
 use anyhow::{Context, Result};
 use indicatif::{ProgressBar, ProgressStyle};
@@ -45,6 +46,9 @@ pub(crate) struct RunStats {
     pub(crate) sharkmer_version: String,
     pub(crate) command: String,
     pub(crate) sample: String,
+    pub(crate) run_id: String,
+    pub(crate) output_manifest: String,
+    pub(crate) run_status: String,
     pub(crate) input_source: InputSourceStats,
     pub(crate) kmer_length: usize,
     pub(crate) chunks: usize,
@@ -76,6 +80,7 @@ pub(crate) fn run_pcr(
     show_progress: bool,
     reads: Option<&[crate::io::ReadRecord]>,
     max_nodes: usize,
+    output_transaction: &mut OutputTransaction,
 ) -> Result<Vec<PcrGeneResult>> {
     let mut pcr_results: Vec<PcrGeneResult> = Vec::new();
 
@@ -123,30 +128,24 @@ pub(crate) fn run_pcr(
         let outcome = fasta_result?;
 
         if !outcome.records.is_empty() {
-            let fasta_path = format!("{}{}_{}.fasta", directory, sample, pcr_params.gene_name);
-            warn_if_exists(&fasta_path);
-            let mut file = std::fs::File::create(&fasta_path)
-                .with_context(|| format!("Failed to create FASTA file: {}", fasta_path))?;
+            let fasta_basename = format!("{}_{}.fasta", sample, pcr_params.gene_name);
 
             let product_lengths: Vec<usize> =
                 outcome.records.iter().map(|r| r.seq().len()).collect();
 
-            for record in outcome.records.iter() {
-                write_fasta_record(&mut file, record).context("Failed to write FASTA record")?;
-            }
+            output_transaction.stage_file(&fasta_basename, |file| {
+                for record in &outcome.records {
+                    write_fasta_record(file, record).context("Failed to write FASTA record")?;
+                }
+                Ok(())
+            })?;
 
             pcr_results.push(PcrGeneResult {
                 gene_name: pcr_params.gene_name.clone(),
                 status: "success".to_string(),
                 n_products: product_lengths.len(),
                 product_lengths,
-                output_file: Some(
-                    std::path::Path::new(&fasta_path)
-                        .file_name()
-                        .context("FASTA output path has no file name")?
-                        .to_string_lossy()
-                        .into_owned(),
-                ),
+                output_file: Some(fasta_basename),
                 failure_reason: None,
             });
         } else {
@@ -209,13 +208,15 @@ pub(crate) fn run_pcr(
 }
 
 /// Write run statistics as a YAML file.
-pub(crate) fn write_stats(run_stats: &RunStats, directory: &str, sample: &str) -> Result<()> {
+pub(crate) fn write_stats(
+    run_stats: &RunStats,
+    output_transaction: &mut OutputTransaction,
+) -> Result<()> {
     info!("Writing stats to file...");
-    let stats_path = format!("{}{}.stats.yaml", directory, sample);
-    warn_if_exists(&stats_path);
-    let file_stats = std::fs::File::create(&stats_path).context("Failed to create stats file")?;
-    serde_yaml_ng::to_writer(file_stats, run_stats).context("Failed to write stats YAML")?;
-    Ok(())
+    let stats_basename = format!("{}.stats.yaml", run_stats.sample);
+    output_transaction.stage_file(&stats_basename, |file| {
+        serde_yaml_ng::to_writer(file, run_stats).context("Failed to write stats YAML")
+    })
 }
 
 /// Print the final summary line to stderr.

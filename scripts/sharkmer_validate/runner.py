@@ -297,12 +297,38 @@ def parse_fasta_products(
 ) -> list:
     """Parse FASTA products, optionally restricted to a stats manifest."""
     products = []
-    if output_files is None:
-        fasta_paths = sorted(output_dir.glob(f"{sample_prefix}_*.fasta"))
-    else:
-        fasta_paths = [output_dir / file_name for file_name in output_files]
+    transaction = None
+    run_stats = None
+    stats_path = output_dir / f"{sample_prefix}.stats.yaml"
+    manifest_path = output_dir / f"{sample_prefix}.manifest.yaml"
+    if (
+        stats_path.exists() or stats_path.is_symlink()
+        or manifest_path.exists() or manifest_path.is_symlink()
+    ):
+        run_stats = _parse_stats_yaml(stats_path)
+        if run_stats.get("sample") != sample_prefix:
+            raise ValueError("Stats sample does not match requested products")
+        transaction = _validate_output_manifest(run_stats, sample_prefix, output_dir)
+        current_files = [
+            entry["output_file"]
+            for entry in run_stats.get("pcr_results", [])
+            if entry.get("status") == "success"
+        ]
+        if output_files is None:
+            output_files = current_files
+        elif any(file_name not in current_files for file_name in output_files):
+            raise ValueError("Requested FASTA is not in the current-run stats")
+    fasta_paths = (
+        sorted(output_dir.glob(f"{sample_prefix}_*.fasta"))
+        if output_files is None
+        else [output_dir / file_name for file_name in output_files]
+    )
     for fasta_path in fasta_paths:
-        if not fasta_path.is_file() or fasta_path.parent.resolve() != output_dir.resolve():
+        if (
+            fasta_path.is_symlink()
+            or not fasta_path.is_file()
+            or fasta_path.parent.resolve() != output_dir.resolve()
+        ):
             raise ValueError(f"Manifest FASTA is missing or outside run directory: {fasta_path}")
         gene_name = fasta_path.stem.replace(f"{sample_prefix}_", "", 1)
         sequence_records = []
@@ -364,6 +390,9 @@ def parse_fasta_products(
             }
         )
 
+    if transaction is not None:
+        if _validate_output_manifest(run_stats, sample_prefix, output_dir) != transaction:
+            raise ValueError("Output transaction changed while products were read")
     return products
 
 
@@ -386,13 +415,15 @@ def parse_stats_file(stats_path: Path) -> dict:
 
 def _parse_stats_yaml(stats_path: Path) -> dict:
     """Parse the complete sharkmer stats manifest."""
-    if not stats_path.exists():
-        raise ValueError(f"Current-run stats manifest is missing: {stats_path}")
+    if stats_path.is_symlink() or not stats_path.is_file():
+        raise ValueError(f"Current-run stats manifest is missing or not a regular file: {stats_path}")
     try:
         with open(stats_path) as f:
             data = yaml.safe_load(f) or {}
     except Exception as error:
         raise ValueError(f"Current-run stats manifest is malformed: {error}") from error
+    if not isinstance(data, dict):
+        raise ValueError("Current-run stats manifest must be a mapping")
     if not isinstance(data.get("pcr_results", []), list):
         raise ValueError("Current-run stats manifest has invalid pcr_results")
     return data
@@ -516,6 +547,85 @@ def _validate_stats_manifest(
             raise ValueError(f"Failed gene reports products: {entry.get('gene_name')}")
     if len(output_files) != len(set(output_files)):
         raise ValueError("Stats manifest contains duplicate FASTA paths")
+
+
+def _validate_output_manifest(stats: dict, sample_prefix: str, output_dir: Path) -> dict | None:
+    manifest_name = f"{sample_prefix}.manifest.yaml"
+    manifest_path = output_dir / manifest_name
+    version = re.match(r"(\d+)\.(\d+)", str(stats.get("sharkmer_version", "")))
+    requires_transaction = version is not None and tuple(map(int, version.groups())) >= (3, 2)
+    has_transaction = any(field in stats for field in ("run_id", "run_status", "output_manifest"))
+    if not (
+        requires_transaction or has_transaction or manifest_path.exists() or manifest_path.is_symlink()
+    ):
+        return None
+    if manifest_path.is_symlink() or not manifest_path.is_file():
+        raise ValueError("Current-run output manifest is missing or is not a regular file")
+    manifest = _parse_stats_yaml(manifest_path)
+    if (
+        type(manifest.get("schema_version")) is not int
+        or manifest["schema_version"] != 1
+        or manifest.get("producer") != "sharkmer"
+        or manifest.get("sample") != sample_prefix
+    ):
+        raise ValueError("Output manifest schema, producer, or sample is invalid")
+    if manifest.get("status") != "complete":
+        raise ValueError(f"Output transaction is not complete: {manifest.get('status')}")
+    if (
+        stats.get("output_manifest") != manifest_name
+        or stats.get("run_status") != "complete"
+        or not isinstance(stats.get("run_id"), str)
+        or not stats["run_id"]
+        or manifest.get("run_id") != stats["run_id"]
+    ):
+        raise ValueError("Stats and output manifest identify different or incomplete runs")
+    expected_files = {f"{sample_prefix}.stats.yaml"}
+    for entry in stats.get("pcr_results", []):
+        if entry.get("status") == "success":
+            output_file = entry.get("output_file")
+            gene_name = entry.get("gene_name")
+            if (
+                not isinstance(gene_name, str) or not gene_name
+                or output_file != f"{sample_prefix}_{gene_name}.fasta"
+            ):
+                raise ValueError("Successful output path does not match its sample and gene")
+            if output_file in expected_files:
+                raise ValueError("Stats has missing or duplicate successful output paths")
+            expected_files.add(output_file)
+    receipts = manifest.get("files")
+    if not isinstance(receipts, list):
+        raise ValueError("Output manifest lacks a file receipt list")
+    observed_files = set()
+    for receipt in receipts:
+        if not isinstance(receipt, dict):
+            raise ValueError("Output file receipt must be a mapping")
+        file_name = receipt.get("path")
+        checksum = receipt.get("sha256")
+        if (
+            not isinstance(file_name, str)
+            or not file_name
+            or file_name in {".", ".."}
+            or Path(file_name).name != file_name
+            or "\\" in file_name
+            or file_name not in expected_files
+            or file_name in observed_files
+        ):
+            raise ValueError(f"Output manifest has an unsafe, duplicate, or unexpected path: {file_name}")
+        if not isinstance(checksum, str) or re.fullmatch(r"[0-9a-f]{64}", checksum) is None:
+            raise ValueError(f"Output manifest has an invalid checksum: {file_name}")
+        file_path = output_dir / file_name
+        if file_path.is_symlink() or not file_path.is_file():
+            raise ValueError(f"Output receipt refers to a missing or non-regular file: {file_name}")
+        try:
+            actual_checksum = _sha256_file(file_path)
+        except OSError as error:
+            raise ValueError(f"Cannot verify output receipt for {file_name}: {error}") from error
+        if actual_checksum != checksum:
+            raise ValueError(f"Output checksum mismatch: {file_name}")
+        observed_files.add(file_name)
+    if observed_files != expected_files:
+        raise ValueError("Output manifest receipt set disagrees with current-run stats")
+    return manifest
 
 
 # ---------------------------------------------------------------------------
@@ -690,6 +800,7 @@ def run_sharkmer(
             benchmark_scope,
             expected_command=cmd,
         )
+        output_transaction = _validate_output_manifest(run_stats, sample_prefix, invocation_dir)
         input_provenance["observed_n_reads"] = run_stats.get("n_reads_read")
         input_provenance["observed_n_bases"] = run_stats.get("n_bases_read")
         source_plan = run_stats.get("input_source")
@@ -732,6 +843,8 @@ def run_sharkmer(
             if gene_result.get("status") == "success"
         ]
         products = parse_fasta_products(sample_prefix, invocation_dir, output_files)
+        if _validate_output_manifest(run_stats, sample_prefix, invocation_dir) != output_transaction:
+            raise ValueError("Output transaction changed while products were read")
     except (KeyError, TypeError, ValueError) as error:
         print(f"  ERROR: sharkmer output manifest invalid: {error}")
         return {
