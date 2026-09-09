@@ -40,7 +40,6 @@ mod repeat_tests;
 mod threshold_tests;
 
 pub use graph::compute_node_budget;
-pub(crate) mod read_filter;
 pub(crate) mod threading;
 
 // Constants that may require tuning
@@ -450,7 +449,7 @@ fn evaluate_threshold_graph(
     params: &PCRParams,
     dump_graph: bool,
     output_directory: &str,
-    gene_reads: Option<&[&crate::io::ReadRecord]>,
+    reads: Option<&[crate::io::ReadRecord]>,
 ) -> Result<ThresholdEvaluation> {
     let unresolved_repeat_sub_kmers =
         graph::unresolved_repeat_sub_kmers(&pruned_graph, extension_repeat_markers);
@@ -486,7 +485,7 @@ fn evaluate_threshold_graph(
             .context("Unable to write dot file")?;
     }
 
-    let threading_annotations = if let Some(reads) = gene_reads {
+    let threading_annotations = if let Some(reads) = reads {
         if !reads.is_empty() {
             let threading_start = std::time::Instant::now();
             gene_info!(
@@ -684,23 +683,6 @@ pub fn do_pcr(
         });
     }
 
-    // Filter reads to those relevant to this gene (if reads available)
-    let gene_reads: Option<Vec<&crate::io::ReadRecord>> = reads.map(|all_reads| {
-        let filter = read_filter::PrimerReadFilter::from_primer_kmers(
-            &forward_primer_kmers,
-            &reverse_primer_kmers,
-            kmer_counts.get_k(),
-        );
-        let filtered = filter.filter_reads(all_reads);
-        gene_info!(
-            params.gene_name,
-            "Read threading: {} of {} reads match primer kmers",
-            filtered.len(),
-            all_reads.len()
-        );
-        filtered
-    });
-
     // Log forward primer kmers for diagnostics
     let mut sorted_forward: Vec<(u64, u32)> =
         forward_primer_kmers.iter().map(|(&k, &v)| (k, v)).collect();
@@ -848,7 +830,7 @@ pub fn do_pcr(
             params,
             dump_graph,
             output_directory,
-            gene_reads.as_deref(),
+            reads,
         )?;
 
         if !evaluation.records.is_empty() {

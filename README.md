@@ -215,6 +215,20 @@ for a later release. See [#127](https://github.com/caseywdunn/sharkmer/issues/12
 for the historical hydrozoan 16S motivation; changing k is not a substitute
 for detecting uncertain repeat lengths.
 
+### Optional read threading
+
+`--read-threading` replays the selected reads and maps both orientations to
+each target graph, including reads from the interior of a target. Invalid
+bases break continuity: they cannot create a branch link across a gap.
+Repeated visits contribute support once per read, or once per fragment when
+paired mates overlap. Equally supported opposite-strand mappings contribute
+only their common local evidence, not an arbitrarily chosen branch.
+
+This remains an opt-in heuristic, not proof of a complete haplotype. Paired
+long-range links are not yet used in path selection. Replay still retains
+reads in memory and can add substantial time and RAM; bounded replay is
+planned for v4.0. Stdin cannot currently be replayed for threading.
+
 ### Working with complex samples
 
 Some samples contain multiple similar templates that you want to recover as distinct products rather than collapse into a single consensus: metagenomic samples with several related taxa, heterozygous individuals where allelic variants matter, multi-copy gene families where paralogs differ by a handful of bases, or pooled samples. The defaults in sharkmer are tuned for the common "one sample, one product per gene" case and will actively work against you here — they stop at the first product and aggressively collapse near-identical paths.

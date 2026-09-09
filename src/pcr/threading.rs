@@ -1,69 +1,42 @@
-// pcr/threading.rs — Read threading through assembly graphs
-//
-// Maps reads to graph edges via maximal contiguous runs of adjacent
-// graph kmers. Annotates edges with read support counts and records
-// branch-point phasing links.
-
-use ahash::AHashMap;
+use ahash::{AHashMap, AHashSet};
 use petgraph::Direction;
 use petgraph::graph::EdgeIndex;
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::visit::{EdgeRef, IntoEdgeReferences};
-use smallvec::{SmallVec, smallvec};
 
 use super::{DBEdge, DBNode};
 use crate::io::{Mate, ReadRecord};
-use crate::kmer::encoding::{kmers_from_ascii, revcomp_kmer};
+use crate::kmer::encoding::revcomp_kmer;
 
-/// Candidates for a canonical-kmer lookup. At most two directional edges can
-/// share a canonical key (the kmer and its reverse complement), because
-/// directional kmers are unique in the graph (nodes are deduplicated by
-/// sub_kmer, parallel edges are forbidden in `extend_graph`). A SmallVec
-/// with inline capacity 2 stores both without heap allocation.
-type EdgeCandidates = SmallVec<[EdgeIndex; 2]>;
-
-/// Per-edge read support annotation.
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct EdgeReadSupport {
-    /// Total reads whose contiguous run includes this edge
     pub read_support_total: u32,
-    /// Reads mapping to a single unbranched path through this edge
     pub read_support_unambiguous: u32,
 }
 
-/// A branch-point phasing observation: a read's contiguous run passed
-/// through a branch point, linking an incoming edge to an outgoing edge.
-#[derive(Debug, Clone, Hash, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, Hash, PartialEq, Eq)]
 pub struct BranchLink {
     pub incoming_edge: EdgeIndex,
     pub outgoing_edge: EdgeIndex,
 }
 
-/// A paired-end phasing link: both mates of a pair map to the same
-/// amplicon graph, providing long-range phasing information.
 #[derive(Debug, Clone)]
 #[allow(dead_code)]
 pub struct PairedEndLink {
-    /// Edges covered by R1 mate
     pub r1_edges: Vec<EdgeIndex>,
-    /// Edges covered by R2 mate
     pub r2_edges: Vec<EdgeIndex>,
 }
 
-/// Complete read threading annotations for a graph.
 #[derive(Debug, Clone)]
 pub struct ThreadingAnnotations {
-    /// Per-edge read support counts
     pub edge_support: AHashMap<EdgeIndex, EdgeReadSupport>,
-    /// Branch-point phasing: (incoming, outgoing) -> count
     pub branch_links: AHashMap<BranchLink, u32>,
-    /// Paired-end links connecting distant regions of the graph
     pub paired_links: Vec<PairedEndLink>,
 }
 
 impl ThreadingAnnotations {
     fn new() -> Self {
-        ThreadingAnnotations {
+        Self {
             edge_support: AHashMap::new(),
             branch_links: AHashMap::new(),
             paired_links: Vec::new(),
@@ -71,116 +44,105 @@ impl ThreadingAnnotations {
     }
 }
 
-/// A contiguous run of graph edges that a single read maps to.
+#[derive(Clone, Copy)]
+struct PositionedKmer {
+    kmer: u64,
+    start: usize,
+}
+
+#[derive(Clone)]
 struct ReadRun {
     edges: Vec<EdgeIndex>,
 }
 
-/// Thread reads through a graph, producing annotations.
-/// This function does NOT modify the graph.
-///
-/// For each read:
-/// 1. Extract kmers from the read sequence
-/// 2. Look up each kmer as a graph edge
-/// 3. Find maximal contiguous runs of adjacent edges
-/// 4. For each run, annotate edges and detect branch-point crossings
+#[derive(Clone, Default)]
+struct ReadEvidence {
+    total_edges: AHashSet<EdgeIndex>,
+    unambiguous_edges: AHashSet<EdgeIndex>,
+    branch_links: AHashSet<BranchLink>,
+    ordered_edges: Vec<EdgeIndex>,
+}
+
+impl ReadEvidence {
+    fn merge(&mut self, other: Self) {
+        self.total_edges.extend(other.total_edges);
+        self.unambiguous_edges.extend(other.unambiguous_edges);
+        self.branch_links.extend(other.branch_links);
+        let mut seen: AHashSet<EdgeIndex> = self.ordered_edges.iter().copied().collect();
+        for edge in other.ordered_edges {
+            if seen.insert(edge) {
+                self.ordered_edges.push(edge);
+            }
+        }
+    }
+
+    fn has_same_local_support(&self, other: &Self) -> bool {
+        self.total_edges == other.total_edges
+            && self.unambiguous_edges == other.unambiguous_edges
+            && self.branch_links == other.branch_links
+            && self.ordered_edges == other.ordered_edges
+    }
+}
+
+#[derive(Default)]
+struct PairEvidence {
+    r1: Option<ReadEvidence>,
+    r2: Option<ReadEvidence>,
+}
+
 pub fn thread_reads(
     graph: &StableDiGraph<DBNode, DBEdge>,
-    reads: &[&ReadRecord],
+    reads: &[ReadRecord],
     k: usize,
 ) -> ThreadingAnnotations {
     let mut annotations = ThreadingAnnotations::new();
-
-    // Build edge lookup: canonical kmer -> candidate EdgeIndices
-    let edge_lookup = build_edge_lookup(graph, k);
+    let edge_lookup = build_edge_lookup(graph);
 
     for read in reads {
-        let kmers = match kmers_from_ascii(&read.sequence, k) {
-            Ok(k) => k,
-            Err(_) => continue, // skip reads with invalid characters
-        };
-
-        let runs = find_contiguous_runs(&kmers, &edge_lookup, graph);
-
-        // Annotate edges from each run
-        for run in &runs {
-            let is_unambiguous = is_run_unambiguous(graph, &run.edges);
-
-            for &edge_idx in &run.edges {
-                let support = annotations.edge_support.entry(edge_idx).or_default();
-                support.read_support_total += 1;
-                if is_unambiguous {
-                    support.read_support_unambiguous += 1;
-                }
-            }
-
-            // Record branch-point phasing links
-            record_branch_links(graph, &run.edges, &mut annotations.branch_links);
-        }
+        let evidence = map_read(graph, &edge_lookup, &read.sequence, k);
+        apply_evidence(&mut annotations, &evidence);
     }
 
     annotations
 }
 
-/// Thread reads with paired-end phasing support.
-/// First performs standard threading, then identifies read pairs
-/// where both mates map to the same graph.
 pub fn thread_reads_paired(
     graph: &StableDiGraph<DBNode, DBEdge>,
-    reads: &[&ReadRecord],
+    reads: &[ReadRecord],
     k: usize,
 ) -> ThreadingAnnotations {
     let mut annotations = ThreadingAnnotations::new();
-    let edge_lookup = build_edge_lookup(graph, k);
-
-    // Group reads by pair index for paired-end phasing
-    // Pair index = read_index / 2 for alternating R1/R2 reads
-    let mut pair_runs: AHashMap<u64, (Vec<EdgeIndex>, Vec<EdgeIndex>)> = AHashMap::new();
+    let edge_lookup = build_edge_lookup(graph);
+    let mut pairs: AHashMap<u64, PairEvidence> = AHashMap::new();
 
     for read in reads {
-        let kmers = match kmers_from_ascii(&read.sequence, k) {
-            Ok(k) => k,
-            Err(_) => continue,
-        };
-
-        let runs = find_contiguous_runs(&kmers, &edge_lookup, graph);
-
-        // Collect all edges from all runs for this read
-        let mut all_edges: Vec<EdgeIndex> = Vec::new();
-
-        for run in &runs {
-            let is_unambiguous = is_run_unambiguous(graph, &run.edges);
-
-            for &edge_idx in &run.edges {
-                let support = annotations.edge_support.entry(edge_idx).or_default();
-                support.read_support_total += 1;
-                if is_unambiguous {
-                    support.read_support_unambiguous += 1;
-                }
-            }
-
-            record_branch_links(graph, &run.edges, &mut annotations.branch_links);
-            all_edges.extend_from_slice(&run.edges);
+        let evidence = map_read(graph, &edge_lookup, &read.sequence, k);
+        if evidence.total_edges.is_empty() {
+            continue;
         }
-
-        // Track paired-end edges
-        if !all_edges.is_empty() {
-            match read.mate {
-                Mate::R1 => {
-                    let pair_idx = read.index / 2;
-                    pair_runs.entry(pair_idx).or_default().0 = all_edges;
-                }
-                Mate::R2 => {
-                    let pair_idx = read.index / 2;
-                    pair_runs.entry(pair_idx).or_default().1 = all_edges;
-                }
-                Mate::Unpaired => {} // no pairing info
-            }
+        match read.mate {
+            Mate::Unpaired => apply_evidence(&mut annotations, &evidence),
+            Mate::R1 => merge_mate(&mut pairs.entry(read.index / 2).or_default().r1, evidence),
+            Mate::R2 => merge_mate(&mut pairs.entry(read.index / 2).or_default().r2, evidence),
         }
     }
 
-    // Create paired-end links where both mates map
-    for (_pair_idx, (r1_edges, r2_edges)) in pair_runs {
+    for pair in pairs.into_values() {
+        let r1_edges = pair
+            .r1
+            .as_ref()
+            .map(|evidence| evidence.ordered_edges.clone())
+            .unwrap_or_default();
+        let r2_edges = pair
+            .r2
+            .as_ref()
+            .map(|evidence| evidence.ordered_edges.clone())
+            .unwrap_or_default();
+        let mut fragment_evidence = pair.r1.unwrap_or_default();
+        if let Some(r2_evidence) = pair.r2 {
+            fragment_evidence.merge(r2_evidence);
+        }
+        apply_evidence(&mut annotations, &fragment_evidence);
         if !r1_edges.is_empty() && !r2_edges.is_empty() {
             annotations
                 .paired_links
@@ -191,439 +153,519 @@ pub fn thread_reads_paired(
     annotations
 }
 
-/// Build a lookup table from canonical kmer -> candidate EdgeIndices.
-///
-/// A canonical key can legitimately map to up to two directional edges when
-/// the amplicon contains an inverted repeat of length >= k: one edge carries
-/// a kmer X, the other carries rc(X), and they share the canonical key
-/// `min(X, rc(X))`. This is common in rRNA and mitochondrial targets where
-/// secondary-structure stems are inverted repeats. Both candidates must be
-/// retained so that threading can disambiguate based on graph adjacency to
-/// the previous edge in the read's run.
-fn build_edge_lookup(
-    graph: &StableDiGraph<DBNode, DBEdge>,
-    k: usize,
-) -> AHashMap<u64, EdgeCandidates> {
-    let mut lookup: AHashMap<u64, EdgeCandidates> = AHashMap::new();
-
-    for edge_ref in graph.edge_references() {
-        let kmer = super::graph::reconstruct_edge_kmer(graph, edge_ref.id());
-        let rc = revcomp_kmer(&kmer, &k);
-        let canonical = kmer.min(rc);
-        lookup
-            .entry(canonical)
-            .and_modify(|cands| cands.push(edge_ref.id()))
-            .or_insert_with(|| smallvec![edge_ref.id()]);
+fn merge_mate(destination: &mut Option<ReadEvidence>, evidence: ReadEvidence) {
+    if let Some(existing) = destination {
+        existing.merge(evidence);
+    } else {
+        *destination = Some(evidence);
     }
+}
 
+fn build_edge_lookup(graph: &StableDiGraph<DBNode, DBEdge>) -> AHashMap<u64, EdgeIndex> {
+    let mut lookup = AHashMap::new();
+    for edge in graph.edge_references() {
+        let kmer = super::graph::reconstruct_edge_kmer(graph, edge.id());
+        let previous = lookup.insert(kmer, edge.id());
+        debug_assert!(previous.is_none(), "directional graph kmers must be unique");
+    }
     lookup
 }
 
-/// Pick the best edge candidate for the current lookup given the previous
-/// edge in the run. When there is only one candidate, that candidate is
-/// returned. When there are two (inverted-repeat collision), prefer the one
-/// whose source node equals the previous edge's target (i.e. the one that
-/// extends the current run). If neither is adjacent (start of run, or the
-/// previous edge was in a different part of the graph), return the first.
-///
-/// Returning the first arbitrarily when no disambiguation is possible is
-/// self-correcting: the adjacency check in `find_contiguous_runs` will
-/// break the run on the next kmer if the wrong choice was made, producing
-/// at worst one spurious singleton run of length 1.
-fn resolve_candidates(
-    candidates: &EdgeCandidates,
-    prev_edge: Option<EdgeIndex>,
-    graph: &StableDiGraph<DBNode, DBEdge>,
-) -> EdgeIndex {
-    debug_assert!(!candidates.is_empty(), "lookup entry must be non-empty");
-    if candidates.len() == 1 {
-        return candidates[0];
+fn positioned_directional_kmers(sequence: &str, k: usize) -> Vec<PositionedKmer> {
+    if k == 0 || k >= 32 {
+        return Vec::new();
     }
-    if let Some(prev) = prev_edge {
-        let (_, prev_target) = graph
-            .edge_endpoints(prev)
-            .expect("previous edge must exist in graph");
-        for &cand in candidates {
-            let (cand_source, _) = graph
-                .edge_endpoints(cand)
-                .expect("candidate edge must exist in graph");
-            if cand_source == prev_target {
-                return cand;
-            }
-        }
-    }
-    candidates[0]
-}
+    let mask = (1u64 << (2 * k)) - 1;
+    let mut frame = 0u64;
+    let mut valid_bases = 0usize;
+    let mut windows = Vec::with_capacity(sequence.len().saturating_sub(k - 1));
 
-/// Walk a read's kmer sequence against the edge lookup, producing maximal
-/// contiguous runs. Each kmer is resolved against the previous edge's
-/// adjacency to handle inverted-repeat canonical collisions.
-fn find_contiguous_runs(
-    kmers: &[u64],
-    edge_lookup: &AHashMap<u64, EdgeCandidates>,
-    graph: &StableDiGraph<DBNode, DBEdge>,
-) -> Vec<ReadRun> {
-    let mut runs: Vec<ReadRun> = Vec::new();
-    let mut current_run: Vec<EdgeIndex> = Vec::new();
-
-    for kmer in kmers {
-        let candidates = match edge_lookup.get(kmer) {
-            Some(c) => c,
-            None => {
-                // No edge match: end current run
-                if !current_run.is_empty() {
-                    runs.push(ReadRun {
-                        edges: std::mem::take(&mut current_run),
-                    });
-                }
+    for (position, nucleotide) in sequence.bytes().enumerate() {
+        let base = match nucleotide {
+            b'A' => 0,
+            b'C' => 1,
+            b'G' => 2,
+            b'T' => 3,
+            _ => {
+                frame = 0;
+                valid_bases = 0;
                 continue;
             }
         };
-
-        let edge_idx = resolve_candidates(candidates, current_run.last().copied(), graph);
-
-        if let Some(&prev_edge) = current_run.last() {
-            let (_, prev_target) = graph
-                .edge_endpoints(prev_edge)
-                .expect("edge must exist in graph");
-            let (curr_source, _) = graph
-                .edge_endpoints(edge_idx)
-                .expect("edge must exist in graph");
-
-            if prev_target == curr_source {
-                current_run.push(edge_idx);
-            } else {
-                // Adjacency broke: flush and start a new run
-                if !current_run.is_empty() {
-                    runs.push(ReadRun {
-                        edges: std::mem::take(&mut current_run),
-                    });
-                }
-                current_run.push(edge_idx);
-            }
-        } else {
-            current_run.push(edge_idx);
+        frame = ((frame << 2) | base) & mask;
+        valid_bases += 1;
+        if valid_bases >= k {
+            windows.push(PositionedKmer {
+                kmer: frame,
+                start: position + 1 - k,
+            });
         }
     }
 
-    // Flush final run
-    if !current_run.is_empty() {
-        runs.push(ReadRun { edges: current_run });
+    windows
+}
+
+fn reverse_normalized_kmers(
+    windows: &[PositionedKmer],
+    sequence_length: usize,
+    k: usize,
+) -> Vec<PositionedKmer> {
+    windows
+        .iter()
+        .rev()
+        .map(|window| PositionedKmer {
+            kmer: revcomp_kmer(&window.kmer, &k),
+            start: sequence_length - k - window.start,
+        })
+        .collect()
+}
+
+fn map_read(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    edge_lookup: &AHashMap<u64, EdgeIndex>,
+    sequence: &str,
+    k: usize,
+) -> ReadEvidence {
+    let forward_windows = positioned_directional_kmers(sequence, k);
+    let reverse_windows = reverse_normalized_kmers(&forward_windows, sequence.len(), k);
+    let forward_runs = find_contiguous_runs(&forward_windows, edge_lookup, graph);
+    let reverse_runs = find_contiguous_runs(&reverse_windows, edge_lookup, graph);
+    let forward_span = longest_run(&forward_runs);
+    let reverse_span = longest_run(&reverse_runs);
+
+    match forward_span.cmp(&reverse_span) {
+        std::cmp::Ordering::Greater => evidence_from_runs(graph, &forward_runs),
+        std::cmp::Ordering::Less => evidence_from_runs(graph, &reverse_runs),
+        std::cmp::Ordering::Equal => {
+            let forward_evidence = evidence_from_runs(graph, &forward_runs);
+            let reverse_evidence = evidence_from_runs(graph, &reverse_runs);
+            if forward_evidence.has_same_local_support(&reverse_evidence) {
+                forward_evidence
+            } else {
+                common_evidence(forward_evidence, reverse_evidence)
+            }
+        }
+    }
+}
+
+fn longest_run(runs: &[ReadRun]) -> usize {
+    runs.iter().map(|run| run.edges.len()).max().unwrap_or(0)
+}
+
+fn find_contiguous_runs(
+    windows: &[PositionedKmer],
+    edge_lookup: &AHashMap<u64, EdgeIndex>,
+    graph: &StableDiGraph<DBNode, DBEdge>,
+) -> Vec<ReadRun> {
+    let mut runs = Vec::new();
+    let mut current_edges = Vec::new();
+    let mut previous_start = None;
+
+    for window in windows {
+        let Some(&edge) = edge_lookup.get(&window.kmer) else {
+            flush_run(&mut runs, &mut current_edges);
+            previous_start = None;
+            continue;
+        };
+
+        let position_is_contiguous = previous_start.is_some_and(|start| window.start == start + 1);
+        let graph_is_contiguous = current_edges.last().is_some_and(|previous_edge| {
+            let (_, previous_target) = graph
+                .edge_endpoints(*previous_edge)
+                .expect("edge must exist in graph");
+            let (current_source, _) = graph
+                .edge_endpoints(edge)
+                .expect("edge must exist in graph");
+            previous_target == current_source
+        });
+
+        if !current_edges.is_empty() && !(position_is_contiguous && graph_is_contiguous) {
+            flush_run(&mut runs, &mut current_edges);
+        }
+        current_edges.push(edge);
+        previous_start = Some(window.start);
     }
 
+    flush_run(&mut runs, &mut current_edges);
     runs
 }
 
-/// Check if a run is "unambiguous": every *intermediate* node has
-/// in-degree <= 1 and out-degree <= 1 in the full graph.
-/// Entry and exit nodes are intentionally excluded — branch points at
-/// run boundaries are expected and handled by the caller.
-fn is_run_unambiguous(graph: &StableDiGraph<DBNode, DBEdge>, edges: &[EdgeIndex]) -> bool {
-    if edges.len() < 2 {
-        return true; // single edge is trivially unambiguous
+fn flush_run(runs: &mut Vec<ReadRun>, current_edges: &mut Vec<EdgeIndex>) {
+    if !current_edges.is_empty() {
+        runs.push(ReadRun {
+            edges: std::mem::take(current_edges),
+        });
     }
-
-    // Check intermediate nodes (shared between consecutive edges)
-    for window in edges.windows(2) {
-        let (_, node) = graph.edge_endpoints(window[0]).expect("edge must exist");
-        let in_deg = graph.neighbors_directed(node, Direction::Incoming).count();
-        let out_deg = graph.neighbors_directed(node, Direction::Outgoing).count();
-        if in_deg > 1 || out_deg > 1 {
-            return false;
-        }
-    }
-
-    true
 }
 
-/// Record branch-point phasing links for consecutive edge pairs
-/// at branch points (in-degree > 1 or out-degree > 1).
-fn record_branch_links(
+fn evidence_from_runs(graph: &StableDiGraph<DBNode, DBEdge>, runs: &[ReadRun]) -> ReadEvidence {
+    let mut evidence = ReadEvidence::default();
+    let mut ordered_seen = AHashSet::new();
+
+    for run in runs {
+        let is_unambiguous = is_run_unambiguous(graph, &run.edges);
+        for &edge in &run.edges {
+            evidence.total_edges.insert(edge);
+            if is_unambiguous {
+                evidence.unambiguous_edges.insert(edge);
+            }
+            if ordered_seen.insert(edge) {
+                evidence.ordered_edges.push(edge);
+            }
+        }
+        evidence
+            .branch_links
+            .extend(branch_links_for_run(graph, &run.edges));
+    }
+
+    evidence
+}
+
+fn common_evidence(forward: ReadEvidence, reverse: ReadEvidence) -> ReadEvidence {
+    let total_edges: AHashSet<EdgeIndex> = forward
+        .total_edges
+        .intersection(&reverse.total_edges)
+        .copied()
+        .collect();
+    let branch_links = forward
+        .branch_links
+        .intersection(&reverse.branch_links)
+        .copied()
+        .collect();
+    let ordered_edges = forward
+        .ordered_edges
+        .into_iter()
+        .filter(|edge| total_edges.contains(edge))
+        .collect();
+    ReadEvidence {
+        total_edges,
+        unambiguous_edges: AHashSet::new(),
+        branch_links,
+        ordered_edges,
+    }
+}
+
+fn apply_evidence(annotations: &mut ThreadingAnnotations, evidence: &ReadEvidence) {
+    for &edge in &evidence.total_edges {
+        annotations
+            .edge_support
+            .entry(edge)
+            .or_default()
+            .read_support_total += 1;
+    }
+    for &edge in &evidence.unambiguous_edges {
+        annotations
+            .edge_support
+            .entry(edge)
+            .or_default()
+            .read_support_unambiguous += 1;
+    }
+    for &link in &evidence.branch_links {
+        *annotations.branch_links.entry(link).or_insert(0) += 1;
+    }
+}
+
+fn is_run_unambiguous(graph: &StableDiGraph<DBNode, DBEdge>, edges: &[EdgeIndex]) -> bool {
+    if edges.len() < 2 {
+        return true;
+    }
+    edges.windows(2).all(|window| {
+        let (_, node) = graph.edge_endpoints(window[0]).expect("edge must exist");
+        graph.neighbors_directed(node, Direction::Incoming).count() <= 1
+            && graph.neighbors_directed(node, Direction::Outgoing).count() <= 1
+    })
+}
+
+fn branch_links_for_run(
     graph: &StableDiGraph<DBNode, DBEdge>,
     edges: &[EdgeIndex],
-    branch_links: &mut AHashMap<BranchLink, u32>,
-) {
+) -> AHashSet<BranchLink> {
+    let mut links = AHashSet::new();
     for window in edges.windows(2) {
-        let incoming = window[0];
-        let outgoing = window[1];
-
-        // The shared node is the target of incoming / source of outgoing
-        let (_, node) = graph.edge_endpoints(incoming).expect("edge must exist");
-
-        let in_deg = graph.neighbors_directed(node, Direction::Incoming).count();
-        let out_deg = graph.neighbors_directed(node, Direction::Outgoing).count();
-
-        if in_deg > 1 || out_deg > 1 {
-            let link = BranchLink {
-                incoming_edge: incoming,
-                outgoing_edge: outgoing,
-            };
-            *branch_links.entry(link).or_insert(0) += 1;
+        let incoming_edge = window[0];
+        let outgoing_edge = window[1];
+        let (_, node) = graph
+            .edge_endpoints(incoming_edge)
+            .expect("edge must exist");
+        let in_degree = graph.neighbors_directed(node, Direction::Incoming).count();
+        let out_degree = graph.neighbors_directed(node, Direction::Outgoing).count();
+        if in_degree > 1 || out_degree > 1 {
+            links.insert(BranchLink {
+                incoming_edge,
+                outgoing_edge,
+            });
         }
     }
+    links
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
-    use petgraph::stable_graph::StableDiGraph;
+    use petgraph::graph::NodeIndex;
 
-    fn make_test_graph() -> StableDiGraph<DBNode, DBEdge> {
-        // Create a simple linear graph: n0 --e0--> n1 --e1--> n2
+    fn encode(sequence: &str) -> u64 {
+        crate::kmer::encoding::seq_to_kmer(sequence).unwrap()
+    }
+
+    fn add_sequence(
+        graph: &mut StableDiGraph<DBNode, DBEdge>,
+        nodes: &mut AHashMap<u64, NodeIndex>,
+        sequence: &str,
+        k: usize,
+    ) -> Vec<EdgeIndex> {
+        let mut edges = Vec::new();
+        for start in 0..=sequence.len() - k {
+            let kmer = encode(&sequence[start..start + k]);
+            let source_kmer = kmer >> 2;
+            let target_kmer = kmer & ((1u64 << (2 * (k - 1))) - 1);
+            let source = *nodes.entry(source_kmer).or_insert_with(|| {
+                graph.add_node(DBNode {
+                    sub_kmer: source_kmer,
+                    is_start: false,
+                    is_end: false,
+                })
+            });
+            let target = *nodes.entry(target_kmer).or_insert_with(|| {
+                graph.add_node(DBNode {
+                    sub_kmer: target_kmer,
+                    is_start: false,
+                    is_end: false,
+                })
+            });
+            let edge = graph.find_edge(source, target).unwrap_or_else(|| {
+                graph.add_edge(
+                    source,
+                    target,
+                    DBEdge {
+                        count: 10,
+                        coverage_ratio: 1.0,
+                    },
+                )
+            });
+            edges.push(edge);
+        }
+        edges
+    }
+
+    fn graph_from_sequences(sequences: &[&str], k: usize) -> StableDiGraph<DBNode, DBEdge> {
         let mut graph = StableDiGraph::new();
-        let n0 = graph.add_node(DBNode {
-            sub_kmer: 0b0000, // AA
-            is_start: true,
-            is_end: false,
-        });
-        let n1 = graph.add_node(DBNode {
-            sub_kmer: 0b0001, // AC
-            is_start: false,
-            is_end: false,
-        });
-        let n2 = graph.add_node(DBNode {
-            sub_kmer: 0b0110, // CG
-            is_start: false,
-            is_end: true,
-        });
-
-        // Edge e0: kmer AAC (0b000001), connects n0->n1
-        graph.add_edge(
-            n0,
-            n1,
-            DBEdge {
-                count: 10,
-                coverage_ratio: 1.0,
-            },
-        );
-        // Edge e1: kmer ACG (0b000110), connects n1->n2
-        graph.add_edge(
-            n1,
-            n2,
-            DBEdge {
-                count: 8,
-                coverage_ratio: 1.0,
-            },
-        );
-
+        let mut nodes = AHashMap::new();
+        for sequence in sequences {
+            add_sequence(&mut graph, &mut nodes, sequence, k);
+        }
         graph
     }
 
-    /// Helper: compute the canonical form of an edge's kmer via the graph.
-    fn canonical_edge_kmer(
+    fn read(sequence: &str, index: u64, mate: Mate) -> ReadRecord {
+        ReadRecord {
+            sequence: sequence.to_string(),
+            index,
+            mate,
+        }
+    }
+
+    fn supported_kmers(
         graph: &StableDiGraph<DBNode, DBEdge>,
-        edge: EdgeIndex,
+        annotations: &ThreadingAnnotations,
         k: usize,
-    ) -> u64 {
-        let kmer = super::super::graph::reconstruct_edge_kmer(graph, edge);
-        let rc = revcomp_kmer(&kmer, &k);
-        kmer.min(rc)
+    ) -> AHashMap<String, EdgeReadSupport> {
+        annotations
+            .edge_support
+            .iter()
+            .map(|(edge, support)| {
+                let kmer = super::super::graph::reconstruct_edge_kmer(graph, *edge);
+                (
+                    crate::kmer::encoding::kmer_to_seq(&kmer, &k),
+                    support.clone(),
+                )
+            })
+            .collect()
     }
 
     #[test]
-    fn test_build_edge_lookup() {
-        let graph = make_test_graph();
-        let lookup = build_edge_lookup(&graph, 3);
-        // Should have 2 entries (one per edge) in the linear test graph
-        assert_eq!(lookup.len(), 2);
-        // Each entry has exactly one candidate
-        for cands in lookup.values() {
-            assert_eq!(cands.len(), 1);
+    fn forward_and_reverse_reads_produce_equal_graph_evidence() {
+        let graph = graph_from_sequences(&["AACGATTCCG", "AACGACTCCG"], 5);
+        let forward = thread_reads(&graph, &[read("AACGATTCCG", 0, Mate::Unpaired)], 5);
+        let reverse = thread_reads(&graph, &[read("CGGAATCGTT", 0, Mate::Unpaired)], 5);
+
+        assert_eq!(
+            supported_kmers(&graph, &forward, 5),
+            supported_kmers(&graph, &reverse, 5)
+        );
+        assert_eq!(forward.branch_links, reverse.branch_links);
+        assert!(!forward.branch_links.is_empty());
+    }
+
+    #[test]
+    fn directional_primer_edge_maps_from_both_read_strands() {
+        let graph = graph_from_sequences(&["TTTGA"], 5);
+        let forward = thread_reads(&graph, &[read("TTTGA", 0, Mate::Unpaired)], 5);
+        let reverse = thread_reads(&graph, &[read("TCAAA", 0, Mate::Unpaired)], 5);
+
+        assert_eq!(
+            supported_kmers(&graph, &forward, 5),
+            supported_kmers(&graph, &reverse, 5)
+        );
+        assert!(supported_kmers(&graph, &forward, 5).contains_key("TTTGA"));
+    }
+
+    #[test]
+    fn unique_flanks_resolve_a_read_spanning_an_inverted_motif() {
+        let sequence = "GGAACGATCGTTACC";
+        let reverse_complement = "GGTAACGATCGTTCC";
+        let graph = graph_from_sequences(&[sequence], 5);
+        let forward = thread_reads(&graph, &[read(sequence, 0, Mate::Unpaired)], 5);
+        let reverse = thread_reads(&graph, &[read(reverse_complement, 0, Mate::Unpaired)], 5);
+
+        assert_eq!(
+            supported_kmers(&graph, &forward, 5),
+            supported_kmers(&graph, &reverse, 5)
+        );
+        assert_eq!(forward.edge_support.len(), sequence.len() - 4);
+    }
+
+    #[test]
+    fn gaps_split_directional_runs() {
+        let graph = graph_from_sequences(&["AACGATT", "AACGACT"], 5);
+        for sequence in ["AACGANACGAT", "AACGAXACGAT"] {
+            let annotations = thread_reads(&graph, &[read(sequence, 0, Mate::Unpaired)], 5);
+            assert!(annotations.branch_links.is_empty());
+            assert_eq!(annotations.edge_support.len(), 2);
         }
     }
 
     #[test]
-    fn test_contiguous_run_linear() {
-        let graph = make_test_graph();
-        let lookup = build_edge_lookup(&graph, 3);
-        let e0 = graph.edge_indices().next().unwrap();
-        let e1 = graph.edge_indices().nth(1).unwrap();
+    fn interior_read_without_primer_kmer_contributes_support() {
+        let graph = graph_from_sequences(&["TTTGAAACGATTCCGAAAAA"], 5);
+        let annotations = thread_reads(&graph, &[read("AACGATTCCG", 0, Mate::Unpaired)], 5);
 
-        // Two adjacent edges in the graph, expressed as their canonical kmers
-        let kmers = vec![
-            canonical_edge_kmer(&graph, e0, 3),
-            canonical_edge_kmer(&graph, e1, 3),
-        ];
-        let runs = find_contiguous_runs(&kmers, &lookup, &graph);
-        assert_eq!(runs.len(), 1);
-        assert_eq!(runs[0].edges.len(), 2);
+        assert!(annotations.edge_support.len() > 1);
+        assert!(!supported_kmers(&graph, &annotations, 5).contains_key("TTTGA"));
     }
 
     #[test]
-    fn test_contiguous_run_gap() {
-        let graph = make_test_graph();
-        let lookup = build_edge_lookup(&graph, 3);
-        let e0 = graph.edge_indices().next().unwrap();
-        let e1 = graph.edge_indices().nth(1).unwrap();
+    fn longest_directional_mapping_beats_incidental_opposite_hit() {
+        let graph = graph_from_sequences(&["AACGATTCCG", "CGGAA"], 5);
+        let annotations = thread_reads(&graph, &[read("AACGATTCCG", 0, Mate::Unpaired)], 5);
+        let support = supported_kmers(&graph, &annotations, 5);
 
-        // A kmer that is not present in the lookup creates a gap
-        let gap_kmer: u64 = 0xDEAD_BEEF;
-        assert!(!lookup.contains_key(&gap_kmer));
-
-        let kmers = vec![
-            canonical_edge_kmer(&graph, e0, 3),
-            gap_kmer,
-            canonical_edge_kmer(&graph, e1, 3),
-        ];
-        let runs = find_contiguous_runs(&kmers, &lookup, &graph);
-        assert_eq!(runs.len(), 2);
-        assert_eq!(runs[0].edges.len(), 1);
-        assert_eq!(runs[1].edges.len(), 1);
+        assert_eq!(support.len(), 6);
+        assert!(!support.contains_key("CGGAA"));
     }
 
-    /// Construct a graph where two directional edges share the same canonical
-    /// kmer (inverted-repeat collision), then verify that:
-    /// (1) the lookup retains both candidates, and
-    /// (2) a contiguous run picks the candidate adjacent to the previous edge.
     #[test]
-    fn test_inverted_repeat_disambiguation() {
-        // We need two edges whose reconstructed kmers are reverse complements
-        // of each other but whose (src, tgt) node pairs are distinct. Using
-        // k=3 for ease of reasoning:
-        //
-        //   Stem arm 1: n_a --kmer_X--> n_b
-        //   Stem arm 2: n_c --kmer_rcX--> n_d
-        //
-        // And a bridging edge from n_b into n_c so that a "read" can walk
-        // n_a -> n_b -> n_c -> n_d, traversing both arms as separate edges.
-        //
-        // Pick kmer X = AAC (0b000001). rc(AAC) = GTT (0b101111).
-        // Source sub_kmer of X = AA (0b0000), target sub_kmer = AC (0b0001).
-        // Source sub_kmer of rc(X)=GTT = GT (0b1011), target sub_kmer = TT (0b1111).
-        //
-        // These four sub_kmers are all distinct, so the node uniqueness
-        // invariant holds.
-        let mut graph = StableDiGraph::new();
-        let n_a = graph.add_node(DBNode {
-            sub_kmer: 0b0000, // AA
-            is_start: true,
-            is_end: false,
-        });
-        let n_b = graph.add_node(DBNode {
-            sub_kmer: 0b0001, // AC
-            is_start: false,
-            is_end: false,
-        });
-        let n_c = graph.add_node(DBNode {
-            sub_kmer: 0b1011, // GT
-            is_start: false,
-            is_end: false,
-        });
-        let n_d = graph.add_node(DBNode {
-            sub_kmer: 0b1111, // TT
-            is_start: false,
-            is_end: true,
-        });
+    fn tied_opposite_paths_do_not_choose_an_arbitrary_arm() {
+        for sequences in [["AACGATTCCG", "CGGAATCGTT"], ["CGGAATCGTT", "AACGATTCCG"]] {
+            let graph = graph_from_sequences(&sequences, 5);
+            let annotations = thread_reads(&graph, &[read("AACGATTCCG", 0, Mate::Unpaired)], 5);
+            assert!(annotations.edge_support.is_empty());
+            assert!(annotations.branch_links.is_empty());
+        }
+    }
 
-        // Edge e_x: AAC, n_a -> n_b
-        let e_x = graph.add_edge(
-            n_a,
-            n_b,
-            DBEdge {
-                count: 10,
-                coverage_ratio: 1.0,
-            },
-        );
-        // Bridge edge: n_b -> n_c (kmer ACGT-like, not used for lookup in this
-        // test — we just need graph connectivity for adjacency walking)
-        let e_bridge = graph.add_edge(
-            n_b,
-            n_c,
-            DBEdge {
-                count: 10,
-                coverage_ratio: 1.0,
-            },
-        );
-        // Edge e_rcx: GTT, n_c -> n_d
-        let e_rcx = graph.add_edge(
-            n_c,
-            n_d,
-            DBEdge {
-                count: 10,
-                coverage_ratio: 1.0,
-            },
-        );
+    #[test]
+    fn tied_opposite_paths_retain_only_common_local_evidence() {
+        let graph = graph_from_sequences(&["GAACGATCGTTA", "TAACGATCGTTC"], 5);
+        let annotations = thread_reads(&graph, &[read("GAACGATCGTTA", 0, Mate::Unpaired)], 5);
+        let support = supported_kmers(&graph, &annotations, 5);
 
-        let lookup = build_edge_lookup(&graph, 3);
+        assert_eq!(support.len(), 6);
+        assert!(!support.contains_key("GAACG"));
+        assert!(!support.contains_key("CGTTA"));
+        assert!(!support.contains_key("TAACG"));
+        assert!(!support.contains_key("CGTTC"));
+        assert!(
+            support
+                .values()
+                .all(|edge_support| edge_support.read_support_unambiguous == 0)
+        );
+    }
 
-        // AAC and GTT should share a canonical key with both edges as candidates
-        let canonical = canonical_edge_kmer(&graph, e_x, 3);
-        assert_eq!(canonical, canonical_edge_kmer(&graph, e_rcx, 3));
-        let cands = lookup.get(&canonical).expect("collision key present");
+    #[test]
+    fn repeated_edge_and_branch_evidence_count_once_per_read() {
+        let graph = graph_from_sequences(&["AACGATT", "AACGACT"], 5);
+        let annotations = thread_reads(&graph, &[read("AACGATTNAACGATT", 0, Mate::Unpaired)], 5);
+
+        assert!(
+            annotations
+                .edge_support
+                .values()
+                .all(|support| support.read_support_total == 1)
+        );
         assert_eq!(
-            cands.len(),
-            2,
-            "both edges must be retained under the canonical key"
+            annotations
+                .branch_links
+                .values()
+                .copied()
+                .collect::<Vec<_>>(),
+            vec![1]
         );
-        assert!(cands.contains(&e_x));
-        assert!(cands.contains(&e_rcx));
+    }
 
-        // A read that walks n_a -> n_b -> n_c -> n_d produces kmers
-        // [canonical(e_x), canonical(e_bridge), canonical(e_rcx)]. With
-        // disambiguation by previous-edge adjacency, the run should pick e_x
-        // at the start (no previous edge, but then e_bridge anchors the run
-        // to n_b -> n_c, and e_rcx's source n_c is adjacent to e_bridge's
-        // target, so e_rcx wins over e_x at the third position).
-        let kmers = vec![
-            canonical_edge_kmer(&graph, e_x, 3),
-            canonical_edge_kmer(&graph, e_bridge, 3),
-            canonical_edge_kmer(&graph, e_rcx, 3),
-        ];
-        let runs = find_contiguous_runs(&kmers, &lookup, &graph);
+    #[test]
+    fn paired_mates_count_support_once_per_fragment() {
+        let graph = graph_from_sequences(&["AACGATT", "AACGACT"], 5);
+        let paired = thread_reads_paired(
+            &graph,
+            &[read("AACGATT", 0, Mate::R1), read("AACGATT", 1, Mate::R2)],
+            5,
+        );
+        let unpaired = thread_reads(
+            &graph,
+            &[
+                read("AACGATT", 0, Mate::Unpaired),
+                read("AACGATT", 1, Mate::Unpaired),
+            ],
+            5,
+        );
 
-        // Either one run of length 3, or a fresh run starting from the
-        // collision point. In either case, e_rcx (not e_x) must appear at
-        // the third position and must follow e_bridge.
-        let picked_third = runs
-            .iter()
-            .flat_map(|r| r.edges.iter())
-            .nth(2)
-            .copied()
-            .expect("three edges must be resolved");
+        assert!(paired.edge_support.values().all(
+            |support| support.read_support_total == 1 && support.read_support_unambiguous <= 1
+        ));
+        assert!(
+            unpaired
+                .edge_support
+                .values()
+                .all(|support| support.read_support_total == 2)
+        );
         assert_eq!(
-            picked_third, e_rcx,
-            "disambiguation must pick the edge adjacent to the previous run edge"
+            paired.branch_links.values().copied().collect::<Vec<_>>(),
+            vec![1]
         );
+        assert_eq!(
+            unpaired.branch_links.values().copied().collect::<Vec<_>>(),
+            vec![2]
+        );
+        assert_eq!(paired.paired_links.len(), 1);
     }
 
     #[test]
-    fn test_unambiguous_linear() {
-        let graph = make_test_graph();
-        let e0 = graph.edge_indices().next().unwrap();
-        let e1 = graph.edge_indices().nth(1).unwrap();
+    fn paired_background_reads_produce_no_fragment_evidence() {
+        let graph = graph_from_sequences(&["AACGATT"], 5);
+        let annotations = thread_reads_paired(
+            &graph,
+            &[
+                read("TTTTTTT", 0, Mate::R1),
+                read("CCCCCCC", 1, Mate::R2),
+                read("GGGGGGG", 2, Mate::R1),
+                read("TATATAT", 3, Mate::R2),
+            ],
+            5,
+        );
 
-        // Linear graph: all intermediate nodes have degree 1
-        assert!(is_run_unambiguous(&graph, &[e0, e1]));
+        assert!(annotations.edge_support.is_empty());
+        assert!(annotations.branch_links.is_empty());
+        assert!(annotations.paired_links.is_empty());
     }
 
     #[test]
-    fn test_branch_point_detection() {
-        let mut graph = make_test_graph();
-
-        // Add a branch at n1: n1 -> n3
-        let n3 = graph.add_node(DBNode {
-            sub_kmer: 0b1010,
-            is_start: false,
-            is_end: false,
-        });
-        let _e2 = graph.add_edge(
-            petgraph::graph::NodeIndex::new(1), // n1
-            n3,
-            DBEdge {
-                count: 3,
-                coverage_ratio: 0.3,
-            },
-        );
-
-        let e0 = graph.edge_indices().next().unwrap();
-        let e1 = graph.edge_indices().nth(1).unwrap();
-
-        // n1 now has out-degree 2, so the run is NOT unambiguous
-        assert!(!is_run_unambiguous(&graph, &[e0, e1]));
-
-        // Should record a branch link
-        let mut branch_links = AHashMap::new();
-        record_branch_links(&graph, &[e0, e1], &mut branch_links);
-        assert_eq!(branch_links.len(), 1);
+    fn positioned_windows_preserve_primer_orientation_and_gap_offsets() {
+        let windows = positioned_directional_kmers("TTTGANACGAT", 5);
+        assert_eq!(windows.len(), 2);
+        assert_eq!(windows[0].kmer, encode("TTTGA"));
+        assert_eq!(windows[0].start, 0);
+        assert_eq!(windows[1].kmer, encode("ACGAT"));
+        assert_eq!(windows[1].start, 6);
     }
 }
