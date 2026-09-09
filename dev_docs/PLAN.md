@@ -97,7 +97,7 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
 - [ ] [#133](https://github.com/caseywdunn/sharkmer/issues/133) — Correct read selection, strand handling, and gap continuity in threading.
 - [ ] [#134](https://github.com/caseywdunn/sharkmer/issues/134) — Publish current-run amplicons and stats without stale FASTA results.
 - [ ] [#135](https://github.com/caseywdunn/sharkmer/issues/135) — Bound primer ambiguity and mismatch expansion before allocation.
-- [ ] [#136](https://github.com/caseywdunn/sharkmer/issues/136) — Fix integer median rounding for even-sized k-mer count sets.
+- [x] [#136](https://github.com/caseywdunn/sharkmer/issues/136) — Fix integer median rounding for even-sized k-mer count sets. Overflow-safe floor average, boundary and exhaustive small-pair regressions, caller/documentation audit; Terra review approved.
 - [ ] [#137](https://github.com/caseywdunn/sharkmer/issues/137) — Make cache publication concurrent-safe and clearing ownership-aware.
 - [ ] [#138](https://github.com/caseywdunn/sharkmer/issues/138) — Align sPCR documentation and diagnostics with current behavior.
 

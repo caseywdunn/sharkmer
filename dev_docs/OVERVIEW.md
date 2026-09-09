@@ -106,6 +106,12 @@ histogram.rs   Frequency distribution of kmer counts
 of length k fits in a `u64` (max k=31). Canonical form = min(forward,
 reverse complement).
 
+`KmerCounts::get_median_count()` returns the integer floor of the median,
+including the average of the middle two counts for even-sized sets (zero for
+an empty table). Graph and per-product coverage medians remain floating-point
+and retain half-count values. The integer primer-count median is diagnostic;
+extension thresholds use the maximum primer count.
+
 **Count type**: `u32` with `saturating_add`. Saves ~25% memory per hash
 table entry vs `u64`. Counts exceeding 4 billion are capped at
 `u32::MAX`. The `get_n_kmers()` method returns `u64` (sum can overflow
