@@ -438,14 +438,16 @@ pub(crate) fn ingest_reads(
                 let file = std::fs::File::open(&local_path).with_context(|| {
                     format!("Failed to open cached file: {}", local_path.display())
                 })?;
-                Box::new(std::io::BufReader::new(flate2::read::GzDecoder::new(file)))
+                Box::new(std::io::BufReader::new(flate2::read::MultiGzDecoder::new(
+                    file,
+                )))
             } else {
                 // No cache: stream directly
                 info!("Streaming from {} (no cache)...", url);
                 let response = ureq::get(url)
                     .call()
                     .with_context(|| format!("Failed to download {}", url))?;
-                Box::new(std::io::BufReader::new(flate2::read::GzDecoder::new(
+                Box::new(std::io::BufReader::new(flate2::read::MultiGzDecoder::new(
                     response.into_reader(),
                 )))
             };
@@ -602,7 +604,7 @@ fn open_fastq_reader(file_path: &std::path::Path) -> Result<Box<dyn BufRead>> {
     // Open the file once. If we need to peek at the gzip magic bytes, do so
     // through the BufReader: fill_buf() loads bytes into the internal buffer
     // without consuming them, so subsequent reads (including through a
-    // GzDecoder wrapper) see the stream from position 0. This avoids a
+    // MultiGzDecoder wrapper) see the stream from position 0. This avoids a
     // redundant second open that showed up as two syscalls per FASTQ file.
     let file = std::fs::File::open(file_path)
         .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
@@ -617,7 +619,7 @@ fn open_fastq_reader(file_path: &std::path::Path) -> Result<Box<dyn BufRead>> {
 
     if use_gzip {
         Ok(Box::new(std::io::BufReader::new(
-            flate2::read::GzDecoder::new(buf_reader),
+            flate2::read::MultiGzDecoder::new(buf_reader),
         )))
     } else {
         Ok(Box::new(buf_reader))
@@ -1158,4 +1160,199 @@ pub(crate) fn consolidate_and_histogram(
     }
 
     Ok((kmer_counts, n_singleton_kmers))
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    const RECORD_ONE: &str = "@read-one\nACGT\n+\n!!!!\n";
+    const RECORD_TWO: &str = "@read-two\nTGCA\n+\n####\n";
+    const RECORD_THREE: &str = "@read-three\nGATC\n+\n$$$$\n";
+    const RECORD_FOUR: &str = "@read-four\nCTAG\n+\n%%%%\n";
+
+    fn gzip_member(contents: &str) -> Vec<u8> {
+        let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::default());
+        encoder.write_all(contents.as_bytes()).unwrap();
+        encoder.finish().unwrap()
+    }
+
+    fn concatenated_gzip(records: &[&str]) -> Vec<u8> {
+        records
+            .iter()
+            .flat_map(|record| gzip_member(record))
+            .collect()
+    }
+
+    fn fastq_state() -> FastqReadState {
+        let kmer_length = 3;
+        FastqReadState {
+            chunks: vec![Chunk::new(&kmer_length)],
+            chunk_index: 0,
+            seqs: Vec::new(),
+            n_reads_read: 0,
+            n_bases_read: 0,
+        }
+    }
+
+    fn read_sequences(
+        path: &std::path::Path,
+        max_reads: u64,
+    ) -> Result<(Vec<String>, u64, u64, bool)> {
+        let reader = open_fastq_reader(path)?;
+        let mut state = fastq_state();
+        let reached_max = read_fastq(
+            reader,
+            &mut state,
+            max_reads,
+            0,
+            &path.to_string_lossy(),
+            &ProgressBar::hidden(),
+        )?;
+        let sequences = state.seqs.clone();
+        let n_chunks = state.chunks.len();
+        drain_batch(&mut state, n_chunks)?;
+        let n_reads = state.chunks.iter().map(Chunk::get_n_reads).sum();
+        let n_kmers = state.chunks.iter().map(Chunk::get_n_kmers).sum();
+        Ok((sequences, n_reads, n_kmers, reached_max))
+    }
+
+    #[test]
+    fn gzip_magic_detection_matches_plain_fastq() {
+        let directory = tempfile::tempdir().unwrap();
+        let plain_path = directory.path().join("reads.fastq");
+        let compressed_path = directory.path().join("reads-compressed.fastq");
+        let fastq = format!("{}{}", RECORD_ONE, RECORD_TWO);
+        std::fs::write(&plain_path, &fastq).unwrap();
+        std::fs::write(
+            &compressed_path,
+            concatenated_gzip(&[RECORD_ONE, RECORD_TWO]),
+        )
+        .unwrap();
+
+        let compressed = read_sequences(&compressed_path, 0).unwrap();
+        let plain = read_sequences(&plain_path, 0).unwrap();
+
+        assert_eq!(compressed.0, plain.0);
+        assert_eq!(compressed.1, plain.1);
+        assert_eq!(compressed.2, plain.2);
+    }
+
+    #[test]
+    fn concatenated_gzip_members_ingest_all_records() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("reads.fastq.gz");
+        std::fs::write(&path, concatenated_gzip(&[RECORD_ONE, RECORD_TWO])).unwrap();
+
+        assert_eq!(
+            read_sequences(&path, 0).unwrap().0,
+            ["ACGT".to_string(), "TGCA".to_string()]
+        );
+    }
+
+    #[test]
+    fn corrupt_second_gzip_member_returns_an_error() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("reads.fastq.gz");
+        let mut corrupt_second_member = gzip_member(RECORD_TWO);
+        *corrupt_second_member.last_mut().unwrap() ^= 0xff;
+        let mut compressed = gzip_member(RECORD_ONE);
+        compressed.extend(corrupt_second_member);
+        std::fs::write(&path, compressed).unwrap();
+
+        let error = read_sequences(&path, 0).unwrap_err();
+        assert!(error.to_string().contains("Failed to read header line"));
+    }
+
+    #[test]
+    fn paired_readers_continue_across_concatenated_members() {
+        let directory = tempfile::tempdir().unwrap();
+        let r1_path = directory.path().join("r1.fastq.gz");
+        let r2_path = directory.path().join("r2.fastq.gz");
+        std::fs::write(&r1_path, concatenated_gzip(&[RECORD_ONE, RECORD_TWO])).unwrap();
+        std::fs::write(&r2_path, concatenated_gzip(&[RECORD_THREE, RECORD_FOUR])).unwrap();
+
+        let mut state = fastq_state();
+        let reached_max = read_fastq_paired(
+            open_fastq_reader(&r1_path).unwrap(),
+            open_fastq_reader(&r2_path).unwrap(),
+            &mut state,
+            0,
+            0,
+            "r1",
+            "r2",
+            &ProgressBar::hidden(),
+        )
+        .unwrap();
+
+        assert!(!reached_max);
+        assert_eq!(
+            state.seqs,
+            [
+                "ACGT".to_string(),
+                "GATC".to_string(),
+                "TGCA".to_string(),
+                "CTAG".to_string(),
+            ]
+        );
+    }
+
+    #[test]
+    fn max_reads_stops_within_a_concatenated_member() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("reads.fastq.gz");
+        std::fs::write(
+            &path,
+            concatenated_gzip(&[
+                &format!("{}{}", RECORD_ONE, RECORD_TWO),
+                &format!("{}{}", RECORD_THREE, RECORD_FOUR),
+            ]),
+        )
+        .unwrap();
+
+        let (sequences, _, _, reached_max) = read_sequences(&path, 3).unwrap();
+        assert!(reached_max);
+        assert_eq!(
+            sequences,
+            ["ACGT".to_string(), "TGCA".to_string(), "GATC".to_string()]
+        );
+    }
+
+    #[test]
+    fn replay_matches_initial_ingestion_for_concatenated_members() {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("cached.fastq.gz");
+        std::fs::write(
+            &path,
+            concatenated_gzip(&[RECORD_ONE, RECORD_TWO, RECORD_THREE]),
+        )
+        .unwrap();
+
+        let ingested_sequences = read_sequences(&path, 0).unwrap().0;
+        let replayed = reread_sequences(
+            &ReadPlan {
+                source: ReadSourcePlan::CachedRemote(vec![path]),
+                paired: false,
+                max_reads: 0,
+            },
+            false,
+        )
+        .unwrap();
+
+        assert_eq!(
+            replayed
+                .iter()
+                .map(|record| record.sequence.clone())
+                .collect::<Vec<_>>(),
+            ingested_sequences
+        );
+        assert!(replayed.iter().all(|record| record.mate == Mate::Unpaired));
+        assert_eq!(
+            replayed
+                .iter()
+                .map(|record| record.index)
+                .collect::<Vec<_>>(),
+            [0, 1, 2]
+        );
+    }
 }

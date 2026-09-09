@@ -163,11 +163,11 @@ impl CacheConfig {
             }
         );
 
-        // Input pipeline: HTTP → GzDecoder → BufReader
+        // Input pipeline: HTTP → MultiGzDecoder → BufReader
         let response = ureq::get(url)
             .call()
             .with_context(|| format!("Failed to download {}", url))?;
-        let gz_reader = flate2::read::GzDecoder::new(response.into_reader());
+        let gz_reader = flate2::read::MultiGzDecoder::new(response.into_reader());
         let buf_reader = std::io::BufReader::new(gz_reader);
         let mut lines = buf_reader.lines();
 
@@ -359,6 +359,41 @@ fn write_meta(path: &Path, meta: &CacheMeta) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::net::TcpListener;
+
+    const RECORD_ONE: &str = "@read-one\nACGT\n+\n!!!!\n";
+    const RECORD_TWO: &str = "@read-two\nTGCA\n+\n####\n";
+
+    fn gzip_member(contents: &str) -> Vec<u8> {
+        let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::default());
+        encoder.write_all(contents.as_bytes()).unwrap();
+        encoder.finish().unwrap()
+    }
+
+    fn serve_once(body: Vec<u8>) -> (String, std::thread::JoinHandle<std::io::Result<()>>) {
+        let listener = TcpListener::bind("127.0.0.1:0").unwrap();
+        let address = listener.local_addr().unwrap();
+        let server = std::thread::spawn(move || -> std::io::Result<()> {
+            let (mut stream, _) = listener.accept()?;
+            stream.set_read_timeout(Some(std::time::Duration::from_secs(1)))?;
+            let mut reader = std::io::BufReader::new(stream.try_clone()?);
+            loop {
+                let mut header_line = String::new();
+                let bytes_read = BufRead::read_line(&mut reader, &mut header_line)?;
+                if bytes_read == 0 || header_line == "\r\n" {
+                    break;
+                }
+            }
+            write!(
+                stream,
+                "HTTP/1.1 200 OK\r\nContent-Length: {}\r\nConnection: close\r\n\r\n",
+                body.len()
+            )?;
+            stream.write_all(&body)?;
+            Ok(())
+        });
+        (format!("http://{address}/reads.fastq.gz"), server)
+    }
 
     #[test]
     fn test_cache_key_deterministic() {
@@ -600,5 +635,47 @@ mod tests {
 
         CacheConfig::clear(Some(&cache_dir)).unwrap();
         assert!(!cache_dir.exists());
+    }
+
+    #[test]
+    fn corrupt_second_gzip_member_is_not_published_to_cache() {
+        let dir = tempfile::tempdir().unwrap();
+        let config = CacheConfig {
+            cache_dir: dir.path().join("cache"),
+        };
+        let mut corrupt_second_member = gzip_member(RECORD_TWO);
+        *corrupt_second_member.last_mut().unwrap() ^= 0xff;
+        let mut body = gzip_member(RECORD_ONE);
+        body.extend(corrupt_second_member);
+        let (url, server) = serve_once(body);
+
+        let result = config.download_to_cache(&url, 0);
+        server.join().unwrap().unwrap();
+        assert!(result.is_err());
+        let key = cache_key(&url);
+        assert!(!config.data_path(&key).exists());
+        assert!(!config.meta_path(&key).exists());
+    }
+
+    #[test]
+    fn cache_download_limit_does_not_read_an_unneeded_corrupt_member() {
+        let dir = tempfile::tempdir().unwrap();
+        let config = CacheConfig {
+            cache_dir: dir.path().join("cache"),
+        };
+        let mut corrupt_second_member = gzip_member(RECORD_TWO);
+        *corrupt_second_member.last_mut().unwrap() ^= 0xff;
+        let mut body = gzip_member(RECORD_ONE);
+        body.extend(corrupt_second_member);
+        let (url, server) = serve_once(body);
+
+        let data_path = config.download_to_cache(&url, 1).unwrap();
+        server.join().unwrap().unwrap();
+        let meta_path = config.meta_path(&cache_key(&url));
+        let meta = read_meta(&meta_path).unwrap().unwrap();
+
+        assert_eq!(config.lookup(&url, 1).unwrap(), Some(data_path));
+        assert_eq!(meta.n_reads, 1);
+        assert!(!meta.complete);
     }
 }
