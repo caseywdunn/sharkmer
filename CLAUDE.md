@@ -49,9 +49,8 @@ sharkmer/                  # Repo root
 │       ├── paths.rs       # Path finding, sequence extraction, deduplication
 │       ├── threading.rs   # Read threading, edge read-support annotation
 │       ├── bubble.rs      # Bubble detection and resolution
-│       ├── read_filter.rs # Per-gene read filtering for threading
 │       └── preconfigured.rs  # YAML panel loading (built-in + sideloaded)
-├── panels/                # Built-in primer panel YAML files (8 panels)
+├── panels/                # Built-in primer panel YAML files (9 panels)
 ├── tests/
 │   ├── fixtures/          # ERR571460 100k reads (gzipped) for integration tests
 │   └── spcr_18s.rs        # Integration test: 18S recovery from ERR571460
@@ -124,17 +123,17 @@ architecture overview with data flow diagrams.
 ### main.rs (~210 lines)
 
 Entry point. Parses CLI, delegates to helper modules, orchestrates the
-pipeline: init logging → collect primers → validate → pre-encode primer
-Oligos (if `--read-eval`) → build Oligo filter → ingest reads (Pass 1)
-→ consolidate → re-read sequences (if `--read-threading`, Pass 2) →
-run PCR → write stats → print summary.
+pipeline: init logging → collect primers → validate primer expansion → ingest
+reads (Pass 1) → consolidate → re-read sequences (if `--read-threading`,
+Pass 2) → run PCR → write stats → print summary.
 
 ### cli.rs (~850 lines)
 
 `Args` struct (clap), `ColorMode`, `parse_pcr_primers_string()`,
 `init_logging()`, early exits, validation, `--dry-run`. New flags:
 `--read-threading` (Pass 2 re-read for graph annotation),
-`--node-budget-global` (hidden, graph node budget). `--paired` exists
+`--node-budget-global` (hidden, per-gene/threshold graph-node budget).
+`--paired` exists
 but is hidden — paired-end R1/R2 reading works, but the paired-end
 phasing feature it is meant to unlock is not yet wired into branch
 ranking; see issue #101.
@@ -145,6 +144,12 @@ ranking; see issue #101.
 `write_fasta_record()`, `ingest_reads()`, `consolidate_and_histogram()`.
 Pass 2 re-reading: `ReadRecord`/`ReadPlan`/`ReadSourcePlan`,
 `reread_sequences()`, `read_fastq_paired()`.
+
+`n_reads_read` measures FASTQ records read; `n_subreads_ingested` is a
+legacy-named count of records submitted to the kmer counter, not N-split
+segments; N only breaks kmer windows within a record. `n_kmers` counts
+accepted occurrences rather than distinct keys. `peak_memory_bytes` is the
+allocator heap peak, not process RSS.
 
 ### format.rs (~45 lines)
 
@@ -185,8 +190,6 @@ resolve bubbles → find paths → generate sequences → deduplicate
   `PairedEndLink` and `thread_reads_paired` construct paired-end link
   data, but nothing downstream consumes it yet — see issue #101 for
   what needs to happen to complete paired-end phasing.
-- `read_filter.rs`: `PrimerReadFilter` for per-gene read filtering
-  during read threading.
 - `bubble.rs`: `resolve_bubbles()`. Detects simple bubbles, ranks
   branches by read support + phasing, returns edge preferences.
 - `mod.rs`: `do_pcr()` orchestration, `PCRParams`, `PathScore`
@@ -196,22 +199,26 @@ resolve bubbles → find paths → generate sequences → deduplicate
 
 Key constants (all exposed as hidden CLI arguments via PCRParams unless
 noted):
-- `COVERAGE_MULTIPLIER = 2`: High coverage definition
+- `COVERAGE_MULTIPLIER = 2`: Divisor for the initial extension threshold
+  (`primer_count / 2`)
 - `COVERAGE_STEPS = 4`: Threshold reduction steps
-- `DEFAULT_MAX_NUM_NODES = 500_000`: Graph size limit (computed from
-  data volume by `compute_node_budget`, no CLI override)
+- `DEFAULT_MAX_NUM_NODES = 500_000`: Maximum auto-selected graph size
+  (computed from data volume by `compute_node_budget`; the hidden
+  `--node-budget-global` pins the per-gene/threshold limit)
 - `DEFAULT_MAX_DFS_STATES = 100_000`: DFS state budget (`--max-dfs-states`)
 - `DEFAULT_MAX_PATHS_PER_PAIR = 20`: Path enumeration limit (`--max-paths-per-pair`)
-- `DEFAULT_MAX_NODE_VISITS = 2`: Cycle tolerance (`--max-node-visits`)
+- `DEFAULT_MAX_NODE_VISITS = 2`: DFS revisit bound (`--max-node-visits`);
+  repeat-touched candidates remain uncertain
 - `DEFAULT_MAX_NUM_PRIMER_KMERS = 40`: Primer variant cap (`--max-primer-kmers`)
-- `DEFAULT_HIGH_COVERAGE_RATIO = 10.0`: Repeat edge filter (`--high-coverage-ratio`)
+- `DEFAULT_HIGH_COVERAGE_RATIO = 10.0`: Repeat edge filter
+  (`--high-coverage-ratio`); threshold is floored by observed primer count
 - `DEFAULT_TIP_COVERAGE_FRACTION = 0.1`: Tip pruning (`--tip-coverage-fraction`)
 - `MAX_NUM_AMPLICONS = 20`: Output sequence limit
 - `DEFAULT_DEDUP_EDIT_THRESHOLD = 10`: Levenshtein threshold for dedup
 
 ### panels/ directory
 
-YAML files defining built-in primer panels (8 panels). Embedded at
+YAML files defining built-in primer panels (9 panels). Embedded at
 compile time via `include_str!()`.
 
 ## Current known issues
@@ -236,5 +243,5 @@ gates, and patching workflow. Key points:
 
 ## Current development
 
-Version is `3.0.0-rc` on `dev` branch. See dev_docs/PLAN.md for the phased
+Version is `3.2.0-dev` on `dev` branch. See dev_docs/PLAN.md for the phased
 execution order and ROADMAP.md for scope and rationale.

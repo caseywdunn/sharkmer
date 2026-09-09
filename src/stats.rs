@@ -249,7 +249,7 @@ pub(crate) fn print_summary(run_stats: &RunStats, elapsed: std::time::Duration) 
             )
         };
         warn!(
-            "sharkmer complete: {} reads, {}/{} genes amplified{}, peak mem {}, {}",
+            "sharkmer complete: {} reads, {}/{} genes amplified{}, allocator peak {}, {}",
             reads_str,
             n_success,
             n_total,
@@ -261,7 +261,7 @@ pub(crate) fn print_summary(run_stats: &RunStats, elapsed: std::time::Duration) 
         let kmers_str = format_count(run_stats.n_kmers);
         if run_stats.chunks > 0 {
             warn!(
-                "sharkmer complete: {} reads, {} kmers, {} chunks, peak mem {}, {}",
+                "sharkmer complete: {} reads, {} kmers, {} chunks, allocator peak {}, {}",
                 reads_str,
                 kmers_str,
                 run_stats.chunks,
@@ -270,7 +270,7 @@ pub(crate) fn print_summary(run_stats: &RunStats, elapsed: std::time::Duration) 
             );
         } else {
             warn!(
-                "sharkmer complete: {} reads, {} kmers, peak mem {}, {}",
+                "sharkmer complete: {} reads, {} kmers, allocator peak {}, {}",
                 reads_str,
                 kmers_str,
                 format_bytes(run_stats.peak_memory_bytes),

@@ -191,9 +191,9 @@ and add an `[Unreleased]` section to `CHANGELOG.md`.
 
 ## Regression benchmarks
 
-A benchmark suite in `benchmarks/` runs sharkmer against 14 real-world SRA
-datasets across multiple primer panels. Run after each development phase or
-before a release to check for regressions.
+A benchmark suite in `benchmarks/` runs sharkmer against 13 real-world SRA
+datasets across 6 of the 9 built-in primer panels. Run after each development
+phase or before a release to check for regressions.
 
 Set up the benchmark conda environment (first time only):
 
@@ -230,10 +230,11 @@ throughput, table capacity, allocator peak, peak RSS when available, and final
 run-directory size. Unavailable metrics remain null with an availability
 statement.
 
-Sample data (~1M reads each) is cached in `benchmarks/data/` and downloaded
-from ENA on first run. The download streams and truncates early, so it does
-not fetch full runs. Configuration (samples, panels, read counts) is in
-`benchmarks/benchmark.yaml`.
+Sample data is cached in `benchmarks/data/` and downloaded from ENA on first
+run. The 1M setting is a requested FASTQ-record cap, not a promise that every
+input reaches it; four calibration inputs exhaust earlier. The download streams
+and truncates early, so it does not fetch full runs. Configuration (samples,
+panels, read counts) is in `benchmarks/benchmark.yaml`.
 
 ## Bioconda recipe
 

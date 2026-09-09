@@ -3,15 +3,16 @@ schema_version: 1
 dataset_role: calibration
 #
 # Each entry selects a validation sample (by panel + accession) and declares
-# the read depths to benchmark at. The sample must exist in the panel's
-# validation.samples block — taxonomy, taxon, etc. are read from there.
+# the read depths to benchmark at. Metadata normally comes from the panel's
+# validation.samples block. `taxon` may provide an explicit verified override
+# when a benchmark accession is intentionally absent from that block.
 #
 # Samples with single-copy nuclear gene panels get multi-level coverage
 # sweeps to measure sensitivity. All others run at 1M.
 #
-# Data files in benchmarks/data/ are named {accession}.fastq. The --max-reads
-# flag controls how many reads are used per run; files must contain at least
-# as many reads as the largest max_reads value.
+# Cached ENA inputs use URL-hashed gzip files with verified metadata under the
+# benchmark cache. `--max-reads` is a requested record cap; source exhaustion
+# is valid when a run has fewer records, including the short calibration runs.
 
 samples:
 
@@ -35,7 +36,9 @@ samples:
 
   - panel: human
     accession: SRR17535371    # Homo sapiens
+    taxon: "Homo sapiens"
     max_reads: [1000000]
+    notes: "ENA verified: tax_id 9606, PRJNA796012"
 
   # -- teleostei --
 

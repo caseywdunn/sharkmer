@@ -146,6 +146,9 @@ validation:
 
 **Per-primer:** `gene`, `forward_seq`, `reverse_seq`.
 
+Primer sequences use uppercase IUPAC bases. `min_count` must be at least 2,
+and `trim` must retain at least one 3' base.
+
 ### Optional panel-level fields
 
 | Field | Description |
@@ -175,17 +178,23 @@ validation:
 | `compartment` | INSDC /organelle value. Absent = nuclear. `"mitochondrion"` \| `"plastid:chloroplast"` \| etc. |
 | `gene_type` | `"protein_coding"` \| `"rRNA"` \| `"tRNA"` \| `"rRNA_SSU"` \| `"rRNA_LSU"` \| `"rRNA_5S"` \| `"ITS"`. |
 | `copy_number` | `"single_copy"` \| `"low_copy"` \| `"high_copy"`. |
-| `deprecated` | `true` to soft-deprecate (runs, warns). Default `false`. |
+| `deprecated` | `true` to skip this primer with a warning. Default `false`. |
 | `deprecated_by` | Name of the replacement entry. |
 | `deprecated_reason` | Human-readable reason for deprecation. |
 | `min_length`, `max_length` | Amplicon length search window (bp). |
-| `min_count` | Minimum kmer count to seed the graph. |
+| `min_count` | Minimum kmer count to seed the graph (≥ 2). |
 | `mismatches` | Allowed mismatches per primer during kmer expansion. |
-| `trim` | Bases to trim from each primer end (≤ k−1, default k=19). |
-| `expected_length` | Expected amplicon length for reporting. |
+| `trim` | Positive number of 3' primer bases retained for seeding (≤ k−1, default k=19). |
+| `expected_length` | Provenance metadata; current Rust and Python validation do not use it to search, rank, constrain, or score output. |
 | `citation` | Primer-level citation. |
 | `notes` | Free-text notes about this primer pair. |
 | `dedup_edit_threshold` | Levenshtein distance below which two products are merged (default 10). |
+
+The YAML fields `max_dfs_states`, `max_paths_per_pair`, `max_node_visits`,
+`max_primer_kmers`, `high_coverage_ratio`, and `tip_coverage_fraction` are
+accepted for compatibility but are not effective per-primer tuning: startup
+overwrites every one with the corresponding global CLI value, including its
+default. `dedup_edit_threshold` remains the supported per-primer tuning field.
 
 ### Output naming
 
@@ -208,9 +217,10 @@ contain `_`.
   Bump the patch digit for notes/citation/validation edits, the minor digit
   for new primers or changed expectations, and the major digit for breaking
   changes (renamed or removed genes).
-- `expected_length` is the canonical expected amplicon length. It is distinct
-  from the `min_length`/`max_length` *search* window, which should be wider
-  to accommodate biological variation.
+- `expected_length` is retained provenance metadata. It is distinct from the
+  Rust `min_length`/`max_length` *search* window, which should be wider to
+  accommodate biological variation; current Rust and Python validation do not
+  use it to constrain search, ranking, emitted FASTA records, or scoring.
 - `dedup_edit_threshold` controls the Levenshtein distance below which two
   output products are collapsed into one (default 10). Lower it (e.g. 0–2)
   for panels targeting complex samples where distinct but closely related

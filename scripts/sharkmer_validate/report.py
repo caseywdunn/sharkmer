@@ -532,7 +532,7 @@ def _format_count(n: int | None) -> str:
 
 
 def _performance_summary(result: dict) -> list:
-    """Performance table: wall time, peak memory, reads, bases, kmers per run."""
+    """Performance table: timing, allocator, input, and counting metrics."""
     rows = []
     for s in result.get("samples", []):
         accession = s["accession"]
@@ -550,6 +550,7 @@ def _performance_summary(result: dict) -> list:
                 "wall_time_s": d.get("wall_time_s"),
                 "peak_mem": stats.get("peak_memory_bytes"),
                 "n_reads": stats.get("n_reads_read"),
+                "n_subreads": stats.get("n_subreads_ingested"),
                 "n_bases": stats.get("n_bases_read"),
                 "n_kmers": stats.get("n_kmers"),
                 "stage_times": stats.get("stage_timings", {}),
@@ -565,13 +566,18 @@ def _performance_summary(result: dict) -> list:
     lines.append("## Performance")
     lines.append("")
     lines.append(
+        "`Records ingested` is the legacy `n_subreads_ingested` field: it currently "
+        "duplicates successfully ingested FASTQ records, while `N` only breaks kmer windows."
+    )
+    lines.append("")
+    lines.append(
         "| Sample | Max reads | Wall time | Count time | PCR time | Allocator peak | "
-        "Reads ingested | Bases ingested | Kmers processed | Mbp/s | k-mers/s | "
+        "Reads read | Records ingested | Bases read | Kmer occurrences | Mbp/s | k-mers/s | "
         "Peak RSS | Table capacity | Final run disk |"
     )
     lines.append(
         "|--------|----------:|----------:|-----------:|---------:|---------------:|"
-        "---------------:|---------------:|---------------:|------:|----------:|"
+        "------------:|------------------:|-----------:|-----------------:|------:|----------:|"
         "---------:|---------------:|---------------:|"
     )
     for r in rows:
@@ -598,6 +604,7 @@ def _performance_summary(result: dict) -> list:
             f"| {r['sample']} | {k_reads} | {wall} | {count_time} | {pcr_time} | "
             f"{_format_bytes(r['peak_mem'])} | "
             f"{_format_count(r['n_reads'])} | "
+            f"{_format_count(r['n_subreads'])} | "
             f"{_format_count(r['n_bases'])} | "
             f"{_format_count(r['n_kmers'])} | {mbps} | {kmers_per_second} | "
             f"{_format_bytes(r['peak_rss'])} | {_format_count(r['table_capacity'])} | "

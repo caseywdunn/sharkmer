@@ -5,6 +5,61 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+Development target: **3.2.0**. These changes are on `dev`; this is not a release.
+Incremental k-mer counting remains supported. Faster bounded-memory counting
+and new nuclear/metagenomic inference policies belong to later releases.
+
+### Added
+
+- Per-product validation with contiguous alignment coverage, explicit
+  wrong-gene/ambiguous/split/unreferenced outcomes, checksummed executable and
+  input provenance, stage timings, and separately identified allocator-heap
+  and process-RSS measurements (#129). Historical inputs remain calibration
+  data, not independently held-out biological validation.
+- Current-run output manifests with run identity, completion state, and
+  SHA-256 receipts. FASTA/stats publication is staged and coordinated by a
+  per-sample lease; interrupted runs cannot be validated as complete (#134).
+- Checked primer expansion work and allocation-count limits before read
+  ingestion or ENA resolution (#135).
+
+### Fixed
+
+- Read every member of concatenated gzip inputs during ingestion, caching,
+  and read-threading replay (#130).
+- Retry lower coverage thresholds until a valid in-range amplicon is found,
+  rather than stopping at graph connectivity. Retain shared high-coverage
+  primer backbones without overriding the configured coverage ratio (#131).
+- Withhold products crossing unresolved repeat-length regions instead of
+  confidently reporting shortened homopolymer/tandem-repeat products (#132).
+- Include interior reads in optional threading; normalize strands, preserve
+  invalid-base gaps, and count support once per FASTQ record or paired fragment,
+  without repeated-visit or overlapping-mate inflation (#133).
+- Correct floor rounding of even-sized integer k-mer count medians without
+  overflow (#136).
+- Serialize cooperating cache users through replay, retain verified entries
+  during replacement downloads, and clear only checksum-verified owned pairs
+  rather than recursively deleting the supplied cache directory (#137).
+
+### Changed
+
+- Reruns invalidate only verified outputs owned by the same sample. Legacy,
+  modified, unowned, and symlink collisions are preserved and refused; use a
+  fresh output directory when upgrading or retaining prior results. Histogram
+  and DOT files are outside the output transaction (#134).
+- Cache-wide leases currently serialize whole runs sharing a directory.
+  Clearing preserves the directory/lock and ambiguous or modified entries;
+  forced-interruption leftovers may require a fresh cache directory or
+  `--no-cache`. Older clients ignoring the lock are not coordinated (#137).
+- PCR requires positive effective primer trim and k >= 2; counting-only k=1
+  remains supported. Excessive primer ambiguity/mismatch expansion fails
+  early with actionable limits (#135).
+- Documentation and diagnostics distinguish local assembly evidence from
+  full-haplotype support, per-target depth from whole-genome depth, and
+  allocator heap from RSS. Removed obsolete flag guidance and corrected panel
+  schema/deprecation descriptions (#138).
+
 ## [3.1.0] - 2026-04-13
 
 ### Added

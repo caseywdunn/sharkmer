@@ -3,9 +3,9 @@
 Regression benchmark for sharkmer.
 
 Reads benchmarks/benchmark.yaml to determine which panel + accession + depth
-combinations to run. Sample metadata (taxon, taxonomy) is resolved from the
-panel YAML files. Produces per-panel result YAMLs and markdown reports, plus
-a combined cross-panel summary.
+combinations to run. Sample metadata is resolved from panel validation samples,
+with an explicit benchmark taxon allowed when the panel has no matching sample.
+Produces per-panel result YAMLs and markdown reports, plus a combined summary.
 
 Usage:
     python benchmarks/run_benchmark.py
@@ -53,6 +53,46 @@ def resolve_sample_metadata(panel_data: dict, accession: str) -> dict | None:
         if sample.get("accession") == accession:
             return sample
     return None
+
+
+def resolve_benchmark_sample_metadata(
+    panel_data: dict, entry: dict, benchmark_scope: str
+) -> dict:
+    """Resolve benchmark metadata and require a taxon for end-to-end scoring."""
+    accession = entry["accession"]
+    sample_meta = dict(
+        resolve_sample_metadata(panel_data, accession) or {"accession": accession}
+    )
+    panel_taxon = sample_meta.get("taxon")
+    if panel_taxon is not None and (
+        not isinstance(panel_taxon, str) or not panel_taxon.strip()
+    ):
+        raise ValueError(
+            f"Panel validation sample {entry['panel']}/{accession} has a taxon "
+            "that is not a nonblank string."
+        )
+    if isinstance(panel_taxon, str):
+        panel_taxon = panel_taxon.strip()
+        sample_meta["taxon"] = panel_taxon
+    configured_taxon = entry.get("taxon")
+    if configured_taxon is not None:
+        if not isinstance(configured_taxon, str) or not configured_taxon.strip():
+            raise ValueError(
+                f"Benchmark {entry['panel']}/{accession} has a taxon that is not a nonblank string."
+            )
+        configured_taxon = configured_taxon.strip()
+        if panel_taxon and panel_taxon != configured_taxon:
+            raise ValueError(
+                f"End-to-end benchmark {entry['panel']}/{accession} has conflicting taxa: "
+                f"panel validation sample={panel_taxon!r}, benchmark.yaml={configured_taxon!r}."
+            )
+        sample_meta["taxon"] = configured_taxon
+    if benchmark_scope == "end-to-end" and not sample_meta.get("taxon"):
+        raise ValueError(
+            f"End-to-end benchmark {entry['panel']}/{accession} has no taxon. "
+            "Add it to the panel validation sample or benchmark.yaml."
+        )
+    return sample_meta
 
 
 def evaluate_known_truth(
@@ -175,14 +215,21 @@ def run_benchmark(
             continue
 
         panel_path, panel_data = panel_cache[panel_name]
-        sample_meta = resolve_sample_metadata(panel_data, accession)
+        panel_sample_meta = resolve_sample_metadata(panel_data, accession)
 
         # Allow filtering by taxon name (underscored) or accession.
         if sample_filter:
-            taxon = (sample_meta or {}).get("taxon", accession)
+            entry_taxon = entry.get("taxon")
+            panel_taxon = (panel_sample_meta or {}).get("taxon")
+            taxon = entry_taxon if isinstance(entry_taxon, str) else panel_taxon
+            taxon = taxon if isinstance(taxon, str) else accession
             sample_id = taxon.replace(" ", "_")
             if accession not in sample_filter and sample_id not in sample_filter:
                 continue
+
+        sample_meta = resolve_benchmark_sample_metadata(
+            panel_data, entry, benchmark_scope
+        )
 
         max_reads = entry.get("max_reads", [1_000_000])
 
@@ -192,8 +239,7 @@ def run_benchmark(
                 "panel_data": panel_data,
                 "accession": accession,
                 "max_reads": max_reads,
-                "sample_meta": sample_meta
-                or {"accession": accession, "taxon": entry.get("taxon", "")},
+                "sample_meta": sample_meta,
                 "notes": entry.get("notes"),
                 "input": (config_path.parent / entry["input"]).resolve()
                 if entry.get("input")

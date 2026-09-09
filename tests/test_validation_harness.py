@@ -9,9 +9,11 @@ from unittest import mock
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
+sys.path.insert(0, str(REPO_ROOT / "benchmarks"))
 
 from sharkmer_validate import blast_references, report, results, runner
 import bootstrap_from_runs
+import run_benchmark as benchmark_runner
 
 
 class BlastClassificationTests(unittest.TestCase):
@@ -124,6 +126,102 @@ class BlastClassificationTests(unittest.TestCase):
         arguments = command.call_args.args[0]
         self.assertEqual(arguments[arguments.index("-num_alignments") + 1], "22")
         self.assertNotIn("-max_target_seqs", arguments)
+
+
+class BenchmarkMetadataTests(unittest.TestCase):
+    def test_panel_schema_matches_runtime_primer_bounds(self):
+        schema = json.loads((REPO_ROOT / "schemas" / "panel" / "v2.json").read_text())
+        primer = schema["$defs"]["PrimerEntry"]["properties"]
+
+        self.assertEqual(primer["forward_seq"]["pattern"], "^[ACGTRYSWKMBDHVN]+$")
+        self.assertEqual(primer["reverse_seq"]["pattern"], "^[ACGTRYSWKMBDHVN]+$")
+        self.assertEqual(primer["max_length"]["minimum"], 1)
+        self.assertEqual(primer["min_count"]["minimum"], 2)
+        self.assertEqual(primer["trim"]["minimum"], 1)
+
+    def test_explicit_benchmark_taxon_overrides_missing_panel_sample(self):
+        metadata = benchmark_runner.resolve_benchmark_sample_metadata(
+            {"validation": {"samples": []}},
+            {"panel": "human", "accession": "SRR17535371", "taxon": "Homo sapiens"},
+            "end-to-end",
+        )
+        self.assertEqual(metadata, {"accession": "SRR17535371", "taxon": "Homo sapiens"})
+
+    def test_end_to_end_benchmark_without_taxon_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "has no taxon"):
+            benchmark_runner.resolve_benchmark_sample_metadata(
+                {"validation": {"samples": []}},
+                {"panel": "human", "accession": "SRR17535371"},
+                "end-to-end",
+            )
+
+    def test_whitespace_benchmark_taxon_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "nonblank string"):
+            benchmark_runner.resolve_benchmark_sample_metadata(
+                {"validation": {"samples": []}},
+                {"panel": "human", "accession": "SRR17535371", "taxon": "  "},
+                "end-to-end",
+            )
+
+    def test_nonstring_panel_taxon_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "nonblank string"):
+            benchmark_runner.resolve_benchmark_sample_metadata(
+                {"validation": {"samples": [{"accession": "SRR17535371", "taxon": 9606}]}},
+                {"panel": "human", "accession": "SRR17535371"},
+                "end-to-end",
+            )
+
+    def test_conflicting_benchmark_taxon_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, "conflicting taxa"):
+            benchmark_runner.resolve_benchmark_sample_metadata(
+                {"validation": {"samples": [{"accession": "SRR17535371", "taxon": "Taxon A"}]}},
+                {"panel": "human", "accession": "SRR17535371", "taxon": "Taxon B"},
+                "end-to-end",
+            )
+
+
+class PerformanceReportTests(unittest.TestCase):
+    def test_performance_table_keeps_distinct_record_and_memory_metrics(self):
+        result = {
+            "samples": [
+                {
+                    "accession": "SRR1",
+                    "taxon": "Taxon A",
+                    "depths": [
+                        {
+                            "max_reads": 1000,
+                            "wall_time_s": 2.0,
+                            "peak_rss_bytes": 2048,
+                            "temp_disk_final_bytes": 4096,
+                            "run_stats": {
+                                "peak_memory_bytes": 1024,
+                                "n_reads_read": 11,
+                                "n_subreads_ingested": 12,
+                                "n_bases_read": 1300,
+                                "n_kmers": 14,
+                                "count_table_capacity": 15,
+                                "stage_timings": {"read_ingest_s": 1.0},
+                            },
+                        }
+                    ],
+                }
+            ]
+        }
+
+        lines = report._performance_summary(result)
+        header_cells = lines[4].split("|")[1:-1]
+        row_cells = lines[6].split("|")[1:-1]
+
+        self.assertEqual(len(header_cells), len(row_cells))
+        self.assertEqual(header_cells[5].strip(), "Allocator peak")
+        self.assertEqual(header_cells[7].strip(), "Records ingested")
+        self.assertEqual(header_cells[12].strip(), "Peak RSS")
+        self.assertEqual(row_cells[5].strip(), report._format_bytes(1024))
+        self.assertEqual(row_cells[6].strip(), "11")
+        self.assertEqual(row_cells[7].strip(), "12")
+        self.assertEqual(row_cells[8].strip(), "1,300")
+        self.assertEqual(row_cells[9].strip(), "14")
+        self.assertEqual(row_cells[12].strip(), report._format_bytes(2048))
 
 
 class CurrentRunManifestTests(unittest.TestCase):

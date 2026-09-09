@@ -38,15 +38,10 @@ fn main() -> Result<()> {
 
     // Apply CLI tuning overrides to all PCR params.
     //
-    // Precedence: CLI flags > panel defaults > hardcoded defaults. Every
-    // field below unconditionally overwrites the per-panel value with the
-    // CLI-provided value, even when the user did not explicitly set the
-    // flag — the CLI parser fills unset flags with the hardcoded defaults,
-    // so the effective precedence still holds but panel-supplied values
-    // for these specific fields are not honored. This is intentional: the
-    // hidden tuning flags are meant for debugging the PCR engine globally,
-    // not for per-gene customization (which is what the per-primer keys in
-    // the panel YAML are for).
+    // Global CLI values always win: unset flags supply their hardcoded defaults
+    // and overwrite these panel compatibility fields. This is intentional for
+    // hidden engine diagnostics, not per-gene tuning. dedup_edit_threshold
+    // remains the supported per-primer runtime tuning field.
     for p in &mut pcr_runs {
         p.max_dfs_states = args.max_dfs_states;
         p.max_paths_per_pair = args.max_paths_per_pair;
@@ -180,11 +175,11 @@ fn main() -> Result<()> {
         None
     };
 
-    // Resolve global node budget: user-pinned or dynamic based on data volume
+    // Resolve the per-gene/threshold node budget from user input or data volume
     let node_budget_global = match args.node_budget_global {
         Some(budget) => {
             info!(
-                "Global node budget: {} (pinned via --node-budget-global)",
+                "Per-gene/threshold node budget: {} (pinned via --node-budget-global)",
                 budget
             );
             budget
@@ -192,7 +187,7 @@ fn main() -> Result<()> {
         None => {
             let budget = pcr::compute_node_budget(n_bases_ingested);
             info!(
-                "Global node budget: {} (auto, based on {} bp ingested; ~{}M reads at 150bp). Pin with --node-budget-global.",
+                "Per-gene/threshold node budget: {} (auto, based on {} bp ingested; ~{}M reads at 150bp). Pin with --node-budget-global.",
                 budget,
                 n_bases_ingested,
                 n_bases_ingested / 150_000_000

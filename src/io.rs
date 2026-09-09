@@ -22,7 +22,7 @@ pub(crate) enum ReadSourcePlan {
     CachedRemote(Vec<PathBuf>),
     /// Remote files that must be re-downloaded (URLs)
     UncachedRemote(Vec<String>),
-    /// Cannot re-read (stdin or --no-read-threading)
+    /// Cannot re-read (stdin or replay otherwise unavailable)
     Unavailable,
 }
 
@@ -571,7 +571,7 @@ pub(crate) fn ingest_reads(
         || !args.pcr_primers.is_empty();
     if has_pcr && state.n_reads_read < 10_000 {
         warn!(
-            "Only {} reads ingested. sPCR typically needs many more reads to produce results.",
+            "Only {} FASTQ records read. sPCR typically needs many more reads to produce results.",
             state.n_reads_read
         );
     }

@@ -141,13 +141,13 @@
 
         "forward_seq": {
           "type": "string",
-          "pattern": "^[ACGTRYSWKMBDHVNacgtryswkmbdhvn]+$",
-          "description": "5'-to-3' forward primer sequence (IUPAC nucleotide codes allowed)."
+          "pattern": "^[ACGTRYSWKMBDHVN]+$",
+          "description": "5'-to-3' uppercase forward primer sequence (IUPAC nucleotide codes allowed)."
         },
         "reverse_seq": {
           "type": "string",
-          "pattern": "^[ACGTRYSWKMBDHVNacgtryswkmbdhvn]+$",
-          "description": "5'-to-3' reverse primer sequence (IUPAC nucleotide codes allowed)."
+          "pattern": "^[ACGTRYSWKMBDHVN]+$",
+          "description": "5'-to-3' uppercase reverse primer sequence (IUPAC nucleotide codes allowed)."
         },
         "min_length": {
           "type": "integer",
@@ -161,7 +161,7 @@
         },
         "min_count": {
           "type": "integer",
-          "minimum": 1,
+          "minimum": 2,
           "description": "Minimum kmer count required to seed the De Bruijn graph. Default: 2."
         },
         "mismatches": {
@@ -171,8 +171,8 @@
         },
         "trim": {
           "type": "integer",
-          "minimum": 0,
-          "description": "Bases to trim from each primer end when seeding the graph (must be ≤ k−1 = 18). Default: 15."
+          "minimum": 1,
+          "description": "Positive bases retained from each primer 3' end when seeding the graph (must be ≤ k−1 = 18). Default: 15."
         },
 
         "compartment": {
@@ -194,7 +194,7 @@
         "deprecated": {
           "type": "boolean",
           "default": false,
-          "description": "If true, sharkmer warns when this primer is used but still runs it. Default: false."
+          "description": "If true, sharkmer warns and skips this primer. Default: false."
         },
         "deprecated_by": {
           "type": "string",
@@ -208,7 +208,7 @@
         "expected_length": {
           "type": "integer",
           "minimum": 1,
-          "description": "Expected amplicon length (bp). Informational; used in validation reports."
+          "description": "Expected amplicon length (bp). Retained provenance metadata; not used by current search or validation scoring."
         },
         "citation": {
           "type": "string",
@@ -227,33 +227,33 @@
         "max_dfs_states": {
           "type": "integer",
           "minimum": 1,
-          "description": "Expert tuning: Maximum DFS state budget during path enumeration. Default: 100000."
+          "description": "Accepted for compatibility, but runtime uses the global CLI --max-dfs-states value. Default: 100000."
         },
         "max_paths_per_pair": {
           "type": "integer",
           "minimum": 1,
-          "description": "Expert tuning: Maximum paths returned per primer pair before truncation. Default: 20."
+          "description": "Accepted for compatibility, but runtime uses the global CLI --max-paths-per-pair value. Default: 20."
         },
         "max_node_visits": {
           "type": "integer",
           "minimum": 1,
-          "description": "Expert tuning: Maximum times a node may be revisited during DFS (cycle tolerance). Default: 2."
+          "description": "Accepted for compatibility, but runtime uses the global CLI --max-node-visits value. Default: 2."
         },
         "max_primer_kmers": {
           "type": "integer",
           "minimum": 1,
-          "description": "Expert tuning: Maximum primer kmer variants after ambiguity/mismatch expansion. Default: 40."
+          "description": "Accepted for compatibility, but runtime uses the global CLI --max-primer-kmers value. Default: 40."
         },
         "high_coverage_ratio": {
           "type": "number",
           "exclusiveMinimum": 0,
-          "description": "Expert tuning: Coverage ratio above which an edge is treated as a repeat and filtered. Default: 10.0."
+          "description": "Accepted for compatibility, but runtime uses the global CLI --high-coverage-ratio value. Default: 10.0."
         },
         "tip_coverage_fraction": {
           "type": "number",
           "exclusiveMinimum": 0,
           "maximum": 1,
-          "description": "Expert tuning: Coverage fraction below which a tip edge is pruned. Default: 0.1."
+          "description": "Accepted for compatibility, but runtime uses the global CLI --tip-coverage-fraction value. Default: 0.1."
         }
       }
     },

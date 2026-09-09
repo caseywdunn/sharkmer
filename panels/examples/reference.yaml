@@ -4,7 +4,7 @@
 # in the panel schema and is NOT embedded into sharkmer as a built-in panel.
 #
 # Load it with:  sharkmer --pcr-panel-file panels/examples/reference.yaml ...
-# Validate with: sharkmer --validate-panels panels/examples/reference.yaml
+# Validate with: sharkmer --validate-panels --pcr-panel-file panels/examples/reference.yaml
 
 # ---------------------------------------------------------------------------
 # Panel-level metadata
@@ -89,15 +89,16 @@ changelog:
 #                     "protein_coding" | "rRNA" | "tRNA" | "rRNA_SSU" |
 #                     "rRNA_LSU" | "rRNA_5S" | "ITS"
 #   copy_number     — "single_copy" | "low_copy" | "high_copy"
-#   deprecated      — true to soft-deprecate (still runs, warns). Default: false.
+#   deprecated      — true to skip this primer with a warning. Default: false.
 #   deprecated_by   — name of replacement primer entry
 #   deprecated_reason — human-readable reason for deprecation
-#   expected_length — expected amplicon length (used in validation output)
+#   expected_length — retained provenance metadata, not active search or scoring
 #   citation        — primer-level citation (distinct from panel citation)
 #   notes           — free-text notes about this primer pair
-#   dedup_edit_threshold, max_dfs_states, max_paths_per_pair,
-#   max_node_visits, max_primer_kmers, high_coverage_ratio,
-#   tip_coverage_fraction — advanced graph-traversal tuning (expert use)
+#   dedup_edit_threshold — per-primer output deduplication tuning
+#   max_dfs_states, max_paths_per_pair, max_node_visits,
+#   max_primer_kmers, high_coverage_ratio, tip_coverage_fraction — accepted
+#                     compatibility fields; global CLI values take precedence
 
 primers:
 
@@ -196,7 +197,7 @@ primers:
     citation: "Ji et al 2003. https://doi.org/10.1046/j.1471-8286.2003.00519.x"
     notes: "Alternative ITS primer pair. Forward = RC of 18S reverse primer."
 
-  # --- Example of a deprecated primer entry ---
+  # --- Example of a skipped deprecated primer entry ---
 
   - gene: "28S"
     index: 1

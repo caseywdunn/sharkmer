@@ -136,7 +136,7 @@ DBNode {
 DBEdge {
     _kmer: u64,           the full kmer connecting two nodes
     count: u32,           observed frequency in the data
-    coverage_ratio: f64,  count / global median (annotated post-pruning)
+    coverage_ratio: f64,  count / current-graph edge-count median (post-pruning)
 }
 
 PathScore {
@@ -159,14 +159,14 @@ Graph: petgraph::StableDiGraph<DBNode, DBEdge>
  | 1. Primer preprocessing   |   primers.rs
  |    Resolve ambiguities    |   Expand R->AG, Y->CT, N->ACGT, etc.
  |    Generate mismatches    |   Up to `mismatches` substitutions
- |    Trim to `trim` length  |   Shorter oligos for binding search
+ |    Retain `trim` 3' bases |   Shorter oligos for binding search
  +---------------------------+
               |
               v
  +---------------------------+
  | 2. Find primer kmers      |   primers.rs: find_oligos_in_kmers()
  |    Scan kmer table for    |   Check both orientations
- |    kmers containing       |   Filter to top 100 by count
+ |    kmers containing       |   Retain up to 40 by count
  |    primer binding sites   |
  +---------------------------+
               |
@@ -186,21 +186,21 @@ Graph: petgraph::StableDiGraph<DBNode, DBEdge>
  |    node, find extending   |   Check kmer exists above threshold
  |    kmers in the data      |   Mark terminal if no extensions
  +---------------------------+
- |    Extended incrementally across coverage threshold steps
+ |    Fresh seed-graph clone at each threshold
  |    (high -> min_count, in COVERAGE_STEPS steps)
- |    prepare_for_lower_threshold() resets terminal flags
- |    between steps; only newly qualifying edges are added
+ |    Extend, prune, and search each clone completely
+ |    Retry lower thresholds after invalid candidates
  |
  |    Coverage-ratio filtering:
- |      - Skip edges with count > 10x median
- |      - Abandon if graph exceeds 50,000 nodes
- |      - Break on first threshold that produces a product
+ |      - Skip high-count edges above max(graph median × ratio, primer floor)
+ |      - Abandon at the per-gene/threshold node budget
+ |      - Stop standard search at the first valid threshold product
               |
               v
  +---------------------------+
  | 5. Prune graph            |   pruning.rs (post-extension, on clone)
  |  remove_low_coverage_tips |   Dead-end tips < k with count
- |                           |     < 0.1x global median
+ |                           |     < 0.1x current-graph edge-count median
  |  reachability_pruning()   |   Bidirectional BFS from start/end
  |                           |     nodes; remove unreachable nodes
  +---------------------------+
@@ -208,8 +208,8 @@ Graph: petgraph::StableDiGraph<DBNode, DBEdge>
               v
  +---------------------------+
  | 5b. Annotate edges        |   graph.rs: annotate_coverage_ratios()
- |    coverage_ratio =       |   count / global median per edge
- |    count / global median  |   Feeds into path scoring
+ |    coverage_ratio =       |   count / current-graph median per edge
+ |    count / graph median   |   Feeds into path scoring
  +---------------------------+
               |
               v
@@ -234,15 +234,13 @@ Graph: petgraph::StableDiGraph<DBNode, DBEdge>
 
 #### Coverage threshold stepping
 
-The graph is extended incrementally with decreasing minimum kmer count
-thresholds. Starting from `primer_count / 2` and stepping down to
-`min_count` in 4 steps (`COVERAGE_STEPS`). Unlike earlier versions that
-rebuilt the graph from scratch at each threshold, Phase 3 extends the
-existing graph: `prepare_for_lower_threshold()` resets terminal flags on
-nodes that may gain new successors, then `extend_graph()` adds only
-newly qualifying edges. If a complete path (start -> end) is found at a
-higher threshold, the search stops. This allows clean assembly at high
-coverage before falling back to noisier low-coverage extension.
+The graph is evaluated at decreasing minimum-kmer-count thresholds, starting
+from `primer_count / 2` and stepping down to `min_count` in 4 steps
+(`COVERAGE_STEPS`). Each step clones the seed graph, extends it, then runs
+pruning and path/length/repeat evaluation independently. Connectivity or an
+invalid candidate does not stop the sweep: lower thresholds are tried. Standard
+search stops only when a threshold yields a valid product, so it is not an
+exhaustive rare-template search.
 
 #### Primer panels
 
@@ -258,6 +256,13 @@ with gene names, sequences, length constraints, and mismatch tolerance.
   deterministic output.
 - **`write_stats()`** -- serializes `RunStats` to YAML.
 - **`print_summary()`** -- human-readable table of results.
+
+`n_reads_read` is FASTQ records read, while `n_subreads_ingested` is a
+legacy-named count of records submitted to the kmer counter rather than
+N-split segments; N only breaks kmer windows within a record. `n_kmers` is
+accepted kmer occurrences rather than distinct keys. `peak_memory_bytes` is
+allocator heap usage; a benchmark process-RSS measurement is separate when
+available.
 
 ### format.rs
 
@@ -295,10 +300,16 @@ Small utility module: `format_count()`, `format_bytes()`,
   choose the best sequences. This preserves information for future
   read-threading phases.
 
+- **Evidence boundary**: A product is an assembled kmer path, not direct proof
+  that one observed read or molecule spans a complete haplotype. Read threading
+  provides local support and does not establish long-range phase or repeat copy
+  count.
+
 - **Coverage-weighted path finding**: DFS explores highest-count edges
   first, so the first paths found are highest quality. Bounded
-  revisitation (`MAX_NODE_VISITS = 2`) handles tandem repeats without
-  exponential blowup. Replaces exhaustive `all_simple_paths` enumeration.
+  revisitation (`MAX_NODE_VISITS = 2`) bounds cycle traversal without
+  exponential blowup. Repeat-touched candidates remain uncertain. Replaces
+  exhaustive `all_simple_paths` enumeration.
 
 - **O(N) deduplication**: Greedy clustering computes bounded Levenshtein
   distance on-the-fly against kept records only, replacing the previous
