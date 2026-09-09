@@ -1,4 +1,6 @@
 # Benchmark configuration for sharkmer regression testing.
+schema_version: 1
+dataset_role: calibration
 #
 # Each entry selects a validation sample (by panel + accession) and declares
 # the read depths to benchmark at. The sample must exist in the panel's

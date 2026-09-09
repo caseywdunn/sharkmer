@@ -88,6 +88,9 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
 ## v3.2 — Correctness and reliable evaluation
 
 - [ ] [#129](https://github.com/caseywdunn/sharkmer/issues/129) — Make sPCR validation and benchmark provenance trustworthy.
+  - [x] Implement per-product validation, executable/input provenance, current-run manifests, benchmark metrics, and offline regression checks; independent Astra review approved on 2026-09-08.
+  - [x] Verify 145 Rust unit tests, 22 integration tests, 20 Python regressions, exact fixture counts/sequences, real BLAST ambiguity/split cases, and bounded ENA cache checks.
+  - [ ] Register independent biological held-out inputs and truth before assembly-policy tuning. Existing datasets remain calibration/regression data; see [the dataset policy](../benchmarks/DATASETS.md). This acceptance gate keeps the issue open.
 - [ ] [#130](https://github.com/caseywdunn/sharkmer/issues/130) — Read every member of concatenated gzip FASTQ inputs.
 - [ ] [#131](https://github.com/caseywdunn/sharkmer/issues/131) — Continue coverage thresholds until a valid amplicon is recovered.
 - [ ] [#132](https://github.com/caseywdunn/sharkmer/issues/132) — Prevent confident amplicon output with collapsed homopolymer lengths.

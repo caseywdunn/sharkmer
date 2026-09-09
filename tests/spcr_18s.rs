@@ -61,6 +61,9 @@ fn test_18s_recovery_from_err571460() {
         fasta_18s.exists(),
         "Expected 18S FASTA to be produced with reverse extension"
     );
+    let stats_path = outdir.path().join(format!("{}.stats.yaml", sample));
+    let stats_content = fs::read_to_string(stats_path).expect("failed to read stats YAML");
+    assert!(stats_content.contains("output_file: ERR571460_test_cnidaria_18S.fasta"));
 }
 
 /// Verify that stats.yaml is produced and contains expected fields.
@@ -101,11 +104,18 @@ fn test_stats_yaml_output() {
     // Check required fields are present
     assert!(stats_content.contains("sharkmer_version:"));
     assert!(stats_content.contains("sample:"));
+    assert!(stats_content.contains("input_source:"));
+    assert!(stats_content.contains("kind: local_files"));
     assert!(stats_content.contains("kmer_length:"));
     assert!(stats_content.contains("n_reads_read:"));
     assert!(stats_content.contains("n_bases_read:"));
     assert!(stats_content.contains("n_kmers:"));
     assert!(stats_content.contains("peak_memory_bytes:"));
+    assert!(stats_content.contains("count_table_capacity:"));
+    assert!(stats_content.contains("stage_timings:"));
+    assert!(stats_content.contains("read_ingest_s:"));
+    assert!(stats_content.contains("count_finalize_s:"));
+    assert!(stats_content.contains("pipeline_total_s:"));
     assert!(stats_content.contains("pcr_results:"));
 }
 

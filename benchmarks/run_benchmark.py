@@ -17,10 +17,10 @@ Run from the repo root directory with the sharkmer-bench conda environment.
 """
 
 import argparse
+import hashlib
 import shutil
 import sys
 import tempfile
-from datetime import datetime
 from pathlib import Path
 
 import yaml
@@ -55,17 +55,92 @@ def resolve_sample_metadata(panel_data: dict, accession: str) -> dict | None:
     return None
 
 
+def evaluate_known_truth(
+    run: dict,
+    expected: dict | None,
+    benchmark_scope: str,
+    expected_input_sha256: str | None = None,
+) -> dict | None:
+    if not expected:
+        return None
+    checks = []
+    if expected_input_sha256 is not None:
+        observed_sha256 = run.get("input", {}).get("sha256")
+        checks.append(
+            {
+                "check": "input_sha256",
+                "expected": expected_input_sha256,
+                "observed": observed_sha256,
+                "passed": observed_sha256 == expected_input_sha256,
+            }
+        )
+    if not run.get("success"):
+        checks.append({"check": "run_success", "passed": False})
+    elif benchmark_scope == "counting-only":
+        expected_kmers = expected.get("counting-only", {}).get("n_kmers")
+        if expected_kmers is not None:
+            observed_kmers = run.get("run_stats", {}).get("n_kmers")
+            checks.append(
+                {
+                    "check": "n_kmers",
+                    "expected": expected_kmers,
+                    "observed": observed_kmers,
+                    "passed": observed_kmers == expected_kmers,
+                }
+            )
+    else:
+        observed = {
+            gene["gene"]: [
+                {
+                    "length": product.get("length"),
+                    "sha256": hashlib.sha256(product.get("sequence", "").encode()).hexdigest(),
+                }
+                for product in gene.get("products", [])
+            ]
+            for gene in run.get("genes", [])
+            if gene.get("recovered")
+        }
+        expected_genes = expected.get("end-to-end", {}).get("genes", {})
+        checks.append(
+            {
+                "check": "recovered_gene_set",
+                "expected": sorted(expected_genes),
+                "observed": sorted(observed),
+                "passed": set(observed) == set(expected_genes),
+            }
+        )
+        for gene, expected_products in expected_genes.items():
+            checks.append(
+                {
+                    "check": f"products:{gene}",
+                    "expected": expected_products,
+                    "observed": observed.get(gene),
+                    "passed": observed.get(gene) == expected_products,
+                }
+            )
+    return {"passed": bool(checks) and all(check["passed"] for check in checks), "checks": checks}
+
+
 def run_benchmark(
     panel_filter: list | None = None,
     sample_filter: list | None = None,
     threads: int = runner.THREADS,
     max_reads_override: list | None = None,
     run_blast: bool = True,
+    executable: Path | None = None,
+    benchmark_scope: str = "end-to-end",
+    cache_mode: str = "warm",
+    diagnostic_graphs: bool = False,
+    config_path: Path = BENCHMARK_CONFIG,
+    k: int = runner.K,
 ):
     """Run the benchmark suite."""
-    runner.build_sharkmer()
+    executable_provenance = runner.build_sharkmer(executable=executable)
+    selected_executable = Path(executable_provenance["path"])
 
-    sharkmer_version = runner.clean_sharkmer_version(runner.get_sharkmer_version())
+    sharkmer_version = runner.clean_sharkmer_version(
+        runner.get_sharkmer_version(selected_executable)
+    )
     git_commit = runner.get_git_commit()
     machine_info = runner.get_machine_info()
 
@@ -74,7 +149,7 @@ def run_benchmark(
     print(f"machine: {machine_info}")
 
     # Load benchmark config and resolve panel data.
-    bench_samples = load_benchmark_config()
+    bench_samples = load_benchmark_config(config_path)
 
     # Load all referenced panels once.
     panel_cache: dict[str, tuple[Path, dict]] = {}
@@ -117,8 +192,14 @@ def run_benchmark(
                 "panel_data": panel_data,
                 "accession": accession,
                 "max_reads": max_reads,
-                "sample_meta": sample_meta or {"accession": accession},
+                "sample_meta": sample_meta
+                or {"accession": accession, "taxon": entry.get("taxon", "")},
                 "notes": entry.get("notes"),
+                "input": (config_path.parent / entry["input"]).resolve()
+                if entry.get("input")
+                else None,
+                "expected": entry.get("expected"),
+                "input_sha256": entry.get("input_sha256"),
             }
         )
 
@@ -130,8 +211,10 @@ def run_benchmark(
     print(f"Panels: {len(by_panel)}, benchmark entries: {total}")
     print()
 
-    stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    stamp = runner.unique_run_id()
     all_panel_results = []
+    known_truth_failures = 0
+    execution_failures = 0
 
     for panel_name, items in sorted(by_panel.items()):
         panel_path = items[0]["panel_path"]
@@ -143,7 +226,7 @@ def run_benchmark(
         # Build reference BLAST DB.
         tmpdir = Path(tempfile.mkdtemp(prefix=f"sharkmer_refs_{panel_name}_"))
         ref_db = None
-        if run_blast:
+        if run_blast and benchmark_scope == "end-to-end":
             ref_db = blast_references.build_reference_db(panel_data, tmpdir)
             if ref_db:
                 print(f"  Reference DB built: {ref_db}")
@@ -171,8 +254,22 @@ def run_benchmark(
                     max_reads,
                     run_dir,
                     threads=threads,
-                    dump_graph=True,
+                    dump_graph=diagnostic_graphs,
+                    executable=selected_executable,
+                    benchmark_scope=benchmark_scope,
+                    cache_mode=cache_mode,
+                    input_path=item["input"],
+                    k=k,
                 )
+                known_truth = evaluate_known_truth(
+                    run, item["expected"], benchmark_scope, item["input_sha256"]
+                )
+                if not run.get("success", False):
+                    execution_failures += 1
+                if known_truth is not None:
+                    run["known_truth"] = known_truth
+                    if not known_truth["passed"]:
+                        known_truth_failures += 1
                 runs.append(run)
 
             # BLAST against references.
@@ -181,6 +278,10 @@ def run_benchmark(
                 ref_db,
                 sample_taxon=taxon,
                 skip_blast=not run_blast,
+                reference_genes={
+                    reference["gene_name"]
+                    for reference in blast_references.extract_references(panel_data)
+                },
             )
 
             sample_results.append((sample_meta, runs))
@@ -193,6 +294,11 @@ def run_benchmark(
             sharkmer_version,
             blast_mode=blast_mode,
             machine_info=machine_info,
+            executable_provenance=executable_provenance,
+            evaluated_genes=runner.panel_gene_names(panel_data)
+            if benchmark_scope == "end-to-end"
+            else [],
+            run_id=stamp,
         )
         result_name = results.result_filename(panel_data, sharkmer_version, stamp)
         result_path = BENCHMARK_RESULTS_DIR / result_name
@@ -219,6 +325,10 @@ def run_benchmark(
         report.write_benchmark_summary(all_panel_results, summary_path)
 
     print("Benchmark complete.")
+    if execution_failures:
+        raise SystemExit(f"{execution_failures} benchmark execution(s) failed; artifacts preserved")
+    if known_truth_failures:
+        raise SystemExit(f"{known_truth_failures} known-truth benchmark run(s) failed")
 
 
 def main():
@@ -229,6 +339,18 @@ def main():
         "--panels",
         nargs="+",
         help="Only run these panels (default: all in benchmark.yaml)",
+    )
+    parser.add_argument(
+        "--config",
+        type=Path,
+        default=BENCHMARK_CONFIG,
+        help=f"Benchmark dataset definition (default: {BENCHMARK_CONFIG})",
+    )
+    parser.add_argument(
+        "-k",
+        type=int,
+        default=runner.K,
+        help=f"Kmer length (default: {runner.K})",
     )
     parser.add_argument(
         "--samples",
@@ -252,6 +374,28 @@ def main():
         action="store_true",
         help="Skip BLAST validation of amplicons",
     )
+    parser.add_argument(
+        "--executable",
+        type=Path,
+        help="Use and fingerprint this executable instead of building the workspace binary",
+    )
+    parser.add_argument(
+        "--scope",
+        choices=["end-to-end", "counting-only"],
+        default="end-to-end",
+        help="Benchmark the full pipeline or counting only (default: end-to-end)",
+    )
+    parser.add_argument(
+        "--cache-mode",
+        choices=["warm", "cold"],
+        default="warm",
+        help="Reuse the sharkmer read cache or use an empty per-run cache",
+    )
+    parser.add_argument(
+        "--diagnostic-graphs",
+        action="store_true",
+        help="Include graph dump overhead and record it in run parameters",
+    )
     args = parser.parse_args()
 
     run_benchmark(
@@ -260,6 +404,12 @@ def main():
         threads=args.threads,
         max_reads_override=args.max_reads,
         run_blast=not args.no_blast,
+        executable=args.executable,
+        benchmark_scope=args.scope,
+        cache_mode=args.cache_mode,
+        diagnostic_graphs=args.diagnostic_graphs,
+        config_path=args.config.resolve(),
+        k=args.k,
     )
 
 

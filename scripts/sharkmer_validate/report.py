@@ -56,6 +56,8 @@ SCORE_LEGEND = (
     "`+` reference for other species, `*` reference for this species. "
     "Position 3: `-` no BLAST hit to same gene, "
     "`+` hit same gene different species, `*` same gene same species.\n"
+    "A hit counts only after the configured identity and single-contiguous-HSP "
+    "query-coverage gates pass; wrong-gene, ambiguous, short, and split matches never count.\n"
 )
 
 
@@ -102,14 +104,16 @@ def _score_gene(
     # Position 3: BLAST result (only meaningful if recovered)
     if not recovered or ref_match is None:
         p3 = "-"
-    elif ref_match.get("pct_identity") is None:
-        p3 = "-"
-    elif ref_match.get("on_target"):
-        # Same gene, same species
+    elif (
+        ref_match.get("status") == "confirmed_product"
+        and (ref_match.get("matched_gene") or "").lower() == gene.lower()
+        and ref_match.get("all_products_confirmed", True)
+    ):
         p3 = "*"
-    elif ref_match.get("matched_gene") is not None:
-        # Got a hit — it's same gene different species
-        # (we only BLAST against same-gene refs now)
+    elif (
+        ref_match.get("status") == "confirmed_gene_other_taxon"
+        and (ref_match.get("matched_gene") or "").lower() == gene.lower()
+    ):
         p3 = "+"
     else:
         p3 = "-"
@@ -147,6 +151,18 @@ def write_panel_report(
     lines.append(f"- **Panel version**: `{panel_version}`")
     lines.append(f"- **sharkmer version**: `{sharkmer_version}`")
     lines.append(f"- **Date**: {now}")
+    executable = result.get("provenance", {}).get("executable") or {}
+    if executable:
+        source_observation = executable.get("workspace_source_observation", {})
+        lines.append(
+            f"- **Executable**: `{executable.get('path', '?')}` "
+            f"(sha256 `{executable.get('sha256', '?')}`)"
+        )
+        lines.append(
+            f"- **Source observation**: `{source_observation.get('revision', '?')}`; "
+            f"dirty={source_observation.get('dirty', '?')}; "
+            f"tree sha256 `{source_observation.get('tree_sha256', '?')}`"
+        )
     machine = result.get("machine", {})
     if machine:
         lines.append(
@@ -213,7 +229,9 @@ def write_panel_report(
             cells = []
             for depth in successful:
                 gr = gene_depths.get(depth["max_reads"])
-                if gr and gr.get("recovered"):
+                if gr and gr.get("evaluation_status") == "not_evaluated":
+                    cells.append("N/E")
+                elif gr and gr.get("recovered"):
                     length = gr.get("length")
                     ref = gr.get("reference_match")
                     if ref and ref.get("pct_identity") is not None:
@@ -228,7 +246,9 @@ def write_panel_report(
             # Score from highest successful depth.
             best_depth = successful[-1]
             gr = gene_depths.get(best_depth["max_reads"])
-            if gr and gr.get("recovered"):
+            if gr and gr.get("evaluation_status") == "not_evaluated":
+                score = "N/E"
+            elif gr and gr.get("recovered"):
                 score = _score_gene(
                     True, gene, taxon,
                     gr.get("reference_match"), ref_availability,
@@ -319,6 +339,9 @@ def _cross_sample_summary(
             best = max(successful, key=lambda d: d["max_reads"])
             gene_results = {g["gene"]: g for g in best.get("genes", [])}
             gr = gene_results.get(gene)
+            if gr and gr.get("evaluation_status") == "not_evaluated":
+                cells.append("`N/E`")
+                continue
             if gr and gr.get("recovered"):
                 score = _score_gene(
                     True, gene, taxon,
@@ -434,21 +457,23 @@ def _reference_details(result: dict, considered_genes: list) -> list:
                 continue
             if not gr.get("recovered"):
                 continue
-            ref = gr.get("reference_match")
-            if ref is None:
-                continue
-            rows.append(
-                {
-                    "sample": accession,
-                    "sample_taxon": taxon,
-                    "gene": gene,
-                    "matched_taxon": ref.get("matched_taxon", "---"),
-                    "matched_accession": ref.get("matched_accession", "---"),
-                    "pct_identity": ref.get("pct_identity"),
-                    "align_length": ref.get("align_length"),
-                    "on_target": ref.get("on_target", False),
-                }
-            )
+            for product in gr.get("products", []):
+                ref = product.get("reference_match")
+                if ref is None:
+                    continue
+                rows.append(
+                    {
+                        "sample": accession,
+                        "sample_taxon": taxon,
+                        "gene": gene,
+                        "product": product.get("product_index"),
+                        "status": ref.get("status", "unknown"),
+                        "matched_taxon": ref.get("matched_taxon", "---"),
+                        "matched_accession": ref.get("matched_accession", "---"),
+                        "pct_identity": ref.get("pct_identity"),
+                        "query_coverage_pct": ref.get("query_coverage_pct"),
+                    }
+                )
 
     if not rows:
         return []
@@ -457,20 +482,24 @@ def _reference_details(result: dict, considered_genes: list) -> list:
     lines.append("## Reference match details")
     lines.append("")
     lines.append(
-        "| Sample | Gene | Sample taxon | Ref taxon | Ref accession | Identity | "
-        "Align len |"
+        "| Sample | Gene | Product | Status | Sample taxon | Ref taxon | Ref accession | "
+        "Identity | Query coverage |"
     )
     lines.append(
-        "|--------|------|-------------|-----------|---------------|----------|"
-        "-----------|"
+        "|--------|------|--------:|--------|-------------|-----------|---------------|"
+        "----------:|---------------:|"
     )
     for r in rows:
         pct = f"{r['pct_identity']:.1f}%" if r["pct_identity"] is not None else "---"
-        alen = str(r["align_length"]) if r["align_length"] is not None else "---"
-        same_sp = "**same**" if r["on_target"] else r["matched_taxon"]
+        coverage = (
+            f"{r['query_coverage_pct']:.1f}%"
+            if r["query_coverage_pct"] is not None
+            else "---"
+        )
         lines.append(
-            f"| {r['sample']} | {r['gene']} | {r['sample_taxon']} | "
-            f"{same_sp} | {r['matched_accession']} | {pct} | {alen} |"
+            f"| {r['sample']} | {r['gene']} | {r['product']} | {r['status']} | "
+            f"{r['sample_taxon']} | {r['matched_taxon']} | {r['matched_accession']} | "
+            f"{pct} | {coverage} |"
         )
     lines.append("")
     return lines
@@ -523,6 +552,10 @@ def _performance_summary(result: dict) -> list:
                 "n_reads": stats.get("n_reads_read"),
                 "n_bases": stats.get("n_bases_read"),
                 "n_kmers": stats.get("n_kmers"),
+                "stage_times": stats.get("stage_timings", {}),
+                "peak_rss": d.get("peak_rss_bytes"),
+                "table_capacity": stats.get("count_table_capacity"),
+                "temp_disk": d.get("temp_disk_final_bytes"),
             })
 
     if not rows:
@@ -532,22 +565,43 @@ def _performance_summary(result: dict) -> list:
     lines.append("## Performance")
     lines.append("")
     lines.append(
-        "| Sample | Max reads | Wall time | Peak memory | "
-        "Reads ingested | Bases ingested | Distinct kmers |"
+        "| Sample | Max reads | Wall time | Count time | PCR time | Allocator peak | "
+        "Reads ingested | Bases ingested | Kmers processed | Mbp/s | k-mers/s | "
+        "Peak RSS | Table capacity | Final run disk |"
     )
     lines.append(
-        "|--------|----------:|----------:|------------:|"
-        "---------------:|---------------:|---------------:|"
+        "|--------|----------:|----------:|-----------:|---------:|---------------:|"
+        "---------------:|---------------:|---------------:|------:|----------:|"
+        "---------:|---------------:|---------------:|"
     )
     for r in rows:
         k_reads = f"{r['reads'] // 1000}k"
         wall = f"{r['wall_time_s']}s" if r["wall_time_s"] is not None else "---"
+        counting_seconds = sum(
+            r["stage_times"].get(key) or 0
+            for key in ("read_ingest_s", "count_finalize_s")
+        )
+        mbps = (
+            f"{r['n_bases'] / 1_000_000 / counting_seconds:.2f}"
+            if r["n_bases"] is not None and counting_seconds > 0
+            else "---"
+        )
+        kmers_per_second = (
+            f"{r['n_kmers'] / counting_seconds:.0f}"
+            if r["n_kmers"] is not None and counting_seconds > 0
+            else "---"
+        )
+        count_time = f"{counting_seconds:.6f}s" if counting_seconds > 0 else "---"
+        pcr_seconds = r["stage_times"].get("pcr_s")
+        pcr_time = f"{pcr_seconds:.6f}s" if pcr_seconds is not None else "---"
         lines.append(
-            f"| {r['sample']} | {k_reads} | {wall} | "
+            f"| {r['sample']} | {k_reads} | {wall} | {count_time} | {pcr_time} | "
             f"{_format_bytes(r['peak_mem'])} | "
             f"{_format_count(r['n_reads'])} | "
             f"{_format_count(r['n_bases'])} | "
-            f"{_format_count(r['n_kmers'])} |"
+            f"{_format_count(r['n_kmers'])} | {mbps} | {kmers_per_second} | "
+            f"{_format_bytes(r['peak_rss'])} | {_format_count(r['table_capacity'])} | "
+            f"{_format_bytes(r['temp_disk'])} |"
         )
     lines.append("")
     return lines
@@ -631,7 +685,9 @@ def write_benchmark_summary(
                 cells = []
                 for gene in all_genes:
                     gr = gene_map.get(gene)
-                    if gr and gr.get("recovered"):
+                    if gr and gr.get("evaluation_status") == "not_evaluated":
+                        cells.append("`N/E`")
+                    elif gr and gr.get("recovered"):
                         length = gr.get("length", "?")
                         score = _score_gene(
                             True, gene, taxon,

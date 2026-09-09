@@ -15,7 +15,7 @@ mod pcr;
 mod stats;
 
 use cli::Args;
-use stats::RunStats;
+use stats::{InputSourceStats, RunStats, StageTimings};
 
 #[global_allocator]
 static PEAK_ALLOC: PeakAlloc = PeakAlloc;
@@ -109,6 +109,7 @@ fn main() -> Result<()> {
     };
 
     // Ingest FASTQ reads from all input sources (Pass 1: kmer counting)
+    let ingest_start = std::time::Instant::now();
     let (state, n_reads_ingested, n_bases_ingested, n_kmers_ingested, read_plan) =
         io::ingest_reads(
             &args,
@@ -117,9 +118,35 @@ fn main() -> Result<()> {
             cache_config.as_ref(),
             show_progress,
         )?;
+    let read_ingest_s = ingest_start.elapsed().as_secs_f64();
+    let (input_source_kind, input_source_inputs) = match &read_plan.source {
+        io::ReadSourcePlan::LocalFiles(paths) => (
+            "local_files".to_string(),
+            paths
+                .iter()
+                .map(|path| path.to_string_lossy().into_owned())
+                .collect(),
+        ),
+        io::ReadSourcePlan::CachedRemote(paths) => (
+            "cached_remote".to_string(),
+            paths
+                .iter()
+                .map(|path| path.to_string_lossy().into_owned())
+                .collect(),
+        ),
+        io::ReadSourcePlan::UncachedRemote(urls) => ("uncached_remote".to_string(), urls.clone()),
+        io::ReadSourcePlan::Unavailable => ("unavailable".to_string(), Vec::new()),
+    };
+    let input_source = InputSourceStats {
+        kind: input_source_kind,
+        inputs: input_source_inputs,
+        paired: read_plan.paired,
+        max_reads: read_plan.max_reads,
+    };
 
     // Consolidate chunks and optionally write histograms
     let mut state = state;
+    let finalize_start = std::time::Instant::now();
     let (kmer_counts, n_singleton_kmers) = io::consolidate_and_histogram(
         &mut state,
         &args,
@@ -129,8 +156,11 @@ fn main() -> Result<()> {
         n_kmers_ingested,
         show_progress,
     )?;
+    let count_finalize_s = finalize_start.elapsed().as_secs_f64();
+    let count_table_capacity = kmer_counts.capacity();
 
     // Pass 2: re-read sequences for read threading (opt-in via --read-threading)
+    let threading_input_start = std::time::Instant::now();
     let threading_reads = if args.read_threading && !pcr_runs.is_empty() {
         match &read_plan.source {
             io::ReadSourcePlan::Unavailable => {
@@ -139,6 +169,11 @@ fn main() -> Result<()> {
             }
             _ => Some(io::reread_sequences(&read_plan, show_progress)?),
         }
+    } else {
+        None
+    };
+    let read_threading_input_s = if args.read_threading && !pcr_runs.is_empty() {
+        Some(threading_input_start.elapsed().as_secs_f64())
     } else {
         None
     };
@@ -165,6 +200,7 @@ fn main() -> Result<()> {
     };
 
     // Run in silico PCR
+    let pcr_start = std::time::Instant::now();
     let pcr_results = stats::run_pcr(
         &kmer_counts,
         &pcr_runs,
@@ -176,6 +212,7 @@ fn main() -> Result<()> {
         threading_reads.as_deref(),
         node_budget_global,
     )?;
+    let pcr_s = pcr_start.elapsed().as_secs_f64();
 
     // Build and write run statistics
     let command = std::env::args().collect::<Vec<String>>().join(" ");
@@ -183,6 +220,7 @@ fn main() -> Result<()> {
         sharkmer_version: env!("CARGO_PKG_VERSION").to_string(),
         command,
         sample: sample.clone(),
+        input_source,
         kmer_length: args.k,
         chunks: args.chunks,
         n_reads_read: state.n_reads_read,
@@ -192,7 +230,15 @@ fn main() -> Result<()> {
         n_kmers: n_kmers_ingested,
         n_multi_kmers: n_singleton_kmers.map(|s| n_kmers_ingested.saturating_sub(s)),
         n_singleton_kmers,
+        count_table_capacity,
         peak_memory_bytes: PEAK_ALLOC.peak_usage() as u64,
+        stage_timings: StageTimings {
+            read_ingest_s,
+            count_finalize_s,
+            read_threading_input_s,
+            pcr_s,
+            pipeline_total_s: start_run.elapsed().as_secs_f64(),
+        },
         pcr_results,
     };
 

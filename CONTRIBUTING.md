@@ -214,17 +214,26 @@ Then activate it before running benchmarks:
     # Run specific samples only
     python benchmarks/run_benchmark.py --samples Porites_lutea Agalma_elegans
 
-    # Pre-download all sample data without running benchmarks
-    python benchmarks/run_benchmark.py --download-only
+    # Run the included offline counting oracle
+    python benchmarks/run_benchmark.py --config benchmarks/known_truth.yaml -k 19 --scope counting-only --no-blast
 
-Results are written as YAML to `benchmarks/benchmark_results/` with the date, version,
-and git commit in the filename. Use `benchmarks/compare.py` to diff results
-across versions.
+Per-panel YAML and Markdown results and a commit-labelled combined summary are
+written to `benchmarks/benchmark_results/`. Compare the structured per-product
+records and performance fields between runs; the repository does not currently
+provide an automated cross-run comparator.
+
+Dataset roles, offline known-truth commands, and the registration gate for
+future held-out data are defined in `benchmarks/DATASETS.md`. Results record
+the executable fingerprint and workspace source observation, effective
+command, input and reference checksums, cache protocol, stage timings,
+throughput, table capacity, allocator peak, peak RSS when available, and final
+run-directory size. Unavailable metrics remain null with an availability
+statement.
 
 Sample data (~1M reads each) is cached in `benchmarks/data/` and downloaded
 from ENA on first run. The download streams and truncates early, so it does
 not fetch full runs. Configuration (samples, panels, read counts) is in
-`benchmarks/config.yaml`.
+`benchmarks/benchmark.yaml`.
 
 ## Bioconda recipe
 

@@ -33,6 +33,7 @@ trait KmerMap {
     fn get_count(&self, key: u64) -> u32;
     fn contains(&self, key: u64) -> bool;
     fn retain_above(&mut self, min_count: u32);
+    fn capacity(&self) -> usize;
 }
 
 #[cfg(feature = "fxhashmap")]
@@ -65,6 +66,9 @@ impl KmerMap for rustc_hash::FxHashMap<u64, u32> {
     }
     fn retain_above(&mut self, min_count: u32) {
         self.retain(|_, count| *count >= min_count);
+    }
+    fn capacity(&self) -> usize {
+        self.capacity()
     }
 }
 
@@ -101,6 +105,9 @@ impl KmerMap for AHashMap<u64, u32> {
     }
     fn retain_above(&mut self, min_count: u32) {
         self.retain(|_, count| *count >= min_count);
+    }
+    fn capacity(&self) -> usize {
+        self.capacity()
     }
 }
 
@@ -257,6 +264,10 @@ impl KmerCounts {
 
     pub fn get_n_unique_kmers(&self) -> u64 {
         self.kmers.len() as u64
+    }
+
+    pub fn capacity(&self) -> usize {
+        self.kmers.capacity()
     }
 
     #[allow(dead_code)]

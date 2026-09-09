@@ -178,6 +178,11 @@ def main():
         help="Skip BLAST validation against reference sequences.",
     )
     parser.add_argument(
+        "--executable",
+        type=Path,
+        help="Use and fingerprint this executable instead of building target/release/sharkmer.",
+    )
+    parser.add_argument(
         "--output-dir",
         type=Path,
         default=REPORTS_DIR,
@@ -241,7 +246,8 @@ def main():
     if args.k != runner.K:
         runner.K = args.k
 
-    runner.build_sharkmer()
+    executable_provenance = runner.build_sharkmer(executable=args.executable)
+    executable = Path(executable_provenance["path"])
 
     # Load panel data (read-only copy for metadata).
     panel_data = runner.load_panel_yaml(panel_path)
@@ -268,9 +274,10 @@ def main():
         panel_path, gene_filter
     )
 
+    sample_results = []
     try:
         sharkmer_version = runner.clean_sharkmer_version(
-            runner.get_sharkmer_version()
+            runner.get_sharkmer_version(executable)
         )
         print(f"sharkmer version: {sharkmer_version}")
         print(
@@ -281,7 +288,7 @@ def main():
             print(f"gene filter: {', '.join(gene_filter)}")
         print()
 
-        stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        stamp = runner.unique_run_id()
         run_dir = RUNS_DIR / f"{panel_name}_{stamp}"
 
         # Build reference BLAST DB (if references exist in panel).
@@ -297,9 +304,12 @@ def main():
                     print("No reference sequences in panel; skipping BLAST.")
                 # else: tool not available, warning already printed
         blast_mode = "references" if ref_db else "none"
+        reference_genes = {
+            reference["gene_name"]
+            for reference in blast_references.extract_references(panel_data)
+        }
 
         # Run sharkmer for each sample x max_reads.
-        sample_results = []
         for sample_block in samples:
             accession = sample_block["accession"]
             declared_reads = sorted(
@@ -324,13 +334,18 @@ def main():
                     run_dir,
                     extra_args=extra_args or None,
                     k=args.k,
+                    executable=executable,
                 )
                 runs.append(run)
 
             # BLAST this sample's amplicons against references.
             taxon = sample_block.get("taxon", "")
             blast_references.blast_all_products(
-                runs, ref_db, sample_taxon=taxon, skip_blast=args.no_blast
+                runs,
+                ref_db,
+                sample_taxon=taxon,
+                skip_blast=args.no_blast,
+                reference_genes=reference_genes,
             )
 
             sample_results.append((sample_block, runs))
@@ -345,6 +360,11 @@ def main():
             blast_mode=blast_mode,
             extra_args=extra_args or None,
             sweep_label=args.label,
+            executable_provenance=executable_provenance,
+            evaluated_genes=runner.panel_gene_names(
+                runner.load_panel_yaml(panel_path_for_run)
+            ),
+            run_id=stamp,
         )
         result_name = results.result_filename(
             panel_data, sharkmer_version, stamp, label=args.label
@@ -371,6 +391,8 @@ def main():
 
         if tmpdir.exists():
             shutil.rmtree(tmpdir, ignore_errors=True)
+    if runner.has_execution_failures(sample_results):
+        raise SystemExit("One or more sharkmer executions failed; reports and logs were preserved")
 
 
 if __name__ == "__main__":

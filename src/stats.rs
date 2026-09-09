@@ -22,12 +22,30 @@ pub(crate) struct PcrGeneResult {
     pub(crate) failure_reason: Option<String>,
 }
 
+#[derive(Serialize)]
+pub(crate) struct StageTimings {
+    pub(crate) read_ingest_s: f64,
+    pub(crate) count_finalize_s: f64,
+    pub(crate) read_threading_input_s: Option<f64>,
+    pub(crate) pcr_s: f64,
+    pub(crate) pipeline_total_s: f64,
+}
+
+#[derive(Serialize)]
+pub(crate) struct InputSourceStats {
+    pub(crate) kind: String,
+    pub(crate) inputs: Vec<String>,
+    pub(crate) paired: bool,
+    pub(crate) max_reads: u64,
+}
+
 /// Structured run statistics, serialized as YAML.
 #[derive(Serialize)]
 pub(crate) struct RunStats {
     pub(crate) sharkmer_version: String,
     pub(crate) command: String,
     pub(crate) sample: String,
+    pub(crate) input_source: InputSourceStats,
     pub(crate) kmer_length: usize,
     pub(crate) chunks: usize,
     pub(crate) n_reads_read: u64,
@@ -39,7 +57,9 @@ pub(crate) struct RunStats {
     pub(crate) n_multi_kmers: Option<u64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) n_singleton_kmers: Option<u64>,
+    pub(crate) count_table_capacity: usize,
     pub(crate) peak_memory_bytes: u64,
+    pub(crate) stage_timings: StageTimings,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub(crate) pcr_results: Vec<PcrGeneResult>,
 }
@@ -120,7 +140,13 @@ pub(crate) fn run_pcr(
                 status: "success".to_string(),
                 n_products: product_lengths.len(),
                 product_lengths,
-                output_file: None,
+                output_file: Some(
+                    std::path::Path::new(&fasta_path)
+                        .file_name()
+                        .context("FASTA output path has no file name")?
+                        .to_string_lossy()
+                        .into_owned(),
+                ),
                 failure_reason: None,
             });
         } else {
