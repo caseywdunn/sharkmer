@@ -139,6 +139,19 @@ previous results untouched; always check the command's exit status.
 
 Reads downloaded via `--ena` are cached (SHA-256 verified) under a shared cache directory so repeated runs on the same accession do not re-download. Use `--cache-dir` to override the location, `--no-cache` to stream directly without touching the cache, or `--clear-cache` to delete cached reads.
 
+In the v3.2 development version, cooperating processes sharing a cache are
+serialized for the lifetime of a run, including read-threading replay.
+`--clear-cache` waits for that lease and removes only verified data/metadata
+pairs. It preserves the cache directory, `.sharkmer-cache.lock`, unrelated
+files, subdirectories, symlinks, and entries with ambiguous ownership or
+modified checksums. Never remove the lock file while a cache is in use.
+
+A malformed or orphaned entry is refused rather than silently overwritten;
+use a fresh `--cache-dir` or `--no-cache` when recovery is needed. Forced
+interruption can leave such entries or temporary files, so clearing is not a
+general directory-cleanup command. Older Sharkmer versions and other programs
+that ignore the advisory lock are not protected by this coordination.
+
 You can see all the available built-in PCR panels with:
 
     sharkmer --list-panels
