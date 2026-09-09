@@ -8,6 +8,20 @@ use crate::kmer::{FilteredKmerCounts, KmerCounts};
 
 use super::{Oligo, PCRParams, PrimerDirection};
 
+const MAX_RESOLVED_VARIANTS: usize = 10_000;
+const MAX_RETAINED_VARIANTS: usize = 1_000_000;
+const MAX_INTERMEDIATE_VARIANTS: usize = 4_000_000;
+const MAX_GENERATION_WORK: usize = 1_000_000;
+
+struct PrimerExpansionPlan {
+    primer: String,
+    mismatches: usize,
+    #[cfg_attr(not(test), allow(dead_code))]
+    retained_variants: usize,
+    #[cfg_attr(not(test), allow(dead_code))]
+    generation_work: usize,
+}
+
 pub(super) fn is_valid_nucleotide(c: char) -> bool {
     match c {
         'A' => true,
@@ -93,6 +107,246 @@ pub(super) fn resolve_primer(primer: &str) -> HashSet<String> {
     }
 
     sequences
+}
+
+fn ambiguity_width(nucleotide: char) -> Result<usize> {
+    match nucleotide {
+        'A' | 'C' | 'G' | 'T' => Ok(1),
+        'R' | 'Y' | 'S' | 'W' | 'K' | 'M' => Ok(2),
+        'B' | 'D' | 'H' | 'V' => Ok(3),
+        'N' => Ok(4),
+        _ => bail!("Invalid nucleotide {} in primer", nucleotide),
+    }
+}
+
+fn checked_product(left: usize, right: usize, primer: &str, limit_name: &str) -> Result<usize> {
+    left.checked_mul(right).ok_or_else(|| {
+        anyhow::anyhow!(
+            "Primer {} exceeds the {} limit before expansion",
+            primer,
+            limit_name
+        )
+    })
+}
+
+fn checked_sum(left: usize, right: usize, primer: &str, limit_name: &str) -> Result<usize> {
+    left.checked_add(right).ok_or_else(|| {
+        anyhow::anyhow!(
+            "Primer {} exceeds the {} limit before expansion",
+            primer,
+            limit_name
+        )
+    })
+}
+
+fn sum_with_limit(values: &[usize], primer: &str, limit_name: &str, limit: usize) -> Result<usize> {
+    let mut total = 0usize;
+    for value in values {
+        total = checked_sum(total, *value, primer, limit_name)?;
+        if total > limit {
+            bail!(
+                "Primer {} requires {} retained variants, exceeding the limit of {}. Reduce ambiguity or mismatches.",
+                primer,
+                total,
+                limit
+            );
+        }
+    }
+    Ok(total)
+}
+
+fn intermediate_peak(
+    exact_variants: usize,
+    previous_seen: usize,
+    current_seen: usize,
+    primer: &str,
+) -> Result<usize> {
+    let permutation_peak = checked_sum(
+        checked_product(previous_seen, 3, primer, "intermediate-variant")?,
+        current_seen,
+        primer,
+        "intermediate-variant",
+    )?;
+    let post_extend_peak = checked_product(current_seen, 3, primer, "intermediate-variant")?;
+    checked_sum(
+        exact_variants,
+        permutation_peak.max(post_extend_peak),
+        primer,
+        "intermediate-variant",
+    )
+}
+
+fn ensure_intermediate_limit(peak: usize, primer: &str) -> Result<()> {
+    if peak > MAX_INTERMEDIATE_VARIANTS {
+        bail!(
+            "Primer {} requires {} intermediate variants, exceeding the limit of {}. Reduce ambiguity or mismatches.",
+            primer,
+            peak,
+            MAX_INTERMEDIATE_VARIANTS
+        );
+    }
+    Ok(())
+}
+
+fn effective_trim(params: &PCRParams, kmer_length: usize) -> Result<usize> {
+    let max_trim = kmer_length.checked_sub(1).ok_or_else(|| {
+        anyhow::anyhow!(
+            "PCR primer processing requires k-mer length of at least 2, got {}",
+            kmer_length
+        )
+    })?;
+    let trim = params.trim.min(max_trim);
+    ensure!(
+        trim > 0,
+        "Primer {} has effective trim length 0 for k-mer length {}. Set trim to at least 1 and use k-mer length at least 2.",
+        params.gene_name,
+        kmer_length
+    );
+    Ok(trim)
+}
+
+fn plan_primer_expansion(
+    params: &PCRParams,
+    dir: PrimerDirection,
+    kmer_length: usize,
+) -> Result<PrimerExpansionPlan> {
+    ensure!(
+        kmer_length < 32,
+        "PCR primer processing requires k-mer length below 32, got {}",
+        kmer_length
+    );
+    let trim = effective_trim(params, kmer_length)?;
+    let source_primer = if dir == PrimerDirection::Reverse {
+        &params.reverse_seq
+    } else {
+        &params.forward_seq
+    };
+    let primer = if source_primer.len() > trim {
+        source_primer[source_primer.len() - trim..].to_string()
+    } else {
+        source_primer.clone()
+    };
+    ensure!(
+        !primer.is_empty(),
+        "Primer {} has no retained bases after trimming",
+        params.gene_name
+    );
+
+    let mut exact_variants = 1usize;
+    for nucleotide in primer.chars() {
+        exact_variants = checked_product(
+            exact_variants,
+            ambiguity_width(nucleotide)?,
+            &primer,
+            "resolved-variant",
+        )?;
+        if exact_variants > MAX_RESOLVED_VARIANTS {
+            bail!(
+                "Primer {} has too many ambiguous bases: more than {} resolved variants exceeds limit of {}. Reduce ambiguity or use a more specific primer.",
+                primer,
+                MAX_RESOLVED_VARIANTS,
+                MAX_RESOLVED_VARIANTS
+            );
+        }
+    }
+
+    let mismatches = params.mismatches.min(primer.len());
+    let mut distance_counts = vec![0usize; mismatches + 1];
+    distance_counts[0] = 1;
+    for nucleotide in primer.chars() {
+        let matching_bases = ambiguity_width(nucleotide)?;
+        let mismatching_bases = 4 - matching_bases;
+        let mut next_counts = vec![0usize; mismatches + 1];
+        for mismatch_count in 0..=mismatches {
+            if distance_counts[mismatch_count] == 0 {
+                continue;
+            }
+            let matching_count = checked_product(
+                distance_counts[mismatch_count],
+                matching_bases,
+                &primer,
+                "retained-variant",
+            )?;
+            next_counts[mismatch_count] = checked_sum(
+                next_counts[mismatch_count],
+                matching_count,
+                &primer,
+                "retained-variant",
+            )?;
+            if mismatch_count < mismatches {
+                let mismatching_count = checked_product(
+                    distance_counts[mismatch_count],
+                    mismatching_bases,
+                    &primer,
+                    "retained-variant",
+                )?;
+                next_counts[mismatch_count + 1] = checked_sum(
+                    next_counts[mismatch_count + 1],
+                    mismatching_count,
+                    &primer,
+                    "retained-variant",
+                )?;
+            }
+        }
+        sum_with_limit(
+            &next_counts,
+            &primer,
+            "retained-variant",
+            MAX_RETAINED_VARIANTS,
+        )?;
+        distance_counts = next_counts;
+    }
+
+    let retained_variants = sum_with_limit(
+        &distance_counts,
+        &primer,
+        "retained-variant",
+        MAX_RETAINED_VARIANTS,
+    )?;
+    let mut previous_seen = distance_counts[0];
+    let mut generation_work = 0usize;
+    let initial_peak = checked_product(exact_variants, 3, &primer, "intermediate-variant")?;
+    ensure_intermediate_limit(initial_peak, &primer)?;
+    for mismatch_count in 1..=mismatches {
+        let current_seen = sum_with_limit(
+            &distance_counts[..=mismatch_count],
+            &primer,
+            "retained-variant",
+            MAX_RETAINED_VARIANTS,
+        )?;
+        let work = checked_product(
+            checked_product(previous_seen, primer.len(), &primer, "generation-work")?,
+            4,
+            &primer,
+            "generation-work",
+        )?;
+        generation_work = checked_sum(generation_work, work, &primer, "generation-work")?;
+        if generation_work > MAX_GENERATION_WORK {
+            bail!(
+                "Primer {} requires {} generated mismatch candidates through round {}, exceeding the limit of {}. Reduce ambiguity or mismatches.",
+                primer,
+                generation_work,
+                mismatch_count,
+                MAX_GENERATION_WORK
+            );
+        }
+        let peak = intermediate_peak(exact_variants, previous_seen, current_seen, &primer)?;
+        ensure_intermediate_limit(peak, &primer)?;
+        previous_seen = current_seen;
+    }
+
+    Ok(PrimerExpansionPlan {
+        primer,
+        mismatches,
+        retained_variants,
+        generation_work,
+    })
+}
+
+pub(super) fn validate_primer_expansion(params: &PCRParams, kmer_length: usize) -> Result<()> {
+    plan_primer_expansion(params, PrimerDirection::Forward, kmer_length)?;
+    plan_primer_expansion(params, PrimerDirection::Reverse, kmer_length)?;
+    Ok(())
 }
 
 /// Given a set of sequences, return a set of all sequences that differ
@@ -236,55 +490,38 @@ pub(super) fn preprocess_primer_by_mismatch(
     dir: PrimerDirection,
     k: &usize,
 ) -> Result<Vec<HashSet<String>>> {
-    let mut primer = params.forward_seq.clone();
-    if dir == PrimerDirection::Reverse {
-        primer = params.reverse_seq.clone();
-    }
-
-    let mut trim = params.trim;
+    let source_primer = if dir == PrimerDirection::Reverse {
+        &params.reverse_seq
+    } else {
+        &params.forward_seq
+    };
+    let plan = plan_primer_expansion(params, dir, *k)?;
     // The seed node sub_kmer is the PREFIX of the primer k-mer (kmer >> 2),
     // which drops the last base of the k-mer.  When the trimmed primer is
     // exactly k bases it IS the k-mer, so its 3' terminal base is dropped
     // from the seed node and the assembled amplicon.  Clamping to k-1
     // ensures all trimmed primer bases are captured in the seed node.
-    if trim >= *k {
+    if params.trim >= *k {
         gene_warn!(
             params.gene_name,
             "Trim length ({}) must be less than k ({}); adjusting trim to k-1 = {}",
-            trim,
+            params.trim,
             k,
             k - 1
         );
-        trim = k - 1;
     }
-
-    // Check if either is longer than trim, if so retain only the last trim nucleotides
-    if primer.len() > trim {
-        primer = primer[primer.len() - trim..].to_string();
+    if source_primer.len() > plan.primer.len() {
         gene_info!(
             params.gene_name,
             "Trimming the primer to {} so that it is within the trim length of {}.",
-            primer,
-            trim
+            plan.primer,
+            plan.primer.len()
         );
     }
+    let primer = plan.primer;
 
-    // Expand ambiguous nucleotides
     let base_variants = resolve_primer(&primer);
-
-    const MAX_RESOLVED_VARIANTS: usize = 10_000;
-    if base_variants.len() > MAX_RESOLVED_VARIANTS {
-        bail!(
-            "Primer {} has too many ambiguous bases: {} resolved variants exceeds limit of {}. \
-             Reduce ambiguity or use a more specific primer.",
-            primer,
-            base_variants.len(),
-            MAX_RESOLVED_VARIANTS
-        );
-    }
-
-    // Clamp mismatches to the trimmed primer length
-    let mismatches = params.mismatches.min(primer.len());
+    let mismatches = plan.mismatches;
 
     // Build variants level by level: 0 mismatches, 1 mismatch, ..., n mismatches.
     // Each level contains only the NEW variants not seen at lower levels.
@@ -818,6 +1055,70 @@ mod tests {
         let flat = preprocess_primer(&params, PrimerDirection::Forward, &k).unwrap();
         let union: HashSet<String> = levels.into_iter().flatten().collect();
         assert_eq!(union, flat, "Union of levels should match flat output");
+    }
+
+    #[test]
+    fn test_expansion_plan_matches_normal_and_iupac_variants() {
+        for primer in ["ACGTAC", "ARNYAC"] {
+            let params = crate::cli::parse_pcr_primers_string(&format!(
+                "name=budget,forward={primer},reverse=TGCAAA,trim=6,mismatches=2"
+            ))
+            .unwrap();
+            let plan = plan_primer_expansion(&params, PrimerDirection::Forward, 7).unwrap();
+            let actual = preprocess_primer(&params, PrimerDirection::Forward, &7).unwrap();
+
+            assert_eq!(plan.retained_variants, actual.len());
+            assert!(plan.generation_work > 0);
+        }
+    }
+
+    #[test]
+    fn test_expansion_plan_rejects_excessive_ambiguity_before_resolution() {
+        let params = crate::cli::parse_pcr_primers_string(
+            "name=budget,forward=NNNNNNNN,reverse=ACGTACGT,trim=8,mismatches=0",
+        )
+        .unwrap();
+        let error = validate_primer_expansion(&params, 9).unwrap_err();
+
+        assert!(error.to_string().contains("too many ambiguous bases"));
+    }
+
+    #[test]
+    fn test_expansion_plan_rejects_generation_work_before_permutation() {
+        let primer = format!("{}{}{}", "N".repeat(5), "B".repeat(2), "A".repeat(23));
+        let params = crate::cli::parse_pcr_primers_string(&format!(
+            "name=budget,forward={primer},reverse=ACGTACGT,trim=30,mismatches=1"
+        ))
+        .unwrap();
+        let error = validate_primer_expansion(&params, 31).unwrap_err();
+
+        assert!(error.to_string().contains("generated mismatch candidates"));
+    }
+
+    #[test]
+    fn test_expansion_plan_rejects_zero_effective_trim_without_panicking() {
+        let params = crate::cli::parse_pcr_primers_string(
+            "name=budget,forward=ACGTACGT,reverse=TGCATGCA,trim=1,mismatches=0",
+        )
+        .unwrap();
+
+        for kmer_length in [0, 1] {
+            let error = validate_primer_expansion(&params, kmer_length).unwrap_err();
+            assert!(error.to_string().contains("k-mer length"));
+        }
+    }
+
+    #[test]
+    fn test_intermediate_peak_accounts_for_post_extend_growth() {
+        let peak = intermediate_peak(1, 10, 100, "ACGT").unwrap();
+        assert_eq!(peak, 301);
+
+        let error = ensure_intermediate_limit(
+            intermediate_peak(1, 100_000, 1_500_000, "ACGT").unwrap(),
+            "ACGT",
+        )
+        .unwrap_err();
+        assert!(error.to_string().contains("intermediate variants"));
     }
 
     // --- is_valid_nucleotide ---

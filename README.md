@@ -174,6 +174,18 @@ sharkmer --node-budget-global 50000 ...
 
 If you find that runs are slow but not producing products, lowering the budget will make them fail faster. If runs succeed for some genes but miss others that you expect to be present, raising the budget (and possibly increasing `--max-reads`) is worth trying.
 
+### Primer expansion limits
+
+Primer ambiguity and mismatch expansion are checked before reads are ingested.
+Each primer permits at most 10,000 ambiguity-only variants, 1,000,000 distinct
+variants across mismatch levels, 1,000,000 generated mismatch candidates,
+and an estimated 4,000,000 simultaneously live variant records. These are
+work and allocation-count limits, not a total process RAM budget. Excessive
+requests fail with an actionable error rather than allocate an exponential
+set. Reduce ambiguity, mismatches, or the retained primer length when a limit
+is exceeded. Effective primer trim must be positive and PCR requires k >= 2;
+counting-only runs still support k=1.
+
 ### Other parameters
 
 If these do not work, then you can try adjusting other parameters.

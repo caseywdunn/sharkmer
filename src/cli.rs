@@ -553,6 +553,16 @@ pub(crate) fn collect_pcr_params(args: &Args) -> Result<Vec<pcr::PCRParams>> {
         );
     }
 
+    for pcr_params in &pcr_runs {
+        pcr::validate_primer_expansion(pcr_params, args.k).map_err(|error| {
+            anyhow::anyhow!(
+                "Primer expansion validation failed for {} ({}): {error:#}",
+                pcr_params.gene_name,
+                pcr_params.source
+            )
+        })?;
+    }
+
     // Warn and clamp if any primer's min-count < --min-kmer-count
     for pcr_params in pcr_runs.iter_mut() {
         if pcr_params.min_count < args.min_kmer_count {
@@ -823,6 +833,7 @@ pub(crate) fn handle_dry_run(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use clap::Parser;
 
     #[test]
     fn test_parse_pcr_primers_duplicate_key_rejected() {
@@ -856,5 +867,39 @@ mod tests {
             .expect("values containing '=' should parse via splitn(2)");
         assert_eq!(params.gene_name, "X");
         assert_eq!(params.citation, "https://doi.org/10.1/abc?x=1&y=2");
+    }
+
+    #[test]
+    fn test_primer_budget_fails_during_collection_before_input_resolution() {
+        let primer = format!("{}{}{}", "N".repeat(5), "B".repeat(2), "A".repeat(23));
+        let args = Args::try_parse_from([
+            "sharkmer",
+            "--ena",
+            "SRR000000",
+            "-k",
+            "31",
+            "--pcr-primers",
+            &format!("name=budget,forward={primer},reverse=ACGTACGT,trim=30,mismatches=1"),
+        ])
+        .unwrap();
+
+        let error = collect_pcr_params(&args).unwrap_err();
+        assert!(format!("{error:#}").contains("generated mismatch candidates"));
+    }
+
+    #[test]
+    fn test_builtin_panel_passes_primer_budget_validation() {
+        let args = Args::try_parse_from(["sharkmer", "--pcr-panel", "cnidaria"]).unwrap();
+        let params = collect_pcr_params(&args).unwrap();
+
+        assert!(!params.is_empty());
+    }
+
+    #[test]
+    fn test_counting_only_kmer_length_one_remains_valid() {
+        let args = Args::try_parse_from(["sharkmer", "-k", "1"]).unwrap();
+        let params = collect_pcr_params(&args).unwrap();
+
+        validate_args(&args, &params).unwrap();
     }
 }

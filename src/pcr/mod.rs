@@ -286,6 +286,10 @@ pub const DEFAULT_MAX_NUM_PRIMER_KMERS: usize = 40;
 pub const DEFAULT_HIGH_COVERAGE_RATIO: f64 = 10.0;
 pub const DEFAULT_TIP_COVERAGE_FRACTION: f64 = 0.1;
 
+pub(crate) fn validate_primer_expansion(params: &PCRParams, kmer_length: usize) -> Result<()> {
+    primers::validate_primer_expansion(params, kmer_length)
+}
+
 /// Result of running in silico PCR for a single gene.
 pub struct PcrOutcome {
     /// FASTA records of recovered products (empty if none found)
