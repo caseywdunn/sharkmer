@@ -1,0 +1,939 @@
+000_cnidaria_SRR9278435_1000000_pair1_candidate: timing timed_complete
+000_cnidaria_SRR9278435_1000000_pair1_baseline: timing timed_complete
+000_cnidaria_SRR9278435_1000000_pair2_baseline: timing timed_complete
+000_cnidaria_SRR9278435_1000000_pair2_candidate: timing timed_complete
+000_cnidaria_SRR9278435_1000000_pair3_candidate: timing timed_complete
+000_cnidaria_SRR9278435_1000000_pair3_baseline: timing timed_complete
+001_cnidaria_SRR25099394_1000000_pair1_baseline: timing timed_complete
+001_cnidaria_SRR25099394_1000000_pair1_candidate: timing timed_complete
+001_cnidaria_SRR25099394_1000000_pair2_candidate: timing timed_complete
+001_cnidaria_SRR25099394_1000000_pair2_baseline: timing timed_complete
+001_cnidaria_SRR25099394_1000000_pair3_baseline: timing timed_complete
+001_cnidaria_SRR25099394_1000000_pair3_candidate: timing timed_complete
+002_cnidaria_SRR8617500_1000000_pair1_baseline: timing failed
+002_cnidaria_SRR8617500_1000000_pair1_candidate: timing timed_complete
+002_cnidaria_SRR8617500_1000000_pair2_candidate: timing timed_complete
+002_cnidaria_SRR8617500_1000000_pair2_baseline: timing failed
+002_cnidaria_SRR8617500_1000000_pair3_baseline: timing failed
+002_cnidaria_SRR8617500_1000000_pair3_candidate: timing timed_complete
+003_human_SRR17535371_1000000_pair1_candidate: timing timed_complete
+003_human_SRR17535371_1000000_pair1_baseline: timing failed
+003_human_SRR17535371_1000000_pair2_baseline: timing failed
+003_human_SRR17535371_1000000_pair2_candidate: timing timed_complete
+003_human_SRR17535371_1000000_pair3_candidate: timing timed_complete
+003_human_SRR17535371_1000000_pair3_baseline: timing failed
+004_teleostei_SRR22396603_1000000_pair1_baseline: timing timed_complete
+004_teleostei_SRR22396603_1000000_pair1_candidate: timing timed_complete
+004_teleostei_SRR22396603_1000000_pair2_candidate: timing timed_complete
+004_teleostei_SRR22396603_1000000_pair2_baseline: timing timed_complete
+004_teleostei_SRR22396603_1000000_pair3_baseline: timing timed_complete
+004_teleostei_SRR22396603_1000000_pair3_candidate: timing timed_complete
+005_angiospermae_SRR25378184_1000000_pair1_baseline: timing timed_complete
+005_angiospermae_SRR25378184_1000000_pair1_candidate: timing timed_complete
+005_angiospermae_SRR25378184_1000000_pair2_candidate: timing timed_complete
+005_angiospermae_SRR25378184_1000000_pair2_baseline: timing timed_complete
+005_angiospermae_SRR25378184_1000000_pair3_baseline: timing timed_complete
+005_angiospermae_SRR25378184_1000000_pair3_candidate: timing timed_complete
+006_angiospermae_ERR14009273_1000000_pair1_candidate: timing timed_complete
+006_angiospermae_ERR14009273_1000000_pair1_baseline: timing timed_complete
+006_angiospermae_ERR14009273_1000000_pair2_baseline: timing timed_complete
+006_angiospermae_ERR14009273_1000000_pair2_candidate: timing timed_complete
+006_angiospermae_ERR14009273_1000000_pair3_candidate: timing timed_complete
+006_angiospermae_ERR14009273_1000000_pair3_baseline: timing timed_complete
+007_insecta_SRR31887760_1000000_pair1_baseline: timing timed_complete
+007_insecta_SRR31887760_1000000_pair1_candidate: timing timed_complete
+007_insecta_SRR31887760_1000000_pair2_candidate: timing timed_complete
+007_insecta_SRR31887760_1000000_pair2_baseline: timing timed_complete
+007_insecta_SRR31887760_1000000_pair3_baseline: timing timed_complete
+007_insecta_SRR31887760_1000000_pair3_candidate: timing timed_complete
+008_insecta_SRR1057608_1000000_pair1_candidate: timing timed_complete
+008_insecta_SRR1057608_1000000_pair1_baseline: timing timed_complete
+008_insecta_SRR1057608_1000000_pair2_baseline: timing timed_complete
+008_insecta_SRR1057608_1000000_pair2_candidate: timing timed_complete
+008_insecta_SRR1057608_1000000_pair3_candidate: timing timed_complete
+008_insecta_SRR1057608_1000000_pair3_baseline: timing timed_complete
+009_insecta_SRR27962769_1000000_pair1_candidate: timing timed_complete
+009_insecta_SRR27962769_1000000_pair1_baseline: timing failed
+009_insecta_SRR27962769_1000000_pair2_baseline: timing failed
+009_insecta_SRR27962769_1000000_pair2_candidate: timing timed_complete
+009_insecta_SRR27962769_1000000_pair3_candidate: timing timed_complete
+009_insecta_SRR27962769_1000000_pair3_baseline: timing failed
+010_bacteria_SRR19418213_1000000_pair1_baseline: timing failed
+010_bacteria_SRR19418213_1000000_pair1_candidate: timing timed_complete
+010_bacteria_SRR19418213_1000000_pair2_candidate: timing timed_complete
+010_bacteria_SRR19418213_1000000_pair2_baseline: timing failed
+010_bacteria_SRR19418213_1000000_pair3_baseline: timing failed
+010_bacteria_SRR19418213_1000000_pair3_candidate: timing timed_complete
+011_bacteria_SRR24806237_1000000_pair1_candidate: timing timed_complete
+011_bacteria_SRR24806237_1000000_pair1_baseline: timing failed
+011_bacteria_SRR24806237_1000000_pair2_baseline: timing failed
+011_bacteria_SRR24806237_1000000_pair2_candidate: timing timed_complete
+011_bacteria_SRR24806237_1000000_pair3_candidate: timing timed_complete
+011_bacteria_SRR24806237_1000000_pair3_baseline: timing failed
+012_bacteria_ERR2596344_1000000_pair1_baseline: timing timed_complete
+012_bacteria_ERR2596344_1000000_pair1_candidate: timing timed_complete
+012_bacteria_ERR2596344_1000000_pair2_candidate: timing timed_complete
+012_bacteria_ERR2596344_1000000_pair2_baseline: timing timed_complete
+012_bacteria_ERR2596344_1000000_pair3_baseline: timing timed_complete
+012_bacteria_ERR2596344_1000000_pair3_candidate: timing timed_complete
+013_cnidaria_SRR9278435_2000000_pair1_baseline: timing timed_complete
+013_cnidaria_SRR9278435_2000000_pair1_candidate: timing timed_complete
+014_cnidaria_SRR25099394_2000000_pair1_baseline: timing timed_complete
+014_cnidaria_SRR25099394_2000000_pair1_candidate: timing timed_complete
+015_cnidaria_SRR8617500_2000000_pair1_baseline: timing timed_complete
+015_cnidaria_SRR8617500_2000000_pair1_candidate: timing timed_complete
+016_insecta_SRR31887760_2000000_pair1_candidate: timing timed_complete
+016_insecta_SRR31887760_2000000_pair1_baseline: timing timed_complete
+017_insecta_SRR1057608_2000000_pair1_baseline: timing failed
+017_insecta_SRR1057608_2000000_pair1_candidate: timing timed_complete
+018_insecta_SRR27962769_2000000_pair1_baseline: timing failed
+018_insecta_SRR27962769_2000000_pair1_candidate: timing timed_complete
+019_cnidaria_SRR9278435_4000000_pair1_candidate: timing timed_complete
+019_cnidaria_SRR9278435_4000000_pair1_baseline: timing failed
+020_cnidaria_SRR25099394_4000000_pair1_candidate: timing timed_complete
+020_cnidaria_SRR25099394_4000000_pair1_baseline: timing timed_complete
+021_cnidaria_SRR8617500_4000000_pair1_baseline: timing failed
+021_cnidaria_SRR8617500_4000000_pair1_candidate: timing timed_complete
+022_insecta_SRR31887760_4000000_pair1_candidate: timing timed_complete
+022_insecta_SRR31887760_4000000_pair1_baseline: timing timed_complete
+023_insecta_SRR1057608_4000000_pair1_candidate: timing timed_complete
+023_insecta_SRR1057608_4000000_pair1_baseline: timing failed
+024_insecta_SRR27962769_4000000_pair1_candidate: timing timed_complete
+024_insecta_SRR27962769_4000000_pair1_baseline: timing timed_complete
+025_cnidaria_SRR9278435_8000000_pair1_candidate: timing timed_complete
+025_cnidaria_SRR9278435_8000000_pair1_baseline: timing timed_complete
+026_cnidaria_SRR25099394_8000000_pair1_candidate: timing timed_complete
+026_cnidaria_SRR25099394_8000000_pair1_baseline: timing timed_complete
+027_cnidaria_SRR8617500_8000000_pair1_baseline: timing timed_complete
+027_cnidaria_SRR8617500_8000000_pair1_candidate: timing timed_complete
+028_insecta_SRR31887760_8000000_pair1_baseline: timing failed
+028_insecta_SRR31887760_8000000_pair1_candidate: timing timed_complete
+029_insecta_SRR1057608_8000000_pair1_baseline: timing failed
+029_insecta_SRR1057608_8000000_pair1_candidate: timing timed_complete
+030_insecta_SRR27962769_8000000_pair1_baseline: timing timed_complete
+030_insecta_SRR27962769_8000000_pair1_candidate: timing timed_complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: ambiguous_gene
+  28S_2 product 0: ambiguous_gene
+000_cnidaria_SRR9278435_1000000_pair1_candidate: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: ambiguous_gene
+  28S_2 product 0: ambiguous_gene
+000_cnidaria_SRR9278435_1000000_pair1_baseline: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: ambiguous_gene
+  28S_2 product 0: ambiguous_gene
+000_cnidaria_SRR9278435_1000000_pair2_baseline: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: ambiguous_gene
+  28S_2 product 0: ambiguous_gene
+000_cnidaria_SRR9278435_1000000_pair2_candidate: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: ambiguous_gene
+  28S_2 product 0: ambiguous_gene
+000_cnidaria_SRR9278435_1000000_pair3_candidate: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: ambiguous_gene
+  28S_2 product 0: ambiguous_gene
+000_cnidaria_SRR9278435_1000000_pair3_baseline: classification complete
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: wrong_gene
+  28S_2 product 0: wrong_gene
+001_cnidaria_SRR25099394_1000000_pair1_baseline: classification complete
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: wrong_gene
+  28S_2 product 0: wrong_gene
+001_cnidaria_SRR25099394_1000000_pair1_candidate: classification complete
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: wrong_gene
+  28S_2 product 0: wrong_gene
+001_cnidaria_SRR25099394_1000000_pair2_candidate: classification complete
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: wrong_gene
+  28S_2 product 0: wrong_gene
+001_cnidaria_SRR25099394_1000000_pair2_baseline: classification complete
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: wrong_gene
+  28S_2 product 0: wrong_gene
+001_cnidaria_SRR25099394_1000000_pair3_baseline: classification complete
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: wrong_gene
+  28S_2 product 0: wrong_gene
+001_cnidaria_SRR25099394_1000000_pair3_candidate: classification complete
+002_cnidaria_SRR8617500_1000000_pair1_baseline: classification failed
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_2 product 0: confirmed_product
+  28S_2 product 0: ambiguous_gene
+002_cnidaria_SRR8617500_1000000_pair1_candidate: classification complete
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_2 product 0: confirmed_product
+  28S_2 product 0: ambiguous_gene
+002_cnidaria_SRR8617500_1000000_pair2_candidate: classification complete
+002_cnidaria_SRR8617500_1000000_pair2_baseline: classification failed
+002_cnidaria_SRR8617500_1000000_pair3_baseline: classification failed
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_2 product 0: confirmed_product
+  28S_2 product 0: ambiguous_gene
+002_cnidaria_SRR8617500_1000000_pair3_candidate: classification complete
+  mt-3734-6739 product 0: confirmed_product
+  mt-6511-9220 product 0: confirmed_product
+  mt-8910-10648 product 0: confirmed_product
+  mt-10360-12226 product 0: confirmed_product
+  mt-14898-151 product 0: confirmed_product
+003_human_SRR17535371_1000000_pair1_candidate: classification complete
+003_human_SRR17535371_1000000_pair1_baseline: classification failed
+003_human_SRR17535371_1000000_pair2_baseline: classification failed
+  mt-3734-6739 product 0: confirmed_product
+  mt-6511-9220 product 0: confirmed_product
+  mt-8910-10648 product 0: confirmed_product
+  mt-10360-12226 product 0: confirmed_product
+  mt-14898-151 product 0: confirmed_product
+003_human_SRR17535371_1000000_pair2_candidate: classification complete
+  mt-3734-6739 product 0: confirmed_product
+  mt-6511-9220 product 0: confirmed_product
+  mt-8910-10648 product 0: confirmed_product
+  mt-10360-12226 product 0: confirmed_product
+  mt-14898-151 product 0: confirmed_product
+003_human_SRR17535371_1000000_pair3_candidate: classification complete
+003_human_SRR17535371_1000000_pair3_baseline: classification failed
+  18S product 0: confirmed_gene_other_taxon
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  12S product 0: confirmed_product
+004_teleostei_SRR22396603_1000000_pair1_baseline: classification complete
+  18S product 0: confirmed_gene_other_taxon
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  12S product 0: confirmed_product
+004_teleostei_SRR22396603_1000000_pair1_candidate: classification complete
+  18S product 0: confirmed_gene_other_taxon
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  12S product 0: confirmed_product
+004_teleostei_SRR22396603_1000000_pair2_candidate: classification complete
+  18S product 0: confirmed_gene_other_taxon
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  12S product 0: confirmed_product
+004_teleostei_SRR22396603_1000000_pair2_baseline: classification complete
+  18S product 0: confirmed_gene_other_taxon
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  12S product 0: confirmed_product
+004_teleostei_SRR22396603_1000000_pair3_baseline: classification complete
+  18S product 0: confirmed_gene_other_taxon
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  12S product 0: confirmed_product
+004_teleostei_SRR22396603_1000000_pair3_candidate: classification complete
+  rpl36-infA-rps8 product 0: confirmed_product
+  trnK-rps16 product 0: no_reference
+  trnC-ycf6 product 0: confirmed_product
+  ycf6-psbM product 0: confirmed_product
+  psbM-trnD product 0: confirmed_product
+  trnL-F product 0: confirmed_product
+005_angiospermae_SRR25378184_1000000_pair1_baseline: classification complete
+  rpl36-infA-rps8 product 0: confirmed_product
+  trnK-rps16 product 0: no_reference
+  trnC-ycf6 product 0: confirmed_product
+  ycf6-psbM product 0: confirmed_product
+  psbM-trnD product 0: confirmed_product
+  trnL-F product 0: confirmed_product
+005_angiospermae_SRR25378184_1000000_pair1_candidate: classification complete
+  rpl36-infA-rps8 product 0: confirmed_product
+  trnK-rps16 product 0: no_reference
+  trnC-ycf6 product 0: confirmed_product
+  ycf6-psbM product 0: confirmed_product
+  psbM-trnD product 0: confirmed_product
+  trnL-F product 0: confirmed_product
+005_angiospermae_SRR25378184_1000000_pair2_candidate: classification complete
+  rpl36-infA-rps8 product 0: confirmed_product
+  trnK-rps16 product 0: no_reference
+  trnC-ycf6 product 0: confirmed_product
+  ycf6-psbM product 0: confirmed_product
+  psbM-trnD product 0: confirmed_product
+  trnL-F product 0: confirmed_product
+005_angiospermae_SRR25378184_1000000_pair2_baseline: classification complete
+  rpl36-infA-rps8 product 0: confirmed_product
+  trnK-rps16 product 0: no_reference
+  trnC-ycf6 product 0: confirmed_product
+  ycf6-psbM product 0: confirmed_product
+  psbM-trnD product 0: confirmed_product
+  trnL-F product 0: confirmed_product
+005_angiospermae_SRR25378184_1000000_pair3_baseline: classification complete
+  rpl36-infA-rps8 product 0: confirmed_product
+  trnK-rps16 product 0: no_reference
+  trnC-ycf6 product 0: confirmed_product
+  ycf6-psbM product 0: confirmed_product
+  psbM-trnD product 0: confirmed_product
+  trnL-F product 0: confirmed_product
+005_angiospermae_SRR25378184_1000000_pair3_candidate: classification complete
+  psbA-trnH product 0: confirmed_product
+  trnC-ycf6 product 0: confirmed_product
+  ycf6-psbM product 0: confirmed_product
+  psbM-trnD product 0: insufficient_alignment
+  atpB-rbcL product 0: confirmed_product
+  ITS product 0: confirmed_product
+006_angiospermae_ERR14009273_1000000_pair1_candidate: classification complete
+  psbA-trnH product 0: confirmed_product
+  trnC-ycf6 product 0: confirmed_product
+  ycf6-psbM product 0: confirmed_product
+  psbM-trnD product 0: insufficient_alignment
+  atpB-rbcL product 0: confirmed_product
+  ITS product 0: confirmed_product
+006_angiospermae_ERR14009273_1000000_pair1_baseline: classification complete
+  psbA-trnH product 0: confirmed_product
+  trnC-ycf6 product 0: confirmed_product
+  ycf6-psbM product 0: confirmed_product
+  psbM-trnD product 0: insufficient_alignment
+  atpB-rbcL product 0: confirmed_product
+  ITS product 0: confirmed_product
+006_angiospermae_ERR14009273_1000000_pair2_baseline: classification complete
+  psbA-trnH product 0: confirmed_product
+  trnC-ycf6 product 0: confirmed_product
+  ycf6-psbM product 0: confirmed_product
+  psbM-trnD product 0: insufficient_alignment
+  atpB-rbcL product 0: confirmed_product
+  ITS product 0: confirmed_product
+006_angiospermae_ERR14009273_1000000_pair2_candidate: classification complete
+  psbA-trnH product 0: confirmed_product
+  trnC-ycf6 product 0: confirmed_product
+  ycf6-psbM product 0: confirmed_product
+  psbM-trnD product 0: insufficient_alignment
+  atpB-rbcL product 0: confirmed_product
+  ITS product 0: confirmed_product
+006_angiospermae_ERR14009273_1000000_pair3_candidate: classification complete
+  psbA-trnH product 0: confirmed_product
+  trnC-ycf6 product 0: confirmed_product
+  ycf6-psbM product 0: confirmed_product
+  psbM-trnD product 0: insufficient_alignment
+  atpB-rbcL product 0: confirmed_product
+  ITS product 0: confirmed_product
+006_angiospermae_ERR14009273_1000000_pair3_baseline: classification complete
+  12S product 0: no_significant_hit
+  12S product 1: no_significant_hit
+  12S product 2: no_significant_hit
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: wrong_gene
+  CytB product 0: insufficient_alignment
+  ND4 product 0: confirmed_gene_other_taxon
+  ND5 product 0: no_significant_hit
+  16S_2 product 0: no_significant_hit
+  CO1_2 product 0: confirmed_product
+  CO2_2 product 0: confirmed_product
+  18S_1 product 0: ambiguous_gene
+  18S_2 product 0: confirmed_product
+007_insecta_SRR31887760_1000000_pair1_baseline: classification complete
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: wrong_gene
+  CytB product 0: insufficient_alignment
+  ND4 product 0: confirmed_gene_other_taxon
+  ND5 product 0: no_significant_hit
+  CO1_2 product 0: confirmed_product
+  CO2_2 product 0: confirmed_product
+  18S_1 product 0: ambiguous_gene
+  18S_2 product 0: confirmed_product
+007_insecta_SRR31887760_1000000_pair1_candidate: classification complete
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: wrong_gene
+  CytB product 0: insufficient_alignment
+  ND4 product 0: confirmed_gene_other_taxon
+  ND5 product 0: no_significant_hit
+  CO1_2 product 0: confirmed_product
+  CO2_2 product 0: confirmed_product
+  18S_1 product 0: ambiguous_gene
+  18S_2 product 0: confirmed_product
+007_insecta_SRR31887760_1000000_pair2_candidate: classification complete
+  12S product 0: no_significant_hit
+  12S product 1: no_significant_hit
+  12S product 2: no_significant_hit
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: wrong_gene
+  CytB product 0: insufficient_alignment
+  ND4 product 0: confirmed_gene_other_taxon
+  ND5 product 0: no_significant_hit
+  16S_2 product 0: no_significant_hit
+  CO1_2 product 0: confirmed_product
+  CO2_2 product 0: confirmed_product
+  18S_1 product 0: ambiguous_gene
+  18S_2 product 0: confirmed_product
+007_insecta_SRR31887760_1000000_pair2_baseline: classification complete
+  12S product 0: no_significant_hit
+  12S product 1: no_significant_hit
+  12S product 2: no_significant_hit
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: wrong_gene
+  CytB product 0: insufficient_alignment
+  ND4 product 0: confirmed_gene_other_taxon
+  ND5 product 0: no_significant_hit
+  16S_2 product 0: no_significant_hit
+  CO1_2 product 0: confirmed_product
+  CO2_2 product 0: confirmed_product
+  18S_1 product 0: ambiguous_gene
+  18S_2 product 0: confirmed_product
+007_insecta_SRR31887760_1000000_pair3_baseline: classification complete
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: wrong_gene
+  CytB product 0: insufficient_alignment
+  ND4 product 0: confirmed_gene_other_taxon
+  ND5 product 0: no_significant_hit
+  CO1_2 product 0: confirmed_product
+  CO2_2 product 0: confirmed_product
+  18S_1 product 0: ambiguous_gene
+  18S_2 product 0: confirmed_product
+007_insecta_SRR31887760_1000000_pair3_candidate: classification complete
+  CO1_1 product 0: confirmed_product
+  CO2_1 product 0: confirmed_product
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND5 product 0: confirmed_product
+  CO1_2 product 0: confirmed_product
+008_insecta_SRR1057608_1000000_pair1_candidate: classification complete
+  CO1_1 product 0: confirmed_product
+  CO2_1 product 0: confirmed_product
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND1 product 1: no_significant_hit
+  ND5 product 0: confirmed_product
+  CO1_2 product 0: confirmed_product
+008_insecta_SRR1057608_1000000_pair1_baseline: classification complete
+  CO1_1 product 0: confirmed_product
+  CO2_1 product 0: confirmed_product
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND1 product 1: no_significant_hit
+  ND5 product 0: confirmed_product
+  CO1_2 product 0: confirmed_product
+008_insecta_SRR1057608_1000000_pair2_baseline: classification complete
+  CO1_1 product 0: confirmed_product
+  CO2_1 product 0: confirmed_product
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND5 product 0: confirmed_product
+  CO1_2 product 0: confirmed_product
+008_insecta_SRR1057608_1000000_pair2_candidate: classification complete
+  CO1_1 product 0: confirmed_product
+  CO2_1 product 0: confirmed_product
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND5 product 0: confirmed_product
+  CO1_2 product 0: confirmed_product
+008_insecta_SRR1057608_1000000_pair3_candidate: classification complete
+  CO1_1 product 0: confirmed_product
+  CO2_1 product 0: confirmed_product
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND1 product 1: no_significant_hit
+  ND5 product 0: confirmed_product
+  CO1_2 product 0: confirmed_product
+008_insecta_SRR1057608_1000000_pair3_baseline: classification complete
+  12S product 0: no_significant_hit
+  16S_1 product 0: ambiguous_gene
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: no_significant_hit
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND4 product 0: confirmed_product
+  ND5 product 0: insufficient_alignment
+  16S_2 product 0: confirmed_product
+  CO1_2 product 0: insufficient_alignment
+  NADH product 0: confirmed_product
+009_insecta_SRR27962769_1000000_pair1_candidate: classification complete
+009_insecta_SRR27962769_1000000_pair1_baseline: classification failed
+009_insecta_SRR27962769_1000000_pair2_baseline: classification failed
+  12S product 0: no_significant_hit
+  16S_1 product 0: ambiguous_gene
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: no_significant_hit
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND4 product 0: confirmed_product
+  ND5 product 0: insufficient_alignment
+  16S_2 product 0: confirmed_product
+  CO1_2 product 0: insufficient_alignment
+  NADH product 0: confirmed_product
+009_insecta_SRR27962769_1000000_pair2_candidate: classification complete
+  12S product 0: no_significant_hit
+  16S_1 product 0: ambiguous_gene
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: no_significant_hit
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND4 product 0: confirmed_product
+  ND5 product 0: insufficient_alignment
+  16S_2 product 0: confirmed_product
+  CO1_2 product 0: insufficient_alignment
+  NADH product 0: confirmed_product
+009_insecta_SRR27962769_1000000_pair3_candidate: classification complete
+009_insecta_SRR27962769_1000000_pair3_baseline: classification failed
+010_bacteria_SRR19418213_1000000_pair1_baseline: classification failed
+  16S-515F-806R product 0: no_reference
+  16S-515F-806RB product 0: no_reference
+010_bacteria_SRR19418213_1000000_pair1_candidate: classification complete
+  16S-515F-806R product 0: no_reference
+  16S-515F-806RB product 0: no_reference
+010_bacteria_SRR19418213_1000000_pair2_candidate: classification complete
+010_bacteria_SRR19418213_1000000_pair2_baseline: classification failed
+010_bacteria_SRR19418213_1000000_pair3_baseline: classification failed
+  16S-515F-806R product 0: no_reference
+  16S-515F-806RB product 0: no_reference
+010_bacteria_SRR19418213_1000000_pair3_candidate: classification complete
+No amplicons to validate.
+011_bacteria_SRR24806237_1000000_pair1_candidate: classification complete
+011_bacteria_SRR24806237_1000000_pair1_baseline: classification failed
+011_bacteria_SRR24806237_1000000_pair2_baseline: classification failed
+No amplicons to validate.
+011_bacteria_SRR24806237_1000000_pair2_candidate: classification complete
+No amplicons to validate.
+011_bacteria_SRR24806237_1000000_pair3_candidate: classification complete
+011_bacteria_SRR24806237_1000000_pair3_baseline: classification failed
+  16S-515F-806R product 0: no_reference
+  16S-515F-806RB product 0: no_reference
+  16S-68F-783Rabc product 0: no_reference
+  16S-68F-783Rabc product 1: no_reference
+  16S-68F-783Rabc product 2: no_reference
+  16S-68F-783Rabc product 3: no_reference
+  16S-68F-783Rabc product 4: no_reference
+  16S-68F-783Rabc product 5: no_reference
+012_bacteria_ERR2596344_1000000_pair1_baseline: classification complete
+  16S-515F-806R product 0: no_reference
+  16S-515F-806RB product 0: no_reference
+  16S-68F-783Rabc product 0: no_reference
+  16S-68F-783Rabc product 1: no_reference
+  16S-68F-783Rabc product 2: no_reference
+012_bacteria_ERR2596344_1000000_pair1_candidate: classification complete
+  16S-515F-806R product 0: no_reference
+  16S-515F-806RB product 0: no_reference
+  16S-68F-783Rabc product 0: no_reference
+  16S-68F-783Rabc product 1: no_reference
+  16S-68F-783Rabc product 2: no_reference
+012_bacteria_ERR2596344_1000000_pair2_candidate: classification complete
+  16S-515F-806R product 0: no_reference
+  16S-515F-806RB product 0: no_reference
+  16S-68F-783Rabc product 0: no_reference
+  16S-68F-783Rabc product 1: no_reference
+  16S-68F-783Rabc product 2: no_reference
+  16S-68F-783Rabc product 3: no_reference
+  16S-68F-783Rabc product 4: no_reference
+  16S-68F-783Rabc product 5: no_reference
+012_bacteria_ERR2596344_1000000_pair2_baseline: classification complete
+  16S-515F-806R product 0: no_reference
+  16S-515F-806RB product 0: no_reference
+  16S-68F-783Rabc product 0: no_reference
+  16S-68F-783Rabc product 1: no_reference
+  16S-68F-783Rabc product 2: no_reference
+  16S-68F-783Rabc product 3: no_reference
+  16S-68F-783Rabc product 4: no_reference
+  16S-68F-783Rabc product 5: no_reference
+012_bacteria_ERR2596344_1000000_pair3_baseline: classification complete
+  16S-515F-806R product 0: no_reference
+  16S-515F-806RB product 0: no_reference
+  16S-68F-783Rabc product 0: no_reference
+  16S-68F-783Rabc product 1: no_reference
+  16S-68F-783Rabc product 2: no_reference
+012_bacteria_ERR2596344_1000000_pair3_candidate: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: confirmed_product
+  28S_2 product 0: ambiguous_gene
+013_cnidaria_SRR9278435_2000000_pair1_baseline: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: confirmed_product
+  28S_2 product 0: ambiguous_gene
+013_cnidaria_SRR9278435_2000000_pair1_candidate: classification complete
+  CO1 product 0: no_significant_hit
+  CO1 product 1: no_significant_hit
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: wrong_gene
+  28S_2 product 0: wrong_gene
+014_cnidaria_SRR25099394_2000000_pair1_baseline: classification complete
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: wrong_gene
+  28S_2 product 0: wrong_gene
+014_cnidaria_SRR25099394_2000000_pair1_candidate: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_2 product 0: confirmed_product
+  28S_2 product 0: ambiguous_gene
+015_cnidaria_SRR8617500_2000000_pair1_baseline: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_2 product 0: confirmed_product
+  28S_2 product 0: ambiguous_gene
+015_cnidaria_SRR8617500_2000000_pair1_candidate: classification complete
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: wrong_gene
+  CytB product 0: insufficient_alignment
+  ND1 product 0: confirmed_gene_other_taxon
+  ND4 product 0: confirmed_gene_other_taxon
+  ND5 product 0: no_significant_hit
+  CO1_2 product 0: confirmed_product
+  CO2_2 product 0: confirmed_product
+  18S_1 product 0: ambiguous_gene
+  18S_2 product 0: confirmed_product
+016_insecta_SRR31887760_2000000_pair1_candidate: classification complete
+  12S product 0: insufficient_alignment
+  12S product 1: insufficient_alignment
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: wrong_gene
+  CytB product 0: insufficient_alignment
+  ND1 product 0: confirmed_gene_other_taxon
+  ND4 product 0: confirmed_gene_other_taxon
+  ND5 product 0: no_significant_hit
+  16S_2 product 0: no_significant_hit
+  16S_2 product 1: no_significant_hit
+  16S_2 product 2: no_significant_hit
+  16S_2 product 3: no_significant_hit
+  CO1_2 product 0: confirmed_product
+  CO2_2 product 0: confirmed_product
+  NADH product 0: no_significant_hit
+  NADH product 1: no_significant_hit
+  NADH product 2: no_significant_hit
+  NADH product 3: no_significant_hit
+  NADH product 4: no_significant_hit
+  NADH product 5: no_significant_hit
+  NADH product 6: no_significant_hit
+  Fz4 product 0: no_reference
+  Fz4 product 1: no_reference
+  Fz4 product 2: no_reference
+  Fz4 product 3: no_reference
+  Fz4 product 4: no_reference
+  Fz4 product 5: no_reference
+  Fz4 product 6: no_reference
+  Gpdh product 0: no_reference
+  Gpdh product 1: no_reference
+  Gpdh product 2: no_reference
+  Pgi product 0: no_reference
+  Pgi product 1: no_reference
+  Pgi product 2: no_reference
+  Pgi product 3: no_reference
+  Pgi product 4: no_reference
+  Pgi product 5: no_reference
+  18S_1 product 0: ambiguous_gene
+  18S_2 product 0: confirmed_product
+016_insecta_SRR31887760_2000000_pair1_baseline: classification complete
+017_insecta_SRR1057608_2000000_pair1_baseline: classification failed
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: confirmed_product
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND4 product 0: no_significant_hit
+  ND5 product 0: confirmed_product
+  CO1_2 product 0: confirmed_product
+017_insecta_SRR1057608_2000000_pair1_candidate: classification complete
+018_insecta_SRR27962769_2000000_pair1_baseline: classification failed
+  12S product 0: no_significant_hit
+  16S_1 product 0: ambiguous_gene
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: no_significant_hit
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND4 product 0: confirmed_product
+  ND5 product 0: insufficient_alignment
+  16S_2 product 0: confirmed_product
+  CO1_2 product 0: insufficient_alignment
+  NADH product 0: confirmed_product
+  28S product 0: confirmed_product
+  18S_2 product 0: insufficient_alignment
+018_insecta_SRR27962769_2000000_pair1_candidate: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: confirmed_product
+  28S_2 product 0: ambiguous_gene
+019_cnidaria_SRR9278435_4000000_pair1_candidate: classification complete
+019_cnidaria_SRR9278435_4000000_pair1_baseline: classification failed
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: wrong_gene
+  28S_2 product 0: wrong_gene
+020_cnidaria_SRR25099394_4000000_pair1_candidate: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: wrong_gene
+  28S_2 product 0: wrong_gene
+020_cnidaria_SRR25099394_4000000_pair1_baseline: classification complete
+021_cnidaria_SRR8617500_4000000_pair1_baseline: classification failed
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_2 product 0: confirmed_product
+  28S_2 product 0: ambiguous_gene
+021_cnidaria_SRR8617500_4000000_pair1_candidate: classification complete
+  12S product 0: confirmed_gene_other_taxon
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: wrong_gene
+  CytB product 0: insufficient_alignment
+  ND1 product 0: confirmed_gene_other_taxon
+  ND4 product 0: confirmed_gene_other_taxon
+  ND5 product 0: no_significant_hit
+  CO1_2 product 0: confirmed_product
+  CO2_2 product 0: confirmed_product
+  18S_1 product 0: ambiguous_gene
+  18S_2 product 0: confirmed_product
+022_insecta_SRR31887760_4000000_pair1_candidate: classification complete
+  12S product 0: confirmed_gene_other_taxon
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: wrong_gene
+  CytB product 0: insufficient_alignment
+  ND1 product 0: confirmed_gene_other_taxon
+  ND4 product 0: confirmed_gene_other_taxon
+  ND5 product 0: no_significant_hit
+  16S_2 product 0: no_significant_hit
+  16S_2 product 1: no_significant_hit
+  16S_2 product 2: no_significant_hit
+  16S_2 product 3: no_significant_hit
+  16S_2 product 4: no_significant_hit
+  16S_2 product 5: no_significant_hit
+  16S_2 product 6: no_significant_hit
+  16S_2 product 7: no_significant_hit
+  16S_2 product 8: no_significant_hit
+  16S_2 product 9: no_significant_hit
+  16S_2 product 10: no_significant_hit
+  16S_2 product 11: no_significant_hit
+  16S_2 product 12: no_significant_hit
+  16S_2 product 13: no_significant_hit
+  CO1_2 product 0: confirmed_product
+  CO2_2 product 0: confirmed_product
+  Fz4 product 0: no_reference
+  Fz4 product 1: no_reference
+  Gpdh product 0: no_reference
+  Gpdh product 1: no_reference
+  Gpdh product 2: no_reference
+  Gpdh product 3: no_reference
+  Gpdh product 4: no_reference
+  Pgi product 0: no_reference
+  Pgi product 1: no_reference
+  Pgi product 2: no_reference
+  Pgi product 3: no_reference
+  Pgi product 4: no_reference
+  Pgi product 5: no_reference
+  Pgi product 6: no_reference
+  Yp2 product 0: no_significant_hit
+  Yp2 product 1: no_significant_hit
+  Yp2 product 2: no_significant_hit
+  18S_1 product 0: ambiguous_gene
+  18S_2 product 0: confirmed_product
+  ITS_2 product 0: no_significant_hit
+  ITS_2 product 1: no_significant_hit
+  ITS_2 product 2: no_significant_hit
+  ITS_2 product 3: no_significant_hit
+022_insecta_SRR31887760_4000000_pair1_baseline: classification complete
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: confirmed_product
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND5 product 0: confirmed_product
+  CO1_2 product 0: confirmed_product
+  18S_1 product 0: insufficient_alignment
+  18S_2 product 0: insufficient_alignment
+023_insecta_SRR1057608_4000000_pair1_candidate: classification complete
+023_insecta_SRR1057608_4000000_pair1_baseline: classification failed
+  12S product 0: no_significant_hit
+  16S_1 product 0: ambiguous_gene
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: no_significant_hit
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND4 product 0: confirmed_product
+  ND5 product 0: insufficient_alignment
+  16S_2 product 0: confirmed_product
+  CO1_2 product 0: insufficient_alignment
+  NADH product 0: confirmed_product
+  18S_1 product 0: insufficient_alignment
+  28S product 0: confirmed_product
+  18S_2 product 0: insufficient_alignment
+024_insecta_SRR27962769_4000000_pair1_candidate: classification complete
+  12S product 0: no_significant_hit
+  16S_1 product 0: ambiguous_gene
+  CO1_1 product 0: insufficient_alignment
+  CO1_1 product 1: insufficient_alignment
+  CO2_1 product 0: no_significant_hit
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND4 product 0: confirmed_product
+  ND5 product 0: insufficient_alignment
+  16S_2 product 0: confirmed_product
+  CO1_2 product 0: insufficient_alignment
+  NADH product 0: confirmed_product
+  Gpdh product 0: no_reference
+  Gpdh product 1: no_reference
+  Gpdh product 2: no_reference
+  Gpdh product 3: no_reference
+  Gpdh product 4: no_reference
+  Gpdh product 5: no_reference
+  Gpdh product 6: no_reference
+  Gpdh product 7: no_reference
+  Gpdh product 8: no_reference
+  Pgi product 0: no_reference
+  Yp2 product 0: no_significant_hit
+  Yp2 product 1: no_significant_hit
+  18S_1 product 0: insufficient_alignment
+  28S product 0: confirmed_product
+  18S_2 product 0: insufficient_alignment
+  ITS_2 product 0: confirmed_product
+  ITS_2 product 1: confirmed_product
+024_insecta_SRR27962769_4000000_pair1_baseline: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: confirmed_product
+  28S_2 product 0: ambiguous_gene
+025_cnidaria_SRR9278435_8000000_pair1_candidate: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: confirmed_product
+  28S_2 product 0: ambiguous_gene
+025_cnidaria_SRR9278435_8000000_pair1_baseline: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: wrong_gene
+  28S_2 product 0: wrong_gene
+026_cnidaria_SRR25099394_8000000_pair1_candidate: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_1 product 0: confirmed_product
+  ITS_2 product 0: wrong_gene
+  28S_2 product 0: wrong_gene
+026_cnidaria_SRR25099394_8000000_pair1_baseline: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_2 product 0: confirmed_product
+  28S_2 product 0: ambiguous_gene
+027_cnidaria_SRR8617500_8000000_pair1_baseline: classification complete
+  16S product 0: confirmed_product
+  CO1 product 0: confirmed_product
+  18S product 0: confirmed_product
+  28S_1 product 0: split_or_chimeric_alignment
+  ITS_2 product 0: confirmed_product
+  28S_2 product 0: ambiguous_gene
+027_cnidaria_SRR8617500_8000000_pair1_candidate: classification complete
+028_insecta_SRR31887760_8000000_pair1_baseline: classification failed
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: wrong_gene
+  CytB product 0: insufficient_alignment
+  ND1 product 0: confirmed_gene_other_taxon
+  ND4 product 0: confirmed_gene_other_taxon
+  ND5 product 0: no_significant_hit
+  CO1_2 product 0: confirmed_product
+  CO2_2 product 0: confirmed_product
+  18S_1 product 0: ambiguous_gene
+  18S_2 product 0: confirmed_product
+028_insecta_SRR31887760_8000000_pair1_candidate: classification complete
+029_insecta_SRR1057608_8000000_pair1_baseline: classification failed
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: confirmed_product
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND5 product 0: confirmed_product
+  CO1_2 product 0: confirmed_product
+029_insecta_SRR1057608_8000000_pair1_candidate: classification complete
+  12S product 0: no_significant_hit
+  16S_1 product 0: ambiguous_gene
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: no_significant_hit
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND4 product 0: confirmed_product
+  ND5 product 0: insufficient_alignment
+  16S_2 product 0: confirmed_product
+  CO1_2 product 0: insufficient_alignment
+  NADH product 0: confirmed_product
+  18S_1 product 0: insufficient_alignment
+  28S product 0: confirmed_product
+  18S_2 product 0: insufficient_alignment
+  ITS_2 product 0: confirmed_product
+030_insecta_SRR27962769_8000000_pair1_baseline: classification complete
+  12S product 0: no_significant_hit
+  16S_1 product 0: ambiguous_gene
+  CO1_1 product 0: insufficient_alignment
+  CO2_1 product 0: no_significant_hit
+  CytB product 0: confirmed_product
+  ND1 product 0: no_significant_hit
+  ND4 product 0: confirmed_product
+  ND5 product 0: insufficient_alignment
+  16S_2 product 0: confirmed_product
+  CO1_2 product 0: insufficient_alignment
+  NADH product 0: confirmed_product
+  18S_1 product 0: insufficient_alignment
+  28S product 0: confirmed_product
+  18S_2 product 0: insufficient_alignment
+030_insecta_SRR27962769_8000000_pair1_candidate: classification complete

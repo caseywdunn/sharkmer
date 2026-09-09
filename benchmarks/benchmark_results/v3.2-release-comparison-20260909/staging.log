@@ -1,0 +1,40 @@
+SRR9278435: 1,000,000 records staged (60.7s)
+SRR9278435: 2,000,000 records staged (134.8s)
+SRR9278435: 4,000,000 records staged (235.7s)
+SRR9278435: 8,000,000 records staged (454.0s)
+Completed SRR9278435: 8,000,000 records, 2.49 GiB
+SRR25099394: 1,000,000 records staged (42.5s)
+SRR25099394: 2,000,000 records staged (73.0s)
+SRR25099394: 4,000,000 records staged (139.0s)
+SRR25099394: 8,000,000 records staged (240.6s)
+Completed SRR25099394: 8,000,000 records, 2.74 GiB
+SRR8617500: 1,000,000 records staged (40.1s)
+SRR8617500: 2,000,000 records staged (59.3s)
+SRR8617500: 4,000,000 records staged (93.9s)
+SRR8617500: 8,000,000 records staged (149.9s)
+Completed SRR8617500: 8,000,000 records, 2.49 GiB
+Completed SRR17535371: 108,518 records, 0.04 GiB
+SRR22396603: 1,000,000 records staged (3.4s)
+Completed SRR22396603: 1,000,000 records, 0.31 GiB
+SRR25378184: 1,000,000 records staged (3.7s)
+Completed SRR25378184: 1,000,000 records, 0.35 GiB
+ERR14009273: 1,000,000 records staged (3.3s)
+Completed ERR14009273: 1,000,000 records, 0.24 GiB
+SRR31887760: 1,000,000 records staged (53.2s)
+SRR31887760: 2,000,000 records staged (106.1s)
+SRR31887760: 4,000,000 records staged (209.7s)
+SRR31887760: 8,000,000 records staged (398.1s)
+Completed SRR31887760: 8,000,000 records, 2.00 GiB
+SRR1057608: 1,000,000 records staged (59.7s)
+SRR1057608: 2,000,000 records staged (105.4s)
+SRR1057608: 4,000,000 records staged (189.7s)
+SRR1057608: 8,000,000 records staged (415.0s)
+Completed SRR1057608: 8,000,000 records, 1.59 GiB
+SRR27962769: 1,000,000 records staged (52.6s)
+SRR27962769: 2,000,000 records staged (101.4s)
+SRR27962769: 4,000,000 records staged (189.3s)
+SRR27962769: 8,000,000 records staged (379.9s)
+Completed SRR27962769: 8,000,000 records, 2.73 GiB
+Completed SRR19418213: 525,982 records, 0.31 GiB
+Completed SRR24806237: 167,686 records, 0.09 GiB
+Completed ERR2596344: 59,704 records, 0.04 GiB

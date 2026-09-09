@@ -1,0 +1,1746 @@
+{
+  "failures": [],
+  "generated_at": "2026-09-09T20:43:20.344424+00:00",
+  "invocations": 114,
+  "legacy_adapter_corrections": [
+    "002_cnidaria_SRR8617500_1000000_pair1_baseline",
+    "002_cnidaria_SRR8617500_1000000_pair2_baseline",
+    "002_cnidaria_SRR8617500_1000000_pair3_baseline",
+    "003_human_SRR17535371_1000000_pair1_baseline",
+    "003_human_SRR17535371_1000000_pair2_baseline",
+    "003_human_SRR17535371_1000000_pair3_baseline",
+    "009_insecta_SRR27962769_1000000_pair1_baseline",
+    "009_insecta_SRR27962769_1000000_pair2_baseline",
+    "009_insecta_SRR27962769_1000000_pair3_baseline",
+    "010_bacteria_SRR19418213_1000000_pair1_baseline",
+    "010_bacteria_SRR19418213_1000000_pair2_baseline",
+    "010_bacteria_SRR19418213_1000000_pair3_baseline",
+    "011_bacteria_SRR24806237_1000000_pair1_baseline",
+    "011_bacteria_SRR24806237_1000000_pair2_baseline",
+    "011_bacteria_SRR24806237_1000000_pair3_baseline",
+    "017_insecta_SRR1057608_2000000_pair1_baseline",
+    "018_insecta_SRR27962769_2000000_pair1_baseline",
+    "019_cnidaria_SRR9278435_4000000_pair1_baseline",
+    "021_cnidaria_SRR8617500_4000000_pair1_baseline",
+    "023_insecta_SRR1057608_4000000_pair1_baseline",
+    "028_insecta_SRR31887760_8000000_pair1_baseline",
+    "029_insecta_SRR1057608_8000000_pair1_baseline"
+  ],
+  "limitations": [
+    "One-million-record cells have three paired repetitions; deeper cells have one paired run.",
+    "Input files are prewarmed outside every timed invocation; operating-system cache residency is not guaranteed.",
+    "Peak RSS is GNU time process RSS; the 40 GiB RLIMIT_AS ceiling is an address-space limit, not an RSS cap.",
+    "BLAST classification uses the current validator after timing and is not a biological truth claim.",
+    "Legacy 3.1.0 lacks current source-plan, stage-timing, capacity, and output-transaction fields; unavailable metrics remain null."
+  ],
+  "normalization_note": "Only exact v3.1.0 adapter failures caused by valid nonnegative integer-or-half median headers were corrected; all other original failures remain failures.",
+  "pair_comparisons": [
+    {
+      "baseline_ingested_kmers_s": 2621252.872821175,
+      "baseline_input_mbp_s": 3.2024498386055518,
+      "baseline_peak_rss_bytes": 2287030272,
+      "baseline_wall_time_s": 30.98,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2606947.4799357946,
+      "candidate_input_mbp_s": 3.184972584269663,
+      "candidate_peak_rss_bytes": 2287316992,
+      "candidate_speedup_ratio": 0.9945425361155699,
+      "candidate_wall_time_s": 31.15,
+      "cell": "angiospermae/ERR14009273/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2609460.6041131103,
+      "baseline_input_mbp_s": 3.1880429305912594,
+      "baseline_peak_rss_bytes": 2287300608,
+      "baseline_wall_time_s": 31.12,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2607784.649967887,
+      "candidate_input_mbp_s": 3.185995375722543,
+      "candidate_peak_rss_bytes": 2287312896,
+      "candidate_speedup_ratio": 0.9993577392421323,
+      "candidate_wall_time_s": 31.14,
+      "cell": "angiospermae/ERR14009273/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2602769.6794871795,
+      "baseline_input_mbp_s": 3.1798684615384616,
+      "baseline_peak_rss_bytes": 2287230976,
+      "baseline_wall_time_s": 31.2,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2587015.418923224,
+      "candidate_input_mbp_s": 3.160621089518955,
+      "candidate_peak_rss_bytes": 2287222784,
+      "candidate_speedup_ratio": 0.9939471169162153,
+      "candidate_wall_time_s": 31.39,
+      "cell": "angiospermae/ERR14009273/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2184764.3115346697,
+      "baseline_input_mbp_s": 2.4811041735129806,
+      "baseline_peak_rss_bytes": 4568961024,
+      "baseline_wall_time_s": 60.86,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2162731.880286272,
+      "candidate_input_mbp_s": 2.4560832791151594,
+      "candidate_peak_rss_bytes": 4569169920,
+      "candidate_speedup_ratio": 0.9899154196486663,
+      "candidate_wall_time_s": 61.48,
+      "cell": "angiospermae/SRR25378184/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2189801.646903821,
+      "baseline_input_mbp_s": 2.4868247694334653,
+      "baseline_peak_rss_bytes": 4569096192,
+      "baseline_wall_time_s": 60.72,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2146670.261543429,
+      "candidate_input_mbp_s": 2.437843073942525,
+      "candidate_peak_rss_bytes": 4569010176,
+      "candidate_speedup_ratio": 0.9803035195350339,
+      "candidate_wall_time_s": 61.94,
+      "cell": "angiospermae/SRR25378184/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2188360.0394996707,
+      "baseline_input_mbp_s": 2.4851876234364716,
+      "baseline_peak_rss_bytes": 4569047040,
+      "baseline_wall_time_s": 60.76,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2154322.0349967596,
+      "candidate_input_mbp_s": 2.446532728451069,
+      "candidate_peak_rss_bytes": 4569096192,
+      "candidate_speedup_ratio": 0.984445884640311,
+      "candidate_wall_time_s": 61.72,
+      "cell": "angiospermae/SRR25378184/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 23208878.87323944,
+      "baseline_input_mbp_s": 24.722501408450707,
+      "baseline_peak_rss_bytes": 76742656,
+      "baseline_wall_time_s": 0.71,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 22267978.37837838,
+      "candidate_input_mbp_s": 23.72023783783784,
+      "candidate_peak_rss_bytes": 77090816,
+      "candidate_speedup_ratio": 0.9594594594594594,
+      "candidate_wall_time_s": 0.74,
+      "cell": "bacteria/ERR2596344/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 22886533.333333336,
+      "baseline_input_mbp_s": 24.379133333333336,
+      "baseline_peak_rss_bytes": 76865536,
+      "baseline_wall_time_s": 0.72,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 21971072.0,
+      "candidate_input_mbp_s": 23.403968000000003,
+      "candidate_peak_rss_bytes": 77090816,
+      "candidate_speedup_ratio": 0.96,
+      "candidate_wall_time_s": 0.75,
+      "cell": "bacteria/ERR2596344/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 23208878.87323944,
+      "baseline_input_mbp_s": 24.722501408450707,
+      "baseline_peak_rss_bytes": 76967936,
+      "baseline_wall_time_s": 0.71,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 22267978.37837838,
+      "candidate_input_mbp_s": 23.72023783783784,
+      "candidate_peak_rss_bytes": 77070336,
+      "candidate_speedup_ratio": 0.9594594594594594,
+      "candidate_wall_time_s": 0.74,
+      "cell": "bacteria/ERR2596344/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 11537337.364341086,
+      "baseline_input_mbp_s": 12.272913333333333,
+      "baseline_peak_rss_bytes": 1146527744,
+      "baseline_wall_time_s": 12.9,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 11582229.72762646,
+      "candidate_input_mbp_s": 12.32066785992218,
+      "candidate_peak_rss_bytes": 1146613760,
+      "candidate_speedup_ratio": 1.0038910505836576,
+      "candidate_wall_time_s": 12.85,
+      "cell": "bacteria/SRR19418213/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 11492791.660231661,
+      "baseline_input_mbp_s": 12.225527567567568,
+      "baseline_peak_rss_bytes": 1146527744,
+      "baseline_wall_time_s": 12.95,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 11591250.15576324,
+      "candidate_input_mbp_s": 12.33026339563863,
+      "candidate_peak_rss_bytes": 1146585088,
+      "candidate_speedup_ratio": 1.0085669781931463,
+      "candidate_wall_time_s": 12.84,
+      "cell": "bacteria/SRR19418213/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 11335236.252856053,
+      "baseline_input_mbp_s": 12.057927037319116,
+      "baseline_peak_rss_bytes": 1146404864,
+      "baseline_wall_time_s": 13.13,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 11564230.924630925,
+      "candidate_input_mbp_s": 12.301521522921524,
+      "candidate_peak_rss_bytes": 1146802176,
+      "candidate_speedup_ratio": 1.0202020202020203,
+      "candidate_wall_time_s": 12.87,
+      "cell": "bacteria/SRR19418213/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 25534081.57894737,
+      "baseline_input_mbp_s": 27.52456644736842,
+      "baseline_peak_rss_bytes": 148279296,
+      "baseline_wall_time_s": 1.52,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 23240601.19760479,
+      "candidate_input_mbp_s": 25.052300000000002,
+      "candidate_peak_rss_bytes": 148414464,
+      "candidate_speedup_ratio": 0.9101796407185629,
+      "candidate_wall_time_s": 1.67,
+      "cell": "bacteria/SRR24806237/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 25367192.156862743,
+      "baseline_input_mbp_s": 27.34466732026144,
+      "baseline_peak_rss_bytes": 148209664,
+      "baseline_wall_time_s": 1.53,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 23380604.819277108,
+      "candidate_input_mbp_s": 25.20321746987952,
+      "candidate_peak_rss_bytes": 148353024,
+      "candidate_speedup_ratio": 0.9216867469879518,
+      "candidate_wall_time_s": 1.66,
+      "cell": "bacteria/SRR24806237/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 25367192.156862743,
+      "baseline_input_mbp_s": 27.34466732026144,
+      "baseline_peak_rss_bytes": 148267008,
+      "baseline_wall_time_s": 1.53,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 23240601.19760479,
+      "candidate_input_mbp_s": 25.052300000000002,
+      "candidate_peak_rss_bytes": 148320256,
+      "candidate_speedup_ratio": 0.9161676646706587,
+      "candidate_wall_time_s": 1.67,
+      "cell": "bacteria/SRR24806237/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 2702430.4816094288,
+      "baseline_input_mbp_s": 3.068482015850437,
+      "baseline_peak_rss_bytes": 4568924160,
+      "baseline_wall_time_s": 49.21,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2739732.262051916,
+      "candidate_input_mbp_s": 3.110836423568191,
+      "candidate_peak_rss_bytes": 4569223168,
+      "candidate_speedup_ratio": 1.0138030490317265,
+      "candidate_wall_time_s": 48.54,
+      "cell": "cnidaria/SRR25099394/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2739732.262051916,
+      "baseline_input_mbp_s": 3.110836423568191,
+      "baseline_peak_rss_bytes": 4568944640,
+      "baseline_wall_time_s": 48.54,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2749929.776674938,
+      "candidate_input_mbp_s": 3.1224152191894126,
+      "candidate_peak_rss_bytes": 4568825856,
+      "candidate_speedup_ratio": 1.0037220843672456,
+      "candidate_wall_time_s": 48.36,
+      "cell": "cnidaria/SRR25099394/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2738603.871499176,
+      "baseline_input_mbp_s": 3.1095551894563425,
+      "baseline_peak_rss_bytes": 4568961024,
+      "baseline_wall_time_s": 48.56,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2731291.9285274185,
+      "candidate_input_mbp_s": 3.101252823988499,
+      "candidate_peak_rss_bytes": 4569063424,
+      "candidate_speedup_ratio": 0.9973300472376259,
+      "candidate_wall_time_s": 48.69,
+      "cell": "cnidaria/SRR25099394/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2567072.2420615773,
+      "baseline_input_mbp_s": 2.914776565968536,
+      "baseline_peak_rss_bytes": 9132384256,
+      "baseline_wall_time_s": 103.61,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2586292.83352781,
+      "candidate_input_mbp_s": 2.9366005445352004,
+      "candidate_peak_rss_bytes": 9132335104,
+      "candidate_speedup_ratio": 1.0074873590042785,
+      "candidate_wall_time_s": 102.84,
+      "cell": "cnidaria/SRR25099394/2000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 2554593.2094318783,
+      "baseline_input_mbp_s": 2.9006387168035346,
+      "baseline_peak_rss_bytes": 18259046400,
+      "baseline_wall_time_s": 208.23,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2427079.1805447824,
+      "candidate_input_mbp_s": 2.7558516220285623,
+      "candidate_peak_rss_bytes": 18196353024,
+      "candidate_speedup_ratio": 0.9500844093625951,
+      "candidate_wall_time_s": 219.17000000000002,
+      "cell": "cnidaria/SRR25099394/4000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2685634.5281971022,
+      "baseline_input_mbp_s": 3.0494269702630383,
+      "baseline_peak_rss_bytes": 18259046400,
+      "baseline_wall_time_s": 396.14,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2692635.6255220063,
+      "candidate_input_mbp_s": 3.0573764268178483,
+      "candidate_peak_rss_bytes": 18259312640,
+      "candidate_speedup_ratio": 1.0026068689731973,
+      "candidate_wall_time_s": 395.11,
+      "cell": "cnidaria/SRR25099394/8000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2434148.2847657693,
+      "baseline_input_mbp_s": 2.766506824050166,
+      "baseline_peak_rss_bytes": 4569104384,
+      "baseline_wall_time_s": 54.22,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2453606.9901468675,
+      "candidate_input_mbp_s": 2.788622420524261,
+      "candidate_peak_rss_bytes": 4569391104,
+      "candidate_speedup_ratio": 1.0079940509388363,
+      "candidate_wall_time_s": 53.79,
+      "cell": "cnidaria/SRR8617500/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2445423.7539373725,
+      "baseline_input_mbp_s": 2.7793218454697053,
+      "baseline_peak_rss_bytes": 4568965120,
+      "baseline_wall_time_s": 53.97,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2457261.59002048,
+      "candidate_input_mbp_s": 2.792776019363247,
+      "candidate_peak_rss_bytes": 4569227264,
+      "candidate_speedup_ratio": 1.0048408117668963,
+      "candidate_wall_time_s": 53.71,
+      "cell": "cnidaria/SRR8617500/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2436844.9039881835,
+      "baseline_input_mbp_s": 2.769571639586411,
+      "baseline_peak_rss_bytes": 4568895488,
+      "baseline_wall_time_s": 54.16,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2467368.1061880724,
+      "candidate_input_mbp_s": 2.8042624789680315,
+      "candidate_peak_rss_bytes": 4569137152,
+      "candidate_speedup_ratio": 1.0125257057393904,
+      "candidate_wall_time_s": 53.49,
+      "cell": "cnidaria/SRR8617500/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2296187.047668754,
+      "baseline_input_mbp_s": 2.6096033402922756,
+      "baseline_peak_rss_bytes": 9132388352,
+      "baseline_wall_time_s": 114.96000000000001,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2313493.9789658193,
+      "candidate_input_mbp_s": 2.629272567922875,
+      "candidate_peak_rss_bytes": 9132539904,
+      "candidate_speedup_ratio": 1.0075372480280458,
+      "candidate_wall_time_s": 114.1,
+      "cell": "cnidaria/SRR8617500/2000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2467381.9413936534,
+      "baseline_input_mbp_s": 2.8041314202925642,
+      "baseline_peak_rss_bytes": 9132437504,
+      "baseline_wall_time_s": 213.97,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2459336.255648204,
+      "candidate_input_mbp_s": 2.7949876554711883,
+      "candidate_peak_rss_bytes": 9132380160,
+      "candidate_speedup_ratio": 0.9967391810686169,
+      "candidate_wall_time_s": 214.67000000000002,
+      "cell": "cnidaria/SRR8617500/4000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2703599.979516067,
+      "baseline_input_mbp_s": 3.0725899372679555,
+      "baseline_peak_rss_bytes": 18259111936,
+      "baseline_wall_time_s": 390.55,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2687018.9637622153,
+      "candidate_input_mbp_s": 3.0537459283387625,
+      "candidate_peak_rss_bytes": 18259304448,
+      "candidate_speedup_ratio": 0.9938670602605864,
+      "candidate_wall_time_s": 392.96,
+      "cell": "cnidaria/SRR8617500/8000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2500552.504743833,
+      "baseline_input_mbp_s": 2.846299810246679,
+      "baseline_peak_rss_bytes": 4569030656,
+      "baseline_wall_time_s": 52.7,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2540075.501156515,
+      "candidate_input_mbp_s": 2.8912875867386276,
+      "candidate_peak_rss_bytes": 4569276416,
+      "candidate_speedup_ratio": 1.0158057054741712,
+      "candidate_wall_time_s": 51.88,
+      "cell": "cnidaria/SRR9278435/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2509122.5628332063,
+      "baseline_input_mbp_s": 2.8560548362528557,
+      "baseline_peak_rss_bytes": 4569051136,
+      "baseline_wall_time_s": 52.52,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2517751.5666794037,
+      "candidate_input_mbp_s": 2.8658769583492547,
+      "candidate_peak_rss_bytes": 4569358336,
+      "candidate_speedup_ratio": 1.0034390523500192,
+      "candidate_wall_time_s": 52.34,
+      "cell": "cnidaria/SRR9278435/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2505782.79140521,
+      "baseline_input_mbp_s": 2.852253280091272,
+      "baseline_peak_rss_bytes": 4569014272,
+      "baseline_wall_time_s": 52.59,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2523537.2845653007,
+      "candidate_input_mbp_s": 2.872462657985446,
+      "candidate_peak_rss_bytes": 4569104384,
+      "candidate_speedup_ratio": 1.0070854078896976,
+      "candidate_wall_time_s": 52.22,
+      "cell": "cnidaria/SRR9278435/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2333804.577246569,
+      "baseline_input_mbp_s": 2.6560424966799467,
+      "baseline_peak_rss_bytes": 9132277760,
+      "baseline_wall_time_s": 112.95,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2353810.4027145277,
+      "candidate_input_mbp_s": 2.678810608090008,
+      "candidate_peak_rss_bytes": 9132490752,
+      "candidate_speedup_ratio": 1.008572193945888,
+      "candidate_wall_time_s": 111.99000000000001,
+      "cell": "cnidaria/SRR9278435/2000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2566103.100360167,
+      "baseline_input_mbp_s": 2.9202764528375353,
+      "baseline_peak_rss_bytes": 9132240896,
+      "baseline_wall_time_s": 205.46,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2559749.201340001,
+      "candidate_input_mbp_s": 2.9130455891634703,
+      "candidate_peak_rss_bytes": 9132363776,
+      "candidate_speedup_ratio": 0.9975239112492111,
+      "candidate_wall_time_s": 205.97,
+      "cell": "cnidaria/SRR9278435/4000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2868952.294676134,
+      "baseline_input_mbp_s": 3.2645066514323027,
+      "baseline_peak_rss_bytes": 18259148800,
+      "baseline_wall_time_s": 367.59,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2842199.6334725777,
+      "candidate_input_mbp_s": 3.2340654898261687,
+      "candidate_peak_rss_bytes": 18259304448,
+      "candidate_speedup_ratio": 0.9906751111710012,
+      "candidate_wall_time_s": 371.05,
+      "cell": "cnidaria/SRR9278435/8000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 41380658.974358976,
+      "baseline_input_mbp_s": 46.39467948717948,
+      "baseline_peak_rss_bytes": 23293952,
+      "baseline_wall_time_s": 0.39,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 36678311.36363637,
+      "candidate_input_mbp_s": 41.12255681818181,
+      "candidate_peak_rss_bytes": 23506944,
+      "candidate_speedup_ratio": 0.8863636363636364,
+      "candidate_wall_time_s": 0.44,
+      "cell": "human/SRR17535371/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 41380658.974358976,
+      "baseline_input_mbp_s": 46.39467948717948,
+      "baseline_peak_rss_bytes": 23556096,
+      "baseline_wall_time_s": 0.39,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 37531295.34883721,
+      "candidate_input_mbp_s": 42.07889534883721,
+      "candidate_peak_rss_bytes": 23658496,
+      "candidate_speedup_ratio": 0.9069767441860466,
+      "candidate_wall_time_s": 0.43,
+      "cell": "human/SRR17535371/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 41380658.974358976,
+      "baseline_input_mbp_s": 46.39467948717948,
+      "baseline_peak_rss_bytes": 23347200,
+      "baseline_wall_time_s": 0.39,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 37531295.34883721,
+      "candidate_input_mbp_s": 42.07889534883721,
+      "candidate_peak_rss_bytes": 23805952,
+      "candidate_speedup_ratio": 0.9069767441860466,
+      "candidate_wall_time_s": 0.43,
+      "cell": "human/SRR17535371/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 1605675.3235162874,
+      "baseline_input_mbp_s": 2.007912271307452,
+      "baseline_peak_rss_bytes": 2287128576,
+      "baseline_wall_time_s": 44.82,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1633001.3160880418,
+      "candidate_input_mbp_s": 2.042083685046517,
+      "candidate_peak_rss_bytes": 2287378432,
+      "candidate_speedup_ratio": 1.0170183798502384,
+      "candidate_wall_time_s": 44.07,
+      "cell": "insecta/SRR1057608/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1621229.285875197,
+      "baseline_input_mbp_s": 2.0273626492453256,
+      "baseline_peak_rss_bytes": 2287226880,
+      "baseline_wall_time_s": 44.39,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1624156.3529677272,
+      "candidate_input_mbp_s": 2.031022974497856,
+      "candidate_peak_rss_bytes": 2287349760,
+      "candidate_speedup_ratio": 1.0018054615211014,
+      "candidate_wall_time_s": 44.31,
+      "cell": "insecta/SRR1057608/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1619405.2205220524,
+      "baseline_input_mbp_s": 2.0250816381638166,
+      "baseline_peak_rss_bytes": 2287292416,
+      "baseline_wall_time_s": 44.44,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1607109.6025011165,
+      "candidate_input_mbp_s": 2.0097058508262617,
+      "candidate_peak_rss_bytes": 2287452160,
+      "candidate_speedup_ratio": 0.9924073246985261,
+      "candidate_wall_time_s": 44.78,
+      "cell": "insecta/SRR1057608/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1419318.2131939651,
+      "baseline_input_mbp_s": 1.7748564638595798,
+      "baseline_peak_rss_bytes": 4568911872,
+      "baseline_wall_time_s": 101.41,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1427482.4952891006,
+      "candidate_input_mbp_s": 1.7850658930873748,
+      "candidate_peak_rss_bytes": 4569034752,
+      "candidate_speedup_ratio": 1.0057522562729346,
+      "candidate_wall_time_s": 100.83,
+      "cell": "insecta/SRR1057608/2000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1256632.8575170247,
+      "baseline_input_mbp_s": 1.5713823162214076,
+      "baseline_peak_rss_bytes": 9132552192,
+      "baseline_wall_time_s": 229.07999999999998,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1217618.8774215379,
+      "candidate_input_mbp_s": 1.522596485068945,
+      "candidate_peak_rss_bytes": 9132703744,
+      "candidate_speedup_ratio": 0.9689535572286607,
+      "candidate_wall_time_s": 236.42000000000002,
+      "cell": "insecta/SRR1057608/4000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1254921.0256745564,
+      "baseline_input_mbp_s": 1.5691250991674295,
+      "baseline_peak_rss_bytes": 18259087360,
+      "baseline_wall_time_s": 458.82,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1227001.800707497,
+      "candidate_input_mbp_s": 1.5342155265737545,
+      "candidate_peak_rss_bytes": 18259124224,
+      "candidate_speedup_ratio": 0.9777522056003068,
+      "candidate_wall_time_s": 469.26,
+      "cell": "insecta/SRR1057608/8000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1337316.7882472137,
+      "baseline_input_mbp_s": 1.519756838905775,
+      "baseline_peak_rss_bytes": 4569018368,
+      "baseline_wall_time_s": 98.7,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1339896.1222210943,
+      "candidate_input_mbp_s": 1.522688051974419,
+      "candidate_peak_rss_bytes": 4569153536,
+      "candidate_speedup_ratio": 1.0019287381991677,
+      "candidate_wall_time_s": 98.50999999999999,
+      "cell": "insecta/SRR27962769/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1339216.3859577922,
+      "baseline_input_mbp_s": 1.5219155844155843,
+      "baseline_peak_rss_bytes": 4568944640,
+      "baseline_wall_time_s": 98.56,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1344947.697167312,
+      "candidate_input_mbp_s": 1.5284287752190748,
+      "candidate_peak_rss_bytes": 4569178112,
+      "candidate_speedup_ratio": 1.0042796005706134,
+      "candidate_wall_time_s": 98.14,
+      "cell": "insecta/SRR27962769/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1332322.2670838803,
+      "baseline_input_mbp_s": 1.514080952861613,
+      "baseline_peak_rss_bytes": 4569108480,
+      "baseline_wall_time_s": 99.07,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1339760.119772635,
+      "candidate_input_mbp_s": 1.522533495736906,
+      "candidate_peak_rss_bytes": 4569219072,
+      "candidate_speedup_ratio": 1.0055826228177018,
+      "candidate_wall_time_s": 98.52000000000001,
+      "cell": "insecta/SRR27962769/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1288755.7898847882,
+      "baseline_input_mbp_s": 1.4645577035735207,
+      "baseline_peak_rss_bytes": 9132437504,
+      "baseline_wall_time_s": 204.84,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1284116.820702403,
+      "candidate_input_mbp_s": 1.459285922755132,
+      "candidate_peak_rss_bytes": 9132429312,
+      "candidate_speedup_ratio": 0.9964004280572041,
+      "candidate_wall_time_s": 205.57999999999998,
+      "cell": "insecta/SRR27962769/2000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1263608.077447766,
+      "baseline_input_mbp_s": 1.4359907139267167,
+      "baseline_peak_rss_bytes": 18259046400,
+      "baseline_wall_time_s": 417.83,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1254600.1069315402,
+      "candidate_input_mbp_s": 1.4257538673573653,
+      "candidate_peak_rss_bytes": 18259640320,
+      "candidate_speedup_ratio": 0.9928712306632131,
+      "candidate_wall_time_s": 420.83,
+      "cell": "insecta/SRR27962769/4000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1295460.064285802,
+      "baseline_input_mbp_s": 1.472193937014636,
+      "baseline_peak_rss_bytes": 36512829440,
+      "baseline_wall_time_s": 815.11,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1288158.8486452857,
+      "candidate_input_mbp_s": 1.4638966488965879,
+      "candidate_peak_rss_bytes": 36513075200,
+      "candidate_speedup_ratio": 0.9943639979017481,
+      "candidate_wall_time_s": 819.73,
+      "cell": "insecta/SRR27962769/8000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1378805.5370801464,
+      "baseline_input_mbp_s": 1.6794146990355836,
+      "baseline_peak_rss_bytes": 2287190016,
+      "baseline_wall_time_s": 60.14,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1362493.6740059152,
+      "candidate_input_mbp_s": 1.6595465001643115,
+      "candidate_peak_rss_bytes": 2287280128,
+      "candidate_speedup_ratio": 0.9881695695037792,
+      "candidate_wall_time_s": 60.86,
+      "cell": "insecta/SRR31887760/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1380642.107892108,
+      "baseline_input_mbp_s": 1.6816516816516816,
+      "baseline_peak_rss_bytes": 2287349760,
+      "baseline_wall_time_s": 60.06,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1293625.03900156,
+      "candidate_input_mbp_s": 1.575663026521061,
+      "candidate_peak_rss_bytes": 2287611904,
+      "candidate_speedup_ratio": 0.9369734789391577,
+      "candidate_wall_time_s": 64.1,
+      "cell": "insecta/SRR31887760/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1379493.6782565296,
+      "baseline_input_mbp_s": 1.6802528697388122,
+      "baseline_peak_rss_bytes": 2287316992,
+      "baseline_wall_time_s": 60.11,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1292818.288119738,
+      "candidate_input_mbp_s": 1.5746803866541939,
+      "candidate_peak_rss_bytes": 2287427584,
+      "candidate_speedup_ratio": 0.9371686934830059,
+      "candidate_wall_time_s": 64.14,
+      "cell": "insecta/SRR31887760/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1263164.170919339,
+      "baseline_input_mbp_s": 1.5385787188666311,
+      "baseline_peak_rss_bytes": 4568928256,
+      "baseline_wall_time_s": 131.29,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1174094.3292035398,
+      "candidate_input_mbp_s": 1.4300884955752213,
+      "candidate_peak_rss_bytes": 4569120768,
+      "candidate_speedup_ratio": 0.9294867256637167,
+      "candidate_wall_time_s": 141.25,
+      "cell": "insecta/SRR31887760/2000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1478832.0208686346,
+      "baseline_input_mbp_s": 1.8014804245072684,
+      "baseline_peak_rss_bytes": 4568834048,
+      "baseline_wall_time_s": 224.26,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1467965.9569759206,
+      "candidate_input_mbp_s": 1.788243626062323,
+      "candidate_peak_rss_bytes": 4568981504,
+      "candidate_speedup_ratio": 0.9926522662889518,
+      "candidate_wall_time_s": 225.92000000000002,
+      "cell": "insecta/SRR31887760/4000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1849921.127781806,
+      "baseline_input_mbp_s": 2.2533325896592116,
+      "baseline_peak_rss_bytes": 9132457984,
+      "baseline_wall_time_s": 358.58,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1786787.1191919192,
+      "candidate_input_mbp_s": 2.1764309764309764,
+      "candidate_peak_rss_bytes": 9132527616,
+      "candidate_speedup_ratio": 0.9658720538720539,
+      "candidate_wall_time_s": 371.25,
+      "cell": "insecta/SRR31887760/8000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 2866399.029963354,
+      "baseline_input_mbp_s": 3.255011856003449,
+      "baseline_peak_rss_bytes": 4569092096,
+      "baseline_wall_time_s": 46.39,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2898893.6341835624,
+      "candidate_input_mbp_s": 3.2919119250054503,
+      "candidate_peak_rss_bytes": 4568920064,
+      "candidate_speedup_ratio": 1.011336385437105,
+      "candidate_wall_time_s": 45.87,
+      "cell": "teleostei/SRR22396603/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2872591.2940159864,
+      "baseline_input_mbp_s": 3.262043637934759,
+      "baseline_peak_rss_bytes": 4569010176,
+      "baseline_wall_time_s": 46.29,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2893216.9495213227,
+      "candidate_input_mbp_s": 3.2854656222802436,
+      "candidate_peak_rss_bytes": 4568997888,
+      "candidate_speedup_ratio": 1.0071801566579635,
+      "candidate_wall_time_s": 45.96,
+      "cell": "teleostei/SRR22396603/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2870730.8074265975,
+      "baseline_input_mbp_s": 3.25993091537133,
+      "baseline_peak_rss_bytes": 4568928256,
+      "baseline_wall_time_s": 46.32,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2886935.540599218,
+      "candidate_input_mbp_s": 3.2783326096396004,
+      "candidate_peak_rss_bytes": 4568903680,
+      "candidate_speedup_ratio": 1.0056448111159357,
+      "candidate_wall_time_s": 46.06,
+      "cell": "teleostei/SRR22396603/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    }
+  ],
+  "schema_version": 1,
+  "source_comparison_sha256": "72879be0fb3f3a4eb6a1bf92eaaaeaa5a1fabb2b420211e290d52f9388b8f93a",
+  "timings": [
+    {
+      "cell": "angiospermae/ERR14009273/1000000",
+      "maximum_s": 31.2,
+      "median_s": 31.12,
+      "minimum_s": 30.98,
+      "n": 3,
+      "values_s": [
+        30.98,
+        31.12,
+        31.2
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "angiospermae/ERR14009273/1000000",
+      "maximum_s": 31.39,
+      "median_s": 31.15,
+      "minimum_s": 31.14,
+      "n": 3,
+      "values_s": [
+        31.15,
+        31.14,
+        31.39
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "angiospermae/SRR25378184/1000000",
+      "maximum_s": 60.86,
+      "median_s": 60.76,
+      "minimum_s": 60.72,
+      "n": 3,
+      "values_s": [
+        60.86,
+        60.72,
+        60.76
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "angiospermae/SRR25378184/1000000",
+      "maximum_s": 61.94,
+      "median_s": 61.72,
+      "minimum_s": 61.48,
+      "n": 3,
+      "values_s": [
+        61.48,
+        61.94,
+        61.72
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "bacteria/ERR2596344/1000000",
+      "maximum_s": 0.72,
+      "median_s": 0.71,
+      "minimum_s": 0.71,
+      "n": 3,
+      "values_s": [
+        0.71,
+        0.72,
+        0.71
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "bacteria/ERR2596344/1000000",
+      "maximum_s": 0.75,
+      "median_s": 0.74,
+      "minimum_s": 0.74,
+      "n": 3,
+      "values_s": [
+        0.74,
+        0.75,
+        0.74
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "bacteria/SRR19418213/1000000",
+      "maximum_s": 13.13,
+      "median_s": 12.95,
+      "minimum_s": 12.9,
+      "n": 3,
+      "values_s": [
+        12.9,
+        12.95,
+        13.13
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "bacteria/SRR19418213/1000000",
+      "maximum_s": 12.87,
+      "median_s": 12.85,
+      "minimum_s": 12.84,
+      "n": 3,
+      "values_s": [
+        12.85,
+        12.84,
+        12.87
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "bacteria/SRR24806237/1000000",
+      "maximum_s": 1.53,
+      "median_s": 1.53,
+      "minimum_s": 1.52,
+      "n": 3,
+      "values_s": [
+        1.52,
+        1.53,
+        1.53
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "bacteria/SRR24806237/1000000",
+      "maximum_s": 1.67,
+      "median_s": 1.67,
+      "minimum_s": 1.66,
+      "n": 3,
+      "values_s": [
+        1.67,
+        1.66,
+        1.67
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/1000000",
+      "maximum_s": 49.21,
+      "median_s": 48.56,
+      "minimum_s": 48.54,
+      "n": 3,
+      "values_s": [
+        49.21,
+        48.54,
+        48.56
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/1000000",
+      "maximum_s": 48.69,
+      "median_s": 48.54,
+      "minimum_s": 48.36,
+      "n": 3,
+      "values_s": [
+        48.54,
+        48.36,
+        48.69
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/2000000",
+      "maximum_s": 103.61,
+      "median_s": 103.61,
+      "minimum_s": 103.61,
+      "n": 1,
+      "values_s": [
+        103.61
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/2000000",
+      "maximum_s": 102.84,
+      "median_s": 102.84,
+      "minimum_s": 102.84,
+      "n": 1,
+      "values_s": [
+        102.84
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/4000000",
+      "maximum_s": 208.23,
+      "median_s": 208.23,
+      "minimum_s": 208.23,
+      "n": 1,
+      "values_s": [
+        208.23
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/4000000",
+      "maximum_s": 219.17000000000002,
+      "median_s": 219.17000000000002,
+      "minimum_s": 219.17000000000002,
+      "n": 1,
+      "values_s": [
+        219.17000000000002
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/8000000",
+      "maximum_s": 396.14,
+      "median_s": 396.14,
+      "minimum_s": 396.14,
+      "n": 1,
+      "values_s": [
+        396.14
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/8000000",
+      "maximum_s": 395.11,
+      "median_s": 395.11,
+      "minimum_s": 395.11,
+      "n": 1,
+      "values_s": [
+        395.11
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/1000000",
+      "maximum_s": 54.22,
+      "median_s": 54.16,
+      "minimum_s": 53.97,
+      "n": 3,
+      "values_s": [
+        54.22,
+        53.97,
+        54.16
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/1000000",
+      "maximum_s": 53.79,
+      "median_s": 53.71,
+      "minimum_s": 53.49,
+      "n": 3,
+      "values_s": [
+        53.79,
+        53.71,
+        53.49
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/2000000",
+      "maximum_s": 114.96000000000001,
+      "median_s": 114.96000000000001,
+      "minimum_s": 114.96000000000001,
+      "n": 1,
+      "values_s": [
+        114.96000000000001
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/2000000",
+      "maximum_s": 114.1,
+      "median_s": 114.1,
+      "minimum_s": 114.1,
+      "n": 1,
+      "values_s": [
+        114.1
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/4000000",
+      "maximum_s": 213.97,
+      "median_s": 213.97,
+      "minimum_s": 213.97,
+      "n": 1,
+      "values_s": [
+        213.97
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/4000000",
+      "maximum_s": 214.67000000000002,
+      "median_s": 214.67000000000002,
+      "minimum_s": 214.67000000000002,
+      "n": 1,
+      "values_s": [
+        214.67000000000002
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/8000000",
+      "maximum_s": 390.55,
+      "median_s": 390.55,
+      "minimum_s": 390.55,
+      "n": 1,
+      "values_s": [
+        390.55
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/8000000",
+      "maximum_s": 392.96,
+      "median_s": 392.96,
+      "minimum_s": 392.96,
+      "n": 1,
+      "values_s": [
+        392.96
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/1000000",
+      "maximum_s": 52.7,
+      "median_s": 52.59,
+      "minimum_s": 52.52,
+      "n": 3,
+      "values_s": [
+        52.7,
+        52.52,
+        52.59
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/1000000",
+      "maximum_s": 52.34,
+      "median_s": 52.22,
+      "minimum_s": 51.88,
+      "n": 3,
+      "values_s": [
+        51.88,
+        52.34,
+        52.22
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/2000000",
+      "maximum_s": 112.95,
+      "median_s": 112.95,
+      "minimum_s": 112.95,
+      "n": 1,
+      "values_s": [
+        112.95
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/2000000",
+      "maximum_s": 111.99000000000001,
+      "median_s": 111.99000000000001,
+      "minimum_s": 111.99000000000001,
+      "n": 1,
+      "values_s": [
+        111.99000000000001
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/4000000",
+      "maximum_s": 205.46,
+      "median_s": 205.46,
+      "minimum_s": 205.46,
+      "n": 1,
+      "values_s": [
+        205.46
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/4000000",
+      "maximum_s": 205.97,
+      "median_s": 205.97,
+      "minimum_s": 205.97,
+      "n": 1,
+      "values_s": [
+        205.97
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/8000000",
+      "maximum_s": 367.59,
+      "median_s": 367.59,
+      "minimum_s": 367.59,
+      "n": 1,
+      "values_s": [
+        367.59
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/8000000",
+      "maximum_s": 371.05,
+      "median_s": 371.05,
+      "minimum_s": 371.05,
+      "n": 1,
+      "values_s": [
+        371.05
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "human/SRR17535371/1000000",
+      "maximum_s": 0.39,
+      "median_s": 0.39,
+      "minimum_s": 0.39,
+      "n": 3,
+      "values_s": [
+        0.39,
+        0.39,
+        0.39
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "human/SRR17535371/1000000",
+      "maximum_s": 0.44,
+      "median_s": 0.43,
+      "minimum_s": 0.43,
+      "n": 3,
+      "values_s": [
+        0.44,
+        0.43,
+        0.43
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "maximum_s": 44.82,
+      "median_s": 44.44,
+      "minimum_s": 44.39,
+      "n": 3,
+      "values_s": [
+        44.82,
+        44.39,
+        44.44
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "maximum_s": 44.78,
+      "median_s": 44.31,
+      "minimum_s": 44.07,
+      "n": 3,
+      "values_s": [
+        44.07,
+        44.31,
+        44.78
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR1057608/2000000",
+      "maximum_s": 101.41,
+      "median_s": 101.41,
+      "minimum_s": 101.41,
+      "n": 1,
+      "values_s": [
+        101.41
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR1057608/2000000",
+      "maximum_s": 100.83,
+      "median_s": 100.83,
+      "minimum_s": 100.83,
+      "n": 1,
+      "values_s": [
+        100.83
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR1057608/4000000",
+      "maximum_s": 229.07999999999998,
+      "median_s": 229.07999999999998,
+      "minimum_s": 229.07999999999998,
+      "n": 1,
+      "values_s": [
+        229.07999999999998
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR1057608/4000000",
+      "maximum_s": 236.42000000000002,
+      "median_s": 236.42000000000002,
+      "minimum_s": 236.42000000000002,
+      "n": 1,
+      "values_s": [
+        236.42000000000002
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR1057608/8000000",
+      "maximum_s": 458.82,
+      "median_s": 458.82,
+      "minimum_s": 458.82,
+      "n": 1,
+      "values_s": [
+        458.82
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR1057608/8000000",
+      "maximum_s": 469.26,
+      "median_s": 469.26,
+      "minimum_s": 469.26,
+      "n": 1,
+      "values_s": [
+        469.26
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "maximum_s": 99.07,
+      "median_s": 98.7,
+      "minimum_s": 98.56,
+      "n": 3,
+      "values_s": [
+        98.7,
+        98.56,
+        99.07
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "maximum_s": 98.52000000000001,
+      "median_s": 98.50999999999999,
+      "minimum_s": 98.14,
+      "n": 3,
+      "values_s": [
+        98.50999999999999,
+        98.14,
+        98.52000000000001
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR27962769/2000000",
+      "maximum_s": 204.84,
+      "median_s": 204.84,
+      "minimum_s": 204.84,
+      "n": 1,
+      "values_s": [
+        204.84
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR27962769/2000000",
+      "maximum_s": 205.57999999999998,
+      "median_s": 205.57999999999998,
+      "minimum_s": 205.57999999999998,
+      "n": 1,
+      "values_s": [
+        205.57999999999998
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR27962769/4000000",
+      "maximum_s": 417.83,
+      "median_s": 417.83,
+      "minimum_s": 417.83,
+      "n": 1,
+      "values_s": [
+        417.83
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR27962769/4000000",
+      "maximum_s": 420.83,
+      "median_s": 420.83,
+      "minimum_s": 420.83,
+      "n": 1,
+      "values_s": [
+        420.83
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR27962769/8000000",
+      "maximum_s": 815.11,
+      "median_s": 815.11,
+      "minimum_s": 815.11,
+      "n": 1,
+      "values_s": [
+        815.11
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR27962769/8000000",
+      "maximum_s": 819.73,
+      "median_s": 819.73,
+      "minimum_s": 819.73,
+      "n": 1,
+      "values_s": [
+        819.73
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "maximum_s": 60.14,
+      "median_s": 60.11,
+      "minimum_s": 60.06,
+      "n": 3,
+      "values_s": [
+        60.14,
+        60.06,
+        60.11
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "maximum_s": 64.14,
+      "median_s": 64.1,
+      "minimum_s": 60.86,
+      "n": 3,
+      "values_s": [
+        60.86,
+        64.1,
+        64.14
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR31887760/2000000",
+      "maximum_s": 131.29,
+      "median_s": 131.29,
+      "minimum_s": 131.29,
+      "n": 1,
+      "values_s": [
+        131.29
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR31887760/2000000",
+      "maximum_s": 141.25,
+      "median_s": 141.25,
+      "minimum_s": 141.25,
+      "n": 1,
+      "values_s": [
+        141.25
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR31887760/4000000",
+      "maximum_s": 224.26,
+      "median_s": 224.26,
+      "minimum_s": 224.26,
+      "n": 1,
+      "values_s": [
+        224.26
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR31887760/4000000",
+      "maximum_s": 225.92000000000002,
+      "median_s": 225.92000000000002,
+      "minimum_s": 225.92000000000002,
+      "n": 1,
+      "values_s": [
+        225.92000000000002
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR31887760/8000000",
+      "maximum_s": 358.58,
+      "median_s": 358.58,
+      "minimum_s": 358.58,
+      "n": 1,
+      "values_s": [
+        358.58
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR31887760/8000000",
+      "maximum_s": 371.25,
+      "median_s": 371.25,
+      "minimum_s": 371.25,
+      "n": 1,
+      "values_s": [
+        371.25
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "teleostei/SRR22396603/1000000",
+      "maximum_s": 46.39,
+      "median_s": 46.32,
+      "minimum_s": 46.29,
+      "n": 3,
+      "values_s": [
+        46.39,
+        46.29,
+        46.32
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "teleostei/SRR22396603/1000000",
+      "maximum_s": 46.06,
+      "median_s": 45.96,
+      "minimum_s": 45.87,
+      "n": 3,
+      "values_s": [
+        45.87,
+        45.96,
+        46.06
+      ],
+      "version": "candidate"
+    }
+  ]
+}

@@ -1,8 +1,10 @@
 # Development plan: scalable, reliable sPCR
 
-Status: v3.2 implementation and bounded calibration complete; stopped for
-user review before release. Remaining validation/security gates are explicit
-in [REVIEW_v3.2.md](REVIEW_v3.2.md). Work follows the 2026-09-08 review of
+Status: v3.2 implementation and direct release-baseline benchmarking complete;
+release remains on hold for user review of substantial output losses and
+repeat/search-budget follow-ups. See [BENCHMARK_v3.2_vs_v3.1.md](BENCHMARK_v3.2_vs_v3.1.md)
+and the remaining validation/security gates in [REVIEW_v3.2.md](REVIEW_v3.2.md).
+Work follows the 2026-09-08 review of
 `5a66468` (Sharkmer 3.1.0).
 Tracking issue: [#152](https://github.com/caseywdunn/sharkmer/issues/152).
 
@@ -103,6 +105,9 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
 - [x] [#136](https://github.com/caseywdunn/sharkmer/issues/136) — Fix integer median rounding for even-sized k-mer count sets. Overflow-safe floor average, boundary and exhaustive small-pair regressions, caller/documentation audit; Terra review approved.
 - [x] [#137](https://github.com/caseywdunn/sharkmer/issues/137) — Make cache publication concurrent-safe and clearing ownership-aware. Terra implementation, Sol review; cache-wide lifetime leases protect replay and serialize cooperating clients. Verified replacements preserve prior data on normal failures; clear preserves foreign, modified, orphaned, and symlink entries with warnings. Twenty-nine focused tests and an independent CLI alias/lease/ownership probe pass. Global serialization and conservative recovery limits are documented.
 - [x] [#138](https://github.com/caseywdunn/sharkmer/issues/138) — Align sPCR documentation and diagnostics with current behavior. Terra implementation, Sol review; documented first-valid-threshold search, physical gaps, unresolved phase, per-gene node budgets, legacy record-count fields, allocator versus RSS, and panel compatibility semantics. Fixed missing human benchmark taxon metadata with fail-closed guards. Thirty-nine Python regressions, all nine built-ins plus reference schema validation, and documented CLI dry-runs pass. Legacy issues #121–126 were audited and remain open for their unimplemented acceptance criteria.
+- [ ] [#153](https://github.com/caseywdunn/sharkmer/issues/153) — Review direct v3.1.0-to-v3.2 benchmark regressions before release. Evidence is recorded: 114 successful CLI invocations, aggregate-count parity, +0.70% primary median-sum runtime, no meaningful RAM reduction, and 179 -> 71 primary products. Lost products include a Gryllus ITS_2 sequence exactly matching its reference; do not classify all withholding as an accuracy improvement.
+- [ ] [#154](https://github.com/caseywdunn/sharkmer/issues/154) — Keep repeat-rejected candidates from exhausting the valid-product path budget, with bounded search and a clean-route regression.
+- [ ] [#155](https://github.com/caseywdunn/sharkmer/issues/155) — Audit repeat-marker scope and preserve cause, threshold, and search-exhaustion diagnostics without restoring unsupported repeat-copy claims.
 
 The development package is `3.2.0-dev`, not a published release. Stop before
 merging to `master`, tagging, or publishing. Independent held-out registration
@@ -112,8 +117,12 @@ Final reviewed code: `03c0fc6`. Both hash backends pass 213 unit and 22
 integration tests, with 39 Python regressions. All 13 historical samples at a
 one-million-record cap preserve read/kmer totals and all 71 product hashes
 against the repaired warm baseline; both pinned fixture oracles pass. This is
-not the full depth/panel matrix or held-out biological validation. See the
-[review and retained evidence](REVIEW_v3.2.md) before authorizing a release.
+not a comparison against released v3.1.0 or held-out biological validation.
+The subsequent [direct release comparison](BENCHMARK_v3.2_vs_v3.1.md) covers
+all configured 1M/2M/4M/8M cells with clean release/candidate builds and finds
+substantial losses not visible against that repaired intermediate baseline.
+Resolve or explicitly disposition #153–155 before release; all-nine-panel
+biological validation and independent held-out registration still remain open.
 
 Start with the benchmark/provenance issue and independent correctness fixes.
 For homopolymers, v3.2 can conservatively withhold a falsely complete product;
@@ -142,6 +151,10 @@ not a portable performance target or a measured improvement.
 
 ### Release gate
 
+- Direct release-baseline output/performance regressions have been reviewed;
+  repeat/path-budget follow-ups #154–155 are resolved or explicitly dispositioned
+  under #153. A reference match is not repeat-copy truth, but lost supported
+  products cannot be dismissed without investigation.
 - All reproduced correctness failures have regression coverage.
 - Validate all products, including negative controls and whole-product
   alignment coverage; wrong-gene/short-fragment matches cannot validate a

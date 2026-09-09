@@ -1,0 +1,544 @@
+{
+  "schema_version": 1,
+  "label": "supplemental known synthetic regressions; not biological calibration or timed benchmarking",
+  "build_manifest": "/tmp/sharkmer-release-comparison/builds.json",
+  "output_root": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z",
+  "results": [
+    {
+      "version": "baseline",
+      "binary": "/tmp/sharkmer-release-comparison/binaries/sharkmer-baseline",
+      "binary_sha256": "4cb93c72c830e052bf9bf03638eec2a060a699c5741ea0630fd9225ecc5b5e18",
+      "case": "threshold",
+      "description": "Known threshold regression: rare valid product after abundant invalid path.",
+      "command": [
+        "/tmp/sharkmer-release-comparison/binaries/sharkmer-baseline",
+        "-s",
+        "threshold",
+        "-o",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/threshold",
+        "-k",
+        "19",
+        "-t",
+        "2",
+        "--pcr-primers",
+        "name=target,forward=GGAAGCTAGGCTCGT,reverse=TCTCCAGCGGTTTCG,trim=15,mismatches=0,min-length=170,max-length=210,dedup-edit-threshold=0",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/threshold.fastq"
+      ],
+      "returncode": 0,
+      "input": {
+        "path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/threshold.fastq",
+        "sha256": "2afbc18f2aa5dcdec64b5a99ac750ca73d07c5a95186da56afaa5b77c69e4b5f",
+        "size_bytes": 82682
+      },
+      "expected": [
+        {
+          "length": 180,
+          "sha256": "5d8711b952e709a00276d3843776db918ad4ff8825a5c4aceb176130ace3377e"
+        }
+      ],
+      "expected_output_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/threshold/threshold_target.fasta",
+      "stats_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/threshold/threshold.stats.yaml",
+      "stats_sha256": "617cfb3f467fb83ec792226748aef1eda78b527742543722cbdf858618ffbf29",
+      "stats_pcr_results": [
+        {
+          "gene_name": "target",
+          "status": "fail",
+          "n_products": 0,
+          "failure_reason": "no path found"
+        }
+      ],
+      "products": [],
+      "all_products_exact": false,
+      "has_incorrect_product": false,
+      "raw_output_directory": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/threshold"
+    },
+    {
+      "version": "baseline",
+      "binary": "/tmp/sharkmer-release-comparison/binaries/sharkmer-baseline",
+      "binary_sha256": "4cb93c72c830e052bf9bf03638eec2a060a699c5741ea0630fd9225ecc5b5e18",
+      "case": "repeat-a18",
+      "description": "Known synthetic repeat regression; candidate behavior may conservatively withhold uncertain repeats.",
+      "command": [
+        "/tmp/sharkmer-release-comparison/binaries/sharkmer-baseline",
+        "-s",
+        "repeat",
+        "-o",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-a18",
+        "-k",
+        "19",
+        "-t",
+        "2",
+        "--pcr-primers",
+        "name=target,forward=AGTTAAAAACGTGTG,reverse=TAGGCTGGGATGGCG,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-a18.fastq"
+      ],
+      "returncode": 0,
+      "input": {
+        "path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-a18.fastq",
+        "sha256": "a37f8033eea7befe85a894ac0b0e0cf6a23ff491983d677ecc6d543d212ae348",
+        "size_bytes": 1148
+      },
+      "expected": [
+        {
+          "length": 138,
+          "sha256": "d2c29f5b39989a5e52beb0ff03014ddde3a723146892db8108d0609bd4ca5567"
+        }
+      ],
+      "expected_output_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-a18/repeat_target.fasta",
+      "stats_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-a18/repeat.stats.yaml",
+      "stats_sha256": "d8a3609ffcc8fc9a3b5794067c20411d3e128c56cb1dd0144dfc0532d7dfe675",
+      "stats_pcr_results": [
+        {
+          "gene_name": "target",
+          "status": "success",
+          "n_products": 1,
+          "product_lengths": [
+            138
+          ]
+        }
+      ],
+      "products": [
+        {
+          "header": "repeat_target_0 sample=repeat gene=target product=0 length=138 kmer_count_mean=4.00 kmer_count_median=4 kmer_count_min=4 kmer_count_max=4 score=4.00",
+          "length": 138,
+          "sha256": "d2c29f5b39989a5e52beb0ff03014ddde3a723146892db8108d0609bd4ca5567",
+          "sequence": "AGTTAAAAACGTGTGTTCACCCGGGTCGCGCTACCGACAACATCCGATACCCTGTCGACCAAAAAAAAAAAAAAAAAAGTGGCCACAGGACTAAGTCCAGTAAATATACGGGGTCTCGTAGGACGCCATCCCAGCCTA"
+        }
+      ],
+      "all_products_exact": true,
+      "has_incorrect_product": false,
+      "raw_output_directory": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-a18"
+    },
+    {
+      "version": "baseline",
+      "binary": "/tmp/sharkmer-release-comparison/binaries/sharkmer-baseline",
+      "binary_sha256": "4cb93c72c830e052bf9bf03638eec2a060a699c5741ea0630fd9225ecc5b5e18",
+      "case": "repeat-a19",
+      "description": "Known synthetic repeat regression; candidate behavior may conservatively withhold uncertain repeats.",
+      "command": [
+        "/tmp/sharkmer-release-comparison/binaries/sharkmer-baseline",
+        "-s",
+        "repeat",
+        "-o",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-a19",
+        "-k",
+        "19",
+        "-t",
+        "2",
+        "--pcr-primers",
+        "name=target,forward=AGTTAAAAACGTGTG,reverse=TAGGCTGGGATGGCG,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-a19.fastq"
+      ],
+      "returncode": 0,
+      "input": {
+        "path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-a19.fastq",
+        "sha256": "ea8419361772a8400439dc5ade0c6ba7aeebf43ee05da5063d89657138148b29",
+        "size_bytes": 1156
+      },
+      "expected": [
+        {
+          "length": 139,
+          "sha256": "655e50088a46e22f1f0066ba3d6f4a71ec483dec002ade91ca37de9e5c9a2ecd"
+        }
+      ],
+      "expected_output_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-a19/repeat_target.fasta",
+      "stats_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-a19/repeat.stats.yaml",
+      "stats_sha256": "625f47aa634cf3e9fbf5da683cde7a685ec34b4d5d2516026622120429ea78f4",
+      "stats_pcr_results": [
+        {
+          "gene_name": "target",
+          "status": "success",
+          "n_products": 1,
+          "product_lengths": [
+            138
+          ]
+        }
+      ],
+      "products": [
+        {
+          "header": "repeat_target_0 sample=repeat gene=target product=0 length=138 kmer_count_mean=4.00 kmer_count_median=4 kmer_count_min=4 kmer_count_max=4 score=4.00",
+          "length": 138,
+          "sha256": "d2c29f5b39989a5e52beb0ff03014ddde3a723146892db8108d0609bd4ca5567",
+          "sequence": "AGTTAAAAACGTGTGTTCACCCGGGTCGCGCTACCGACAACATCCGATACCCTGTCGACCAAAAAAAAAAAAAAAAAAGTGGCCACAGGACTAAGTCCAGTAAATATACGGGGTCTCGTAGGACGCCATCCCAGCCTA"
+        }
+      ],
+      "all_products_exact": false,
+      "has_incorrect_product": true,
+      "raw_output_directory": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-a19"
+    },
+    {
+      "version": "baseline",
+      "binary": "/tmp/sharkmer-release-comparison/binaries/sharkmer-baseline",
+      "binary_sha256": "4cb93c72c830e052bf9bf03638eec2a060a699c5741ea0630fd9225ecc5b5e18",
+      "case": "repeat-a40",
+      "description": "Known synthetic repeat regression; candidate behavior may conservatively withhold uncertain repeats.",
+      "command": [
+        "/tmp/sharkmer-release-comparison/binaries/sharkmer-baseline",
+        "-s",
+        "repeat",
+        "-o",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-a40",
+        "-k",
+        "19",
+        "-t",
+        "2",
+        "--pcr-primers",
+        "name=target,forward=AGTTAAAAACGTGTG,reverse=TAGGCTGGGATGGCG,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-a40.fastq"
+      ],
+      "returncode": 0,
+      "input": {
+        "path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-a40.fastq",
+        "sha256": "89ac804b36acfd6d8e168e88f2de8f6e61cc258a1e127aef70702bb4915d0597",
+        "size_bytes": 1324
+      },
+      "expected": [
+        {
+          "length": 160,
+          "sha256": "bf07890a32bc5af3e1fec651ad833cd477048be1a813867a3580f0e0361e4d7e"
+        }
+      ],
+      "expected_output_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-a40/repeat_target.fasta",
+      "stats_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-a40/repeat.stats.yaml",
+      "stats_sha256": "b638b70c3a3c22759d5417337f0a5f548d1620dcb9033c94733883cd149bcfb8",
+      "stats_pcr_results": [
+        {
+          "gene_name": "target",
+          "status": "success",
+          "n_products": 1,
+          "product_lengths": [
+            138
+          ]
+        }
+      ],
+      "products": [
+        {
+          "header": "repeat_target_0 sample=repeat gene=target product=0 length=138 kmer_count_mean=4.00 kmer_count_median=4 kmer_count_min=4 kmer_count_max=4 score=4.00",
+          "length": 138,
+          "sha256": "d2c29f5b39989a5e52beb0ff03014ddde3a723146892db8108d0609bd4ca5567",
+          "sequence": "AGTTAAAAACGTGTGTTCACCCGGGTCGCGCTACCGACAACATCCGATACCCTGTCGACCAAAAAAAAAAAAAAAAAAGTGGCCACAGGACTAAGTCCAGTAAATATACGGGGTCTCGTAGGACGCCATCCCAGCCTA"
+        }
+      ],
+      "all_products_exact": false,
+      "has_incorrect_product": true,
+      "raw_output_directory": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-a40"
+    },
+    {
+      "version": "baseline",
+      "binary": "/tmp/sharkmer-release-comparison/binaries/sharkmer-baseline",
+      "binary_sha256": "4cb93c72c830e052bf9bf03638eec2a060a699c5741ea0630fd9225ecc5b5e18",
+      "case": "repeat-ac40",
+      "description": "Known synthetic repeat regression; candidate behavior may conservatively withhold uncertain repeats.",
+      "command": [
+        "/tmp/sharkmer-release-comparison/binaries/sharkmer-baseline",
+        "-s",
+        "repeat",
+        "-o",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-ac40",
+        "-k",
+        "19",
+        "-t",
+        "2",
+        "--pcr-primers",
+        "name=target,forward=AGTTAAAAACGTGTG,reverse=TAGGCTGGGATGGCG,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-ac40.fastq"
+      ],
+      "returncode": 0,
+      "input": {
+        "path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-ac40.fastq",
+        "sha256": "75cf848a8ef402cdf27b8c15140e69356a52f00f70fed31ed1c71c834b3332d8",
+        "size_bytes": 1324
+      },
+      "expected": [
+        {
+          "length": 160,
+          "sha256": "777acb4e9dc9a5a3ff94fec7f5875dcb2383f2606500d80a02dff7fea5a6caec"
+        }
+      ],
+      "expected_output_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-ac40/repeat_target.fasta",
+      "stats_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-ac40/repeat.stats.yaml",
+      "stats_sha256": "4418e3325ccc949184f4f1f0687dc12625290c4d1f86052ce82c5c4324b07663",
+      "stats_pcr_results": [
+        {
+          "gene_name": "target",
+          "status": "success",
+          "n_products": 1,
+          "product_lengths": [
+            138
+          ]
+        }
+      ],
+      "products": [
+        {
+          "header": "repeat_target_0 sample=repeat gene=target product=0 length=138 kmer_count_mean=4.37 kmer_count_median=4 kmer_count_min=4 kmer_count_max=48 score=1.67",
+          "length": 138,
+          "sha256": "c288d15060ca3cc4476fb97e09824e129944f36b3d50d1459a5ac5ccb86ff65b",
+          "sequence": "AGTTAAAAACGTGTGTTCACCCGGGTCGCGCTACCGACAACATCCGATACCCTGTCGACCACACACACACACACACACGTGGCCACAGGACTAAGTCCAGTAAATATACGGGGTCTCGTAGGACGCCATCCCAGCCTA"
+        }
+      ],
+      "all_products_exact": false,
+      "has_incorrect_product": true,
+      "raw_output_directory": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/baseline/repeat-ac40"
+    },
+    {
+      "version": "candidate",
+      "binary": "/tmp/sharkmer-release-comparison/binaries/sharkmer-candidate",
+      "binary_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+      "case": "threshold",
+      "description": "Known threshold regression: rare valid product after abundant invalid path.",
+      "command": [
+        "/tmp/sharkmer-release-comparison/binaries/sharkmer-candidate",
+        "-s",
+        "threshold",
+        "-o",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/threshold",
+        "-k",
+        "19",
+        "-t",
+        "2",
+        "--pcr-primers",
+        "name=target,forward=GGAAGCTAGGCTCGT,reverse=TCTCCAGCGGTTTCG,trim=15,mismatches=0,min-length=170,max-length=210,dedup-edit-threshold=0",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/threshold.fastq"
+      ],
+      "returncode": 0,
+      "input": {
+        "path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/threshold.fastq",
+        "sha256": "2afbc18f2aa5dcdec64b5a99ac750ca73d07c5a95186da56afaa5b77c69e4b5f",
+        "size_bytes": 82682
+      },
+      "expected": [
+        {
+          "length": 180,
+          "sha256": "5d8711b952e709a00276d3843776db918ad4ff8825a5c4aceb176130ace3377e"
+        }
+      ],
+      "expected_output_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/threshold/threshold_target.fasta",
+      "stats_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/threshold/threshold.stats.yaml",
+      "stats_sha256": "b05d5445050060ba33ab9057364ee3d97d8a3d751cd446f4124d3860f4cb7881",
+      "stats_pcr_results": [
+        {
+          "gene_name": "target",
+          "status": "success",
+          "n_products": 1,
+          "product_lengths": [
+            180
+          ],
+          "output_file": "threshold_target.fasta"
+        }
+      ],
+      "products": [
+        {
+          "header": "threshold_target_0 sample=threshold gene=target product=0 length=180 kmer_count_mean=12.64 kmer_count_median=4 kmer_count_min=4 kmer_count_max=104 score=1.80",
+          "length": 180,
+          "sha256": "5d8711b952e709a00276d3843776db918ad4ff8825a5c4aceb176130ace3377e",
+          "sequence": "GGAAGCTAGGCTCGTCTTCGGGCCAGACTTGGTGATATCTTTTGCGGTCTGTGGGAAGGAAGGTGCCATTCGCAAAACTGTAAACACGACTCCCGGCGACACCCTACCCTAGTCCGTGATTCAGGTTTAGCGCCCGCGGCTACTGCATTGCGGGACGATCATCCCCGAAACCGCTGGAGA"
+        }
+      ],
+      "all_products_exact": true,
+      "has_incorrect_product": false,
+      "raw_output_directory": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/threshold"
+    },
+    {
+      "version": "candidate",
+      "binary": "/tmp/sharkmer-release-comparison/binaries/sharkmer-candidate",
+      "binary_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+      "case": "repeat-a18",
+      "description": "Known synthetic repeat regression; candidate behavior may conservatively withhold uncertain repeats.",
+      "command": [
+        "/tmp/sharkmer-release-comparison/binaries/sharkmer-candidate",
+        "-s",
+        "repeat",
+        "-o",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-a18",
+        "-k",
+        "19",
+        "-t",
+        "2",
+        "--pcr-primers",
+        "name=target,forward=AGTTAAAAACGTGTG,reverse=TAGGCTGGGATGGCG,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-a18.fastq"
+      ],
+      "returncode": 0,
+      "input": {
+        "path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-a18.fastq",
+        "sha256": "a37f8033eea7befe85a894ac0b0e0cf6a23ff491983d677ecc6d543d212ae348",
+        "size_bytes": 1148
+      },
+      "expected": [
+        {
+          "length": 138,
+          "sha256": "d2c29f5b39989a5e52beb0ff03014ddde3a723146892db8108d0609bd4ca5567"
+        }
+      ],
+      "expected_output_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-a18/repeat_target.fasta",
+      "stats_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-a18/repeat.stats.yaml",
+      "stats_sha256": "4f848707df519b595371059f24a90a913594b791f3eff0c309605f4c0f1ac6d2",
+      "stats_pcr_results": [
+        {
+          "gene_name": "target",
+          "status": "success",
+          "n_products": 1,
+          "product_lengths": [
+            138
+          ],
+          "output_file": "repeat_target.fasta"
+        }
+      ],
+      "products": [
+        {
+          "header": "repeat_target_0 sample=repeat gene=target product=0 length=138 kmer_count_mean=4.00 kmer_count_median=4 kmer_count_min=4 kmer_count_max=4 score=4.00",
+          "length": 138,
+          "sha256": "d2c29f5b39989a5e52beb0ff03014ddde3a723146892db8108d0609bd4ca5567",
+          "sequence": "AGTTAAAAACGTGTGTTCACCCGGGTCGCGCTACCGACAACATCCGATACCCTGTCGACCAAAAAAAAAAAAAAAAAAGTGGCCACAGGACTAAGTCCAGTAAATATACGGGGTCTCGTAGGACGCCATCCCAGCCTA"
+        }
+      ],
+      "all_products_exact": true,
+      "has_incorrect_product": false,
+      "raw_output_directory": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-a18"
+    },
+    {
+      "version": "candidate",
+      "binary": "/tmp/sharkmer-release-comparison/binaries/sharkmer-candidate",
+      "binary_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+      "case": "repeat-a19",
+      "description": "Known synthetic repeat regression; candidate behavior may conservatively withhold uncertain repeats.",
+      "command": [
+        "/tmp/sharkmer-release-comparison/binaries/sharkmer-candidate",
+        "-s",
+        "repeat",
+        "-o",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-a19",
+        "-k",
+        "19",
+        "-t",
+        "2",
+        "--pcr-primers",
+        "name=target,forward=AGTTAAAAACGTGTG,reverse=TAGGCTGGGATGGCG,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-a19.fastq"
+      ],
+      "returncode": 0,
+      "input": {
+        "path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-a19.fastq",
+        "sha256": "ea8419361772a8400439dc5ade0c6ba7aeebf43ee05da5063d89657138148b29",
+        "size_bytes": 1156
+      },
+      "expected": [
+        {
+          "length": 139,
+          "sha256": "655e50088a46e22f1f0066ba3d6f4a71ec483dec002ade91ca37de9e5c9a2ecd"
+        }
+      ],
+      "expected_output_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-a19/repeat_target.fasta",
+      "stats_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-a19/repeat.stats.yaml",
+      "stats_sha256": "7afcf13ec707ad7b43058db13b4079197a8d2ef4e0ff62e142aab4309e2a79fe",
+      "stats_pcr_results": [
+        {
+          "gene_name": "target",
+          "status": "fail",
+          "n_products": 0,
+          "failure_reason": "repeat length unresolved for all valid amplicon paths"
+        }
+      ],
+      "products": [],
+      "all_products_exact": false,
+      "has_incorrect_product": false,
+      "raw_output_directory": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-a19"
+    },
+    {
+      "version": "candidate",
+      "binary": "/tmp/sharkmer-release-comparison/binaries/sharkmer-candidate",
+      "binary_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+      "case": "repeat-a40",
+      "description": "Known synthetic repeat regression; candidate behavior may conservatively withhold uncertain repeats.",
+      "command": [
+        "/tmp/sharkmer-release-comparison/binaries/sharkmer-candidate",
+        "-s",
+        "repeat",
+        "-o",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-a40",
+        "-k",
+        "19",
+        "-t",
+        "2",
+        "--pcr-primers",
+        "name=target,forward=AGTTAAAAACGTGTG,reverse=TAGGCTGGGATGGCG,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-a40.fastq"
+      ],
+      "returncode": 0,
+      "input": {
+        "path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-a40.fastq",
+        "sha256": "89ac804b36acfd6d8e168e88f2de8f6e61cc258a1e127aef70702bb4915d0597",
+        "size_bytes": 1324
+      },
+      "expected": [
+        {
+          "length": 160,
+          "sha256": "bf07890a32bc5af3e1fec651ad833cd477048be1a813867a3580f0e0361e4d7e"
+        }
+      ],
+      "expected_output_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-a40/repeat_target.fasta",
+      "stats_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-a40/repeat.stats.yaml",
+      "stats_sha256": "ba744c87d9f73e5f9c12519f2cb2b9fd5469cc8d8c611ff321b2eb6e42319dd8",
+      "stats_pcr_results": [
+        {
+          "gene_name": "target",
+          "status": "fail",
+          "n_products": 0,
+          "failure_reason": "repeat length unresolved for all valid amplicon paths"
+        }
+      ],
+      "products": [],
+      "all_products_exact": false,
+      "has_incorrect_product": false,
+      "raw_output_directory": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-a40"
+    },
+    {
+      "version": "candidate",
+      "binary": "/tmp/sharkmer-release-comparison/binaries/sharkmer-candidate",
+      "binary_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+      "case": "repeat-ac40",
+      "description": "Known synthetic repeat regression; candidate behavior may conservatively withhold uncertain repeats.",
+      "command": [
+        "/tmp/sharkmer-release-comparison/binaries/sharkmer-candidate",
+        "-s",
+        "repeat",
+        "-o",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-ac40",
+        "-k",
+        "19",
+        "-t",
+        "2",
+        "--pcr-primers",
+        "name=target,forward=AGTTAAAAACGTGTG,reverse=TAGGCTGGGATGGCG,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-ac40.fastq"
+      ],
+      "returncode": 0,
+      "input": {
+        "path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/inputs/repeat-ac40.fastq",
+        "sha256": "75cf848a8ef402cdf27b8c15140e69356a52f00f70fed31ed1c71c834b3332d8",
+        "size_bytes": 1324
+      },
+      "expected": [
+        {
+          "length": 160,
+          "sha256": "777acb4e9dc9a5a3ff94fec7f5875dcb2383f2606500d80a02dff7fea5a6caec"
+        }
+      ],
+      "expected_output_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-ac40/repeat_target.fasta",
+      "stats_path": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-ac40/repeat.stats.yaml",
+      "stats_sha256": "a01cbfb29f058e0e163f150158c6615813a1623d75548ddf2777440b724f3751",
+      "stats_pcr_results": [
+        {
+          "gene_name": "target",
+          "status": "fail",
+          "n_products": 0,
+          "failure_reason": "repeat length unresolved for all valid amplicon paths"
+        }
+      ],
+      "products": [],
+      "all_products_exact": false,
+      "has_incorrect_product": false,
+      "raw_output_directory": "/tmp/sharkmer-release-comparison/supplemental-synthetic-20260909T162310Z/candidate/repeat-ac40"
+    }
+  ]
+}

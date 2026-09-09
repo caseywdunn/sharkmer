@@ -1,0 +1,1002 @@
+{
+  "schema_version": 1,
+  "preparation": {
+    "description": "Immutable record-aligned uncompressed FASTQ; each 1M prefix verified against earlier checksum-verified calibration cache.",
+    "command": [
+      "python",
+      "/tmp/sharkmer-release-comparison/stage_inputs.py"
+    ],
+    "tool_versions": {
+      "python": "3.13.13"
+    },
+    "record_order": "ENA URL order, sequential, unpaired",
+    "limits": "first8M for six configured sweep samples; first1M or EOF for remaining samples",
+    "remote_integrity_note": "Staged full/prefix SHA-256 verifies comparison identity. Partial remote downloads do not verify full upstream compressed MD5."
+  },
+  "inputs": [
+    {
+      "id": "SRR9278435",
+      "accession": "SRR9278435",
+      "path": "/tmp/sharkmer-release-comparison/inputs/SRR9278435.fastq",
+      "sha256": "fa1b4d580381397a440d1d9418ad60dd0a3da908e6587fac544f99996cabeee8",
+      "size_bytes": 2669777792,
+      "total_records": 8000000,
+      "total_bases": 1200000000,
+      "requested_max_records": 8000000,
+      "source_urls_ordered": [
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz"
+      ],
+      "source_consumption": [
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz",
+          "records": 8000000,
+          "eof_verified": false,
+          "transport": {
+            "kind": "https_gzip_prefix",
+            "status": 200,
+            "headers": {
+              "Date": "Wed, 09 Sep 2026 16:11:11 GMT",
+              "Server": "Apache",
+              "Last-Modified": "Sun, 19 Apr 2020 10:04:39 GMT",
+              "ETag": "\"17539bec0-5a3a1e913bbc0\"",
+              "Accept-Ranges": "bytes",
+              "Content-Length": "6261685952",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET,OPTIONS",
+              "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+              "Connection": "close",
+              "Content-Type": "application/x-gzip"
+            },
+            "full_upstream_checksum_verified": false
+          }
+        }
+      ],
+      "ena_metadata": {
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR9278435&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR9278435.tsv",
+        "sha256": "5a3a744717ed4fe6433dd60cb7e0f7f5c37e92bfc019b42a2f09e265974dbfac",
+        "fields": {
+          "run_accession": "SRR9278435",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz",
+          "scientific_name": "Xenia sp.",
+          "read_count": "73901878",
+          "fastq_md5": "60f9698c8b0a6fce8001be35001ed1f3",
+          "fastq_bytes": "6261685952"
+        }
+      },
+      "prefixes": {
+        "1000000": {
+          "records": 1000000,
+          "bases": 150000000,
+          "size_bytes": 331777792,
+          "sha256": "b87eb6bcb4b3cece3b461ee96d8c9c96d09ec59e94e752b688b4efde57410c62"
+        },
+        "2000000": {
+          "records": 2000000,
+          "bases": 300000000,
+          "size_bytes": 665777792,
+          "sha256": "a36911d131cd9d9855d1091d36dac9a50b6e0f12c1cd4c68e4bd04bcae3e71c4"
+        },
+        "4000000": {
+          "records": 4000000,
+          "bases": 600000000,
+          "size_bytes": 1333777792,
+          "sha256": "6a09b8eb776625ea23b3328d0e0f0db53bcda2ad63aa3ea36d2a832c846e4829"
+        },
+        "8000000": {
+          "records": 8000000,
+          "bases": 1200000000,
+          "size_bytes": 2669777792,
+          "sha256": "fa1b4d580381397a440d1d9418ad60dd0a3da908e6587fac544f99996cabeee8"
+        }
+      },
+      "historical_1m_prefix": {
+        "sha256": "b87eb6bcb4b3cece3b461ee96d8c9c96d09ec59e94e752b688b4efde57410c62",
+        "records": 1000000,
+        "bases": 150000000,
+        "size_bytes": 331777792
+      },
+      "historical_1m_prefix_identical": true,
+      "prepared_at": "2026-09-09T16:18:50.178683+00:00"
+    },
+    {
+      "id": "SRR25099394",
+      "accession": "SRR25099394",
+      "path": "/tmp/sharkmer-release-comparison/inputs/SRR25099394.fastq",
+      "sha256": "aaa6c64c436c25886b6acea8b9118744369dbb4029bfec050fc413f1a0a46758",
+      "size_bytes": 2946617031,
+      "total_records": 8000000,
+      "total_bases": 1208000000,
+      "requested_max_records": 8000000,
+      "source_urls_ordered": [
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz",
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_2.fastq.gz"
+      ],
+      "source_consumption": [
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz",
+          "records": 8000000,
+          "eof_verified": false,
+          "transport": {
+            "kind": "https_gzip_prefix",
+            "status": 200,
+            "headers": {
+              "Date": "Wed, 09 Sep 2026 16:18:54 GMT",
+              "Server": "Apache",
+              "Last-Modified": "Fri, 21 Jul 2023 03:19:49 GMT",
+              "ETag": "\"85112a3a-600f6bcc13f40\"",
+              "Accept-Ranges": "bytes",
+              "Content-Length": "2232494650",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET,OPTIONS",
+              "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+              "Connection": "close",
+              "Content-Type": "application/x-gzip"
+            },
+            "full_upstream_checksum_verified": false
+          }
+        }
+      ],
+      "ena_metadata": {
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR25099394&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR25099394.tsv",
+        "sha256": "7f9ac7b0a197e0112a86d0aa7f887cb4697853029c10969cba9ced366f293867",
+        "fields": {
+          "run_accession": "SRR25099394",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_2.fastq.gz",
+          "scientific_name": "Agalma elegans",
+          "read_count": "40291807",
+          "fastq_md5": "fb2fe27ee879ee26c6f25672cab87a88;1e39b7faf59177ca63dc33ca4fe60416",
+          "fastq_bytes": "2232494650;2236913697"
+        }
+      },
+      "prefixes": {
+        "1000000": {
+          "records": 1000000,
+          "bases": 151000000,
+          "size_bytes": 367358324,
+          "sha256": "eda4f80dcb7853c3ef734e4efa2ff06e6f3332e105a99797fa1f709c441f0f43"
+        },
+        "2000000": {
+          "records": 2000000,
+          "bases": 302000000,
+          "size_bytes": 735817511,
+          "sha256": "bc80992264a0c00327050e7d06ade863a303359539cbb29a47fee7e0f288d3e9"
+        },
+        "4000000": {
+          "records": 4000000,
+          "bases": 604000000,
+          "size_bytes": 1472753809,
+          "sha256": "082319e9bbcd216f1bbb0648ddff9da5879cad9fcc70d56c6297275d1d18e274"
+        },
+        "8000000": {
+          "records": 8000000,
+          "bases": 1208000000,
+          "size_bytes": 2946617031,
+          "sha256": "aaa6c64c436c25886b6acea8b9118744369dbb4029bfec050fc413f1a0a46758"
+        }
+      },
+      "historical_1m_prefix": {
+        "sha256": "eda4f80dcb7853c3ef734e4efa2ff06e6f3332e105a99797fa1f709c441f0f43",
+        "records": 1000000,
+        "bases": 151000000,
+        "size_bytes": 367358324
+      },
+      "historical_1m_prefix_identical": true,
+      "prepared_at": "2026-09-09T16:23:00.456503+00:00"
+    },
+    {
+      "id": "SRR8617500",
+      "accession": "SRR8617500",
+      "path": "/tmp/sharkmer-release-comparison/inputs/SRR8617500.fastq",
+      "sha256": "e3b7c7380f6c7ee9363fb73f9a03c43928ae97514f997feefe3f5156e23456ea",
+      "size_bytes": 2669777792,
+      "total_records": 8000000,
+      "total_bases": 1200000000,
+      "requested_max_records": 8000000,
+      "source_urls_ordered": [
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz",
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_2.fastq.gz"
+      ],
+      "source_consumption": [
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz",
+          "records": 8000000,
+          "eof_verified": false,
+          "transport": {
+            "kind": "https_gzip_prefix",
+            "status": 200,
+            "headers": {
+              "Date": "Wed, 09 Sep 2026 16:23:09 GMT",
+              "Server": "Apache",
+              "Last-Modified": "Sun, 08 Mar 2020 02:30:37 GMT",
+              "ETag": "\"139353646-5a04eabfe0d40\"",
+              "Accept-Ranges": "bytes",
+              "Content-Length": "5254755910",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET,OPTIONS",
+              "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+              "Connection": "close",
+              "Content-Type": "application/x-gzip"
+            },
+            "full_upstream_checksum_verified": false
+          }
+        }
+      ],
+      "ena_metadata": {
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR8617500&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR8617500.tsv",
+        "sha256": "24061427fe24a57e9c1d84b98913925e6419243041ca91c23e16d684a6567f81",
+        "fields": {
+          "run_accession": "SRR8617500",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_2.fastq.gz",
+          "scientific_name": "Rhopilema esculentum",
+          "read_count": "76034912",
+          "fastq_md5": "8ace50c3d3e007af9fa78bbf0adac213;9f2f833432e4f2faa070c6965173fd88",
+          "fastq_bytes": "5254755910;5456790747"
+        }
+      },
+      "prefixes": {
+        "1000000": {
+          "records": 1000000,
+          "bases": 150000000,
+          "size_bytes": 331777792,
+          "sha256": "681c732745f4820ae8600617452e42b5a98e63775b250cf9f7971e283ef9fbdc"
+        },
+        "2000000": {
+          "records": 2000000,
+          "bases": 300000000,
+          "size_bytes": 665777792,
+          "sha256": "81be1a5b4e4df0973a8aca8c0133e81816707b78688c43193e431131997ac6a6"
+        },
+        "4000000": {
+          "records": 4000000,
+          "bases": 600000000,
+          "size_bytes": 1333777792,
+          "sha256": "4b4791648ded9fdd2da9cb68392bca7bb912b2c7a0561a20a31da2bc02b57c95"
+        },
+        "8000000": {
+          "records": 8000000,
+          "bases": 1200000000,
+          "size_bytes": 2669777792,
+          "sha256": "e3b7c7380f6c7ee9363fb73f9a03c43928ae97514f997feefe3f5156e23456ea"
+        }
+      },
+      "historical_1m_prefix": {
+        "sha256": "681c732745f4820ae8600617452e42b5a98e63775b250cf9f7971e283ef9fbdc",
+        "records": 1000000,
+        "bases": 150000000,
+        "size_bytes": 331777792
+      },
+      "historical_1m_prefix_identical": true,
+      "prepared_at": "2026-09-09T16:25:44.359847+00:00"
+    },
+    {
+      "id": "SRR17535371",
+      "accession": "SRR17535371",
+      "path": "/tmp/sharkmer-release-comparison/inputs/SRR17535371.fastq",
+      "sha256": "5f6230177848a7fb58e3cfe5a8de2aa43b9239466c87f07fec3a057fc5ab429f",
+      "size_bytes": 39517474,
+      "total_records": 108518,
+      "total_bases": 18093925,
+      "requested_max_records": 1000000,
+      "source_urls_ordered": [
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz",
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz",
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz"
+      ],
+      "source_consumption": [
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz",
+          "records": 30024,
+          "eof_verified": true,
+          "transport": {
+            "kind": "verified_historical_cache",
+            "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz",
+            "compressed_sha256": "dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21"
+          }
+        },
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz",
+          "records": 39247,
+          "eof_verified": true,
+          "transport": {
+            "kind": "verified_historical_cache",
+            "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz",
+            "compressed_sha256": "5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8"
+          }
+        },
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz",
+          "records": 39247,
+          "eof_verified": true,
+          "transport": {
+            "kind": "verified_historical_cache",
+            "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz",
+            "compressed_sha256": "c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe"
+          }
+        }
+      ],
+      "ena_metadata": {
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR17535371&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR17535371.tsv",
+        "sha256": "95626bd694024ee39dc4e9002c8a1d52ecfb9e8de5dcd557c8ad1a1725f8f90c",
+        "fields": {
+          "run_accession": "SRR17535371",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz",
+          "scientific_name": "Homo sapiens",
+          "read_count": "69271",
+          "fastq_md5": "1f412292d86fc5fb634f9e0f3dfcc500;c7705dbb57c224c648afa666c33ad819;2d04ae035e0303d958ec8bbd3ae601e1",
+          "fastq_bytes": "822668;1077287;1228815"
+        }
+      },
+      "prefixes": {
+        "1000000": {
+          "records": 108518,
+          "bases": 18093925,
+          "size_bytes": 39517474,
+          "sha256": "5f6230177848a7fb58e3cfe5a8de2aa43b9239466c87f07fec3a057fc5ab429f"
+        }
+      },
+      "historical_1m_prefix": {
+        "sha256": "5f6230177848a7fb58e3cfe5a8de2aa43b9239466c87f07fec3a057fc5ab429f",
+        "records": 108518,
+        "bases": 18093925,
+        "size_bytes": 39517474
+      },
+      "historical_1m_prefix_identical": true,
+      "prepared_at": "2026-09-09T16:25:45.819101+00:00"
+    },
+    {
+      "id": "SRR22396603",
+      "accession": "SRR22396603",
+      "path": "/tmp/sharkmer-release-comparison/inputs/SRR22396603.fastq",
+      "sha256": "6e9da22ee6605ebcd6e67d7dd52b997411f7c8e7655b6930ddbe158dbc2a3ed3",
+      "size_bytes": 334777792,
+      "total_records": 1000000,
+      "total_bases": 151000000,
+      "requested_max_records": 1000000,
+      "source_urls_ordered": [
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz",
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_2.fastq.gz"
+      ],
+      "source_consumption": [
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz",
+          "records": 1000000,
+          "eof_verified": false,
+          "transport": {
+            "kind": "verified_historical_cache",
+            "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz",
+            "compressed_sha256": "d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626"
+          }
+        }
+      ],
+      "ena_metadata": {
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR22396603&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR22396603.tsv",
+        "sha256": "61a18865273e255f8312b3ec2794424e49f7e0f7c03739f0dde8afa566af1b28",
+        "fields": {
+          "run_accession": "SRR22396603",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_2.fastq.gz",
+          "scientific_name": "Nomeus gronovii",
+          "read_count": "8506252",
+          "fastq_md5": "71e911d25dfaeb344806946d54fe9461;47d5e008697a388dd36fd70a46837d56",
+          "fastq_bytes": "550817463;593075367"
+        }
+      },
+      "prefixes": {
+        "1000000": {
+          "records": 1000000,
+          "bases": 151000000,
+          "size_bytes": 334777792,
+          "sha256": "6e9da22ee6605ebcd6e67d7dd52b997411f7c8e7655b6930ddbe158dbc2a3ed3"
+        }
+      },
+      "historical_1m_prefix": {
+        "sha256": "6e9da22ee6605ebcd6e67d7dd52b997411f7c8e7655b6930ddbe158dbc2a3ed3",
+        "records": 1000000,
+        "bases": 151000000,
+        "size_bytes": 334777792
+      },
+      "historical_1m_prefix_identical": true,
+      "prepared_at": "2026-09-09T16:25:54.686361+00:00"
+    },
+    {
+      "id": "SRR25378184",
+      "accession": "SRR25378184",
+      "path": "/tmp/sharkmer-release-comparison/inputs/SRR25378184.fastq",
+      "sha256": "2a44558f81127ac7aae0f8b9789d3ac5d589986e172c5ba27784a5d84f287bd3",
+      "size_bytes": 371615360,
+      "total_records": 1000000,
+      "total_bases": 151000000,
+      "requested_max_records": 1000000,
+      "source_urls_ordered": [
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz",
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz"
+      ],
+      "source_consumption": [
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz",
+          "records": 656431,
+          "eof_verified": true,
+          "transport": {
+            "kind": "verified_historical_cache",
+            "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz",
+            "compressed_sha256": "67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e"
+          }
+        },
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz",
+          "records": 343569,
+          "eof_verified": false,
+          "transport": {
+            "kind": "verified_historical_cache",
+            "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz",
+            "compressed_sha256": "6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3"
+          }
+        }
+      ],
+      "ena_metadata": {
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR25378184&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR25378184.tsv",
+        "sha256": "b0f23cc1a8b2f2000f2957e7217621bfb877bf1be3bb64d147dc13d372725c5c",
+        "fields": {
+          "run_accession": "SRR25378184",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz",
+          "scientific_name": "Liriodendron tulipifera",
+          "read_count": "656431",
+          "fastq_md5": "7fe3cf225cb45609d30e4dfba1616c58;8093164754995859f41ae69f0ecb54c6",
+          "fastq_bytes": "53856469;53374349"
+        }
+      },
+      "prefixes": {
+        "1000000": {
+          "records": 1000000,
+          "bases": 151000000,
+          "size_bytes": 371615360,
+          "sha256": "2a44558f81127ac7aae0f8b9789d3ac5d589986e172c5ba27784a5d84f287bd3"
+        }
+      },
+      "historical_1m_prefix": {
+        "sha256": "2a44558f81127ac7aae0f8b9789d3ac5d589986e172c5ba27784a5d84f287bd3",
+        "records": 1000000,
+        "bases": 151000000,
+        "size_bytes": 371615360
+      },
+      "historical_1m_prefix_identical": true,
+      "prepared_at": "2026-09-09T16:26:04.531380+00:00"
+    },
+    {
+      "id": "ERR14009273",
+      "accession": "ERR14009273",
+      "path": "/tmp/sharkmer-release-comparison/inputs/ERR14009273.fastq",
+      "sha256": "9b0248592f5616f52f473c7080462390b578b614e8ef523c6491e36d442dafb1",
+      "size_bytes": 255801372,
+      "total_records": 1000000,
+      "total_bases": 99211896,
+      "requested_max_records": 1000000,
+      "source_urls_ordered": [
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz",
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_2.fastq.gz"
+      ],
+      "source_consumption": [
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz",
+          "records": 1000000,
+          "eof_verified": false,
+          "transport": {
+            "kind": "verified_historical_cache",
+            "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz",
+            "compressed_sha256": "261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22"
+          }
+        }
+      ],
+      "ena_metadata": {
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=ERR14009273&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "path": "/tmp/sharkmer-release-comparison/ena/ERR14009273.tsv",
+        "sha256": "67555df3e07f8f5a687622e69f17bb71985e58b95d9d5702b9ddb0a1591c4cce",
+        "fields": {
+          "run_accession": "ERR14009273",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_2.fastq.gz",
+          "scientific_name": "Acer monspessulanum",
+          "read_count": "9292512",
+          "fastq_md5": "66355f6a545d65e92b04265498eae21c;2562857c520e9b00362dce3b7d4b94d4",
+          "fastq_bytes": "426350363;424863046"
+        }
+      },
+      "prefixes": {
+        "1000000": {
+          "records": 1000000,
+          "bases": 99211896,
+          "size_bytes": 255801372,
+          "sha256": "9b0248592f5616f52f473c7080462390b578b614e8ef523c6491e36d442dafb1"
+        }
+      },
+      "historical_1m_prefix": {
+        "sha256": "9b0248592f5616f52f473c7080462390b578b614e8ef523c6491e36d442dafb1",
+        "records": 1000000,
+        "bases": 99211896,
+        "size_bytes": 255801372
+      },
+      "historical_1m_prefix_identical": true,
+      "prepared_at": "2026-09-09T16:26:13.369498+00:00"
+    },
+    {
+      "id": "SRR31887760",
+      "accession": "SRR31887760",
+      "path": "/tmp/sharkmer-release-comparison/inputs/SRR31887760.fastq",
+      "sha256": "95250efe8110653f9255782bca96e4a4e206e7f0f891451ce363470f5d7bc0e7",
+      "size_bytes": 2146802050,
+      "total_records": 8000000,
+      "total_bases": 808000000,
+      "requested_max_records": 8000000,
+      "source_urls_ordered": [
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz",
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_2.fastq.gz"
+      ],
+      "source_consumption": [
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz",
+          "records": 8000000,
+          "eof_verified": false,
+          "transport": {
+            "kind": "https_gzip_prefix",
+            "status": 200,
+            "headers": {
+              "Date": "Wed, 09 Sep 2026 16:26:18 GMT",
+              "Server": "Apache",
+              "Last-Modified": "Thu, 13 Feb 2025 04:14:18 GMT",
+              "ETag": "\"56631e42-62dfe4aac1a80\"",
+              "Accept-Ranges": "bytes",
+              "Content-Length": "1449336386",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET,OPTIONS",
+              "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+              "Connection": "close",
+              "Content-Type": "application/x-gzip"
+            },
+            "full_upstream_checksum_verified": false
+          }
+        }
+      ],
+      "ena_metadata": {
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR31887760&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR31887760.tsv",
+        "sha256": "bff2ead87c921470acb6006eeaf8c5704c487c594a60236b87108bf028e987ab",
+        "fields": {
+          "run_accession": "SRR31887760",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_2.fastq.gz",
+          "scientific_name": "Drosophila melanogaster",
+          "read_count": "17265830",
+          "fastq_md5": "2c4e9fc97bffcc9281d9d8f362c60c7f;a4e4a52acc000cb28608f98b47db7042",
+          "fastq_bytes": "1449336386;1469922374"
+        }
+      },
+      "prefixes": {
+        "1000000": {
+          "records": 1000000,
+          "bases": 101000000,
+          "size_bytes": 267366976,
+          "sha256": "b952eb9be7212ae79da85b0548b1c74a0343637d8af400ae9a08968b297638ae"
+        },
+        "2000000": {
+          "records": 2000000,
+          "bases": 202000000,
+          "size_bytes": 535859390,
+          "sha256": "c798c01b4e2907728f115dfccd59a20f73d54d51cb3f7daf0b6c59b0d242f6bc"
+        },
+        "4000000": {
+          "records": 4000000,
+          "bases": 404000000,
+          "size_bytes": 1072845041,
+          "sha256": "a2cf1ace700372d40512b9f33ef453f4443aeec5b82a6f3d0e830b6989bdb823"
+        },
+        "8000000": {
+          "records": 8000000,
+          "bases": 808000000,
+          "size_bytes": 2146802050,
+          "sha256": "95250efe8110653f9255782bca96e4a4e206e7f0f891451ce363470f5d7bc0e7"
+        }
+      },
+      "historical_1m_prefix": {
+        "sha256": "b952eb9be7212ae79da85b0548b1c74a0343637d8af400ae9a08968b297638ae",
+        "records": 1000000,
+        "bases": 101000000,
+        "size_bytes": 267366976
+      },
+      "historical_1m_prefix_identical": true,
+      "prepared_at": "2026-09-09T16:33:00.372079+00:00"
+    },
+    {
+      "id": "SRR1057608",
+      "accession": "SRR1057608",
+      "path": "/tmp/sharkmer-release-comparison/inputs/SRR1057608.fastq",
+      "sha256": "c510fc8a625f7c89b4031c108d67aeaca31cba08e118846fdb7f76ed9323ec8a",
+      "size_bytes": 1709669748,
+      "total_records": 8000000,
+      "total_bases": 719945978,
+      "requested_max_records": 8000000,
+      "source_urls_ordered": [
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz",
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_2.fastq.gz"
+      ],
+      "source_consumption": [
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz",
+          "records": 8000000,
+          "eof_verified": false,
+          "transport": {
+            "kind": "https_gzip_prefix",
+            "status": 200,
+            "headers": {
+              "Date": "Wed, 09 Sep 2026 16:33:05 GMT",
+              "Server": "Apache",
+              "Last-Modified": "Fri, 18 Apr 2014 01:41:09 GMT",
+              "ETag": "\"7fd79b10-4f7473e6e5740\"",
+              "Accept-Ranges": "bytes",
+              "Content-Length": "2144836368",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET,OPTIONS",
+              "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+              "Connection": "close",
+              "Content-Type": "application/x-gzip"
+            },
+            "full_upstream_checksum_verified": false
+          }
+        }
+      ],
+      "ena_metadata": {
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR1057608&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR1057608.tsv",
+        "sha256": "3200fe09f95b1c96c4f35c19529781d7aa8923bbc1c977b2a4b83369daecf87b",
+        "fields": {
+          "run_accession": "SRR1057608",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_2.fastq.gz",
+          "scientific_name": "Heliconius pachinus",
+          "read_count": "27465279",
+          "fastq_md5": "4c2a08d94de1ad21f3bf50c1d18cdff4;f29c4ba70ce750588b386f70a5dd147e",
+          "fastq_bytes": "2144836368;2146068154"
+        }
+      },
+      "prefixes": {
+        "1000000": {
+          "records": 1000000,
+          "bases": 89994628,
+          "size_bytes": 211767048,
+          "sha256": "a65515c2b54d585ca1028f2c865381aed16f4da9f7cc956f1c8d3fdcda8ca3e0"
+        },
+        "2000000": {
+          "records": 2000000,
+          "bases": 179988194,
+          "size_bytes": 425754180,
+          "sha256": "db400cff131c54be57600ef9b4a92aaefb621db3c5d1c98f8786bc2ce0f662f2"
+        },
+        "4000000": {
+          "records": 4000000,
+          "bases": 359972261,
+          "size_bytes": 853722314,
+          "sha256": "cd4c0eb1e6d0a52ee296d4044f48b2eedb7fb3a933d81c868d5c070c329e577b"
+        },
+        "8000000": {
+          "records": 8000000,
+          "bases": 719945978,
+          "size_bytes": 1709669748,
+          "sha256": "c510fc8a625f7c89b4031c108d67aeaca31cba08e118846fdb7f76ed9323ec8a"
+        }
+      },
+      "historical_1m_prefix": {
+        "sha256": "a65515c2b54d585ca1028f2c865381aed16f4da9f7cc956f1c8d3fdcda8ca3e0",
+        "records": 1000000,
+        "bases": 89994628,
+        "size_bytes": 211767048
+      },
+      "historical_1m_prefix_identical": true,
+      "prepared_at": "2026-09-09T16:40:03.684385+00:00"
+    },
+    {
+      "id": "SRR27962769",
+      "accession": "SRR27962769",
+      "path": "/tmp/sharkmer-release-comparison/inputs/SRR27962769.fastq",
+      "sha256": "d4252f0052d9eaf1753debd1c82eb132666f2300e43d80524ded9275a81081b2",
+      "size_bytes": 2929733806,
+      "total_records": 8000000,
+      "total_bases": 1200000000,
+      "requested_max_records": 8000000,
+      "source_urls_ordered": [
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz",
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_2.fastq.gz"
+      ],
+      "source_consumption": [
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz",
+          "records": 7209861,
+          "eof_verified": true,
+          "transport": {
+            "kind": "https_gzip_prefix",
+            "status": 200,
+            "headers": {
+              "Date": "Wed, 09 Sep 2026 16:40:12 GMT",
+              "Server": "Apache",
+              "Last-Modified": "Wed, 26 Jun 2024 04:28:04 GMT",
+              "ETag": "\"1e55129e-61bc370b8dd00\"",
+              "Accept-Ranges": "bytes",
+              "Content-Length": "508891806",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET,OPTIONS",
+              "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+              "Connection": "close",
+              "Content-Type": "application/x-gzip"
+            },
+            "full_upstream_checksum_verified": false
+          }
+        },
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_2.fastq.gz",
+          "records": 790139,
+          "eof_verified": false,
+          "transport": {
+            "kind": "https_gzip_prefix",
+            "status": 200,
+            "headers": {
+              "Date": "Wed, 09 Sep 2026 16:45:45 GMT",
+              "Server": "Apache",
+              "Last-Modified": "Wed, 26 Jun 2024 04:28:02 GMT",
+              "ETag": "\"20f8bd34-61bc3709a5880\"",
+              "Accept-Ranges": "bytes",
+              "Content-Length": "553172276",
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Methods": "GET,OPTIONS",
+              "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+              "Connection": "close",
+              "Content-Type": "application/x-gzip"
+            },
+            "full_upstream_checksum_verified": false
+          }
+        }
+      ],
+      "ena_metadata": {
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR27962769&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR27962769.tsv",
+        "sha256": "13327f2a455012720fc23338a5d1f85b8e5275c667d6aea2a373fd60198cb810",
+        "fields": {
+          "run_accession": "SRR27962769",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_2.fastq.gz",
+          "scientific_name": "Gryllus bimaculatus",
+          "read_count": "7209861",
+          "fastq_md5": "ceab3f7c7809b13d1422c3e108faccbc;74fa2edb91358238d73dd618deea284e",
+          "fastq_bytes": "508891806;553172276"
+        }
+      },
+      "prefixes": {
+        "1000000": {
+          "records": 1000000,
+          "bases": 150000000,
+          "size_bytes": 365356898,
+          "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794"
+        },
+        "2000000": {
+          "records": 2000000,
+          "bases": 300000000,
+          "size_bytes": 731824249,
+          "sha256": "785a3afe758678fd68ec277e56a3d7537e669763c4448b45b1a167d9c2cb5785"
+        },
+        "4000000": {
+          "records": 4000000,
+          "bases": 600000000,
+          "size_bytes": 1464761835,
+          "sha256": "8a2d7dc0bae6717161620a13ec82f5eac04565f956073e9ab37184af82f5d98c"
+        },
+        "8000000": {
+          "records": 8000000,
+          "bases": 1200000000,
+          "size_bytes": 2929733806,
+          "sha256": "d4252f0052d9eaf1753debd1c82eb132666f2300e43d80524ded9275a81081b2"
+        }
+      },
+      "historical_1m_prefix": {
+        "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+        "records": 1000000,
+        "bases": 150000000,
+        "size_bytes": 365356898
+      },
+      "historical_1m_prefix_identical": true,
+      "prepared_at": "2026-09-09T16:46:38.570856+00:00"
+    },
+    {
+      "id": "SRR19418213",
+      "accession": "SRR19418213",
+      "path": "/tmp/sharkmer-release-comparison/inputs/SRR19418213.fastq",
+      "sha256": "937720721272e290f2e59eaf02bc411777043cd49c0615237e8d55160eab81dc",
+      "size_bytes": 333554150,
+      "total_records": 525982,
+      "total_bases": 158320582,
+      "requested_max_records": 1000000,
+      "source_urls_ordered": [
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz",
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz"
+      ],
+      "source_consumption": [
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz",
+          "records": 262991,
+          "eof_verified": true,
+          "transport": {
+            "kind": "verified_historical_cache",
+            "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz",
+            "compressed_sha256": "339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536"
+          }
+        },
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz",
+          "records": 262991,
+          "eof_verified": true,
+          "transport": {
+            "kind": "verified_historical_cache",
+            "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz",
+            "compressed_sha256": "503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7"
+          }
+        }
+      ],
+      "ena_metadata": {
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR19418213&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR19418213.tsv",
+        "sha256": "a47c29bac56e79345a7ec6e0f87d72188a13ab26bf49c375d022db949b74bcca",
+        "fields": {
+          "run_accession": "SRR19418213",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz",
+          "scientific_name": "rhizosphere metagenome",
+          "read_count": "262991",
+          "fastq_md5": "f337e0b6c3a78a4b53e9b93076f89dde;52694eeb2cc2a81a177e2433b1ce130c",
+          "fastq_bytes": "35208655;44177623"
+        }
+      },
+      "prefixes": {
+        "1000000": {
+          "records": 525982,
+          "bases": 158320582,
+          "size_bytes": 333554150,
+          "sha256": "937720721272e290f2e59eaf02bc411777043cd49c0615237e8d55160eab81dc"
+        }
+      },
+      "historical_1m_prefix": {
+        "sha256": "937720721272e290f2e59eaf02bc411777043cd49c0615237e8d55160eab81dc",
+        "records": 525982,
+        "bases": 158320582,
+        "size_bytes": 333554150
+      },
+      "historical_1m_prefix_identical": true,
+      "prepared_at": "2026-09-09T16:46:47.213974+00:00"
+    },
+    {
+      "id": "SRR24806237",
+      "accession": "SRR24806237",
+      "path": "/tmp/sharkmer-release-comparison/inputs/SRR24806237.fastq",
+      "sha256": "f477c84df33e9448419260b6374ca9d013e9b98282c3692772e799b7292c5edb",
+      "size_bytes": 94463450,
+      "total_records": 167686,
+      "total_bases": 41837341,
+      "requested_max_records": 1000000,
+      "source_urls_ordered": [
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz",
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz"
+      ],
+      "source_consumption": [
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz",
+          "records": 83843,
+          "eof_verified": true,
+          "transport": {
+            "kind": "verified_historical_cache",
+            "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz",
+            "compressed_sha256": "8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362"
+          }
+        },
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz",
+          "records": 83843,
+          "eof_verified": true,
+          "transport": {
+            "kind": "verified_historical_cache",
+            "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz",
+            "compressed_sha256": "de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d"
+          }
+        }
+      ],
+      "ena_metadata": {
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR24806237&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR24806237.tsv",
+        "sha256": "ab4c71b11e782418291ca1c47a114f26fb28e8fffd75838f149a89f98dc52df5",
+        "fields": {
+          "run_accession": "SRR24806237",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz",
+          "scientific_name": "coral metagenome",
+          "read_count": "83843",
+          "fastq_md5": "b08b0202ce68cd1ddca473f24039524d;f48659339208bf963b1fe45ed3554c89",
+          "fastq_bytes": "2863349;3189966"
+        }
+      },
+      "prefixes": {
+        "1000000": {
+          "records": 167686,
+          "bases": 41837341,
+          "size_bytes": 94463450,
+          "sha256": "f477c84df33e9448419260b6374ca9d013e9b98282c3692772e799b7292c5edb"
+        }
+      },
+      "historical_1m_prefix": {
+        "sha256": "f477c84df33e9448419260b6374ca9d013e9b98282c3692772e799b7292c5edb",
+        "records": 167686,
+        "bases": 41837341,
+        "size_bytes": 94463450
+      },
+      "historical_1m_prefix_identical": true,
+      "prepared_at": "2026-09-09T16:46:49.630082+00:00"
+    },
+    {
+      "id": "ERR2596344",
+      "accession": "ERR2596344",
+      "path": "/tmp/sharkmer-release-comparison/inputs/ERR2596344.fastq",
+      "sha256": "bef24d10191b4e7c4fdedbf8ea822db30381a321121203995eb45bbd62c2ecda",
+      "size_bytes": 38114192,
+      "total_records": 59704,
+      "total_bases": 17552976,
+      "requested_max_records": 1000000,
+      "source_urls_ordered": [
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz",
+        "https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz"
+      ],
+      "source_consumption": [
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz",
+          "records": 29852,
+          "eof_verified": true,
+          "transport": {
+            "kind": "verified_historical_cache",
+            "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz",
+            "compressed_sha256": "cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8"
+          }
+        },
+        {
+          "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz",
+          "records": 29852,
+          "eof_verified": true,
+          "transport": {
+            "kind": "verified_historical_cache",
+            "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz",
+            "compressed_sha256": "8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523"
+          }
+        }
+      ],
+      "ena_metadata": {
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=ERR2596344&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "path": "/tmp/sharkmer-release-comparison/ena/ERR2596344.tsv",
+        "sha256": "9649e17c7cb110a7772baeff82fb405aa865dfc9eb00a9df25c588523dc3376d",
+        "fields": {
+          "run_accession": "ERR2596344",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz",
+          "scientific_name": "seawater metagenome",
+          "read_count": "29852",
+          "fastq_md5": "dffb2559327c2387868c373f878a33c9;c0a869e48cd0d52ef1af393edd4f1c5a",
+          "fastq_bytes": "3470778;5631582"
+        }
+      },
+      "prefixes": {
+        "1000000": {
+          "records": 59704,
+          "bases": 17552976,
+          "size_bytes": 38114192,
+          "sha256": "bef24d10191b4e7c4fdedbf8ea822db30381a321121203995eb45bbd62c2ecda"
+        }
+      },
+      "historical_1m_prefix": {
+        "sha256": "bef24d10191b4e7c4fdedbf8ea822db30381a321121203995eb45bbd62c2ecda",
+        "records": 59704,
+        "bases": 17552976,
+        "size_bytes": 38114192
+      },
+      "historical_1m_prefix_identical": true,
+      "prepared_at": "2026-09-09T16:46:51.069127+00:00"
+    }
+  ]
+}

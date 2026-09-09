@@ -2,6 +2,13 @@
 
 Prepared 2026-09-09. **Development work only: awaiting user review, not release approval.**
 
+**Subsequent direct-release benchmark:** [BENCHMARK_v3.2_vs_v3.1.md](BENCHMARK_v3.2_vs_v3.1.md)
+compares pristine released v3.1.0 with the candidate across 114 invocations.
+It finds roughly flat runtime/RAM but 179 -> 71 primary products, including a
+lost exact-reference Gryllus ITS_2 product. Release remains on hold for
+[#153–155](https://github.com/caseywdunn/sharkmer/issues/153). The intermediate
+baseline calibration below is retained as history, not release-to-release parity.
+
 ## Scope and status
 
 The v3.2 correctness implementation covers #129–138. The reviewed code point
@@ -166,9 +173,11 @@ commands. This is calibration/regression evidence only, not held-out validation.
    or truth have been supplied. Freeze accessions, checksums, subsets, callable
    targets, truth, and tolerances before further assembly-policy tuning. Existing
    historical data remain calibration/regression data; #129 stays open.
-3. **Full release-depth and panel validation.** The bounded review uses a
-   one-million-record cap, not the configured 2/4/8M depth sweeps. The historical
-   matrix covers six panels, not biological validation of all nine. Run the
+3. **Release-baseline regressions and wider panel validation.** The subsequent
+   [direct comparison](BENCHMARK_v3.2_vs_v3.1.md) completes the configured
+   2/4/8M depth sweeps and repeated 1M timings, but exposes unresolved output
+   losses and repeat/search-budget concerns (#153–155). The historical matrix
+   covers six panels, not biological validation of all nine. Run the
    broader release procedure in CONTRIBUTING.md and inspect every product and
    negative control before publishing; primer/schema loading alone is not
    biological validation.
@@ -206,8 +215,9 @@ Current-code audit comments were recorded on #121–126; all remain open:
 
 ## Next implementation cycle
 
-After this review, begin v4.0 with the count-store/replay/evidence contracts in
-#139. Retain exact counts and one-pass ingestion; measure bounded end-to-end
+First review the direct-release losses under #153 and resolve or disposition
+#154–155. After the v3.2 review gate, begin v4.0 with the count-store/replay/evidence
+contracts in #139. Retain exact counts and one-pass ingestion; measure bounded end-to-end
 resources before selecting packed counters or external storage. Keep legacy
 incremental counting isolated rather than deleting it. Do not use a higher
 FASTA product count as evidence of better nuclear/metagenomic inference.
