@@ -1,0 +1,4071 @@
+panel: insecta
+panel_version: 1.0.0
+sharkmer_version: 3.2.0-dev
+git_commit: 03c0fc6
+date: '2026-09-09'
+run_id: 20260909_140757_074624_b292cd0a
+parameters:
+  runs:
+  - &id018
+    k: 19
+    threads: 2
+    max_reads: 1000000
+    options:
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR31887760_1000k_6f3b9921cc67/
+    - -s
+    - insecta_SRR31887760_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/insecta.yaml
+    - --ena
+    - SRR31887760
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    benchmark_scope: end-to-end
+    graph_dump: false
+    cache_mode: warm
+    effective_panel:
+      path: /home/claude/repos/sharkmer/panels/insecta.yaml
+      sha256: 043a4d224f8186d58459287c54bec7935d5f4921a5087c14a2136cfac42df874
+  - &id031
+    k: 19
+    threads: 2
+    max_reads: 1000000
+    options:
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR1057608_1000k_d9a295b64740/
+    - -s
+    - insecta_SRR1057608_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/insecta.yaml
+    - --ena
+    - SRR1057608
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    benchmark_scope: end-to-end
+    graph_dump: false
+    cache_mode: warm
+    effective_panel:
+      path: /home/claude/repos/sharkmer/panels/insecta.yaml
+      sha256: 043a4d224f8186d58459287c54bec7935d5f4921a5087c14a2136cfac42df874
+  - &id052
+    k: 19
+    threads: 2
+    max_reads: 1000000
+    options:
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR27962769_1000k_8e8a3889e30c/
+    - -s
+    - insecta_SRR27962769_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/insecta.yaml
+    - --ena
+    - SRR27962769
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    benchmark_scope: end-to-end
+    graph_dump: false
+    cache_mode: warm
+    effective_panel:
+      path: /home/claude/repos/sharkmer/panels/insecta.yaml
+      sha256: 043a4d224f8186d58459287c54bec7935d5f4921a5087c14a2136cfac42df874
+blast_mode: references
+rustc_version: rustc 1.98.1 (48a229cea 2026-09-01)
+provenance:
+  executable:
+    path: /home/claude/repos/sharkmer/target/release/sharkmer
+    sha256: 387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82
+    size_bytes: 6754904
+    selected_explicitly: false
+    built_for_run: true
+    build_command:
+    - cargo
+    - build
+    - --release
+    - --message-format=json-render-diagnostics
+    build_flags: []
+    build_environment: {}
+    build_profile: release
+    cargo_artifact_features:
+    - ahashmap
+    - default
+    hash_backend: ahashmap
+    workspace_source_observation:
+      revision: 03c0fc62ee0521f85a527b86f78252a60be1500b
+      dirty: false
+      tree_sha256: 86756eb858a152c35a33d7b4c46006533deee6ca448e3a9a1d7e35b7d0e8cf84
+      relationship_to_explicit_binary: built_immediately_before_fingerprint
+    fingerprinted_at: '2026-09-09T14:07:56.972011+00:00'
+  panel:
+    path: /home/claude/repos/sharkmer/panels/insecta.yaml
+    sha256: 043a4d224f8186d58459287c54bec7935d5f4921a5087c14a2136cfac42df874
+  references:
+  - gene: 12S
+    taxon: Drosophila tanythrix
+    accession: EU494495
+    length: 420
+    sha256: f12440f362d8037c26ba2668a3e31999d2cb3d541a3d7bef0d25ed2682518485
+  - gene: 16S_1
+    taxon: Drosophila sechellia
+    accession: NC_005780
+    length: 380
+    sha256: 5b7f3b95703955fca084997b9a11f076aed461b78886cbb8848454b844379d43
+  - gene: 16S_1
+    taxon: Drosophila tanythrix
+    accession: KM252237
+    length: 379
+    sha256: 44e23d689c95c641033baeeb25f0cb72e7bb9094ff3ac862e0b20c4f47ab0a95
+  - gene: 16S_1
+    taxon: Gryllus bimaculatus
+    accession: NC_053546
+    length: 376
+    sha256: e5f5129691d3c5b0526cb4322c4e0566420f408d7090cca76a8ad146718b755c
+  - gene: 16S_1
+    taxon: Heliconius pachinus
+    accession: KP073314
+    length: 317
+    sha256: 67046e4cd6d2b658a60d77231d2361b324bf93925f8698bc1182d1f747f2d62c
+  - gene: CO1_1
+    taxon: Drosophila tanythrix
+    accession: OM754561
+    length: 352
+    sha256: 22b7811a5ddf8604ee945184885042ae3a3b9edeb8597ca08dcc781e0e189c35
+  - gene: CO1_1
+    taxon: Gryllus bimaculatus
+    accession: PP230540
+    length: 304
+    sha256: 29d1091f50ad961c1e1a778a80930325f82f63b39b1b25e7e170d93ca599cb8d
+  - gene: CO1_1
+    taxon: Heliconius pachinus
+    accession: KJ174812
+    length: 304
+    sha256: 8ba0cf4d35377c7ebbb54000f07053c99d16008cf3e79cb45d8441da95ec1f2f
+  - gene: CO2_1
+    taxon: Drosophila melanogaster
+    accession: AC254620
+    length: 325
+    sha256: 81018509b4a91b7c6ed8dd12acc7358b2b95015f019c20b07df5da5b496341c9
+  - gene: CO2_1
+    taxon: Drosophila tanythrix
+    accession: KM252505
+    length: 291
+    sha256: 06f3ffbb21d5f655befcd56a83d2241def842759b48dafda45bcd26cf73831f3
+  - gene: CO2_1
+    taxon: Heliconius pachinus
+    accession: GQ398183
+    length: 288
+    sha256: 75a2f13657c465c52bb64e68bea7a87ee7602a32700e5905a346b6dab7692712
+  - gene: ND1
+    taxon: Drosophila sechellia
+    accession: NC_005780
+    length: 240
+    sha256: e1f30300b75f4ba9468d26bde07f925dad14115818211ea869501f46bc6718ab
+  - gene: ND4
+    taxon: Drosophila tanythrix
+    accession: MK659833
+    length: 241
+    sha256: af6517445caf93924c95d4a8788083b78cf110408f9b3fd8805d502f1b23ada0
+  - gene: ND4
+    taxon: Gryllus bimaculatus
+    accession: PP230540
+    length: 241
+    sha256: 36eba17e1bc0c8eada369c9d50bea98b464803b954d9d1a2701e0a1a89cecab8
+  - gene: 16S_2
+    taxon: Drosophila sechellia
+    accession: NC_005780
+    length: 541
+    sha256: f94072650f22fc0904a71df38975045704212b21a8dcc68a1f48fc3f09d696b5
+  - gene: 16S_2
+    taxon: Drosophila tanythrix
+    accession: BK006341
+    length: 540
+    sha256: 128895aff655a1bc92ad2e338db5fd92da30300a222e9f127e44a38edf45de43
+  - gene: 16S_2
+    taxon: Gryllus bimaculatus
+    accession: PP230540
+    length: 534
+    sha256: 66686929b8d17dfa5e1851e37d6a089bc385a664000b4f50bf5c1431a3c22db4
+  - gene: 16S_2
+    taxon: Heliconius pachinus
+    accession: NC_026564
+    length: 400
+    sha256: c03f6174544b202af37048463ccb21b978e08f3029e35e62b3ec4c0b0fa3b2e6
+  - gene: CO1_2
+    taxon: Drosophila melanogaster
+    accession: PP764096
+    length: 859
+    sha256: 51bf43f54d090b6eabf16c53c6c873ee67be7eb506b52ff8e9f943bd6d117366
+  - gene: CO1_2
+    taxon: Drosophila sechellia
+    accession: NC_005780
+    length: 859
+    sha256: 6531e505b7dd94b425eb8389223029f42599991f0d18b4bb3aff5ff5a8f116d0
+  - gene: CO1_2
+    taxon: Drosophila tanythrix
+    accession: KM252239
+    length: 859
+    sha256: 5061c15a94bd8fce86f9d4bc967bdf7fcd872d0fa5b7435e2e62a616a418b777
+  - gene: CO1_2
+    taxon: Heliconius pachinus
+    accession: KP074829
+    length: 855
+    sha256: 017bd8b318b157bd0a3e287883fddac70be8f2e280202fe418c6251d412e0f82
+  - gene: CO2_2
+    taxon: Drosophila melanogaster
+    accession: MW376578
+    length: 777
+    sha256: 108adaa4993ac45ef33426c64df695f7759b03a64454e0906964efbcc0798edf
+  - gene: CO2_2
+    taxon: Drosophila sechellia
+    accession: NC_005780
+    length: 777
+    sha256: 079a4e8eaaa2d7172dd2542326297449836dd75be16871ae1521389b52ea39c4
+  - gene: CO2_2
+    taxon: Drosophila tanythrix
+    accession: KM252494
+    length: 780
+    sha256: bf44e9b94a9f69e2fff4aca79e082f44f4d53637cfc8dc95243237af0f1ea7cd
+  - gene: NADH
+    taxon: Drosophila sechellia
+    accession: NC_005780
+    length: 550
+    sha256: e582fd811cd01cb9d1561c01423b06de772236495d51b9da13b2740dc734c74b
+  - gene: NADH
+    taxon: Drosophila tanythrix
+    accession: KM252368
+    length: 550
+    sha256: e92d453a2c581c33916f2fea577e9e63260745e23864c3ce1f53b92be785aee8
+  - gene: NADH
+    taxon: Gryllus bimaculatus
+    accession: PP230540
+    length: 544
+    sha256: f01e2075d7ef7a69567543a806fa8efeaf5e13deb7759deefecba8b8c681efe6
+  - gene: Yp2
+    taxon: Drosophila melanogaster
+    accession: AC007928
+    length: 685
+    sha256: f45ac6fdf2210db72f9290e6261e07fa53dfd679256671df00689ef3a437d21a
+  - gene: 18S_1
+    taxon: Drosophila melanogaster
+    accession: NR_133558
+    length: 661
+    sha256: d9560d203e10a1dcbd87c480e049dc7f9b8396a419f38199d186c84c2364766c
+  - gene: 18S_1
+    taxon: Drosophila sechellia
+    accession: XR_005544871
+    length: 661
+    sha256: fe0f828018cff69ec1e4dbbeda17b8cbd70f76c4d2ad13ea727bef55e01bcaa9
+  - gene: 28S
+    taxon: Drosophila melanogaster
+    accession: AY183920
+    length: 829
+    sha256: f878cec63dee7a045f90a49401df23a1482c6816118b83032d581064eefa9348
+  - gene: 28S
+    taxon: Gryllus bimaculatus
+    accession: AK281049
+    length: 636
+    sha256: c34d3a7dda4b364f49af87467f2bf6dfc702788de729e0cb47e9eeb755629197
+  - gene: 18S_2
+    taxon: Drosophila melanogaster
+    accession: NR_133554
+    length: 1977
+    sha256: 35d21bc51d980e58c64ec74ea7fc035b278e1fbeeb55caab5782cd45885268d0
+  - gene: 18S_2
+    taxon: Drosophila sechellia
+    accession: XR_004459988
+    length: 1977
+    sha256: bba4bee9df8dc23cbc2e0d75f5100cd43faf4888d8aa84c0657f8d99d1935599
+  - gene: 18S_2
+    taxon: Drosophila tanythrix
+    accession: XR_006246778
+    length: 1947
+    sha256: a544596cc915356770bc7bb6fc3d428206ac9707ed514fa16584f3f898169991
+  - gene: ITS_1
+    taxon: Drosophila tanythrix
+    accession: K01281
+    length: 774
+    sha256: a5fe48d290dc4272bf46c6f3ad92b919eeb0c72363cacd17de6a047407906134
+  - gene: CytB
+    taxon: Gryllus bimaculatus
+    accession: PP230540
+    length: 403
+    sha256: 7d75f8650e104c236b595fc0b12a5a8a74976b7aa3268fd0b5f5715bfff38f81
+  - gene: CytB
+    taxon: Heliconius pachinus
+    accession: NC_024741
+    length: 403
+    sha256: f7944f2a336182246d3bbdffcf7d5b92912818cd61182a1de13d5fa745b92ec3
+  - gene: ND5
+    taxon: Heliconius pachinus
+    accession: NC_024864
+    length: 301
+    sha256: c09cf847c492455f94558517a37d8a454e2eeecaf438d6a9fc5c8a51d1a761d5
+  - gene: ITS_2
+    taxon: Gryllus bimaculatus
+    accession: AK281180
+    length: 978
+    sha256: 23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c
+machine:
+  os: Linux 7.0.0-30-generic
+  cpu_model: x86_64
+  cpu_cores: 12
+  total_ram_gb: 62.6
+metric_availability:
+  stage_times: sharkmer_stats
+  allocator_peak_bytes: sharkmer_peak_alloc
+  peak_rss_bytes: gnu_time_linux_or_null
+  temp_disk_peak_bytes: null
+  temp_disk_final_bytes: invocation_directory_scan
+  os_page_cache_state: null
+samples:
+- accession: SRR31887760
+  taxon: Drosophila melanogaster
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 61.23430067603476
+    success: true
+    genes:
+    - gene: 12S
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded; path limit reached; all enumerated paths
+        had unresolved repeat length
+    - gene: 16S_1
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: CO1_1
+      recovered: true
+      length: 352
+      n_products: 1
+      kmer_count_median: 38
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 352
+        sha256: 4421359eb30276c48af559081691c91a74d132155b4192c72cd44eac885f4af4
+        kmer_count_median: 38
+        reference_match:
+          status: insufficient_alignment
+          expected_gene: CO1_1
+          expected_taxon: Drosophila melanogaster
+          matched_gene: CO1_1
+          matched_taxon: Drosophila tanythrix
+          matched_accession: OM754561
+          pct_identity: 85.47
+          align_length: 351
+          query_length: 352
+          query_coverage_pct: 99.716
+          aligned_fraction: 0.997159
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id001
+          - gene: CO1_1
+            taxon: Drosophila tanythrix
+            accession: OM754561
+            align_length: 351
+            pct_identity: 85.47008547008546
+            identity_count: 300
+            bit_score: 366.757
+            query_coverage_pct: 99.7159090909091
+            query_from: 1
+            query_to: 351
+            subject_from: 1
+            subject_to: 351
+          on_target: false
+          thresholds: &id002
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: insufficient_alignment
+        expected_gene: CO1_1
+        expected_taxon: Drosophila melanogaster
+        matched_gene: CO1_1
+        matched_taxon: Drosophila tanythrix
+        matched_accession: OM754561
+        pct_identity: 85.47
+        align_length: 351
+        query_length: 352
+        query_coverage_pct: 99.716
+        aligned_fraction: 0.997159
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id001
+        on_target: false
+        thresholds: *id002
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: CO2_1
+      recovered: true
+      length: 291
+      n_products: 1
+      kmer_count_median: 28
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 291
+        sha256: aaa3bf71efe19ffb6d146638d290833eb4390437b17063b1c494af2461b3bd91
+        kmer_count_median: 28
+        reference_match:
+          status: wrong_gene
+          expected_gene: CO2_1
+          expected_taxon: Drosophila melanogaster
+          matched_gene: CO2_2
+          matched_taxon: Drosophila melanogaster
+          matched_accession: MW376578
+          pct_identity: 100.0
+          align_length: 291
+          query_length: 291
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id003
+          - gene: CO2_2
+            taxon: Drosophila melanogaster
+            accession: MW376578
+            align_length: 291
+            pct_identity: 100.0
+            identity_count: 291
+            bit_score: 538.495
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 291
+            subject_from: 364
+            subject_to: 654
+          - gene: CO2_2
+            taxon: Drosophila sechellia
+            accession: NC 005780
+            align_length: 291
+            pct_identity: 94.50171821305842
+            identity_count: 275
+            bit_score: 449.856
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 291
+            subject_from: 364
+            subject_to: 654
+          - gene: CO2_1
+            taxon: Heliconius pachinus
+            accession: GQ398183
+            align_length: 294
+            pct_identity: 82.31292517006803
+            identity_count: 242
+            bit_score: 246.725
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 291
+            subject_from: 1
+            subject_to: 288
+          on_target: false
+          thresholds: &id004
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: wrong_gene
+        expected_gene: CO2_1
+        expected_taxon: Drosophila melanogaster
+        matched_gene: CO2_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: MW376578
+        pct_identity: 100.0
+        align_length: 291
+        query_length: 291
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id003
+        on_target: false
+        thresholds: *id004
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: 29
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 403
+        sha256: 4e0516151ac3d36705aaa10a2a1f49fc16efa661c4f584a5bcdb174aea119845
+        kmer_count_median: 29
+        reference_match:
+          status: insufficient_alignment
+          expected_gene: CytB
+          expected_taxon: Drosophila melanogaster
+          matched_gene: CytB
+          matched_taxon: Gryllus bimaculatus
+          matched_accession: PP230540
+          pct_identity: 78.431
+          align_length: 408
+          query_length: 403
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id005
+          - gene: CytB
+            taxon: Gryllus bimaculatus
+            accession: PP230540
+            align_length: 408
+            pct_identity: 78.43137254901961
+            identity_count: 320
+            bit_score: 257.805
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 403
+            subject_from: 1
+            subject_to: 403
+          on_target: false
+          thresholds: &id006
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: insufficient_alignment
+        expected_gene: CytB
+        expected_taxon: Drosophila melanogaster
+        matched_gene: CytB
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 78.431
+        align_length: 408
+        query_length: 403
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id005
+        on_target: false
+        thresholds: *id006
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: ND1
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: ND4
+      recovered: true
+      length: 241
+      n_products: 1
+      kmer_count_median: 5
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 241
+        sha256: 473835dfdc90b9dd4a33a9ef45654208d9beae9c20c17a0f5d0c9dad39ec4470
+        kmer_count_median: 5
+        reference_match:
+          status: confirmed_gene_other_taxon
+          expected_gene: ND4
+          expected_taxon: Drosophila melanogaster
+          matched_gene: ND4
+          matched_taxon: Drosophila tanythrix
+          matched_accession: MK659833
+          pct_identity: 92.917
+          align_length: 240
+          query_length: 241
+          query_coverage_pct: 99.585
+          aligned_fraction: 0.995851
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id007
+          - gene: ND4
+            taxon: Drosophila tanythrix
+            accession: MK659833
+            align_length: 240
+            pct_identity: 92.91666666666667
+            identity_count: 223
+            bit_score: 350.137
+            query_coverage_pct: 99.5850622406639
+            query_from: 1
+            query_to: 240
+            subject_from: 1
+            subject_to: 240
+          on_target: false
+          thresholds: &id008
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_gene_other_taxon
+        expected_gene: ND4
+        expected_taxon: Drosophila melanogaster
+        matched_gene: ND4
+        matched_taxon: Drosophila tanythrix
+        matched_accession: MK659833
+        pct_identity: 92.917
+        align_length: 240
+        query_length: 241
+        query_coverage_pct: 99.585
+        aligned_fraction: 0.995851
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id007
+        on_target: false
+        thresholds: *id008
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: 21
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 301
+        sha256: 1b9f14a0dd0b1c865e6521bbd9d2a250e80b1306d77fc3e5f70f7546a714cb85
+        kmer_count_median: 21
+        reference_match:
+          status: no_significant_hit
+          expected_gene: ND5
+          expected_taxon: Drosophila melanogaster
+          matched_gene: null
+          matched_taxon: null
+          matched_accession: null
+          pct_identity: null
+          align_length: null
+          query_length: 301
+          query_coverage_pct: null
+          aligned_fraction: null
+          hsp_count: 0
+          split_alignment: null
+          chimeric_alignment: null
+          alignment_structure_status: no_significant_alignment
+          alignment_evidence: null
+          on_target: false
+          thresholds: &id009
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: no_significant_hit
+        expected_gene: ND5
+        expected_taxon: Drosophila melanogaster
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        query_length: 301
+        query_coverage_pct: null
+        aligned_fraction: null
+        hsp_count: 0
+        split_alignment: null
+        chimeric_alignment: null
+        alignment_structure_status: no_significant_alignment
+        alignment_evidence: null
+        on_target: false
+        thresholds: *id009
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: 16S_2
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded; DFS state limit reached; all enumerated
+        paths had unresolved repeat length
+    - gene: CO1_2
+      recovered: true
+      length: 859
+      n_products: 1
+      kmer_count_median: 32
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 859
+        sha256: 51bf43f54d090b6eabf16c53c6c873ee67be7eb506b52ff8e9f943bd6d117366
+        kmer_count_median: 32
+        reference_match:
+          status: confirmed_product
+          expected_gene: CO1_2
+          expected_taxon: Drosophila melanogaster
+          matched_gene: CO1_2
+          matched_taxon: Drosophila melanogaster
+          matched_accession: PP764096
+          pct_identity: 100.0
+          align_length: 859
+          query_length: 859
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id010
+          - gene: CO1_2
+            taxon: Drosophila melanogaster
+            accession: PP764096
+            align_length: 859
+            pct_identity: 100.0
+            identity_count: 859
+            bit_score: 1587.39
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 859
+            subject_from: 1
+            subject_to: 859
+          - gene: CO1_2
+            taxon: Drosophila sechellia
+            accession: NC 005780
+            align_length: 859
+            pct_identity: 95.80908032596042
+            identity_count: 823
+            bit_score: 1387.95
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 859
+            subject_from: 1
+            subject_to: 859
+          - gene: CO1_2
+            taxon: Drosophila tanythrix
+            accession: KM252239
+            align_length: 859
+            pct_identity: 90.22118742724098
+            identity_count: 775
+            bit_score: 1122.04
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 859
+            subject_from: 1
+            subject_to: 859
+          - gene: CO1_2
+            taxon: Heliconius pachinus
+            accession: KP074829
+            align_length: 687
+            pct_identity: 86.17176128093159
+            identity_count: 592
+            bit_score: 743.473
+            query_coverage_pct: 79.976717112922
+            query_from: 1
+            query_to: 687
+            subject_from: 1
+            subject_to: 687
+          on_target: true
+          thresholds: &id011
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: CO1_2
+        expected_taxon: Drosophila melanogaster
+        matched_gene: CO1_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: PP764096
+        pct_identity: 100.0
+        align_length: 859
+        query_length: 859
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id010
+        on_target: true
+        thresholds: *id011
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: CO2_2
+      recovered: true
+      length: 777
+      n_products: 1
+      kmer_count_median: 24
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 777
+        sha256: 108adaa4993ac45ef33426c64df695f7759b03a64454e0906964efbcc0798edf
+        kmer_count_median: 24
+        reference_match:
+          status: confirmed_product
+          expected_gene: CO2_2
+          expected_taxon: Drosophila melanogaster
+          matched_gene: CO2_2
+          matched_taxon: Drosophila melanogaster
+          matched_accession: MW376578
+          pct_identity: 100.0
+          align_length: 777
+          query_length: 777
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id012
+          - gene: CO2_2
+            taxon: Drosophila melanogaster
+            accession: MW376578
+            align_length: 777
+            pct_identity: 100.0
+            identity_count: 777
+            bit_score: 1435.97
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 777
+            subject_from: 1
+            subject_to: 777
+          - gene: CO2_2
+            taxon: Drosophila sechellia
+            accession: NC 005780
+            align_length: 777
+            pct_identity: 95.10939510939511
+            identity_count: 739
+            bit_score: 1225.45
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 777
+            subject_from: 1
+            subject_to: 777
+          - gene: CO2_2
+            taxon: Drosophila tanythrix
+            accession: KM252494
+            align_length: 781
+            pct_identity: 89.11651728553137
+            identity_count: 696
+            bit_score: 966.918
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 777
+            subject_from: 1
+            subject_to: 780
+          - gene: CO2_1
+            taxon: Heliconius pachinus
+            accession: GQ398183
+            align_length: 294
+            pct_identity: 82.31292517006803
+            identity_count: 242
+            bit_score: 246.725
+            query_coverage_pct: 37.45173745173745
+            query_from: 364
+            query_to: 654
+            subject_from: 1
+            subject_to: 288
+          on_target: true
+          thresholds: &id013
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: CO2_2
+        expected_taxon: Drosophila melanogaster
+        matched_gene: CO2_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: MW376578
+        pct_identity: 100.0
+        align_length: 777
+        query_length: 777
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id012
+        on_target: true
+        thresholds: *id013
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: NADH
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: Fz4
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: Gpdh
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded; DFS state limit reached while repeat length
+        remained unresolved
+    - gene: Pgi
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded
+    - gene: Yp2
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: 18S_1
+      recovered: true
+      length: 661
+      n_products: 1
+      kmer_count_median: 58
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 661
+        sha256: d9560d203e10a1dcbd87c480e049dc7f9b8396a419f38199d186c84c2364766c
+        kmer_count_median: 58
+        reference_match:
+          status: ambiguous_gene
+          expected_gene: 18S_1
+          expected_taxon: Drosophila melanogaster
+          matched_gene: 18S_2
+          matched_taxon: Drosophila melanogaster
+          matched_accession: NR 133554
+          pct_identity: 100.0
+          align_length: 661
+          query_length: 661
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id014
+          - gene: 18S_2
+            taxon: Drosophila melanogaster
+            accession: NR 133554
+            align_length: 661
+            pct_identity: 100.0
+            identity_count: 661
+            bit_score: 1221.76
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 661
+            subject_from: 568
+            subject_to: 1228
+          - gene: 18S_1
+            taxon: Drosophila melanogaster
+            accession: NR 133558
+            align_length: 661
+            pct_identity: 100.0
+            identity_count: 661
+            bit_score: 1221.76
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 661
+            subject_from: 1
+            subject_to: 661
+          - gene: 18S_2
+            taxon: Drosophila sechellia
+            accession: XR 004459988
+            align_length: 661
+            pct_identity: 99.84871406959152
+            identity_count: 660
+            bit_score: 1216.22
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 661
+            subject_from: 568
+            subject_to: 1228
+          - gene: 18S_1
+            taxon: Drosophila sechellia
+            accession: XR 005544871
+            align_length: 661
+            pct_identity: 99.84871406959152
+            identity_count: 660
+            bit_score: 1216.22
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 661
+            subject_from: 1
+            subject_to: 661
+          - gene: 18S_2
+            taxon: Drosophila tanythrix
+            accession: XR 006246778
+            align_length: 661
+            pct_identity: 98.94099848714069
+            identity_count: 654
+            bit_score: 1181.13
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 661
+            subject_from: 568
+            subject_to: 1227
+          on_target: false
+          thresholds: &id015
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: ambiguous_gene
+        expected_gene: 18S_1
+        expected_taxon: Drosophila melanogaster
+        matched_gene: 18S_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: NR 133554
+        pct_identity: 100.0
+        align_length: 661
+        query_length: 661
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id014
+        on_target: false
+        thresholds: *id015
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: 28S
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded
+    - gene: 18S_2
+      recovered: true
+      length: 1977
+      n_products: 1
+      kmer_count_median: 63
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 1977
+        sha256: 35d21bc51d980e58c64ec74ea7fc035b278e1fbeeb55caab5782cd45885268d0
+        kmer_count_median: 63
+        reference_match:
+          status: confirmed_product
+          expected_gene: 18S_2
+          expected_taxon: Drosophila melanogaster
+          matched_gene: 18S_2
+          matched_taxon: Drosophila melanogaster
+          matched_accession: NR 133554
+          pct_identity: 100.0
+          align_length: 1977
+          query_length: 1977
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id016
+          - gene: 18S_2
+            taxon: Drosophila melanogaster
+            accession: NR 133554
+            align_length: 1977
+            pct_identity: 100.0
+            identity_count: 1977
+            bit_score: 3651.95
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 1977
+            subject_from: 1
+            subject_to: 1977
+          - gene: 18S_2
+            taxon: Drosophila sechellia
+            accession: XR 004459988
+            align_length: 1977
+            pct_identity: 99.84825493171472
+            identity_count: 1974
+            bit_score: 3635.33
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 1977
+            subject_from: 1
+            subject_to: 1977
+          - gene: 18S_2
+            taxon: Drosophila tanythrix
+            accession: XR 006246778
+            align_length: 1830
+            pct_identity: 98.7431693989071
+            identity_count: 1807
+            bit_score: 3251.22
+            query_coverage_pct: 92.56449165402124
+            query_from: 1
+            query_to: 1830
+            subject_from: 1
+            subject_to: 1829
+          - gene: 18S_1
+            taxon: Drosophila melanogaster
+            accession: NR 133558
+            align_length: 661
+            pct_identity: 100.0
+            identity_count: 661
+            bit_score: 1221.76
+            query_coverage_pct: 33.43449671219019
+            query_from: 568
+            query_to: 1228
+            subject_from: 1
+            subject_to: 661
+          - gene: 18S_1
+            taxon: Drosophila sechellia
+            accession: XR 005544871
+            align_length: 661
+            pct_identity: 99.84871406959152
+            identity_count: 660
+            bit_score: 1216.22
+            query_coverage_pct: 33.43449671219019
+            query_from: 568
+            query_to: 1228
+            subject_from: 1
+            subject_to: 661
+          - gene: ITS_1
+            taxon: Drosophila tanythrix
+            accession: K01281
+            align_length: 155
+            pct_identity: 98.70967741935483
+            identity_count: 153
+            bit_score: 276.271
+            query_coverage_pct: 7.8401618614061706
+            query_from: 1823
+            query_to: 1977
+            subject_from: 1
+            subject_to: 155
+          on_target: true
+          thresholds: &id017
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: 18S_2
+        expected_taxon: Drosophila melanogaster
+        matched_gene: 18S_2
+        matched_taxon: Drosophila melanogaster
+        matched_accession: NR 133554
+        pct_identity: 100.0
+        align_length: 1977
+        query_length: 1977
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id016
+        on_target: true
+        thresholds: *id017
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: ITS_1
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: ITS_2
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    command:
+    - /home/claude/repos/sharkmer/target/release/sharkmer
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR31887760_1000k_6f3b9921cc67/
+    - -s
+    - insecta_SRR31887760_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/insecta.yaml
+    - --ena
+    - SRR31887760
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    actual_parameters: *id018
+    input:
+      source: ena
+      accession: SRR31887760
+      subset:
+        method: first_reads
+        max_reads: 1000000
+      cache_mode: warm
+      cache_state_before:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      cache_state_after:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      observed_n_reads: 1000000
+      observed_n_bases: 101000000
+      observed_source_plan: &id019
+        kind: cached_remote
+        inputs:
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        paired: false
+        max_reads: 1000000
+      selected_cache_entries:
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+    logs:
+      stdout: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR31887760_1000k_6f3b9921cc67/insecta_SRR31887760_1000k.stdout.log
+      stderr: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR31887760_1000k_6f3b9921cc67/insecta_SRR31887760_1000k.stderr.log
+      resource_usage: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR31887760_1000k_6f3b9921cc67/resource_usage.txt
+    failure: null
+    peak_rss_bytes: 2289582080
+    peak_rss_provenance: proc_time_linux
+    temp_disk_final_bytes: 17234
+    known_truth: null
+    run_stats:
+      sharkmer_version: 3.2.0-dev
+      command: /home/claude/repos/sharkmer/target/release/sharkmer -k 19 -t 2 --max-reads
+        1000000 -o /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR31887760_1000k_6f3b9921cc67/
+        -s insecta_SRR31887760_1000k --pcr-panel-file /home/claude/repos/sharkmer/panels/insecta.yaml
+        --ena SRR31887760 --cache-dir /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+      sample: insecta_SRR31887760_1000k
+      run_id: 18d3ac82bc33d6c1-e42df-c5306ef6b55f3daf
+      output_manifest: insecta_SRR31887760_1000k.manifest.yaml
+      run_status: complete
+      input_source: *id019
+      kmer_length: 19
+      chunks: 0
+      n_reads_read: 1000000
+      n_bases_read: 101000000
+      n_subreads_ingested: 1000000
+      n_bases_ingested: 100979233
+      n_kmers: 82921365
+      count_table_capacity: 58720256
+      peak_memory_bytes: 2281798418
+      stage_timings:
+        read_ingest_s: 14.003479176999999
+        count_finalize_s: 6.834586575
+        read_threading_input_s: null
+        pcr_s: 40.26179577
+        pipeline_total_s: 61.111804848
+      pcr_results:
+      - gene_name: insecta_12S
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; path limit reached; all enumerated paths
+          had unresolved repeat length
+      - gene_name: insecta_16S_1
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_CO1_1
+        status: success
+        n_products: 1
+        product_lengths:
+        - 352
+        output_file: insecta_SRR31887760_1000k_insecta_CO1_1.fasta
+      - gene_name: insecta_CO2_1
+        status: success
+        n_products: 1
+        product_lengths:
+        - 291
+        output_file: insecta_SRR31887760_1000k_insecta_CO2_1.fasta
+      - gene_name: insecta_CytB
+        status: success
+        n_products: 1
+        product_lengths:
+        - 403
+        output_file: insecta_SRR31887760_1000k_insecta_CytB.fasta
+      - gene_name: insecta_ND1
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_ND4
+        status: success
+        n_products: 1
+        product_lengths:
+        - 241
+        output_file: insecta_SRR31887760_1000k_insecta_ND4.fasta
+      - gene_name: insecta_ND5
+        status: success
+        n_products: 1
+        product_lengths:
+        - 301
+        output_file: insecta_SRR31887760_1000k_insecta_ND5.fasta
+      - gene_name: insecta_16S_2
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; DFS state limit reached; all enumerated
+          paths had unresolved repeat length
+      - gene_name: insecta_CO1_2
+        status: success
+        n_products: 1
+        product_lengths:
+        - 859
+        output_file: insecta_SRR31887760_1000k_insecta_CO1_2.fasta
+      - gene_name: insecta_CO2_2
+        status: success
+        n_products: 1
+        product_lengths:
+        - 777
+        output_file: insecta_SRR31887760_1000k_insecta_CO2_2.fasta
+      - gene_name: insecta_NADH
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_Fz4
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_Gpdh
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; DFS state limit reached while repeat
+          length remained unresolved
+      - gene_name: insecta_Pgi
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded
+      - gene_name: insecta_Yp2
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_18S_1
+        status: success
+        n_products: 1
+        product_lengths:
+        - 661
+        output_file: insecta_SRR31887760_1000k_insecta_18S_1.fasta
+      - gene_name: insecta_28S
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded
+      - gene_name: insecta_18S_2
+        status: success
+        n_products: 1
+        product_lengths:
+        - 1977
+        output_file: insecta_SRR31887760_1000k_insecta_18S_2.fasta
+      - gene_name: insecta_ITS_1
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_ITS_2
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+- accession: SRR1057608
+  taxon: Heliconius pachinus
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 45.228631692007184
+    success: true
+    genes:
+    - gene: 12S
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: 16S_1
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: CO1_1
+      recovered: true
+      length: 304
+      n_products: 1
+      kmer_count_median: 104
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 304
+        sha256: 8ba0cf4d35377c7ebbb54000f07053c99d16008cf3e79cb45d8441da95ec1f2f
+        kmer_count_median: 104
+        reference_match:
+          status: confirmed_product
+          expected_gene: CO1_1
+          expected_taxon: Heliconius pachinus
+          matched_gene: CO1_1
+          matched_taxon: Heliconius pachinus
+          matched_accession: KJ174812
+          pct_identity: 100.0
+          align_length: 304
+          query_length: 304
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id020
+          - gene: CO1_1
+            taxon: Heliconius pachinus
+            accession: KJ174812
+            align_length: 304
+            pct_identity: 100.0
+            identity_count: 304
+            bit_score: 562.502
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 304
+            subject_from: 1
+            subject_to: 304
+          - gene: CO1_1
+            taxon: Gryllus bimaculatus
+            accession: PP230540
+            align_length: 309
+            pct_identity: 82.20064724919094
+            identity_count: 254
+            bit_score: 257.805
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 304
+            subject_from: 1
+            subject_to: 304
+          on_target: true
+          thresholds: &id021
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: CO1_1
+        expected_taxon: Heliconius pachinus
+        matched_gene: CO1_1
+        matched_taxon: Heliconius pachinus
+        matched_accession: KJ174812
+        pct_identity: 100.0
+        align_length: 304
+        query_length: 304
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id020
+        on_target: true
+        thresholds: *id021
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: CO2_1
+      recovered: true
+      length: 288
+      n_products: 1
+      kmer_count_median: 109
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 288
+        sha256: 75a2f13657c465c52bb64e68bea7a87ee7602a32700e5905a346b6dab7692712
+        kmer_count_median: 109
+        reference_match:
+          status: confirmed_product
+          expected_gene: CO2_1
+          expected_taxon: Heliconius pachinus
+          matched_gene: CO2_1
+          matched_taxon: Heliconius pachinus
+          matched_accession: GQ398183
+          pct_identity: 100.0
+          align_length: 288
+          query_length: 288
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id022
+          - gene: CO2_1
+            taxon: Heliconius pachinus
+            accession: GQ398183
+            align_length: 288
+            pct_identity: 100.0
+            identity_count: 288
+            bit_score: 532.955
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 288
+            subject_from: 1
+            subject_to: 288
+          - gene: CO2_2
+            taxon: Drosophila melanogaster
+            accession: MW376578
+            align_length: 294
+            pct_identity: 82.31292517006803
+            identity_count: 242
+            bit_score: 246.725
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 288
+            subject_from: 364
+            subject_to: 654
+          on_target: true
+          thresholds: &id023
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: CO2_1
+        expected_taxon: Heliconius pachinus
+        matched_gene: CO2_1
+        matched_taxon: Heliconius pachinus
+        matched_accession: GQ398183
+        pct_identity: 100.0
+        align_length: 288
+        query_length: 288
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id022
+        on_target: true
+        thresholds: *id023
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: 100
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 403
+        sha256: f7944f2a336182246d3bbdffcf7d5b92912818cd61182a1de13d5fa745b92ec3
+        kmer_count_median: 100
+        reference_match:
+          status: confirmed_product
+          expected_gene: CytB
+          expected_taxon: Heliconius pachinus
+          matched_gene: CytB
+          matched_taxon: Heliconius pachinus
+          matched_accession: NC 024741
+          pct_identity: 100.0
+          align_length: 403
+          query_length: 403
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id024
+          - gene: CytB
+            taxon: Heliconius pachinus
+            accession: NC 024741
+            align_length: 403
+            pct_identity: 100.0
+            identity_count: 403
+            bit_score: 745.32
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 403
+            subject_from: 1
+            subject_to: 403
+          on_target: true
+          thresholds: &id025
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: CytB
+        expected_taxon: Heliconius pachinus
+        matched_gene: CytB
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024741
+        pct_identity: 100.0
+        align_length: 403
+        query_length: 403
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id024
+        on_target: true
+        thresholds: *id025
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: ND1
+      recovered: true
+      length: 240
+      n_products: 1
+      kmer_count_median: 15
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 240
+        sha256: a38abaa51a1d659ed1d5ba84d99748b57a9244bc3fd68444f8ca013972a7d72c
+        kmer_count_median: 15
+        reference_match:
+          status: no_significant_hit
+          expected_gene: ND1
+          expected_taxon: Heliconius pachinus
+          matched_gene: null
+          matched_taxon: null
+          matched_accession: null
+          pct_identity: null
+          align_length: null
+          query_length: 240
+          query_coverage_pct: null
+          aligned_fraction: null
+          hsp_count: 0
+          split_alignment: null
+          chimeric_alignment: null
+          alignment_structure_status: no_significant_alignment
+          alignment_evidence: null
+          on_target: false
+          thresholds: &id026
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: no_significant_hit
+        expected_gene: ND1
+        expected_taxon: Heliconius pachinus
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        query_length: 240
+        query_coverage_pct: null
+        aligned_fraction: null
+        hsp_count: 0
+        split_alignment: null
+        chimeric_alignment: null
+        alignment_structure_status: no_significant_alignment
+        alignment_evidence: null
+        on_target: false
+        thresholds: *id026
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: ND4
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded; path limit reached; all enumerated paths
+        had unresolved repeat length
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: 66
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 301
+        sha256: c09cf847c492455f94558517a37d8a454e2eeecaf438d6a9fc5c8a51d1a761d5
+        kmer_count_median: 66
+        reference_match:
+          status: confirmed_product
+          expected_gene: ND5
+          expected_taxon: Heliconius pachinus
+          matched_gene: ND5
+          matched_taxon: Heliconius pachinus
+          matched_accession: NC 024864
+          pct_identity: 100.0
+          align_length: 301
+          query_length: 301
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id027
+          - gene: ND5
+            taxon: Heliconius pachinus
+            accession: NC 024864
+            align_length: 301
+            pct_identity: 100.0
+            identity_count: 301
+            bit_score: 556.962
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 301
+            subject_from: 1
+            subject_to: 301
+          on_target: true
+          thresholds: &id028
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: ND5
+        expected_taxon: Heliconius pachinus
+        matched_gene: ND5
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024864
+        pct_identity: 100.0
+        align_length: 301
+        query_length: 301
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id027
+        on_target: true
+        thresholds: *id028
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: 16S_2
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: CO1_2
+      recovered: true
+      length: 855
+      n_products: 1
+      kmer_count_median: 134
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 855
+        sha256: 017bd8b318b157bd0a3e287883fddac70be8f2e280202fe418c6251d412e0f82
+        kmer_count_median: 134
+        reference_match:
+          status: confirmed_product
+          expected_gene: CO1_2
+          expected_taxon: Heliconius pachinus
+          matched_gene: CO1_2
+          matched_taxon: Heliconius pachinus
+          matched_accession: KP074829
+          pct_identity: 100.0
+          align_length: 855
+          query_length: 855
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id029
+          - gene: CO1_2
+            taxon: Heliconius pachinus
+            accession: KP074829
+            align_length: 855
+            pct_identity: 100.0
+            identity_count: 855
+            bit_score: 1580.01
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 855
+            subject_from: 1
+            subject_to: 855
+          - gene: CO1_2
+            taxon: Drosophila sechellia
+            accession: NC 005780
+            align_length: 687
+            pct_identity: 86.31732168850073
+            identity_count: 593
+            bit_score: 749.013
+            query_coverage_pct: 80.35087719298245
+            query_from: 1
+            query_to: 687
+            subject_from: 1
+            subject_to: 687
+          - gene: CO1_2
+            taxon: Drosophila melanogaster
+            accession: PP764096
+            align_length: 687
+            pct_identity: 86.17176128093159
+            identity_count: 592
+            bit_score: 743.473
+            query_coverage_pct: 80.35087719298245
+            query_from: 1
+            query_to: 687
+            subject_from: 1
+            subject_to: 687
+          - gene: CO1_2
+            taxon: Drosophila tanythrix
+            accession: KM252239
+            align_length: 867
+            pct_identity: 81.199538638985
+            identity_count: 704
+            bit_score: 680.687
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 855
+            subject_from: 1
+            subject_to: 859
+          on_target: true
+          thresholds: &id030
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: CO1_2
+        expected_taxon: Heliconius pachinus
+        matched_gene: CO1_2
+        matched_taxon: Heliconius pachinus
+        matched_accession: KP074829
+        pct_identity: 100.0
+        align_length: 855
+        query_length: 855
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id029
+        on_target: true
+        thresholds: *id030
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: CO2_2
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: NADH
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: Fz4
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: Gpdh
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: no path found
+    - gene: Pgi
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: Yp2
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: no path found
+    - gene: 18S_1
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: 28S
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: 18S_2
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: ITS_1
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: no path found
+    - gene: ITS_2
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: no path found
+    command:
+    - /home/claude/repos/sharkmer/target/release/sharkmer
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR1057608_1000k_d9a295b64740/
+    - -s
+    - insecta_SRR1057608_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/insecta.yaml
+    - --ena
+    - SRR1057608
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    actual_parameters: *id031
+    input:
+      source: ena
+      accession: SRR1057608
+      subset:
+        method: first_reads
+        max_reads: 1000000
+      cache_mode: warm
+      cache_state_before:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      cache_state_after:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      observed_n_reads: 1000000
+      observed_n_bases: 89994628
+      observed_source_plan: &id032
+        kind: cached_remote
+        inputs:
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        paired: false
+        max_reads: 1000000
+      selected_cache_entries:
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+    logs:
+      stdout: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR1057608_1000k_d9a295b64740/insecta_SRR1057608_1000k.stdout.log
+      stderr: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR1057608_1000k_d9a295b64740/insecta_SRR1057608_1000k.stderr.log
+      resource_usage: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR1057608_1000k_d9a295b64740/resource_usage.txt
+    failure: null
+    peak_rss_bytes: 2289262592
+    peak_rss_provenance: proc_time_linux
+    temp_disk_final_bytes: 12454
+    known_truth: null
+    run_stats:
+      sharkmer_version: 3.2.0-dev
+      command: /home/claude/repos/sharkmer/target/release/sharkmer -k 19 -t 2 --max-reads
+        1000000 -o /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR1057608_1000k_d9a295b64740/
+        -s insecta_SRR1057608_1000k --pcr-panel-file /home/claude/repos/sharkmer/panels/insecta.yaml
+        --ena SRR1057608 --cache-dir /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+      sample: insecta_SRR1057608_1000k
+      run_id: 18d3ac912d525561-e432e-53e616735cfd86b5
+      output_manifest: insecta_SRR1057608_1000k.manifest.yaml
+      run_status: complete
+      input_source: *id032
+      kmer_length: 19
+      chunks: 0
+      n_reads_read: 1000000
+      n_bases_read: 89994628
+      n_subreads_ingested: 1000000
+      n_bases_ingested: 89990682
+      n_kmers: 71966368
+      count_table_capacity: 58720256
+      peak_memory_bytes: 2281798405
+      stage_timings:
+        read_ingest_s: 11.806298679
+        count_finalize_s: 7.030292841
+        read_threading_input_s: null
+        pcr_s: 26.269315545
+        pipeline_total_s: 45.117184052
+      pcr_results:
+      - gene_name: insecta_12S
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_16S_1
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_CO1_1
+        status: success
+        n_products: 1
+        product_lengths:
+        - 304
+        output_file: insecta_SRR1057608_1000k_insecta_CO1_1.fasta
+      - gene_name: insecta_CO2_1
+        status: success
+        n_products: 1
+        product_lengths:
+        - 288
+        output_file: insecta_SRR1057608_1000k_insecta_CO2_1.fasta
+      - gene_name: insecta_CytB
+        status: success
+        n_products: 1
+        product_lengths:
+        - 403
+        output_file: insecta_SRR1057608_1000k_insecta_CytB.fasta
+      - gene_name: insecta_ND1
+        status: success
+        n_products: 1
+        product_lengths:
+        - 240
+        output_file: insecta_SRR1057608_1000k_insecta_ND1.fasta
+      - gene_name: insecta_ND4
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; path limit reached; all enumerated paths
+          had unresolved repeat length
+      - gene_name: insecta_ND5
+        status: success
+        n_products: 1
+        product_lengths:
+        - 301
+        output_file: insecta_SRR1057608_1000k_insecta_ND5.fasta
+      - gene_name: insecta_16S_2
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_CO1_2
+        status: success
+        n_products: 1
+        product_lengths:
+        - 855
+        output_file: insecta_SRR1057608_1000k_insecta_CO1_2.fasta
+      - gene_name: insecta_CO2_2
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_NADH
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_Fz4
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_Gpdh
+        status: fail
+        n_products: 0
+        failure_reason: no path found
+      - gene_name: insecta_Pgi
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_Yp2
+        status: fail
+        n_products: 0
+        failure_reason: no path found
+      - gene_name: insecta_18S_1
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_28S
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_18S_2
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_ITS_1
+        status: fail
+        n_products: 0
+        failure_reason: no path found
+      - gene_name: insecta_ITS_2
+        status: fail
+        n_products: 0
+        failure_reason: no path found
+- accession: SRR27962769
+  taxon: Gryllus bimaculatus
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 99.55063691595569
+    success: true
+    genes:
+    - gene: 12S
+      recovered: true
+      length: 423
+      n_products: 1
+      kmer_count_median: 39
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 423
+        sha256: 8a88bc972180963c12a31346c26f60c6862fd516b5d6ccc2d120855c8e23d47c
+        kmer_count_median: 39
+        reference_match:
+          status: no_significant_hit
+          expected_gene: 12S
+          expected_taxon: Gryllus bimaculatus
+          matched_gene: null
+          matched_taxon: null
+          matched_accession: null
+          pct_identity: null
+          align_length: null
+          query_length: 423
+          query_coverage_pct: null
+          aligned_fraction: null
+          hsp_count: 0
+          split_alignment: null
+          chimeric_alignment: null
+          alignment_structure_status: no_significant_alignment
+          alignment_evidence: null
+          on_target: false
+          thresholds: &id033
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: no_significant_hit
+        expected_gene: 12S
+        expected_taxon: Gryllus bimaculatus
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        query_length: 423
+        query_coverage_pct: null
+        aligned_fraction: null
+        hsp_count: 0
+        split_alignment: null
+        chimeric_alignment: null
+        alignment_structure_status: no_significant_alignment
+        alignment_evidence: null
+        on_target: false
+        thresholds: *id033
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: 16S_1
+      recovered: true
+      length: 376
+      n_products: 1
+      kmer_count_median: 37
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 376
+        sha256: e5f5129691d3c5b0526cb4322c4e0566420f408d7090cca76a8ad146718b755c
+        kmer_count_median: 37
+        reference_match:
+          status: ambiguous_gene
+          expected_gene: 16S_1
+          expected_taxon: Gryllus bimaculatus
+          matched_gene: 16S_2
+          matched_taxon: Gryllus bimaculatus
+          matched_accession: PP230540
+          pct_identity: 100.0
+          align_length: 376
+          query_length: 376
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id034
+          - gene: 16S_2
+            taxon: Gryllus bimaculatus
+            accession: PP230540
+            align_length: 376
+            pct_identity: 100.0
+            identity_count: 376
+            bit_score: 695.461
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 376
+            subject_from: 76
+            subject_to: 451
+          - gene: 16S_1
+            taxon: Gryllus bimaculatus
+            accession: NC 053546
+            align_length: 376
+            pct_identity: 100.0
+            identity_count: 376
+            bit_score: 695.461
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 376
+            subject_from: 1
+            subject_to: 376
+          - gene: 16S_2
+            taxon: Drosophila tanythrix
+            accession: BK006341
+            align_length: 390
+            pct_identity: 78.46153846153847
+            identity_count: 306
+            bit_score: 231.952
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 376
+            subject_from: 77
+            subject_to: 455
+          - gene: 16S_1
+            taxon: Drosophila tanythrix
+            accession: KM252237
+            align_length: 390
+            pct_identity: 78.46153846153847
+            identity_count: 306
+            bit_score: 231.952
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 376
+            subject_from: 1
+            subject_to: 379
+          - gene: 16S_2
+            taxon: Drosophila sechellia
+            accession: NC 005780
+            align_length: 390
+            pct_identity: 77.43589743589743
+            identity_count: 302
+            bit_score: 211.638
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 376
+            subject_from: 77
+            subject_to: 456
+          - gene: 16S_1
+            taxon: Drosophila sechellia
+            accession: NC 005780
+            align_length: 390
+            pct_identity: 77.43589743589743
+            identity_count: 302
+            bit_score: 211.638
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 376
+            subject_from: 1
+            subject_to: 380
+          on_target: false
+          thresholds: &id035
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: ambiguous_gene
+        expected_gene: 16S_1
+        expected_taxon: Gryllus bimaculatus
+        matched_gene: 16S_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 376
+        query_length: 376
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id034
+        on_target: false
+        thresholds: *id035
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: CO1_1
+      recovered: true
+      length: 352
+      n_products: 1
+      kmer_count_median: null
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 352
+        sha256: e2d376bc5b0f09a954f7dfb6083ff3e4a768a2b687685e18349f66dd25cfc9c0
+        kmer_count_median: null
+        reference_match:
+          status: insufficient_alignment
+          expected_gene: CO1_1
+          expected_taxon: Gryllus bimaculatus
+          matched_gene: CO1_1
+          matched_taxon: Gryllus bimaculatus
+          matched_accession: PP230540
+          pct_identity: 100.0
+          align_length: 304
+          query_length: 352
+          query_coverage_pct: 86.364
+          aligned_fraction: 0.863636
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id036
+          - gene: CO1_1
+            taxon: Gryllus bimaculatus
+            accession: PP230540
+            align_length: 304
+            pct_identity: 100.0
+            identity_count: 304
+            bit_score: 562.502
+            query_coverage_pct: 86.36363636363636
+            query_from: 1
+            query_to: 304
+            subject_from: 1
+            subject_to: 304
+          - gene: CO1_1
+            taxon: Heliconius pachinus
+            accession: KJ174812
+            align_length: 309
+            pct_identity: 82.20064724919094
+            identity_count: 254
+            bit_score: 257.805
+            query_coverage_pct: 86.36363636363636
+            query_from: 1
+            query_to: 304
+            subject_from: 1
+            subject_to: 304
+          on_target: false
+          thresholds: &id037
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: insufficient_alignment
+        expected_gene: CO1_1
+        expected_taxon: Gryllus bimaculatus
+        matched_gene: CO1_1
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 304
+        query_length: 352
+        query_coverage_pct: 86.364
+        aligned_fraction: 0.863636
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id036
+        on_target: false
+        thresholds: *id037
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: CO2_1
+      recovered: true
+      length: 288
+      n_products: 1
+      kmer_count_median: 36
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 288
+        sha256: 660fe7a5eb0e9edf02db0254455941d046e95c11da69b0a7a8de4e28449a054f
+        kmer_count_median: 36
+        reference_match:
+          status: no_significant_hit
+          expected_gene: CO2_1
+          expected_taxon: Gryllus bimaculatus
+          matched_gene: null
+          matched_taxon: null
+          matched_accession: null
+          pct_identity: null
+          align_length: null
+          query_length: 288
+          query_coverage_pct: null
+          aligned_fraction: null
+          hsp_count: 0
+          split_alignment: null
+          chimeric_alignment: null
+          alignment_structure_status: no_significant_alignment
+          alignment_evidence: null
+          on_target: false
+          thresholds: &id038
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: no_significant_hit
+        expected_gene: CO2_1
+        expected_taxon: Gryllus bimaculatus
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        query_length: 288
+        query_coverage_pct: null
+        aligned_fraction: null
+        hsp_count: 0
+        split_alignment: null
+        chimeric_alignment: null
+        alignment_structure_status: no_significant_alignment
+        alignment_evidence: null
+        on_target: false
+        thresholds: *id038
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: CytB
+      recovered: true
+      length: 403
+      n_products: 1
+      kmer_count_median: 39
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 403
+        sha256: 7d75f8650e104c236b595fc0b12a5a8a74976b7aa3268fd0b5f5715bfff38f81
+        kmer_count_median: 39
+        reference_match:
+          status: confirmed_product
+          expected_gene: CytB
+          expected_taxon: Gryllus bimaculatus
+          matched_gene: CytB
+          matched_taxon: Gryllus bimaculatus
+          matched_accession: PP230540
+          pct_identity: 100.0
+          align_length: 403
+          query_length: 403
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id039
+          - gene: CytB
+            taxon: Gryllus bimaculatus
+            accession: PP230540
+            align_length: 403
+            pct_identity: 100.0
+            identity_count: 403
+            bit_score: 745.32
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 403
+            subject_from: 1
+            subject_to: 403
+          on_target: true
+          thresholds: &id040
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: CytB
+        expected_taxon: Gryllus bimaculatus
+        matched_gene: CytB
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 403
+        query_length: 403
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id039
+        on_target: true
+        thresholds: *id040
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: ND1
+      recovered: true
+      length: 240
+      n_products: 1
+      kmer_count_median: null
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 240
+        sha256: 0319b5ee87e454d7fb77932645b8ecda1e09e19293aa61271cf761572c057456
+        kmer_count_median: null
+        reference_match:
+          status: no_significant_hit
+          expected_gene: ND1
+          expected_taxon: Gryllus bimaculatus
+          matched_gene: null
+          matched_taxon: null
+          matched_accession: null
+          pct_identity: null
+          align_length: null
+          query_length: 240
+          query_coverage_pct: null
+          aligned_fraction: null
+          hsp_count: 0
+          split_alignment: null
+          chimeric_alignment: null
+          alignment_structure_status: no_significant_alignment
+          alignment_evidence: null
+          on_target: false
+          thresholds: &id041
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: no_significant_hit
+        expected_gene: ND1
+        expected_taxon: Gryllus bimaculatus
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        query_length: 240
+        query_coverage_pct: null
+        aligned_fraction: null
+        hsp_count: 0
+        split_alignment: null
+        chimeric_alignment: null
+        alignment_structure_status: no_significant_alignment
+        alignment_evidence: null
+        on_target: false
+        thresholds: *id041
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: ND4
+      recovered: true
+      length: 241
+      n_products: 1
+      kmer_count_median: 27
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 241
+        sha256: 36eba17e1bc0c8eada369c9d50bea98b464803b954d9d1a2701e0a1a89cecab8
+        kmer_count_median: 27
+        reference_match:
+          status: confirmed_product
+          expected_gene: ND4
+          expected_taxon: Gryllus bimaculatus
+          matched_gene: ND4
+          matched_taxon: Gryllus bimaculatus
+          matched_accession: PP230540
+          pct_identity: 100.0
+          align_length: 241
+          query_length: 241
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id042
+          - gene: ND4
+            taxon: Gryllus bimaculatus
+            accession: PP230540
+            align_length: 241
+            pct_identity: 100.0
+            identity_count: 241
+            bit_score: 446.163
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 241
+            subject_from: 1
+            subject_to: 241
+          on_target: true
+          thresholds: &id043
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: ND4
+        expected_taxon: Gryllus bimaculatus
+        matched_gene: ND4
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 241
+        query_length: 241
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id042
+        on_target: true
+        thresholds: *id043
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: ND5
+      recovered: true
+      length: 301
+      n_products: 1
+      kmer_count_median: 39
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 301
+        sha256: 9c9cfa9286e4b4c9bc4e981e3e2855c3dda925528ca94bd44ea148799b190d1e
+        kmer_count_median: 39
+        reference_match:
+          status: insufficient_alignment
+          expected_gene: ND5
+          expected_taxon: Gryllus bimaculatus
+          matched_gene: ND5
+          matched_taxon: Heliconius pachinus
+          matched_accession: NC 024864
+          pct_identity: 81.395
+          align_length: 301
+          query_length: 301
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id044
+          - gene: ND5
+            taxon: Heliconius pachinus
+            accession: NC 024864
+            align_length: 301
+            pct_identity: 81.3953488372093
+            identity_count: 245
+            bit_score: 246.725
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 301
+            subject_from: 1
+            subject_to: 301
+          on_target: false
+          thresholds: &id045
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: insufficient_alignment
+        expected_gene: ND5
+        expected_taxon: Gryllus bimaculatus
+        matched_gene: ND5
+        matched_taxon: Heliconius pachinus
+        matched_accession: NC 024864
+        pct_identity: 81.395
+        align_length: 301
+        query_length: 301
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id044
+        on_target: false
+        thresholds: *id045
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: 16S_2
+      recovered: true
+      length: 534
+      n_products: 1
+      kmer_count_median: 38
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 534
+        sha256: 66686929b8d17dfa5e1851e37d6a089bc385a664000b4f50bf5c1431a3c22db4
+        kmer_count_median: 38
+        reference_match:
+          status: confirmed_product
+          expected_gene: 16S_2
+          expected_taxon: Gryllus bimaculatus
+          matched_gene: 16S_2
+          matched_taxon: Gryllus bimaculatus
+          matched_accession: PP230540
+          pct_identity: 100.0
+          align_length: 534
+          query_length: 534
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id046
+          - gene: 16S_2
+            taxon: Gryllus bimaculatus
+            accession: PP230540
+            align_length: 534
+            pct_identity: 100.0
+            identity_count: 534
+            bit_score: 987.231
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 534
+            subject_from: 1
+            subject_to: 534
+          - gene: 16S_1
+            taxon: Gryllus bimaculatus
+            accession: NC 053546
+            align_length: 376
+            pct_identity: 100.0
+            identity_count: 376
+            bit_score: 695.461
+            query_coverage_pct: 70.4119850187266
+            query_from: 76
+            query_to: 451
+            subject_from: 1
+            subject_to: 376
+          - gene: 16S_2
+            taxon: Drosophila tanythrix
+            accession: BK006341
+            align_length: 553
+            pct_identity: 79.56600361663652
+            identity_count: 440
+            bit_score: 366.757
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 534
+            subject_from: 1
+            subject_to: 540
+          - gene: 16S_2
+            taxon: Drosophila sechellia
+            accession: NC 005780
+            align_length: 553
+            pct_identity: 79.38517179023508
+            identity_count: 439
+            bit_score: 361.217
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 534
+            subject_from: 1
+            subject_to: 541
+          - gene: 16S_1
+            taxon: Drosophila tanythrix
+            accession: KM252237
+            align_length: 390
+            pct_identity: 78.46153846153847
+            identity_count: 306
+            bit_score: 231.952
+            query_coverage_pct: 70.4119850187266
+            query_from: 76
+            query_to: 451
+            subject_from: 1
+            subject_to: 379
+          - gene: 16S_1
+            taxon: Drosophila sechellia
+            accession: NC 005780
+            align_length: 390
+            pct_identity: 77.43589743589743
+            identity_count: 302
+            bit_score: 211.638
+            query_coverage_pct: 70.4119850187266
+            query_from: 76
+            query_to: 451
+            subject_from: 1
+            subject_to: 380
+          on_target: true
+          thresholds: &id047
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: 16S_2
+        expected_taxon: Gryllus bimaculatus
+        matched_gene: 16S_2
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 534
+        query_length: 534
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id046
+        on_target: true
+        thresholds: *id047
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: CO1_2
+      recovered: true
+      length: 855
+      n_products: 1
+      kmer_count_median: 38
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 855
+        sha256: f5b2dd13ff4e23f87760a4ab151ea7b267d1c6245a9e0c6effa6f463ccdc16d1
+        kmer_count_median: 38
+        reference_match:
+          status: insufficient_alignment
+          expected_gene: CO1_2
+          expected_taxon: Gryllus bimaculatus
+          matched_gene: CO1_2
+          matched_taxon: Drosophila tanythrix
+          matched_accession: KM252239
+          pct_identity: 82.135
+          align_length: 862
+          query_length: 855
+          query_coverage_pct: 99.766
+          aligned_fraction: 0.997661
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id048
+          - gene: CO1_2
+            taxon: Drosophila tanythrix
+            accession: KM252239
+            align_length: 862
+            pct_identity: 82.13457076566125
+            identity_count: 708
+            bit_score: 726.854
+            query_coverage_pct: 99.76608187134502
+            query_from: 1
+            query_to: 853
+            subject_from: 1
+            subject_to: 857
+          on_target: false
+          thresholds: &id049
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: insufficient_alignment
+        expected_gene: CO1_2
+        expected_taxon: Gryllus bimaculatus
+        matched_gene: CO1_2
+        matched_taxon: Drosophila tanythrix
+        matched_accession: KM252239
+        pct_identity: 82.135
+        align_length: 862
+        query_length: 855
+        query_coverage_pct: 99.766
+        aligned_fraction: 0.997661
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id048
+        on_target: false
+        thresholds: *id049
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: CO2_2
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded; DFS state limit reached while repeat length
+        remained unresolved
+    - gene: NADH
+      recovered: true
+      length: 544
+      n_products: 1
+      kmer_count_median: 37
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 544
+        sha256: f01e2075d7ef7a69567543a806fa8efeaf5e13deb7759deefecba8b8c681efe6
+        kmer_count_median: 37
+        reference_match:
+          status: confirmed_product
+          expected_gene: NADH
+          expected_taxon: Gryllus bimaculatus
+          matched_gene: NADH
+          matched_taxon: Gryllus bimaculatus
+          matched_accession: PP230540
+          pct_identity: 100.0
+          align_length: 544
+          query_length: 544
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id050
+          - gene: NADH
+            taxon: Gryllus bimaculatus
+            accession: PP230540
+            align_length: 544
+            pct_identity: 100.0
+            identity_count: 544
+            bit_score: 1005.7
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 544
+            subject_from: 1
+            subject_to: 544
+          on_target: true
+          thresholds: &id051
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: NADH
+        expected_taxon: Gryllus bimaculatus
+        matched_gene: NADH
+        matched_taxon: Gryllus bimaculatus
+        matched_accession: PP230540
+        pct_identity: 100.0
+        align_length: 544
+        query_length: 544
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id050
+        on_target: true
+        thresholds: *id051
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: Fz4
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: Gpdh
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded; DFS state limit reached while repeat length
+        remained unresolved
+    - gene: Pgi
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded
+    - gene: Yp2
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded; path limit reached; all enumerated paths
+        had unresolved repeat length
+    - gene: 18S_1
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded; DFS state limit reached; all enumerated
+        paths had unresolved repeat length
+    - gene: 28S
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: 18S_2
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: ITS_1
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: ITS_2
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded
+    command:
+    - /home/claude/repos/sharkmer/target/release/sharkmer
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR27962769_1000k_8e8a3889e30c/
+    - -s
+    - insecta_SRR27962769_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/insecta.yaml
+    - --ena
+    - SRR27962769
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    actual_parameters: *id052
+    input:
+      source: ena
+      accession: SRR27962769
+      subset:
+        method: first_reads
+        max_reads: 1000000
+      cache_mode: warm
+      cache_state_before:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      cache_state_after:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      observed_n_reads: 1000000
+      observed_n_bases: 150000000
+      observed_source_plan: &id053
+        kind: cached_remote
+        inputs:
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        paired: false
+        max_reads: 1000000
+      selected_cache_entries:
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+    logs:
+      stdout: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR27962769_1000k_8e8a3889e30c/insecta_SRR27962769_1000k.stdout.log
+      stderr: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR27962769_1000k_8e8a3889e30c/insecta_SRR27962769_1000k.stderr.log
+      resource_usage: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR27962769_1000k_8e8a3889e30c/resource_usage.txt
+    failure: null
+    peak_rss_bytes: 4571324416
+    peak_rss_provenance: proc_time_linux
+    temp_disk_final_bytes: 16743
+    known_truth: null
+    run_stats:
+      sharkmer_version: 3.2.0-dev
+      command: /home/claude/repos/sharkmer/target/release/sharkmer -k 19 -t 2 --max-reads
+        1000000 -o /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_insecta_20260909_140757_074624_b292cd0a/insecta_SRR27962769_1000k_8e8a3889e30c/
+        -s insecta_SRR27962769_1000k --pcr-panel-file /home/claude/repos/sharkmer/panels/insecta.yaml
+        --ena SRR27962769 --cache-dir /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+      sample: insecta_SRR27962769_1000k
+      run_id: 18d3ac9bd87547cf-e437f-408c1057f03c8e2a
+      output_manifest: insecta_SRR27962769_1000k.manifest.yaml
+      run_status: complete
+      input_source: *id053
+      kmer_length: 19
+      chunks: 0
+      n_reads_read: 1000000
+      n_bases_read: 150000000
+      n_subreads_ingested: 1000000
+      n_bases_ingested: 149999387
+      n_kmers: 131993167
+      count_table_capacity: 117440512
+      peak_memory_bytes: 4563499794
+      stage_timings:
+        read_ingest_s: 21.302406985
+        count_finalize_s: 13.21182836
+        read_threading_input_s: null
+        pcr_s: 64.811640069
+        pipeline_total_s: 99.337034425
+      pcr_results:
+      - gene_name: insecta_12S
+        status: success
+        n_products: 1
+        product_lengths:
+        - 423
+        output_file: insecta_SRR27962769_1000k_insecta_12S.fasta
+      - gene_name: insecta_16S_1
+        status: success
+        n_products: 1
+        product_lengths:
+        - 376
+        output_file: insecta_SRR27962769_1000k_insecta_16S_1.fasta
+      - gene_name: insecta_CO1_1
+        status: success
+        n_products: 1
+        product_lengths:
+        - 352
+        output_file: insecta_SRR27962769_1000k_insecta_CO1_1.fasta
+      - gene_name: insecta_CO2_1
+        status: success
+        n_products: 1
+        product_lengths:
+        - 288
+        output_file: insecta_SRR27962769_1000k_insecta_CO2_1.fasta
+      - gene_name: insecta_CytB
+        status: success
+        n_products: 1
+        product_lengths:
+        - 403
+        output_file: insecta_SRR27962769_1000k_insecta_CytB.fasta
+      - gene_name: insecta_ND1
+        status: success
+        n_products: 1
+        product_lengths:
+        - 240
+        output_file: insecta_SRR27962769_1000k_insecta_ND1.fasta
+      - gene_name: insecta_ND4
+        status: success
+        n_products: 1
+        product_lengths:
+        - 241
+        output_file: insecta_SRR27962769_1000k_insecta_ND4.fasta
+      - gene_name: insecta_ND5
+        status: success
+        n_products: 1
+        product_lengths:
+        - 301
+        output_file: insecta_SRR27962769_1000k_insecta_ND5.fasta
+      - gene_name: insecta_16S_2
+        status: success
+        n_products: 1
+        product_lengths:
+        - 534
+        output_file: insecta_SRR27962769_1000k_insecta_16S_2.fasta
+      - gene_name: insecta_CO1_2
+        status: success
+        n_products: 1
+        product_lengths:
+        - 855
+        output_file: insecta_SRR27962769_1000k_insecta_CO1_2.fasta
+      - gene_name: insecta_CO2_2
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; DFS state limit reached while repeat
+          length remained unresolved
+      - gene_name: insecta_NADH
+        status: success
+        n_products: 1
+        product_lengths:
+        - 544
+        output_file: insecta_SRR27962769_1000k_insecta_NADH.fasta
+      - gene_name: insecta_Fz4
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_Gpdh
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; DFS state limit reached while repeat
+          length remained unresolved
+      - gene_name: insecta_Pgi
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded
+      - gene_name: insecta_Yp2
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; path limit reached; all enumerated paths
+          had unresolved repeat length
+      - gene_name: insecta_18S_1
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; DFS state limit reached; all enumerated
+          paths had unresolved repeat length
+      - gene_name: insecta_28S
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_18S_2
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_ITS_1
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: insecta_ITS_2
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded

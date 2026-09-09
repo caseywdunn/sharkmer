@@ -308,7 +308,7 @@ Alternatively, with local files (gzipped or uncompressed):
 
 The incremental histogram files in this case will be:
 
-    output/Cordagalma-ordinatum.histo # All the incremental histograms, each in their own column. Suitable for analysis with `sharkmer_viewer.py`.
+    output/Cordagalma-ordinatum.histo # All the incremental histograms, each in their own column. Suitable for analysis with `sharkmer_viewer`.
 
     output/Cordagalma-ordinatum.final.histo # Just the final histogram with all data. Suitable for analysis with genomescope and other tools.
 

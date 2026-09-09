@@ -1,7 +1,9 @@
 # Development plan: scalable, reliable sPCR
 
-Status: v3.2 implementation complete; pre-release validation and user review
-pending. Work follows the 2026-09-08 review of `5a66468` (Sharkmer 3.1.0).
+Status: v3.2 implementation and bounded calibration complete; stopped for
+user review before release. Remaining validation/security gates are explicit
+in [REVIEW_v3.2.md](REVIEW_v3.2.md). Work follows the 2026-09-08 review of
+`5a66468` (Sharkmer 3.1.0).
 Tracking issue: [#152](https://github.com/caseywdunn/sharkmer/issues/152).
 
 This is the active execution plan. [ROADMAP.md](../ROADMAP.md) describes the
@@ -105,6 +107,13 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
 The development package is `3.2.0-dev`, not a published release. Stop before
 merging to `master`, tagging, or publishing. Independent held-out registration
 under #129 remains open; calibration results do not close that gate.
+
+Final reviewed code: `03c0fc6`. Both hash backends pass 213 unit and 22
+integration tests, with 39 Python regressions. All 13 historical samples at a
+one-million-record cap preserve read/kmer totals and all 71 product hashes
+against the repaired warm baseline; both pinned fixture oracles pass. This is
+not the full depth/panel matrix or held-out biological validation. See the
+[review and retained evidence](REVIEW_v3.2.md) before authorizing a release.
 
 Start with the benchmark/provenance issue and independent correctness fixes.
 For homopolymers, v3.2 can conservatively withhold a falsely complete product;

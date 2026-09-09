@@ -1,0 +1,2082 @@
+panel: angiospermae
+panel_version: 1.0.0
+sharkmer_version: 3.2.0-dev
+git_commit: 03c0fc6
+date: '2026-09-09'
+run_id: 20260909_140757_074624_b292cd0a
+parameters:
+  runs:
+  - &id011
+    k: 19
+    threads: 2
+    max_reads: 1000000
+    options:
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_angiospermae_20260909_140757_074624_b292cd0a/angiospermae_SRR25378184_1000k_4cf228e5d028/
+    - -s
+    - angiospermae_SRR25378184_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/angiospermae.yaml
+    - --ena
+    - SRR25378184
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    benchmark_scope: end-to-end
+    graph_dump: false
+    cache_mode: warm
+    effective_panel:
+      path: /home/claude/repos/sharkmer/panels/angiospermae.yaml
+      sha256: b41760aa28d0f0128ae06151fe1c265b50bb3ed612f51734ed3e911b58dda8c0
+  - &id025
+    k: 19
+    threads: 2
+    max_reads: 1000000
+    options:
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_angiospermae_20260909_140757_074624_b292cd0a/angiospermae_ERR14009273_1000k_4c6874495d74/
+    - -s
+    - angiospermae_ERR14009273_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/angiospermae.yaml
+    - --ena
+    - ERR14009273
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    benchmark_scope: end-to-end
+    graph_dump: false
+    cache_mode: warm
+    effective_panel:
+      path: /home/claude/repos/sharkmer/panels/angiospermae.yaml
+      sha256: b41760aa28d0f0128ae06151fe1c265b50bb3ed612f51734ed3e911b58dda8c0
+blast_mode: references
+rustc_version: rustc 1.98.1 (48a229cea 2026-09-01)
+provenance:
+  executable:
+    path: /home/claude/repos/sharkmer/target/release/sharkmer
+    sha256: 387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82
+    size_bytes: 6754904
+    selected_explicitly: false
+    built_for_run: true
+    build_command:
+    - cargo
+    - build
+    - --release
+    - --message-format=json-render-diagnostics
+    build_flags: []
+    build_environment: {}
+    build_profile: release
+    cargo_artifact_features:
+    - ahashmap
+    - default
+    hash_backend: ahashmap
+    workspace_source_observation:
+      revision: 03c0fc62ee0521f85a527b86f78252a60be1500b
+      dirty: false
+      tree_sha256: 86756eb858a152c35a33d7b4c46006533deee6ca448e3a9a1d7e35b7d0e8cf84
+      relationship_to_explicit_binary: built_immediately_before_fingerprint
+    fingerprinted_at: '2026-09-09T14:07:56.972011+00:00'
+  panel:
+    path: /home/claude/repos/sharkmer/panels/angiospermae.yaml
+    sha256: b41760aa28d0f0128ae06151fe1c265b50bb3ed612f51734ed3e911b58dda8c0
+  references:
+  - gene: psbA-trnH
+    taxon: Acer monspessulanum
+    accession: NC_056221
+    length: 508
+    sha256: fba241e53d7da4115ea4edf34b24bd5404b57779c319c206675eb713be2cfd69
+  - gene: psbA-trnH
+    taxon: Liriodendron tulipifera
+    accession: MN990625
+    length: 614
+    sha256: 1ee32d49c0243afcc0df8d5eb87432b4d9be6e599fd6a3167557a1ebfe3976b7
+  - gene: psbA-trnH
+    taxon: Opuntia comonduensis
+    accession: OQ613386
+    length: 432
+    sha256: ea3051b2fbfbaf9bb3629a6a9242576e9f8fc2cee42d04cba51f830633d5b7fa
+  - gene: rpl36-infA-rps8
+    taxon: Liriodendron tulipifera
+    accession: NC_008326
+    length: 552
+    sha256: 9d24409abb93cd61eb5d04b5f191d5d3c8c1c96827b563dbec7135aca1e4bd1b
+  - gene: rpl36-infA-rps8
+    taxon: Opuntia comonduensis
+    accession: NC_083948
+    length: 567
+    sha256: 4aea98575bc8fed5ea5f6b48e3e26b4b1a0940d80f600f6e222ae2e6660fd93e
+  - gene: trnV-atpE
+    taxon: Acer monspessulanum
+    accession: NC_056221
+    length: 983
+    sha256: dc25c187e7595ba487d919c27147899278a5d36dd0d77af6976dbd59fe5d1fde
+  - gene: trnV-atpE
+    taxon: Liriodendron tulipifera
+    accession: NC_008326
+    length: 545
+    sha256: cd916348b5a66b9bce914c576cd7a9ad1fe2085be7e1372b78396c7a24c5cc10
+  - gene: trnC-ycf6
+    taxon: Acer monspessulanum
+    accession: NC_056221
+    length: 593
+    sha256: b97e0ced34ecc6014baf7e8cf4284965a525072dd4597b37204e2190580a16eb
+  - gene: trnC-ycf6
+    taxon: Liriodendron tulipifera
+    accession: NC_008326
+    length: 1099
+    sha256: 02c8786902b1efe94015212a3fceeb59a4e69ed425fabb3d66d81fea1c2fb504
+  - gene: trnC-ycf6
+    taxon: Opuntia comonduensis
+    accession: NC_083948
+    length: 643
+    sha256: 7eb3210a45fb26107c13bf85dceda5c2fae3a697fade8c08a955d4bd3b6ebb80
+  - gene: ycf6-psbM
+    taxon: Acer monspessulanum
+    accession: NC_056221
+    length: 937
+    sha256: 76c47b56a55620125381c7eda339dea236734dc3f3e8337a969d1ffecc909bb7
+  - gene: ycf6-psbM
+    taxon: Liriodendron tulipifera
+    accession: NC_008326
+    length: 927
+    sha256: 318b25d2e6be72f22077182ca86a88eaf9877cc9b26831ec4597ce5ffdcd4cd3
+  - gene: psbM-trnD
+    taxon: Liriodendron tulipifera
+    accession: NC_008326
+    length: 1287
+    sha256: e9898573db0183da6b7f80727476bb72246c560f5de373e9b2586cede1a37dfe
+  - gene: atpB-rbcL
+    taxon: Acer monspessulanum
+    accession: NC_056221
+    length: 812
+    sha256: 3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07
+  - gene: atpB-rbcL
+    taxon: Euphorbia nicaeensis subsp. nicaeensis
+    accession: OR400606
+    length: 821
+    sha256: 44134865445eaad9daaca4ee79d8156b6f1535feb451f8e6fc8d86e5efe62493
+  - gene: trnL-F
+    taxon: Acer monspessulanum
+    accession: NC_049166
+    length: 468
+    sha256: a55158b0b75f58d04b747f7aecf0ee47c47068a31891f9063f43023aa6b4bcef
+  - gene: trnL-F
+    taxon: Liriodendron tulipifera
+    accession: NC_008326
+    length: 434
+    sha256: 8b1eb5da66ff32aff98e9c036e6bd7c5b768604edc00ebfd3af6ddcda95cbdca
+  - gene: trnL-F
+    taxon: Opuntia comonduensis
+    accession: NC_087798
+    length: 455
+    sha256: 04d6d2881c87db38e32e4f0f68de513fdad49c41ff8f734695ec6bf447ec8ced
+  - gene: ITS
+    taxon: Acer monspessulanum
+    accession: MW070149
+    length: 753
+    sha256: ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748
+  - gene: ITS
+    taxon: Euphorbia nicaeensis subsp. nicaeensis
+    accession: LN680643
+    length: 764
+    sha256: 6da8ee115912ada6c089a59bf87bce3f7e0487b9c6c6a9007c69c11bec5df3f3
+  - gene: ITS
+    taxon: Opuntia comonduensis
+    accession: MZ366774
+    length: 687
+    sha256: f2ccba2c48f4e0419594a024506f88c5a5939c733b07850088148568aca4e159
+machine:
+  os: Linux 7.0.0-30-generic
+  cpu_model: x86_64
+  cpu_cores: 12
+  total_ram_gb: 62.6
+metric_availability:
+  stage_times: sharkmer_stats
+  allocator_peak_bytes: sharkmer_peak_alloc
+  peak_rss_bytes: gnu_time_linux_or_null
+  temp_disk_peak_bytes: null
+  temp_disk_final_bytes: invocation_directory_scan
+  os_page_cache_state: null
+samples:
+- accession: SRR25378184
+  taxon: Liriodendron tulipifera
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 63.07123056094861
+    success: true
+    genes:
+    - gene: psbA-trnH
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded; path limit reached; all enumerated paths
+        had unresolved repeat length
+    - gene: rpl36-infA-rps8
+      recovered: true
+      length: 552
+      n_products: 1
+      kmer_count_median: 39
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 552
+        sha256: 9d24409abb93cd61eb5d04b5f191d5d3c8c1c96827b563dbec7135aca1e4bd1b
+        kmer_count_median: 39
+        reference_match:
+          status: confirmed_product
+          expected_gene: rpl36-infA-rps8
+          expected_taxon: Liriodendron tulipifera
+          matched_gene: rpl36-infA-rps8
+          matched_taxon: Liriodendron tulipifera
+          matched_accession: NC 008326
+          pct_identity: 100.0
+          align_length: 552
+          query_length: 552
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id001
+          - gene: rpl36-infA-rps8
+            taxon: Liriodendron tulipifera
+            accession: NC 008326
+            align_length: 552
+            pct_identity: 100.0
+            identity_count: 552
+            bit_score: 1020.47
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 552
+            subject_from: 1
+            subject_to: 552
+          - gene: rpl36-infA-rps8
+            taxon: Opuntia comonduensis
+            accession: NC 083948
+            align_length: 579
+            pct_identity: 78.92918825561313
+            identity_count: 457
+            bit_score: 357.524
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 552
+            subject_from: 1
+            subject_to: 567
+          on_target: true
+          thresholds: &id002
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: rpl36-infA-rps8
+        expected_taxon: Liriodendron tulipifera
+        matched_gene: rpl36-infA-rps8
+        matched_taxon: Liriodendron tulipifera
+        matched_accession: NC 008326
+        pct_identity: 100.0
+        align_length: 552
+        query_length: 552
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id001
+        on_target: true
+        thresholds: *id002
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: trnK-rps16
+      recovered: true
+      length: 657
+      n_products: 1
+      kmer_count_median: 38
+      evaluation_status: recovered
+      reference_status: no_reference
+      products:
+      - product_index: 0
+        length: 657
+        sha256: 767857d34bed29816c88abdcf073e69f4f30dc9dd52f5621228676249cc84d8e
+        kmer_count_median: 38
+        reference_match:
+          status: no_reference
+          expected_gene: trnK-rps16
+          expected_taxon: Liriodendron tulipifera
+          matched_gene: null
+          matched_taxon: null
+          matched_accession: null
+          pct_identity: null
+          align_length: null
+          query_length: null
+          query_coverage_pct: null
+          aligned_fraction: null
+          hsp_count: 0
+          split_alignment: null
+          chimeric_alignment: null
+          alignment_structure_status: not_evaluated
+          alignment_evidence: null
+          on_target: false
+          thresholds: null
+          error: null
+      reference_match:
+        status: no_reference
+        expected_gene: trnK-rps16
+        expected_taxon: Liriodendron tulipifera
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        query_length: null
+        query_coverage_pct: null
+        aligned_fraction: null
+        hsp_count: 0
+        split_alignment: null
+        chimeric_alignment: null
+        alignment_structure_status: not_evaluated
+        alignment_evidence: null
+        on_target: false
+        thresholds: null
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: trnV-atpE
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded; path limit reached; all enumerated paths
+        had unresolved repeat length
+    - gene: trnC-ycf6
+      recovered: true
+      length: 1099
+      n_products: 1
+      kmer_count_median: 43
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 1099
+        sha256: 02c8786902b1efe94015212a3fceeb59a4e69ed425fabb3d66d81fea1c2fb504
+        kmer_count_median: 43
+        reference_match:
+          status: confirmed_product
+          expected_gene: trnC-ycf6
+          expected_taxon: Liriodendron tulipifera
+          matched_gene: trnC-ycf6
+          matched_taxon: Liriodendron tulipifera
+          matched_accession: NC 008326
+          pct_identity: 100.0
+          align_length: 1099
+          query_length: 1099
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id003
+          - gene: trnC-ycf6
+            taxon: Liriodendron tulipifera
+            accession: NC 008326
+            align_length: 1099
+            pct_identity: 100.0
+            identity_count: 1099
+            bit_score: 2030.59
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 1099
+            subject_from: 1
+            subject_to: 1099
+          - gene: trnC-ycf6
+            taxon: Acer monspessulanum
+            accession: NC 056221
+            align_length: 123
+            pct_identity: 94.3089430894309
+            identity_count: 116
+            bit_score: 189.479
+            query_coverage_pct: 11.191992720655142
+            query_from: 977
+            query_to: 1099
+            subject_from: 471
+            subject_to: 593
+          - gene: trnC-ycf6
+            taxon: Opuntia comonduensis
+            accession: NC 083948
+            align_length: 122
+            pct_identity: 88.52459016393442
+            identity_count: 108
+            bit_score: 143.312
+            query_coverage_pct: 10.555050045495905
+            query_from: 984
+            query_to: 1099
+            subject_from: 522
+            subject_to: 643
+          on_target: true
+          thresholds: &id004
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: trnC-ycf6
+        expected_taxon: Liriodendron tulipifera
+        matched_gene: trnC-ycf6
+        matched_taxon: Liriodendron tulipifera
+        matched_accession: NC 008326
+        pct_identity: 100.0
+        align_length: 1099
+        query_length: 1099
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id003
+        on_target: true
+        thresholds: *id004
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: ycf6-psbM
+      recovered: true
+      length: 927
+      n_products: 1
+      kmer_count_median: 41
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 927
+        sha256: 318b25d2e6be72f22077182ca86a88eaf9877cc9b26831ec4597ce5ffdcd4cd3
+        kmer_count_median: 41
+        reference_match:
+          status: confirmed_product
+          expected_gene: ycf6-psbM
+          expected_taxon: Liriodendron tulipifera
+          matched_gene: ycf6-psbM
+          matched_taxon: Liriodendron tulipifera
+          matched_accession: NC 008326
+          pct_identity: 100.0
+          align_length: 927
+          query_length: 927
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id005
+          - gene: ycf6-psbM
+            taxon: Liriodendron tulipifera
+            accession: NC 008326
+            align_length: 927
+            pct_identity: 100.0
+            identity_count: 927
+            bit_score: 1712.96
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 927
+            subject_from: 1
+            subject_to: 927
+          - gene: ycf6-psbM
+            taxon: Acer monspessulanum
+            accession: NC 056221
+            align_length: 139
+            pct_identity: 87.05035971223022
+            identity_count: 121
+            bit_score: 150.699
+            query_coverage_pct: 14.994606256742179
+            query_from: 1
+            query_to: 139
+            subject_from: 1
+            subject_to: 131
+          - gene: ycf6-psbM
+            taxon: Acer monspessulanum
+            accession: NC 056221
+            align_length: 145
+            pct_identity: 84.82758620689656
+            identity_count: 123
+            bit_score: 137.772
+            query_coverage_pct: 14.670981661272924
+            query_from: 792
+            query_to: 927
+            subject_from: 793
+            subject_to: 937
+          - gene: psbM-trnD
+            taxon: Liriodendron tulipifera
+            accession: NC 008326
+            align_length: 31
+            pct_identity: 100.0
+            identity_count: 31
+            bit_score: 58.3664
+            query_coverage_pct: 3.344120819848975
+            query_from: 897
+            query_to: 927
+            subject_from: 1
+            subject_to: 31
+          on_target: true
+          thresholds: &id006
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: ycf6-psbM
+        expected_taxon: Liriodendron tulipifera
+        matched_gene: ycf6-psbM
+        matched_taxon: Liriodendron tulipifera
+        matched_accession: NC 008326
+        pct_identity: 100.0
+        align_length: 927
+        query_length: 927
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id005
+        on_target: true
+        thresholds: *id006
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: psbM-trnD
+      recovered: true
+      length: 1287
+      n_products: 1
+      kmer_count_median: 46
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 1287
+        sha256: e9898573db0183da6b7f80727476bb72246c560f5de373e9b2586cede1a37dfe
+        kmer_count_median: 46
+        reference_match:
+          status: confirmed_product
+          expected_gene: psbM-trnD
+          expected_taxon: Liriodendron tulipifera
+          matched_gene: psbM-trnD
+          matched_taxon: Liriodendron tulipifera
+          matched_accession: NC 008326
+          pct_identity: 100.0
+          align_length: 1287
+          query_length: 1287
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id007
+          - gene: psbM-trnD
+            taxon: Liriodendron tulipifera
+            accession: NC 008326
+            align_length: 1287
+            pct_identity: 100.0
+            identity_count: 1287
+            bit_score: 2377.76
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 1287
+            subject_from: 1
+            subject_to: 1287
+          - gene: ycf6-psbM
+            taxon: Liriodendron tulipifera
+            accession: NC 008326
+            align_length: 31
+            pct_identity: 100.0
+            identity_count: 31
+            bit_score: 58.3664
+            query_coverage_pct: 2.4087024087024087
+            query_from: 1
+            query_to: 31
+            subject_from: 897
+            subject_to: 927
+          on_target: true
+          thresholds: &id008
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: psbM-trnD
+        expected_taxon: Liriodendron tulipifera
+        matched_gene: psbM-trnD
+        matched_taxon: Liriodendron tulipifera
+        matched_accession: NC 008326
+        pct_identity: 100.0
+        align_length: 1287
+        query_length: 1287
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id007
+        on_target: true
+        thresholds: *id008
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: atpB-rbcL
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded
+    - gene: trnL-F
+      recovered: true
+      length: 434
+      n_products: 1
+      kmer_count_median: 43
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 434
+        sha256: 8b1eb5da66ff32aff98e9c036e6bd7c5b768604edc00ebfd3af6ddcda95cbdca
+        kmer_count_median: 43
+        reference_match:
+          status: confirmed_product
+          expected_gene: trnL-F
+          expected_taxon: Liriodendron tulipifera
+          matched_gene: trnL-F
+          matched_taxon: Liriodendron tulipifera
+          matched_accession: NC 008326
+          pct_identity: 100.0
+          align_length: 434
+          query_length: 434
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id009
+          - gene: trnL-F
+            taxon: Liriodendron tulipifera
+            accession: NC 008326
+            align_length: 434
+            pct_identity: 100.0
+            identity_count: 434
+            bit_score: 802.566
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 434
+            subject_from: 1
+            subject_to: 434
+          - gene: trnL-F
+            taxon: Opuntia comonduensis
+            accession: NC 087798
+            align_length: 192
+            pct_identity: 80.72916666666667
+            identity_count: 155
+            bit_score: 134.079
+            query_coverage_pct: 40.78341013824885
+            query_from: 258
+            query_to: 434
+            subject_from: 266
+            subject_to: 455
+          on_target: true
+          thresholds: &id010
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: trnL-F
+        expected_taxon: Liriodendron tulipifera
+        matched_gene: trnL-F
+        matched_taxon: Liriodendron tulipifera
+        matched_accession: NC 008326
+        pct_identity: 100.0
+        align_length: 434
+        query_length: 434
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id009
+        on_target: true
+        thresholds: *id010
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: ITS
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    command:
+    - /home/claude/repos/sharkmer/target/release/sharkmer
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_angiospermae_20260909_140757_074624_b292cd0a/angiospermae_SRR25378184_1000k_4cf228e5d028/
+    - -s
+    - angiospermae_SRR25378184_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/angiospermae.yaml
+    - --ena
+    - SRR25378184
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    actual_parameters: *id011
+    input:
+      source: ena
+      accession: SRR25378184
+      subset:
+        method: first_reads
+        max_reads: 1000000
+      cache_mode: warm
+      cache_state_before:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      cache_state_after:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      observed_n_reads: 1000000
+      observed_n_bases: 151000000
+      observed_source_plan: &id012
+        kind: cached_remote
+        inputs:
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        paired: false
+        max_reads: 1000000
+      selected_cache_entries:
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+    logs:
+      stdout: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_angiospermae_20260909_140757_074624_b292cd0a/angiospermae_SRR25378184_1000k_4cf228e5d028/angiospermae_SRR25378184_1000k.stdout.log
+      stderr: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_angiospermae_20260909_140757_074624_b292cd0a/angiospermae_SRR25378184_1000k_4cf228e5d028/angiospermae_SRR25378184_1000k.stderr.log
+      resource_usage: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_angiospermae_20260909_140757_074624_b292cd0a/angiospermae_SRR25378184_1000k_4cf228e5d028/resource_usage.txt
+    failure: null
+    peak_rss_bytes: 4571279360
+    peak_rss_provenance: proc_time_linux
+    temp_disk_final_bytes: 13812
+    known_truth: null
+    run_stats:
+      sharkmer_version: 3.2.0-dev
+      command: /home/claude/repos/sharkmer/target/release/sharkmer -k 19 -t 2 --max-reads
+        1000000 -o /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_angiospermae_20260909_140757_074624_b292cd0a/angiospermae_SRR25378184_1000k_4cf228e5d028/
+        -s angiospermae_SRR25378184_1000k --pcr-panel-file /home/claude/repos/sharkmer/panels/angiospermae.yaml
+        --ena SRR25378184 --cache-dir /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+      sample: angiospermae_SRR25378184_1000k
+      run_id: 18d3ac422d617e75-e3dbd-1fa6e043340a61e4
+      output_manifest: angiospermae_SRR25378184_1000k.manifest.yaml
+      run_status: complete
+      input_source: *id012
+      kmer_length: 19
+      chunks: 0
+      n_reads_read: 1000000
+      n_bases_read: 151000000
+      n_subreads_ingested: 1000000
+      n_bases_ingested: 150987700
+      n_kmers: 132964756
+      count_table_capacity: 117440512
+      peak_memory_bytes: 4563492906
+      stage_timings:
+        read_ingest_s: 22.759373299
+        count_finalize_s: 9.484819902
+        read_threading_input_s: null
+        pcr_s: 30.601945888
+        pipeline_total_s: 62.854307662
+      pcr_results:
+      - gene_name: angiospermae_psbA-trnH
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; path limit reached; all enumerated paths
+          had unresolved repeat length
+      - gene_name: angiospermae_rpl36-infA-rps8
+        status: success
+        n_products: 1
+        product_lengths:
+        - 552
+        output_file: angiospermae_SRR25378184_1000k_angiospermae_rpl36-infA-rps8.fasta
+      - gene_name: angiospermae_trnK-rps16
+        status: success
+        n_products: 1
+        product_lengths:
+        - 657
+        output_file: angiospermae_SRR25378184_1000k_angiospermae_trnK-rps16.fasta
+      - gene_name: angiospermae_trnV-atpE
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; path limit reached; all enumerated paths
+          had unresolved repeat length
+      - gene_name: angiospermae_trnC-ycf6
+        status: success
+        n_products: 1
+        product_lengths:
+        - 1099
+        output_file: angiospermae_SRR25378184_1000k_angiospermae_trnC-ycf6.fasta
+      - gene_name: angiospermae_ycf6-psbM
+        status: success
+        n_products: 1
+        product_lengths:
+        - 927
+        output_file: angiospermae_SRR25378184_1000k_angiospermae_ycf6-psbM.fasta
+      - gene_name: angiospermae_psbM-trnD
+        status: success
+        n_products: 1
+        product_lengths:
+        - 1287
+        output_file: angiospermae_SRR25378184_1000k_angiospermae_psbM-trnD.fasta
+      - gene_name: angiospermae_atpB-rbcL
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded
+      - gene_name: angiospermae_trnL-F
+        status: success
+        n_products: 1
+        product_lengths:
+        - 434
+        output_file: angiospermae_SRR25378184_1000k_angiospermae_trnL-F.fasta
+      - gene_name: angiospermae_ITS
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+- accession: ERR14009273
+  taxon: Acer monspessulanum
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 32.98959383403417
+    success: true
+    genes:
+    - gene: psbA-trnH
+      recovered: true
+      length: 508
+      n_products: 1
+      kmer_count_median: 12
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 508
+        sha256: fba241e53d7da4115ea4edf34b24bd5404b57779c319c206675eb713be2cfd69
+        kmer_count_median: 12
+        reference_match:
+          status: confirmed_product
+          expected_gene: psbA-trnH
+          expected_taxon: Acer monspessulanum
+          matched_gene: psbA-trnH
+          matched_taxon: Acer monspessulanum
+          matched_accession: NC 056221
+          pct_identity: 100.0
+          align_length: 508
+          query_length: 508
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id013
+          - gene: psbA-trnH
+            taxon: Acer monspessulanum
+            accession: NC 056221
+            align_length: 508
+            pct_identity: 100.0
+            identity_count: 508
+            bit_score: 939.218
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 508
+            subject_from: 1
+            subject_to: 508
+          on_target: true
+          thresholds: &id014
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: psbA-trnH
+        expected_taxon: Acer monspessulanum
+        matched_gene: psbA-trnH
+        matched_taxon: Acer monspessulanum
+        matched_accession: NC 056221
+        pct_identity: 100.0
+        align_length: 508
+        query_length: 508
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id013
+        on_target: true
+        thresholds: *id014
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: rpl36-infA-rps8
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: trnK-rps16
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded; DFS state limit reached while repeat length
+        remained unresolved
+    - gene: trnV-atpE
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded
+    - gene: trnC-ycf6
+      recovered: true
+      length: 593
+      n_products: 1
+      kmer_count_median: 12
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 593
+        sha256: b97e0ced34ecc6014baf7e8cf4284965a525072dd4597b37204e2190580a16eb
+        kmer_count_median: 12
+        reference_match:
+          status: confirmed_product
+          expected_gene: trnC-ycf6
+          expected_taxon: Acer monspessulanum
+          matched_gene: trnC-ycf6
+          matched_taxon: Acer monspessulanum
+          matched_accession: NC 056221
+          pct_identity: 100.0
+          align_length: 593
+          query_length: 593
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id015
+          - gene: trnC-ycf6
+            taxon: Acer monspessulanum
+            accession: NC 056221
+            align_length: 593
+            pct_identity: 100.0
+            identity_count: 593
+            bit_score: 1096.18
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 593
+            subject_from: 1
+            subject_to: 593
+          - gene: trnC-ycf6
+            taxon: Liriodendron tulipifera
+            accession: NC 008326
+            align_length: 123
+            pct_identity: 94.3089430894309
+            identity_count: 116
+            bit_score: 189.479
+            query_coverage_pct: 20.741989881956155
+            query_from: 471
+            query_to: 593
+            subject_from: 977
+            subject_to: 1099
+          - gene: trnC-ycf6
+            taxon: Opuntia comonduensis
+            accession: NC 083948
+            align_length: 122
+            pct_identity: 86.88524590163935
+            identity_count: 106
+            bit_score: 132.232
+            query_coverage_pct: 19.561551433389546
+            query_from: 478
+            query_to: 593
+            subject_from: 522
+            subject_to: 643
+          on_target: true
+          thresholds: &id016
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: trnC-ycf6
+        expected_taxon: Acer monspessulanum
+        matched_gene: trnC-ycf6
+        matched_taxon: Acer monspessulanum
+        matched_accession: NC 056221
+        pct_identity: 100.0
+        align_length: 593
+        query_length: 593
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id015
+        on_target: true
+        thresholds: *id016
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: ycf6-psbM
+      recovered: true
+      length: 937
+      n_products: 1
+      kmer_count_median: 11
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 937
+        sha256: 76c47b56a55620125381c7eda339dea236734dc3f3e8337a969d1ffecc909bb7
+        kmer_count_median: 11
+        reference_match:
+          status: confirmed_product
+          expected_gene: ycf6-psbM
+          expected_taxon: Acer monspessulanum
+          matched_gene: ycf6-psbM
+          matched_taxon: Acer monspessulanum
+          matched_accession: NC 056221
+          pct_identity: 100.0
+          align_length: 937
+          query_length: 937
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id017
+          - gene: ycf6-psbM
+            taxon: Acer monspessulanum
+            accession: NC 056221
+            align_length: 937
+            pct_identity: 100.0
+            identity_count: 937
+            bit_score: 1731.43
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 937
+            subject_from: 1
+            subject_to: 937
+          - gene: ycf6-psbM
+            taxon: Liriodendron tulipifera
+            accession: NC 008326
+            align_length: 139
+            pct_identity: 87.05035971223022
+            identity_count: 121
+            bit_score: 150.699
+            query_coverage_pct: 13.980789754535753
+            query_from: 1
+            query_to: 131
+            subject_from: 1
+            subject_to: 139
+          - gene: ycf6-psbM
+            taxon: Liriodendron tulipifera
+            accession: NC 008326
+            align_length: 145
+            pct_identity: 84.82758620689656
+            identity_count: 123
+            bit_score: 137.772
+            query_coverage_pct: 15.474919957310565
+            query_from: 793
+            query_to: 937
+            subject_from: 792
+            subject_to: 927
+          on_target: true
+          thresholds: &id018
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: ycf6-psbM
+        expected_taxon: Acer monspessulanum
+        matched_gene: ycf6-psbM
+        matched_taxon: Acer monspessulanum
+        matched_accession: NC 056221
+        pct_identity: 100.0
+        align_length: 937
+        query_length: 937
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id017
+        on_target: true
+        thresholds: *id018
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: psbM-trnD
+      recovered: true
+      length: 699
+      n_products: 1
+      kmer_count_median: 13
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 699
+        sha256: 0256151a72c59f7b1883a5130b8b7b445e47ba1eda935f9e1fc8c6deea94de62
+        kmer_count_median: 13
+        reference_match:
+          status: insufficient_alignment
+          expected_gene: psbM-trnD
+          expected_taxon: Acer monspessulanum
+          matched_gene: psbM-trnD
+          matched_taxon: Liriodendron tulipifera
+          matched_accession: NC 008326
+          pct_identity: 86.288
+          align_length: 299
+          query_length: 699
+          query_coverage_pct: 42.489
+          aligned_fraction: 0.424893
+          hsp_count: 2
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id019
+          - gene: psbM-trnD
+            taxon: Liriodendron tulipifera
+            accession: NC 008326
+            align_length: 299
+            pct_identity: 86.2876254180602
+            identity_count: 258
+            bit_score: 315.051
+            query_coverage_pct: 42.48927038626609
+            query_from: 1
+            query_to: 297
+            subject_from: 1
+            subject_to: 290
+          - gene: psbM-trnD
+            taxon: Liriodendron tulipifera
+            accession: NC 008326
+            align_length: 71
+            pct_identity: 98.59154929577464
+            identity_count: 70
+            bit_score: 126.692
+            query_coverage_pct: 10.157367668097281
+            query_from: 629
+            query_to: 699
+            subject_from: 1217
+            subject_to: 1287
+          - gene: ycf6-psbM
+            taxon: Acer monspessulanum
+            accession: NC 056221
+            align_length: 31
+            pct_identity: 100.0
+            identity_count: 31
+            bit_score: 58.3664
+            query_coverage_pct: 4.434907010014306
+            query_from: 1
+            query_to: 31
+            subject_from: 907
+            subject_to: 937
+          on_target: false
+          thresholds: &id020
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: insufficient_alignment
+        expected_gene: psbM-trnD
+        expected_taxon: Acer monspessulanum
+        matched_gene: psbM-trnD
+        matched_taxon: Liriodendron tulipifera
+        matched_accession: NC 008326
+        pct_identity: 86.288
+        align_length: 299
+        query_length: 699
+        query_coverage_pct: 42.489
+        aligned_fraction: 0.424893
+        hsp_count: 2
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id019
+        on_target: false
+        thresholds: *id020
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: atpB-rbcL
+      recovered: true
+      length: 812
+      n_products: 1
+      kmer_count_median: 10
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 812
+        sha256: 3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07
+        kmer_count_median: 10
+        reference_match:
+          status: confirmed_product
+          expected_gene: atpB-rbcL
+          expected_taxon: Acer monspessulanum
+          matched_gene: atpB-rbcL
+          matched_taxon: Acer monspessulanum
+          matched_accession: NC 056221
+          pct_identity: 100.0
+          align_length: 812
+          query_length: 812
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id021
+          - gene: atpB-rbcL
+            taxon: Acer monspessulanum
+            accession: NC 056221
+            align_length: 812
+            pct_identity: 100.0
+            identity_count: 812
+            bit_score: 1500.6
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 812
+            subject_from: 1
+            subject_to: 812
+          - gene: atpB-rbcL
+            taxon: Euphorbia nicaeensis subsp. nicaeensis
+            accession: OR400606
+            align_length: 371
+            pct_identity: 87.33153638814017
+            identity_count: 324
+            bit_score: 414.77
+            query_coverage_pct: 45.689655172413794
+            query_from: 442
+            query_to: 812
+            subject_from: 462
+            subject_to: 821
+          on_target: true
+          thresholds: &id022
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: atpB-rbcL
+        expected_taxon: Acer monspessulanum
+        matched_gene: atpB-rbcL
+        matched_taxon: Acer monspessulanum
+        matched_accession: NC 056221
+        pct_identity: 100.0
+        align_length: 812
+        query_length: 812
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id021
+        on_target: true
+        thresholds: *id022
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    - gene: trnL-F
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: node budget exceeded; DFS state limit reached; all enumerated
+        paths had unresolved repeat length
+    - gene: ITS
+      recovered: true
+      length: 753
+      n_products: 1
+      kmer_count_median: 91
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 753
+        sha256: ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748
+        kmer_count_median: 91
+        reference_match:
+          status: confirmed_product
+          expected_gene: ITS
+          expected_taxon: Acer monspessulanum
+          matched_gene: ITS
+          matched_taxon: Acer monspessulanum
+          matched_accession: MW070149
+          pct_identity: 100.0
+          align_length: 753
+          query_length: 753
+          query_coverage_pct: 100.0
+          aligned_fraction: 1.0
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id023
+          - gene: ITS
+            taxon: Acer monspessulanum
+            accession: MW070149
+            align_length: 753
+            pct_identity: 100.0
+            identity_count: 753
+            bit_score: 1391.65
+            query_coverage_pct: 100.0
+            query_from: 1
+            query_to: 753
+            subject_from: 1
+            subject_to: 753
+          - gene: ITS
+            taxon: Euphorbia nicaeensis subsp. nicaeensis
+            accession: LN680643
+            align_length: 461
+            pct_identity: 79.17570498915401
+            identity_count: 365
+            bit_score: 292.891
+            query_coverage_pct: 60.2921646746348
+            query_from: 300
+            query_to: 753
+            subject_from: 326
+            subject_to: 764
+          - gene: ITS
+            taxon: Euphorbia nicaeensis subsp. nicaeensis
+            accession: LN680643
+            align_length: 99
+            pct_identity: 97.97979797979798
+            identity_count: 97
+            bit_score: 172.859
+            query_coverage_pct: 13.147410358565738
+            query_from: 1
+            query_to: 99
+            subject_from: 1
+            subject_to: 99
+          - gene: ITS
+            taxon: Opuntia comonduensis
+            accession: MZ366774
+            align_length: 301
+            pct_identity: 84.38538205980066
+            identity_count: 254
+            bit_score: 281.811
+            query_coverage_pct: 39.309428950863214
+            query_from: 172
+            query_to: 467
+            subject_from: 130
+            subject_to: 420
+          - gene: ITS
+            taxon: Opuntia comonduensis
+            accession: MZ366774
+            align_length: 105
+            pct_identity: 96.19047619047619
+            identity_count: 101
+            bit_score: 172.859
+            query_coverage_pct: 13.944223107569721
+            query_from: 1
+            query_to: 105
+            subject_from: 1
+            subject_to: 105
+          - gene: ITS
+            taxon: Opuntia comonduensis
+            accession: MZ366774
+            align_length: 53
+            pct_identity: 96.22641509433963
+            identity_count: 51
+            bit_score: 87.9128
+            query_coverage_pct: 7.038512616201859
+            query_from: 701
+            query_to: 753
+            subject_from: 635
+            subject_to: 687
+          on_target: true
+          thresholds: &id024
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_product
+        expected_gene: ITS
+        expected_taxon: Acer monspessulanum
+        matched_gene: ITS
+        matched_taxon: Acer monspessulanum
+        matched_accession: MW070149
+        pct_identity: 100.0
+        align_length: 753
+        query_length: 753
+        query_coverage_pct: 100.0
+        aligned_fraction: 1.0
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id023
+        on_target: true
+        thresholds: *id024
+        error: null
+        all_products_confirmed: true
+        n_products_evaluated: 1
+    command:
+    - /home/claude/repos/sharkmer/target/release/sharkmer
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_angiospermae_20260909_140757_074624_b292cd0a/angiospermae_ERR14009273_1000k_4c6874495d74/
+    - -s
+    - angiospermae_ERR14009273_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/angiospermae.yaml
+    - --ena
+    - ERR14009273
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    actual_parameters: *id025
+    input:
+      source: ena
+      accession: ERR14009273
+      subset:
+        method: first_reads
+        max_reads: 1000000
+      cache_mode: warm
+      cache_state_before:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      cache_state_after:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      observed_n_reads: 1000000
+      observed_n_bases: 99211896
+      observed_source_plan: &id026
+        kind: cached_remote
+        inputs:
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        paired: false
+        max_reads: 1000000
+      selected_cache_entries:
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+    logs:
+      stdout: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_angiospermae_20260909_140757_074624_b292cd0a/angiospermae_ERR14009273_1000k_4c6874495d74/angiospermae_ERR14009273_1000k.stdout.log
+      stderr: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_angiospermae_20260909_140757_074624_b292cd0a/angiospermae_ERR14009273_1000k_4c6874495d74/angiospermae_ERR14009273_1000k.stderr.log
+      resource_usage: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_angiospermae_20260909_140757_074624_b292cd0a/angiospermae_ERR14009273_1000k_4c6874495d74/resource_usage.txt
+    failure: null
+    peak_rss_bytes: 2289561600
+    peak_rss_provenance: proc_time_linux
+    temp_disk_final_bytes: 12341
+    known_truth: null
+    run_stats:
+      sharkmer_version: 3.2.0-dev
+      command: /home/claude/repos/sharkmer/target/release/sharkmer -k 19 -t 2 --max-reads
+        1000000 -o /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_angiospermae_20260909_140757_074624_b292cd0a/angiospermae_ERR14009273_1000k_4c6874495d74/
+        -s angiospermae_ERR14009273_1000k --pcr-panel-file /home/claude/repos/sharkmer/panels/angiospermae.yaml
+        --ena ERR14009273 --cache-dir /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+      sample: angiospermae_ERR14009273_1000k
+      run_id: 18d3ac5101801cfd-e3eb0-0b5710263d47cb98
+      output_manifest: angiospermae_ERR14009273_1000k.manifest.yaml
+      run_status: complete
+      input_source: *id026
+      kmer_length: 19
+      chunks: 0
+      n_reads_read: 1000000
+      n_bases_read: 99211896
+      n_subreads_ingested: 1000000
+      n_bases_ingested: 99211392
+      n_kmers: 81206414
+      count_table_capacity: 58720256
+      peak_memory_bytes: 2281791256
+      stage_timings:
+        read_ingest_s: 14.069330267
+        count_finalize_s: 6.156407283
+        read_threading_input_s: null
+        pcr_s: 12.649170128
+        pipeline_total_s: 32.885527837
+      pcr_results:
+      - gene_name: angiospermae_psbA-trnH
+        status: success
+        n_products: 1
+        product_lengths:
+        - 508
+        output_file: angiospermae_ERR14009273_1000k_angiospermae_psbA-trnH.fasta
+      - gene_name: angiospermae_rpl36-infA-rps8
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: angiospermae_trnK-rps16
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; DFS state limit reached while repeat
+          length remained unresolved
+      - gene_name: angiospermae_trnV-atpE
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded
+      - gene_name: angiospermae_trnC-ycf6
+        status: success
+        n_products: 1
+        product_lengths:
+        - 593
+        output_file: angiospermae_ERR14009273_1000k_angiospermae_trnC-ycf6.fasta
+      - gene_name: angiospermae_ycf6-psbM
+        status: success
+        n_products: 1
+        product_lengths:
+        - 937
+        output_file: angiospermae_ERR14009273_1000k_angiospermae_ycf6-psbM.fasta
+      - gene_name: angiospermae_psbM-trnD
+        status: success
+        n_products: 1
+        product_lengths:
+        - 699
+        output_file: angiospermae_ERR14009273_1000k_angiospermae_psbM-trnD.fasta
+      - gene_name: angiospermae_atpB-rbcL
+        status: success
+        n_products: 1
+        product_lengths:
+        - 812
+        output_file: angiospermae_ERR14009273_1000k_angiospermae_atpB-rbcL.fasta
+      - gene_name: angiospermae_trnL-F
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; DFS state limit reached; all enumerated
+          paths had unresolved repeat length
+      - gene_name: angiospermae_ITS
+        status: success
+        n_products: 1
+        product_lengths:
+        - 753
+        output_file: angiospermae_ERR14009273_1000k_angiospermae_ITS.fasta

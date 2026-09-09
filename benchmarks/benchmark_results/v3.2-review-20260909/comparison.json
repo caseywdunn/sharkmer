@@ -1,0 +1,1611 @@
+{
+  "schema_version": 1,
+  "dataset_role": "calibration_regression",
+  "review_date": "2026-09-09",
+  "candidate_source_commit": "03c0fc62ee0521f85a527b86f78252a60be1500b",
+  "candidate_executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+  "baseline_note": "Preserved baseline executable historically labeled b728f14, used after the threshold/repeat fixes rather than for untouched 3.1.0. The label is not verified build provenance; explicit executable provenance records source relationship as unknown.",
+  "parameters": {
+    "k": 19,
+    "threads": 2,
+    "requested_max_reads": 1000000,
+    "cache_mode": "warm",
+    "virtual_memory_limit_bytes": 12884901888,
+    "os_page_cache_state": null
+  },
+  "summary": {
+    "runs": 13,
+    "all_successful": true,
+    "all_counts_and_products_identical": true,
+    "all_selected_input_checksums_identical": true,
+    "products": 71,
+    "classifications": {
+      "confirmed_product": 39,
+      "insufficient_alignment": 6,
+      "no_reference": 8,
+      "split_or_chimeric_alignment": 3,
+      "wrong_gene": 3,
+      "ambiguous_gene": 5,
+      "no_significant_hit": 5,
+      "confirmed_gene_other_taxon": 2
+    }
+  },
+  "cli_probes": {
+    "exact_180bp_threshold_mixture": true,
+    "a18_exact_a19_a40_ac40_withheld": true,
+    "pinned_threading_products_exact": true,
+    "primer_budget_fails_before_ena_with_128mib_address_space": true,
+    "output": {
+      "initial_exact_product": true,
+      "failed_input_invalidates_prior_products": true,
+      "real_sigkill_is_not_complete": true,
+      "restart_after_sigkill_recovers_exact_product": true,
+      "unrelated_fasta_preserved": true
+    },
+    "cache": {
+      "clear_waits_for_lease_through_directory_alias": true,
+      "verified_legacy_pair_cleared": true,
+      "foreign_modified_orphan_and_symlink_entries_preserved": true,
+      "cache_directory_and_lock_retained": true
+    }
+  },
+  "runs": {
+    "angiospermae/ERR14009273/1000000": {
+      "both_successful": true,
+      "counts_identical": true,
+      "products_identical": true,
+      "classification_change": null,
+      "baseline": {
+        "success": true,
+        "taxon": "Acer monspessulanum",
+        "n_reads_read": 1000000,
+        "n_kmers": 81206414,
+        "products": {
+          "psbA-trnH": [
+            [
+              508,
+              "fba241e53d7da4115ea4edf34b24bd5404b57779c319c206675eb713be2cfd69"
+            ]
+          ],
+          "trnC-ycf6": [
+            [
+              593,
+              "b97e0ced34ecc6014baf7e8cf4284965a525072dd4597b37204e2190580a16eb"
+            ]
+          ],
+          "ycf6-psbM": [
+            [
+              937,
+              "76c47b56a55620125381c7eda339dea236734dc3f3e8337a969d1ffecc909bb7"
+            ]
+          ],
+          "psbM-trnD": [
+            [
+              699,
+              "0256151a72c59f7b1883a5130b8b7b445e47ba1eda935f9e1fc8c6deea94de62"
+            ]
+          ],
+          "atpB-rbcL": [
+            [
+              812,
+              "3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07"
+            ]
+          ],
+          "ITS": [
+            [
+              753,
+              "ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_product": 5,
+          "insufficient_alignment": 1
+        },
+        "wall_time_s": 31.95216566399904,
+        "peak_rss_bytes": 2289246208,
+        "stage_timings": {
+          "read_ingest_s": 13.498321188,
+          "count_finalize_s": 5.696252729,
+          "read_threading_input_s": null,
+          "pcr_s": 12.663497365,
+          "pipeline_total_s": 31.858955101
+        },
+        "executable_sha256": "70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-warm-b728f14/results/angiospermae_1.0.0_3.1.0_20260909_132424_485613_b9e858d8.yaml"
+      },
+      "candidate": {
+        "success": true,
+        "taxon": "Acer monspessulanum",
+        "n_reads_read": 1000000,
+        "n_kmers": 81206414,
+        "products": {
+          "psbA-trnH": [
+            [
+              508,
+              "fba241e53d7da4115ea4edf34b24bd5404b57779c319c206675eb713be2cfd69"
+            ]
+          ],
+          "trnC-ycf6": [
+            [
+              593,
+              "b97e0ced34ecc6014baf7e8cf4284965a525072dd4597b37204e2190580a16eb"
+            ]
+          ],
+          "ycf6-psbM": [
+            [
+              937,
+              "76c47b56a55620125381c7eda339dea236734dc3f3e8337a969d1ffecc909bb7"
+            ]
+          ],
+          "psbM-trnD": [
+            [
+              699,
+              "0256151a72c59f7b1883a5130b8b7b445e47ba1eda935f9e1fc8c6deea94de62"
+            ]
+          ],
+          "atpB-rbcL": [
+            [
+              812,
+              "3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07"
+            ]
+          ],
+          "ITS": [
+            [
+              753,
+              "ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_product": 5,
+          "insufficient_alignment": 1
+        },
+        "wall_time_s": 32.98959383403417,
+        "peak_rss_bytes": 2289561600,
+        "stage_timings": {
+          "read_ingest_s": 14.069330267,
+          "count_finalize_s": 6.156407283,
+          "read_threading_input_s": null,
+          "pcr_s": 12.649170128,
+          "pipeline_total_s": 32.885527837
+        },
+        "executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-final/results/angiospermae_1.0.0_3.2.0-dev_20260909_140757_074624_b292cd0a.yaml"
+      },
+      "input_selection_and_checksums_identical": true,
+      "panel_and_references_identical": true
+    },
+    "angiospermae/SRR25378184/1000000": {
+      "both_successful": true,
+      "counts_identical": true,
+      "products_identical": true,
+      "classification_change": null,
+      "baseline": {
+        "success": true,
+        "taxon": "Liriodendron tulipifera",
+        "n_reads_read": 1000000,
+        "n_kmers": 132964756,
+        "products": {
+          "rpl36-infA-rps8": [
+            [
+              552,
+              "9d24409abb93cd61eb5d04b5f191d5d3c8c1c96827b563dbec7135aca1e4bd1b"
+            ]
+          ],
+          "trnK-rps16": [
+            [
+              657,
+              "767857d34bed29816c88abdcf073e69f4f30dc9dd52f5621228676249cc84d8e"
+            ]
+          ],
+          "trnC-ycf6": [
+            [
+              1099,
+              "02c8786902b1efe94015212a3fceeb59a4e69ed425fabb3d66d81fea1c2fb504"
+            ]
+          ],
+          "ycf6-psbM": [
+            [
+              927,
+              "318b25d2e6be72f22077182ca86a88eaf9877cc9b26831ec4597ce5ffdcd4cd3"
+            ]
+          ],
+          "psbM-trnD": [
+            [
+              1287,
+              "e9898573db0183da6b7f80727476bb72246c560f5de373e9b2586cede1a37dfe"
+            ]
+          ],
+          "trnL-F": [
+            [
+              434,
+              "8b1eb5da66ff32aff98e9c036e6bd7c5b768604edc00ebfd3af6ddcda95cbdca"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_product": 5,
+          "no_reference": 1
+        },
+        "wall_time_s": 62.21077714400599,
+        "peak_rss_bytes": 4570951680,
+        "stage_timings": {
+          "read_ingest_s": 22.839321103,
+          "count_finalize_s": 8.957488207,
+          "read_threading_input_s": null,
+          "pcr_s": 30.217085849,
+          "pipeline_total_s": 62.014790046
+        },
+        "executable_sha256": "70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-warm-b728f14/results/angiospermae_1.0.0_3.1.0_20260909_132424_485613_b9e858d8.yaml"
+      },
+      "candidate": {
+        "success": true,
+        "taxon": "Liriodendron tulipifera",
+        "n_reads_read": 1000000,
+        "n_kmers": 132964756,
+        "products": {
+          "rpl36-infA-rps8": [
+            [
+              552,
+              "9d24409abb93cd61eb5d04b5f191d5d3c8c1c96827b563dbec7135aca1e4bd1b"
+            ]
+          ],
+          "trnK-rps16": [
+            [
+              657,
+              "767857d34bed29816c88abdcf073e69f4f30dc9dd52f5621228676249cc84d8e"
+            ]
+          ],
+          "trnC-ycf6": [
+            [
+              1099,
+              "02c8786902b1efe94015212a3fceeb59a4e69ed425fabb3d66d81fea1c2fb504"
+            ]
+          ],
+          "ycf6-psbM": [
+            [
+              927,
+              "318b25d2e6be72f22077182ca86a88eaf9877cc9b26831ec4597ce5ffdcd4cd3"
+            ]
+          ],
+          "psbM-trnD": [
+            [
+              1287,
+              "e9898573db0183da6b7f80727476bb72246c560f5de373e9b2586cede1a37dfe"
+            ]
+          ],
+          "trnL-F": [
+            [
+              434,
+              "8b1eb5da66ff32aff98e9c036e6bd7c5b768604edc00ebfd3af6ddcda95cbdca"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_product": 5,
+          "no_reference": 1
+        },
+        "wall_time_s": 63.07123056094861,
+        "peak_rss_bytes": 4571279360,
+        "stage_timings": {
+          "read_ingest_s": 22.759373299,
+          "count_finalize_s": 9.484819902,
+          "read_threading_input_s": null,
+          "pcr_s": 30.601945888,
+          "pipeline_total_s": 62.854307662
+        },
+        "executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-final/results/angiospermae_1.0.0_3.2.0-dev_20260909_140757_074624_b292cd0a.yaml"
+      },
+      "input_selection_and_checksums_identical": true,
+      "panel_and_references_identical": true
+    },
+    "bacteria/ERR2596344/1000000": {
+      "both_successful": true,
+      "counts_identical": true,
+      "products_identical": true,
+      "classification_change": null,
+      "baseline": {
+        "success": true,
+        "taxon": "seawater metagenome",
+        "n_reads_read": 59704,
+        "n_kmers": 16478304,
+        "products": {
+          "16S-515F-806R": [
+            [
+              283,
+              "c660e604a2fe5313c8136cd7d41ca2c125f25e14e3984fb7cec378e1b4d0a766"
+            ]
+          ],
+          "16S-515F-806RB": [
+            [
+              283,
+              "c660e604a2fe5313c8136cd7d41ca2c125f25e14e3984fb7cec378e1b4d0a766"
+            ]
+          ],
+          "16S-68F-783Rabc": [
+            [
+              208,
+              "4fb3f6ac0ddef46523af87987d5f3b0d76ffe529f45843636f6eec26e3a0c9e5"
+            ],
+            [
+              208,
+              "83360379d296fc2749924f5ade094749c7f9baa2eee03aad681c98972bbed82b"
+            ],
+            [
+              208,
+              "8933823a851c69760777ea6cfc6aea6b153f858ab29fe63716c73c940915b60b"
+            ]
+          ]
+        },
+        "classifications": {
+          "no_reference": 5
+        },
+        "wall_time_s": 1.3653522050008178,
+        "peak_rss_bytes": 78790656,
+        "stage_timings": {
+          "read_ingest_s": 0.980546945,
+          "count_finalize_s": 0.055703605,
+          "read_threading_input_s": null,
+          "pcr_s": 0.321426223,
+          "pipeline_total_s": 1.358154137
+        },
+        "executable_sha256": "70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-warm-b728f14/results/bacteria_1.0.0_3.1.0_20260909_132424_485613_b9e858d8.yaml"
+      },
+      "candidate": {
+        "success": true,
+        "taxon": "seawater metagenome",
+        "n_reads_read": 59704,
+        "n_kmers": 16478304,
+        "products": {
+          "16S-515F-806R": [
+            [
+              283,
+              "c660e604a2fe5313c8136cd7d41ca2c125f25e14e3984fb7cec378e1b4d0a766"
+            ]
+          ],
+          "16S-515F-806RB": [
+            [
+              283,
+              "c660e604a2fe5313c8136cd7d41ca2c125f25e14e3984fb7cec378e1b4d0a766"
+            ]
+          ],
+          "16S-68F-783Rabc": [
+            [
+              208,
+              "4fb3f6ac0ddef46523af87987d5f3b0d76ffe529f45843636f6eec26e3a0c9e5"
+            ],
+            [
+              208,
+              "83360379d296fc2749924f5ade094749c7f9baa2eee03aad681c98972bbed82b"
+            ],
+            [
+              208,
+              "8933823a851c69760777ea6cfc6aea6b153f858ab29fe63716c73c940915b60b"
+            ]
+          ]
+        },
+        "classifications": {
+          "no_reference": 5
+        },
+        "wall_time_s": 1.2618632639641874,
+        "peak_rss_bytes": 79319040,
+        "stage_timings": {
+          "read_ingest_s": 0.865010733,
+          "count_finalize_s": 0.060582597,
+          "read_threading_input_s": null,
+          "pcr_s": 0.308519049,
+          "pipeline_total_s": 1.242970983
+        },
+        "executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-final/results/bacteria_1.0.0_3.2.0-dev_20260909_140757_074624_b292cd0a.yaml"
+      },
+      "input_selection_and_checksums_identical": true,
+      "panel_and_references_identical": true
+    },
+    "bacteria/SRR19418213/1000000": {
+      "both_successful": true,
+      "counts_identical": true,
+      "products_identical": true,
+      "classification_change": null,
+      "baseline": {
+        "success": true,
+        "taxon": "rhizosphere metagenome",
+        "n_reads_read": 525982,
+        "n_kmers": 148831652,
+        "products": {
+          "16S-515F-806R": [
+            [
+              283,
+              "875ded71184a626d088d0644609565e3dd63e1e411107d646c27da6fdc642646"
+            ]
+          ],
+          "16S-515F-806RB": [
+            [
+              283,
+              "875ded71184a626d088d0644609565e3dd63e1e411107d646c27da6fdc642646"
+            ]
+          ]
+        },
+        "classifications": {
+          "no_reference": 2
+        },
+        "wall_time_s": 14.69048772304086,
+        "peak_rss_bytes": 1148526592,
+        "stage_timings": {
+          "read_ingest_s": 11.229702198,
+          "count_finalize_s": 1.80946816,
+          "read_threading_input_s": null,
+          "pcr_s": 1.603829723,
+          "pipeline_total_s": 14.643479871
+        },
+        "executable_sha256": "70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-warm-b728f14/results/bacteria_1.0.0_3.1.0_20260909_132424_485613_b9e858d8.yaml"
+      },
+      "candidate": {
+        "success": true,
+        "taxon": "rhizosphere metagenome",
+        "n_reads_read": 525982,
+        "n_kmers": 148831652,
+        "products": {
+          "16S-515F-806R": [
+            [
+              283,
+              "875ded71184a626d088d0644609565e3dd63e1e411107d646c27da6fdc642646"
+            ]
+          ],
+          "16S-515F-806RB": [
+            [
+              283,
+              "875ded71184a626d088d0644609565e3dd63e1e411107d646c27da6fdc642646"
+            ]
+          ]
+        },
+        "classifications": {
+          "no_reference": 2
+        },
+        "wall_time_s": 14.838818577001803,
+        "peak_rss_bytes": 1148936192,
+        "stage_timings": {
+          "read_ingest_s": 11.227131782,
+          "count_finalize_s": 1.929382517,
+          "read_threading_input_s": null,
+          "pcr_s": 1.612438253,
+          "pipeline_total_s": 14.779589254
+        },
+        "executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-final/results/bacteria_1.0.0_3.2.0-dev_20260909_140757_074624_b292cd0a.yaml"
+      },
+      "input_selection_and_checksums_identical": true,
+      "panel_and_references_identical": true
+    },
+    "bacteria/SRR24806237/1000000": {
+      "both_successful": true,
+      "counts_identical": true,
+      "products_identical": true,
+      "classification_change": null,
+      "baseline": {
+        "success": true,
+        "taxon": "coral metagenome",
+        "n_reads_read": 167686,
+        "n_kmers": 38811804,
+        "products": {},
+        "classifications": {},
+        "wall_time_s": 2.3123287189519033,
+        "peak_rss_bytes": 150253568,
+        "stage_timings": {
+          "read_ingest_s": 1.534474892,
+          "count_finalize_s": 0.10808374,
+          "read_threading_input_s": null,
+          "pcr_s": 0.657330153,
+          "pipeline_total_s": 2.300376424
+        },
+        "executable_sha256": "70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-warm-b728f14/results/bacteria_1.0.0_3.1.0_20260909_132424_485613_b9e858d8.yaml"
+      },
+      "candidate": {
+        "success": true,
+        "taxon": "coral metagenome",
+        "n_reads_read": 167686,
+        "n_kmers": 38811804,
+        "products": {},
+        "classifications": {},
+        "wall_time_s": 2.232159766019322,
+        "peak_rss_bytes": 150568960,
+        "stage_timings": {
+          "read_ingest_s": 1.470374035,
+          "count_finalize_s": 0.107694284,
+          "read_threading_input_s": null,
+          "pcr_s": 0.615545135,
+          "pipeline_total_s": 2.202444883
+        },
+        "executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-final/results/bacteria_1.0.0_3.2.0-dev_20260909_140757_074624_b292cd0a.yaml"
+      },
+      "input_selection_and_checksums_identical": true,
+      "panel_and_references_identical": true
+    },
+    "cnidaria/SRR25099394/1000000": {
+      "both_successful": true,
+      "counts_identical": true,
+      "products_identical": true,
+      "classification_change": null,
+      "baseline": {
+        "success": true,
+        "taxon": "Agalma elegans",
+        "n_reads_read": 1000000,
+        "n_kmers": 132986604,
+        "products": {
+          "18S": [
+            [
+              1785,
+              "c23378920cd43acb881fb906b67930ab4868a2512cf259345a268225933d1cf1"
+            ]
+          ],
+          "28S_1": [
+            [
+              3230,
+              "ffca6496028c8889c1222437a876c794026bc9d1195f8b50a5fc3d7d12fb694d"
+            ]
+          ],
+          "ITS_1": [
+            [
+              817,
+              "7c6643ab6df00024bbd34c338614fd7ea3d5bf2285bc5c01a2c4af00fccd1d49"
+            ]
+          ],
+          "ITS_2": [
+            [
+              671,
+              "5f20f7add08ebe87db58ffe277694a59a166ddcea44c0bce2cb6c377133c333e"
+            ]
+          ],
+          "28S_2": [
+            [
+              417,
+              "93180882a100dfc1ede9e8de1f6026ecb7fb67a84629a7e34276ee37b422f0ae"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_product": 2,
+          "split_or_chimeric_alignment": 1,
+          "wrong_gene": 2
+        },
+        "wall_time_s": 48.460417499009054,
+        "peak_rss_bytes": 4571217920,
+        "stage_timings": {
+          "read_ingest_s": 21.330574604,
+          "count_finalize_s": 10.731753509,
+          "read_threading_input_s": null,
+          "pcr_s": 16.201307054,
+          "pipeline_total_s": 48.264815814
+        },
+        "executable_sha256": "70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-warm-b728f14/results/cnidaria_1.1.0_3.1.0_20260909_132424_485613_b9e858d8.yaml"
+      },
+      "candidate": {
+        "success": true,
+        "taxon": "Agalma elegans",
+        "n_reads_read": 1000000,
+        "n_kmers": 132986604,
+        "products": {
+          "18S": [
+            [
+              1785,
+              "c23378920cd43acb881fb906b67930ab4868a2512cf259345a268225933d1cf1"
+            ]
+          ],
+          "28S_1": [
+            [
+              3230,
+              "ffca6496028c8889c1222437a876c794026bc9d1195f8b50a5fc3d7d12fb694d"
+            ]
+          ],
+          "ITS_1": [
+            [
+              817,
+              "7c6643ab6df00024bbd34c338614fd7ea3d5bf2285bc5c01a2c4af00fccd1d49"
+            ]
+          ],
+          "ITS_2": [
+            [
+              671,
+              "5f20f7add08ebe87db58ffe277694a59a166ddcea44c0bce2cb6c377133c333e"
+            ]
+          ],
+          "28S_2": [
+            [
+              417,
+              "93180882a100dfc1ede9e8de1f6026ecb7fb67a84629a7e34276ee37b422f0ae"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_product": 2,
+          "split_or_chimeric_alignment": 1,
+          "wrong_gene": 2
+        },
+        "wall_time_s": 49.325977676024195,
+        "peak_rss_bytes": 4571283456,
+        "stage_timings": {
+          "read_ingest_s": 21.292986936,
+          "count_finalize_s": 11.627515939,
+          "read_threading_input_s": null,
+          "pcr_s": 16.173670035,
+          "pipeline_total_s": 49.107081035
+        },
+        "executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-final/results/cnidaria_1.1.0_3.2.0-dev_20260909_140757_074624_b292cd0a.yaml"
+      },
+      "input_selection_and_checksums_identical": true,
+      "panel_and_references_identical": true
+    },
+    "cnidaria/SRR8617500/1000000": {
+      "both_successful": true,
+      "counts_identical": true,
+      "products_identical": true,
+      "classification_change": null,
+      "baseline": {
+        "success": true,
+        "taxon": "Rhopilema esculentum",
+        "n_reads_read": 1000000,
+        "n_kmers": 131979520,
+        "products": {
+          "CO1": [
+            [
+              692,
+              "5aa4e1ee93e87ba70ba6e2473289572f8320c6ff7dbb40054bfe384810538f65"
+            ]
+          ],
+          "18S": [
+            [
+              1796,
+              "b816072915f8e9705cae7d551c061c4603f99a66b726783eaa3dac4d251fbdd9"
+            ]
+          ],
+          "28S_1": [
+            [
+              3258,
+              "d7ca72ab7054616f1cbeddd2fc1e8032c6d8981342aec4924c1b9ef7b0edb6fe"
+            ]
+          ],
+          "ITS_2": [
+            [
+              929,
+              "833f238101d8c9f5aa38cd2804e5c1c240864e42c42f616999f6f1c3ddb7dcb5"
+            ]
+          ],
+          "28S_2": [
+            [
+              426,
+              "9fc8e32ed482e29fa12cef7559a8f9f1e1b7396ea76f06ba0c850ad4bb80abae"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_product": 3,
+          "split_or_chimeric_alignment": 1,
+          "ambiguous_gene": 1
+        },
+        "wall_time_s": 56.66901292098919,
+        "peak_rss_bytes": 4570869760,
+        "stage_timings": {
+          "read_ingest_s": 24.323046216,
+          "count_finalize_s": 10.635087694,
+          "read_threading_input_s": null,
+          "pcr_s": 21.504491992,
+          "pipeline_total_s": 56.463854435
+        },
+        "executable_sha256": "70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-warm-b728f14/results/cnidaria_1.1.0_3.1.0_20260909_132424_485613_b9e858d8.yaml"
+      },
+      "candidate": {
+        "success": true,
+        "taxon": "Rhopilema esculentum",
+        "n_reads_read": 1000000,
+        "n_kmers": 131979520,
+        "products": {
+          "CO1": [
+            [
+              692,
+              "5aa4e1ee93e87ba70ba6e2473289572f8320c6ff7dbb40054bfe384810538f65"
+            ]
+          ],
+          "18S": [
+            [
+              1796,
+              "b816072915f8e9705cae7d551c061c4603f99a66b726783eaa3dac4d251fbdd9"
+            ]
+          ],
+          "28S_1": [
+            [
+              3258,
+              "d7ca72ab7054616f1cbeddd2fc1e8032c6d8981342aec4924c1b9ef7b0edb6fe"
+            ]
+          ],
+          "ITS_2": [
+            [
+              929,
+              "833f238101d8c9f5aa38cd2804e5c1c240864e42c42f616999f6f1c3ddb7dcb5"
+            ]
+          ],
+          "28S_2": [
+            [
+              426,
+              "9fc8e32ed482e29fa12cef7559a8f9f1e1b7396ea76f06ba0c850ad4bb80abae"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_product": 3,
+          "split_or_chimeric_alignment": 1,
+          "ambiguous_gene": 1
+        },
+        "wall_time_s": 54.236107525008265,
+        "peak_rss_bytes": 4571275264,
+        "stage_timings": {
+          "read_ingest_s": 21.589398077,
+          "count_finalize_s": 11.224153741,
+          "read_threading_input_s": null,
+          "pcr_s": 21.1996974,
+          "pipeline_total_s": 54.023770878
+        },
+        "executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-final/results/cnidaria_1.1.0_3.2.0-dev_20260909_140757_074624_b292cd0a.yaml"
+      },
+      "input_selection_and_checksums_identical": true,
+      "panel_and_references_identical": true
+    },
+    "cnidaria/SRR9278435/1000000": {
+      "both_successful": true,
+      "counts_identical": true,
+      "products_identical": true,
+      "classification_change": null,
+      "baseline": {
+        "success": true,
+        "taxon": "Xenia sp.",
+        "n_reads_read": 1000000,
+        "n_kmers": 131779117,
+        "products": {
+          "16S": [
+            [
+              621,
+              "98855f568dcf511aeb9eb65db128d00b1e22c309d7ebc78fc3acca46003bf8ea"
+            ]
+          ],
+          "CO1": [
+            [
+              692,
+              "c6c71d47c22eeb600d9917e2edc48af584a0579a5182f24b5ccef3b2cef6191b"
+            ]
+          ],
+          "18S": [
+            [
+              1807,
+              "d8c9a0acd3ea1645f4b9a0bb396c0c6d8db47a1719fe125f80a077c5064930de"
+            ]
+          ],
+          "28S_1": [
+            [
+              3234,
+              "b319dd820ad90ca5d7b583b68326bd2aaa77cf17466cc95feae2237df577d427"
+            ]
+          ],
+          "ITS_1": [
+            [
+              899,
+              "9416c74660e1ef18b17754853b4cc9b688953ea5f4b3640de3e9c6c59ca6e263"
+            ]
+          ],
+          "ITS_2": [
+            [
+              748,
+              "072103867c850bdcd28b620c54042c2231f117e8e190db86bb0c1089a0039332"
+            ]
+          ],
+          "28S_2": [
+            [
+              414,
+              "0fcfeb7036e7bb899ccf20ff2e308bc72df4ab9a3f6512669af597af9e932caa"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_product": 4,
+          "split_or_chimeric_alignment": 1,
+          "ambiguous_gene": 2
+        },
+        "wall_time_s": 54.15565063501708,
+        "peak_rss_bytes": 4570980352,
+        "stage_timings": {
+          "read_ingest_s": 22.072643916,
+          "count_finalize_s": 11.958663975,
+          "read_threading_input_s": null,
+          "pcr_s": 19.92862381,
+          "pipeline_total_s": 53.961697323
+        },
+        "executable_sha256": "70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-warm-b728f14/results/cnidaria_1.1.0_3.1.0_20260909_132424_485613_b9e858d8.yaml"
+      },
+      "candidate": {
+        "success": true,
+        "taxon": "Xenia sp.",
+        "n_reads_read": 1000000,
+        "n_kmers": 131779117,
+        "products": {
+          "16S": [
+            [
+              621,
+              "98855f568dcf511aeb9eb65db128d00b1e22c309d7ebc78fc3acca46003bf8ea"
+            ]
+          ],
+          "CO1": [
+            [
+              692,
+              "c6c71d47c22eeb600d9917e2edc48af584a0579a5182f24b5ccef3b2cef6191b"
+            ]
+          ],
+          "18S": [
+            [
+              1807,
+              "d8c9a0acd3ea1645f4b9a0bb396c0c6d8db47a1719fe125f80a077c5064930de"
+            ]
+          ],
+          "28S_1": [
+            [
+              3234,
+              "b319dd820ad90ca5d7b583b68326bd2aaa77cf17466cc95feae2237df577d427"
+            ]
+          ],
+          "ITS_1": [
+            [
+              899,
+              "9416c74660e1ef18b17754853b4cc9b688953ea5f4b3640de3e9c6c59ca6e263"
+            ]
+          ],
+          "ITS_2": [
+            [
+              748,
+              "072103867c850bdcd28b620c54042c2231f117e8e190db86bb0c1089a0039332"
+            ]
+          ],
+          "28S_2": [
+            [
+              414,
+              "0fcfeb7036e7bb899ccf20ff2e308bc72df4ab9a3f6512669af597af9e932caa"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_product": 4,
+          "split_or_chimeric_alignment": 1,
+          "ambiguous_gene": 2
+        },
+        "wall_time_s": 53.94298647902906,
+        "peak_rss_bytes": 4571242496,
+        "stage_timings": {
+          "read_ingest_s": 22.576425308,
+          "count_finalize_s": 11.189089327,
+          "read_threading_input_s": null,
+          "pcr_s": 19.954645159000002,
+          "pipeline_total_s": 53.729945091
+        },
+        "executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-final/results/cnidaria_1.1.0_3.2.0-dev_20260909_140757_074624_b292cd0a.yaml"
+      },
+      "input_selection_and_checksums_identical": true,
+      "panel_and_references_identical": true
+    },
+    "human/SRR17535371/1000000": {
+      "both_successful": true,
+      "counts_identical": true,
+      "products_identical": true,
+      "classification_change": {
+        "before": {
+          "confirmed_gene_other_taxon": 5
+        },
+        "after": {
+          "confirmed_product": 5
+        }
+      },
+      "baseline": {
+        "success": true,
+        "taxon": "",
+        "n_reads_read": 108518,
+        "n_kmers": 16138457,
+        "products": {
+          "mt-3734-6739": [
+            [
+              2990,
+              "03c2cbd791702dced1f7555a120979ffb77c287346322b426d798ef9a4e05edf"
+            ]
+          ],
+          "mt-6511-9220": [
+            [
+              2694,
+              "60afa17b355c59cc5f00360660ef540b79a487b3bd18377ed9862a7708830efd"
+            ]
+          ],
+          "mt-8910-10648": [
+            [
+              1725,
+              "1b92f0a3473f8b0742e24d495ea8e9d1cf6035cce55823a4169b261765606c73"
+            ]
+          ],
+          "mt-10360-12226": [
+            [
+              1853,
+              "f9651761bd4d462f95252358ed1a75ed69ac98a6f3385335eedc0cd5be2f0672"
+            ]
+          ],
+          "mt-14898-151": [
+            [
+              1808,
+              "17631adad883fb91c1c7dc2c40233d42d1597486836869404853a5adde23f17f"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_gene_other_taxon": 5
+        },
+        "wall_time_s": 1.051174565043766,
+        "peak_rss_bytes": 25382912,
+        "stage_timings": {
+          "read_ingest_s": 0.875787819,
+          "count_finalize_s": 0.010302976,
+          "read_threading_input_s": null,
+          "pcr_s": 0.160858172,
+          "pipeline_total_s": 1.047972011
+        },
+        "executable_sha256": "70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-warm-b728f14/results/human_1.0.1_3.1.0_20260909_132424_485613_b9e858d8.yaml"
+      },
+      "candidate": {
+        "success": true,
+        "taxon": "Homo sapiens",
+        "n_reads_read": 108518,
+        "n_kmers": 16138457,
+        "products": {
+          "mt-3734-6739": [
+            [
+              2990,
+              "03c2cbd791702dced1f7555a120979ffb77c287346322b426d798ef9a4e05edf"
+            ]
+          ],
+          "mt-6511-9220": [
+            [
+              2694,
+              "60afa17b355c59cc5f00360660ef540b79a487b3bd18377ed9862a7708830efd"
+            ]
+          ],
+          "mt-8910-10648": [
+            [
+              1725,
+              "1b92f0a3473f8b0742e24d495ea8e9d1cf6035cce55823a4169b261765606c73"
+            ]
+          ],
+          "mt-10360-12226": [
+            [
+              1853,
+              "f9651761bd4d462f95252358ed1a75ed69ac98a6f3385335eedc0cd5be2f0672"
+            ]
+          ],
+          "mt-14898-151": [
+            [
+              1808,
+              "17631adad883fb91c1c7dc2c40233d42d1597486836869404853a5adde23f17f"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_product": 5
+        },
+        "wall_time_s": 0.9889621500042267,
+        "peak_rss_bytes": 25718784,
+        "stage_timings": {
+          "read_ingest_s": 0.784495727,
+          "count_finalize_s": 0.009718736,
+          "read_threading_input_s": null,
+          "pcr_s": 0.167358387,
+          "pipeline_total_s": 0.973619323
+        },
+        "executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-final/results/human_1.0.1_3.2.0-dev_20260909_140757_074624_b292cd0a.yaml"
+      },
+      "input_selection_and_checksums_identical": true,
+      "panel_and_references_identical": true
+    },
+    "insecta/SRR1057608/1000000": {
+      "both_successful": true,
+      "counts_identical": true,
+      "products_identical": true,
+      "classification_change": null,
+      "baseline": {
+        "success": true,
+        "taxon": "Heliconius pachinus",
+        "n_reads_read": 1000000,
+        "n_kmers": 71966368,
+        "products": {
+          "CO1_1": [
+            [
+              304,
+              "8ba0cf4d35377c7ebbb54000f07053c99d16008cf3e79cb45d8441da95ec1f2f"
+            ]
+          ],
+          "CO2_1": [
+            [
+              288,
+              "75a2f13657c465c52bb64e68bea7a87ee7602a32700e5905a346b6dab7692712"
+            ]
+          ],
+          "CytB": [
+            [
+              403,
+              "f7944f2a336182246d3bbdffcf7d5b92912818cd61182a1de13d5fa745b92ec3"
+            ]
+          ],
+          "ND1": [
+            [
+              240,
+              "a38abaa51a1d659ed1d5ba84d99748b57a9244bc3fd68444f8ca013972a7d72c"
+            ]
+          ],
+          "ND5": [
+            [
+              301,
+              "c09cf847c492455f94558517a37d8a454e2eeecaf438d6a9fc5c8a51d1a761d5"
+            ]
+          ],
+          "CO1_2": [
+            [
+              855,
+              "017bd8b318b157bd0a3e287883fddac70be8f2e280202fe418c6251d412e0f82"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_product": 5,
+          "no_significant_hit": 1
+        },
+        "wall_time_s": 45.03031637100503,
+        "peak_rss_bytes": 2289115136,
+        "stage_timings": {
+          "read_ingest_s": 11.815074932,
+          "count_finalize_s": 6.612993475,
+          "read_threading_input_s": null,
+          "pcr_s": 26.509028847,
+          "pipeline_total_s": 44.938400369
+        },
+        "executable_sha256": "70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-warm-b728f14/results/insecta_1.0.0_3.1.0_20260909_132424_485613_b9e858d8.yaml"
+      },
+      "candidate": {
+        "success": true,
+        "taxon": "Heliconius pachinus",
+        "n_reads_read": 1000000,
+        "n_kmers": 71966368,
+        "products": {
+          "CO1_1": [
+            [
+              304,
+              "8ba0cf4d35377c7ebbb54000f07053c99d16008cf3e79cb45d8441da95ec1f2f"
+            ]
+          ],
+          "CO2_1": [
+            [
+              288,
+              "75a2f13657c465c52bb64e68bea7a87ee7602a32700e5905a346b6dab7692712"
+            ]
+          ],
+          "CytB": [
+            [
+              403,
+              "f7944f2a336182246d3bbdffcf7d5b92912818cd61182a1de13d5fa745b92ec3"
+            ]
+          ],
+          "ND1": [
+            [
+              240,
+              "a38abaa51a1d659ed1d5ba84d99748b57a9244bc3fd68444f8ca013972a7d72c"
+            ]
+          ],
+          "ND5": [
+            [
+              301,
+              "c09cf847c492455f94558517a37d8a454e2eeecaf438d6a9fc5c8a51d1a761d5"
+            ]
+          ],
+          "CO1_2": [
+            [
+              855,
+              "017bd8b318b157bd0a3e287883fddac70be8f2e280202fe418c6251d412e0f82"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_product": 5,
+          "no_significant_hit": 1
+        },
+        "wall_time_s": 45.228631692007184,
+        "peak_rss_bytes": 2289262592,
+        "stage_timings": {
+          "read_ingest_s": 11.806298679,
+          "count_finalize_s": 7.030292841,
+          "read_threading_input_s": null,
+          "pcr_s": 26.269315545,
+          "pipeline_total_s": 45.117184052
+        },
+        "executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-final/results/insecta_1.0.0_3.2.0-dev_20260909_140757_074624_b292cd0a.yaml"
+      },
+      "input_selection_and_checksums_identical": true,
+      "panel_and_references_identical": true
+    },
+    "insecta/SRR27962769/1000000": {
+      "both_successful": true,
+      "counts_identical": true,
+      "products_identical": true,
+      "classification_change": null,
+      "baseline": {
+        "success": true,
+        "taxon": "Gryllus bimaculatus",
+        "n_reads_read": 1000000,
+        "n_kmers": 131993167,
+        "products": {
+          "12S": [
+            [
+              423,
+              "8a88bc972180963c12a31346c26f60c6862fd516b5d6ccc2d120855c8e23d47c"
+            ]
+          ],
+          "16S_1": [
+            [
+              376,
+              "e5f5129691d3c5b0526cb4322c4e0566420f408d7090cca76a8ad146718b755c"
+            ]
+          ],
+          "CO1_1": [
+            [
+              352,
+              "e2d376bc5b0f09a954f7dfb6083ff3e4a768a2b687685e18349f66dd25cfc9c0"
+            ]
+          ],
+          "CO2_1": [
+            [
+              288,
+              "660fe7a5eb0e9edf02db0254455941d046e95c11da69b0a7a8de4e28449a054f"
+            ]
+          ],
+          "CytB": [
+            [
+              403,
+              "7d75f8650e104c236b595fc0b12a5a8a74976b7aa3268fd0b5f5715bfff38f81"
+            ]
+          ],
+          "ND1": [
+            [
+              240,
+              "0319b5ee87e454d7fb77932645b8ecda1e09e19293aa61271cf761572c057456"
+            ]
+          ],
+          "ND4": [
+            [
+              241,
+              "36eba17e1bc0c8eada369c9d50bea98b464803b954d9d1a2701e0a1a89cecab8"
+            ]
+          ],
+          "ND5": [
+            [
+              301,
+              "9c9cfa9286e4b4c9bc4e981e3e2855c3dda925528ca94bd44ea148799b190d1e"
+            ]
+          ],
+          "16S_2": [
+            [
+              534,
+              "66686929b8d17dfa5e1851e37d6a089bc385a664000b4f50bf5c1431a3c22db4"
+            ]
+          ],
+          "CO1_2": [
+            [
+              855,
+              "f5b2dd13ff4e23f87760a4ab151ea7b267d1c6245a9e0c6effa6f463ccdc16d1"
+            ]
+          ],
+          "NADH": [
+            [
+              544,
+              "f01e2075d7ef7a69567543a806fa8efeaf5e13deb7759deefecba8b8c681efe6"
+            ]
+          ]
+        },
+        "classifications": {
+          "no_significant_hit": 3,
+          "ambiguous_gene": 1,
+          "insufficient_alignment": 3,
+          "confirmed_product": 4
+        },
+        "wall_time_s": 99.4084070250392,
+        "peak_rss_bytes": 4570910720,
+        "stage_timings": {
+          "read_ingest_s": 20.957281862,
+          "count_finalize_s": 12.564206485,
+          "read_threading_input_s": null,
+          "pcr_s": 65.684042697,
+          "pipeline_total_s": 99.206856039
+        },
+        "executable_sha256": "70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-warm-b728f14/results/insecta_1.0.0_3.1.0_20260909_132424_485613_b9e858d8.yaml"
+      },
+      "candidate": {
+        "success": true,
+        "taxon": "Gryllus bimaculatus",
+        "n_reads_read": 1000000,
+        "n_kmers": 131993167,
+        "products": {
+          "12S": [
+            [
+              423,
+              "8a88bc972180963c12a31346c26f60c6862fd516b5d6ccc2d120855c8e23d47c"
+            ]
+          ],
+          "16S_1": [
+            [
+              376,
+              "e5f5129691d3c5b0526cb4322c4e0566420f408d7090cca76a8ad146718b755c"
+            ]
+          ],
+          "CO1_1": [
+            [
+              352,
+              "e2d376bc5b0f09a954f7dfb6083ff3e4a768a2b687685e18349f66dd25cfc9c0"
+            ]
+          ],
+          "CO2_1": [
+            [
+              288,
+              "660fe7a5eb0e9edf02db0254455941d046e95c11da69b0a7a8de4e28449a054f"
+            ]
+          ],
+          "CytB": [
+            [
+              403,
+              "7d75f8650e104c236b595fc0b12a5a8a74976b7aa3268fd0b5f5715bfff38f81"
+            ]
+          ],
+          "ND1": [
+            [
+              240,
+              "0319b5ee87e454d7fb77932645b8ecda1e09e19293aa61271cf761572c057456"
+            ]
+          ],
+          "ND4": [
+            [
+              241,
+              "36eba17e1bc0c8eada369c9d50bea98b464803b954d9d1a2701e0a1a89cecab8"
+            ]
+          ],
+          "ND5": [
+            [
+              301,
+              "9c9cfa9286e4b4c9bc4e981e3e2855c3dda925528ca94bd44ea148799b190d1e"
+            ]
+          ],
+          "16S_2": [
+            [
+              534,
+              "66686929b8d17dfa5e1851e37d6a089bc385a664000b4f50bf5c1431a3c22db4"
+            ]
+          ],
+          "CO1_2": [
+            [
+              855,
+              "f5b2dd13ff4e23f87760a4ab151ea7b267d1c6245a9e0c6effa6f463ccdc16d1"
+            ]
+          ],
+          "NADH": [
+            [
+              544,
+              "f01e2075d7ef7a69567543a806fa8efeaf5e13deb7759deefecba8b8c681efe6"
+            ]
+          ]
+        },
+        "classifications": {
+          "no_significant_hit": 3,
+          "ambiguous_gene": 1,
+          "insufficient_alignment": 3,
+          "confirmed_product": 4
+        },
+        "wall_time_s": 99.55063691595569,
+        "peak_rss_bytes": 4571324416,
+        "stage_timings": {
+          "read_ingest_s": 21.302406985,
+          "count_finalize_s": 13.21182836,
+          "read_threading_input_s": null,
+          "pcr_s": 64.811640069,
+          "pipeline_total_s": 99.337034425
+        },
+        "executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-final/results/insecta_1.0.0_3.2.0-dev_20260909_140757_074624_b292cd0a.yaml"
+      },
+      "input_selection_and_checksums_identical": true,
+      "panel_and_references_identical": true
+    },
+    "insecta/SRR31887760/1000000": {
+      "both_successful": true,
+      "counts_identical": true,
+      "products_identical": true,
+      "classification_change": null,
+      "baseline": {
+        "success": true,
+        "taxon": "Drosophila melanogaster",
+        "n_reads_read": 1000000,
+        "n_kmers": 82921365,
+        "products": {
+          "CO1_1": [
+            [
+              352,
+              "4421359eb30276c48af559081691c91a74d132155b4192c72cd44eac885f4af4"
+            ]
+          ],
+          "CO2_1": [
+            [
+              291,
+              "aaa3bf71efe19ffb6d146638d290833eb4390437b17063b1c494af2461b3bd91"
+            ]
+          ],
+          "CytB": [
+            [
+              403,
+              "4e0516151ac3d36705aaa10a2a1f49fc16efa661c4f584a5bcdb174aea119845"
+            ]
+          ],
+          "ND4": [
+            [
+              241,
+              "473835dfdc90b9dd4a33a9ef45654208d9beae9c20c17a0f5d0c9dad39ec4470"
+            ]
+          ],
+          "ND5": [
+            [
+              301,
+              "1b9f14a0dd0b1c865e6521bbd9d2a250e80b1306d77fc3e5f70f7546a714cb85"
+            ]
+          ],
+          "CO1_2": [
+            [
+              859,
+              "51bf43f54d090b6eabf16c53c6c873ee67be7eb506b52ff8e9f943bd6d117366"
+            ]
+          ],
+          "CO2_2": [
+            [
+              777,
+              "108adaa4993ac45ef33426c64df695f7759b03a64454e0906964efbcc0798edf"
+            ]
+          ],
+          "18S_1": [
+            [
+              661,
+              "d9560d203e10a1dcbd87c480e049dc7f9b8396a419f38199d186c84c2364766c"
+            ]
+          ],
+          "18S_2": [
+            [
+              1977,
+              "35d21bc51d980e58c64ec74ea7fc035b278e1fbeeb55caab5782cd45885268d0"
+            ]
+          ]
+        },
+        "classifications": {
+          "insufficient_alignment": 2,
+          "wrong_gene": 1,
+          "confirmed_gene_other_taxon": 1,
+          "no_significant_hit": 1,
+          "confirmed_product": 3,
+          "ambiguous_gene": 1
+        },
+        "wall_time_s": 60.66211607202422,
+        "peak_rss_bytes": 2289180672,
+        "stage_timings": {
+          "read_ingest_s": 13.655529461,
+          "count_finalize_s": 6.354991974,
+          "read_threading_input_s": null,
+          "pcr_s": 40.544038583,
+          "pipeline_total_s": 60.555837634
+        },
+        "executable_sha256": "70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-warm-b728f14/results/insecta_1.0.0_3.1.0_20260909_132424_485613_b9e858d8.yaml"
+      },
+      "candidate": {
+        "success": true,
+        "taxon": "Drosophila melanogaster",
+        "n_reads_read": 1000000,
+        "n_kmers": 82921365,
+        "products": {
+          "CO1_1": [
+            [
+              352,
+              "4421359eb30276c48af559081691c91a74d132155b4192c72cd44eac885f4af4"
+            ]
+          ],
+          "CO2_1": [
+            [
+              291,
+              "aaa3bf71efe19ffb6d146638d290833eb4390437b17063b1c494af2461b3bd91"
+            ]
+          ],
+          "CytB": [
+            [
+              403,
+              "4e0516151ac3d36705aaa10a2a1f49fc16efa661c4f584a5bcdb174aea119845"
+            ]
+          ],
+          "ND4": [
+            [
+              241,
+              "473835dfdc90b9dd4a33a9ef45654208d9beae9c20c17a0f5d0c9dad39ec4470"
+            ]
+          ],
+          "ND5": [
+            [
+              301,
+              "1b9f14a0dd0b1c865e6521bbd9d2a250e80b1306d77fc3e5f70f7546a714cb85"
+            ]
+          ],
+          "CO1_2": [
+            [
+              859,
+              "51bf43f54d090b6eabf16c53c6c873ee67be7eb506b52ff8e9f943bd6d117366"
+            ]
+          ],
+          "CO2_2": [
+            [
+              777,
+              "108adaa4993ac45ef33426c64df695f7759b03a64454e0906964efbcc0798edf"
+            ]
+          ],
+          "18S_1": [
+            [
+              661,
+              "d9560d203e10a1dcbd87c480e049dc7f9b8396a419f38199d186c84c2364766c"
+            ]
+          ],
+          "18S_2": [
+            [
+              1977,
+              "35d21bc51d980e58c64ec74ea7fc035b278e1fbeeb55caab5782cd45885268d0"
+            ]
+          ]
+        },
+        "classifications": {
+          "insufficient_alignment": 2,
+          "wrong_gene": 1,
+          "confirmed_gene_other_taxon": 1,
+          "no_significant_hit": 1,
+          "confirmed_product": 3,
+          "ambiguous_gene": 1
+        },
+        "wall_time_s": 61.23430067603476,
+        "peak_rss_bytes": 2289582080,
+        "stage_timings": {
+          "read_ingest_s": 14.003479176999999,
+          "count_finalize_s": 6.834586575,
+          "read_threading_input_s": null,
+          "pcr_s": 40.26179577,
+          "pipeline_total_s": 61.111804848
+        },
+        "executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-final/results/insecta_1.0.0_3.2.0-dev_20260909_140757_074624_b292cd0a.yaml"
+      },
+      "input_selection_and_checksums_identical": true,
+      "panel_and_references_identical": true
+    },
+    "teleostei/SRR22396603/1000000": {
+      "both_successful": true,
+      "counts_identical": true,
+      "products_identical": true,
+      "classification_change": null,
+      "baseline": {
+        "success": true,
+        "taxon": "Nomeus gronovii",
+        "n_reads_read": 1000000,
+        "n_kmers": 132972251,
+        "products": {
+          "18S": [
+            [
+              472,
+              "6b675d79c68a0dff4606b6177323b7ae9371db76059fef5a96adc5df8a771ea7"
+            ]
+          ],
+          "16S": [
+            [
+              605,
+              "89c960c2d0a84c008a6957723b8ea67a00aeef21ba9aebd4e39bb5f513ec113f"
+            ]
+          ],
+          "CO1": [
+            [
+              685,
+              "cd6e38cb2b0e8fea25598584af0a4b1f7e50e6b8d1c4da2ffa94c76ef5b84c35"
+            ]
+          ],
+          "12S": [
+            [
+              419,
+              "282b68f1813e26fd278913de66dbdf5c9f1717e012658f5ee828a1b70e3edcd7"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_gene_other_taxon": 1,
+          "confirmed_product": 3
+        },
+        "wall_time_s": 46.51701463502832,
+        "peak_rss_bytes": 4570812416,
+        "stage_timings": {
+          "read_ingest_s": 20.548431554,
+          "count_finalize_s": 11.650047409,
+          "read_threading_input_s": null,
+          "pcr_s": 14.120296643,
+          "pipeline_total_s": 46.31941266
+        },
+        "executable_sha256": "70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-warm-b728f14/results/teleostei_1.0.0_3.1.0_20260909_132424_485613_b9e858d8.yaml"
+      },
+      "candidate": {
+        "success": true,
+        "taxon": "Nomeus gronovii",
+        "n_reads_read": 1000000,
+        "n_kmers": 132972251,
+        "products": {
+          "18S": [
+            [
+              472,
+              "6b675d79c68a0dff4606b6177323b7ae9371db76059fef5a96adc5df8a771ea7"
+            ]
+          ],
+          "16S": [
+            [
+              605,
+              "89c960c2d0a84c008a6957723b8ea67a00aeef21ba9aebd4e39bb5f513ec113f"
+            ]
+          ],
+          "CO1": [
+            [
+              685,
+              "cd6e38cb2b0e8fea25598584af0a4b1f7e50e6b8d1c4da2ffa94c76ef5b84c35"
+            ]
+          ],
+          "12S": [
+            [
+              419,
+              "282b68f1813e26fd278913de66dbdf5c9f1717e012658f5ee828a1b70e3edcd7"
+            ]
+          ]
+        },
+        "classifications": {
+          "confirmed_gene_other_taxon": 1,
+          "confirmed_product": 3
+        },
+        "wall_time_s": 48.047465036972426,
+        "peak_rss_bytes": 4571332608,
+        "stage_timings": {
+          "read_ingest_s": 21.716781395,
+          "count_finalize_s": 12.138275699,
+          "read_threading_input_s": null,
+          "pcr_s": 13.96862846,
+          "pipeline_total_s": 47.832194626
+        },
+        "executable_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "source_result": "/tmp/sharkmer-v3.2-review/calibration-final/results/teleostei_1.0.0_3.2.0-dev_20260909_140757_074624_b292cd0a.yaml"
+      },
+      "input_selection_and_checksums_identical": true,
+      "panel_and_references_identical": true
+    }
+  }
+}

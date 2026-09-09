@@ -334,9 +334,10 @@ and emits two output files:
 - A YAML result file to `panels/validation_results/` — machine-readable
   record of the same run, useful for diffing across panel versions.
 
-The validator writes reports to `panels/validation_reports/` by default. If
-your panel lives outside the repo (e.g. a private panel under development),
-use `--output-dir` to redirect reports to a directory of your choice:
+The validator writes Markdown reports to `panels/validation_reports/` by
+default. `--output-dir` redirects only those Markdown reports; YAML results
+still go to `panels/validation_results/`, and invocation artifacts retain their
+separate run directory. For example, for a panel outside the repo:
 
 ```bash
 python scripts/validate_panel.py ~/my_panels/arachnida.yaml \

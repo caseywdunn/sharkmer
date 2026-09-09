@@ -1,0 +1,336 @@
+panel: cnidaria
+panel_version: 1.1.0
+sharkmer_version: 3.2.0-dev
+git_commit: 03c0fc6
+date: '2026-09-09'
+run_id: 20260909_141651_859651_fa18ff39
+parameters:
+  runs:
+  - &id001
+    k: 19
+    threads: 2
+    max_reads: 100000
+    options:
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '100000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/known-truth-final-count/runs/benchmark_cnidaria_20260909_141651_859651_fa18ff39/cnidaria_ERR571460_100k_9d3fa1815318/
+    - -s
+    - cnidaria_ERR571460_100k
+    - /home/claude/repos/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+    benchmark_scope: counting-only
+    graph_dump: false
+    cache_mode: warm
+    effective_panel: null
+blast_mode: none
+rustc_version: rustc 1.98.1 (48a229cea 2026-09-01)
+provenance:
+  executable:
+    path: /home/claude/repos/sharkmer/target/release/sharkmer
+    sha256: 387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82
+    size_bytes: 6754904
+    selected_explicitly: false
+    built_for_run: true
+    build_command:
+    - cargo
+    - build
+    - --release
+    - --message-format=json-render-diagnostics
+    build_flags: []
+    build_environment: {}
+    build_profile: release
+    cargo_artifact_features:
+    - ahashmap
+    - default
+    hash_backend: ahashmap
+    workspace_source_observation:
+      revision: 03c0fc62ee0521f85a527b86f78252a60be1500b
+      dirty: false
+      tree_sha256: 86756eb858a152c35a33d7b4c46006533deee6ca448e3a9a1d7e35b7d0e8cf84
+      relationship_to_explicit_binary: built_immediately_before_fingerprint
+    fingerprinted_at: '2026-09-09T14:16:51.830462+00:00'
+  panel:
+    path: /home/claude/repos/sharkmer/panels/cnidaria.yaml
+    sha256: c7cebcaf6d2ce7fa9b6a23ef6a1e93e58adc8254334f006216eb4d4ddbb07b6d
+  references:
+  - gene: 16S
+    taxon: Agalma elegans
+    accession: OQ957203
+    length: 542
+    sha256: 32a59cd26699712674486da0a95fdd06793959e37ed9c1431553018b1e61d53e
+  - gene: 16S
+    taxon: Haliclystus octoradiatus
+    accession: OU744455.1
+    length: 513
+    sha256: 89c96b6179cc73d67c52db89e858a4fc22aeaae661b02ed494752ffca612fc26
+  - gene: 16S
+    taxon: Morbakka sp. ZRC CNI 1418
+    accession: OR400211
+    length: 563
+    sha256: 23a6b1ce0dedd3d6b7b38922b0102c2037d1d09dad34d3606409477b5ce25f55
+  - gene: 16S
+    taxon: Rhopilema esculentum
+    accession: NC_035741
+    length: 563
+    sha256: 6f1226f0e97ba3c8f9a67970a5cb990d4e84e61ba7718edc8801eb20e7958cb0
+  - gene: 16S
+    taxon: Xenia sp.
+    accession: XM_047005986
+    length: 621
+    sha256: 98855f568dcf511aeb9eb65db128d00b1e22c309d7ebc78fc3acca46003bf8ea
+  - gene: CO1
+    taxon: Agalma elegans
+    accession: OQ957203
+    length: 693
+    sha256: 76c378c31b6576b2a6aa25a4dd30a494ca5f39312fe51c890fe9437b8fdf3a3c
+  - gene: CO1
+    taxon: Haliclystus octoradiatus
+    accession: OU744455
+    length: 693
+    sha256: 2a35c49a649156a65ed53031c26bd1e29ea1f6b493ef9aa2476da2df4c54b82e
+  - gene: CO1
+    taxon: Morbakka sp. ZRC CNI 1418
+    accession: OR400210
+    length: 693
+    sha256: f4da5b47a8073bc36639066fb92fd9ceaf6f5704c6339d2041098d935fb1c8c8
+  - gene: CO1
+    taxon: Rhopilema esculentum
+    accession: NC_035741
+    length: 693
+    sha256: 2275a434340d838a3466af230b6cb98ff59cc523c6e010f707ffabb968257e47
+  - gene: CO1
+    taxon: Xenia sp.
+    accession: HG999760
+    length: 693
+    sha256: 6924e9af1814333ce8dda8db18879fc8cbdbb044435cce557bf78e02530eef3f
+  - gene: 18S
+    taxon: Agalma elegans
+    accession: AY937313
+    length: 1785
+    sha256: c23378920cd43acb881fb906b67930ab4868a2512cf259345a268225933d1cf1
+  - gene: 18S
+    taxon: Haliclystus octoradiatus
+    accession: AF358102
+    length: 1784
+    sha256: 9b8d6c7d0d63d204388b3257ad4670856cff64ab43409c62cfb62cfa9b1093b2
+  - gene: 18S
+    taxon: Morbakka sp. ZRC CNI 1418
+    accession: GQ849083
+    length: 1792
+    sha256: d8db9265b956c5d6e94f26717f98059e0a34114e41ad6ab15be09291f0951f61
+  - gene: 18S
+    taxon: Rhopilema esculentum
+    accession: XR_010517292
+    length: 1796
+    sha256: b816072915f8e9705cae7d551c061c4603f99a66b726783eaa3dac4d251fbdd9
+  - gene: 18S
+    taxon: Xenia sp.
+    accession: XR_006952126
+    length: 1807
+    sha256: d8c9a0acd3ea1645f4b9a0bb396c0c6d8db47a1719fe125f80a077c5064930de
+  - gene: 28S_1
+    taxon: Agalma elegans
+    accession: EU272542
+    length: 3230
+    sha256: ffca6496028c8889c1222437a876c794026bc9d1195f8b50a5fc3d7d12fb694d
+  - gene: 28S_1
+    taxon: Haliclystus octoradiatus
+    accession: KU308592
+    length: 3242
+    sha256: f7e8be227d2d52dcdd0995dc58bf6da311dfdea666039dd2707f7f72a56a317e
+  - gene: 28S_1
+    taxon: Morbakka sp. ZRC CNI 1418
+    accession: GQ849060
+    length: 3329
+    sha256: 60f689a257e2674cfa06330ace8bd91ce0a375e5281d15e4ec08bc8f7460ae86
+  - gene: 28S_1
+    taxon: Rhopilema esculentum
+    accession: XR_010517322
+    length: 3258
+    sha256: d7ca72ab7054616f1cbeddd2fc1e8032c6d8981342aec4924c1b9ef7b0edb6fe
+  - gene: 28S_1
+    taxon: Xenia sp.
+    accession: XR_006952137
+    length: 3234
+    sha256: b319dd820ad90ca5d7b583b68326bd2aaa77cf17466cc95feae2237df577d427
+  - gene: 28S_2
+    taxon: Agalma elegans
+    accession: EU272542
+    length: 406
+    sha256: babe089737f24c79cd7bc0a3d67bf75d8642c8d4f6ad003c66eeea3c1053a3cb
+  - gene: 28S_2
+    taxon: Haliclystus octoradiatus
+    accession: KU308592
+    length: 420
+    sha256: 83790678134fc652394bb25ba89ab5affb3b1e177f6e1940131894a814b91902
+  - gene: 28S_2
+    taxon: Morbakka sp. ZRC CNI 1418
+    accession: GQ849060
+    length: 438
+    sha256: 4b81074496e37666c2f6c11fe0e1e816b4d2ccb12c8cd6a71b8dd4b834d724c0
+  - gene: 28S_2
+    taxon: Rhopilema esculentum
+    accession: XR_010517322
+    length: 426
+    sha256: 9fc8e32ed482e29fa12cef7559a8f9f1e1b7396ea76f06ba0c850ad4bb80abae
+  - gene: 28S_2
+    taxon: Xenia sp.
+    accession: XR_006952139
+    length: 414
+    sha256: 0fcfeb7036e7bb899ccf20ff2e308bc72df4ab9a3f6512669af597af9e932caa
+  - gene: ITS_1
+    taxon: Agalma elegans
+    accession: AY937313
+    length: 817
+    sha256: 7c6643ab6df00024bbd34c338614fd7ea3d5bf2285bc5c01a2c4af00fccd1d49
+  - gene: ITS_1
+    taxon: Haliclystus octoradiatus
+    accession: HM022146
+    length: 872
+    sha256: 14e97db784a8041f8040e71efa6b90672ec4d5a82e5defb6c8ba3ffd473f07d0
+  - gene: ITS_1
+    taxon: Xenia sp.
+    accession: KC864852
+    length: 899
+    sha256: c7f0d534b0b7dcabd4e2fa69f3a92d7dc74c98120a0438e3a88ea32f3beba390
+  - gene: ITS_2
+    taxon: Haliclystus octoradiatus
+    accession: HM022147
+    length: 726
+    sha256: 38cec8e93bacfb41215edd0552825f6ce3d2b43e3e5ab10e06812755751ecb71
+  - gene: ITS_2
+    taxon: Rhopilema esculentum
+    accession: KR338966
+    length: 929
+    sha256: 833f238101d8c9f5aa38cd2804e5c1c240864e42c42f616999f6f1c3ddb7dcb5
+  - gene: ITS_2
+    taxon: Xenia sp.
+    accession: KY442629
+    length: 748
+    sha256: eb9cafa8fdc271fcddbc5c28c8f5beda9f97687842924f3b715f765e8b9c9277
+machine:
+  os: Linux 7.0.0-30-generic
+  cpu_model: x86_64
+  cpu_cores: 12
+  total_ram_gb: 62.6
+metric_availability:
+  stage_times: sharkmer_stats
+  allocator_peak_bytes: sharkmer_peak_alloc
+  peak_rss_bytes: gnu_time_linux_or_null
+  temp_disk_peak_bytes: null
+  temp_disk_final_bytes: invocation_directory_scan
+  os_page_cache_state: null
+samples:
+- accession: ERR571460
+  taxon: Porites lutea
+  depths:
+  - max_reads: 100000
+    wall_time_s: 2.441905100014992
+    success: true
+    genes:
+    - gene: 16S
+      recovered: false
+      evaluation_status: not_evaluated
+      reference_status: available
+    - gene: CO1
+      recovered: false
+      evaluation_status: not_evaluated
+      reference_status: available
+    - gene: 18S
+      recovered: false
+      evaluation_status: not_evaluated
+      reference_status: available
+    - gene: 28S_1
+      recovered: false
+      evaluation_status: not_evaluated
+      reference_status: available
+    - gene: ITS_1
+      recovered: false
+      evaluation_status: not_evaluated
+      reference_status: available
+    - gene: ITS_2
+      recovered: false
+      evaluation_status: not_evaluated
+      reference_status: available
+    - gene: 28S_2
+      recovered: false
+      evaluation_status: not_evaluated
+      reference_status: available
+    command:
+    - /home/claude/repos/sharkmer/target/release/sharkmer
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '100000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/known-truth-final-count/runs/benchmark_cnidaria_20260909_141651_859651_fa18ff39/cnidaria_ERR571460_100k_9d3fa1815318/
+    - -s
+    - cnidaria_ERR571460_100k
+    - /home/claude/repos/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+    actual_parameters: *id001
+    input:
+      source: local
+      path: /home/claude/repos/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+      sha256: 3d554c9bad681c519c2c0f5a77e87bd6d7bd06a0ffff845a4b9cb22ced8e3eef
+      size_bytes: 10710465
+      subset:
+        method: first_reads
+        max_reads: 100000
+      observed_n_reads: 100000
+      observed_n_bases: 15000000
+      observed_source_plan: &id002
+        kind: local_files
+        inputs:
+        - /home/claude/repos/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+        paired: false
+        max_reads: 100000
+    logs:
+      stdout: /tmp/sharkmer-v3.2-review/known-truth-final-count/runs/benchmark_cnidaria_20260909_141651_859651_fa18ff39/cnidaria_ERR571460_100k_9d3fa1815318/cnidaria_ERR571460_100k.stdout.log
+      stderr: /tmp/sharkmer-v3.2-review/known-truth-final-count/runs/benchmark_cnidaria_20260909_141651_859651_fa18ff39/cnidaria_ERR571460_100k_9d3fa1815318/cnidaria_ERR571460_100k.stderr.log
+      resource_usage: /tmp/sharkmer-v3.2-review/known-truth-final-count/runs/benchmark_cnidaria_20260909_141651_859651_fa18ff39/cnidaria_ERR571460_100k_9d3fa1815318/resource_usage.txt
+    failure: null
+    peak_rss_bytes: 576483328
+    peak_rss_provenance: proc_time_linux
+    temp_disk_final_bytes: 2519
+    known_truth:
+      passed: true
+      checks:
+      - check: input_sha256
+        expected: 3d554c9bad681c519c2c0f5a77e87bd6d7bd06a0ffff845a4b9cb22ced8e3eef
+        observed: 3d554c9bad681c519c2c0f5a77e87bd6d7bd06a0ffff845a4b9cb22ced8e3eef
+        passed: true
+      - check: n_kmers
+        expected: 13197385
+        observed: 13197385
+        passed: true
+    run_stats:
+      sharkmer_version: 3.2.0-dev
+      command: /home/claude/repos/sharkmer/target/release/sharkmer -k 19 -t 2 --max-reads
+        100000 -o /tmp/sharkmer-v3.2-review/known-truth-final-count/runs/benchmark_cnidaria_20260909_141651_859651_fa18ff39/cnidaria_ERR571460_100k_9d3fa1815318/
+        -s cnidaria_ERR571460_100k /home/claude/repos/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+      sample: cnidaria_ERR571460_100k
+      run_id: 18d3acbea969a18f-e4461-fe82310e940c498a
+      output_manifest: cnidaria_ERR571460_100k.manifest.yaml
+      run_status: complete
+      input_source: *id002
+      kmer_length: 19
+      chunks: 0
+      n_reads_read: 100000
+      n_bases_read: 15000000
+      n_subreads_ingested: 100000
+      n_bases_ingested: 14999541
+      n_kmers: 13197385
+      count_table_capacity: 14680064
+      peak_memory_bytes: 570476024
+      stage_timings:
+        read_ingest_s: 1.333319483
+        count_finalize_s: 1.063986805
+        read_threading_input_s: null
+        pcr_s: 1.84e-07
+        pipeline_total_s: 2.407373555

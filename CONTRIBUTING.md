@@ -97,8 +97,9 @@ and commit the results:
     conda activate sharkmer-bench
     python benchmarks/run_benchmark.py
 
-Review the results in `benchmarks/benchmark_results/` and compare against prior versions
-with `benchmarks/compare.py`. If there are regressions, fix them before
+Review the results in `benchmarks/benchmark_results/` and compare the structured
+per-product YAML records, classifications, and performance fields with prior
+runs. There is no separate comparison script. Investigate regressions before
 proceeding. Commit the benchmark results to `dev`:
 
     git add benchmarks/benchmark_results/

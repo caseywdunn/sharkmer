@@ -1,0 +1,1630 @@
+panel: bacteria
+panel_version: 1.0.0
+sharkmer_version: 3.2.0-dev
+git_commit: 03c0fc6
+date: '2026-09-09'
+run_id: 20260909_140757_074624_b292cd0a
+parameters:
+  runs:
+  - &id001
+    k: 19
+    threads: 2
+    max_reads: 1000000
+    options:
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_SRR19418213_1000k_fcc25c46dd22/
+    - -s
+    - bacteria_SRR19418213_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/bacteria.yaml
+    - --ena
+    - SRR19418213
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    benchmark_scope: end-to-end
+    graph_dump: false
+    cache_mode: warm
+    effective_panel:
+      path: /home/claude/repos/sharkmer/panels/bacteria.yaml
+      sha256: 3a3a9df11359cd1736f2edd52279d2ddb4c6a819dbf797fab59ba55ceae842ae
+  - &id003
+    k: 19
+    threads: 2
+    max_reads: 1000000
+    options:
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_SRR24806237_1000k_ec6a201d9748/
+    - -s
+    - bacteria_SRR24806237_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/bacteria.yaml
+    - --ena
+    - SRR24806237
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    benchmark_scope: end-to-end
+    graph_dump: false
+    cache_mode: warm
+    effective_panel:
+      path: /home/claude/repos/sharkmer/panels/bacteria.yaml
+      sha256: 3a3a9df11359cd1736f2edd52279d2ddb4c6a819dbf797fab59ba55ceae842ae
+  - &id005
+    k: 19
+    threads: 2
+    max_reads: 1000000
+    options:
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_ERR2596344_1000k_5f4ce534c16e/
+    - -s
+    - bacteria_ERR2596344_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/bacteria.yaml
+    - --ena
+    - ERR2596344
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    benchmark_scope: end-to-end
+    graph_dump: false
+    cache_mode: warm
+    effective_panel:
+      path: /home/claude/repos/sharkmer/panels/bacteria.yaml
+      sha256: 3a3a9df11359cd1736f2edd52279d2ddb4c6a819dbf797fab59ba55ceae842ae
+blast_mode: none
+rustc_version: rustc 1.98.1 (48a229cea 2026-09-01)
+provenance:
+  executable:
+    path: /home/claude/repos/sharkmer/target/release/sharkmer
+    sha256: 387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82
+    size_bytes: 6754904
+    selected_explicitly: false
+    built_for_run: true
+    build_command:
+    - cargo
+    - build
+    - --release
+    - --message-format=json-render-diagnostics
+    build_flags: []
+    build_environment: {}
+    build_profile: release
+    cargo_artifact_features:
+    - ahashmap
+    - default
+    hash_backend: ahashmap
+    workspace_source_observation:
+      revision: 03c0fc62ee0521f85a527b86f78252a60be1500b
+      dirty: false
+      tree_sha256: 86756eb858a152c35a33d7b4c46006533deee6ca448e3a9a1d7e35b7d0e8cf84
+      relationship_to_explicit_binary: built_immediately_before_fingerprint
+    fingerprinted_at: '2026-09-09T14:07:56.972011+00:00'
+  panel:
+    path: /home/claude/repos/sharkmer/panels/bacteria.yaml
+    sha256: 3a3a9df11359cd1736f2edd52279d2ddb4c6a819dbf797fab59ba55ceae842ae
+  references: []
+machine:
+  os: Linux 7.0.0-30-generic
+  cpu_model: x86_64
+  cpu_cores: 12
+  total_ram_gb: 62.6
+metric_availability:
+  stage_times: sharkmer_stats
+  allocator_peak_bytes: sharkmer_peak_alloc
+  peak_rss_bytes: gnu_time_linux_or_null
+  temp_disk_peak_bytes: null
+  temp_disk_final_bytes: invocation_directory_scan
+  os_page_cache_state: null
+samples:
+- accession: SRR19418213
+  taxon: rhizosphere metagenome
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 14.838818577001803
+    success: true
+    genes:
+    - gene: 16S-341F-785R
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: 16S-PRK341F-PRK806R
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: 16S-515F-806R
+      recovered: true
+      length: 283
+      n_products: 1
+      kmer_count_median: 16051
+      evaluation_status: recovered
+      reference_status: no_reference
+      products:
+      - product_index: 0
+        length: 283
+        sha256: 875ded71184a626d088d0644609565e3dd63e1e411107d646c27da6fdc642646
+        kmer_count_median: 16051
+        reference_match:
+          status: no_reference
+          expected_gene: 16S-515F-806R
+          expected_taxon: rhizosphere metagenome
+          matched_gene: null
+          matched_taxon: null
+          matched_accession: null
+          pct_identity: null
+          align_length: null
+          query_length: null
+          query_coverage_pct: null
+          aligned_fraction: null
+          hsp_count: 0
+          split_alignment: null
+          chimeric_alignment: null
+          alignment_structure_status: not_evaluated
+          alignment_evidence: null
+          on_target: false
+          thresholds: null
+          error: null
+      reference_match:
+        status: no_reference
+        expected_gene: 16S-515F-806R
+        expected_taxon: rhizosphere metagenome
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        query_length: null
+        query_coverage_pct: null
+        aligned_fraction: null
+        hsp_count: 0
+        split_alignment: null
+        chimeric_alignment: null
+        alignment_structure_status: not_evaluated
+        alignment_evidence: null
+        on_target: false
+        thresholds: null
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: 16S-515F-806RB
+      recovered: true
+      length: 283
+      n_products: 1
+      kmer_count_median: 16051
+      evaluation_status: recovered
+      reference_status: no_reference
+      products:
+      - product_index: 0
+        length: 283
+        sha256: 875ded71184a626d088d0644609565e3dd63e1e411107d646c27da6fdc642646
+        kmer_count_median: 16051
+        reference_match:
+          status: no_reference
+          expected_gene: 16S-515F-806RB
+          expected_taxon: rhizosphere metagenome
+          matched_gene: null
+          matched_taxon: null
+          matched_accession: null
+          pct_identity: null
+          align_length: null
+          query_length: null
+          query_coverage_pct: null
+          aligned_fraction: null
+          hsp_count: 0
+          split_alignment: null
+          chimeric_alignment: null
+          alignment_structure_status: not_evaluated
+          alignment_evidence: null
+          on_target: false
+          thresholds: null
+          error: null
+      reference_match:
+        status: no_reference
+        expected_gene: 16S-515F-806RB
+        expected_taxon: rhizosphere metagenome
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        query_length: null
+        query_coverage_pct: null
+        aligned_fraction: null
+        hsp_count: 0
+        split_alignment: null
+        chimeric_alignment: null
+        alignment_structure_status: not_evaluated
+        alignment_evidence: null
+        on_target: false
+        thresholds: null
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: 16S-68F-783Rabc
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    - gene: 16S-341F-783Rabc
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded after repeat evidence was encountered before
+        start-to-end connectivity
+    command:
+    - /home/claude/repos/sharkmer/target/release/sharkmer
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_SRR19418213_1000k_fcc25c46dd22/
+    - -s
+    - bacteria_SRR19418213_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/bacteria.yaml
+    - --ena
+    - SRR19418213
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    actual_parameters: *id001
+    input:
+      source: ena
+      accession: SRR19418213
+      subset:
+        method: first_reads
+        max_reads: 1000000
+      cache_mode: warm
+      cache_state_before:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      cache_state_after:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      observed_n_reads: 525982
+      observed_n_bases: 158320582
+      observed_source_plan: &id002
+        kind: cached_remote
+        inputs:
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        paired: false
+        max_reads: 1000000
+      selected_cache_entries:
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+    logs:
+      stdout: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_SRR19418213_1000k_fcc25c46dd22/bacteria_SRR19418213_1000k.stdout.log
+      stderr: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_SRR19418213_1000k_fcc25c46dd22/bacteria_SRR19418213_1000k.stderr.log
+      resource_usage: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_SRR19418213_1000k_fcc25c46dd22/resource_usage.txt
+    failure: null
+    peak_rss_bytes: 1148936192
+    peak_rss_provenance: proc_time_linux
+    temp_disk_final_bytes: 5893
+    known_truth: null
+    run_stats:
+      sharkmer_version: 3.2.0-dev
+      command: /home/claude/repos/sharkmer/target/release/sharkmer -k 19 -t 2 --max-reads
+        1000000 -o /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_SRR19418213_1000k_fcc25c46dd22/
+        -s bacteria_SRR19418213_1000k --pcr-panel-file /home/claude/repos/sharkmer/panels/bacteria.yaml
+        --ena SRR19418213 --cache-dir /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+      sample: bacteria_SRR19418213_1000k
+      run_id: 18d3ac58d884e45a-e3f5c-a44d5ae8fa97e414
+      output_manifest: bacteria_SRR19418213_1000k.manifest.yaml
+      run_status: complete
+      input_source: *id002
+      kmer_length: 19
+      chunks: 0
+      n_reads_read: 525982
+      n_bases_read: 158320582
+      n_subreads_ingested: 525982
+      n_bases_ingested: 158316694
+      n_kmers: 148831652
+      count_table_capacity: 29360128
+      peak_memory_bytes: 1140937986
+      stage_timings:
+        read_ingest_s: 11.227131782
+        count_finalize_s: 1.929382517
+        read_threading_input_s: null
+        pcr_s: 1.612438253
+        pipeline_total_s: 14.779589254
+      pcr_results:
+      - gene_name: bacteria_16S-341F-785R
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: bacteria_16S-PRK341F-PRK806R
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: bacteria_16S-515F-806R
+        status: success
+        n_products: 1
+        product_lengths:
+        - 283
+        output_file: bacteria_SRR19418213_1000k_bacteria_16S-515F-806R.fasta
+      - gene_name: bacteria_16S-515F-806RB
+        status: success
+        n_products: 1
+        product_lengths:
+        - 283
+        output_file: bacteria_SRR19418213_1000k_bacteria_16S-515F-806RB.fasta
+      - gene_name: bacteria_16S-68F-783Rabc
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+      - gene_name: bacteria_16S-341F-783Rabc
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded after repeat evidence was encountered
+          before start-to-end connectivity
+- accession: SRR24806237
+  taxon: coral metagenome
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 2.232159766019322
+    success: true
+    genes:
+    - gene: 16S-341F-785R
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded; repeat length unresolved on a start-to-end
+        graph path
+    - gene: 16S-PRK341F-PRK806R
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded; repeat length unresolved on a start-to-end
+        graph path
+    - gene: 16S-515F-806R
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded; repeat length unresolved on a start-to-end
+        graph path
+    - gene: 16S-515F-806RB
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded; repeat length unresolved on a start-to-end
+        graph path
+    - gene: 16S-68F-783Rabc
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded; path limit reached; all enumerated paths
+        had unresolved repeat length
+    - gene: 16S-341F-783Rabc
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: node budget exceeded; DFS state limit reached while repeat length
+        remained unresolved
+    command:
+    - /home/claude/repos/sharkmer/target/release/sharkmer
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_SRR24806237_1000k_ec6a201d9748/
+    - -s
+    - bacteria_SRR24806237_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/bacteria.yaml
+    - --ena
+    - SRR24806237
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    actual_parameters: *id003
+    input:
+      source: ena
+      accession: SRR24806237
+      subset:
+        method: first_reads
+        max_reads: 1000000
+      cache_mode: warm
+      cache_state_before:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      cache_state_after:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      observed_n_reads: 167686
+      observed_n_bases: 41837341
+      observed_source_plan: &id004
+        kind: cached_remote
+        inputs:
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        paired: false
+        max_reads: 1000000
+      selected_cache_entries:
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+    logs:
+      stdout: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_SRR24806237_1000k_ec6a201d9748/bacteria_SRR24806237_1000k.stdout.log
+      stderr: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_SRR24806237_1000k_ec6a201d9748/bacteria_SRR24806237_1000k.stderr.log
+      resource_usage: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_SRR24806237_1000k_ec6a201d9748/resource_usage.txt
+    failure: null
+    peak_rss_bytes: 150568960
+    peak_rss_provenance: proc_time_linux
+    temp_disk_final_bytes: 5713
+    known_truth: null
+    run_stats:
+      sharkmer_version: 3.2.0-dev
+      command: /home/claude/repos/sharkmer/target/release/sharkmer -k 19 -t 2 --max-reads
+        1000000 -o /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_SRR24806237_1000k_ec6a201d9748/
+        -s bacteria_SRR24806237_1000k --pcr-panel-file /home/claude/repos/sharkmer/panels/bacteria.yaml
+        --ena SRR24806237 --cache-dir /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+      sample: bacteria_SRR24806237_1000k
+      run_id: 18d3ac5c5c754de1-e3fab-a3961bde30b12a58
+      output_manifest: bacteria_SRR24806237_1000k.manifest.yaml
+      run_status: complete
+      input_source: *id004
+      kmer_length: 19
+      chunks: 0
+      n_reads_read: 167686
+      n_bases_read: 41837341
+      n_subreads_ingested: 167686
+      n_bases_ingested: 41836958
+      n_kmers: 38811804
+      count_table_capacity: 3670016
+      peak_memory_bytes: 142693634
+      stage_timings:
+        read_ingest_s: 1.470374035
+        count_finalize_s: 0.107694284
+        read_threading_input_s: null
+        pcr_s: 0.615545135
+        pipeline_total_s: 2.202444883
+      pcr_results:
+      - gene_name: bacteria_16S-341F-785R
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; repeat length unresolved on a start-to-end
+          graph path
+      - gene_name: bacteria_16S-PRK341F-PRK806R
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; repeat length unresolved on a start-to-end
+          graph path
+      - gene_name: bacteria_16S-515F-806R
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; repeat length unresolved on a start-to-end
+          graph path
+      - gene_name: bacteria_16S-515F-806RB
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; repeat length unresolved on a start-to-end
+          graph path
+      - gene_name: bacteria_16S-68F-783Rabc
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; path limit reached; all enumerated paths
+          had unresolved repeat length
+      - gene_name: bacteria_16S-341F-783Rabc
+        status: fail
+        n_products: 0
+        failure_reason: node budget exceeded; DFS state limit reached while repeat
+          length remained unresolved
+- accession: ERR2596344
+  taxon: seawater metagenome
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 1.2618632639641874
+    success: true
+    genes:
+    - gene: 16S-341F-785R
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: forward primer not found
+    - gene: 16S-PRK341F-PRK806R
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: repeat evidence encountered before start-to-end connectivity
+        could be established
+    - gene: 16S-515F-806R
+      recovered: true
+      length: 283
+      n_products: 1
+      kmer_count_median: 17337
+      evaluation_status: recovered
+      reference_status: no_reference
+      products:
+      - product_index: 0
+        length: 283
+        sha256: c660e604a2fe5313c8136cd7d41ca2c125f25e14e3984fb7cec378e1b4d0a766
+        kmer_count_median: 17337
+        reference_match:
+          status: no_reference
+          expected_gene: 16S-515F-806R
+          expected_taxon: seawater metagenome
+          matched_gene: null
+          matched_taxon: null
+          matched_accession: null
+          pct_identity: null
+          align_length: null
+          query_length: null
+          query_coverage_pct: null
+          aligned_fraction: null
+          hsp_count: 0
+          split_alignment: null
+          chimeric_alignment: null
+          alignment_structure_status: not_evaluated
+          alignment_evidence: null
+          on_target: false
+          thresholds: null
+          error: null
+      reference_match:
+        status: no_reference
+        expected_gene: 16S-515F-806R
+        expected_taxon: seawater metagenome
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        query_length: null
+        query_coverage_pct: null
+        aligned_fraction: null
+        hsp_count: 0
+        split_alignment: null
+        chimeric_alignment: null
+        alignment_structure_status: not_evaluated
+        alignment_evidence: null
+        on_target: false
+        thresholds: null
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: 16S-515F-806RB
+      recovered: true
+      length: 283
+      n_products: 1
+      kmer_count_median: 17337
+      evaluation_status: recovered
+      reference_status: no_reference
+      products:
+      - product_index: 0
+        length: 283
+        sha256: c660e604a2fe5313c8136cd7d41ca2c125f25e14e3984fb7cec378e1b4d0a766
+        kmer_count_median: 17337
+        reference_match:
+          status: no_reference
+          expected_gene: 16S-515F-806RB
+          expected_taxon: seawater metagenome
+          matched_gene: null
+          matched_taxon: null
+          matched_accession: null
+          pct_identity: null
+          align_length: null
+          query_length: null
+          query_coverage_pct: null
+          aligned_fraction: null
+          hsp_count: 0
+          split_alignment: null
+          chimeric_alignment: null
+          alignment_structure_status: not_evaluated
+          alignment_evidence: null
+          on_target: false
+          thresholds: null
+          error: null
+      reference_match:
+        status: no_reference
+        expected_gene: 16S-515F-806RB
+        expected_taxon: seawater metagenome
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        query_length: null
+        query_coverage_pct: null
+        aligned_fraction: null
+        hsp_count: 0
+        split_alignment: null
+        chimeric_alignment: null
+        alignment_structure_status: not_evaluated
+        alignment_evidence: null
+        on_target: false
+        thresholds: null
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: 16S-68F-783Rabc
+      recovered: true
+      length: 208
+      n_products: 3
+      kmer_count_median: 6
+      evaluation_status: recovered
+      reference_status: no_reference
+      products:
+      - product_index: 0
+        length: 208
+        sha256: 4fb3f6ac0ddef46523af87987d5f3b0d76ffe529f45843636f6eec26e3a0c9e5
+        kmer_count_median: 6
+        reference_match:
+          status: no_reference
+          expected_gene: 16S-68F-783Rabc
+          expected_taxon: seawater metagenome
+          matched_gene: null
+          matched_taxon: null
+          matched_accession: null
+          pct_identity: null
+          align_length: null
+          query_length: null
+          query_coverage_pct: null
+          aligned_fraction: null
+          hsp_count: 0
+          split_alignment: null
+          chimeric_alignment: null
+          alignment_structure_status: not_evaluated
+          alignment_evidence: null
+          on_target: false
+          thresholds: null
+          error: null
+      - product_index: 1
+        length: 208
+        sha256: 83360379d296fc2749924f5ade094749c7f9baa2eee03aad681c98972bbed82b
+        kmer_count_median: 6
+        reference_match:
+          status: no_reference
+          expected_gene: 16S-68F-783Rabc
+          expected_taxon: seawater metagenome
+          matched_gene: null
+          matched_taxon: null
+          matched_accession: null
+          pct_identity: null
+          align_length: null
+          query_length: null
+          query_coverage_pct: null
+          aligned_fraction: null
+          hsp_count: 0
+          split_alignment: null
+          chimeric_alignment: null
+          alignment_structure_status: not_evaluated
+          alignment_evidence: null
+          on_target: false
+          thresholds: null
+          error: null
+      - product_index: 2
+        length: 208
+        sha256: 8933823a851c69760777ea6cfc6aea6b153f858ab29fe63716c73c940915b60b
+        kmer_count_median: 7
+        reference_match:
+          status: no_reference
+          expected_gene: 16S-68F-783Rabc
+          expected_taxon: seawater metagenome
+          matched_gene: null
+          matched_taxon: null
+          matched_accession: null
+          pct_identity: null
+          align_length: null
+          query_length: null
+          query_coverage_pct: null
+          aligned_fraction: null
+          hsp_count: 0
+          split_alignment: null
+          chimeric_alignment: null
+          alignment_structure_status: not_evaluated
+          alignment_evidence: null
+          on_target: false
+          thresholds: null
+          error: null
+      reference_match:
+        status: no_reference
+        expected_gene: 16S-68F-783Rabc
+        expected_taxon: seawater metagenome
+        matched_gene: null
+        matched_taxon: null
+        matched_accession: null
+        pct_identity: null
+        align_length: null
+        query_length: null
+        query_coverage_pct: null
+        aligned_fraction: null
+        hsp_count: 0
+        split_alignment: null
+        chimeric_alignment: null
+        alignment_structure_status: not_evaluated
+        alignment_evidence: null
+        on_target: false
+        thresholds: null
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 3
+    - gene: 16S-341F-783Rabc
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: no_reference
+      failure_reason: forward primer not found
+    command:
+    - /home/claude/repos/sharkmer/target/release/sharkmer
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_ERR2596344_1000k_5f4ce534c16e/
+    - -s
+    - bacteria_ERR2596344_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/bacteria.yaml
+    - --ena
+    - ERR2596344
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    actual_parameters: *id005
+    input:
+      source: ena
+      accession: ERR2596344
+      subset:
+        method: first_reads
+        max_reads: 1000000
+      cache_mode: warm
+      cache_state_before:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      cache_state_after:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      observed_n_reads: 59704
+      observed_n_bases: 17552976
+      observed_source_plan: &id006
+        kind: cached_remote
+        inputs:
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        paired: false
+        max_reads: 1000000
+      selected_cache_entries:
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+    logs:
+      stdout: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_ERR2596344_1000k_5f4ce534c16e/bacteria_ERR2596344_1000k.stdout.log
+      stderr: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_ERR2596344_1000k_5f4ce534c16e/bacteria_ERR2596344_1000k.stderr.log
+      resource_usage: /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_ERR2596344_1000k_5f4ce534c16e/resource_usage.txt
+    failure: null
+    peak_rss_bytes: 79319040
+    peak_rss_provenance: proc_time_linux
+    temp_disk_final_bytes: 7187
+    known_truth: null
+    run_stats:
+      sharkmer_version: 3.2.0-dev
+      command: /home/claude/repos/sharkmer/target/release/sharkmer -k 19 -t 2 --max-reads
+        1000000 -o /tmp/sharkmer-v3.2-review/calibration-final/runs/benchmark_bacteria_20260909_140757_074624_b292cd0a/bacteria_ERR2596344_1000k_5f4ce534c16e/
+        -s bacteria_ERR2596344_1000k --pcr-panel-file /home/claude/repos/sharkmer/panels/bacteria.yaml
+        --ena ERR2596344 --cache-dir /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+      sample: bacteria_ERR2596344_1000k
+      run_id: 18d3ac5ce4e5e808-e3fcd-23a8d190e687e67c
+      output_manifest: bacteria_ERR2596344_1000k.manifest.yaml
+      run_status: complete
+      input_source: *id006
+      kmer_length: 19
+      chunks: 0
+      n_reads_read: 59704
+      n_bases_read: 17552976
+      n_subreads_ingested: 59704
+      n_bases_ingested: 17552976
+      n_kmers: 16478304
+      count_table_capacity: 1835008
+      peak_memory_bytes: 71390453
+      stage_timings:
+        read_ingest_s: 0.865010733
+        count_finalize_s: 0.060582597
+        read_threading_input_s: null
+        pcr_s: 0.308519049
+        pipeline_total_s: 1.242970983
+      pcr_results:
+      - gene_name: bacteria_16S-341F-785R
+        status: fail
+        n_products: 0
+        failure_reason: forward primer not found
+      - gene_name: bacteria_16S-PRK341F-PRK806R
+        status: fail
+        n_products: 0
+        failure_reason: repeat evidence encountered before start-to-end connectivity
+          could be established
+      - gene_name: bacteria_16S-515F-806R
+        status: success
+        n_products: 1
+        product_lengths:
+        - 283
+        output_file: bacteria_ERR2596344_1000k_bacteria_16S-515F-806R.fasta
+      - gene_name: bacteria_16S-515F-806RB
+        status: success
+        n_products: 1
+        product_lengths:
+        - 283
+        output_file: bacteria_ERR2596344_1000k_bacteria_16S-515F-806RB.fasta
+      - gene_name: bacteria_16S-68F-783Rabc
+        status: success
+        n_products: 3
+        product_lengths:
+        - 208
+        - 208
+        - 208
+        output_file: bacteria_ERR2596344_1000k_bacteria_16S-68F-783Rabc.fasta
+      - gene_name: bacteria_16S-341F-783Rabc
+        status: fail
+        n_products: 0
+        failure_reason: forward primer not found
