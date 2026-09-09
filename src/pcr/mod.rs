@@ -35,6 +35,8 @@ mod paths;
 mod primers;
 mod pruning;
 #[cfg(test)]
+mod repeat_tests;
+#[cfg(test)]
 mod threshold_tests;
 
 pub use graph::compute_node_budget;
@@ -437,6 +439,7 @@ struct ThresholdEvaluation {
 #[allow(clippy::too_many_arguments)]
 fn evaluate_threshold_graph(
     mut pruned_graph: petgraph::stable_graph::StableDiGraph<DBNode, DBEdge>,
+    extension_repeat_markers: ahash::AHashSet<u64>,
     min_count: u32,
     kmer_counts: &FilteredKmerCounts,
     sample_name: &str,
@@ -445,6 +448,8 @@ fn evaluate_threshold_graph(
     output_directory: &str,
     gene_reads: Option<&[&crate::io::ReadRecord]>,
 ) -> Result<ThresholdEvaluation> {
+    let unresolved_repeat_sub_kmers =
+        graph::unresolved_repeat_sub_kmers(&pruned_graph, extension_repeat_markers);
     let prune_start = std::time::Instant::now();
     gene_info!(params.gene_name, "Pruning the assembly graph...");
 
@@ -455,6 +460,9 @@ fn evaluate_threshold_graph(
     );
     pruning::reachability_pruning(&mut pruned_graph);
     graph::annotate_coverage_ratios(&mut pruned_graph);
+    let repeat_evidence_survived_pruning = pruned_graph
+        .node_indices()
+        .any(|node| unresolved_repeat_sub_kmers.contains(&pruned_graph[node].sub_kmer));
 
     gene_info!(
         params.gene_name,
@@ -552,7 +560,13 @@ fn evaluate_threshold_graph(
     }
 
     if path_search.paths.is_empty() {
-        let failure_reason = if path_search.dfs_limit_reached {
+        let failure_reason = if repeat_evidence_survived_pruning && path_search.dfs_limit_reached {
+            "DFS state limit reached while repeat length remained unresolved"
+        } else if repeat_evidence_survived_pruning && path_search.path_limit_reached {
+            "path limit reached while repeat length remained unresolved"
+        } else if repeat_evidence_survived_pruning {
+            "repeat length unresolved on a start-to-end graph path"
+        } else if path_search.dfs_limit_reached {
             "DFS state limit reached before a valid amplicon was found"
         } else if path_search.path_limit_reached {
             "path limit reached before a valid amplicon was found"
@@ -567,9 +581,36 @@ fn evaluate_threshold_graph(
         });
     }
 
-    let (records, _) = paths::generate_sequences_from_paths(
+    let (resolved_paths, unresolved_path_count) = paths::filter_unresolved_repeat_paths(
         &pruned_graph,
         path_search.paths,
+        &unresolved_repeat_sub_kmers,
+    );
+    if unresolved_path_count > 0 {
+        gene_warn!(
+            params.gene_name,
+            "Withholding {} candidate path(s) because repeat length is unresolved at threshold {}.",
+            unresolved_path_count,
+            min_count
+        );
+    }
+    if resolved_paths.is_empty() {
+        let failure_reason = if path_search.dfs_limit_reached {
+            "DFS state limit reached; all enumerated paths had unresolved repeat length"
+        } else if path_search.path_limit_reached {
+            "path limit reached; all enumerated paths had unresolved repeat length"
+        } else {
+            "repeat length unresolved for all valid amplicon paths"
+        };
+        return Ok(ThresholdEvaluation {
+            records: Vec::new(),
+            failure_reason: Some(failure_reason.to_string()),
+        });
+    }
+
+    let (records, _) = paths::generate_sequences_from_paths(
+        &pruned_graph,
+        resolved_paths,
         kmer_counts,
         sample_name,
         params,
@@ -751,6 +792,8 @@ pub fn do_pcr(
 
     let extend_start = std::time::Instant::now();
     let _ = node_lookup;
+    let mut saw_connectivity = false;
+    let mut saw_repeat_before_connectivity = false;
 
     'threshold_loop: for (step_idx, min_count) in coverage_thresholds.iter().enumerate() {
         gene_info!(
@@ -771,7 +814,7 @@ pub fn do_pcr(
         // Unified bidirectional extension: processes forward and reverse
         // seeds in one pass with an interleaved frontier. Symmetric — swapping
         // forward/reverse primer labels doesn't change behavior.
-        let (final_graph, _final_lookup, found) = graph::extend_graph(
+        let (final_graph, _final_lookup, found, extension_repeat_markers) = graph::extend_graph(
             fresh_graph,
             fresh_lookup,
             kmer_counts,
@@ -787,11 +830,14 @@ pub fn do_pcr(
         }
 
         if !found {
+            saw_repeat_before_connectivity |= !extension_repeat_markers.is_empty();
             continue;
         }
+        saw_connectivity = true;
 
         let evaluation = evaluate_threshold_graph(
             final_graph,
+            extension_repeat_markers,
             *min_count,
             kmer_counts,
             sample_name,
@@ -828,6 +874,18 @@ pub fn do_pcr(
         "Done. Time to extend and evaluate graphs: {}",
         format_duration(extend_start.elapsed())
     );
+
+    if assembly_records_all.is_empty() && !saw_connectivity && saw_repeat_before_connectivity {
+        failure_reason = Some(
+            if failure_reason.as_deref() == Some("node budget exceeded") {
+                "node budget exceeded after repeat evidence was encountered before start-to-end connectivity"
+                .to_string()
+            } else {
+                "repeat evidence encountered before start-to-end connectivity could be established"
+                    .to_string()
+            },
+        );
+    }
 
     debug!(
         "      - The maximum count of a forward kmer is {} and of a reverse kmer is {}. Large differences in value can indicate non-specific binding of one of the primers.",
@@ -1447,16 +1505,17 @@ mod tests {
         assert_eq!(get_start_nodes(&seed_graph).len(), 1);
         assert_eq!(get_end_nodes(&seed_graph).len(), 1);
 
-        let (mut graph_result, _node_lookup_final, _found) = graph::extend_graph(
-            seed_graph,
-            node_lookup,
-            &filtered,
-            &min_count,
-            &params,
-            0,
-            graph::DEFAULT_MAX_NUM_NODES,
-        )
-        .unwrap();
+        let (mut graph_result, _node_lookup_final, _found, _extension_repeat_markers) =
+            graph::extend_graph(
+                seed_graph,
+                node_lookup,
+                &filtered,
+                &min_count,
+                &params,
+                0,
+                graph::DEFAULT_MAX_NUM_NODES,
+            )
+            .unwrap();
 
         // Print the number of nodes and edges in the graph
         println!("There are {} nodes in the graph", graph_result.node_count());

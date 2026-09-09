@@ -338,11 +338,13 @@ pub(super) fn extend_graph(
     StableDiGraph<DBNode, DBEdge>,
     AHashMap<u64, NodeIndex>,
     bool,
+    AHashSet<u64>,
 )> {
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
     let k = kmer_counts.get_k();
     let prefix_shift = 2 * (k - 1);
     let mut found_path = false;
+    let mut unresolved_repeat_sub_kmers: AHashSet<u64> = AHashSet::new();
 
     let mut last_check: usize = 0;
     let mut median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
@@ -454,17 +456,29 @@ pub(super) fn extend_graph(
 
             // Self-loop: node would extend to itself
             if new_sub_kmer == sub_kmer {
+                unresolved_repeat_sub_kmers.insert(sub_kmer);
                 continue;
             }
 
+            let edge = get_dbedge(kmer, kmer_counts);
+            let exceeds_coverage_limit = (edge.count as f64)
+                > high_coverage_limit(
+                    median_edge_count,
+                    params.high_coverage_ratio,
+                    coverage_count_floor,
+                );
+
             if let Some(&existing_node) = node_lookup.get(&new_sub_kmer) {
+                if exceeds_coverage_limit {
+                    unresolved_repeat_sub_kmers.insert(sub_kmer);
+                    unresolved_repeat_sub_kmers.insert(new_sub_kmer);
+                }
                 // Connect to existing node. Edge direction depends on extension dir.
                 let edge_check = match dir {
                     ExtDir::Forward => graph.find_edge(node, existing_node).is_none(),
                     ExtDir::Reverse => graph.find_edge(existing_node, node).is_none(),
                 };
                 if edge_check {
-                    let edge = get_dbedge(kmer, kmer_counts);
                     match dir {
                         ExtDir::Forward => {
                             graph.add_edge(node, existing_node, edge);
@@ -497,17 +511,8 @@ pub(super) fn extend_graph(
                     }
                 }
             } else {
-                let edge = get_dbedge(kmer, kmer_counts);
-                let edge_count = edge.count;
-
                 // Skip high-coverage edges (likely repetitive)
-                if (edge_count as f64)
-                    > high_coverage_limit(
-                        median_edge_count,
-                        params.high_coverage_ratio,
-                        coverage_count_floor,
-                    )
-                {
+                if exceeds_coverage_limit {
                     continue;
                 }
 
@@ -539,7 +544,24 @@ pub(super) fn extend_graph(
         }
     }
 
-    Ok((graph, node_lookup, found_path))
+    Ok((graph, node_lookup, found_path, unresolved_repeat_sub_kmers))
+}
+
+pub(super) fn unresolved_repeat_sub_kmers(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    mut unresolved_repeat_sub_kmers: AHashSet<u64>,
+) -> AHashSet<u64> {
+    for component in petgraph::algo::kosaraju_scc(graph) {
+        let cyclic = component.len() > 1
+            || component
+                .first()
+                .is_some_and(|node| graph.find_edge(*node, *node).is_some());
+        if cyclic {
+            unresolved_repeat_sub_kmers
+                .extend(component.into_iter().map(|node| graph[node].sub_kmer));
+        }
+    }
+    unresolved_repeat_sub_kmers
 }
 
 /// Annotate each edge with its coverage ratio: count / global median.
@@ -694,6 +716,26 @@ mod tests {
         assert_eq!(high_coverage_limit(2.0, 10.0, 104), 104.0);
         assert_eq!(high_coverage_limit(100.0, 10.0, 104), 1000.0);
         assert_eq!(high_coverage_limit(100.0, 2.0, 104), 200.0);
+    }
+
+    #[test]
+    fn test_repeat_scan_handles_deep_graph_on_small_stack() {
+        let mut graph = StableDiGraph::new();
+        let nodes = (0..20_000)
+            .map(|sub_kmer| graph.add_node(mk_node(sub_kmer, false, false)))
+            .collect::<Vec<_>>();
+        for pair in nodes.windows(2) {
+            graph.add_edge(pair[0], pair[1], mk_edge(1));
+        }
+
+        let unresolved_count = std::thread::Builder::new()
+            .stack_size(64 * 1024)
+            .spawn(move || unresolved_repeat_sub_kmers(&graph, AHashSet::new()).len())
+            .unwrap()
+            .join()
+            .unwrap();
+
+        assert_eq!(unresolved_count, 0);
     }
 
     #[test]

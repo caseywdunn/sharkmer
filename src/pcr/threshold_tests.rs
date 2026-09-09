@@ -152,6 +152,7 @@ fn disconnected_graph_after_pruning_has_explicit_failure() {
 
     let evaluation = evaluate_threshold_graph(
         graph,
+        ahash::AHashSet::new(),
         1,
         &filtered,
         "threshold",

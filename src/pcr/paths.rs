@@ -212,6 +212,24 @@ pub(super) fn search_assembly_paths(
     result
 }
 
+pub(super) fn filter_unresolved_repeat_paths(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    paths: Vec<Vec<PathStep>>,
+    unresolved_repeat_sub_kmers: &AHashSet<u64>,
+) -> (Vec<Vec<PathStep>>, usize) {
+    let path_count = paths.len();
+    let resolved_paths = paths
+        .into_iter()
+        .filter(|path| {
+            !path
+                .iter()
+                .any(|(node, _)| unresolved_repeat_sub_kmers.contains(&graph[*node].sub_kmer))
+        })
+        .collect::<Vec<_>>();
+    let unresolved_path_count = path_count - resolved_paths.len();
+    (resolved_paths, unresolved_path_count)
+}
+
 /// Extract sequences from graph paths, producing FASTA assembly records.
 /// Returns the generated records and the updated amplicon index.
 pub(super) fn generate_sequences_from_paths(

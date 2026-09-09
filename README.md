@@ -190,6 +190,19 @@ By default, sharkmer stops searching as soon as the first connected primer-bindi
 
 Keep in mind that there is no way to assemble a sPCR product without kmer counts along its full length that meet or exceed the `min-count` parameter. The tool cannot output assembled sequences in the fasta file that are not in the input raw reads from the fastq file. If you are trying to amplify a single copy nuclear gene, that means your sequencing depth (average coverage) of the genome will need to be quite a bit higher than the `min-count` parameter, since there will be fluctuations in coverage along the length of the target region. If coverage at each site is independently distributed, then to have a 95% chance of coverage $\geq 2$ at each site in a region of length $n$, you would need a sequencing depth of 13x for a 1000bp region. That is on the order of 26 million 150 bp reads for a 300Mb genome. This may place single copy nuclear genes out of reach for some organisms with larger genomes, especially if computer RAM limits the number of reads that can be processed.
 
+### Repeat-length uncertainty
+
+The unreleased v3.2 development version withholds candidate products that
+cross unresolved homopolymer or tandem-repeat regions instead of reporting
+a shortened sequence as a complete amplicon. These failures include
+`repeat length unresolved` in the per-gene stats. This intentionally removes
+some previously emitted, incorrectly shortened products; it is not evidence
+that the target is absent. Supplying `--read-threading` does not currently
+establish repeat copy count. Read-supported repeat reconstruction is planned
+for a later release. See [#127](https://github.com/caseywdunn/sharkmer/issues/127)
+for the historical hydrozoan 16S motivation; changing k is not a substitute
+for detecting uncertain repeat lengths.
+
 ### Working with complex samples
 
 Some samples contain multiple similar templates that you want to recover as distinct products rather than collapse into a single consensus: metagenomic samples with several related taxa, heterozygous individuals where allelic variants matter, multi-copy gene families where paralogs differ by a handful of bases, or pooled samples. The defaults in sharkmer are tuned for the common "one sample, one product per gene" case and will actively work against you here — they stop at the first product and aggressively collapse near-identical paths.
