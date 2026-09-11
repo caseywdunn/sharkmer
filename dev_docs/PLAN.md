@@ -110,6 +110,8 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
   - [x] Sol implementation and independent Astra review: reject complete repeat-tainted candidates before quota accounting; 32 higher-ranked rejected routes no longer hide a clean route. Both hash backends pass 216 unit and 22 integration tests plus Clippy; existing repeat controls remain conservative.
   - [x] Six affected insect invocations preserve all 26 sequences/classifications and aggregate counts versus pre-fix development code; runtime sum 202.61 -> 202.56 seconds with no meaningful RSS change. Single-pair measurements are descriptive, not proof of statistical equivalence. The Gryllus ITS_2 release-baseline loss remains open under #155/#153; see [follow-up evidence](BENCHMARK_high_copy_followups.md).
 - [ ] [#155](https://github.com/caseywdunn/sharkmer/issues/155) — Audit repeat-marker scope and preserve cause, threshold, and search-exhaustion diagnostics without restoring unsupported repeat-copy claims.
+  - [x] Sol implementation, independent Astra review: retained high-coverage collisions mark traversed edges rather than both endpoints; omitted self-loops and pre-pruning cyclic SCC nodes remain conservative. Bounded per-threshold diagnostics survive successful/failed searches. Both backends pass 221 unit and 22 integration tests, formatting, and Clippy; 39 Python regressions also pass.
+  - [ ] Run clean-binary controls and fresh repeated released-v3.1 comparisons for the scoped high-copy recovery/runtime/RAM review; implementation approval is not biological or performance approval.
 
 ### 2026-09-11 release-scope clarification
 

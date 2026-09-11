@@ -71,6 +71,22 @@ fn lower_threshold_is_tried_after_connected_path_is_too_long() {
         outcome.failure_reason
     );
     assert_eq!(outcome.records[0].seq(), targets[1].as_bytes());
+    assert!(outcome.threshold_diagnostics.len() > 1);
+    assert!(outcome.threshold_diagnostics.len() <= COVERAGE_STEPS as usize);
+    assert_eq!(
+        outcome
+            .threshold_diagnostics
+            .last()
+            .unwrap()
+            .generated_products,
+        1
+    );
+    assert!(
+        outcome
+            .threshold_diagnostics
+            .windows(2)
+            .all(|pair| pair[0].threshold != pair[1].threshold)
+    );
 }
 
 #[test]
@@ -113,6 +129,9 @@ fn standard_mode_stops_at_first_threshold_with_a_valid_product() {
 
     assert_eq!(outcome.records.len(), 1);
     assert_eq!(outcome.records[0].seq(), targets[0].as_bytes());
+    assert_eq!(outcome.threshold_diagnostics.len(), 1);
+    assert_eq!(outcome.threshold_diagnostics[0].generated_products, 1);
+    assert!(outcome.threshold_diagnostics[0].path_search_evaluated);
 }
 
 #[test]
@@ -152,7 +171,7 @@ fn disconnected_graph_after_pruning_has_explicit_failure() {
 
     let evaluation = evaluate_threshold_graph(
         graph,
-        ahash::AHashSet::new(),
+        graph::ExtensionRepeatMarkers::default(),
         1,
         &filtered,
         "threshold",
@@ -183,6 +202,12 @@ fn search_limits_have_explicit_failures() {
         dfs_outcome.failure_reason.as_deref(),
         Some("DFS state limit reached before a valid amplicon was found")
     );
+    assert!(
+        dfs_outcome
+            .threshold_diagnostics
+            .iter()
+            .all(|diagnostic| diagnostic.dfs_limit_reached)
+    );
 
     let mut path_limited = params;
     path_limited.max_paths_per_pair = 0;
@@ -191,6 +216,12 @@ fn search_limits_have_explicit_failures() {
     assert_eq!(
         path_outcome.failure_reason.as_deref(),
         Some("path limit reached before a valid amplicon was found")
+    );
+    assert!(
+        path_outcome
+            .threshold_diagnostics
+            .iter()
+            .all(|diagnostic| diagnostic.path_quota_reached)
     );
 }
 
@@ -215,4 +246,66 @@ fn node_budget_failure_remains_explicit() {
         outcome.failure_reason.as_deref(),
         Some("node budget exceeded")
     );
+    assert!(
+        outcome
+            .threshold_diagnostics
+            .iter()
+            .all(|diagnostic| diagnostic.node_budget_reached)
+    );
+    assert!(
+        outcome
+            .threshold_diagnostics
+            .iter()
+            .all(|diagnostic| !diagnostic.scc_evaluated)
+    );
+}
+
+#[test]
+fn earlier_threshold_limits_are_not_erased_by_later_no_connectivity() {
+    let earlier_repeat = PcrThresholdDiagnostic {
+        threshold: 8,
+        connectivity_found: true,
+        scc_evaluated: true,
+        path_search_evaluated: true,
+        withheld_candidate_paths: 3,
+        withheld_by_scc_node_paths: 3,
+        ..PcrThresholdDiagnostic::default()
+    };
+    let earlier_dfs = PcrThresholdDiagnostic {
+        threshold: 6,
+        connectivity_found: true,
+        scc_evaluated: true,
+        path_search_evaluated: true,
+        dfs_limit_reached: true,
+        ..PcrThresholdDiagnostic::default()
+    };
+    let later_no_connectivity = PcrThresholdDiagnostic {
+        threshold: 2,
+        failure_reason: Some(
+            "no start-to-end connectivity established at this threshold".to_string(),
+        ),
+        ..PcrThresholdDiagnostic::default()
+    };
+
+    let summary =
+        earlier_threshold_limit_summary(&[earlier_repeat, earlier_dfs, later_no_connectivity])
+            .unwrap();
+
+    assert!(summary.contains("threshold 8: candidate-local repeat uncertainty"));
+    assert!(summary.contains("threshold 6: DFS state limit reached"));
+}
+
+#[test]
+fn threshold_diagnostics_serialization_is_bounded_and_contains_no_graph_ids() {
+    let (targets, params) = synthetic_targets(&[400, 180]);
+    let counts = counts_for(&[(&targets[0], 100), (&targets[1], 4)]);
+    let outcome = run_pcr(&counts, &params);
+
+    let serialized = serde_yaml_ng::to_string(&outcome.threshold_diagnostics).unwrap();
+
+    assert!(outcome.threshold_diagnostics.len() <= COVERAGE_STEPS as usize);
+    assert!(!serialized.contains("sub_kmer"));
+    assert!(!serialized.contains("edge_id"));
+    assert!(serialized.contains("completed_candidate_paths"));
+    assert!(serialized.contains("retained_collision_edges"));
 }

@@ -36,6 +36,10 @@ and new nuclear/metagenomic inference policies belong to later releases.
 - Keep repeat-rejected candidates from consuming the valid-product path
   quota; continue searching for clean routes within the existing DFS, length,
   and node-visit limits (#154).
+- Scope retained high-coverage graph-collision uncertainty to the exact edge
+  traversed, while preserving conservative self-loop and cyclic-component
+  withholding. Record bounded per-threshold search and repeat-cause diagnostics
+  for successful and failed genes (#155).
 - Include interior reads in optional threading; normalize strands, preserve
   invalid-base gaps, and count support once per FASTQ record or paired fragment,
   without repeated-visit or overlapping-mate inflation (#133).

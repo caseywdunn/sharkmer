@@ -64,6 +64,9 @@ fn test_18s_recovery_from_err571460() {
     let stats_path = outdir.path().join(format!("{}.stats.yaml", sample));
     let stats_content = fs::read_to_string(stats_path).expect("failed to read stats YAML");
     assert!(stats_content.contains("output_file: ERR571460_test_cnidaria_18S.fasta"));
+    assert!(stats_content.contains("threshold_diagnostics:"));
+    assert!(stats_content.contains("completed_candidate_paths:"));
+    assert!(stats_content.contains("retained_collision_edges:"));
 }
 
 /// Verify that stats.yaml is produced and contains expected fields.

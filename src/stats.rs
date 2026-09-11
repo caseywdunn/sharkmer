@@ -21,6 +21,8 @@ pub(crate) struct PcrGeneResult {
     pub(crate) output_file: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) failure_reason: Option<String>,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub(crate) threshold_diagnostics: Vec<pcr::PcrThresholdDiagnostic>,
 }
 
 #[derive(Serialize)]
@@ -126,15 +128,20 @@ pub(crate) fn run_pcr(
     // Write output files sequentially to maintain deterministic order
     for (pcr_params, fasta_result) in pcr_fasta_results {
         let outcome = fasta_result?;
+        let pcr::PcrOutcome {
+            records,
+            failure_reason,
+            threshold_diagnostics,
+        } = outcome;
 
-        if !outcome.records.is_empty() {
+        if !records.is_empty() {
             let fasta_basename = format!("{}_{}.fasta", sample, pcr_params.gene_name);
 
             let product_lengths: Vec<usize> =
-                outcome.records.iter().map(|r| r.seq().len()).collect();
+                records.iter().map(|record| record.seq().len()).collect();
 
             output_transaction.stage_file(&fasta_basename, |file| {
-                for record in &outcome.records {
+                for record in &records {
                     write_fasta_record(file, record).context("Failed to write FASTA record")?;
                 }
                 Ok(())
@@ -147,6 +154,7 @@ pub(crate) fn run_pcr(
                 product_lengths,
                 output_file: Some(fasta_basename),
                 failure_reason: None,
+                threshold_diagnostics,
             });
         } else {
             // Ensure failure_reason is always populated when status=="fail"
@@ -155,8 +163,7 @@ pub(crate) fn run_pcr(
             // but default it here rather than silently leaving None if a
             // new failure path is added upstream without updating the
             // outcome.
-            let failure_reason = outcome
-                .failure_reason
+            let failure_reason = failure_reason
                 .or_else(|| Some("unknown (no reason reported by PCR pipeline)".to_string()));
             pcr_results.push(PcrGeneResult {
                 gene_name: pcr_params.gene_name.clone(),
@@ -165,6 +172,7 @@ pub(crate) fn run_pcr(
                 product_lengths: Vec::new(),
                 output_file: None,
                 failure_reason,
+                threshold_diagnostics,
             });
         }
     }

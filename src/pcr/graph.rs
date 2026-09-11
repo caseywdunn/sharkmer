@@ -3,7 +3,7 @@
 use ahash::{AHashMap, AHashSet};
 use anyhow::Result;
 use log::debug;
-use petgraph::graph::NodeIndex;
+use petgraph::graph::{EdgeIndex, NodeIndex};
 use petgraph::stable_graph::StableDiGraph;
 use std::collections::VecDeque;
 
@@ -311,13 +311,27 @@ enum ExtDir {
     Reverse,
 }
 
+#[derive(Debug, Default)]
+pub(super) struct ExtensionRepeatMarkers {
+    pub omitted_self_loop_sub_kmers: AHashSet<u64>,
+    pub retained_collision_edges: AHashSet<EdgeIndex>,
+}
+
+#[derive(Debug, Default)]
+pub(super) struct RepeatMarkers {
+    pub omitted_self_loop_sub_kmers: AHashSet<u64>,
+    pub cyclic_scc_sub_kmers: AHashSet<u64>,
+    pub retained_collision_edges: AHashSet<EdgeIndex>,
+}
+
 /// Unified bidirectional graph extension. Processes forward and reverse seeds
 /// in a single pass with an interleaved frontier. Each frontier entry is
 /// tagged with its extension direction; new nodes inherit the direction of
 /// their parent. Forward and reverse extension share the same global node
 /// budget and operate on the same shared graph.
 ///
-/// Returns `(graph, node_lookup, found_path)`. `found_path` is true when
+/// Returns the graph, node lookup, connectivity status, repeat markers, and
+/// node-budget status. Connectivity is true when
 /// forward and reverse extensions meet — i.e., a forward extension reaches a
 /// node previously added by reverse extension (including `is_end` seed nodes),
 /// or vice versa. When this happens, the graph contains a potential
@@ -338,13 +352,15 @@ pub(super) fn extend_graph(
     StableDiGraph<DBNode, DBEdge>,
     AHashMap<u64, NodeIndex>,
     bool,
-    AHashSet<u64>,
+    ExtensionRepeatMarkers,
+    bool,
 )> {
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
     let k = kmer_counts.get_k();
     let prefix_shift = 2 * (k - 1);
     let mut found_path = false;
-    let mut unresolved_repeat_sub_kmers: AHashSet<u64> = AHashSet::new();
+    let mut node_budget_reached = false;
+    let mut repeat_markers = ExtensionRepeatMarkers::default();
 
     let mut last_check: usize = 0;
     let mut median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
@@ -398,6 +414,7 @@ pub(super) fn extend_graph(
         let n_nodes = graph.node_count();
 
         if n_nodes > max_num_nodes {
+            node_budget_reached = true;
             gene_info!(
                 params.gene_name,
                 "There are {} nodes in the graph. This exceeds the maximum of {}, abandoning search.",
@@ -456,7 +473,7 @@ pub(super) fn extend_graph(
 
             // Self-loop: node would extend to itself
             if new_sub_kmer == sub_kmer {
-                unresolved_repeat_sub_kmers.insert(sub_kmer);
+                repeat_markers.omitted_self_loop_sub_kmers.insert(sub_kmer);
                 continue;
             }
 
@@ -469,19 +486,17 @@ pub(super) fn extend_graph(
                 );
 
             if let Some(&existing_node) = node_lookup.get(&new_sub_kmer) {
-                if exceeds_coverage_limit {
-                    unresolved_repeat_sub_kmers.insert(sub_kmer);
-                    unresolved_repeat_sub_kmers.insert(new_sub_kmer);
-                }
                 // Connect to existing node. Edge direction depends on extension dir.
-                let edge_check = match dir {
-                    ExtDir::Forward => graph.find_edge(node, existing_node).is_none(),
-                    ExtDir::Reverse => graph.find_edge(existing_node, node).is_none(),
+                let existing_edge = match dir {
+                    ExtDir::Forward => graph.find_edge(node, existing_node),
+                    ExtDir::Reverse => graph.find_edge(existing_node, node),
                 };
-                if edge_check {
+                let collision_edge = if let Some(edge_id) = existing_edge {
+                    edge_id
+                } else {
                     match dir {
                         ExtDir::Forward => {
-                            graph.add_edge(node, existing_node, edge);
+                            let edge_id = graph.add_edge(node, existing_node, edge);
                             // Path found if forward extension reaches any node
                             // that was added by reverse extension (or is_end seed)
                             if added_by_rev.contains(&existing_node) {
@@ -493,9 +508,10 @@ pub(super) fn extend_graph(
                                 }
                                 found_path = true;
                             }
+                            edge_id
                         }
                         ExtDir::Reverse => {
-                            graph.add_edge(existing_node, node, edge);
+                            let edge_id = graph.add_edge(existing_node, node, edge);
                             // Path found if reverse extension reaches any node
                             // that was added by forward extension (or is_start seed)
                             if added_by_fwd.contains(&existing_node) {
@@ -507,8 +523,14 @@ pub(super) fn extend_graph(
                                 }
                                 found_path = true;
                             }
+                            edge_id
                         }
                     }
+                };
+                if exceeds_coverage_limit {
+                    repeat_markers
+                        .retained_collision_edges
+                        .insert(collision_edge);
                 }
             } else {
                 // Skip high-coverage edges (likely repetitive)
@@ -544,24 +566,44 @@ pub(super) fn extend_graph(
         }
     }
 
-    Ok((graph, node_lookup, found_path, unresolved_repeat_sub_kmers))
+    Ok((
+        graph,
+        node_lookup,
+        found_path,
+        repeat_markers,
+        node_budget_reached,
+    ))
 }
 
-pub(super) fn unresolved_repeat_sub_kmers(
+pub(super) fn repeat_markers_before_pruning(
     graph: &StableDiGraph<DBNode, DBEdge>,
-    mut unresolved_repeat_sub_kmers: AHashSet<u64>,
-) -> AHashSet<u64> {
+    extension_markers: ExtensionRepeatMarkers,
+) -> RepeatMarkers {
+    debug_assert!(
+        extension_markers
+            .retained_collision_edges
+            .iter()
+            .all(|edge| graph.edge_weight(*edge).is_some())
+    );
+    RepeatMarkers {
+        omitted_self_loop_sub_kmers: extension_markers.omitted_self_loop_sub_kmers,
+        cyclic_scc_sub_kmers: cyclic_scc_sub_kmers(graph),
+        retained_collision_edges: extension_markers.retained_collision_edges,
+    }
+}
+
+fn cyclic_scc_sub_kmers(graph: &StableDiGraph<DBNode, DBEdge>) -> AHashSet<u64> {
+    let mut cyclic_sub_kmers = AHashSet::new();
     for component in petgraph::algo::kosaraju_scc(graph) {
         let cyclic = component.len() > 1
             || component
                 .first()
                 .is_some_and(|node| graph.find_edge(*node, *node).is_some());
         if cyclic {
-            unresolved_repeat_sub_kmers
-                .extend(component.into_iter().map(|node| graph[node].sub_kmer));
+            cyclic_sub_kmers.extend(component.into_iter().map(|node| graph[node].sub_kmer));
         }
     }
-    unresolved_repeat_sub_kmers
+    cyclic_sub_kmers
 }
 
 /// Annotate each edge with its coverage ratio: count / global median.
@@ -719,6 +761,75 @@ mod tests {
     }
 
     #[test]
+    fn retained_high_coverage_collision_marks_new_edge_not_endpoints() {
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(
+            crate::kmer::seq_to_kmer("AA").unwrap(),
+            true,
+            false,
+        ));
+        let end = graph.add_node(mk_node(
+            crate::kmer::seq_to_kmer("AC").unwrap(),
+            false,
+            true,
+        ));
+        let lookup =
+            AHashMap::from_iter([(graph[start].sub_kmer, start), (graph[end].sub_kmer, end)]);
+        let kmer_length = 3;
+        let mut counts = KmerCounts::new(&kmer_length);
+        for _copy in 0..100 {
+            counts.ingest_seq("AAC").unwrap();
+        }
+        let params = crate::cli::parse_pcr_primers_string(
+            "name=collision,forward=AA,reverse=GT,min-length=0,max-length=100,mismatches=0",
+        )
+        .unwrap();
+
+        let (extended, _, found, markers, _) =
+            extend_graph(graph, lookup, &counts.filtered_view(1), &1, &params, 0, 100).unwrap();
+        let collision_edge = extended.find_edge(start, end).unwrap();
+
+        assert!(found);
+        assert!(markers.omitted_self_loop_sub_kmers.is_empty());
+        assert_eq!(markers.retained_collision_edges.len(), 1);
+        assert!(markers.retained_collision_edges.contains(&collision_edge));
+    }
+
+    #[test]
+    fn retained_high_coverage_collision_marks_already_present_edge() {
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(
+            crate::kmer::seq_to_kmer("AA").unwrap(),
+            true,
+            false,
+        ));
+        let end = graph.add_node(mk_node(
+            crate::kmer::seq_to_kmer("AC").unwrap(),
+            false,
+            true,
+        ));
+        let existing_edge = graph.add_edge(start, end, mk_edge(1));
+        let lookup =
+            AHashMap::from_iter([(graph[start].sub_kmer, start), (graph[end].sub_kmer, end)]);
+        let kmer_length = 3;
+        let mut counts = KmerCounts::new(&kmer_length);
+        for _copy in 0..100 {
+            counts.ingest_seq("AAC").unwrap();
+        }
+        let params = crate::cli::parse_pcr_primers_string(
+            "name=collision,forward=AA,reverse=GT,min-length=0,max-length=100,mismatches=0",
+        )
+        .unwrap();
+
+        let (_, _, _, markers, _) =
+            extend_graph(graph, lookup, &counts.filtered_view(1), &1, &params, 0, 100).unwrap();
+
+        assert!(markers.omitted_self_loop_sub_kmers.is_empty());
+        assert_eq!(markers.retained_collision_edges.len(), 1);
+        assert!(markers.retained_collision_edges.contains(&existing_edge));
+    }
+
+    #[test]
     fn test_repeat_scan_handles_deep_graph_on_small_stack() {
         let mut graph = StableDiGraph::new();
         let nodes = (0..20_000)
@@ -730,7 +841,7 @@ mod tests {
 
         let unresolved_count = std::thread::Builder::new()
             .stack_size(64 * 1024)
-            .spawn(move || unresolved_repeat_sub_kmers(&graph, AHashSet::new()).len())
+            .spawn(move || cyclic_scc_sub_kmers(&graph).len())
             .unwrap()
             .join()
             .unwrap();

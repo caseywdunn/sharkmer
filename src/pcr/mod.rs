@@ -295,6 +295,32 @@ pub struct PcrOutcome {
     pub records: Vec<bio::io::fasta::Record>,
     /// Short description of why no product was found (None if successful)
     pub failure_reason: Option<String>,
+    pub threshold_diagnostics: Vec<PcrThresholdDiagnostic>,
+}
+
+#[derive(Clone, Debug, Default, serde::Serialize)]
+pub struct PcrThresholdDiagnostic {
+    pub threshold: u32,
+    pub connectivity_found: bool,
+    pub node_budget_reached: bool,
+    pub scc_evaluated: bool,
+    pub path_search_evaluated: bool,
+    pub omitted_self_loop_nodes: usize,
+    pub pre_prune_scc_nodes: Option<usize>,
+    pub retained_collision_edges: usize,
+    pub dfs_limit_reached: bool,
+    pub path_quota_reached: bool,
+    pub end_below_min_length: bool,
+    pub max_length_reached: bool,
+    pub completed_candidate_paths: usize,
+    pub eligible_candidate_paths: usize,
+    pub withheld_candidate_paths: usize,
+    pub withheld_by_self_loop_node_paths: usize,
+    pub withheld_by_scc_node_paths: usize,
+    pub withheld_by_collision_edge_paths: usize,
+    pub repeat_tainted_out_of_range_paths: usize,
+    pub generated_products: usize,
+    pub failure_reason: Option<String>,
 }
 
 /// Validate a primer pair and return a list of (error, suggestion) pairs.
@@ -434,15 +460,59 @@ fn compute_coverage_thresholds(primer_count: u32, min_count: u32) -> Vec<u32> {
     thresholds
 }
 
+fn earlier_threshold_limit_summary(diagnostics: &[PcrThresholdDiagnostic]) -> Option<String> {
+    let last = diagnostics.last()?;
+    let earlier = diagnostics.get(..diagnostics.len().saturating_sub(1))?;
+    let summaries = earlier
+        .iter()
+        .filter_map(|diagnostic| {
+            let mut causes = Vec::new();
+            if diagnostic.node_budget_reached && !last.node_budget_reached {
+                causes.push("node budget reached");
+            }
+            if diagnostic.dfs_limit_reached && !last.dfs_limit_reached {
+                causes.push("DFS state limit reached");
+            }
+            if diagnostic.path_quota_reached && !last.path_quota_reached {
+                causes.push("path quota reached");
+            }
+            if diagnostic.withheld_candidate_paths > 0
+                || diagnostic.repeat_tainted_out_of_range_paths > 0
+            {
+                let last_has_repeat_uncertainty =
+                    last.withheld_candidate_paths > 0 || last.repeat_tainted_out_of_range_paths > 0;
+                if !last_has_repeat_uncertainty {
+                    causes.push("candidate-local repeat uncertainty");
+                }
+            }
+            if causes.is_empty() {
+                None
+            } else {
+                Some(format!(
+                    "threshold {}: {}",
+                    diagnostic.threshold,
+                    causes.join(", ")
+                ))
+            }
+        })
+        .collect::<Vec<_>>();
+    if summaries.is_empty() {
+        None
+    } else {
+        Some(summaries.join("; "))
+    }
+}
+
 struct ThresholdEvaluation {
     records: Vec<AssemblyRecord>,
     failure_reason: Option<String>,
+    diagnostic: PcrThresholdDiagnostic,
 }
 
 #[allow(clippy::too_many_arguments)]
 fn evaluate_threshold_graph(
     mut pruned_graph: petgraph::stable_graph::StableDiGraph<DBNode, DBEdge>,
-    extension_repeat_markers: ahash::AHashSet<u64>,
+    extension_repeat_markers: graph::ExtensionRepeatMarkers,
     min_count: u32,
     kmer_counts: &FilteredKmerCounts,
     sample_name: &str,
@@ -451,8 +521,11 @@ fn evaluate_threshold_graph(
     output_directory: &str,
     reads: Option<&[crate::io::ReadRecord]>,
 ) -> Result<ThresholdEvaluation> {
-    let unresolved_repeat_sub_kmers =
-        graph::unresolved_repeat_sub_kmers(&pruned_graph, extension_repeat_markers);
+    let repeat_markers =
+        graph::repeat_markers_before_pruning(&pruned_graph, extension_repeat_markers);
+    let omitted_self_loop_nodes = repeat_markers.omitted_self_loop_sub_kmers.len();
+    let pre_prune_scc_nodes = repeat_markers.cyclic_scc_sub_kmers.len();
+    let retained_collision_edges = repeat_markers.retained_collision_edges.len();
     let prune_start = std::time::Instant::now();
     gene_info!(params.gene_name, "Pruning the assembly graph...");
 
@@ -463,10 +536,6 @@ fn evaluate_threshold_graph(
     );
     pruning::reachability_pruning(&mut pruned_graph);
     graph::annotate_coverage_ratios(&mut pruned_graph);
-    let repeat_evidence_survived_pruning = pruned_graph
-        .node_indices()
-        .any(|node| unresolved_repeat_sub_kmers.contains(&pruned_graph[node].sub_kmer));
-
     gene_info!(
         params.gene_name,
         "Done. Time to prune graph: {}",
@@ -536,7 +605,7 @@ fn evaluate_threshold_graph(
         kmer_counts,
         params,
         edge_preferences.as_ref(),
-        &unresolved_repeat_sub_kmers,
+        &repeat_markers,
     );
 
     gene_info!(
@@ -563,27 +632,47 @@ fn evaluate_threshold_graph(
         );
     }
 
-    if path_search.unresolved_repeat_path_count > 0 {
+    if path_search.withheld_candidate_path_count > 0 {
         gene_warn!(
             params.gene_name,
             "Withholding {} complete candidate path(s) because repeat length is unresolved at threshold {}.",
-            path_search.unresolved_repeat_path_count,
+            path_search.withheld_candidate_path_count,
             min_count
         );
     }
 
+    let mut diagnostic = PcrThresholdDiagnostic {
+        threshold: min_count,
+        connectivity_found: true,
+        node_budget_reached: false,
+        scc_evaluated: true,
+        path_search_evaluated: true,
+        omitted_self_loop_nodes,
+        pre_prune_scc_nodes: Some(pre_prune_scc_nodes),
+        retained_collision_edges,
+        dfs_limit_reached: path_search.dfs_limit_reached,
+        path_quota_reached: path_search.path_limit_reached,
+        end_below_min_length: path_search.end_below_min_length,
+        max_length_reached: path_search.max_length_reached,
+        completed_candidate_paths: path_search.completed_candidate_path_count,
+        eligible_candidate_paths: path_search.eligible_candidate_path_count,
+        withheld_candidate_paths: path_search.withheld_candidate_path_count,
+        withheld_by_self_loop_node_paths: path_search.withheld_by_self_loop_node_count,
+        withheld_by_scc_node_paths: path_search.withheld_by_scc_node_count,
+        withheld_by_collision_edge_paths: path_search.withheld_by_collision_edge_count,
+        repeat_tainted_out_of_range_paths: path_search.repeat_tainted_out_of_range_path_count,
+        generated_products: 0,
+        failure_reason: None,
+    };
+
     if path_search.paths.is_empty() {
         let failure_reason =
-            if path_search.unresolved_repeat_path_count > 0 && path_search.dfs_limit_reached {
+            if path_search.withheld_candidate_path_count > 0 && path_search.dfs_limit_reached {
                 "DFS state limit reached; completed candidate paths had unresolved repeat length"
-            } else if path_search.unresolved_repeat_path_count > 0 {
+            } else if path_search.withheld_candidate_path_count > 0 {
                 "repeat length unresolved for all complete candidate paths"
-            } else if repeat_evidence_survived_pruning && path_search.dfs_limit_reached {
-                "DFS state limit reached while repeat length remained unresolved"
-            } else if repeat_evidence_survived_pruning && path_search.path_limit_reached {
-                "path limit reached while repeat length remained unresolved"
-            } else if repeat_evidence_survived_pruning {
-                "repeat length unresolved on a start-to-end graph path"
+            } else if path_search.repeat_tainted_out_of_range_path_count > 0 {
+                "repeat length unresolved on an out-of-range start-to-end path"
             } else if path_search.dfs_limit_reached {
                 "DFS state limit reached before a valid amplicon was found"
             } else if path_search.path_limit_reached {
@@ -593,9 +682,11 @@ fn evaluate_threshold_graph(
             } else {
                 "connectivity found but no start-to-end path remained after pruning"
             };
+        diagnostic.failure_reason = Some(failure_reason.to_string());
         return Ok(ThresholdEvaluation {
             records: Vec::new(),
             failure_reason: Some(failure_reason.to_string()),
+            diagnostic,
         });
     }
 
@@ -614,9 +705,12 @@ fn evaluate_threshold_graph(
     } else {
         None
     };
+    diagnostic.generated_products = records.len();
+    diagnostic.failure_reason = failure_reason.clone();
     Ok(ThresholdEvaluation {
         records,
         failure_reason,
+        diagnostic,
     })
 }
 
@@ -640,6 +734,7 @@ pub fn do_pcr(
                 params.max_length,
                 kmer_counts.get_k()
             )),
+            threshold_diagnostics: Vec::new(),
         });
     }
 
@@ -668,6 +763,7 @@ pub fn do_pcr(
         return Ok(PcrOutcome {
             records: Vec::new(),
             failure_reason: Some(format!("{} not found", which)),
+            threshold_diagnostics: Vec::new(),
         });
     }
 
@@ -751,6 +847,7 @@ pub fn do_pcr(
 
     let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
     let mut failure_reason: Option<String> = Some("no path found".to_string());
+    let mut threshold_diagnostics = Vec::with_capacity(coverage_thresholds.len());
 
     // Coverage threshold sweep: at each min_count, clone the seed graph fresh
     // and extend at that threshold. Pruning + path-finding happens after each
@@ -766,9 +863,6 @@ pub fn do_pcr(
 
     let extend_start = std::time::Instant::now();
     let _ = node_lookup;
-    let mut saw_connectivity = false;
-    let mut saw_repeat_before_connectivity = false;
-
     'threshold_loop: for (step_idx, min_count) in coverage_thresholds.iter().enumerate() {
         gene_info!(
             params.gene_name,
@@ -788,28 +882,35 @@ pub fn do_pcr(
         // Unified bidirectional extension: processes forward and reverse
         // seeds in one pass with an interleaved frontier. Symmetric — swapping
         // forward/reverse primer labels doesn't change behavior.
-        let (final_graph, _final_lookup, found, extension_repeat_markers) = graph::extend_graph(
-            fresh_graph,
-            fresh_lookup,
-            kmer_counts,
-            min_count,
-            params,
-            max_primer_count,
-            max_num_nodes,
-        )?;
-
-        let node_budget_reached = final_graph.node_count() >= max_num_nodes;
-        if node_budget_reached {
-            failure_reason = Some("node budget exceeded".to_string());
-        }
-
+        let (final_graph, _final_lookup, found, extension_repeat_markers, node_budget_reached) =
+            graph::extend_graph(
+                fresh_graph,
+                fresh_lookup,
+                kmer_counts,
+                min_count,
+                params,
+                max_primer_count,
+                max_num_nodes,
+            )?;
         if !found {
-            saw_repeat_before_connectivity |= !extension_repeat_markers.is_empty();
+            let threshold_failure = if node_budget_reached {
+                "node budget exceeded"
+            } else {
+                "no start-to-end connectivity established at this threshold"
+            };
+            failure_reason = Some(threshold_failure.to_string());
+            threshold_diagnostics.push(PcrThresholdDiagnostic {
+                threshold: *min_count,
+                connectivity_found: false,
+                node_budget_reached,
+                omitted_self_loop_nodes: extension_repeat_markers.omitted_self_loop_sub_kmers.len(),
+                retained_collision_edges: extension_repeat_markers.retained_collision_edges.len(),
+                failure_reason: Some(threshold_failure.to_string()),
+                ..PcrThresholdDiagnostic::default()
+            });
             continue;
         }
-        saw_connectivity = true;
-
-        let evaluation = evaluate_threshold_graph(
+        let mut evaluation = evaluate_threshold_graph(
             final_graph,
             extension_repeat_markers,
             *min_count,
@@ -820,6 +921,7 @@ pub fn do_pcr(
             output_directory,
             reads,
         )?;
+        evaluation.diagnostic.node_budget_reached = node_budget_reached;
 
         if !evaluation.records.is_empty() {
             gene_info!(
@@ -828,6 +930,7 @@ pub fn do_pcr(
                 evaluation.records.len(),
                 min_count
             );
+            threshold_diagnostics.push(evaluation.diagnostic);
             assembly_records_all.extend(evaluation.records);
             failure_reason = None;
             break 'threshold_loop;
@@ -841,6 +944,8 @@ pub fn do_pcr(
         } else {
             evaluation_failure
         });
+        evaluation.diagnostic.failure_reason = failure_reason.clone();
+        threshold_diagnostics.push(evaluation.diagnostic);
     }
 
     gene_info!(
@@ -849,16 +954,14 @@ pub fn do_pcr(
         format_duration(extend_start.elapsed())
     );
 
-    if assembly_records_all.is_empty() && !saw_connectivity && saw_repeat_before_connectivity {
-        failure_reason = Some(
-            if failure_reason.as_deref() == Some("node budget exceeded") {
-                "node budget exceeded after repeat evidence was encountered before start-to-end connectivity"
-                .to_string()
-            } else {
-                "repeat evidence encountered before start-to-end connectivity could be established"
-                    .to_string()
-            },
-        );
+    if assembly_records_all.is_empty()
+        && let Some(summary) = earlier_threshold_limit_summary(&threshold_diagnostics)
+    {
+        failure_reason = Some(format!(
+            "{}; earlier threshold outcomes: {}",
+            failure_reason.as_deref().unwrap_or("no path found"),
+            summary
+        ));
     }
 
     debug!(
@@ -898,6 +1001,7 @@ pub fn do_pcr(
         return Ok(PcrOutcome {
             records: Vec::new(),
             failure_reason,
+            threshold_diagnostics,
         });
     }
 
@@ -934,6 +1038,7 @@ pub fn do_pcr(
     Ok(PcrOutcome {
         records,
         failure_reason: None,
+        threshold_diagnostics,
     })
 }
 
@@ -1479,17 +1584,22 @@ mod tests {
         assert_eq!(get_start_nodes(&seed_graph).len(), 1);
         assert_eq!(get_end_nodes(&seed_graph).len(), 1);
 
-        let (mut graph_result, _node_lookup_final, _found, _extension_repeat_markers) =
-            graph::extend_graph(
-                seed_graph,
-                node_lookup,
-                &filtered,
-                &min_count,
-                &params,
-                0,
-                graph::DEFAULT_MAX_NUM_NODES,
-            )
-            .unwrap();
+        let (
+            mut graph_result,
+            _node_lookup_final,
+            _found,
+            _extension_repeat_markers,
+            _node_budget_reached,
+        ) = graph::extend_graph(
+            seed_graph,
+            node_lookup,
+            &filtered,
+            &min_count,
+            &params,
+            0,
+            graph::DEFAULT_MAX_NUM_NODES,
+        )
+        .unwrap();
 
         // Print the number of nodes and edges in the graph
         println!("There are {} nodes in the graph", graph_result.node_count());

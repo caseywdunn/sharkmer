@@ -13,7 +13,7 @@ use smallvec::SmallVec;
 
 use crate::kmer::FilteredKmerCounts;
 
-use super::graph::{compute_mean, compute_median, get_end_nodes, get_start_nodes};
+use super::graph::{RepeatMarkers, compute_mean, compute_median, get_end_nodes, get_start_nodes};
 use super::{AssemblyRecord, DBEdge, DBNode, PCRParams};
 
 /// The maximum number of fasta records to return
@@ -30,7 +30,13 @@ pub type PathStep = (NodeIndex, Option<EdgeIndex>);
 
 pub(super) struct PathSearchResult {
     pub paths: Vec<Vec<PathStep>>,
-    pub unresolved_repeat_path_count: usize,
+    pub completed_candidate_path_count: usize,
+    pub eligible_candidate_path_count: usize,
+    pub withheld_candidate_path_count: usize,
+    pub withheld_by_self_loop_node_count: usize,
+    pub withheld_by_scc_node_count: usize,
+    pub withheld_by_collision_edge_count: usize,
+    pub repeat_tainted_out_of_range_path_count: usize,
     pub dfs_limit_reached: bool,
     pub path_limit_reached: bool,
     pub end_below_min_length: bool,
@@ -96,7 +102,7 @@ pub fn get_assembly_paths(
         kmer_counts,
         params,
         edge_preferences,
-        &AHashSet::new(),
+        &RepeatMarkers::default(),
     )
     .paths
 }
@@ -106,7 +112,7 @@ pub(super) fn search_assembly_paths(
     kmer_counts: &FilteredKmerCounts,
     params: &PCRParams,
     edge_preferences: Option<&AHashMap<EdgeIndex, f64>>,
-    unresolved_repeat_sub_kmers: &AHashSet<u64>,
+    repeat_markers: &RepeatMarkers,
 ) -> PathSearchResult {
     // A path of N nodes produces a sequence of (k-1) + (N-1) = N+k-2 bases
     // (first node contributes k-1 bases via its sub_kmer, each subsequent
@@ -128,7 +134,13 @@ pub(super) fn search_assembly_paths(
     let end_nodes: AHashSet<NodeIndex> = get_end_nodes(graph).into_iter().collect();
     let mut result = PathSearchResult {
         paths: Vec::new(),
-        unresolved_repeat_path_count: 0,
+        completed_candidate_path_count: 0,
+        eligible_candidate_path_count: 0,
+        withheld_candidate_path_count: 0,
+        withheld_by_self_loop_node_count: 0,
+        withheld_by_scc_node_count: 0,
+        withheld_by_collision_edge_count: 0,
+        repeat_tainted_out_of_range_path_count: 0,
         dfs_limit_reached: false,
         path_limit_reached: false,
         end_below_min_length: false,
@@ -147,8 +159,17 @@ pub(super) fn search_assembly_paths(
         let mut path: Vec<PathStep> = vec![(start, None)];
         let mut visit_counts: AHashMap<NodeIndex, usize> = AHashMap::new();
         visit_counts.insert(start, 1);
-        let mut unresolved_repeat_nodes_in_path =
-            usize::from(unresolved_repeat_sub_kmers.contains(&graph[start].sub_kmer));
+        let mut omitted_self_loop_nodes_in_path = usize::from(
+            repeat_markers
+                .omitted_self_loop_sub_kmers
+                .contains(&graph[start].sub_kmer),
+        );
+        let mut cyclic_scc_nodes_in_path = usize::from(
+            repeat_markers
+                .cyclic_scc_sub_kmers
+                .contains(&graph[start].sub_kmer),
+        );
+        let mut retained_collision_edges_in_path = 0_usize;
 
         // Compute sorted children for the start node
         let children = sorted_children(graph, start, edge_preferences);
@@ -177,23 +198,43 @@ pub(super) fn search_assembly_paths(
                 // Push neighbor onto path with the edge that connects to it
                 path.push((neighbor, Some(edge_id)));
                 *visit_counts.entry(neighbor).or_insert(0) += 1;
-                let neighbor_has_unresolved_repeat =
-                    unresolved_repeat_sub_kmers.contains(&graph[neighbor].sub_kmer);
-                unresolved_repeat_nodes_in_path += usize::from(neighbor_has_unresolved_repeat);
+                let neighbor_has_omitted_self_loop = repeat_markers
+                    .omitted_self_loop_sub_kmers
+                    .contains(&graph[neighbor].sub_kmer);
+                let neighbor_is_in_cyclic_scc = repeat_markers
+                    .cyclic_scc_sub_kmers
+                    .contains(&graph[neighbor].sub_kmer);
+                let edge_is_retained_collision =
+                    repeat_markers.retained_collision_edges.contains(&edge_id);
+                omitted_self_loop_nodes_in_path += usize::from(neighbor_has_omitted_self_loop);
+                cyclic_scc_nodes_in_path += usize::from(neighbor_is_in_cyclic_scc);
+                retained_collision_edges_in_path += usize::from(edge_is_retained_collision);
 
                 let path_len = path.len();
 
                 // Check if we reached an end node with valid length
                 if end_nodes.contains(&neighbor) {
                     if path_len >= min_path_nodes && path_len <= max_path_nodes {
-                        if unresolved_repeat_nodes_in_path > 0 {
-                            result.unresolved_repeat_path_count += 1;
+                        result.completed_candidate_path_count += 1;
+                        let withheld_by_self_loop = omitted_self_loop_nodes_in_path > 0;
+                        let withheld_by_scc = cyclic_scc_nodes_in_path > 0;
+                        let withheld_by_collision = retained_collision_edges_in_path > 0;
+                        if withheld_by_self_loop || withheld_by_scc || withheld_by_collision {
+                            result.withheld_candidate_path_count += 1;
+                            result.withheld_by_self_loop_node_count +=
+                                usize::from(withheld_by_self_loop);
+                            result.withheld_by_scc_node_count += usize::from(withheld_by_scc);
+                            result.withheld_by_collision_edge_count +=
+                                usize::from(withheld_by_collision);
                         } else {
                             result.paths.push(path.clone());
+                            result.eligible_candidate_path_count += 1;
                             paths_from_start += 1;
                         }
-                        unresolved_repeat_nodes_in_path -=
-                            usize::from(neighbor_has_unresolved_repeat);
+                        omitted_self_loop_nodes_in_path -=
+                            usize::from(neighbor_has_omitted_self_loop);
+                        cyclic_scc_nodes_in_path -= usize::from(neighbor_is_in_cyclic_scc);
+                        retained_collision_edges_in_path -= usize::from(edge_is_retained_collision);
                         *visit_counts.get_mut(&neighbor).unwrap() -= 1;
                         path.pop();
                         continue;
@@ -203,12 +244,20 @@ pub(super) fn search_assembly_paths(
                     } else {
                         result.max_length_reached = true;
                     }
+                    if omitted_self_loop_nodes_in_path > 0
+                        || cyclic_scc_nodes_in_path > 0
+                        || retained_collision_edges_in_path > 0
+                    {
+                        result.repeat_tainted_out_of_range_path_count += 1;
+                    }
                 }
 
                 // Don't extend past max length
                 if path_len >= max_path_nodes {
                     result.max_length_reached = true;
-                    unresolved_repeat_nodes_in_path -= usize::from(neighbor_has_unresolved_repeat);
+                    omitted_self_loop_nodes_in_path -= usize::from(neighbor_has_omitted_self_loop);
+                    cyclic_scc_nodes_in_path -= usize::from(neighbor_is_in_cyclic_scc);
+                    retained_collision_edges_in_path -= usize::from(edge_is_retained_collision);
                     *visit_counts.get_mut(&neighbor).unwrap() -= 1;
                     path.pop();
                     continue;
@@ -223,10 +272,22 @@ pub(super) fn search_assembly_paths(
                 if child_stack.is_empty() {
                     break;
                 }
-                let (backtrack_node, _) = path.pop().expect("BUG: path empty during DFS backtrack");
-                unresolved_repeat_nodes_in_path -= usize::from(
-                    unresolved_repeat_sub_kmers.contains(&graph[backtrack_node].sub_kmer),
+                let (backtrack_node, incoming_edge) =
+                    path.pop().expect("BUG: path empty during DFS backtrack");
+                omitted_self_loop_nodes_in_path -= usize::from(
+                    repeat_markers
+                        .omitted_self_loop_sub_kmers
+                        .contains(&graph[backtrack_node].sub_kmer),
                 );
+                cyclic_scc_nodes_in_path -= usize::from(
+                    repeat_markers
+                        .cyclic_scc_sub_kmers
+                        .contains(&graph[backtrack_node].sub_kmer),
+                );
+                retained_collision_edges_in_path -=
+                    usize::from(incoming_edge.is_some_and(|edge_id| {
+                        repeat_markers.retained_collision_edges.contains(&edge_id)
+                    }));
                 *visit_counts
                     .get_mut(&backtrack_node)
                     .expect("BUG: backtrack node missing from visit_counts") -= 1;
@@ -643,7 +704,7 @@ mod tests {
 
         let mut params = test_params(0, 100);
         params.max_dfs_states = 0; // no exploration allowed
-        let result = search_assembly_paths(&graph, &fkc, &params, None, &AHashSet::new());
+        let result = search_assembly_paths(&graph, &fkc, &params, None, &RepeatMarkers::default());
         assert!(result.paths.is_empty());
         assert!(result.dfs_limit_reached);
         assert!(!result.path_limit_reached);
@@ -662,7 +723,8 @@ mod tests {
 
         let mut params = test_params(0, 100);
         params.max_paths_per_pair = 0;
-        let result = search_assembly_paths(&graph, &filtered, &params, None, &AHashSet::new());
+        let result =
+            search_assembly_paths(&graph, &filtered, &params, None, &RepeatMarkers::default());
         assert!(result.paths.is_empty());
         assert!(!result.dfs_limit_reached);
         assert!(result.path_limit_reached);
@@ -686,7 +748,7 @@ mod tests {
             &filtered,
             &test_params(5, 10),
             None,
-            &AHashSet::new(),
+            &RepeatMarkers::default(),
         );
         assert!(too_short.paths.is_empty());
         assert!(too_short.end_below_min_length);
@@ -696,7 +758,7 @@ mod tests {
             &filtered,
             &test_params(0, 3),
             None,
-            &AHashSet::new(),
+            &RepeatMarkers::default(),
         );
         assert!(too_long.paths.is_empty());
         assert!(too_long.max_length_reached);
@@ -720,14 +782,14 @@ mod tests {
             &filtered,
             &test_params(3, 3),
             None,
-            &AHashSet::new(),
+            &RepeatMarkers::default(),
         );
         let length_k_plus_one = search_assembly_paths(
             &graph,
             &filtered,
             &test_params(4, 4),
             None,
-            &AHashSet::new(),
+            &RepeatMarkers::default(),
         );
 
         assert_eq!(length_k.paths.len(), 1);
@@ -781,7 +843,7 @@ mod tests {
             &filtered,
             &test_params(0, 2),
             None,
-            &AHashSet::new(),
+            &RepeatMarkers::default(),
         );
 
         assert!(result.paths.is_empty());
@@ -805,7 +867,7 @@ mod tests {
             &filtered,
             &test_params(4, 4),
             None,
-            &AHashSet::new(),
+            &RepeatMarkers::default(),
         );
 
         assert_eq!(result.paths.len(), 1);

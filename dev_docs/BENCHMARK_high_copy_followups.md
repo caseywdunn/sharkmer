@@ -69,3 +69,26 @@ Review criteria flag every high-copy sequence loss or measured resource
 increase; >5% per-cell median runtime or >2% median RSS increases receive
 priority investigation. These are review triggers, not permitted regression
 allowances or automatic release approval.
+
+## #155: precise marker scope and threshold diagnostics
+
+Sol implementation and independent Astra review are complete. Retained
+high-coverage collisions mark the traversed edge, not both endpoints. Omitted
+self-loops and nodes in pre-pruning cyclic SCCs remain conservative markers.
+Pruning only removes graph nodes/edges, so surviving stable edge identifiers
+are not reassigned before search. Tests cover actual collision-marker creation
+for new and existing edges, clean acyclic shared endpoints, and repeat controls.
+
+Stats now retain a bounded record for every attempted coverage threshold,
+including successful attempts. Records distinguish connectivity, node/DFS/path
+limits, candidate-local repeat causes, and unperformed SCC/path evaluation.
+Cause-specific withheld-path counts can overlap; generated products are before
+final cross-path deduplication. No graph identities or sequences are serialized
+into diagnostics, and graph-level markers alone do not establish that every
+candidate is ambiguous or the target is absent.
+
+Both hash backends pass 221 unit and 22 integration tests, formatting and
+Clippy; 39 Python validation regressions pass. Clean-binary independent controls
+and fresh repeated comparisons against released v3.1.0 remain pending. The
+release remains on hold until the scoped results and remaining gates are
+reviewed; metagenomic/single-copy diversity losses are not this release's gate.

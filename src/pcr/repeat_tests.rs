@@ -76,7 +76,7 @@ fn repeat_quota_graph(
     clean_route_count: usize,
 ) -> (
     StableDiGraph<DBNode, DBEdge>,
-    ahash::AHashSet<u64>,
+    graph::RepeatMarkers,
     Vec<petgraph::graph::NodeIndex>,
 ) {
     let mut graph = StableDiGraph::new();
@@ -161,8 +161,12 @@ fn repeat_quota_graph(
         clean_ends.push(clean_end);
     }
 
-    let unresolved = ahash::AHashSet::from_iter([graph[repeat_root].sub_kmer]);
-    (graph, unresolved, clean_ends)
+    let repeat_markers = graph::RepeatMarkers {
+        omitted_self_loop_sub_kmers: ahash::AHashSet::new(),
+        cyclic_scc_sub_kmers: ahash::AHashSet::from_iter([graph[repeat_root].sub_kmer]),
+        retained_collision_edges: ahash::AHashSet::new(),
+    };
+    (graph, repeat_markers, clean_ends)
 }
 
 fn run_repeat_pcr(
@@ -232,6 +236,12 @@ fn forty_base_homopolymer_never_emits_collapsed_product() {
 
     assert_eq!(fixture.target.len(), 160);
     assert_repeat_uncertainty(&outcome);
+    assert!(
+        outcome
+            .threshold_diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.omitted_self_loop_nodes > 0)
+    );
 }
 
 #[test]
@@ -306,7 +316,8 @@ fn tandem_repeat_cycle_and_first_visit_shortcut_are_withheld() {
             coverage_ratio: 1.0,
         },
     );
-    let unresolved = graph::unresolved_repeat_sub_kmers(&graph, ahash::AHashSet::new());
+    let repeat_markers =
+        graph::repeat_markers_before_pruning(&graph, graph::ExtensionRepeatMarkers::default());
     graph.remove_edge(cycle_edge);
     let counts = path_search_counts();
     let result = paths::search_assembly_paths(
@@ -314,26 +325,32 @@ fn tandem_repeat_cycle_and_first_visit_shortcut_are_withheld() {
         &counts.filtered_view(1),
         &path_search_params(),
         None,
-        &unresolved,
+        &repeat_markers,
     );
 
     assert!(result.paths.is_empty());
-    assert_eq!(result.unresolved_repeat_path_count, 1);
+    assert_eq!(result.withheld_candidate_path_count, 1);
+    assert_eq!(result.withheld_by_scc_node_count, 1);
+    assert_eq!(result.withheld_by_self_loop_node_count, 0);
+    assert_eq!(result.withheld_by_collision_edge_count, 0);
 }
 
 #[test]
 fn repeat_rejected_paths_do_not_consume_clean_path_quota() {
-    let (graph, unresolved, clean_ends) = repeat_quota_graph(5, 1);
+    let (graph, repeat_markers, clean_ends) = repeat_quota_graph(5, 1);
     let counts = path_search_counts();
     let result = paths::search_assembly_paths(
         &graph,
         &counts.filtered_view(1),
         &path_search_params(),
         None,
-        &unresolved,
+        &repeat_markers,
     );
 
-    assert_eq!(result.unresolved_repeat_path_count, 32);
+    assert_eq!(result.withheld_candidate_path_count, 32);
+    assert_eq!(result.withheld_by_scc_node_count, 32);
+    assert_eq!(result.completed_candidate_path_count, 33);
+    assert_eq!(result.eligible_candidate_path_count, 1);
     assert_eq!(result.paths.len(), 1);
     assert_eq!(result.paths[0].last().unwrap().0, clean_ends[0]);
     assert!(!result.path_limit_reached);
@@ -342,30 +359,40 @@ fn repeat_rejected_paths_do_not_consume_clean_path_quota() {
 
 #[test]
 fn all_repetitive_search_remains_bounded_by_dfs_budget() {
-    let (graph, unresolved, _) = repeat_quota_graph(5, 0);
+    let (graph, repeat_markers, _) = repeat_quota_graph(5, 0);
     let counts = path_search_counts();
     let mut params = path_search_params();
     params.max_dfs_states = 10;
-    let result =
-        paths::search_assembly_paths(&graph, &counts.filtered_view(1), &params, None, &unresolved);
+    let result = paths::search_assembly_paths(
+        &graph,
+        &counts.filtered_view(1),
+        &params,
+        None,
+        &repeat_markers,
+    );
 
     assert!(result.paths.is_empty());
-    assert!(result.unresolved_repeat_path_count > 0);
+    assert!(result.withheld_candidate_path_count > 0);
     assert!(result.dfs_limit_reached);
     assert!(!result.path_limit_reached);
 }
 
 #[test]
 fn clean_candidates_still_consume_path_quota() {
-    let (graph, unresolved, clean_ends) = repeat_quota_graph(1, 3);
+    let (graph, repeat_markers, clean_ends) = repeat_quota_graph(1, 3);
     let counts = path_search_counts();
     let mut params = path_search_params();
     params.max_paths_per_pair = 2;
-    let result =
-        paths::search_assembly_paths(&graph, &counts.filtered_view(1), &params, None, &unresolved);
+    let result = paths::search_assembly_paths(
+        &graph,
+        &counts.filtered_view(1),
+        &params,
+        None,
+        &repeat_markers,
+    );
 
     assert_eq!(result.paths.len(), 2);
-    assert_eq!(result.unresolved_repeat_path_count, 2);
+    assert_eq!(result.withheld_candidate_path_count, 2);
     assert!(result.path_limit_reached);
     assert!(
         result
@@ -373,6 +400,83 @@ fn clean_candidates_still_consume_path_quota() {
             .iter()
             .all(|path| clean_ends.contains(&path.last().unwrap().0))
     );
+}
+
+#[test]
+fn acyclic_merge_taints_only_the_collision_edge() {
+    let mut graph = StableDiGraph::new();
+    let clean_start = graph.add_node(DBNode {
+        sub_kmer: 1,
+        is_start: true,
+        is_end: false,
+    });
+    let collision_start = graph.add_node(DBNode {
+        sub_kmer: 2,
+        is_start: true,
+        is_end: false,
+    });
+    let shared = graph.add_node(DBNode {
+        sub_kmer: 3,
+        is_start: false,
+        is_end: false,
+    });
+    let end = graph.add_node(DBNode {
+        sub_kmer: 4,
+        is_start: false,
+        is_end: true,
+    });
+    graph.add_edge(
+        clean_start,
+        shared,
+        DBEdge {
+            count: 5,
+            coverage_ratio: 1.0,
+        },
+    );
+    let collision_edge = graph.add_edge(
+        collision_start,
+        shared,
+        DBEdge {
+            count: 100,
+            coverage_ratio: 1.0,
+        },
+    );
+    graph.add_edge(
+        shared,
+        end,
+        DBEdge {
+            count: 5,
+            coverage_ratio: 1.0,
+        },
+    );
+    let markers = graph::RepeatMarkers {
+        omitted_self_loop_sub_kmers: ahash::AHashSet::new(),
+        cyclic_scc_sub_kmers: ahash::AHashSet::new(),
+        retained_collision_edges: ahash::AHashSet::from_iter([collision_edge]),
+    };
+    let counts = path_search_counts();
+    let params = path_search_params();
+    let result =
+        paths::search_assembly_paths(&graph, &counts.filtered_view(1), &params, None, &markers);
+
+    assert_eq!(result.completed_candidate_path_count, 2);
+    assert_eq!(result.eligible_candidate_path_count, 1);
+    assert_eq!(result.withheld_candidate_path_count, 1);
+    assert_eq!(result.withheld_by_collision_edge_count, 1);
+    assert_eq!(result.withheld_by_self_loop_node_count, 0);
+    assert_eq!(result.withheld_by_scc_node_count, 0);
+    assert_eq!(result.paths[0][0].0, clean_start);
+    let (records, _) = paths::generate_sequences_from_paths(
+        &graph,
+        result.paths,
+        &counts.filtered_view(1),
+        "collision",
+        &params,
+        0,
+        None,
+    )
+    .unwrap();
+    assert_eq!(records.len(), 1);
 }
 
 #[test]
@@ -416,7 +520,7 @@ fn repeat_branch_does_not_suppress_disjoint_clean_path() {
 }
 
 #[test]
-fn repeat_evidence_without_connectivity_is_explicit() {
+fn repeat_evidence_without_candidate_path_is_not_generic_repeat_failure() {
     let fixture = repeat_fixture(&"A".repeat(40));
     let mut random = rand::rngs::StdRng::seed_from_u64(132_001);
     let forward_arm = format!(
@@ -433,8 +537,13 @@ fn repeat_evidence_without_connectivity_is_explicit() {
     assert!(outcome.records.is_empty());
     assert_eq!(
         outcome.failure_reason.as_deref(),
-        Some("repeat evidence encountered before start-to-end connectivity could be established")
+        Some("no start-to-end connectivity established at this threshold")
     );
+    assert_eq!(outcome.threshold_diagnostics.len(), 1);
+    assert!(!outcome.threshold_diagnostics[0].connectivity_found);
+    assert!(!outcome.threshold_diagnostics[0].scc_evaluated);
+    assert!(outcome.threshold_diagnostics[0].omitted_self_loop_nodes > 0);
+    assert_eq!(outcome.threshold_diagnostics[0].withheld_candidate_paths, 0);
 }
 
 #[test]

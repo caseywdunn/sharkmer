@@ -119,7 +119,7 @@ The `--pcr-primers` argument takes a string with the format `key1=value1,key2=va
 
 The `--max-reads 1000000` argument indicates that the first million reads (individual reads, not read pairs) should be used. It is a practical starting point for high-copy rRNA and mitochondrial markers, not a recovery guarantee; single-copy nuclear genes commonly require more data.
 
-This analysis will generate one fasta file for each primer pair, named `{sample}_{gene}.fasta` (e.g., `Stenogorgia_casta_18S.fasta`). If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found. A YAML stats file (`{sample}.stats.yaml`) is also produced with run statistics and per-gene PCR results.
+This analysis will generate one fasta file for each primer pair, named `{sample}_{gene}.fasta` (e.g., `Stenogorgia_casta_18S.fasta`). If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found. A YAML stats file (`{sample}.stats.yaml`) is also produced with run statistics, per-gene PCR results, and bounded diagnostics for each attempted coverage threshold. Threshold diagnostics record connectivity and search-limit observations, repeat-marker cause counts, and eligible or withheld complete candidate counts without serializing graph identifiers. A reached search quota records why enumeration stopped; it does not prove that another valid path exists beyond the quota.
 
 In stats, `n_reads_read` is the number of FASTQ records read.
 `n_subreads_ingested` is a legacy-named count of FASTQ records submitted to
@@ -248,7 +248,11 @@ cross unresolved homopolymer or tandem-repeat regions instead of reporting
 a shortened sequence as a complete amplicon. These failures include
 `repeat length unresolved` in the per-gene stats. This intentionally removes
 some previously emitted, incorrectly shortened products; it is not evidence
-that the target is absent. Supplying `--read-threading` does not currently
+that the target is absent. Omitted self-loops and nodes in cyclic graph
+components remain conservative path-local uncertainty markers. A retained
+high-coverage edge that collides with an existing graph node marks that exact
+edge rather than both endpoint nodes, so a separate acyclic route may share an
+endpoint without inheriting the collision. Supplying `--read-threading` does not currently
 establish repeat copy count. Read-supported repeat reconstruction is planned
 for a later release. See [#127](https://github.com/caseywdunn/sharkmer/issues/127)
 for the historical hydrozoan 16S motivation; changing k is not a substitute
