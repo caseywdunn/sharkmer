@@ -1,0 +1,2197 @@
+{
+  "builds": {
+    "schema_version": 1,
+    "source_manifests": [
+      "/tmp/sharkmer-release-comparison/builds.json",
+      "/tmp/sharkmer-high-copy-20260911/issue155-build/builds.json"
+    ],
+    "versions": {
+      "baseline": {
+        "binary_path": "/tmp/sharkmer-release-comparison/binaries/sharkmer-baseline",
+        "binary_sha256": "4cb93c72c830e052bf9bf03638eec2a060a699c5741ea0630fd9225ecc5b5e18",
+        "binary_version": "sharkmer 3.1.0 (https://github.com/caseywdunn/sharkmer)",
+        "build_command": [
+          "cargo",
+          "build",
+          "--locked",
+          "--offline",
+          "--release",
+          "--message-format=json-render-diagnostics"
+        ],
+        "build_cwd": "/tmp/sharkmer-release-comparison/sources/baseline",
+        "build_environment": {
+          "CARGO_ENCODED_RUSTFLAGS": null,
+          "CARGO_TARGET_DIR": "/tmp/sharkmer-release-comparison/targets/baseline",
+          "RUSTC_WORKSPACE_WRAPPER": null,
+          "RUSTC_WRAPPER": null,
+          "RUSTFLAGS": null
+        },
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "cargo_artifact_features": [
+          "ahashmap",
+          "default"
+        ],
+        "cargo_artifact_profile": {
+          "debug_assertions": false,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": false,
+          "test": false
+        },
+        "cargo_lock_sha256": "4f556fac3069ec4b8b84a881f12a683900e2671189fa9f64a0ccd7199c42183e",
+        "commit": "5a664680c91ad59f32b8c2a847b8fef37f34a0ae",
+        "git_tree_oid": "d5114939fc2e89a0c0761d9190b53cfb51e73f5b",
+        "release_tag": "v3.1.0",
+        "release_tag_commit": "5a664680c91ad59f32b8c2a847b8fef37f34a0ae",
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "source_archive": "/tmp/sharkmer-release-comparison/baseline-source.tar",
+        "source_archive_sha256": "5bea09cfd4bc1c6918094848a2e8a3d2e3f9ffbd96395ec703b9004011600f03",
+        "source_binding": "built_from_verified_clean_git_archive_with_locked_dependencies",
+        "source_export": "/tmp/sharkmer-release-comparison/sources/baseline",
+        "source_export_pristine_after_build": true,
+        "source_tree_sha256_after_build": "290dc527579909dc36805e059c15767276d82365ebdddea45ddbc1d117088599",
+        "source_tree_sha256_before_build": "290dc527579909dc36805e059c15767276d82365ebdddea45ddbc1d117088599"
+      },
+      "candidate": {
+        "binary_path": "/tmp/sharkmer-high-copy-20260911/issue155-build/binaries/sharkmer-candidate",
+        "binary_sha256": "469065d8416d38f25993d537ee2956d88fdd2ba24a9461e356807c5bf4957a81",
+        "binary_version": "sharkmer 3.2.0-dev (https://github.com/caseywdunn/sharkmer)",
+        "build_command": [
+          "cargo",
+          "build",
+          "--locked",
+          "--offline",
+          "--release",
+          "--message-format=json-render-diagnostics"
+        ],
+        "build_cwd": "/tmp/sharkmer-high-copy-20260911/issue155-build/sources/candidate",
+        "build_environment": {
+          "CARGO_ENCODED_RUSTFLAGS": null,
+          "CARGO_TARGET_DIR": "/tmp/sharkmer-high-copy-20260911/issue155-build/targets/candidate",
+          "RUSTC_WORKSPACE_WRAPPER": null,
+          "RUSTC_WRAPPER": null,
+          "RUSTFLAGS": null
+        },
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "cargo_artifact_features": [
+          "ahashmap",
+          "default"
+        ],
+        "cargo_artifact_profile": {
+          "debug_assertions": false,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": false,
+          "test": false
+        },
+        "cargo_lock_sha256": "e2c47a967781a25ef845cea33bbb99e6a2cb20e50328a9bb5a651eac9190ff0b",
+        "commit": "0c38d6a051082cc2a1eb961b4206837f82948fda",
+        "git_tree_oid": "66ba9f5727f53146be06d91e4021a6b5afc64f3d",
+        "release_tag": null,
+        "release_tag_commit": null,
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "source_archive": "/tmp/sharkmer-high-copy-20260911/issue155-build/candidate-source.tar",
+        "source_archive_sha256": "f60d662ac60af4292c938183413868a39fca975cb53b3f15e47e3b162b4e5463",
+        "source_binding": "built_from_verified_clean_git_archive_with_locked_dependencies",
+        "source_export": "/tmp/sharkmer-high-copy-20260911/issue155-build/sources/candidate",
+        "source_export_pristine_after_build": true,
+        "source_tree_sha256_after_build": "bf8a362f8306dc47ee2fa98ba14d210abd9f0445d498de954f1720d246001db8",
+        "source_tree_sha256_before_build": "bf8a362f8306dc47ee2fa98ba14d210abd9f0445d498de954f1720d246001db8"
+      }
+    }
+  },
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "frozen_receipts": {
+    "build_wrapper": {
+      "path": "/tmp/sharkmer-high-copy-20260911/final-execution/receipts/build.py",
+      "sha256": "8720e4f4316812978a6fe58b873b963b228ae6b77e7eeb543b88252039ca43bf",
+      "size_bytes": 1166
+    },
+    "builder": {
+      "path": "/tmp/sharkmer-high-copy-20260911/final-execution/receipts/build_versions.py",
+      "sha256": "1c7128c86d74f1d10ca15900721ecc9acf933cc53d86d5d5ba8cfc9633324f87",
+      "size_bytes": 5408
+    },
+    "builds": {
+      "path": "/tmp/sharkmer-high-copy-20260911/final-execution/receipts/builds.json",
+      "sha256": "c705b80b311f4874cb3258ce8a203dfa3f7478ac771ad6e250fd7630e70e9c79",
+      "size_bytes": 4774
+    },
+    "driver": {
+      "path": "/tmp/sharkmer-high-copy-20260911/final-execution/receipts/benchmark.py",
+      "sha256": "10d199dcaa7610d29dfde61d92b4646d8abc974065b1cee6f5ef02d800ae7b1d",
+      "size_bytes": 11380
+    },
+    "helper": {
+      "path": "/tmp/sharkmer-high-copy-20260911/final-execution/receipts/helper.py",
+      "sha256": "f0d7eee4631819921eadb6b4dddf05b422c5e6eaf4c554db82259cd1c41bec97",
+      "size_bytes": 67620
+    },
+    "inputs": {
+      "path": "/tmp/sharkmer-high-copy-20260911/final-execution/receipts/inputs.json",
+      "sha256": "4763732cebacd43d3e295afe17ff903bdd1a6fc07449de24a03cd263b692cacf",
+      "size_bytes": 45269
+    },
+    "legacy_adapter": {
+      "path": "/tmp/sharkmer-high-copy-20260911/final-execution/receipts/postprocess_legacy.py",
+      "sha256": "f9e58a665c530b71c96ad7fb79508ba1598df7119feb7c52ee403aeb3e790aef",
+      "size_bytes": 27915
+    },
+    "original_builds": {
+      "path": "/tmp/sharkmer-high-copy-20260911/final-execution/receipts/original-builds.json",
+      "sha256": "475518df001573fd5f4a05316a16d6b29e4bac4d402bd49530a4207d9f32cec7",
+      "size_bytes": 4604
+    },
+    "original_protocol": {
+      "path": "/tmp/sharkmer-high-copy-20260911/final-execution/receipts/original-protocol.json",
+      "sha256": "097485889647071ce0ec7de56ceb9030f90a6ad27ddacbf5cb37cc2a37cbb825",
+      "size_bytes": 7175
+    },
+    "protocol": {
+      "path": "/tmp/sharkmer-high-copy-20260911/final-execution/receipts/protocol.json",
+      "sha256": "8b9e1ad915f0e1ebde5fe904d2e938d408c218bb6ff17c7da73a7986677f7f5b",
+      "size_bytes": 13491
+    }
+  },
+  "inputs": {
+    "inputs": [
+      {
+        "accession": "SRR9278435",
+        "ena_metadata": {
+          "fields": {
+            "fastq_bytes": "6261685952",
+            "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz",
+            "fastq_md5": "60f9698c8b0a6fce8001be35001ed1f3",
+            "read_count": "73901878",
+            "run_accession": "SRR9278435",
+            "scientific_name": "Xenia sp."
+          },
+          "path": "/tmp/sharkmer-release-comparison/ena/SRR9278435.tsv",
+          "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR9278435&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+          "sha256": "5a3a744717ed4fe6433dd60cb7e0f7f5c37e92bfc019b42a2f09e265974dbfac"
+        },
+        "historical_1m_prefix": {
+          "bases": 150000000,
+          "records": 1000000,
+          "sha256": "b87eb6bcb4b3cece3b461ee96d8c9c96d09ec59e94e752b688b4efde57410c62",
+          "size_bytes": 331777792
+        },
+        "historical_1m_prefix_identical": true,
+        "id": "SRR9278435",
+        "path": "/tmp/sharkmer-release-comparison/inputs/SRR9278435.fastq",
+        "prefixes": {
+          "1000000": {
+            "bases": 150000000,
+            "records": 1000000,
+            "sha256": "b87eb6bcb4b3cece3b461ee96d8c9c96d09ec59e94e752b688b4efde57410c62",
+            "size_bytes": 331777792
+          },
+          "2000000": {
+            "bases": 300000000,
+            "records": 2000000,
+            "sha256": "a36911d131cd9d9855d1091d36dac9a50b6e0f12c1cd4c68e4bd04bcae3e71c4",
+            "size_bytes": 665777792
+          },
+          "4000000": {
+            "bases": 600000000,
+            "records": 4000000,
+            "sha256": "6a09b8eb776625ea23b3328d0e0f0db53bcda2ad63aa3ea36d2a832c846e4829",
+            "size_bytes": 1333777792
+          },
+          "8000000": {
+            "bases": 1200000000,
+            "records": 8000000,
+            "sha256": "fa1b4d580381397a440d1d9418ad60dd0a3da908e6587fac544f99996cabeee8",
+            "size_bytes": 2669777792
+          }
+        },
+        "prepared_at": "2026-09-09T16:18:50.178683+00:00",
+        "requested_max_records": 8000000,
+        "sha256": "fa1b4d580381397a440d1d9418ad60dd0a3da908e6587fac544f99996cabeee8",
+        "size_bytes": 2669777792,
+        "source_consumption": [
+          {
+            "eof_verified": false,
+            "records": 8000000,
+            "transport": {
+              "full_upstream_checksum_verified": false,
+              "headers": {
+                "Accept-Ranges": "bytes",
+                "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+                "Access-Control-Allow-Methods": "GET,OPTIONS",
+                "Access-Control-Allow-Origin": "*",
+                "Connection": "close",
+                "Content-Length": "6261685952",
+                "Content-Type": "application/x-gzip",
+                "Date": "Wed, 09 Sep 2026 16:11:11 GMT",
+                "ETag": "\"17539bec0-5a3a1e913bbc0\"",
+                "Last-Modified": "Sun, 19 Apr 2020 10:04:39 GMT",
+                "Server": "Apache"
+              },
+              "kind": "https_gzip_prefix",
+              "status": 200
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz"
+          }
+        ],
+        "source_urls_ordered": [
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz"
+        ],
+        "total_bases": 1200000000,
+        "total_records": 8000000
+      },
+      {
+        "accession": "SRR25099394",
+        "ena_metadata": {
+          "fields": {
+            "fastq_bytes": "2232494650;2236913697",
+            "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_2.fastq.gz",
+            "fastq_md5": "fb2fe27ee879ee26c6f25672cab87a88;1e39b7faf59177ca63dc33ca4fe60416",
+            "read_count": "40291807",
+            "run_accession": "SRR25099394",
+            "scientific_name": "Agalma elegans"
+          },
+          "path": "/tmp/sharkmer-release-comparison/ena/SRR25099394.tsv",
+          "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR25099394&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+          "sha256": "7f9ac7b0a197e0112a86d0aa7f887cb4697853029c10969cba9ced366f293867"
+        },
+        "historical_1m_prefix": {
+          "bases": 151000000,
+          "records": 1000000,
+          "sha256": "eda4f80dcb7853c3ef734e4efa2ff06e6f3332e105a99797fa1f709c441f0f43",
+          "size_bytes": 367358324
+        },
+        "historical_1m_prefix_identical": true,
+        "id": "SRR25099394",
+        "path": "/tmp/sharkmer-release-comparison/inputs/SRR25099394.fastq",
+        "prefixes": {
+          "1000000": {
+            "bases": 151000000,
+            "records": 1000000,
+            "sha256": "eda4f80dcb7853c3ef734e4efa2ff06e6f3332e105a99797fa1f709c441f0f43",
+            "size_bytes": 367358324
+          },
+          "2000000": {
+            "bases": 302000000,
+            "records": 2000000,
+            "sha256": "bc80992264a0c00327050e7d06ade863a303359539cbb29a47fee7e0f288d3e9",
+            "size_bytes": 735817511
+          },
+          "4000000": {
+            "bases": 604000000,
+            "records": 4000000,
+            "sha256": "082319e9bbcd216f1bbb0648ddff9da5879cad9fcc70d56c6297275d1d18e274",
+            "size_bytes": 1472753809
+          },
+          "8000000": {
+            "bases": 1208000000,
+            "records": 8000000,
+            "sha256": "aaa6c64c436c25886b6acea8b9118744369dbb4029bfec050fc413f1a0a46758",
+            "size_bytes": 2946617031
+          }
+        },
+        "prepared_at": "2026-09-09T16:23:00.456503+00:00",
+        "requested_max_records": 8000000,
+        "sha256": "aaa6c64c436c25886b6acea8b9118744369dbb4029bfec050fc413f1a0a46758",
+        "size_bytes": 2946617031,
+        "source_consumption": [
+          {
+            "eof_verified": false,
+            "records": 8000000,
+            "transport": {
+              "full_upstream_checksum_verified": false,
+              "headers": {
+                "Accept-Ranges": "bytes",
+                "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+                "Access-Control-Allow-Methods": "GET,OPTIONS",
+                "Access-Control-Allow-Origin": "*",
+                "Connection": "close",
+                "Content-Length": "2232494650",
+                "Content-Type": "application/x-gzip",
+                "Date": "Wed, 09 Sep 2026 16:18:54 GMT",
+                "ETag": "\"85112a3a-600f6bcc13f40\"",
+                "Last-Modified": "Fri, 21 Jul 2023 03:19:49 GMT",
+                "Server": "Apache"
+              },
+              "kind": "https_gzip_prefix",
+              "status": 200
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz"
+          }
+        ],
+        "source_urls_ordered": [
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz",
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_2.fastq.gz"
+        ],
+        "total_bases": 1208000000,
+        "total_records": 8000000
+      },
+      {
+        "accession": "SRR8617500",
+        "ena_metadata": {
+          "fields": {
+            "fastq_bytes": "5254755910;5456790747",
+            "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_2.fastq.gz",
+            "fastq_md5": "8ace50c3d3e007af9fa78bbf0adac213;9f2f833432e4f2faa070c6965173fd88",
+            "read_count": "76034912",
+            "run_accession": "SRR8617500",
+            "scientific_name": "Rhopilema esculentum"
+          },
+          "path": "/tmp/sharkmer-release-comparison/ena/SRR8617500.tsv",
+          "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR8617500&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+          "sha256": "24061427fe24a57e9c1d84b98913925e6419243041ca91c23e16d684a6567f81"
+        },
+        "historical_1m_prefix": {
+          "bases": 150000000,
+          "records": 1000000,
+          "sha256": "681c732745f4820ae8600617452e42b5a98e63775b250cf9f7971e283ef9fbdc",
+          "size_bytes": 331777792
+        },
+        "historical_1m_prefix_identical": true,
+        "id": "SRR8617500",
+        "path": "/tmp/sharkmer-release-comparison/inputs/SRR8617500.fastq",
+        "prefixes": {
+          "1000000": {
+            "bases": 150000000,
+            "records": 1000000,
+            "sha256": "681c732745f4820ae8600617452e42b5a98e63775b250cf9f7971e283ef9fbdc",
+            "size_bytes": 331777792
+          },
+          "2000000": {
+            "bases": 300000000,
+            "records": 2000000,
+            "sha256": "81be1a5b4e4df0973a8aca8c0133e81816707b78688c43193e431131997ac6a6",
+            "size_bytes": 665777792
+          },
+          "4000000": {
+            "bases": 600000000,
+            "records": 4000000,
+            "sha256": "4b4791648ded9fdd2da9cb68392bca7bb912b2c7a0561a20a31da2bc02b57c95",
+            "size_bytes": 1333777792
+          },
+          "8000000": {
+            "bases": 1200000000,
+            "records": 8000000,
+            "sha256": "e3b7c7380f6c7ee9363fb73f9a03c43928ae97514f997feefe3f5156e23456ea",
+            "size_bytes": 2669777792
+          }
+        },
+        "prepared_at": "2026-09-09T16:25:44.359847+00:00",
+        "requested_max_records": 8000000,
+        "sha256": "e3b7c7380f6c7ee9363fb73f9a03c43928ae97514f997feefe3f5156e23456ea",
+        "size_bytes": 2669777792,
+        "source_consumption": [
+          {
+            "eof_verified": false,
+            "records": 8000000,
+            "transport": {
+              "full_upstream_checksum_verified": false,
+              "headers": {
+                "Accept-Ranges": "bytes",
+                "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+                "Access-Control-Allow-Methods": "GET,OPTIONS",
+                "Access-Control-Allow-Origin": "*",
+                "Connection": "close",
+                "Content-Length": "5254755910",
+                "Content-Type": "application/x-gzip",
+                "Date": "Wed, 09 Sep 2026 16:23:09 GMT",
+                "ETag": "\"139353646-5a04eabfe0d40\"",
+                "Last-Modified": "Sun, 08 Mar 2020 02:30:37 GMT",
+                "Server": "Apache"
+              },
+              "kind": "https_gzip_prefix",
+              "status": 200
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz"
+          }
+        ],
+        "source_urls_ordered": [
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz",
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_2.fastq.gz"
+        ],
+        "total_bases": 1200000000,
+        "total_records": 8000000
+      },
+      {
+        "accession": "SRR17535371",
+        "ena_metadata": {
+          "fields": {
+            "fastq_bytes": "822668;1077287;1228815",
+            "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz",
+            "fastq_md5": "1f412292d86fc5fb634f9e0f3dfcc500;c7705dbb57c224c648afa666c33ad819;2d04ae035e0303d958ec8bbd3ae601e1",
+            "read_count": "69271",
+            "run_accession": "SRR17535371",
+            "scientific_name": "Homo sapiens"
+          },
+          "path": "/tmp/sharkmer-release-comparison/ena/SRR17535371.tsv",
+          "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR17535371&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+          "sha256": "95626bd694024ee39dc4e9002c8a1d52ecfb9e8de5dcd557c8ad1a1725f8f90c"
+        },
+        "historical_1m_prefix": {
+          "bases": 18093925,
+          "records": 108518,
+          "sha256": "5f6230177848a7fb58e3cfe5a8de2aa43b9239466c87f07fec3a057fc5ab429f",
+          "size_bytes": 39517474
+        },
+        "historical_1m_prefix_identical": true,
+        "id": "SRR17535371",
+        "path": "/tmp/sharkmer-release-comparison/inputs/SRR17535371.fastq",
+        "prefixes": {
+          "1000000": {
+            "bases": 18093925,
+            "records": 108518,
+            "sha256": "5f6230177848a7fb58e3cfe5a8de2aa43b9239466c87f07fec3a057fc5ab429f",
+            "size_bytes": 39517474
+          }
+        },
+        "prepared_at": "2026-09-09T16:25:45.819101+00:00",
+        "requested_max_records": 1000000,
+        "sha256": "5f6230177848a7fb58e3cfe5a8de2aa43b9239466c87f07fec3a057fc5ab429f",
+        "size_bytes": 39517474,
+        "source_consumption": [
+          {
+            "eof_verified": true,
+            "records": 30024,
+            "transport": {
+              "compressed_sha256": "dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21",
+              "kind": "verified_historical_cache",
+              "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz"
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz"
+          },
+          {
+            "eof_verified": true,
+            "records": 39247,
+            "transport": {
+              "compressed_sha256": "5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8",
+              "kind": "verified_historical_cache",
+              "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz"
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz"
+          },
+          {
+            "eof_verified": true,
+            "records": 39247,
+            "transport": {
+              "compressed_sha256": "c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe",
+              "kind": "verified_historical_cache",
+              "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz"
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz"
+          }
+        ],
+        "source_urls_ordered": [
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz",
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz",
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz"
+        ],
+        "total_bases": 18093925,
+        "total_records": 108518
+      },
+      {
+        "accession": "SRR22396603",
+        "ena_metadata": {
+          "fields": {
+            "fastq_bytes": "550817463;593075367",
+            "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_2.fastq.gz",
+            "fastq_md5": "71e911d25dfaeb344806946d54fe9461;47d5e008697a388dd36fd70a46837d56",
+            "read_count": "8506252",
+            "run_accession": "SRR22396603",
+            "scientific_name": "Nomeus gronovii"
+          },
+          "path": "/tmp/sharkmer-release-comparison/ena/SRR22396603.tsv",
+          "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR22396603&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+          "sha256": "61a18865273e255f8312b3ec2794424e49f7e0f7c03739f0dde8afa566af1b28"
+        },
+        "historical_1m_prefix": {
+          "bases": 151000000,
+          "records": 1000000,
+          "sha256": "6e9da22ee6605ebcd6e67d7dd52b997411f7c8e7655b6930ddbe158dbc2a3ed3",
+          "size_bytes": 334777792
+        },
+        "historical_1m_prefix_identical": true,
+        "id": "SRR22396603",
+        "path": "/tmp/sharkmer-release-comparison/inputs/SRR22396603.fastq",
+        "prefixes": {
+          "1000000": {
+            "bases": 151000000,
+            "records": 1000000,
+            "sha256": "6e9da22ee6605ebcd6e67d7dd52b997411f7c8e7655b6930ddbe158dbc2a3ed3",
+            "size_bytes": 334777792
+          }
+        },
+        "prepared_at": "2026-09-09T16:25:54.686361+00:00",
+        "requested_max_records": 1000000,
+        "sha256": "6e9da22ee6605ebcd6e67d7dd52b997411f7c8e7655b6930ddbe158dbc2a3ed3",
+        "size_bytes": 334777792,
+        "source_consumption": [
+          {
+            "eof_verified": false,
+            "records": 1000000,
+            "transport": {
+              "compressed_sha256": "d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626",
+              "kind": "verified_historical_cache",
+              "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz"
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz"
+          }
+        ],
+        "source_urls_ordered": [
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz",
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_2.fastq.gz"
+        ],
+        "total_bases": 151000000,
+        "total_records": 1000000
+      },
+      {
+        "accession": "SRR25378184",
+        "ena_metadata": {
+          "fields": {
+            "fastq_bytes": "53856469;53374349",
+            "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz",
+            "fastq_md5": "7fe3cf225cb45609d30e4dfba1616c58;8093164754995859f41ae69f0ecb54c6",
+            "read_count": "656431",
+            "run_accession": "SRR25378184",
+            "scientific_name": "Liriodendron tulipifera"
+          },
+          "path": "/tmp/sharkmer-release-comparison/ena/SRR25378184.tsv",
+          "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR25378184&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+          "sha256": "b0f23cc1a8b2f2000f2957e7217621bfb877bf1be3bb64d147dc13d372725c5c"
+        },
+        "historical_1m_prefix": {
+          "bases": 151000000,
+          "records": 1000000,
+          "sha256": "2a44558f81127ac7aae0f8b9789d3ac5d589986e172c5ba27784a5d84f287bd3",
+          "size_bytes": 371615360
+        },
+        "historical_1m_prefix_identical": true,
+        "id": "SRR25378184",
+        "path": "/tmp/sharkmer-release-comparison/inputs/SRR25378184.fastq",
+        "prefixes": {
+          "1000000": {
+            "bases": 151000000,
+            "records": 1000000,
+            "sha256": "2a44558f81127ac7aae0f8b9789d3ac5d589986e172c5ba27784a5d84f287bd3",
+            "size_bytes": 371615360
+          }
+        },
+        "prepared_at": "2026-09-09T16:26:04.531380+00:00",
+        "requested_max_records": 1000000,
+        "sha256": "2a44558f81127ac7aae0f8b9789d3ac5d589986e172c5ba27784a5d84f287bd3",
+        "size_bytes": 371615360,
+        "source_consumption": [
+          {
+            "eof_verified": true,
+            "records": 656431,
+            "transport": {
+              "compressed_sha256": "67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e",
+              "kind": "verified_historical_cache",
+              "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz"
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz"
+          },
+          {
+            "eof_verified": false,
+            "records": 343569,
+            "transport": {
+              "compressed_sha256": "6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3",
+              "kind": "verified_historical_cache",
+              "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz"
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz"
+          }
+        ],
+        "source_urls_ordered": [
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz",
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz"
+        ],
+        "total_bases": 151000000,
+        "total_records": 1000000
+      },
+      {
+        "accession": "ERR14009273",
+        "ena_metadata": {
+          "fields": {
+            "fastq_bytes": "426350363;424863046",
+            "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_2.fastq.gz",
+            "fastq_md5": "66355f6a545d65e92b04265498eae21c;2562857c520e9b00362dce3b7d4b94d4",
+            "read_count": "9292512",
+            "run_accession": "ERR14009273",
+            "scientific_name": "Acer monspessulanum"
+          },
+          "path": "/tmp/sharkmer-release-comparison/ena/ERR14009273.tsv",
+          "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=ERR14009273&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+          "sha256": "67555df3e07f8f5a687622e69f17bb71985e58b95d9d5702b9ddb0a1591c4cce"
+        },
+        "historical_1m_prefix": {
+          "bases": 99211896,
+          "records": 1000000,
+          "sha256": "9b0248592f5616f52f473c7080462390b578b614e8ef523c6491e36d442dafb1",
+          "size_bytes": 255801372
+        },
+        "historical_1m_prefix_identical": true,
+        "id": "ERR14009273",
+        "path": "/tmp/sharkmer-release-comparison/inputs/ERR14009273.fastq",
+        "prefixes": {
+          "1000000": {
+            "bases": 99211896,
+            "records": 1000000,
+            "sha256": "9b0248592f5616f52f473c7080462390b578b614e8ef523c6491e36d442dafb1",
+            "size_bytes": 255801372
+          }
+        },
+        "prepared_at": "2026-09-09T16:26:13.369498+00:00",
+        "requested_max_records": 1000000,
+        "sha256": "9b0248592f5616f52f473c7080462390b578b614e8ef523c6491e36d442dafb1",
+        "size_bytes": 255801372,
+        "source_consumption": [
+          {
+            "eof_verified": false,
+            "records": 1000000,
+            "transport": {
+              "compressed_sha256": "261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22",
+              "kind": "verified_historical_cache",
+              "path": "/tmp/sharkmer-v3.2-review/calibration-b728f14/cache/da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz"
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz"
+          }
+        ],
+        "source_urls_ordered": [
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz",
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_2.fastq.gz"
+        ],
+        "total_bases": 99211896,
+        "total_records": 1000000
+      },
+      {
+        "accession": "SRR31887760",
+        "ena_metadata": {
+          "fields": {
+            "fastq_bytes": "1449336386;1469922374",
+            "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_2.fastq.gz",
+            "fastq_md5": "2c4e9fc97bffcc9281d9d8f362c60c7f;a4e4a52acc000cb28608f98b47db7042",
+            "read_count": "17265830",
+            "run_accession": "SRR31887760",
+            "scientific_name": "Drosophila melanogaster"
+          },
+          "path": "/tmp/sharkmer-release-comparison/ena/SRR31887760.tsv",
+          "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR31887760&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+          "sha256": "bff2ead87c921470acb6006eeaf8c5704c487c594a60236b87108bf028e987ab"
+        },
+        "historical_1m_prefix": {
+          "bases": 101000000,
+          "records": 1000000,
+          "sha256": "b952eb9be7212ae79da85b0548b1c74a0343637d8af400ae9a08968b297638ae",
+          "size_bytes": 267366976
+        },
+        "historical_1m_prefix_identical": true,
+        "id": "SRR31887760",
+        "path": "/tmp/sharkmer-release-comparison/inputs/SRR31887760.fastq",
+        "prefixes": {
+          "1000000": {
+            "bases": 101000000,
+            "records": 1000000,
+            "sha256": "b952eb9be7212ae79da85b0548b1c74a0343637d8af400ae9a08968b297638ae",
+            "size_bytes": 267366976
+          },
+          "2000000": {
+            "bases": 202000000,
+            "records": 2000000,
+            "sha256": "c798c01b4e2907728f115dfccd59a20f73d54d51cb3f7daf0b6c59b0d242f6bc",
+            "size_bytes": 535859390
+          },
+          "4000000": {
+            "bases": 404000000,
+            "records": 4000000,
+            "sha256": "a2cf1ace700372d40512b9f33ef453f4443aeec5b82a6f3d0e830b6989bdb823",
+            "size_bytes": 1072845041
+          },
+          "8000000": {
+            "bases": 808000000,
+            "records": 8000000,
+            "sha256": "95250efe8110653f9255782bca96e4a4e206e7f0f891451ce363470f5d7bc0e7",
+            "size_bytes": 2146802050
+          }
+        },
+        "prepared_at": "2026-09-09T16:33:00.372079+00:00",
+        "requested_max_records": 8000000,
+        "sha256": "95250efe8110653f9255782bca96e4a4e206e7f0f891451ce363470f5d7bc0e7",
+        "size_bytes": 2146802050,
+        "source_consumption": [
+          {
+            "eof_verified": false,
+            "records": 8000000,
+            "transport": {
+              "full_upstream_checksum_verified": false,
+              "headers": {
+                "Accept-Ranges": "bytes",
+                "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+                "Access-Control-Allow-Methods": "GET,OPTIONS",
+                "Access-Control-Allow-Origin": "*",
+                "Connection": "close",
+                "Content-Length": "1449336386",
+                "Content-Type": "application/x-gzip",
+                "Date": "Wed, 09 Sep 2026 16:26:18 GMT",
+                "ETag": "\"56631e42-62dfe4aac1a80\"",
+                "Last-Modified": "Thu, 13 Feb 2025 04:14:18 GMT",
+                "Server": "Apache"
+              },
+              "kind": "https_gzip_prefix",
+              "status": 200
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz"
+          }
+        ],
+        "source_urls_ordered": [
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz",
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_2.fastq.gz"
+        ],
+        "total_bases": 808000000,
+        "total_records": 8000000
+      },
+      {
+        "accession": "SRR1057608",
+        "ena_metadata": {
+          "fields": {
+            "fastq_bytes": "2144836368;2146068154",
+            "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_2.fastq.gz",
+            "fastq_md5": "4c2a08d94de1ad21f3bf50c1d18cdff4;f29c4ba70ce750588b386f70a5dd147e",
+            "read_count": "27465279",
+            "run_accession": "SRR1057608",
+            "scientific_name": "Heliconius pachinus"
+          },
+          "path": "/tmp/sharkmer-release-comparison/ena/SRR1057608.tsv",
+          "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR1057608&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+          "sha256": "3200fe09f95b1c96c4f35c19529781d7aa8923bbc1c977b2a4b83369daecf87b"
+        },
+        "historical_1m_prefix": {
+          "bases": 89994628,
+          "records": 1000000,
+          "sha256": "a65515c2b54d585ca1028f2c865381aed16f4da9f7cc956f1c8d3fdcda8ca3e0",
+          "size_bytes": 211767048
+        },
+        "historical_1m_prefix_identical": true,
+        "id": "SRR1057608",
+        "path": "/tmp/sharkmer-release-comparison/inputs/SRR1057608.fastq",
+        "prefixes": {
+          "1000000": {
+            "bases": 89994628,
+            "records": 1000000,
+            "sha256": "a65515c2b54d585ca1028f2c865381aed16f4da9f7cc956f1c8d3fdcda8ca3e0",
+            "size_bytes": 211767048
+          },
+          "2000000": {
+            "bases": 179988194,
+            "records": 2000000,
+            "sha256": "db400cff131c54be57600ef9b4a92aaefb621db3c5d1c98f8786bc2ce0f662f2",
+            "size_bytes": 425754180
+          },
+          "4000000": {
+            "bases": 359972261,
+            "records": 4000000,
+            "sha256": "cd4c0eb1e6d0a52ee296d4044f48b2eedb7fb3a933d81c868d5c070c329e577b",
+            "size_bytes": 853722314
+          },
+          "8000000": {
+            "bases": 719945978,
+            "records": 8000000,
+            "sha256": "c510fc8a625f7c89b4031c108d67aeaca31cba08e118846fdb7f76ed9323ec8a",
+            "size_bytes": 1709669748
+          }
+        },
+        "prepared_at": "2026-09-09T16:40:03.684385+00:00",
+        "requested_max_records": 8000000,
+        "sha256": "c510fc8a625f7c89b4031c108d67aeaca31cba08e118846fdb7f76ed9323ec8a",
+        "size_bytes": 1709669748,
+        "source_consumption": [
+          {
+            "eof_verified": false,
+            "records": 8000000,
+            "transport": {
+              "full_upstream_checksum_verified": false,
+              "headers": {
+                "Accept-Ranges": "bytes",
+                "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+                "Access-Control-Allow-Methods": "GET,OPTIONS",
+                "Access-Control-Allow-Origin": "*",
+                "Connection": "close",
+                "Content-Length": "2144836368",
+                "Content-Type": "application/x-gzip",
+                "Date": "Wed, 09 Sep 2026 16:33:05 GMT",
+                "ETag": "\"7fd79b10-4f7473e6e5740\"",
+                "Last-Modified": "Fri, 18 Apr 2014 01:41:09 GMT",
+                "Server": "Apache"
+              },
+              "kind": "https_gzip_prefix",
+              "status": 200
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz"
+          }
+        ],
+        "source_urls_ordered": [
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz",
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_2.fastq.gz"
+        ],
+        "total_bases": 719945978,
+        "total_records": 8000000
+      },
+      {
+        "accession": "SRR27962769",
+        "ena_metadata": {
+          "fields": {
+            "fastq_bytes": "508891806;553172276",
+            "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_2.fastq.gz",
+            "fastq_md5": "ceab3f7c7809b13d1422c3e108faccbc;74fa2edb91358238d73dd618deea284e",
+            "read_count": "7209861",
+            "run_accession": "SRR27962769",
+            "scientific_name": "Gryllus bimaculatus"
+          },
+          "path": "/tmp/sharkmer-release-comparison/ena/SRR27962769.tsv",
+          "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR27962769&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+          "sha256": "13327f2a455012720fc23338a5d1f85b8e5275c667d6aea2a373fd60198cb810"
+        },
+        "historical_1m_prefix": {
+          "bases": 150000000,
+          "records": 1000000,
+          "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+          "size_bytes": 365356898
+        },
+        "historical_1m_prefix_identical": true,
+        "id": "SRR27962769",
+        "path": "/tmp/sharkmer-release-comparison/inputs/SRR27962769.fastq",
+        "prefixes": {
+          "1000000": {
+            "bases": 150000000,
+            "records": 1000000,
+            "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+            "size_bytes": 365356898
+          },
+          "2000000": {
+            "bases": 300000000,
+            "records": 2000000,
+            "sha256": "785a3afe758678fd68ec277e56a3d7537e669763c4448b45b1a167d9c2cb5785",
+            "size_bytes": 731824249
+          },
+          "4000000": {
+            "bases": 600000000,
+            "records": 4000000,
+            "sha256": "8a2d7dc0bae6717161620a13ec82f5eac04565f956073e9ab37184af82f5d98c",
+            "size_bytes": 1464761835
+          },
+          "8000000": {
+            "bases": 1200000000,
+            "records": 8000000,
+            "sha256": "d4252f0052d9eaf1753debd1c82eb132666f2300e43d80524ded9275a81081b2",
+            "size_bytes": 2929733806
+          }
+        },
+        "prepared_at": "2026-09-09T16:46:38.570856+00:00",
+        "requested_max_records": 8000000,
+        "sha256": "d4252f0052d9eaf1753debd1c82eb132666f2300e43d80524ded9275a81081b2",
+        "size_bytes": 2929733806,
+        "source_consumption": [
+          {
+            "eof_verified": true,
+            "records": 7209861,
+            "transport": {
+              "full_upstream_checksum_verified": false,
+              "headers": {
+                "Accept-Ranges": "bytes",
+                "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+                "Access-Control-Allow-Methods": "GET,OPTIONS",
+                "Access-Control-Allow-Origin": "*",
+                "Connection": "close",
+                "Content-Length": "508891806",
+                "Content-Type": "application/x-gzip",
+                "Date": "Wed, 09 Sep 2026 16:40:12 GMT",
+                "ETag": "\"1e55129e-61bc370b8dd00\"",
+                "Last-Modified": "Wed, 26 Jun 2024 04:28:04 GMT",
+                "Server": "Apache"
+              },
+              "kind": "https_gzip_prefix",
+              "status": 200
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz"
+          },
+          {
+            "eof_verified": false,
+            "records": 790139,
+            "transport": {
+              "full_upstream_checksum_verified": false,
+              "headers": {
+                "Accept-Ranges": "bytes",
+                "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+                "Access-Control-Allow-Methods": "GET,OPTIONS",
+                "Access-Control-Allow-Origin": "*",
+                "Connection": "close",
+                "Content-Length": "553172276",
+                "Content-Type": "application/x-gzip",
+                "Date": "Wed, 09 Sep 2026 16:45:45 GMT",
+                "ETag": "\"20f8bd34-61bc3709a5880\"",
+                "Last-Modified": "Wed, 26 Jun 2024 04:28:02 GMT",
+                "Server": "Apache"
+              },
+              "kind": "https_gzip_prefix",
+              "status": 200
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_2.fastq.gz"
+          }
+        ],
+        "source_urls_ordered": [
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz",
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_2.fastq.gz"
+        ],
+        "total_bases": 1200000000,
+        "total_records": 8000000
+      }
+    ],
+    "preparation": {
+      "command": [
+        "python",
+        "/tmp/sharkmer-release-comparison/stage_inputs.py"
+      ],
+      "description": "Immutable record-aligned uncompressed FASTQ; each 1M prefix verified against earlier checksum-verified calibration cache.",
+      "limits": "first8M for six configured sweep samples; first1M or EOF for remaining samples",
+      "record_order": "ENA URL order, sequential, unpaired",
+      "remote_integrity_note": "Staged full/prefix SHA-256 verifies comparison identity. Partial remote downloads do not verify full upstream compressed MD5.",
+      "tool_versions": {
+        "python": "3.13.13"
+      }
+    },
+    "schema_version": 1
+  },
+  "machine": {
+    "cpu_cores": 12,
+    "cpu_model": "x86_64",
+    "os": "Linux 7.0.0-30-generic",
+    "total_ram_gb": 62.6
+  },
+  "protocol": {
+    "baseline_role": "baseline",
+    "expected_commits": {
+      "baseline": "5a664680c91ad59f32b8c2a847b8fef37f34a0ae",
+      "candidate": "0c38d6a051082cc2a1eb961b4206837f82948fda"
+    },
+    "limitations": [
+      "Local uncompressed fixed-prefix calibration, not held-out truth; network/gzip/BLAST excluded.",
+      "Whole unchanged panels are timed; recovery is assessed by target metadata and per-product evidence, not raw total products.",
+      "Small number of paired measurements supports descriptive comparisons, not portable statistical guarantees.",
+      "40 GiB virtual-address limit is not an RSS cap or 16 GB laptop validation."
+    ],
+    "priority": "2026-09-11 user: protect abundant organelle/ribosomal recovery and runtime/RAM; metagenomic and single-copy nuclear optimization deferred",
+    "purpose": "High-copy-focused final comparison: unchanged non-metagenomic panels, released v3.1.0 vs combined154155",
+    "review_criteria": {
+      "deferred": "Metagenomic and single-copy nuclear diversity/recovery are not current release gates.",
+      "failures": "Any nonzero CLI exit, timeout, resource breach, count mismatch, invalid provenance/output or BLAST evaluation error invalidates that cell.",
+      "ram": "Report every increase; prioritize investigation of >2% per-cell paired median RSS increase.",
+      "recovery": "Flag every lost high-copy candidate; prioritize reference-supported and dominant products. Compare sequence membership independent of index, retain classification and median/minimum support. Do not require restoration of unsupported repeat-copy claims.",
+      "release": "Stop before release for user review, regardless of numeric thresholds.",
+      "runtime": "Report every increase; prioritize investigation of >5% per-cell paired median wall increase. Descriptive only; no automatic no-regression claim."
+    },
+    "samples": [
+      {
+        "depth": 1000000,
+        "input": "SRR9278435",
+        "pairs": 3,
+        "panel": "cnidaria",
+        "taxon": "Xenia sp."
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR25099394",
+        "pairs": 3,
+        "panel": "cnidaria",
+        "taxon": "Agalma elegans"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR8617500",
+        "pairs": 3,
+        "panel": "cnidaria",
+        "taxon": "Rhopilema esculentum"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR17535371",
+        "pairs": 3,
+        "panel": "human",
+        "taxon": "Homo sapiens"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR22396603",
+        "pairs": 3,
+        "panel": "teleostei",
+        "taxon": "Nomeus gronovii"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR25378184",
+        "pairs": 3,
+        "panel": "angiospermae",
+        "taxon": "Liriodendron tulipifera"
+      },
+      {
+        "depth": 1000000,
+        "input": "ERR14009273",
+        "pairs": 3,
+        "panel": "angiospermae",
+        "taxon": "Acer monspessulanum"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR31887760",
+        "pairs": 3,
+        "panel": "insecta",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR1057608",
+        "pairs": 3,
+        "panel": "insecta",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR27962769",
+        "pairs": 3,
+        "panel": "insecta",
+        "taxon": "Gryllus bimaculatus"
+      }
+    ],
+    "settings": {
+      "address_space_limit_bytes": 42949672960,
+      "chunks": 0,
+      "cpu_list": [
+        0,
+        1
+      ],
+      "input_format": "uncompressed_four_line_fastq",
+      "k": 19,
+      "paired": false,
+      "prewarm_each_invocation": true,
+      "read_threading": false,
+      "threads": 2,
+      "timeout_seconds": 1800
+    },
+    "target_metadata": {
+      "angiospermae": [
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "psbA-trnH",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "rpl36-infA-rps8",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "trnK-rps16",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "trnV-atpE",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "trnC-ycf6",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "ycf6-psbM",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "psbM-trnD",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "atpB-rbcL",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "trnL-F",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        }
+      ],
+      "cnidaria": [
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "16S",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "18S",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "28S_1",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS_1",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS_2",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "28S_2",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        }
+      ],
+      "human": [
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-1404-3947",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-3734-6739",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-6511-9220",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-8910-10648",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-10360-12226",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-11977-13830",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-13477-15349",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-14898-151",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-16488-1677",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        }
+      ],
+      "insecta": [
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "12S",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "16S_1",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO1_1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO2_1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CytB",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "ND1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "ND4",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "ND5",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "16S_2",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO1_2",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO2_2",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "NADH",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Fz4",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Gpdh",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Pgi",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Yp2",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "18S_1",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "28S",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "18S_2",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS_1",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS_2",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        }
+      ],
+      "teleostei": [
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "18S",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "16S",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CytB",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "12S",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        }
+      ]
+    }
+  },
+  "schedule": [
+    {
+      "cell": "cnidaria/SRR9278435/1000000",
+      "cell_index": 0,
+      "depth": 1000000,
+      "input": "SRR9278435",
+      "invocation_id": "000_cnidaria_SRR9278435_1000000_pair1_baseline",
+      "order_position": 1,
+      "pair_index": 1,
+      "panel": "cnidaria",
+      "taxon": "Xenia sp.",
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/1000000",
+      "cell_index": 0,
+      "depth": 1000000,
+      "input": "SRR9278435",
+      "invocation_id": "000_cnidaria_SRR9278435_1000000_pair1_candidate",
+      "order_position": 2,
+      "pair_index": 1,
+      "panel": "cnidaria",
+      "taxon": "Xenia sp.",
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/1000000",
+      "cell_index": 0,
+      "depth": 1000000,
+      "input": "SRR9278435",
+      "invocation_id": "000_cnidaria_SRR9278435_1000000_pair2_candidate",
+      "order_position": 1,
+      "pair_index": 2,
+      "panel": "cnidaria",
+      "taxon": "Xenia sp.",
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/1000000",
+      "cell_index": 0,
+      "depth": 1000000,
+      "input": "SRR9278435",
+      "invocation_id": "000_cnidaria_SRR9278435_1000000_pair2_baseline",
+      "order_position": 2,
+      "pair_index": 2,
+      "panel": "cnidaria",
+      "taxon": "Xenia sp.",
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/1000000",
+      "cell_index": 0,
+      "depth": 1000000,
+      "input": "SRR9278435",
+      "invocation_id": "000_cnidaria_SRR9278435_1000000_pair3_baseline",
+      "order_position": 1,
+      "pair_index": 3,
+      "panel": "cnidaria",
+      "taxon": "Xenia sp.",
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/1000000",
+      "cell_index": 0,
+      "depth": 1000000,
+      "input": "SRR9278435",
+      "invocation_id": "000_cnidaria_SRR9278435_1000000_pair3_candidate",
+      "order_position": 2,
+      "pair_index": 3,
+      "panel": "cnidaria",
+      "taxon": "Xenia sp.",
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/1000000",
+      "cell_index": 1,
+      "depth": 1000000,
+      "input": "SRR25099394",
+      "invocation_id": "001_cnidaria_SRR25099394_1000000_pair1_candidate",
+      "order_position": 1,
+      "pair_index": 1,
+      "panel": "cnidaria",
+      "taxon": "Agalma elegans",
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/1000000",
+      "cell_index": 1,
+      "depth": 1000000,
+      "input": "SRR25099394",
+      "invocation_id": "001_cnidaria_SRR25099394_1000000_pair1_baseline",
+      "order_position": 2,
+      "pair_index": 1,
+      "panel": "cnidaria",
+      "taxon": "Agalma elegans",
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/1000000",
+      "cell_index": 1,
+      "depth": 1000000,
+      "input": "SRR25099394",
+      "invocation_id": "001_cnidaria_SRR25099394_1000000_pair2_baseline",
+      "order_position": 1,
+      "pair_index": 2,
+      "panel": "cnidaria",
+      "taxon": "Agalma elegans",
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/1000000",
+      "cell_index": 1,
+      "depth": 1000000,
+      "input": "SRR25099394",
+      "invocation_id": "001_cnidaria_SRR25099394_1000000_pair2_candidate",
+      "order_position": 2,
+      "pair_index": 2,
+      "panel": "cnidaria",
+      "taxon": "Agalma elegans",
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/1000000",
+      "cell_index": 1,
+      "depth": 1000000,
+      "input": "SRR25099394",
+      "invocation_id": "001_cnidaria_SRR25099394_1000000_pair3_candidate",
+      "order_position": 1,
+      "pair_index": 3,
+      "panel": "cnidaria",
+      "taxon": "Agalma elegans",
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/1000000",
+      "cell_index": 1,
+      "depth": 1000000,
+      "input": "SRR25099394",
+      "invocation_id": "001_cnidaria_SRR25099394_1000000_pair3_baseline",
+      "order_position": 2,
+      "pair_index": 3,
+      "panel": "cnidaria",
+      "taxon": "Agalma elegans",
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/1000000",
+      "cell_index": 2,
+      "depth": 1000000,
+      "input": "SRR8617500",
+      "invocation_id": "002_cnidaria_SRR8617500_1000000_pair1_baseline",
+      "order_position": 1,
+      "pair_index": 1,
+      "panel": "cnidaria",
+      "taxon": "Rhopilema esculentum",
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/1000000",
+      "cell_index": 2,
+      "depth": 1000000,
+      "input": "SRR8617500",
+      "invocation_id": "002_cnidaria_SRR8617500_1000000_pair1_candidate",
+      "order_position": 2,
+      "pair_index": 1,
+      "panel": "cnidaria",
+      "taxon": "Rhopilema esculentum",
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/1000000",
+      "cell_index": 2,
+      "depth": 1000000,
+      "input": "SRR8617500",
+      "invocation_id": "002_cnidaria_SRR8617500_1000000_pair2_candidate",
+      "order_position": 1,
+      "pair_index": 2,
+      "panel": "cnidaria",
+      "taxon": "Rhopilema esculentum",
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/1000000",
+      "cell_index": 2,
+      "depth": 1000000,
+      "input": "SRR8617500",
+      "invocation_id": "002_cnidaria_SRR8617500_1000000_pair2_baseline",
+      "order_position": 2,
+      "pair_index": 2,
+      "panel": "cnidaria",
+      "taxon": "Rhopilema esculentum",
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/1000000",
+      "cell_index": 2,
+      "depth": 1000000,
+      "input": "SRR8617500",
+      "invocation_id": "002_cnidaria_SRR8617500_1000000_pair3_baseline",
+      "order_position": 1,
+      "pair_index": 3,
+      "panel": "cnidaria",
+      "taxon": "Rhopilema esculentum",
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/1000000",
+      "cell_index": 2,
+      "depth": 1000000,
+      "input": "SRR8617500",
+      "invocation_id": "002_cnidaria_SRR8617500_1000000_pair3_candidate",
+      "order_position": 2,
+      "pair_index": 3,
+      "panel": "cnidaria",
+      "taxon": "Rhopilema esculentum",
+      "version": "candidate"
+    },
+    {
+      "cell": "human/SRR17535371/1000000",
+      "cell_index": 3,
+      "depth": 1000000,
+      "input": "SRR17535371",
+      "invocation_id": "003_human_SRR17535371_1000000_pair1_candidate",
+      "order_position": 1,
+      "pair_index": 1,
+      "panel": "human",
+      "taxon": "Homo sapiens",
+      "version": "candidate"
+    },
+    {
+      "cell": "human/SRR17535371/1000000",
+      "cell_index": 3,
+      "depth": 1000000,
+      "input": "SRR17535371",
+      "invocation_id": "003_human_SRR17535371_1000000_pair1_baseline",
+      "order_position": 2,
+      "pair_index": 1,
+      "panel": "human",
+      "taxon": "Homo sapiens",
+      "version": "baseline"
+    },
+    {
+      "cell": "human/SRR17535371/1000000",
+      "cell_index": 3,
+      "depth": 1000000,
+      "input": "SRR17535371",
+      "invocation_id": "003_human_SRR17535371_1000000_pair2_baseline",
+      "order_position": 1,
+      "pair_index": 2,
+      "panel": "human",
+      "taxon": "Homo sapiens",
+      "version": "baseline"
+    },
+    {
+      "cell": "human/SRR17535371/1000000",
+      "cell_index": 3,
+      "depth": 1000000,
+      "input": "SRR17535371",
+      "invocation_id": "003_human_SRR17535371_1000000_pair2_candidate",
+      "order_position": 2,
+      "pair_index": 2,
+      "panel": "human",
+      "taxon": "Homo sapiens",
+      "version": "candidate"
+    },
+    {
+      "cell": "human/SRR17535371/1000000",
+      "cell_index": 3,
+      "depth": 1000000,
+      "input": "SRR17535371",
+      "invocation_id": "003_human_SRR17535371_1000000_pair3_candidate",
+      "order_position": 1,
+      "pair_index": 3,
+      "panel": "human",
+      "taxon": "Homo sapiens",
+      "version": "candidate"
+    },
+    {
+      "cell": "human/SRR17535371/1000000",
+      "cell_index": 3,
+      "depth": 1000000,
+      "input": "SRR17535371",
+      "invocation_id": "003_human_SRR17535371_1000000_pair3_baseline",
+      "order_position": 2,
+      "pair_index": 3,
+      "panel": "human",
+      "taxon": "Homo sapiens",
+      "version": "baseline"
+    },
+    {
+      "cell": "teleostei/SRR22396603/1000000",
+      "cell_index": 4,
+      "depth": 1000000,
+      "input": "SRR22396603",
+      "invocation_id": "004_teleostei_SRR22396603_1000000_pair1_baseline",
+      "order_position": 1,
+      "pair_index": 1,
+      "panel": "teleostei",
+      "taxon": "Nomeus gronovii",
+      "version": "baseline"
+    },
+    {
+      "cell": "teleostei/SRR22396603/1000000",
+      "cell_index": 4,
+      "depth": 1000000,
+      "input": "SRR22396603",
+      "invocation_id": "004_teleostei_SRR22396603_1000000_pair1_candidate",
+      "order_position": 2,
+      "pair_index": 1,
+      "panel": "teleostei",
+      "taxon": "Nomeus gronovii",
+      "version": "candidate"
+    },
+    {
+      "cell": "teleostei/SRR22396603/1000000",
+      "cell_index": 4,
+      "depth": 1000000,
+      "input": "SRR22396603",
+      "invocation_id": "004_teleostei_SRR22396603_1000000_pair2_candidate",
+      "order_position": 1,
+      "pair_index": 2,
+      "panel": "teleostei",
+      "taxon": "Nomeus gronovii",
+      "version": "candidate"
+    },
+    {
+      "cell": "teleostei/SRR22396603/1000000",
+      "cell_index": 4,
+      "depth": 1000000,
+      "input": "SRR22396603",
+      "invocation_id": "004_teleostei_SRR22396603_1000000_pair2_baseline",
+      "order_position": 2,
+      "pair_index": 2,
+      "panel": "teleostei",
+      "taxon": "Nomeus gronovii",
+      "version": "baseline"
+    },
+    {
+      "cell": "teleostei/SRR22396603/1000000",
+      "cell_index": 4,
+      "depth": 1000000,
+      "input": "SRR22396603",
+      "invocation_id": "004_teleostei_SRR22396603_1000000_pair3_baseline",
+      "order_position": 1,
+      "pair_index": 3,
+      "panel": "teleostei",
+      "taxon": "Nomeus gronovii",
+      "version": "baseline"
+    },
+    {
+      "cell": "teleostei/SRR22396603/1000000",
+      "cell_index": 4,
+      "depth": 1000000,
+      "input": "SRR22396603",
+      "invocation_id": "004_teleostei_SRR22396603_1000000_pair3_candidate",
+      "order_position": 2,
+      "pair_index": 3,
+      "panel": "teleostei",
+      "taxon": "Nomeus gronovii",
+      "version": "candidate"
+    },
+    {
+      "cell": "angiospermae/SRR25378184/1000000",
+      "cell_index": 5,
+      "depth": 1000000,
+      "input": "SRR25378184",
+      "invocation_id": "005_angiospermae_SRR25378184_1000000_pair1_candidate",
+      "order_position": 1,
+      "pair_index": 1,
+      "panel": "angiospermae",
+      "taxon": "Liriodendron tulipifera",
+      "version": "candidate"
+    },
+    {
+      "cell": "angiospermae/SRR25378184/1000000",
+      "cell_index": 5,
+      "depth": 1000000,
+      "input": "SRR25378184",
+      "invocation_id": "005_angiospermae_SRR25378184_1000000_pair1_baseline",
+      "order_position": 2,
+      "pair_index": 1,
+      "panel": "angiospermae",
+      "taxon": "Liriodendron tulipifera",
+      "version": "baseline"
+    },
+    {
+      "cell": "angiospermae/SRR25378184/1000000",
+      "cell_index": 5,
+      "depth": 1000000,
+      "input": "SRR25378184",
+      "invocation_id": "005_angiospermae_SRR25378184_1000000_pair2_baseline",
+      "order_position": 1,
+      "pair_index": 2,
+      "panel": "angiospermae",
+      "taxon": "Liriodendron tulipifera",
+      "version": "baseline"
+    },
+    {
+      "cell": "angiospermae/SRR25378184/1000000",
+      "cell_index": 5,
+      "depth": 1000000,
+      "input": "SRR25378184",
+      "invocation_id": "005_angiospermae_SRR25378184_1000000_pair2_candidate",
+      "order_position": 2,
+      "pair_index": 2,
+      "panel": "angiospermae",
+      "taxon": "Liriodendron tulipifera",
+      "version": "candidate"
+    },
+    {
+      "cell": "angiospermae/SRR25378184/1000000",
+      "cell_index": 5,
+      "depth": 1000000,
+      "input": "SRR25378184",
+      "invocation_id": "005_angiospermae_SRR25378184_1000000_pair3_candidate",
+      "order_position": 1,
+      "pair_index": 3,
+      "panel": "angiospermae",
+      "taxon": "Liriodendron tulipifera",
+      "version": "candidate"
+    },
+    {
+      "cell": "angiospermae/SRR25378184/1000000",
+      "cell_index": 5,
+      "depth": 1000000,
+      "input": "SRR25378184",
+      "invocation_id": "005_angiospermae_SRR25378184_1000000_pair3_baseline",
+      "order_position": 2,
+      "pair_index": 3,
+      "panel": "angiospermae",
+      "taxon": "Liriodendron tulipifera",
+      "version": "baseline"
+    },
+    {
+      "cell": "angiospermae/ERR14009273/1000000",
+      "cell_index": 6,
+      "depth": 1000000,
+      "input": "ERR14009273",
+      "invocation_id": "006_angiospermae_ERR14009273_1000000_pair1_baseline",
+      "order_position": 1,
+      "pair_index": 1,
+      "panel": "angiospermae",
+      "taxon": "Acer monspessulanum",
+      "version": "baseline"
+    },
+    {
+      "cell": "angiospermae/ERR14009273/1000000",
+      "cell_index": 6,
+      "depth": 1000000,
+      "input": "ERR14009273",
+      "invocation_id": "006_angiospermae_ERR14009273_1000000_pair1_candidate",
+      "order_position": 2,
+      "pair_index": 1,
+      "panel": "angiospermae",
+      "taxon": "Acer monspessulanum",
+      "version": "candidate"
+    },
+    {
+      "cell": "angiospermae/ERR14009273/1000000",
+      "cell_index": 6,
+      "depth": 1000000,
+      "input": "ERR14009273",
+      "invocation_id": "006_angiospermae_ERR14009273_1000000_pair2_candidate",
+      "order_position": 1,
+      "pair_index": 2,
+      "panel": "angiospermae",
+      "taxon": "Acer monspessulanum",
+      "version": "candidate"
+    },
+    {
+      "cell": "angiospermae/ERR14009273/1000000",
+      "cell_index": 6,
+      "depth": 1000000,
+      "input": "ERR14009273",
+      "invocation_id": "006_angiospermae_ERR14009273_1000000_pair2_baseline",
+      "order_position": 2,
+      "pair_index": 2,
+      "panel": "angiospermae",
+      "taxon": "Acer monspessulanum",
+      "version": "baseline"
+    },
+    {
+      "cell": "angiospermae/ERR14009273/1000000",
+      "cell_index": 6,
+      "depth": 1000000,
+      "input": "ERR14009273",
+      "invocation_id": "006_angiospermae_ERR14009273_1000000_pair3_baseline",
+      "order_position": 1,
+      "pair_index": 3,
+      "panel": "angiospermae",
+      "taxon": "Acer monspessulanum",
+      "version": "baseline"
+    },
+    {
+      "cell": "angiospermae/ERR14009273/1000000",
+      "cell_index": 6,
+      "depth": 1000000,
+      "input": "ERR14009273",
+      "invocation_id": "006_angiospermae_ERR14009273_1000000_pair3_candidate",
+      "order_position": 2,
+      "pair_index": 3,
+      "panel": "angiospermae",
+      "taxon": "Acer monspessulanum",
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "cell_index": 7,
+      "depth": 1000000,
+      "input": "SRR31887760",
+      "invocation_id": "007_insecta_SRR31887760_1000000_pair1_candidate",
+      "order_position": 1,
+      "pair_index": 1,
+      "panel": "insecta",
+      "taxon": "Drosophila melanogaster",
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "cell_index": 7,
+      "depth": 1000000,
+      "input": "SRR31887760",
+      "invocation_id": "007_insecta_SRR31887760_1000000_pair1_baseline",
+      "order_position": 2,
+      "pair_index": 1,
+      "panel": "insecta",
+      "taxon": "Drosophila melanogaster",
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "cell_index": 7,
+      "depth": 1000000,
+      "input": "SRR31887760",
+      "invocation_id": "007_insecta_SRR31887760_1000000_pair2_baseline",
+      "order_position": 1,
+      "pair_index": 2,
+      "panel": "insecta",
+      "taxon": "Drosophila melanogaster",
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "cell_index": 7,
+      "depth": 1000000,
+      "input": "SRR31887760",
+      "invocation_id": "007_insecta_SRR31887760_1000000_pair2_candidate",
+      "order_position": 2,
+      "pair_index": 2,
+      "panel": "insecta",
+      "taxon": "Drosophila melanogaster",
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "cell_index": 7,
+      "depth": 1000000,
+      "input": "SRR31887760",
+      "invocation_id": "007_insecta_SRR31887760_1000000_pair3_candidate",
+      "order_position": 1,
+      "pair_index": 3,
+      "panel": "insecta",
+      "taxon": "Drosophila melanogaster",
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "cell_index": 7,
+      "depth": 1000000,
+      "input": "SRR31887760",
+      "invocation_id": "007_insecta_SRR31887760_1000000_pair3_baseline",
+      "order_position": 2,
+      "pair_index": 3,
+      "panel": "insecta",
+      "taxon": "Drosophila melanogaster",
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "cell_index": 8,
+      "depth": 1000000,
+      "input": "SRR1057608",
+      "invocation_id": "008_insecta_SRR1057608_1000000_pair1_baseline",
+      "order_position": 1,
+      "pair_index": 1,
+      "panel": "insecta",
+      "taxon": "Heliconius pachinus",
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "cell_index": 8,
+      "depth": 1000000,
+      "input": "SRR1057608",
+      "invocation_id": "008_insecta_SRR1057608_1000000_pair1_candidate",
+      "order_position": 2,
+      "pair_index": 1,
+      "panel": "insecta",
+      "taxon": "Heliconius pachinus",
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "cell_index": 8,
+      "depth": 1000000,
+      "input": "SRR1057608",
+      "invocation_id": "008_insecta_SRR1057608_1000000_pair2_candidate",
+      "order_position": 1,
+      "pair_index": 2,
+      "panel": "insecta",
+      "taxon": "Heliconius pachinus",
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "cell_index": 8,
+      "depth": 1000000,
+      "input": "SRR1057608",
+      "invocation_id": "008_insecta_SRR1057608_1000000_pair2_baseline",
+      "order_position": 2,
+      "pair_index": 2,
+      "panel": "insecta",
+      "taxon": "Heliconius pachinus",
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "cell_index": 8,
+      "depth": 1000000,
+      "input": "SRR1057608",
+      "invocation_id": "008_insecta_SRR1057608_1000000_pair3_baseline",
+      "order_position": 1,
+      "pair_index": 3,
+      "panel": "insecta",
+      "taxon": "Heliconius pachinus",
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "cell_index": 8,
+      "depth": 1000000,
+      "input": "SRR1057608",
+      "invocation_id": "008_insecta_SRR1057608_1000000_pair3_candidate",
+      "order_position": 2,
+      "pair_index": 3,
+      "panel": "insecta",
+      "taxon": "Heliconius pachinus",
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "cell_index": 9,
+      "depth": 1000000,
+      "input": "SRR27962769",
+      "invocation_id": "009_insecta_SRR27962769_1000000_pair1_candidate",
+      "order_position": 1,
+      "pair_index": 1,
+      "panel": "insecta",
+      "taxon": "Gryllus bimaculatus",
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "cell_index": 9,
+      "depth": 1000000,
+      "input": "SRR27962769",
+      "invocation_id": "009_insecta_SRR27962769_1000000_pair1_baseline",
+      "order_position": 2,
+      "pair_index": 1,
+      "panel": "insecta",
+      "taxon": "Gryllus bimaculatus",
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "cell_index": 9,
+      "depth": 1000000,
+      "input": "SRR27962769",
+      "invocation_id": "009_insecta_SRR27962769_1000000_pair2_baseline",
+      "order_position": 1,
+      "pair_index": 2,
+      "panel": "insecta",
+      "taxon": "Gryllus bimaculatus",
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "cell_index": 9,
+      "depth": 1000000,
+      "input": "SRR27962769",
+      "invocation_id": "009_insecta_SRR27962769_1000000_pair2_candidate",
+      "order_position": 2,
+      "pair_index": 2,
+      "panel": "insecta",
+      "taxon": "Gryllus bimaculatus",
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "cell_index": 9,
+      "depth": 1000000,
+      "input": "SRR27962769",
+      "invocation_id": "009_insecta_SRR27962769_1000000_pair3_candidate",
+      "order_position": 1,
+      "pair_index": 3,
+      "panel": "insecta",
+      "taxon": "Gryllus bimaculatus",
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "cell_index": 9,
+      "depth": 1000000,
+      "input": "SRR27962769",
+      "invocation_id": "009_insecta_SRR27962769_1000000_pair3_baseline",
+      "order_position": 2,
+      "pair_index": 3,
+      "panel": "insecta",
+      "taxon": "Gryllus bimaculatus",
+      "version": "baseline"
+    }
+  ],
+  "started_at": "2026-09-11T13:45:15.603940+00:00",
+  "timing_boundary": "all invocations before any BLAST",
+  "validator": {
+    "blast_references_sha256": "fb07d39d0bda0e5da8f8a18018dccda87266fc84fe7cdd4f6f2144a6421843f4",
+    "root": "/tmp/sharkmer-release-comparison/sources/candidate",
+    "runner_sha256": "b19a74b2f5265b9963acfa6f48cd8b700ba82268db68e2dede4a5d640261b50e"
+  }
+}

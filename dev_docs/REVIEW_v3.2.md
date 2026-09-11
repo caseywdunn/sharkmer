@@ -9,10 +9,16 @@ lost exact-reference Gryllus ITS_2 product. Release remains on hold for
 [#153–155](https://github.com/caseywdunn/sharkmer/issues/153). The intermediate
 baseline calibration below is retained as history, not release-to-release parity.
 
-**2026-09-11 follow-up:** [#154 evidence](BENCHMARK_high_copy_followups.md)
-records the reviewed path-quota fix and six paired affected-sample invocations.
-Existing development outputs remain unchanged; this does not restore Gryllus
-ITS_2 or close the direct-release high-copy gate. #155 follows separately.
+**2026-09-11 follow-up:** [#154/#155 evidence](BENCHMARK_high_copy_followups.md)
+records reviewed quota/marker/diagnostic fixes, six supplemental invocations,
+and 60 fresh comparisons against released v3.1.0. Candidate sequences remain
+unchanged from pre-fix development code. High-copy products are 71 -> 64,
+including the lost exact-reference Gryllus ITS_2. Median-runtime sum is 1.81%
+lower, human is 0.05 s slower, and RSS is effectively unchanged. Both hash
+backends pass 221 unit and 22 integration tests; all 13 independent control
+invocations pass applicable checks. #154/#155 implementation is complete,
+but **the high-copy release gate remains open under #153**. Metagenomic and
+single-copy nuclear recovery losses are deferred, not current blockers.
 
 ## Scope and status
 

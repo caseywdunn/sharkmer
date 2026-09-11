@@ -88,7 +88,129 @@ into diagnostics, and graph-level markers alone do not establish that every
 candidate is ambiguous or the target is absent.
 
 Both hash backends pass 221 unit and 22 integration tests, formatting and
-Clippy; 39 Python validation regressions pass. Clean-binary independent controls
-and fresh repeated comparisons against released v3.1.0 remain pending. The
-release remains on hold until the scoped results and remaining gates are
-reviewed; metagenomic/single-copy diversity losses are not this release's gate.
+Clippy; 39 Python validation regressions pass. Implementation commit:
+`0c38d6a051082cc2a1eb961b4206837f82948fda`; clean-binary SHA-256:
+`469065d8416d38f25993d537ee2956d88fdd2ba24a9461e356807c5bf4957a81`.
+
+### Independent controls
+
+All 13 invocations pass their applicable checks: five descriptive v3.1 probes,
+five candidate synthetic expectations, and three candidate exact-fixture
+checks. The 180 bp threshold target and A18 control remain exact. A19/A40
+produce no product and report positive path-local self-loop withholding;
+AC40 produces no product and reports positive collision-edge withholding.
+This guards against simply exempting every acyclic collision.
+
+ERR571460 has exactly 13,197,385 k-mer occurrences at k=19. At k=31,
+both with and without read threading, it preserves exactly the pinned 1,783 bp
+18S and 430 bp 28S_2 hashes. Current-run manifests validate. These are known
+regression controls, not held-out biological sensitivity measurements.
+
+### Fresh released-v3.1 comparison
+
+**Release remains on hold: the high-copy recovery gate does not pass.**
+The final matrix contains 60 fresh invocations: three alternating pairs for
+each of ten historical samples across five unchanged non-bacterial panels.
+Requested depth is 1M records; the human source exhausts at **108,518 actual
+records**. The other nine inputs contain 1M records each. Algorithm, resource,
+input-prefix, and timing boundaries match the supplemental protocol above.
+The comparator is the attested pristine released-v3.1 binary, SHA-256
+`4cb93c72c830e052bf9bf03638eec2a060a699c5741ea0630fd9225ecc5b5e18`.
+
+All 60 CLI invocations and classifications complete. All 30 pairs have exact
+aggregate read/base/k-mer occurrence parity. Each version's sequences and
+classifier statuses are stable across all three repetitions. Seven non-insect
+samples retain exactly the same sequences. Across the ten samples, the
+candidate's 64 sequences are also unchanged from pre-fix development code;
+#154/#155 fix the demonstrated mechanisms but do not recover additional
+real-data products in this calibration.
+
+| Sample | v3.1 median wall s | Candidate median wall s |
+| --- | ---: | ---: |
+| Xenia / SRR9278435 | 52.19 | 50.96 |
+| Agalma / SRR25099394 | 48.39 | 47.03 |
+| Rhopilema / SRR8617500 | 53.73 | 52.30 |
+| Human / SRR17535371 | 0.39 | 0.44 |
+| Nomeus / SRR22396603 | 46.10 | 44.54 |
+| Liriodendron / SRR25378184 | 60.96 | 60.37 |
+| Acer / ERR14009273 | 31.00 | 30.95 |
+| Drosophila / SRR31887760 | 59.74 | 59.46 |
+| Heliconius / SRR1057608 | 43.95 | 43.83 |
+| Gryllus / SRR27962769 | 98.27 | 95.90 |
+
+Sum of per-cell median wall times: **494.72 -> 485.78 seconds (-1.81%)**.
+Nine cells have lower medians; the shortest human input is **0.05 seconds
+slower (+12.82%)**, exceeding the percentage review trigger despite its small
+absolute change. Do not call this universally regression-free or assign the
+timing difference to a particular optimization without profiling. There is
+no new counting backend in this release.
+
+Process RSS is effectively unchanged, not improved: median increases are
+12–156 KiB on these cells, including 88 KiB for the human sample. The largest
+median is about 4.255 GiB. Full per-pair RSS, throughput, and available stage
+metrics are in the evidence. Three same-host repeats remain descriptive;
+deeper 2M/4M/8M cells, gzip/network ingestion, all nine panels, and a physical
+16 GB laptop were not revalidated in this scoped follow-up.
+
+### Remaining high-copy losses
+
+Metadata-selected high-copy products are **71 -> 64**, with no gained
+sequences. The seven missing sequences are not seven independently proven
+biological false negatives, but they cannot all be dismissed as errors.
+
+| Sample / gene | Lost lengths bp | Baseline median/min k-mer support | Frozen reference classifier | Candidate still recovers this gene? |
+| --- | --- | --- | --- | --- |
+| Drosophila / 12S | 475, 487, 499 | 6/2 each | No significant hit | No |
+| Drosophila / 16S_2 | 590 | 5/2 | No significant hit | No |
+| Heliconius / ND1 | 263 | 17/9 | No significant hit | Yes, another sequence |
+| Gryllus / CO1_1 | 373 | 52/29 | Insufficient alignment | Yes, another sequence |
+| Gryllus / ITS_2 | 978 | 17/4 | Confirmed; exact AK281180 match | No |
+
+The additional CO1_1/ND1 products are alternatives, not established minor
+alleles or low-abundance variants. Product index is not an abundance estimate.
+No significant hit or insufficient alignment does not prove a sequence wrong.
+The 15 lost Gryllus Yp2 products (median/min support 5/2) are single-copy
+nuclear candidates and are explicitly outside the present recovery gate.
+All-gene counts are 86 -> 64; repeated timing observations are not multiplied
+into the unique product totals above.
+
+Gryllus ITS_2 remains absent in every candidate replicate. Its baseline
+978 bp sequence exactly equals frozen reference AK281180, SHA-256
+`23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c`.
+At threshold 4, the candidate evaluates **180 complete candidates**, withholding
+all 180 because they touch pre-pruning SCC markers; none is withheld by a
+collision-edge marker. Neither DFS nor path quota is reached there. At
+threshold 2, graph extension reaches its node budget without connectivity.
+The new diagnostic retains both outcomes instead of reporting only the final
+node-budget failure. This rules out the repaired collision-marker/quota
+mechanisms as sufficient rescue for this cell, not every possible algorithmic
+cause or repeat-copy uncertainty.
+
+The next review should focus on supported reconstruction of this abundant
+ribosomal locus and disposition of the other high-copy losses. More data or
+unconditionally removing SCC safeguards is not a demonstrated solution.
+Read-spanning evidence is a candidate for a targeted follow-up; existing
+`--read-threading` does not resolve repeat copy count. Do not expand this into
+general metagenomic diversity or single-copy nuclear reconstruction without
+separate review. #153 remains open; no release, tag, master merge, or package
+publication is authorized.
+
+### Final evidence
+
+The [final archive](../benchmarks/benchmark_results/v3.2-high-copy-final-20260911)
+contains all 60 raw runs, controls, validation logs, clean-build receipts,
+per-product classifications, scoped losses, threshold diagnostics, and
+checksums. Independent Astra review verifies artifact/source/reference hashes
+and agrees that the high-copy release hold remains warranted. Frozen panel
+references remain calibration evidence, not independent held-out truth.
+
+The timing driver did not fingerprint the BLAST executables before its first
+classification. A separate post-timing audit pins BLAST/makeblastdb 2.17.0+
+paths, binary hashes and versions, validator/helper identities, and existing
+reference-database file hashes. Reclassifying all 60 saved results reproduces
+every full per-product `reference_match` record, with tool/DB/source-result hashes unchanged
+before and after. This is supplementary verification, not retroactive
+executable attestation for the original classification. Its first attempt
+had 54 locator failures from attempting to open FASTAs for zero-product genes;
+the corrected `final-classification-audit-r2` succeeds for all 60. Both audit
+attempts are retained; no Sharkmer measurement or original result was replaced.

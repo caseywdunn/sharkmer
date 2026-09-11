@@ -1,0 +1,697 @@
+{
+  "representation": "First pair per cell; biological loci/products are not multiplied by repeated timings.",
+  "product_totals_by_scope": {
+    "baseline": {
+      "high_copy_candidate": 71,
+      "deferred_or_unclassified": 15
+    },
+    "candidate": {
+      "high_copy_candidate": 64,
+      "deferred_or_unclassified": 0
+    }
+  },
+  "high_copy_lost_gene_audits": [
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "gene": "ND1",
+      "lost_products": [
+        {
+          "gene": "ND1",
+          "kmer_count_median": "17",
+          "kmer_count_min": 9,
+          "length": 263,
+          "reference_match": {
+            "align_length": null,
+            "aligned_fraction": null,
+            "alignment_evidence": null,
+            "alignment_structure_status": "no_significant_alignment",
+            "chimeric_alignment": null,
+            "error": null,
+            "expected_gene": "ND1",
+            "expected_taxon": "Heliconius pachinus",
+            "hsp_count": 0,
+            "matched_accession": null,
+            "matched_gene": null,
+            "matched_taxon": null,
+            "on_target": false,
+            "pct_identity": null,
+            "query_coverage_pct": null,
+            "query_length": 263,
+            "split_alignment": null,
+            "status": "no_significant_hit",
+            "thresholds": {
+              "coverage_rule": "single_contiguous_hsp",
+              "min_identity_pct": 90.0,
+              "min_query_coverage_pct": 90.0
+            }
+          },
+          "scope": "high_copy_candidate",
+          "sha256": "3ba955f286a5468dbd65fc5e81601dbd53f0d898189a6c576c91bc744098728f"
+        }
+      ],
+      "candidate_gene_status": "success",
+      "candidate_product_count": 1,
+      "candidate_failure_reason": null,
+      "threshold_diagnostics": [
+        {
+          "threshold": 13,
+          "connectivity_found": false,
+          "node_budget_reached": false,
+          "scc_evaluated": false,
+          "path_search_evaluated": false,
+          "omitted_self_loop_nodes": 0,
+          "pre_prune_scc_nodes": null,
+          "retained_collision_edges": 0,
+          "dfs_limit_reached": false,
+          "path_quota_reached": false,
+          "end_below_min_length": false,
+          "max_length_reached": false,
+          "completed_candidate_paths": 0,
+          "eligible_candidate_paths": 0,
+          "withheld_candidate_paths": 0,
+          "withheld_by_self_loop_node_paths": 0,
+          "withheld_by_scc_node_paths": 0,
+          "withheld_by_collision_edge_paths": 0,
+          "repeat_tainted_out_of_range_paths": 0,
+          "generated_products": 0,
+          "failure_reason": "no start-to-end connectivity established at this threshold"
+        },
+        {
+          "threshold": 10,
+          "connectivity_found": false,
+          "node_budget_reached": false,
+          "scc_evaluated": false,
+          "path_search_evaluated": false,
+          "omitted_self_loop_nodes": 0,
+          "pre_prune_scc_nodes": null,
+          "retained_collision_edges": 166,
+          "dfs_limit_reached": false,
+          "path_quota_reached": false,
+          "end_below_min_length": false,
+          "max_length_reached": false,
+          "completed_candidate_paths": 0,
+          "eligible_candidate_paths": 0,
+          "withheld_candidate_paths": 0,
+          "withheld_by_self_loop_node_paths": 0,
+          "withheld_by_scc_node_paths": 0,
+          "withheld_by_collision_edge_paths": 0,
+          "repeat_tainted_out_of_range_paths": 0,
+          "generated_products": 0,
+          "failure_reason": "no start-to-end connectivity established at this threshold"
+        },
+        {
+          "threshold": 7,
+          "connectivity_found": true,
+          "node_budget_reached": false,
+          "scc_evaluated": true,
+          "path_search_evaluated": true,
+          "omitted_self_loop_nodes": 0,
+          "pre_prune_scc_nodes": 37094,
+          "retained_collision_edges": 302,
+          "dfs_limit_reached": true,
+          "path_quota_reached": false,
+          "end_below_min_length": false,
+          "max_length_reached": true,
+          "completed_candidate_paths": 2,
+          "eligible_candidate_paths": 1,
+          "withheld_candidate_paths": 1,
+          "withheld_by_self_loop_node_paths": 0,
+          "withheld_by_scc_node_paths": 1,
+          "withheld_by_collision_edge_paths": 0,
+          "repeat_tainted_out_of_range_paths": 0,
+          "generated_products": 1,
+          "failure_reason": null
+        }
+      ]
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "gene": "CO1_1",
+      "lost_products": [
+        {
+          "gene": "CO1_1",
+          "kmer_count_median": "52",
+          "kmer_count_min": 29,
+          "length": 373,
+          "reference_match": {
+            "align_length": 304,
+            "aligned_fraction": 0.815013,
+            "alignment_evidence": [
+              {
+                "accession": "PP230540",
+                "align_length": 304,
+                "bit_score": 562.502,
+                "gene": "CO1_1",
+                "identity_count": 304,
+                "pct_identity": 100.0,
+                "query_coverage_pct": 81.50134048257372,
+                "query_from": 1,
+                "query_to": 304,
+                "subject_from": 1,
+                "subject_to": 304,
+                "taxon": "Gryllus bimaculatus"
+              },
+              {
+                "accession": "KJ174812",
+                "align_length": 309,
+                "bit_score": 257.805,
+                "gene": "CO1_1",
+                "identity_count": 254,
+                "pct_identity": 82.20064724919094,
+                "query_coverage_pct": 81.50134048257372,
+                "query_from": 1,
+                "query_to": 304,
+                "subject_from": 1,
+                "subject_to": 304,
+                "taxon": "Heliconius pachinus"
+              }
+            ],
+            "alignment_structure_status": "single_hsp_gate",
+            "chimeric_alignment": false,
+            "error": null,
+            "expected_gene": "CO1_1",
+            "expected_taxon": "Gryllus bimaculatus",
+            "hsp_count": 1,
+            "matched_accession": "PP230540",
+            "matched_gene": "CO1_1",
+            "matched_taxon": "Gryllus bimaculatus",
+            "on_target": false,
+            "pct_identity": 100.0,
+            "query_coverage_pct": 81.501,
+            "query_length": 373,
+            "split_alignment": false,
+            "status": "insufficient_alignment",
+            "thresholds": {
+              "coverage_rule": "single_contiguous_hsp",
+              "min_identity_pct": 90.0,
+              "min_query_coverage_pct": 90.0
+            }
+          },
+          "scope": "high_copy_candidate",
+          "sha256": "e86a7ccf9e78adaf259ec804eb05dadaf8557bc4a7c637b483dfacd330a7e3ba"
+        }
+      ],
+      "candidate_gene_status": "success",
+      "candidate_product_count": 1,
+      "candidate_failure_reason": null,
+      "threshold_diagnostics": [
+        {
+          "threshold": 18,
+          "connectivity_found": true,
+          "node_budget_reached": false,
+          "scc_evaluated": true,
+          "path_search_evaluated": true,
+          "omitted_self_loop_nodes": 0,
+          "pre_prune_scc_nodes": 79,
+          "retained_collision_edges": 0,
+          "dfs_limit_reached": false,
+          "path_quota_reached": false,
+          "end_below_min_length": false,
+          "max_length_reached": false,
+          "completed_candidate_paths": 2,
+          "eligible_candidate_paths": 0,
+          "withheld_candidate_paths": 2,
+          "withheld_by_self_loop_node_paths": 0,
+          "withheld_by_scc_node_paths": 2,
+          "withheld_by_collision_edge_paths": 0,
+          "repeat_tainted_out_of_range_paths": 0,
+          "generated_products": 0,
+          "failure_reason": "repeat length unresolved for all complete candidate paths"
+        },
+        {
+          "threshold": 13,
+          "connectivity_found": true,
+          "node_budget_reached": false,
+          "scc_evaluated": true,
+          "path_search_evaluated": true,
+          "omitted_self_loop_nodes": 0,
+          "pre_prune_scc_nodes": 0,
+          "retained_collision_edges": 0,
+          "dfs_limit_reached": false,
+          "path_quota_reached": false,
+          "end_below_min_length": false,
+          "max_length_reached": false,
+          "completed_candidate_paths": 1,
+          "eligible_candidate_paths": 1,
+          "withheld_candidate_paths": 0,
+          "withheld_by_self_loop_node_paths": 0,
+          "withheld_by_scc_node_paths": 0,
+          "withheld_by_collision_edge_paths": 0,
+          "repeat_tainted_out_of_range_paths": 0,
+          "generated_products": 1,
+          "failure_reason": null
+        }
+      ]
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "gene": "ITS_2",
+      "lost_products": [
+        {
+          "gene": "ITS_2",
+          "kmer_count_median": "17",
+          "kmer_count_min": 4,
+          "length": 978,
+          "reference_match": {
+            "align_length": 978,
+            "aligned_fraction": 1.0,
+            "alignment_evidence": [
+              {
+                "accession": "AK281180",
+                "align_length": 978,
+                "bit_score": 1807.14,
+                "gene": "ITS_2",
+                "identity_count": 978,
+                "pct_identity": 100.0,
+                "query_coverage_pct": 100.0,
+                "query_from": 1,
+                "query_to": 978,
+                "subject_from": 1,
+                "subject_to": 978,
+                "taxon": "Gryllus bimaculatus"
+              }
+            ],
+            "alignment_structure_status": "single_hsp_gate",
+            "chimeric_alignment": false,
+            "error": null,
+            "expected_gene": "ITS_2",
+            "expected_taxon": "Gryllus bimaculatus",
+            "hsp_count": 1,
+            "matched_accession": "AK281180",
+            "matched_gene": "ITS_2",
+            "matched_taxon": "Gryllus bimaculatus",
+            "on_target": true,
+            "pct_identity": 100.0,
+            "query_coverage_pct": 100.0,
+            "query_length": 978,
+            "split_alignment": false,
+            "status": "confirmed_product",
+            "thresholds": {
+              "coverage_rule": "single_contiguous_hsp",
+              "min_identity_pct": 90.0,
+              "min_query_coverage_pct": 90.0
+            }
+          },
+          "scope": "high_copy_candidate",
+          "sha256": "23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c"
+        }
+      ],
+      "candidate_gene_status": "fail",
+      "candidate_product_count": 0,
+      "candidate_failure_reason": "node budget exceeded; earlier threshold outcomes: threshold 4: candidate-local repeat uncertainty",
+      "threshold_diagnostics": [
+        {
+          "threshold": 4,
+          "connectivity_found": true,
+          "node_budget_reached": false,
+          "scc_evaluated": true,
+          "path_search_evaluated": true,
+          "omitted_self_loop_nodes": 0,
+          "pre_prune_scc_nodes": 148,
+          "retained_collision_edges": 0,
+          "dfs_limit_reached": false,
+          "path_quota_reached": false,
+          "end_below_min_length": false,
+          "max_length_reached": true,
+          "completed_candidate_paths": 180,
+          "eligible_candidate_paths": 0,
+          "withheld_candidate_paths": 180,
+          "withheld_by_self_loop_node_paths": 0,
+          "withheld_by_scc_node_paths": 180,
+          "withheld_by_collision_edge_paths": 0,
+          "repeat_tainted_out_of_range_paths": 0,
+          "generated_products": 0,
+          "failure_reason": "repeat length unresolved for all complete candidate paths"
+        },
+        {
+          "threshold": 2,
+          "connectivity_found": false,
+          "node_budget_reached": true,
+          "scc_evaluated": false,
+          "path_search_evaluated": false,
+          "omitted_self_loop_nodes": 0,
+          "pre_prune_scc_nodes": null,
+          "retained_collision_edges": 130,
+          "dfs_limit_reached": false,
+          "path_quota_reached": false,
+          "end_below_min_length": false,
+          "max_length_reached": false,
+          "completed_candidate_paths": 0,
+          "eligible_candidate_paths": 0,
+          "withheld_candidate_paths": 0,
+          "withheld_by_self_loop_node_paths": 0,
+          "withheld_by_scc_node_paths": 0,
+          "withheld_by_collision_edge_paths": 0,
+          "repeat_tainted_out_of_range_paths": 0,
+          "generated_products": 0,
+          "failure_reason": "node budget exceeded"
+        }
+      ]
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "gene": "12S",
+      "lost_products": [
+        {
+          "gene": "12S",
+          "kmer_count_median": "6",
+          "kmer_count_min": 2,
+          "length": 475,
+          "reference_match": {
+            "align_length": null,
+            "aligned_fraction": null,
+            "alignment_evidence": null,
+            "alignment_structure_status": "no_significant_alignment",
+            "chimeric_alignment": null,
+            "error": null,
+            "expected_gene": "12S",
+            "expected_taxon": "Drosophila melanogaster",
+            "hsp_count": 0,
+            "matched_accession": null,
+            "matched_gene": null,
+            "matched_taxon": null,
+            "on_target": false,
+            "pct_identity": null,
+            "query_coverage_pct": null,
+            "query_length": 475,
+            "split_alignment": null,
+            "status": "no_significant_hit",
+            "thresholds": {
+              "coverage_rule": "single_contiguous_hsp",
+              "min_identity_pct": 90.0,
+              "min_query_coverage_pct": 90.0
+            }
+          },
+          "scope": "high_copy_candidate",
+          "sha256": "bde6ccaf771a24982439c53e7d38c45748cb2773f6ce05660c2a31a85d9203be"
+        },
+        {
+          "gene": "12S",
+          "kmer_count_median": "6",
+          "kmer_count_min": 2,
+          "length": 499,
+          "reference_match": {
+            "align_length": null,
+            "aligned_fraction": null,
+            "alignment_evidence": null,
+            "alignment_structure_status": "no_significant_alignment",
+            "chimeric_alignment": null,
+            "error": null,
+            "expected_gene": "12S",
+            "expected_taxon": "Drosophila melanogaster",
+            "hsp_count": 0,
+            "matched_accession": null,
+            "matched_gene": null,
+            "matched_taxon": null,
+            "on_target": false,
+            "pct_identity": null,
+            "query_coverage_pct": null,
+            "query_length": 499,
+            "split_alignment": null,
+            "status": "no_significant_hit",
+            "thresholds": {
+              "coverage_rule": "single_contiguous_hsp",
+              "min_identity_pct": 90.0,
+              "min_query_coverage_pct": 90.0
+            }
+          },
+          "scope": "high_copy_candidate",
+          "sha256": "c1a643a6313600b14ac0faae530e4fd93b48fa5007978c93ae81f089efa04148"
+        },
+        {
+          "gene": "12S",
+          "kmer_count_median": "6",
+          "kmer_count_min": 2,
+          "length": 487,
+          "reference_match": {
+            "align_length": null,
+            "aligned_fraction": null,
+            "alignment_evidence": null,
+            "alignment_structure_status": "no_significant_alignment",
+            "chimeric_alignment": null,
+            "error": null,
+            "expected_gene": "12S",
+            "expected_taxon": "Drosophila melanogaster",
+            "hsp_count": 0,
+            "matched_accession": null,
+            "matched_gene": null,
+            "matched_taxon": null,
+            "on_target": false,
+            "pct_identity": null,
+            "query_coverage_pct": null,
+            "query_length": 487,
+            "split_alignment": null,
+            "status": "no_significant_hit",
+            "thresholds": {
+              "coverage_rule": "single_contiguous_hsp",
+              "min_identity_pct": 90.0,
+              "min_query_coverage_pct": 90.0
+            }
+          },
+          "scope": "high_copy_candidate",
+          "sha256": "d147d2a3d79608354456b94cbfeb6df52eae820d135852530fb2d8798d54b39c"
+        }
+      ],
+      "candidate_gene_status": "fail",
+      "candidate_product_count": 0,
+      "candidate_failure_reason": "node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length",
+      "threshold_diagnostics": [
+        {
+          "threshold": 9,
+          "connectivity_found": false,
+          "node_budget_reached": false,
+          "scc_evaluated": false,
+          "path_search_evaluated": false,
+          "omitted_self_loop_nodes": 0,
+          "pre_prune_scc_nodes": null,
+          "retained_collision_edges": 0,
+          "dfs_limit_reached": false,
+          "path_quota_reached": false,
+          "end_below_min_length": false,
+          "max_length_reached": false,
+          "completed_candidate_paths": 0,
+          "eligible_candidate_paths": 0,
+          "withheld_candidate_paths": 0,
+          "withheld_by_self_loop_node_paths": 0,
+          "withheld_by_scc_node_paths": 0,
+          "withheld_by_collision_edge_paths": 0,
+          "repeat_tainted_out_of_range_paths": 0,
+          "generated_products": 0,
+          "failure_reason": "no start-to-end connectivity established at this threshold"
+        },
+        {
+          "threshold": 7,
+          "connectivity_found": false,
+          "node_budget_reached": false,
+          "scc_evaluated": false,
+          "path_search_evaluated": false,
+          "omitted_self_loop_nodes": 0,
+          "pre_prune_scc_nodes": null,
+          "retained_collision_edges": 0,
+          "dfs_limit_reached": false,
+          "path_quota_reached": false,
+          "end_below_min_length": false,
+          "max_length_reached": false,
+          "completed_candidate_paths": 0,
+          "eligible_candidate_paths": 0,
+          "withheld_candidate_paths": 0,
+          "withheld_by_self_loop_node_paths": 0,
+          "withheld_by_scc_node_paths": 0,
+          "withheld_by_collision_edge_paths": 0,
+          "repeat_tainted_out_of_range_paths": 0,
+          "generated_products": 0,
+          "failure_reason": "no start-to-end connectivity established at this threshold"
+        },
+        {
+          "threshold": 5,
+          "connectivity_found": false,
+          "node_budget_reached": true,
+          "scc_evaluated": false,
+          "path_search_evaluated": false,
+          "omitted_self_loop_nodes": 1,
+          "pre_prune_scc_nodes": null,
+          "retained_collision_edges": 180,
+          "dfs_limit_reached": false,
+          "path_quota_reached": false,
+          "end_below_min_length": false,
+          "max_length_reached": false,
+          "completed_candidate_paths": 0,
+          "eligible_candidate_paths": 0,
+          "withheld_candidate_paths": 0,
+          "withheld_by_self_loop_node_paths": 0,
+          "withheld_by_scc_node_paths": 0,
+          "withheld_by_collision_edge_paths": 0,
+          "repeat_tainted_out_of_range_paths": 0,
+          "generated_products": 0,
+          "failure_reason": "node budget exceeded"
+        },
+        {
+          "threshold": 2,
+          "connectivity_found": true,
+          "node_budget_reached": true,
+          "scc_evaluated": true,
+          "path_search_evaluated": true,
+          "omitted_self_loop_nodes": 0,
+          "pre_prune_scc_nodes": 4646,
+          "retained_collision_edges": 196,
+          "dfs_limit_reached": true,
+          "path_quota_reached": false,
+          "end_below_min_length": false,
+          "max_length_reached": true,
+          "completed_candidate_paths": 26,
+          "eligible_candidate_paths": 0,
+          "withheld_candidate_paths": 26,
+          "withheld_by_self_loop_node_paths": 0,
+          "withheld_by_scc_node_paths": 26,
+          "withheld_by_collision_edge_paths": 26,
+          "repeat_tainted_out_of_range_paths": 0,
+          "generated_products": 0,
+          "failure_reason": "node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length"
+        }
+      ]
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "gene": "16S_2",
+      "lost_products": [
+        {
+          "gene": "16S_2",
+          "kmer_count_median": "5",
+          "kmer_count_min": 2,
+          "length": 590,
+          "reference_match": {
+            "align_length": null,
+            "aligned_fraction": null,
+            "alignment_evidence": null,
+            "alignment_structure_status": "no_significant_alignment",
+            "chimeric_alignment": null,
+            "error": null,
+            "expected_gene": "16S_2",
+            "expected_taxon": "Drosophila melanogaster",
+            "hsp_count": 0,
+            "matched_accession": null,
+            "matched_gene": null,
+            "matched_taxon": null,
+            "on_target": false,
+            "pct_identity": null,
+            "query_coverage_pct": null,
+            "query_length": 590,
+            "split_alignment": null,
+            "status": "no_significant_hit",
+            "thresholds": {
+              "coverage_rule": "single_contiguous_hsp",
+              "min_identity_pct": 90.0,
+              "min_query_coverage_pct": 90.0
+            }
+          },
+          "scope": "high_copy_candidate",
+          "sha256": "6d6a1fe8e2de508afa9a757ceca421c0796eb2e7a70dcdd39b357190764f4049"
+        }
+      ],
+      "candidate_gene_status": "fail",
+      "candidate_product_count": 0,
+      "candidate_failure_reason": "node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length",
+      "threshold_diagnostics": [
+        {
+          "threshold": 4,
+          "connectivity_found": false,
+          "node_budget_reached": true,
+          "scc_evaluated": false,
+          "path_search_evaluated": false,
+          "omitted_self_loop_nodes": 0,
+          "pre_prune_scc_nodes": null,
+          "retained_collision_edges": 216,
+          "dfs_limit_reached": false,
+          "path_quota_reached": false,
+          "end_below_min_length": false,
+          "max_length_reached": false,
+          "completed_candidate_paths": 0,
+          "eligible_candidate_paths": 0,
+          "withheld_candidate_paths": 0,
+          "withheld_by_self_loop_node_paths": 0,
+          "withheld_by_scc_node_paths": 0,
+          "withheld_by_collision_edge_paths": 0,
+          "repeat_tainted_out_of_range_paths": 0,
+          "generated_products": 0,
+          "failure_reason": "node budget exceeded"
+        },
+        {
+          "threshold": 2,
+          "connectivity_found": true,
+          "node_budget_reached": true,
+          "scc_evaluated": true,
+          "path_search_evaluated": true,
+          "omitted_self_loop_nodes": 0,
+          "pre_prune_scc_nodes": 5903,
+          "retained_collision_edges": 268,
+          "dfs_limit_reached": true,
+          "path_quota_reached": false,
+          "end_below_min_length": false,
+          "max_length_reached": true,
+          "completed_candidate_paths": 1,
+          "eligible_candidate_paths": 0,
+          "withheld_candidate_paths": 1,
+          "withheld_by_self_loop_node_paths": 0,
+          "withheld_by_scc_node_paths": 1,
+          "withheld_by_collision_edge_paths": 1,
+          "repeat_tainted_out_of_range_paths": 0,
+          "generated_products": 0,
+          "failure_reason": "node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length"
+        }
+      ]
+    }
+  ],
+  "pre_fix_sequence_comparison": [
+    {
+      "cell": "cnidaria/SRR9278435/1000000",
+      "products": 7,
+      "unchanged": true
+    },
+    {
+      "cell": "cnidaria/SRR25099394/1000000",
+      "products": 5,
+      "unchanged": true
+    },
+    {
+      "cell": "cnidaria/SRR8617500/1000000",
+      "products": 5,
+      "unchanged": true
+    },
+    {
+      "cell": "human/SRR17535371/1000000",
+      "products": 5,
+      "unchanged": true
+    },
+    {
+      "cell": "teleostei/SRR22396603/1000000",
+      "products": 4,
+      "unchanged": true
+    },
+    {
+      "cell": "angiospermae/SRR25378184/1000000",
+      "products": 6,
+      "unchanged": true
+    },
+    {
+      "cell": "angiospermae/ERR14009273/1000000",
+      "products": 6,
+      "unchanged": true
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "products": 9,
+      "unchanged": true
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "products": 6,
+      "unchanged": true
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "products": 11,
+      "unchanged": true
+    }
+  ],
+  "interpretation": "Markers and exhausted search do not establish sequence absence or exact repeat-copy truth; alternative product order is not an abundance estimate."
+}
