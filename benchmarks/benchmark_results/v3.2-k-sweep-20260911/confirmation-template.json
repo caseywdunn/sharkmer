@@ -1,0 +1,316 @@
+{
+  "settings": {
+    "k": 19,
+    "threads": 2,
+    "chunks": 0,
+    "read_threading": false,
+    "paired": false,
+    "timeout_seconds": 1800,
+    "address_space_limit_bytes": 42949672960,
+    "cpu_list": [
+      0,
+      1
+    ],
+    "prewarm_each_invocation": true,
+    "input_format": "uncompressed_four_line_fastq"
+  },
+  "priority": "2026-09-11 user: protect abundant organelle/ribosomal recovery and runtime/RAM; metagenomic and single-copy nuclear optimization deferred",
+  "limitations": [
+    "Local uncompressed fixed-prefix calibration, not held-out truth; network/gzip/BLAST excluded.",
+    "Whole unchanged panels are timed; recovery is assessed by target metadata and per-product evidence, not raw total products.",
+    "Small number of paired measurements supports descriptive comparisons, not portable statistical guarantees.",
+    "40 GiB virtual-address limit is not an RSS cap or 16 GB laptop validation."
+  ],
+  "baseline_role": "baseline",
+  "purpose": "High-copy-focused final comparison: unchanged non-metagenomic panels, released v3.1.0 vs combined154155",
+  "samples": [
+    {
+      "panel": "cnidaria",
+      "input": "SRR9278435",
+      "taxon": "Xenia sp.",
+      "depth": 1000000,
+      "pairs": 3
+    },
+    {
+      "panel": "cnidaria",
+      "input": "SRR25099394",
+      "taxon": "Agalma elegans",
+      "depth": 1000000,
+      "pairs": 3
+    },
+    {
+      "panel": "cnidaria",
+      "input": "SRR8617500",
+      "taxon": "Rhopilema esculentum",
+      "depth": 1000000,
+      "pairs": 3
+    },
+    {
+      "panel": "human",
+      "input": "SRR17535371",
+      "taxon": "Homo sapiens",
+      "depth": 1000000,
+      "pairs": 3
+    },
+    {
+      "panel": "teleostei",
+      "input": "SRR22396603",
+      "taxon": "Nomeus gronovii",
+      "depth": 1000000,
+      "pairs": 3
+    },
+    {
+      "panel": "angiospermae",
+      "input": "SRR25378184",
+      "taxon": "Liriodendron tulipifera",
+      "depth": 1000000,
+      "pairs": 3
+    },
+    {
+      "panel": "angiospermae",
+      "input": "ERR14009273",
+      "taxon": "Acer monspessulanum",
+      "depth": 1000000,
+      "pairs": 3
+    }
+  ],
+  "expected_commits": {
+    "baseline": "5a664680c91ad59f32b8c2a847b8fef37f34a0ae",
+    "candidate": "0c38d6a051082cc2a1eb961b4206837f82948fda"
+  },
+  "review_criteria": {
+    "recovery": "Flag every lost high-copy candidate; prioritize reference-supported and dominant products. Compare sequence membership independent of index, retain classification and median/minimum support. Do not require restoration of unsupported repeat-copy claims.",
+    "runtime": "Report every increase; prioritize investigation of >5% per-cell paired median wall increase. Descriptive only; no automatic no-regression claim.",
+    "ram": "Report every increase; prioritize investigation of >2% per-cell paired median RSS increase.",
+    "failures": "Any nonzero CLI exit, timeout, resource breach, count mismatch, invalid provenance/output or BLAST evaluation error invalidates that cell.",
+    "deferred": "Metagenomic and single-copy nuclear diversity/recovery are not current release gates.",
+    "release": "Stop before release for user review, regardless of numeric thresholds."
+  },
+  "target_metadata": {
+    "angiospermae": [
+      {
+        "gene": "psbA-trnH",
+        "scope": "high_copy_candidate",
+        "compartment": "plastid:chloroplast",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "rpl36-infA-rps8",
+        "scope": "high_copy_candidate",
+        "compartment": "plastid:chloroplast",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "trnK-rps16",
+        "scope": "high_copy_candidate",
+        "compartment": "plastid:chloroplast",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "trnV-atpE",
+        "scope": "high_copy_candidate",
+        "compartment": "plastid:chloroplast",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "trnC-ycf6",
+        "scope": "high_copy_candidate",
+        "compartment": "plastid:chloroplast",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "ycf6-psbM",
+        "scope": "high_copy_candidate",
+        "compartment": "plastid:chloroplast",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "psbM-trnD",
+        "scope": "high_copy_candidate",
+        "compartment": "plastid:chloroplast",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "atpB-rbcL",
+        "scope": "high_copy_candidate",
+        "compartment": "plastid:chloroplast",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "trnL-F",
+        "scope": "high_copy_candidate",
+        "compartment": "plastid:chloroplast",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "ITS",
+        "scope": "high_copy_candidate",
+        "compartment": null,
+        "gene_type": "ITS",
+        "copy_number": "high_copy"
+      }
+    ],
+    "cnidaria": [
+      {
+        "gene": "16S",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "rRNA_LSU",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "CO1",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "protein_coding",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "18S",
+        "scope": "high_copy_candidate",
+        "compartment": null,
+        "gene_type": "rRNA_SSU",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "28S_1",
+        "scope": "high_copy_candidate",
+        "compartment": null,
+        "gene_type": "rRNA_LSU",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "ITS_1",
+        "scope": "high_copy_candidate",
+        "compartment": null,
+        "gene_type": "ITS",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "ITS_2",
+        "scope": "high_copy_candidate",
+        "compartment": null,
+        "gene_type": "ITS",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "28S_2",
+        "scope": "high_copy_candidate",
+        "compartment": null,
+        "gene_type": "rRNA_LSU",
+        "copy_number": "high_copy"
+      }
+    ],
+    "human": [
+      {
+        "gene": "mt-1404-3947",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "mt-3734-6739",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "mt-6511-9220",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "mt-8910-10648",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "mt-10360-12226",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "mt-11977-13830",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "mt-13477-15349",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "mt-14898-151",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": null,
+        "copy_number": null
+      },
+      {
+        "gene": "mt-16488-1677",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": null,
+        "copy_number": null
+      }
+    ],
+    "teleostei": [
+      {
+        "gene": "18S",
+        "scope": "high_copy_candidate",
+        "compartment": null,
+        "gene_type": "rRNA_SSU",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "16S",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "rRNA_LSU",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "CO1",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "protein_coding",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "CytB",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "protein_coding",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "12S",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "rRNA_SSU",
+        "copy_number": "high_copy"
+      }
+    ]
+  }
+}

@@ -1,0 +1,95 @@
+{
+  "status": "Discovery complete; no eligible longer k; conditional confirmation not run",
+  "release": "Held under #153; no default or production changes",
+  "source_files": {
+    "discovery-analysis/analysis.json": "08d3b2961a28a40157d7f5365361274482acb0ead93fa80d221e3ef82db875a2",
+    "discovery-analysis/summary.json": "b21a2c28c2a378b5f22f14e537a547037160b0f63a79dc5c71e9244641395c07",
+    "discovery-protocol.json": "464f70848477c5580482d67963774b9b0182a82df0ab45d09e996f61ff7646af"
+  },
+  "counts": {
+    "samples": 3,
+    "k_values": [
+      19,
+      23,
+      27,
+      31
+    ],
+    "versions": 2,
+    "pairs_per_cell": 3,
+    "timed_invocations": 72
+  },
+  "per_k": {
+    "19": {
+      "high_copy_exact_products_total": {
+        "baseline": 33,
+        "candidate": 26
+      },
+      "baseline_wall_sum_cell_medians_s": 205.09,
+      "candidate_wall_sum_cell_medians_s": 198.87,
+      "candidate_rss_median_cell_medians_bytes": 2287431680,
+      "same_k_count_parity_every_pair": true,
+      "same_k_sequence_parity": false,
+      "repeat_sequence_and_classification_stable": true
+    },
+    "23": {
+      "high_copy_exact_products_total": {
+        "baseline": 34,
+        "candidate": 27
+      },
+      "baseline_wall_sum_cell_medians_s": 191.04999999999998,
+      "candidate_wall_sum_cell_medians_s": 188.82,
+      "candidate_rss_median_cell_medians_bytes": 2287349760,
+      "same_k_count_parity_every_pair": true,
+      "same_k_sequence_parity": false,
+      "repeat_sequence_and_classification_stable": true
+    },
+    "27": {
+      "high_copy_exact_products_total": {
+        "baseline": 28,
+        "candidate": 28
+      },
+      "baseline_wall_sum_cell_medians_s": 185.54000000000002,
+      "candidate_wall_sum_cell_medians_s": 179.21,
+      "candidate_rss_median_cell_medians_bytes": 2287370240,
+      "same_k_count_parity_every_pair": true,
+      "same_k_sequence_parity": true,
+      "repeat_sequence_and_classification_stable": true
+    },
+    "31": {
+      "high_copy_exact_products_total": {
+        "baseline": 37,
+        "candidate": 30
+      },
+      "baseline_wall_sum_cell_medians_s": 176.49,
+      "candidate_wall_sum_cell_medians_s": 173.96,
+      "candidate_rss_median_cell_medians_bytes": 2287267840,
+      "same_k_count_parity_every_pair": true,
+      "same_k_sequence_parity": false,
+      "repeat_sequence_and_classification_stable": true
+    }
+  },
+  "options": [
+    {
+      "k": 23,
+      "eligible": false,
+      "exact_missing_products_restored": 0,
+      "released_k19_high_copy_retained": 24,
+      "confirmed_k19_candidate_sequences_lost": 0
+    },
+    {
+      "k": 27,
+      "eligible": false,
+      "exact_missing_products_restored": 0,
+      "released_k19_high_copy_retained": 24,
+      "confirmed_k19_candidate_sequences_lost": 0
+    },
+    {
+      "k": 31,
+      "eligible": false,
+      "exact_missing_products_restored": 0,
+      "released_k19_high_copy_retained": 24,
+      "confirmed_k19_candidate_sequences_lost": 0
+    }
+  ],
+  "scope_note": "Only the three insect samples; products are not multiplied by timing repetitions. Exact restoration differs from new gene recovery or reference classification."
+}

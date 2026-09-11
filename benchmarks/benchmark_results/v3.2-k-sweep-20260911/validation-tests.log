@@ -1,0 +1,19 @@
+test_classification_tool_receipt_binds_path_hash_and_version (test_driver.DriverTests.test_classification_tool_receipt_binds_path_hash_and_version) ... ok
+test_dynamic_adapter_requires_actual_stats_k (test_driver.DriverTests.test_dynamic_adapter_requires_actual_stats_k) ... ok
+test_fixed_k_schedule_never_mixes_k (test_driver.DriverTests.test_fixed_k_schedule_never_mixes_k) ... ok
+test_master_guard_requires_every_preregistered_k_before_classification (test_driver.DriverTests.test_master_guard_requires_every_preregistered_k_before_classification) ... ok
+test_master_schedule_rotation_and_version_order_are_exact (test_driver.DriverTests.test_master_schedule_rotation_and_version_order_are_exact) ... ok
+test_measurement_index_receipt_detects_mutation (test_driver.DriverTests.test_measurement_index_receipt_detects_mutation) ... ok
+test_protocol_allows_only_preregistered_k_and_exact_invariants (test_driver.DriverTests.test_protocol_allows_only_preregistered_k_and_exact_invariants) ... ok
+test_protocol_refuses_changed_sample_or_metadata (test_driver.DriverTests.test_protocol_refuses_changed_sample_or_metadata) ... ok
+test_registered_protocol_and_dependency_receipt_names_are_valid (test_driver.DriverTests.test_registered_protocol_and_dependency_receipt_names_are_valid) ... ok
+test_result_k_checks_command_signature_and_raw_stats (test_driver.DriverTests.test_result_k_checks_command_signature_and_raw_stats) ... ok
+test_changed_same_gene_is_visible_but_not_exact_retained (test_analyze_sweep.SweepTest.test_changed_same_gene_is_visible_but_not_exact_retained) ... ok
+test_nested_sweep_requires_exact_every_replicate_restoration (test_analyze_sweep.SweepTest.test_nested_sweep_requires_exact_every_replicate_restoration) ... ok
+test_selection_uses_intersection_not_union_across_replicates (test_analyze_sweep.SweepTest.test_selection_uses_intersection_not_union_across_replicates) ... ok
+test_three_sample_selection_allows_gryllus_only_rescue_but_blocks_instability_or_confirmed_loss (test_analyze_sweep.SweepTest.test_three_sample_selection_allows_gryllus_only_rescue_but_blocks_instability_or_confirmed_loss) ... ok
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.133s
+
+OK

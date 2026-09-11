@@ -220,8 +220,8 @@ attempts are retained; no Sharkmer measurement or original result was replaced.
 ### What the existing evidence establishes
 
 The release comparisons above use **k=19**, the CLI default. The separate
-k=31 coral 18S/28S controls do not test the affected insect loci. No comparison
-at longer k has yet established recovery of the seven missing sequences.
+k=31 coral 18S/28S controls do not test the affected insect loci. Before this
+sweep, no longer-k comparison had tested recovery of the seven missing sequences.
 
 The repeat-withholding policy introduced by #132 (`b728f14`) marks cyclic
 strongly connected components before pruning and rejects paths touching those
@@ -245,7 +245,9 @@ not an automatic change to primer trim or permission to ignore sequence changes.
 
 ### Protocol frozen before measurement
 
-Status: preregistered 2026-09-11; measurements and review pending under #153.
+Status: preregistered 2026-09-11; all 72 discovery invocations and independent
+evidence review complete. No longer k qualifies for conditional confirmation;
+#153 remains open. The original prospective protocol follows unchanged.
 Sol prepares the isolated driver, Terra the cross-k analysis, and Astra
 independently reviews protocol, harness, and evidence. No production code,
 default k, primer panel, repeat policy, or release state changes.
@@ -286,3 +288,120 @@ The machine-readable discovery protocol SHA-256 is
 Its full file and execution/analysis receipts will accompany the resulting
 archive. These are historical calibration inputs, not newly held-out data.
 The user reviews the findings before any release or assembly-policy expansion.
+
+### Longer-k results
+
+**Longer k does not repair the seven targeted regressions.** All 72 invocations
+complete and all 36 same-k pairs have matching aggregate counts. Sequences and
+full per-product classifications are stable across all three repeats within
+each sample/k/version. No k>19 restores any of the seven exact missing sequences,
+including ITS_2; released v3.1.0 also loses all seven at those longer k values.
+These are three-sample totals, not the earlier ten-sample 71 -> 64 aggregate.
+
+| k | Released high-copy products | Dev high-copy products | Dev retains of its 26 k19 sequences | Targeted seven restored | Exact same-k version parity |
+| --- | ---: | ---: | ---: | ---: | --- |
+| 19 | 33 | 26 | 26 | 0 | No |
+| 23 | 34 | 27 | 24 | 0 | No |
+| 27 | 28 | 28 | 24 | 0 | Yes |
+| 31 | 37 | 30 | 24 | 0 | No |
+
+The equality at k=27 is not recovery: both versions have lost the targeted
+k19 products. No longer k satisfies the preregistered eligibility rule, so
+the conditional 42 confirmation invocations are **not run**, rather than
+silently choosing a different success criterion after seeing the results.
+
+There are real, separate benefits worth retaining as evidence:
+
+- Drosophila CO2_1 at k=23/27/31 changes from a 291 bp product classified
+  `wrong_gene` against the frozen indexed panel to a 325 bp product exactly
+  matching the expected CO2_1 reference AC254620 (`confirmed_product`). This
+  is changed sequence membership, not restoration of one of the seven losses.
+- Gryllus 28S gains a 636 bp `confirmed_product` at k=27/31.
+- Drosophila ND1 gains a 240 bp `confirmed_gene_other_taxon` product at every
+  longer k; this is gene support, not expected-taxon confirmation.
+- Additional Heliconius/Gryllus 12S or 18S products lack sufficient reference
+  confirmation. Product-count growth alone does not establish biological gain.
+
+All **12 k19 dev `confirmed_product` sequences** survive at longer k. That
+does not mean all reference-supported products survive: Drosophila loses
+its 241 bp ND4 `confirmed_gene_other_taxon` product at every longer k, as well
+as the old CO2_1 sequence. Drosophila retains 7/9 old dev sequences; Heliconius
+retains 6/6 and Gryllus 11/11. No changed sequence is silently accepted as a
+primer-boundary equivalent. At identical k, dev has no sequences absent from
+the released version: k23 additionally withholds one Heliconius 12S and six
+Gryllus 28S baseline products; k31 withholds seven Gryllus 18S_1 products.
+Those same-k withheld products have `no_significant_hit`, not proof of error.
+
+### Longer-k runtime and memory
+
+| k | Released sum of three median wall times (s) | Dev sum (s) | Dev vs released at same k | Dev vs its k19 |
+| --- | ---: | ---: | ---: | ---: |
+| 19 | 205.09 | 198.87 | -3.03% | baseline |
+| 23 | 191.05 | 188.82 | -1.17% | -5.05% |
+| 27 | 185.54 | 179.21 | -3.41% | -9.89% |
+| 31 | 176.49 | 173.96 | -1.43% | -12.53% |
+
+Higher k reduces runtime in this scoped experiment, but also changes accepted
+k-mer workload, seed context, graph searches, and output membership; this is
+not an isolated counter or repeat-resolution speedup. Median RSS stays around
+2.13 GiB for Drosophila/Heliconius and 4.26 GiB for Gryllus, with only small
+changes. There is no meaningful RAM improvement or demonstrated laptop limit.
+All per-cell/per-pair increases and measurements remain in the archive.
+
+### What the sweep adds to causal understanding
+
+Gryllus ITS_2 diagnostics are identical across repetitions at each k:
+
+| k | Threshold 4 | Threshold 2 |
+| --- | --- | --- |
+| 19 | 148 pre-pruning SCC nodes; 180 complete candidates, all SCC-rejected | Node budget reached without connectivity |
+| 23 | No SCC nodes; connectivity found but no in-range candidate; maximum-length bound encountered | Node budget reached without connectivity |
+| 27 | 1,912 SCC nodes; connectivity found but no in-range candidate; maximum-length bound encountered | No connectivity; node budget not reached |
+| 31 | 1,915 SCC nodes; connectivity found but no in-range candidate; maximum-length bound encountered | No connectivity; node budget not reached |
+
+Thus larger k can remove SCC evidence at one setting without restoring a
+valid-length product; SCC size is not monotonic in k in these actual searches.
+At k23/27/31 no complete in-range ITS_2 candidate is repeat-rejected. This
+does not prove that changing length limits, coverage, or graph budgets would
+recover the target, or that the exact baseline sequence exists in those graphs.
+The lower-threshold graphs are independently constructed, not guaranteed
+supersets of higher-threshold graphs. No primer-seed-specific count diagnostic
+in these receipts supports attributing the failure to seed discovery alone.
+
+A supplementary reference-only probe verifies that the exact 978 bp AK281180
+sequence has **961 distinct oriented 18-mers with no duplicates**; its 22-,
+26-, and 30-mers are likewise unique. The isolated reference path therefore
+does not revisit an identical oriented node even at k19. This is not a read
+graph: other templates, orientations, sequencing errors, and graph construction
+can still produce cycles. It does not demonstrate that the exact old sequence
+is a recoverable clean path in the current graph. The next targeted diagnostic
+is to trace that sequence through seed discovery, extension, pruning, and
+length/repeat checks, rather than assuming its own exact repeats cause failure.
+
+### Sweep evidence and decision
+
+The [sweep archive](../benchmarks/benchmark_results/v3.2-k-sweep-20260911)
+preserves all 72 raw runs, immutable measurement results, per-product BLAST
+outputs, raw stats/manifests/FASTAs, interleaved schedule, reviewed protocol,
+analysis, summaries, reference probe, and tool/checksum receipts. Ten driver
+tests and four analyzer tests pass; all eight real-binary actual-k adapter
+smokes pass, including deliberate wrong-k rejection. Astra independently
+validates measurement integrity, classification stability, and no-selection.
+
+BLAST/makeblastdb 2.17.0+ binaries, reference databases, measurement-result
+files, and source identities are checked before/after classification, which
+starts after the last timed invocation. The analysis `protocol_sha256` field
+is a canonical-JSON digest; the raw preregistered protocol digest is the
+`464f7084...7646af` value above and in execution receipts. These are distinct
+representations of the same protocol, not interchangeable hashes.
+
+Driver bytes match the approved launch checkpoint and all five frozen copies.
+An unused-helper working-file edit was reported during the approval handoff
+and reverted; the archive's development-race note records this explicitly.
+Do not claim continuous working-file immutability or independently attested
+running Python bytecode. No measurements were replaced or rerun to hide it.
+
+**Keep k=19 as the unchanged default and #153 open.** Longer k has useful
+calibration gains and lower runtime, but neither targeted-regression rescue
+nor universal high-copy retention. Do not release or broaden assembly policy
+without user review. Metagenomic/nuclear recovery remains deferred.
