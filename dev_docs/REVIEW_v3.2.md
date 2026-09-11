@@ -9,6 +9,11 @@ lost exact-reference Gryllus ITS_2 product. Release remains on hold for
 [#153–155](https://github.com/caseywdunn/sharkmer/issues/153). The intermediate
 baseline calibration below is retained as history, not release-to-release parity.
 
+**2026-09-11 follow-up:** [#154 evidence](BENCHMARK_high_copy_followups.md)
+records the reviewed path-quota fix and six paired affected-sample invocations.
+Existing development outputs remain unchanged; this does not restore Gryllus
+ITS_2 or close the direct-release high-copy gate. #155 follows separately.
+
 ## Scope and status
 
 The v3.2 correctness implementation covers #129–138. The reviewed code point

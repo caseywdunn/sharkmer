@@ -1,0 +1,314 @@
+{
+  "baseline_role": "pre_fix",
+  "candidate_role": "candidate",
+  "cells": [
+    {
+      "aggregate_count_parity": {
+        "all_pairs_identical": true,
+        "baseline": {
+          "n_bases_ingested": 89990682,
+          "n_bases_read": 89994628,
+          "n_kmers": 71966368,
+          "n_reads_read": 1000000,
+          "n_subreads_ingested": 1000000
+        },
+        "candidate": {
+          "n_bases_ingested": 89990682,
+          "n_bases_read": 89994628,
+          "n_kmers": 71966368,
+          "n_reads_read": 1000000,
+          "n_subreads_ingested": 1000000
+        },
+        "identical": true
+      },
+      "all_unfiltered_losses": [],
+      "baseline_peak_rss_bytes": {
+        "maximum": 2287435776,
+        "median": 2287435776,
+        "minimum": 2287435776,
+        "n": 1
+      },
+      "baseline_wall_time_s": {
+        "maximum": 44.18,
+        "median": 44.18,
+        "minimum": 44.18,
+        "n": 1
+      },
+      "candidate_peak_rss_bytes": {
+        "maximum": 2287296512,
+        "median": 2287296512,
+        "minimum": 2287296512,
+        "n": 1
+      },
+      "candidate_wall_time_s": {
+        "maximum": 44.23,
+        "median": 44.23,
+        "minimum": 44.23,
+        "n": 1
+      },
+      "cell": "insecta/SRR1057608/1000000",
+      "losses_by_scope": {
+        "deferred_or_unclassified": [],
+        "high_copy_candidate": []
+      },
+      "pairs": [
+        {
+          "baseline": {
+            "counts": {
+              "n_bases_ingested": 89990682,
+              "n_bases_read": 89994628,
+              "n_kmers": 71966368,
+              "n_reads_read": 1000000,
+              "n_subreads_ingested": 1000000
+            },
+            "peak_rss_bytes": 2287435776,
+            "wall_time_s": 44.18
+          },
+          "baseline_duplicate_products": [],
+          "baseline_role": "pre_fix",
+          "candidate": {
+            "counts": {
+              "n_bases_ingested": 89990682,
+              "n_bases_read": 89994628,
+              "n_kmers": 71966368,
+              "n_reads_read": 1000000,
+              "n_subreads_ingested": 1000000
+            },
+            "peak_rss_bytes": 2287296512,
+            "wall_time_s": 44.23
+          },
+          "candidate_duplicate_products": [],
+          "candidate_role": "candidate",
+          "counts_identical": true,
+          "gained_products": [],
+          "lost_products": [],
+          "pair_index": 1,
+          "rss_ratio_candidate_over_baseline": 0.9999391178535104,
+          "wall_ratio_candidate_over_baseline": 1.0011317338162065
+        }
+      ],
+      "repetitions": 1,
+      "same_version_stability": {
+        "baseline": {
+          "classification_stable": true,
+          "sequence_membership_stable": true
+        },
+        "candidate": {
+          "classification_stable": true,
+          "sequence_membership_stable": true
+        }
+      }
+    },
+    {
+      "aggregate_count_parity": {
+        "all_pairs_identical": true,
+        "baseline": {
+          "n_bases_ingested": 149999387,
+          "n_bases_read": 150000000,
+          "n_kmers": 131993167,
+          "n_reads_read": 1000000,
+          "n_subreads_ingested": 1000000
+        },
+        "candidate": {
+          "n_bases_ingested": 149999387,
+          "n_bases_read": 150000000,
+          "n_kmers": 131993167,
+          "n_reads_read": 1000000,
+          "n_subreads_ingested": 1000000
+        },
+        "identical": true
+      },
+      "all_unfiltered_losses": [],
+      "baseline_peak_rss_bytes": {
+        "maximum": 4569202688,
+        "median": 4569202688,
+        "minimum": 4569202688,
+        "n": 1
+      },
+      "baseline_wall_time_s": {
+        "maximum": 98.21000000000001,
+        "median": 98.21000000000001,
+        "minimum": 98.21000000000001,
+        "n": 1
+      },
+      "candidate_peak_rss_bytes": {
+        "maximum": 4569210880,
+        "median": 4569210880,
+        "minimum": 4569210880,
+        "n": 1
+      },
+      "candidate_wall_time_s": {
+        "maximum": 98.41,
+        "median": 98.41,
+        "minimum": 98.41,
+        "n": 1
+      },
+      "cell": "insecta/SRR27962769/1000000",
+      "losses_by_scope": {
+        "deferred_or_unclassified": [],
+        "high_copy_candidate": []
+      },
+      "pairs": [
+        {
+          "baseline": {
+            "counts": {
+              "n_bases_ingested": 149999387,
+              "n_bases_read": 150000000,
+              "n_kmers": 131993167,
+              "n_reads_read": 1000000,
+              "n_subreads_ingested": 1000000
+            },
+            "peak_rss_bytes": 4569202688,
+            "wall_time_s": 98.21000000000001
+          },
+          "baseline_duplicate_products": [],
+          "baseline_role": "pre_fix",
+          "candidate": {
+            "counts": {
+              "n_bases_ingested": 149999387,
+              "n_bases_read": 150000000,
+              "n_kmers": 131993167,
+              "n_reads_read": 1000000,
+              "n_subreads_ingested": 1000000
+            },
+            "peak_rss_bytes": 4569210880,
+            "wall_time_s": 98.41
+          },
+          "candidate_duplicate_products": [],
+          "candidate_role": "candidate",
+          "counts_identical": true,
+          "gained_products": [],
+          "lost_products": [],
+          "pair_index": 1,
+          "rss_ratio_candidate_over_baseline": 1.0000017928729714,
+          "wall_ratio_candidate_over_baseline": 1.0020364524997454
+        }
+      ],
+      "repetitions": 1,
+      "same_version_stability": {
+        "baseline": {
+          "classification_stable": true,
+          "sequence_membership_stable": true
+        },
+        "candidate": {
+          "classification_stable": true,
+          "sequence_membership_stable": true
+        }
+      }
+    },
+    {
+      "aggregate_count_parity": {
+        "all_pairs_identical": true,
+        "baseline": {
+          "n_bases_ingested": 100979233,
+          "n_bases_read": 101000000,
+          "n_kmers": 82921365,
+          "n_reads_read": 1000000,
+          "n_subreads_ingested": 1000000
+        },
+        "candidate": {
+          "n_bases_ingested": 100979233,
+          "n_bases_read": 101000000,
+          "n_kmers": 82921365,
+          "n_reads_read": 1000000,
+          "n_subreads_ingested": 1000000
+        },
+        "identical": true
+      },
+      "all_unfiltered_losses": [],
+      "baseline_peak_rss_bytes": {
+        "maximum": 2287484928,
+        "median": 2287484928,
+        "minimum": 2287484928,
+        "n": 1
+      },
+      "baseline_wall_time_s": {
+        "maximum": 60.22,
+        "median": 60.22,
+        "minimum": 60.22,
+        "n": 1
+      },
+      "candidate_peak_rss_bytes": {
+        "maximum": 2287312896,
+        "median": 2287312896,
+        "minimum": 2287312896,
+        "n": 1
+      },
+      "candidate_wall_time_s": {
+        "maximum": 59.92,
+        "median": 59.92,
+        "minimum": 59.92,
+        "n": 1
+      },
+      "cell": "insecta/SRR31887760/1000000",
+      "losses_by_scope": {
+        "deferred_or_unclassified": [],
+        "high_copy_candidate": []
+      },
+      "pairs": [
+        {
+          "baseline": {
+            "counts": {
+              "n_bases_ingested": 100979233,
+              "n_bases_read": 101000000,
+              "n_kmers": 82921365,
+              "n_reads_read": 1000000,
+              "n_subreads_ingested": 1000000
+            },
+            "peak_rss_bytes": 2287484928,
+            "wall_time_s": 60.22
+          },
+          "baseline_duplicate_products": [],
+          "baseline_role": "pre_fix",
+          "candidate": {
+            "counts": {
+              "n_bases_ingested": 100979233,
+              "n_bases_read": 101000000,
+              "n_kmers": 82921365,
+              "n_reads_read": 1000000,
+              "n_subreads_ingested": 1000000
+            },
+            "peak_rss_bytes": 2287312896,
+            "wall_time_s": 59.92
+          },
+          "candidate_duplicate_products": [],
+          "candidate_role": "candidate",
+          "counts_identical": true,
+          "gained_products": [],
+          "lost_products": [],
+          "pair_index": 1,
+          "rss_ratio_candidate_over_baseline": 0.9999247942585788,
+          "wall_ratio_candidate_over_baseline": 0.9950182663566922
+        }
+      ],
+      "repetitions": 1,
+      "same_version_stability": {
+        "baseline": {
+          "classification_stable": true,
+          "sequence_membership_stable": true
+        },
+        "candidate": {
+          "classification_stable": true,
+          "sequence_membership_stable": true
+        }
+      }
+    }
+  ],
+  "execution": "/tmp/sharkmer-high-copy-20260911/issue154-execution",
+  "interpretation": "Descriptive comparison only: membership changes are neither automatic false positives nor automatic true gains, and this analysis does not authorize release or claim no regression.",
+  "protocol_priority": "2026-09-11 user: protect abundant organelle/ribosomal recovery and runtime/RAM; metagenomic and single-copy nuclear optimization deferred",
+  "review_criteria": {
+    "deferred": "Metagenomic and single-copy nuclear diversity/recovery are not current release gates.",
+    "failures": "Any nonzero CLI exit, timeout, resource breach, count mismatch, invalid provenance/output or BLAST evaluation error invalidates that cell.",
+    "ram": "Report every increase; prioritize investigation of >2% per-cell paired median RSS increase.",
+    "recovery": "Flag every lost high-copy candidate; prioritize reference-supported and dominant products. Compare sequence membership independent of index, retain classification and median/minimum support. Do not require restoration of unsupported repeat-copy claims.",
+    "release": "Stop before release for user review, regardless of numeric thresholds.",
+    "runtime": "Report every increase; prioritize investigation of >5% per-cell paired median wall increase. Descriptive only; no automatic no-regression claim."
+  },
+  "schema_version": 1,
+  "sum_per_cell_median_wall_seconds": {
+    "baseline": 202.61,
+    "candidate": 202.56,
+    "candidate_over_baseline_ratio": 0.9997532204728296
+  }
+}

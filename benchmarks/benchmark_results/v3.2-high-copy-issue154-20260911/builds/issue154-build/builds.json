@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-11T13:08:41.348891+00:00",
+  "versions": {
+    "pre_fix": {
+      "commit": "47536207e4b7e6570fc1169436a7af47a51a9c99",
+      "git_tree_oid": "90736609b29ecafe587d3e69823b2eace0ce1437",
+      "release_tag": null,
+      "release_tag_commit": null,
+      "source_export": "/tmp/sharkmer-high-copy-20260911/issue154-build/sources/pre_fix",
+      "source_archive": "/tmp/sharkmer-high-copy-20260911/issue154-build/pre_fix-source.tar",
+      "source_archive_sha256": "a9f87b74d660a905d05c3ca587ac748a01fe2f4e69457d4c6723bf488341713d",
+      "source_tree_sha256_before_build": "55234da0e1b77f0e66a1ac2a73ad2ac30f2d165908e250b87ae24176fc7436d7",
+      "source_tree_sha256_after_build": "55234da0e1b77f0e66a1ac2a73ad2ac30f2d165908e250b87ae24176fc7436d7",
+      "source_export_pristine_after_build": true,
+      "binary_path": "/tmp/sharkmer-high-copy-20260911/issue154-build/binaries/sharkmer-pre_fix",
+      "binary_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+      "binary_version": "sharkmer 3.2.0-dev (https://github.com/caseywdunn/sharkmer)",
+      "cargo_lock_sha256": "e2c47a967781a25ef845cea33bbb99e6a2cb20e50328a9bb5a651eac9190ff0b",
+      "build_command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json-render-diagnostics"
+      ],
+      "build_cwd": "/tmp/sharkmer-high-copy-20260911/issue154-build/sources/pre_fix",
+      "build_environment": {
+        "CARGO_TARGET_DIR": "/tmp/sharkmer-high-copy-20260911/issue154-build/targets/pre_fix",
+        "RUSTFLAGS": null,
+        "CARGO_ENCODED_RUSTFLAGS": null,
+        "RUSTC_WRAPPER": null,
+        "RUSTC_WORKSPACE_WRAPPER": null
+      },
+      "cargo_artifact_features": [
+        "ahashmap",
+        "default"
+      ],
+      "cargo_artifact_profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+      "source_binding": "built_from_verified_clean_git_archive_with_locked_dependencies"
+    },
+    "candidate": {
+      "commit": "7b057dcde7594fd64cc0f23903f49c3fa1c23974",
+      "git_tree_oid": "ca7b3d61a314fbfd8033307b7fdef042e1775430",
+      "release_tag": null,
+      "release_tag_commit": null,
+      "source_export": "/tmp/sharkmer-high-copy-20260911/issue154-build/sources/candidate",
+      "source_archive": "/tmp/sharkmer-high-copy-20260911/issue154-build/candidate-source.tar",
+      "source_archive_sha256": "8d9081814aa29d1e6800ea8f0f03cd07c7d222277a35841a05baa4a7529c91fa",
+      "source_tree_sha256_before_build": "2fe1d9dee900ef10bbba2cb48f23f54a0f69e923aba8fb7277e529031f0544b5",
+      "source_tree_sha256_after_build": "2fe1d9dee900ef10bbba2cb48f23f54a0f69e923aba8fb7277e529031f0544b5",
+      "source_export_pristine_after_build": true,
+      "binary_path": "/tmp/sharkmer-high-copy-20260911/issue154-build/binaries/sharkmer-candidate",
+      "binary_sha256": "bcbac0dd58940bbb381970abfd35a06dd9ab2b0f7933674e3fe242e02673a367",
+      "binary_version": "sharkmer 3.2.0-dev (https://github.com/caseywdunn/sharkmer)",
+      "cargo_lock_sha256": "e2c47a967781a25ef845cea33bbb99e6a2cb20e50328a9bb5a651eac9190ff0b",
+      "build_command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json-render-diagnostics"
+      ],
+      "build_cwd": "/tmp/sharkmer-high-copy-20260911/issue154-build/sources/candidate",
+      "build_environment": {
+        "CARGO_TARGET_DIR": "/tmp/sharkmer-high-copy-20260911/issue154-build/targets/candidate",
+        "RUSTFLAGS": null,
+        "CARGO_ENCODED_RUSTFLAGS": null,
+        "RUSTC_WRAPPER": null,
+        "RUSTC_WORKSPACE_WRAPPER": null
+      },
+      "cargo_artifact_features": [
+        "ahashmap",
+        "default"
+      ],
+      "cargo_artifact_profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+      "source_binding": "built_from_verified_clean_git_archive_with_locked_dependencies"
+    }
+  }
+}
