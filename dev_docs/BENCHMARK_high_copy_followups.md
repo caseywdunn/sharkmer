@@ -214,3 +214,75 @@ executable attestation for the original classification. Its first attempt
 had 54 locator failures from attempting to open FASTAs for zero-product genes;
 the corrected `final-classification-audit-r2` succeeds for all 60. Both audit
 attempts are retained; no Sharkmer measurement or original result was replaced.
+
+## Longer-k hypothesis and preregistered sweep
+
+### What the existing evidence establishes
+
+The release comparisons above use **k=19**, the CLI default. The separate
+k=31 coral 18S/28S controls do not test the affected insect loci. No comparison
+at longer k has yet established recovery of the seven missing sequences.
+
+The repeat-withholding policy introduced by #132 (`b728f14`) marks cyclic
+strongly connected components before pruning and rejects paths touching those
+nodes, even on their first visit. Its synthetic controls prevent incorrect
+shortened products. The ITS_2 diagnostics directly show SCC-based rejection,
+but do not establish that its exact old 978 bp sequence is among the 180
+complete candidates. Drosophila 12S/16S_2 additionally reach node/DFS limits;
+Heliconius ND1 has one SCC-rejected candidate and one survivor with DFS
+exhaustion; Gryllus CO1_1 rejects two SCC-touched candidates at threshold 18
+and returns one clean candidate at threshold 13. These are observed rejection
+mechanisms, not a one-change-at-a-time attribution for every missing sequence.
+
+Longer k could distinguish contexts merged at k=19, reducing cyclic regions
+and conservative rejection. Conversely, it changes seed context and usable
+k-mer support and may break low-support paths. This is a hypothesis, not
+measured rescue. General motivation is the repeat-resolution/connectivity
+trade-off described in the [SPAdes paper](https://pmc.ncbi.nlm.nih.gov/articles/PMC3342519/).
+The current encoding permits k up to 31. All affected panel primers retain
+15 bases at each k in this sweep; longer k adds observed inward seed context,
+not an automatic change to primer trim or permission to ignore sequence changes.
+
+### Protocol frozen before measurement
+
+Status: preregistered 2026-09-11; measurements and review pending under #153.
+Sol prepares the isolated driver, Terra the cross-k analysis, and Astra
+independently reviews protocol, harness, and evidence. No production code,
+default k, primer panel, repeat policy, or release state changes.
+
+- Discovery: **72 invocations**, three affected insect samples, k=19/23/27/31,
+  both released v3.1.0 and reviewed candidate `0c38d6a`, three paired repeats.
+  The candidate production tree matches documentation-only dev `9105f29`;
+  the previously attested clean binaries are reused after identity checks.
+- Same frozen first 1M records, unchanged whole insect panel, two physical
+  cores, chunks=0, threading off, 1,800 s timeout and 40 GiB address-space
+  ceiling. Only k changes. Prewarming remains outside timing.
+- Serial paired measurements rotate k order across pair/sample blocks and
+  alternate version order. Every discovery timing finishes before BLAST.
+  Record actual command/stats/manifest k, tool and database identities, input
+  and binary hashes, and preserve failures rather than replacing measurements.
+- Compare versions at each identical k and compare both against fixed k19
+  released/candidate memberships. Read/base/prefix identities must agree
+  across k; k-mer occurrence parity is required only within the same k.
+- Track all seven missing high-copy sequences, exact-reference ITS_2, every
+  previously retained high-copy sequence, per-product reference classification,
+  threshold/repeat/search diagnostics, wall time and peak RSS. Same-k parity
+  obtained by both versions losing products is not rescue. Full-sequence hashes
+  are primary; any independently demonstrated boundary equivalence is separate,
+  never counted as exact restoration. Deferred nuclear results stay separate.
+- Select at most one longer k for confirmation. Eligibility requires valid,
+  repeat-stable results, restoration of at least one of the seven exact missing
+  sequences in every replicate, and preservation of every k19 candidate
+  reference-confirmed sequence in the affected samples. Rank eligible settings
+  by exact ITS_2 restoration, number of the seven restored, total released-k19
+  high-copy sequence retention, then lower k. Do not select by noisy timing.
+- If eligible, confirm the selected k on the seven remaining non-insect samples
+  using three paired repeats (**42 additional invocations**). Otherwise stop
+  at discovery and report the unresolved gate. Selection does not waive other
+  high-copy losses or resource increases and does not change the default.
+
+The machine-readable discovery protocol SHA-256 is
+`464f70848477c5580482d67963774b9b0182a82df0ab45d09e996f61ff7646af`.
+Its full file and execution/analysis receipts will accompany the resulting
+archive. These are historical calibration inputs, not newly held-out data.
+The user reviews the findings before any release or assembly-policy expansion.
