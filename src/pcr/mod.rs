@@ -536,6 +536,7 @@ fn evaluate_threshold_graph(
         kmer_counts,
         params,
         edge_preferences.as_ref(),
+        &unresolved_repeat_sub_kmers,
     );
 
     gene_info!(
@@ -562,49 +563,36 @@ fn evaluate_threshold_graph(
         );
     }
 
-    if path_search.paths.is_empty() {
-        let failure_reason = if repeat_evidence_survived_pruning && path_search.dfs_limit_reached {
-            "DFS state limit reached while repeat length remained unresolved"
-        } else if repeat_evidence_survived_pruning && path_search.path_limit_reached {
-            "path limit reached while repeat length remained unresolved"
-        } else if repeat_evidence_survived_pruning {
-            "repeat length unresolved on a start-to-end graph path"
-        } else if path_search.dfs_limit_reached {
-            "DFS state limit reached before a valid amplicon was found"
-        } else if path_search.path_limit_reached {
-            "path limit reached before a valid amplicon was found"
-        } else if path_search.end_below_min_length || path_search.max_length_reached {
-            "connectivity found but no path satisfied the requested length range"
-        } else {
-            "connectivity found but no start-to-end path remained after pruning"
-        };
-        return Ok(ThresholdEvaluation {
-            records: Vec::new(),
-            failure_reason: Some(failure_reason.to_string()),
-        });
-    }
-
-    let (resolved_paths, unresolved_path_count) = paths::filter_unresolved_repeat_paths(
-        &pruned_graph,
-        path_search.paths,
-        &unresolved_repeat_sub_kmers,
-    );
-    if unresolved_path_count > 0 {
+    if path_search.unresolved_repeat_path_count > 0 {
         gene_warn!(
             params.gene_name,
-            "Withholding {} candidate path(s) because repeat length is unresolved at threshold {}.",
-            unresolved_path_count,
+            "Withholding {} complete candidate path(s) because repeat length is unresolved at threshold {}.",
+            path_search.unresolved_repeat_path_count,
             min_count
         );
     }
-    if resolved_paths.is_empty() {
-        let failure_reason = if path_search.dfs_limit_reached {
-            "DFS state limit reached; all enumerated paths had unresolved repeat length"
-        } else if path_search.path_limit_reached {
-            "path limit reached; all enumerated paths had unresolved repeat length"
-        } else {
-            "repeat length unresolved for all valid amplicon paths"
-        };
+
+    if path_search.paths.is_empty() {
+        let failure_reason =
+            if path_search.unresolved_repeat_path_count > 0 && path_search.dfs_limit_reached {
+                "DFS state limit reached; completed candidate paths had unresolved repeat length"
+            } else if path_search.unresolved_repeat_path_count > 0 {
+                "repeat length unresolved for all complete candidate paths"
+            } else if repeat_evidence_survived_pruning && path_search.dfs_limit_reached {
+                "DFS state limit reached while repeat length remained unresolved"
+            } else if repeat_evidence_survived_pruning && path_search.path_limit_reached {
+                "path limit reached while repeat length remained unresolved"
+            } else if repeat_evidence_survived_pruning {
+                "repeat length unresolved on a start-to-end graph path"
+            } else if path_search.dfs_limit_reached {
+                "DFS state limit reached before a valid amplicon was found"
+            } else if path_search.path_limit_reached {
+                "path limit reached before a valid amplicon was found"
+            } else if path_search.end_below_min_length || path_search.max_length_reached {
+                "connectivity found but no path satisfied the requested length range"
+            } else {
+                "connectivity found but no start-to-end path remained after pruning"
+            };
         return Ok(ThresholdEvaluation {
             records: Vec::new(),
             failure_reason: Some(failure_reason.to_string()),
@@ -613,7 +601,7 @@ fn evaluate_threshold_graph(
 
     let (records, _) = paths::generate_sequences_from_paths(
         &pruned_graph,
-        resolved_paths,
+        path_search.paths,
         kmer_counts,
         sample_name,
         params,

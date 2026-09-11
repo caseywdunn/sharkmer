@@ -30,6 +30,7 @@ pub type PathStep = (NodeIndex, Option<EdgeIndex>);
 
 pub(super) struct PathSearchResult {
     pub paths: Vec<Vec<PathStep>>,
+    pub unresolved_repeat_path_count: usize,
     pub dfs_limit_reached: bool,
     pub path_limit_reached: bool,
     pub end_below_min_length: bool,
@@ -90,7 +91,14 @@ pub fn get_assembly_paths(
     params: &PCRParams,
     edge_preferences: Option<&AHashMap<EdgeIndex, f64>>,
 ) -> Vec<Vec<PathStep>> {
-    search_assembly_paths(graph, kmer_counts, params, edge_preferences).paths
+    search_assembly_paths(
+        graph,
+        kmer_counts,
+        params,
+        edge_preferences,
+        &AHashSet::new(),
+    )
+    .paths
 }
 
 pub(super) fn search_assembly_paths(
@@ -98,6 +106,7 @@ pub(super) fn search_assembly_paths(
     kmer_counts: &FilteredKmerCounts,
     params: &PCRParams,
     edge_preferences: Option<&AHashMap<EdgeIndex, f64>>,
+    unresolved_repeat_sub_kmers: &AHashSet<u64>,
 ) -> PathSearchResult {
     // A path of N nodes produces a sequence of (k-1) + (N-1) = N+k-2 bases
     // (first node contributes k-1 bases via its sub_kmer, each subsequent
@@ -119,6 +128,7 @@ pub(super) fn search_assembly_paths(
     let end_nodes: AHashSet<NodeIndex> = get_end_nodes(graph).into_iter().collect();
     let mut result = PathSearchResult {
         paths: Vec::new(),
+        unresolved_repeat_path_count: 0,
         dfs_limit_reached: false,
         path_limit_reached: false,
         end_below_min_length: false,
@@ -137,6 +147,8 @@ pub(super) fn search_assembly_paths(
         let mut path: Vec<PathStep> = vec![(start, None)];
         let mut visit_counts: AHashMap<NodeIndex, usize> = AHashMap::new();
         visit_counts.insert(start, 1);
+        let mut unresolved_repeat_nodes_in_path =
+            usize::from(unresolved_repeat_sub_kmers.contains(&graph[start].sub_kmer));
 
         // Compute sorted children for the start node
         let children = sorted_children(graph, start, edge_preferences);
@@ -165,14 +177,23 @@ pub(super) fn search_assembly_paths(
                 // Push neighbor onto path with the edge that connects to it
                 path.push((neighbor, Some(edge_id)));
                 *visit_counts.entry(neighbor).or_insert(0) += 1;
+                let neighbor_has_unresolved_repeat =
+                    unresolved_repeat_sub_kmers.contains(&graph[neighbor].sub_kmer);
+                unresolved_repeat_nodes_in_path += usize::from(neighbor_has_unresolved_repeat);
 
                 let path_len = path.len();
 
                 // Check if we reached an end node with valid length
                 if end_nodes.contains(&neighbor) {
                     if path_len >= min_path_nodes && path_len <= max_path_nodes {
-                        result.paths.push(path.clone());
-                        paths_from_start += 1;
+                        if unresolved_repeat_nodes_in_path > 0 {
+                            result.unresolved_repeat_path_count += 1;
+                        } else {
+                            result.paths.push(path.clone());
+                            paths_from_start += 1;
+                        }
+                        unresolved_repeat_nodes_in_path -=
+                            usize::from(neighbor_has_unresolved_repeat);
                         *visit_counts.get_mut(&neighbor).unwrap() -= 1;
                         path.pop();
                         continue;
@@ -187,6 +208,7 @@ pub(super) fn search_assembly_paths(
                 // Don't extend past max length
                 if path_len >= max_path_nodes {
                     result.max_length_reached = true;
+                    unresolved_repeat_nodes_in_path -= usize::from(neighbor_has_unresolved_repeat);
                     *visit_counts.get_mut(&neighbor).unwrap() -= 1;
                     path.pop();
                     continue;
@@ -202,6 +224,9 @@ pub(super) fn search_assembly_paths(
                     break;
                 }
                 let (backtrack_node, _) = path.pop().expect("BUG: path empty during DFS backtrack");
+                unresolved_repeat_nodes_in_path -= usize::from(
+                    unresolved_repeat_sub_kmers.contains(&graph[backtrack_node].sub_kmer),
+                );
                 *visit_counts
                     .get_mut(&backtrack_node)
                     .expect("BUG: backtrack node missing from visit_counts") -= 1;
@@ -210,24 +235,6 @@ pub(super) fn search_assembly_paths(
     }
 
     result
-}
-
-pub(super) fn filter_unresolved_repeat_paths(
-    graph: &StableDiGraph<DBNode, DBEdge>,
-    paths: Vec<Vec<PathStep>>,
-    unresolved_repeat_sub_kmers: &AHashSet<u64>,
-) -> (Vec<Vec<PathStep>>, usize) {
-    let path_count = paths.len();
-    let resolved_paths = paths
-        .into_iter()
-        .filter(|path| {
-            !path
-                .iter()
-                .any(|(node, _)| unresolved_repeat_sub_kmers.contains(&graph[*node].sub_kmer))
-        })
-        .collect::<Vec<_>>();
-    let unresolved_path_count = path_count - resolved_paths.len();
-    (resolved_paths, unresolved_path_count)
 }
 
 /// Extract sequences from graph paths, producing FASTA assembly records.
@@ -636,7 +643,7 @@ mod tests {
 
         let mut params = test_params(0, 100);
         params.max_dfs_states = 0; // no exploration allowed
-        let result = search_assembly_paths(&graph, &fkc, &params, None);
+        let result = search_assembly_paths(&graph, &fkc, &params, None, &AHashSet::new());
         assert!(result.paths.is_empty());
         assert!(result.dfs_limit_reached);
         assert!(!result.path_limit_reached);
@@ -655,7 +662,7 @@ mod tests {
 
         let mut params = test_params(0, 100);
         params.max_paths_per_pair = 0;
-        let result = search_assembly_paths(&graph, &filtered, &params, None);
+        let result = search_assembly_paths(&graph, &filtered, &params, None, &AHashSet::new());
         assert!(result.paths.is_empty());
         assert!(!result.dfs_limit_reached);
         assert!(result.path_limit_reached);
@@ -674,11 +681,23 @@ mod tests {
         counts.insert(&0, &10);
         let filtered = counts.filtered_view(1);
 
-        let too_short = search_assembly_paths(&graph, &filtered, &test_params(5, 10), None);
+        let too_short = search_assembly_paths(
+            &graph,
+            &filtered,
+            &test_params(5, 10),
+            None,
+            &AHashSet::new(),
+        );
         assert!(too_short.paths.is_empty());
         assert!(too_short.end_below_min_length);
 
-        let too_long = search_assembly_paths(&graph, &filtered, &test_params(0, 3), None);
+        let too_long = search_assembly_paths(
+            &graph,
+            &filtered,
+            &test_params(0, 3),
+            None,
+            &AHashSet::new(),
+        );
         assert!(too_long.paths.is_empty());
         assert!(too_long.max_length_reached);
     }
@@ -696,8 +715,20 @@ mod tests {
         let mut counts = crate::kmer::KmerCounts::new(&3);
         counts.insert(&0, &10);
         let filtered = counts.filtered_view(1);
-        let length_k = search_assembly_paths(&graph, &filtered, &test_params(3, 3), None);
-        let length_k_plus_one = search_assembly_paths(&graph, &filtered, &test_params(4, 4), None);
+        let length_k = search_assembly_paths(
+            &graph,
+            &filtered,
+            &test_params(3, 3),
+            None,
+            &AHashSet::new(),
+        );
+        let length_k_plus_one = search_assembly_paths(
+            &graph,
+            &filtered,
+            &test_params(4, 4),
+            None,
+            &AHashSet::new(),
+        );
 
         assert_eq!(length_k.paths.len(), 1);
         assert_eq!(length_k_plus_one.paths.len(), 1);
@@ -745,7 +776,13 @@ mod tests {
         let mut counts = crate::kmer::KmerCounts::new(&3);
         counts.insert(&0, &10);
         let filtered = counts.filtered_view(1);
-        let result = search_assembly_paths(&graph, &filtered, &test_params(0, 2), None);
+        let result = search_assembly_paths(
+            &graph,
+            &filtered,
+            &test_params(0, 2),
+            None,
+            &AHashSet::new(),
+        );
 
         assert!(result.paths.is_empty());
         assert!(result.max_length_reached);
@@ -763,7 +800,13 @@ mod tests {
         let mut counts = crate::kmer::KmerCounts::new(&3);
         counts.insert(&0, &10);
         let filtered = counts.filtered_view(1);
-        let result = search_assembly_paths(&graph, &filtered, &test_params(4, 4), None);
+        let result = search_assembly_paths(
+            &graph,
+            &filtered,
+            &test_params(4, 4),
+            None,
+            &AHashSet::new(),
+        );
 
         assert_eq!(result.paths.len(), 1);
         assert!(result.end_below_min_length);

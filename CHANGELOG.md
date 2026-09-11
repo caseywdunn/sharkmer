@@ -33,6 +33,9 @@ and new nuclear/metagenomic inference policies belong to later releases.
   primer backbones without overriding the configured coverage ratio (#131).
 - Withhold products crossing unresolved repeat-length regions instead of
   confidently reporting shortened homopolymer/tandem-repeat products (#132).
+- Keep repeat-rejected candidates from consuming the valid-product path
+  quota; continue searching for clean routes within the existing DFS, length,
+  and node-visit limits (#154).
 - Include interior reads in optional threading; normalize strands, preserve
   invalid-base gaps, and count support once per FASTQ record or paired fragment,
   without repeated-visit or overlapping-mate inflation (#133).

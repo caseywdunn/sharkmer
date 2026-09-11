@@ -54,6 +54,117 @@ fn repeat_counts(targets: &[&str]) -> KmerCounts {
     counts
 }
 
+fn path_search_counts() -> KmerCounts {
+    let kmer_length = 19;
+    let mut counts = KmerCounts::new(&kmer_length);
+    counts.insert(&0, &10);
+    counts
+}
+
+fn path_search_params() -> PCRParams {
+    let mut params = repeat_fixture("AC").params;
+    params.min_length = 0;
+    params.max_length = 100;
+    params.max_dfs_states = 10_000;
+    params.max_paths_per_pair = 20;
+    params.max_node_visits = 2;
+    params
+}
+
+fn repeat_quota_graph(
+    repeat_depth: usize,
+    clean_route_count: usize,
+) -> (
+    StableDiGraph<DBNode, DBEdge>,
+    ahash::AHashSet<u64>,
+    Vec<petgraph::graph::NodeIndex>,
+) {
+    let mut graph = StableDiGraph::new();
+    let mut next_sub_kmer = 1_u64;
+    let start = graph.add_node(DBNode {
+        sub_kmer: next_sub_kmer,
+        is_start: true,
+        is_end: false,
+    });
+    next_sub_kmer += 1;
+    let repeat_root = graph.add_node(DBNode {
+        sub_kmer: next_sub_kmer,
+        is_start: false,
+        is_end: false,
+    });
+    next_sub_kmer += 1;
+    graph.add_edge(
+        start,
+        repeat_root,
+        DBEdge {
+            count: 100,
+            coverage_ratio: 1.0,
+        },
+    );
+
+    let mut frontier = vec![repeat_root];
+    for level in 0..repeat_depth {
+        let mut next_frontier = Vec::new();
+        for parent in frontier {
+            for _branch in 0..2 {
+                let child = graph.add_node(DBNode {
+                    sub_kmer: next_sub_kmer,
+                    is_start: false,
+                    is_end: level + 1 == repeat_depth,
+                });
+                next_sub_kmer += 1;
+                graph.add_edge(
+                    parent,
+                    child,
+                    DBEdge {
+                        count: 100,
+                        coverage_ratio: 1.0,
+                    },
+                );
+                next_frontier.push(child);
+            }
+        }
+        frontier = next_frontier;
+    }
+
+    let mut clean_ends = Vec::new();
+    for route_index in 0..clean_route_count {
+        let clean_middle = graph.add_node(DBNode {
+            sub_kmer: next_sub_kmer,
+            is_start: false,
+            is_end: false,
+        });
+        next_sub_kmer += 1;
+        let clean_end = graph.add_node(DBNode {
+            sub_kmer: next_sub_kmer,
+            is_start: false,
+            is_end: true,
+        });
+        next_sub_kmer += 1;
+        let edge_count = u32::try_from(clean_route_count - route_index).unwrap();
+        graph.add_edge(
+            start,
+            clean_middle,
+            DBEdge {
+                count: edge_count,
+                coverage_ratio: 1.0,
+            },
+        );
+        graph.add_edge(
+            clean_middle,
+            clean_end,
+            DBEdge {
+                count: edge_count,
+                coverage_ratio: 1.0,
+            },
+        );
+        clean_ends.push(clean_end);
+    }
+
+    let unresolved = ahash::AHashSet::from_iter([graph[repeat_root].sub_kmer]);
+    (graph, unresolved, clean_ends)
+}
+
 fn run_repeat_pcr(
     counts: &KmerCounts,
     params: &PCRParams,
@@ -163,7 +274,7 @@ fn tandem_repeat_cycle_and_first_visit_shortcut_are_withheld() {
         is_start: false,
         is_end: true,
     });
-    let start_edge = graph.add_edge(
+    graph.add_edge(
         start,
         cycle_first,
         DBEdge {
@@ -187,7 +298,7 @@ fn tandem_repeat_cycle_and_first_visit_shortcut_are_withheld() {
             coverage_ratio: 1.0,
         },
     );
-    let end_edge = graph.add_edge(
+    graph.add_edge(
         cycle_first,
         end,
         DBEdge {
@@ -197,16 +308,71 @@ fn tandem_repeat_cycle_and_first_visit_shortcut_are_withheld() {
     );
     let unresolved = graph::unresolved_repeat_sub_kmers(&graph, ahash::AHashSet::new());
     graph.remove_edge(cycle_edge);
-    let shortcut = vec![
-        (start, None),
-        (cycle_first, Some(start_edge)),
-        (end, Some(end_edge)),
-    ];
-    let (resolved, unresolved_count) =
-        paths::filter_unresolved_repeat_paths(&graph, vec![shortcut], &unresolved);
+    let counts = path_search_counts();
+    let result = paths::search_assembly_paths(
+        &graph,
+        &counts.filtered_view(1),
+        &path_search_params(),
+        None,
+        &unresolved,
+    );
 
-    assert!(resolved.is_empty());
-    assert_eq!(unresolved_count, 1);
+    assert!(result.paths.is_empty());
+    assert_eq!(result.unresolved_repeat_path_count, 1);
+}
+
+#[test]
+fn repeat_rejected_paths_do_not_consume_clean_path_quota() {
+    let (graph, unresolved, clean_ends) = repeat_quota_graph(5, 1);
+    let counts = path_search_counts();
+    let result = paths::search_assembly_paths(
+        &graph,
+        &counts.filtered_view(1),
+        &path_search_params(),
+        None,
+        &unresolved,
+    );
+
+    assert_eq!(result.unresolved_repeat_path_count, 32);
+    assert_eq!(result.paths.len(), 1);
+    assert_eq!(result.paths[0].last().unwrap().0, clean_ends[0]);
+    assert!(!result.path_limit_reached);
+    assert!(!result.dfs_limit_reached);
+}
+
+#[test]
+fn all_repetitive_search_remains_bounded_by_dfs_budget() {
+    let (graph, unresolved, _) = repeat_quota_graph(5, 0);
+    let counts = path_search_counts();
+    let mut params = path_search_params();
+    params.max_dfs_states = 10;
+    let result =
+        paths::search_assembly_paths(&graph, &counts.filtered_view(1), &params, None, &unresolved);
+
+    assert!(result.paths.is_empty());
+    assert!(result.unresolved_repeat_path_count > 0);
+    assert!(result.dfs_limit_reached);
+    assert!(!result.path_limit_reached);
+}
+
+#[test]
+fn clean_candidates_still_consume_path_quota() {
+    let (graph, unresolved, clean_ends) = repeat_quota_graph(1, 3);
+    let counts = path_search_counts();
+    let mut params = path_search_params();
+    params.max_paths_per_pair = 2;
+    let result =
+        paths::search_assembly_paths(&graph, &counts.filtered_view(1), &params, None, &unresolved);
+
+    assert_eq!(result.paths.len(), 2);
+    assert_eq!(result.unresolved_repeat_path_count, 2);
+    assert!(result.path_limit_reached);
+    assert!(
+        result
+            .paths
+            .iter()
+            .all(|path| clean_ends.contains(&path.last().unwrap().0))
+    );
 }
 
 #[test]

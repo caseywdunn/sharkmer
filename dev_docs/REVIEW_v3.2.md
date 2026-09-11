@@ -181,6 +181,16 @@ commands. This is calibration/regression evidence only, not held-out validation.
    broader release procedure in CONTRIBUTING.md and inspect every product and
    negative control before publishing; primer/schema loading alone is not
    biological validation.
+
+   **2026-09-11 scope clarification:** release review protects observed
+   organelle/rRNA recovery on the frozen calibration inputs, including the
+   reference-supported Gryllus ITS_2 loss, plus runtime and RAM under the
+   scoped protocol. `copy_number` and `compartment` metadata are not evidence
+   of abundance or read support. Conservative withholding of unsupported
+   repeat-copy claims remains intentional. Metagenomic-diversity and
+   single-copy-nuclear recovery regressions are deferred to v4.1/v4.2, not new
+   v3.2 blockers; this does not waive the independent held-out or all-panel
+   biological-validation gates.
 4. **Dependency alert triage.** Four existing default-branch Dependabot alerts
    were observed during this review: rustls-webpki malformed CRL BIT STRING
    panic/DoS (high, #7), rand custom-logger unsoundness (low, #6), and

@@ -107,7 +107,22 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
 - [x] [#138](https://github.com/caseywdunn/sharkmer/issues/138) — Align sPCR documentation and diagnostics with current behavior. Terra implementation, Sol review; documented first-valid-threshold search, physical gaps, unresolved phase, per-gene node budgets, legacy record-count fields, allocator versus RSS, and panel compatibility semantics. Fixed missing human benchmark taxon metadata with fail-closed guards. Thirty-nine Python regressions, all nine built-ins plus reference schema validation, and documented CLI dry-runs pass. Legacy issues #121–126 were audited and remain open for their unimplemented acceptance criteria.
 - [ ] [#153](https://github.com/caseywdunn/sharkmer/issues/153) — Review direct v3.1.0-to-v3.2 benchmark regressions before release. Evidence is recorded: 114 successful CLI invocations, aggregate-count parity, +0.70% primary median-sum runtime, no meaningful RAM reduction, and 179 -> 71 primary products. Lost products include a Gryllus ITS_2 sequence exactly matching its reference; do not classify all withholding as an accuracy improvement.
 - [ ] [#154](https://github.com/caseywdunn/sharkmer/issues/154) — Keep repeat-rejected candidates from exhausting the valid-product path budget, with bounded search and a clean-route regression.
+  - [x] Sol implementation and independent Astra review: reject complete repeat-tainted candidates before quota accounting; 32 higher-ranked rejected routes no longer hide a clean route. Both hash backends pass 216 unit and 22 integration tests plus Clippy; existing repeat controls remain conservative.
+  - [ ] Measure affected high-copy calibration cells before merge; additional exploration remains DFS-bounded but is not presumed free.
 - [ ] [#155](https://github.com/caseywdunn/sharkmer/issues/155) — Audit repeat-marker scope and preserve cause, threshold, and search-exhaustion diagnostics without restoring unsupported repeat-copy claims.
+
+### 2026-09-11 release-scope clarification
+
+The current release decision must protect observed recovery of abundant
+organelle and rRNA targets on the frozen calibration inputs, including the
+reference-supported Gryllus ITS_2 loss, and must not regress measured runtime
+or RAM under the scoped comparison protocol. Panel `copy_number` and
+`compartment` annotations describe targets; they do not prove abundance or
+read support. Continue to withhold unsupported repeat-copy claims
+conservatively rather than treating every withheld product as an improvement.
+Metagenomic diversity and single-copy nuclear recovery regressions are deferred
+to v4.1/v4.2 and are not additional v3.2 release blockers. This does not waive
+the independent held-out registration or all-panel biological-validation gates.
 
 The development package is `3.2.0-dev`, not a published release. Stop before
 merging to `master`, tagging, or publishing. Independent held-out registration
