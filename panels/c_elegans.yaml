@@ -1,6 +1,6 @@
 name: c_elegans
 schema_version: "2"
-panel_version: 1.0.1
+panel_version: 1.0.2
 description: "Development panel for Caenorhabditis elegans (N2 strain). Exact primers (no degeneracy) for mitochondrial, ribosomal, and single-copy nuclear genes. Designed for benchmarking sPCR recovery of nuclear SCGs."
 clade: "Caenorhabditis elegans"
 taxon_id: 6239
@@ -9,6 +9,10 @@ maintainers:
 - name: "Casey Dunn"
 
 changelog:
+- panel_version: 1.0.2
+  date: 2026-09-13
+  sharkmer_version: "3.2.0-dev"
+  changes: "Add independently annotated public reference regions with exact-source provenance; source taxa and partial/homologous scope remain explicit. Primers and validation samples unchanged."
 - panel_version: 1.0.1
   date: 2026-09-13
   sharkmer_version: "3.2.0-dev"
@@ -420,3 +424,33 @@ references:
       start: 8154
       strand: '-'
       wraps_origin: false
+  - accession: FO080392.2
+    provenance:
+      accession_version: FO080392.2
+      end: 8309
+      kind: public_record_region
+      schema_version: 1
+      sequence_sha256: e8ad26f5384b83076102c9031864fa340cc4b3397af211d37fcd0dd151e441ab
+      source_length: 22895
+      source_sequence_sha256: 8f2f9af48f357921106aab310ca1d5f4337c0af018458822df74fdcfd7cef09a
+      start: 8149
+      strand: '-'
+      wraps_origin: false
+    sequence: GGACGTGTTGAGACCGGAATCATCAAGCCAGGAATGGTCGTTACCTTCGCTCCACAAAACGTCACCACTGAAGTCAAGTCCGTTGAGATGCATCACGAATCTCTTCCAGAGGCCGTCCCAGGAGACAACGTTGGATTCAACGTCAAGAACGTCTCCGTCA
+    taxon: Caenorhabditis elegans
+- gene: H3
+  sequences:
+  - accession: Z98866.1
+    provenance:
+      accession_version: Z98866.1
+      end: 753
+      kind: public_record_region
+      schema_version: 1
+      sequence_sha256: 12868d40a6f5e5ac0f5484f2cecefd2d07fae38ecb6dd9e46139cecd858f7614
+      source_length: 125590
+      source_sequence_sha256: a0c81934a189c18b3b790b1de10c32abb319a4bb2202943c6a7783d18496f5e8
+      start: 320
+      strand: '-'
+      wraps_origin: false
+    sequence: ATGGCTCGTACCAAGCAAACCGCTCGTAAATCCACCGGAGGAAAGGCTCCAAGAAAGCAGTTGGCCACCAAGGCCGCCCGCAAATCGGCTCCAACCACCGGAGGAGTCAAGAAGCCACATCGTTACCGTCCAGGAACTGTCGCTCTCCGTGAGATTCGTCGTTACCAGAAGTCGACTGAGCTTCTCATCCGCAAGCTTCCTTTCCAACGTCTCGTTCGTGAGATTGCCCAGGACTTCAAGACTGATCTCCGCTTCCAGTCGGCTGCCATCGGAGCTCTCCAGGTTTGTAGTTTGAATTTGAAATTTAAAAAAAATTAATTAAAATCTTTTTTTTTTTCCAGGAGGCATCTGAAGCATACCTCGTCGGACTCTTCGAGGACACCAACCTGTGCGCCATCCACGCCAAGCGCGTCACCATCATGCCAAAGGACAT
+    taxon: Caenorhabditis elegans

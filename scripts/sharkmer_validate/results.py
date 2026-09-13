@@ -11,6 +11,7 @@ from pathlib import Path
 import yaml
 
 from . import blast_references, runner
+from .reference_targets import logical_gene_name, target_logical_genes
 
 RESULTS_DIR = runner.REPO_ROOT / "panels" / "validation_results"
 
@@ -50,8 +51,11 @@ def build_result(
     reference_provenance = blast_references.reference_checksums(
         panel_data, reference_catalog_path
     )
+    target_mapping = reference_provenance.get(
+        "target_logical_genes", target_logical_genes(panel_data)
+    )
     reference_genes = {
-        reference["gene"] for reference in reference_provenance["verified"]
+        reference["logical_gene"] for reference in reference_provenance["verified"]
     }
     if extra_args:
         parameters["extra_args"] = list(extra_args)
@@ -69,6 +73,7 @@ def build_result(
             "target_support": "alignment support against verified external references",
             "target_gene_absence": "not established by a competing or missing reference alignment",
             "sequence_relationship": "relationship between product and selected reference alignment",
+            "primer_region_support": "not established by logical gene grouping or reference alignment",
             "haplotype_truth": "not established without explicit independent sample truth",
             "read_support": "not evaluated by reference BLAST",
         },
@@ -109,6 +114,9 @@ def build_result(
             for prod in run.get("genes", []):
                 gene_entry = {
                     "gene": prod["gene"],
+                    "logical_gene": logical_gene_name(
+                        prod["gene"], target_mapping=target_mapping
+                    ),
                     "recovered": prod.get("recovered", bool(prod.get("products"))),
                     "length": prod["lengths"][0] if prod.get("lengths") else None,
                     "n_products": prod.get("n_products", 0),
@@ -117,7 +125,9 @@ def build_result(
                     if prod.get("recovered", bool(prod.get("products")))
                     else "no_product",
                     "reference_status": "verified_reference_available"
-                    if prod["gene"] in reference_genes
+                    if logical_gene_name(
+                        prod["gene"], target_mapping=target_mapping
+                    ) in reference_genes
                     else "no_verified_reference",
                 }
 
@@ -156,10 +166,15 @@ def build_result(
                     gene_results.append(
                         {
                             "gene": gene,
+                            "logical_gene": logical_gene_name(
+                                gene, target_mapping=target_mapping
+                            ),
                             "recovered": False,
                             "evaluation_status": evaluation_status,
                             "reference_status": "verified_reference_available"
-                            if gene in reference_genes
+                            if logical_gene_name(
+                                gene, target_mapping=target_mapping
+                            ) in reference_genes
                             else "no_verified_reference",
                         }
                     )

@@ -30,6 +30,7 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT / "scripts"))
 
 from sharkmer_validate import runner, blast_references, results, report  # noqa: E402
+from sharkmer_validate.reference_targets import target_logical_genes  # noqa: E402
 
 BENCHMARK_CONFIG = REPO_ROOT / "benchmarks" / "benchmark.yaml"
 RUNS_DIR = REPO_ROOT / "benchmarks" / "benchmark_runs"
@@ -325,10 +326,10 @@ def run_benchmark(
                 ref_db,
                 sample_taxon=taxon,
                 skip_blast=not run_blast,
-                reference_genes={
-                    reference["gene_name"]
-                    for reference in blast_references.extract_references(panel_data, reference_catalog_path)
-                },
+                reference_genes=blast_references.available_reference_targets(
+                    panel_data, reference_catalog_path
+                ),
+                target_mapping=target_logical_genes(panel_data),
             )
 
             sample_results.append((sample_meta, runs))

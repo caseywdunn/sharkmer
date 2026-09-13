@@ -9,6 +9,11 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from . import reference_provenance
+from .reference_targets import (
+    logical_gene_name,
+    reference_target_names,
+    target_logical_genes,
+)
 
 MIN_QUERY_COVERAGE_PCT = 90.0
 MIN_IDENTITY_PCT = 90.0
@@ -29,6 +34,9 @@ class RefBlastResult:
     target_gene_absence: str = "not_established"
     haplotype_truth: str = "not_established"
     read_support: str = "not_evaluated"
+    primer_region_support: str = "not_established"
+    expected_logical_gene: str | None = None
+    matched_logical_gene: str | None = None
     pct_identity: float | None = None
     identity_count: int | None = None
     align_length: int | None = None
@@ -57,6 +65,12 @@ class RefBlastResult:
     reference_database_provenance: dict | None = None
     error: str | None = None
 
+    def __post_init__(self):
+        if self.expected_logical_gene is None:
+            self.expected_logical_gene = logical_gene_name(self.expected_gene)
+        if self.matched_logical_gene is None and self.matched_gene:
+            self.matched_logical_gene = logical_gene_name(self.matched_gene)
+
 
 def check_blastn_available() -> bool:
     try:
@@ -80,13 +94,20 @@ def extract_references(panel_data: dict, catalog_path: Path | None = None) -> li
     return reference_provenance.verified_references(panel_data, catalog_path)
 
 
-def _audit_summary(audit: dict) -> dict:
+def _audit_summary(audit: dict, panel_data: dict | None = None) -> dict:
+    target_mapping = target_logical_genes(panel_data or {})
+    target_mapping_sha256 = hashlib.sha256(
+        json.dumps(target_mapping, sort_keys=True, separators=(",", ":")).encode()
+    ).hexdigest()
     verified = []
     for reference in audit.get("verified", []):
         sequence = reference["sequence"].upper().encode()
         verified.append(
             {
                 "gene": reference["gene_name"],
+                "logical_gene": logical_gene_name(
+                    reference["gene_name"], panel_data=panel_data
+                ),
                 "taxon": reference["taxon"],
                 "accession": reference["accession"],
                 "length": len(sequence),
@@ -107,11 +128,25 @@ def _audit_summary(audit: dict) -> dict:
         "audit_sha256": audit.get("audit_sha256"),
         "coordinate_system": audit.get("coordinate_system"),
         "biological_truth": audit.get("biological_truth"),
+        "target_logical_genes": target_mapping,
+        "target_logical_genes_sha256": target_mapping_sha256,
+        "primer_region_support": "not_established",
     }
 
 
 def reference_checksums(panel_data: dict, catalog_path: Path | None = None) -> dict:
-    return _audit_summary(reference_provenance.audit_references(panel_data, catalog_path))
+    return _audit_summary(
+        reference_provenance.audit_references(panel_data, catalog_path), panel_data
+    )
+
+
+def available_reference_targets(
+    panel_data: dict, catalog_path: Path | None = None
+) -> set[str]:
+    references = extract_references(panel_data, catalog_path)
+    return reference_target_names(
+        panel_data, {reference["gene_name"] for reference in references}
+    )
 
 
 def _metadata_path(db_prefix: Path) -> Path:
@@ -158,6 +193,9 @@ def build_reference_db(
             sequence = reference["sequence"].upper()
             metadata[subject_id] = {
                 "gene": reference["gene_name"],
+                "logical_gene": logical_gene_name(
+                    reference["gene_name"], panel_data=panel_data
+                ),
                 "taxon": reference["taxon"],
                 "accession": reference["accession"],
                 "length": len(sequence),
@@ -203,7 +241,7 @@ def build_reference_db(
         "database_prefix": db_prefix.name,
         "reference_fasta": _file_receipt(fasta_path),
         "artifacts": [_file_receipt(path) for path in database_artifacts],
-        "reference_audit": _audit_summary(audit),
+        "reference_audit": _audit_summary(audit, panel_data),
     }
     manifest_path = _database_manifest_path(db_prefix)
     manifest_path.write_text(json.dumps(database_manifest, indent=2, sort_keys=True) + "\n")
@@ -306,15 +344,25 @@ def _load_database_manifest(db_path: Path) -> tuple[dict, dict]:
 
 
 def _validate_metadata_audit(metadata: dict, manifest: dict) -> None:
-    verified = manifest.get("reference_audit", {}).get("verified")
+    reference_audit = manifest.get("reference_audit", {})
+    verified = reference_audit.get("verified")
+    target_mapping = reference_audit.get("target_logical_genes", {})
     if not isinstance(verified, list) or len(verified) != len(metadata):
         raise ValueError("BLAST metadata and verified-reference audit counts differ")
     for reference_index, expected in enumerate(verified):
+        expected_logical_gene = logical_gene_name(
+            expected.get("gene"), target_mapping=target_mapping
+        )
+        if expected.get("logical_gene") != expected_logical_gene:
+            raise ValueError(
+                "BLAST reference audit logical target differs from panel context"
+            )
         observed = metadata.get(f"reference_{reference_index:06d}")
         if observed is None:
             raise ValueError("BLAST metadata subject ordering differs from reference audit")
         comparable = {
             "gene": observed.get("gene"),
+            "logical_gene": observed.get("logical_gene"),
             "taxon": observed.get("taxon"),
             "accession": observed.get("accession"),
             "length": observed.get("length"),
@@ -395,6 +443,9 @@ def blast_against_references(
             error=f"{error}; BLAST output was not classified",
         )
     database_provenance = {**database_provenance, **metadata_provenance}
+    target_mapping = database_manifest.get("reference_audit", {}).get(
+        "target_logical_genes", {}
+    )
     return _parse_blast_xml(
         completed.stdout,
         expected_gene,
@@ -403,6 +454,9 @@ def blast_against_references(
         min_identity_pct,
         metadata,
         database_provenance,
+        expected_logical_gene=logical_gene_name(
+            expected_gene, target_mapping=target_mapping
+        ),
     )
 
 
@@ -441,13 +495,15 @@ def _unmatched_regions(length: int, intervals: list[tuple[int, int]]) -> list[li
 
 def _legacy_metadata(hit_definition: str, hit_length: int) -> dict:
     parts = hit_definition.split("|", 2)
-    return {
+    metadata = {
         "gene": parts[0] if parts else None,
         "taxon": parts[1].replace("_", " ") if len(parts) >= 2 else None,
         "accession": parts[2] if len(parts) >= 3 else None,
         "length": hit_length or None,
         "provenance": {"status": "explicit_test_fixture"},
     }
+    metadata["logical_gene"] = logical_gene_name(metadata["gene"])
+    return metadata
 
 
 def _hsp_orientation(hsp: dict) -> int:
@@ -500,6 +556,8 @@ def _parse_hit(hit: ET.Element, query_length: int, metadata_by_id: dict | None) 
         metadata = _legacy_metadata(hit_definition, hit_length)
     elif hit_length != metadata.get("length"):
         raise ValueError(f"BLAST subject length differs from reference metadata: {hit_definition}")
+    if not metadata.get("logical_gene"):
+        metadata = {**metadata, "logical_gene": logical_gene_name(metadata.get("gene"))}
     hsps = []
     for hsp_index, hsp in enumerate(hit.findall(".//Hsp")):
         align_length = int(hsp.findtext("Hsp_align-len", "0"))
@@ -646,7 +704,7 @@ def _complementary_conflict(
                 and 100.0 * added / query_length >= MIN_CONFLICT_COVERAGE_PCT
             ):
                 cross_reference = True
-                if (first_hit.get("gene") or "").lower() != (second_hit.get("gene") or "").lower():
+                if first_hit.get("logical_gene") != second_hit.get("logical_gene"):
                     cross_gene = True
     return cross_reference, cross_gene
 
@@ -678,6 +736,7 @@ def _parse_blast_xml(
     reference_metadata: dict | None = None,
     database_provenance: dict | None = None,
     fixture_provenance: str | None = None,
+    expected_logical_gene: str | None = None,
 ) -> RefBlastResult:
     thresholds = {
         "min_query_coverage_pct": min_query_coverage_pct,
@@ -740,9 +799,9 @@ def _parse_blast_xml(
     selected = max(selected_pool, key=_hit_score)
     selected_score = _hit_score(selected)
     tied = [hit for hit in selected_pool if _hit_score(hit) == selected_score]
-    expected_gene_lower = expected_gene.lower()
-    selected_gene_matches = (selected.get("gene") or "").lower() == expected_gene_lower
-    tied_genes = {(hit.get("gene") or "").lower() for hit in tied}
+    expected_logical_gene = expected_logical_gene or logical_gene_name(expected_gene)
+    selected_gene_matches = selected.get("logical_gene") == expected_logical_gene
+    tied_genes = {hit.get("logical_gene") for hit in tied}
     tied_taxa = {(hit.get("taxon") or "").lower() for hit in tied}
     if structural:
         status = "structurally_conflicting"
@@ -788,6 +847,7 @@ def _parse_blast_xml(
                 {
                     "subject_id": hit["subject_id"],
                     "gene": hit.get("gene"),
+                    "logical_gene": hit.get("logical_gene"),
                     "taxon": hit.get("taxon"),
                     "accession": hit.get("accession"),
                     "selected_in_coherent_chain": (
@@ -816,6 +876,8 @@ def _parse_blast_xml(
         matched_gene=selected.get("gene"), matched_taxon=selected.get("taxon"),
         matched_accession=selected.get("accession"), target_support=target_support,
         taxon_support=taxon_support,
+        expected_logical_gene=expected_logical_gene,
+        matched_logical_gene=selected.get("logical_gene"),
         sequence_relationship=_relationship(selected, structural, qualifying_selected),
         pct_identity=round(selected["pct_identity"], 3),
         identity_count=selected["identity_count"], align_length=selected["align_length"],
@@ -841,11 +903,23 @@ def _parse_blast_xml(
     )
 
 
-def _unevaluated_result(status: str, gene: str, taxon: str, error: str | None = None) -> dict:
+def _unevaluated_result(
+    status: str,
+    gene: str,
+    taxon: str,
+    error: str | None = None,
+    expected_logical_gene: str | None = None,
+) -> dict:
     support = "unavailable" if status == "no_verified_reference" else "not_evaluated"
     return asdict(
         RefBlastResult(
-            status, gene, taxon, target_support=support, taxon_support=support, error=error
+            status,
+            gene,
+            taxon,
+            target_support=support,
+            taxon_support=support,
+            expected_logical_gene=expected_logical_gene,
+            error=error,
         )
     )
 
@@ -891,8 +965,38 @@ def blast_all_products(
     sample_taxon: str,
     skip_blast: bool = False,
     reference_genes: set[str] | None = None,
+    target_mapping: dict[str, str] | None = None,
 ):
-    reference_genes = reference_genes or set()
+    requested_target_mapping = dict(target_mapping or {})
+    target_mapping = requested_target_mapping
+    database_error = None
+    if db_path is not None:
+        try:
+            manifest, _ = _load_database_manifest(db_path)
+            reference_audit = manifest.get("reference_audit", {})
+            stored_target_mapping = dict(
+                reference_audit.get("target_logical_genes", {})
+            )
+            if (
+                requested_target_mapping
+                and requested_target_mapping != stored_target_mapping
+            ):
+                raise ValueError(
+                    "BLAST database target mapping differs from current panel context"
+                )
+            target_mapping = stored_target_mapping
+            reference_logical_genes = {
+                reference.get("logical_gene")
+                for reference in reference_audit.get("verified", [])
+            }
+        except (OSError, TypeError, ValueError, json.JSONDecodeError) as error:
+            database_error = str(error)
+            reference_logical_genes = set()
+    else:
+        reference_logical_genes = {
+            logical_gene_name(gene, target_mapping=target_mapping)
+            for gene in (reference_genes or set())
+        }
     count = 0
     for run in run_results:
         if not run.get("success"):
@@ -902,16 +1006,37 @@ def blast_all_products(
             products = gene_result.get("products", [])
             for product in products:
                 count += 1
-                if gene not in reference_genes:
-                    match = _unevaluated_result("no_verified_reference", gene, sample_taxon)
+                expected_logical_gene = logical_gene_name(
+                    gene, target_mapping=target_mapping
+                )
+                if database_error is not None:
+                    match = _unevaluated_result(
+                        "failed_run",
+                        gene,
+                        sample_taxon,
+                        f"{database_error}; BLAST output was not classified",
+                        expected_logical_gene,
+                    )
+                elif expected_logical_gene not in reference_logical_genes:
+                    match = _unevaluated_result(
+                        "no_verified_reference",
+                        gene,
+                        sample_taxon,
+                        expected_logical_gene=expected_logical_gene,
+                    )
                 elif skip_blast:
                     match = _unevaluated_result(
-                        "not_evaluated", gene, sample_taxon, "BLAST disabled"
+                        "not_evaluated",
+                        gene,
+                        sample_taxon,
+                        "BLAST disabled",
+                        expected_logical_gene,
                     )
                 elif db_path is None:
                     match = _unevaluated_result(
                         "not_evaluated", gene, sample_taxon,
                         "Verified reference database unavailable",
+                        expected_logical_gene,
                     )
                 else:
                     match = asdict(

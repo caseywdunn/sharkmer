@@ -42,6 +42,7 @@ from ruamel.yaml import YAML
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from sharkmer_validate import runner, blast_references, results, report  # noqa: E402
+from sharkmer_validate.reference_targets import target_logical_genes  # noqa: E402
 
 REPORTS_DIR = runner.REPO_ROOT / "panels" / "validation_reports"
 RUNS_DIR = runner.REPO_ROOT / "panels" / "validation_runs"
@@ -312,10 +313,10 @@ def main():
                     )
                 # else: tool not available, warning already printed
         blast_mode = "references" if ref_db else "none"
-        reference_genes = {
-            reference["gene_name"]
-            for reference in blast_references.extract_references(panel_data, args.reference_catalog)
-        }
+        reference_genes = blast_references.available_reference_targets(
+            panel_data, args.reference_catalog
+        )
+        target_mapping = target_logical_genes(panel_data)
 
         # Run sharkmer for each sample x max_reads.
         for sample_block in samples:
@@ -354,6 +355,7 @@ def main():
                 sample_taxon=taxon,
                 skip_blast=args.no_blast,
                 reference_genes=reference_genes,
+                target_mapping=target_mapping,
             )
 
             sample_results.append((sample_block, runs))

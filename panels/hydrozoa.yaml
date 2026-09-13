@@ -1,6 +1,6 @@
 name: hydrozoa
 schema_version: "2"
-panel_version: 1.0.8
+panel_version: 1.0.9
 description: "Primers targeting mitochondrial and nuclear markers for Hydrozoa (Cnidaria: Hydrozoa), covering hydroids, siphonophores, leptothecates, and trachylines."
 
 clade: "Hydrozoa"
@@ -10,6 +10,10 @@ maintainers:
   - name: "Casey Dunn"
 
 changelog:
+  - panel_version: 1.0.9
+    date: 2026-09-13
+    sharkmer_version: "3.2.0-dev"
+    changes: "Add independently annotated public reference regions with exact-source provenance; source taxa and partial/homologous scope remain explicit. Primers and validation samples unchanged."
   - panel_version: 1.0.8
     date: 2026-09-13
     sharkmer_version: "3.2.0-dev"
@@ -307,6 +311,20 @@ references:
       start: 0
       strand: +
       wraps_origin: false
+  - accession: EU293971.1
+    provenance:
+      accession_version: EU293971.1
+      end: 539
+      kind: public_record_region
+      schema_version: 1
+      sequence_sha256: a423c5161298e1e673b0de287c78ad766001226ce56f646510b7d189c4c8315d
+      source_length: 539
+      source_sequence_sha256: a423c5161298e1e673b0de287c78ad766001226ce56f646510b7d189c4c8315d
+      start: 0
+      strand: +
+      wraps_origin: false
+    sequence: CCTTGGTTTAACTCAAAGGTGCAGCCTGCCCTATGGTCTTCGACGCGTTTTGTGACTAAAACCTAAACAGAGACTAAATGGCCGCGGTAACTCTGACCGTGATAATGTAGCGAAATCAATCGTCGTTTAATTGACGACCCGTATGAAAGGTTAAACGAATCTCCCCCTGTCTCGAAAATAAACCTCATCGAAATTGTATGAGCAGTGAAGATACTGCTATCAGATTGCTAGACGAAAAGACCCTATAGAGCTTAACTATATTCTCGATCCACAACTTACCCTATGAAGATAGGAGTGCATCGAGAGTGGTAGTTTGGTTGGGGCGACCTTCTTCTATAACAAACGAAGATAGACAAAGGCACATCGATTTTAAATCGCTTAATTGTTTAATCCATAAATTTAACAAATACTAACGTAGGTAAAAATGACCCGTTCTCCTCAAAAAATAGAGAGAACGATCAATAAATAAAAGCTACCTTAGGGATAACAGCGTAATCTTGTTCAAGAGTCCTTATCGACGACAAGGTTTGCGACCTCGA
+    taxon: Craspedacusta sowerbii
 - gene: CO1
   sequences:
   - taxon: Physalia physalis

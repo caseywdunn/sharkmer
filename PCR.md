@@ -340,6 +340,11 @@ support. Reports distinguish alignment support, sequence differences, and
 unestablished sample haplotype truth; read support is not evaluated by reference
 BLAST. Missing or unverified references are excluded visibly, not treated as
 proof that a product is incorrect. See the [reference contract and audit](dev_docs/REFERENCE_PROVENANCE.md).
+The [public replacement source map](dev_docs/PUBLIC_REFERENCE_REPLACEMENTS.md)
+records accessioned alternatives, related taxa, partial loci, and unresolved
+annotation conflicts. Reviewed alternative primer indices can share gene-level
+evidence; this does not establish the intended primer-bounded region or the
+sample's complete haplotype.
 Use `--reference-catalog path/catalog.json.gz` for a reviewed external catalog.
 
 The validator writes Markdown reports to `panels/validation_reports/` by

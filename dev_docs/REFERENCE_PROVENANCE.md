@@ -3,6 +3,13 @@
 Date: 2026-09-13. Implementation/evaluation issue: [#129](https://github.com/caseywdunn/sharkmer/issues/129).
 Release review remains open under [#153](https://github.com/caseywdunn/sharkmer/issues/153).
 
+**Follow-up:** the initial 99-reference inventory documented here is now
+expanded to 156 independently sourced regions. Public alternatives cover
+58 of the 61 quarantined entries, including the already replaced Hydra
+example; three remain unresolved. See [the replacement findings and source
+map](PUBLIC_REFERENCE_REPLACEMENTS.md). The original audit/evidence below
+remains a historical snapshot, not the current active-reference count.
+
 ## Two different questions
 
 1. **Where did a reference come from?** Its stored sequence must be an exact,

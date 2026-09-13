@@ -8,6 +8,7 @@ from datetime import datetime
 from pathlib import Path
 
 from . import blast_references, primer_analysis, runner
+from .reference_targets import logical_gene_name, target_logical_genes
 
 
 # ---------------------------------------------------------------------------
@@ -73,11 +74,25 @@ def _build_ref_availability(
     ref_map = {}
     if isinstance(reference_summary, dict):
         references = reference_summary.get("verified", [])
+        target_mapping = reference_summary.get("target_logical_genes", {})
         for reference in references:
             ref_map.setdefault(reference["gene"], set()).add(reference["taxon"])
+            reference_logical_gene = reference.get("logical_gene") or logical_gene_name(
+                reference["gene"]
+            )
+            for target, logical_gene in target_mapping.items():
+                if logical_gene == reference_logical_gene:
+                    ref_map.setdefault(target, set()).add(reference["taxon"])
         return ref_map
+    target_mapping = target_logical_genes(panel_data or {})
     for reference in blast_references.extract_references(panel_data or {}):
         ref_map.setdefault(reference["gene_name"], set()).add(reference["taxon"])
+        reference_logical_gene = logical_gene_name(
+            reference["gene_name"], panel_data=panel_data
+        )
+        for target, logical_gene in target_mapping.items():
+            if logical_gene == reference_logical_gene:
+                ref_map.setdefault(target, set()).add(reference["taxon"])
     return ref_map
 
 
@@ -96,7 +111,19 @@ def _score_gene(
         p1 = "+"
 
     # Position 2: reference availability for this gene
-    gene_refs = ref_availability.get(gene, set())
+    expected_logical_gene = (
+        ref_match.get("expected_logical_gene")
+        if isinstance(ref_match, dict)
+        else logical_gene_name(gene)
+    ) or logical_gene_name(gene)
+    gene_refs = set().union(
+        *(
+            taxa
+            for target, taxa in ref_availability.items()
+            if target == gene
+            or logical_gene_name(target) == expected_logical_gene
+        )
+    )
     if not gene_refs:
         p2 = "-"
     elif sample_taxon in gene_refs:
@@ -109,13 +136,21 @@ def _score_gene(
         p3 = "-"
     elif (
         ref_match.get("status") == "gene_supported_expected_taxon"
-        and (ref_match.get("matched_gene") or "").lower() == gene.lower()
+        and (
+            ref_match.get("matched_logical_gene")
+            or logical_gene_name(ref_match.get("matched_gene"))
+        )
+        == expected_logical_gene
         and ref_match.get("all_products_expected_taxon_supported", True)
     ):
         p3 = "*"
     elif (
         ref_match.get("status") == "gene_supported_other_taxon"
-        and (ref_match.get("matched_gene") or "").lower() == gene.lower()
+        and (
+            ref_match.get("matched_logical_gene")
+            or logical_gene_name(ref_match.get("matched_gene"))
+        )
+        == expected_logical_gene
     ):
         p3 = "+"
     else:
@@ -143,6 +178,24 @@ def _reference_provenance_summary(result: dict) -> list:
     biological_truth = references.get("biological_truth")
     if biological_truth:
         lines.append(f"- **Evidence scope**: {biological_truth}")
+    target_mapping = references.get("target_logical_genes") or {}
+    grouped_targets = {}
+    for target, logical_gene in target_mapping.items():
+        grouped_targets.setdefault(logical_gene, []).append(target)
+    reviewed_groups = {
+        logical_gene: sorted(targets)
+        for logical_gene, targets in grouped_targets.items()
+        if len(targets) > 1
+    }
+    if reviewed_groups:
+        rendered_groups = "; ".join(
+            f"`{logical_gene}`: {', '.join(f'`{target}`' for target in targets)}"
+            for logical_gene, targets in sorted(reviewed_groups.items())
+        )
+        lines.append(f"- **Reviewed logical target groups**: {rendered_groups}")
+        lines.append(
+            "- **Primer-region support**: not established by logical target grouping"
+        )
     excluded = references.get("excluded") or []
     if excluded:
         reason_counts = {}
@@ -513,10 +566,17 @@ def _reference_details(result: dict, considered_genes: list) -> list:
                         "sample": accession,
                         "sample_taxon": taxon,
                         "gene": gene,
+                        "logical_gene": ref.get("expected_logical_gene")
+                        or gr.get("logical_gene")
+                        or logical_gene_name(gene),
                         "product": product.get("product_index"),
                         "status": ref.get("status", "unknown"),
                         "target_support": ref.get("target_support", "unavailable"),
                         "sequence_relationship": ref.get("sequence_relationship", "unavailable"),
+                        "matched_gene": ref.get("matched_gene", "---"),
+                        "matched_logical_gene": ref.get(
+                            "matched_logical_gene", "---"
+                        ),
                         "matched_taxon": ref.get("matched_taxon", "---"),
                         "matched_accession": ref.get("matched_accession", "---"),
                         "pct_identity": ref.get("pct_identity"),
@@ -528,6 +588,9 @@ def _reference_details(result: dict, considered_genes: list) -> list:
                         "gap_count": ref.get("gap_count"),
                         "haplotype_truth": ref.get("haplotype_truth", "not_established"),
                         "read_support": ref.get("read_support", "not_evaluated"),
+                        "primer_region_support": ref.get(
+                            "primer_region_support", "not_established"
+                        ),
                     }
                 )
 
@@ -538,16 +601,16 @@ def _reference_details(result: dict, considered_genes: list) -> list:
     lines.append("## Reference match details")
     lines.append("")
     lines.append(
-        "| Sample | Gene | Product | Status | Target support | Sequence relationship | "
-        "Sample taxon | Ref taxon | Ref accession | Identity | Query coverage | "
+        "| Sample | Target | Logical target | Product | Status | Target support | Sequence relationship | "
+        "Matched reference target | Matched logical target | Sample taxon | Ref taxon | Ref accession | Identity | Query coverage | "
         "Unmatched query regions | Reference coverage | Unmatched reference regions | "
-        "Gaps | Haplotype truth | Read support |"
+        "Gaps | Primer-region support | Haplotype truth | Read support |"
     )
     lines.append(
-        "|--------|------|--------:|--------|----------------|-----------------------|"
-        "-------------|-----------|---------------|----------:|---------------:|"
+        "|--------|--------|----------------|--------:|--------|----------------|-----------------------|"
+        "--------------------------|------------------------|-------------|-----------|---------------|----------:|---------------:|"
         "-------------------------|-------------------:|-----------------------------|"
-        "-----:|-----------------|--------------|"
+        "-----:|----------------------|-----------------|--------------|"
     )
     for r in rows:
         pct = f"{r['pct_identity']:.1f}%" if r["pct_identity"] is not None else "---"
@@ -568,12 +631,13 @@ def _reference_details(result: dict, considered_genes: list) -> list:
             f"{start}-{end}" for start, end in r["unmatched_reference_regions"] or []
         ) or "none"
         lines.append(
-            f"| {r['sample']} | {r['gene']} | {r['product']} | {r['status']} | "
-            f"{r['target_support']} | {r['sequence_relationship']} | {r['sample_taxon']} | "
+            f"| {r['sample']} | {r['gene']} | {r['logical_gene']} | {r['product']} | {r['status']} | "
+            f"{r['target_support']} | {r['sequence_relationship']} | "
+            f"{r['matched_gene']} | {r['matched_logical_gene']} | {r['sample_taxon']} | "
             f"{r['matched_taxon']} | {r['matched_accession']} | {pct} | {coverage} | "
             f"{unmatched_query} | {reference_coverage} | {unmatched_reference} | "
             f"{r['gap_count'] if r['gap_count'] is not None else '---'} | "
-            f"{r['haplotype_truth']} | {r['read_support']} |"
+            f"{r['primer_region_support']} | {r['haplotype_truth']} | {r['read_support']} |"
         )
     lines.append("")
     return lines

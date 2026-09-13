@@ -97,9 +97,25 @@ class BlastClassificationTests(unittest.TestCase):
         ]
         with mock.patch.object(
             blast_references, "blast_against_references", side_effect=matches
-        ) as blast:
+        ) as blast, mock.patch.object(
+            blast_references,
+            "_load_database_manifest",
+            return_value=(
+                {
+                    "reference_audit": {
+                        "target_logical_genes": {"target": "target"},
+                        "verified": [{"logical_gene": "target"}],
+                    }
+                },
+                {},
+            ),
+        ):
             blast_references.blast_all_products(
-                runs, Path("db"), "Taxon A", reference_genes={"target"}
+                runs,
+                Path("db"),
+                "Taxon A",
+                reference_genes={"target"},
+                target_mapping={"target": "target"},
             )
         self.assertEqual(blast.call_count, 2)
         self.assertEqual(
@@ -218,6 +234,7 @@ class BlastClassificationTests(unittest.TestCase):
             metadata_path.write_text(json.dumps({
                 f"reference_{index:06d}": {
                     "gene": "target",
+                    "logical_gene": "target",
                     "taxon": "Taxon A",
                     "accession": f"A{index}.1",
                     "length": 100,
@@ -238,6 +255,7 @@ class BlastClassificationTests(unittest.TestCase):
                     "verified": [
                         {
                             "gene": reference["gene"],
+                            "logical_gene": reference.get("logical_gene", "target"),
                             "taxon": reference["taxon"],
                             "accession": reference["accession"],
                             "length": reference["length"],

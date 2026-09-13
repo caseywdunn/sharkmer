@@ -21,7 +21,10 @@ and new nuclear/metagenomic inference policies belong to later releases.
 - Public-record reference catalog, exact extraction provenance, offline audit,
   known annotation-conflict exclusions, and anti-promotion bootstrap guards
   (#129). The complete audit preserves all 159 historical references separately;
-  active panels contain 99 independently sourced regions.
+  subsequent annotation-reviewed public replacements expand active panels to
+  156 independently sourced regions, covering 58 of 61 quarantined entries
+  (including the already replaced documentation example). Three remain
+  unresolved; related taxa and partial loci are not asserted sample truth.
 - Current-run output manifests with run identity, completion state, and
   SHA-256 receipts. FASTA/stats publication is staged and coordinated by a
   per-sample lease; interrupted runs cannot be validated as complete (#134).
@@ -61,6 +64,9 @@ and new nuclear/metagenomic inference policies belong to later releases.
   split alignments alone are not chimeras. Legacy panels still load in the
   updated binary, but new provenance-bearing panels require the updated loader
   (#129). Counting and repeat policies are unchanged by this evaluation update.
+- Reviewed indexed targets share gene-level reference evidence without claiming
+  primer-region identity. ITS grouping is restricted to reviewed panel/primer
+  definitions; arbitrary external ITS labels remain distinct (#129).
 - Reruns invalidate only verified outputs owned by the same sample. Legacy,
   modified, unowned, and symlink collisions are preserved and refused; use a
   fresh output directory when upgrading or retaining prior results. Histogram
