@@ -187,12 +187,14 @@ tuning is used for the reported comparison.
 The diagnostic slice is complete, but **#148's read-supported reconstruction,
 #153's biological disposition, and #129's release gates remain open**.
 
-Next prioritize the two localized ITS regions: reconstruct the relevant
-SCC entry/exit context and all bounded competing repeat/sequence alternatives,
-then preregister complete distinguishing intervals and variation-aware
-read-evidence assays. Use exact primary evidence and explicitly separate
-substitution/indel sensitivity without collapsing the copy-number question.
-Marginal windows must not be combined into a full-length phase claim.
+The subsequent [ITS SCC/read audit](ITS_SCC_AUDIT_RESULTS.md) completes the
+two-region bounded alternative analysis. Both cycles survive pruning, and
+neither historical traversal nor either read-length extra-cycle alternative
+has a qualifying exact/one-substitution bridge. Independent exact recount
+agrees, including before quality filtering. These unresolved results do not
+justify a gate exception. Next investigate local read recruitment and
+variation under a separately frozen diagnostic protocol. Marginal windows
+must not be combined into a full-length phase claim.
 
 Only positive evidence covering the actual restrictions proposed for removal,
 appropriate true/collapsed-repeat and mixture controls, and a fresh high-copy
