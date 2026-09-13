@@ -167,7 +167,7 @@ and `trim` must retain at least one 3' base.
 | `maintainers` | List of `{name, orcid, contact, notes}`. |
 | `changelog` | List of `{panel_version, date, sharkmer_version, changes, notes}`. |
 | `validation` | Validation block (see below). |
-| `references` | Reference sequences for BLAST-identity validation. |
+| `references` | Independent public-record regions with exact extraction provenance; product assessment allows sequence variation. |
 
 ### Optional per-primer fields
 
@@ -325,7 +325,7 @@ conda activate sharkmer-bench
 
 This runs sharkmer against each declared sample at each declared read depth
 (using the shared cache under `benchmarks/data/cache/`), BLASTs the
-recovered amplicons against the sequences in the panel's `references:` block,
+recovered amplicons against provenance-verified public regions in the panel's `references:` block,
 and emits two output files:
 
 - A markdown report to `panels/validation_reports/` — human-readable,
@@ -333,6 +333,14 @@ and emits two output files:
   binding analysis section.
 - A YAML result file to `panels/validation_results/` — machine-readable
   record of the same run, useful for diffing across panel versions.
+
+Reference provenance requires exact public-record extraction; product validation
+does **not** require exact reference equality. SNPs and indels can retain gene
+support. Reports distinguish alignment support, sequence differences, and
+unestablished sample haplotype truth; read support is not evaluated by reference
+BLAST. Missing or unverified references are excluded visibly, not treated as
+proof that a product is incorrect. See the [reference contract and audit](dev_docs/REFERENCE_PROVENANCE.md).
+Use `--reference-catalog path/catalog.json.gz` for a reviewed external catalog.
 
 The validator writes Markdown reports to `panels/validation_reports/` by
 default. `--output-dir` redirects only those Markdown reports; YAML results
@@ -390,8 +398,11 @@ when it does, that is information we want.
 External panel contributions are welcome. 
 
 Contributed panels must include a `validation:` block with samples for
-validating the primers, and a `references:` block with reference sequences
-for BLAST identity checking. All primers in the panel should return at least
+validating the primers, and a `references:` block with independently sourced
+public regions and verified extraction provenance for BLAST support assessment.
+Sharkmer products are regression fixtures, not biological references. Review
+gene annotations separately from source provenance, and do not require an
+archive individual to share every allele with the read sample. All primers in the panel should return at least
 some correct targets. If during development you find that some primers return
 no products, off-target products (according to BLAST), or are highly
 unreliable, remove them from the panel before submitting. Dead primers slow

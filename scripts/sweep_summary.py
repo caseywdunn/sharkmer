@@ -12,8 +12,8 @@ with one section per knob:
      that panel × value cell. Points are computed from the existing
      3-position score code in sharkmer_validate.report:
 
-       +**  recovered, ref for this species, BLAST hit same gene same species   3 pts
-       +++  recovered, hit same gene in a different species                     2 pts
+       +**  recovered, verified ref for this species, expected-taxon gene support  3 pts
+       +++  recovered, same-gene support from another taxon                        2 pts
        +--  recovered, no references for this gene (no validation possible)     1 pt
        everything else (suspicious or not-recovered)                            0 pts
 
@@ -165,8 +165,8 @@ def group_by_knob_panel_value(
 
 
 SCORE_POINTS = {
-    "+**": 3,  # confirmed: same gene, same species
-    "+++": 2,  # right gene, different species
+    "+**": 3,
+    "+++": 2,
     "+--": 1,  # recovered, no possible validation
     # Everything else (suspicious or not recovered) is 0.
 }
@@ -447,8 +447,8 @@ def render_summary(
     out.append("")
     out.append("| Code | Meaning | Points |")
     out.append("|------|---------|-------:|")
-    out.append("| `+**` | Recovered, confirmed: same gene, same species | 3 |")
-    out.append("| `+++` | Recovered, hit same gene in a different species | 2 |")
+    out.append("| `+**` | Recovered; expected-gene and expected-taxon alignment support | 3 |")
+    out.append("| `+++` | Recovered; same-gene alignment support from another taxon | 2 |")
     out.append("| `+--` | Recovered, no references for this gene (no validation possible) | 1 |")
     out.append("| anything else | Suspicious or not recovered | 0 |")
     out.append("")

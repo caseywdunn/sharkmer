@@ -83,7 +83,7 @@
     },
     "references": {
       "type": "array",
-      "description": "Gold-standard reference amplicon sequences for validation. Consumed by validate_panel.py, not by the Rust binary.",
+      "description": "Independent public-record regions for validation. Python tooling requires verified provenance; Rust accepts legacy metadata without using it for assembly.",
       "items": { "$ref": "#/$defs/ReferenceGene" }
     },
     "validation": {
@@ -280,13 +280,33 @@
       "required": ["taxon", "sequence"],
       "additionalProperties": false,
       "properties": {
-        "taxon":     { "type": "string", "description": "Species or sample name." },
-        "accession": { "type": "string", "description": "GenBank/SRA accession for provenance." },
+        "taxon":     { "type": "string", "description": "Organism of the public source record, not the validation read sample." },
+        "accession": { "type": "string", "description": "Versioned public nucleotide accession; a BLAST-hit label alone is not sequence provenance." },
         "sequence":  {
           "type": "string",
           "pattern": "^[ACGTRYSWKMBDHVNacgtryswkmbdhvn]+$",
-          "description": "Expected amplicon sequence (IUPAC nucleotides)."
-        }
+          "description": "Literal public-record region (IUPAC nucleotides), not necessarily the sample allele. Verified references require uppercase symbols."
+        },
+        "provenance": { "$ref": "#/$defs/ReferenceProvenance" }
+      }
+    },
+
+    "ReferenceProvenance": {
+      "type": "object",
+      "required": ["schema_version", "kind", "accession_version", "source_sequence_sha256", "source_length", "start", "end", "strand", "wraps_origin", "sequence_sha256"],
+      "additionalProperties": false,
+      "description": "Exact extraction receipt verified against a trusted local public-record catalog. Coordinates are zero-based half-open; extract in source orientation, then reverse-complement for strand -. This does not establish gene annotation, unique locus, or sample haplotype truth.",
+      "properties": {
+        "schema_version": { "type": "integer", "const": 1 },
+        "kind": { "type": "string", "const": "public_record_region" },
+        "accession_version": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*\\.[0-9]+$" },
+        "source_sequence_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "source_length": { "type": "integer", "minimum": 1 },
+        "start": { "type": "integer", "minimum": 0 },
+        "end": { "type": "integer", "minimum": 0 },
+        "strand": { "type": "string", "enum": ["+", "-"] },
+        "wraps_origin": { "type": "boolean" },
+        "sequence_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
       }
     },
 

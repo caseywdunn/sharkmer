@@ -173,6 +173,7 @@ def run_benchmark(
     diagnostic_graphs: bool = False,
     config_path: Path = BENCHMARK_CONFIG,
     k: int = runner.K,
+    reference_catalog_path: Path | None = None,
 ):
     """Run the benchmark suite."""
     executable_provenance = runner.build_sharkmer(executable=executable)
@@ -273,7 +274,7 @@ def run_benchmark(
         tmpdir = Path(tempfile.mkdtemp(prefix=f"sharkmer_refs_{panel_name}_"))
         ref_db = None
         if run_blast and benchmark_scope == "end-to-end":
-            ref_db = blast_references.build_reference_db(panel_data, tmpdir)
+            ref_db = blast_references.build_reference_db(panel_data, tmpdir, reference_catalog_path)
             if ref_db:
                 print(f"  Reference DB built: {ref_db}")
         blast_mode = "references" if ref_db else "none"
@@ -326,7 +327,7 @@ def run_benchmark(
                 skip_blast=not run_blast,
                 reference_genes={
                     reference["gene_name"]
-                    for reference in blast_references.extract_references(panel_data)
+                    for reference in blast_references.extract_references(panel_data, reference_catalog_path)
                 },
             )
 
@@ -345,6 +346,7 @@ def run_benchmark(
             if benchmark_scope == "end-to-end"
             else [],
             run_id=stamp,
+            reference_catalog_path=reference_catalog_path,
         )
         result_name = results.result_filename(panel_data, sharkmer_version, stamp)
         result_path = BENCHMARK_RESULTS_DIR / result_name
@@ -421,6 +423,11 @@ def main():
         help="Skip BLAST validation of amplicons",
     )
     parser.add_argument(
+        "--reference-catalog",
+        type=Path,
+        help="Trusted public-record catalog for reference verification (default: panels/reference_sources.json.gz)",
+    )
+    parser.add_argument(
         "--executable",
         type=Path,
         help="Use and fingerprint this executable instead of building the workspace binary",
@@ -456,6 +463,7 @@ def main():
         diagnostic_graphs=args.diagnostic_graphs,
         config_path=args.config.resolve(),
         k=args.k,
+        reference_catalog_path=args.reference_catalog,
     )
 
 

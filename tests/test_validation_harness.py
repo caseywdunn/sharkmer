@@ -1,5 +1,6 @@
 import sys
 import subprocess
+import hashlib
 import json
 import yaml
 import tempfile
@@ -14,14 +15,19 @@ sys.path.insert(0, str(REPO_ROOT / "benchmarks"))
 from sharkmer_validate import blast_references, report, results, runner
 import bootstrap_from_runs
 import run_benchmark as benchmark_runner
+import sweep_summary
 
 
 class BlastClassificationTests(unittest.TestCase):
     def fixture(self, name):
         return (REPO_ROOT / "tests" / "fixtures" / "validation" / name).read_text()
 
+    def parse(self, xml_text, gene="target", taxon="Taxon A", **kwargs):
+        kwargs.setdefault("fixture_provenance", "explicit_test_fixture")
+        return blast_references._parse_blast_xml(xml_text, gene, taxon, **kwargs)
+
     def test_wrong_gene_is_never_same_gene_success(self):
-        match = blast_references._parse_blast_xml(
+        match = self.parse(
             self.fixture("wrong_gene.xml"), "target", "Taxon A"
         )
         self.assertEqual(match.status, "wrong_gene")
@@ -30,24 +36,36 @@ class BlastClassificationTests(unittest.TestCase):
             True,
             "target",
             "Taxon A",
-            {**match.__dict__, "all_products_confirmed": False},
+            {**match.__dict__, "all_products_gene_supported": False},
             {"target": {"Taxon A"}},
         )
         self.assertNotIn(score, {"+**", "+++"})
 
-    def test_short_fragment_cannot_confirm_product(self):
+    def test_direct_xml_without_explicit_fixture_or_verified_metadata_fails_closed(self):
         match = blast_references._parse_blast_xml(
+            self.fixture("wrong_gene.xml"), "target", "Taxon A"
+        )
+        self.assertEqual(match.status, "failed_run")
+        self.assertIn("Verified reference metadata", match.error)
+
+    def test_short_fragment_cannot_confirm_product(self):
+        match = self.parse(
             self.fixture("short_fragment.xml"), "target", "Taxon A"
         )
         self.assertEqual(match.status, "insufficient_alignment")
         self.assertEqual(match.query_coverage_pct, 15.0)
         self.assertFalse(match.on_target)
 
-    def test_complementary_same_gene_references_are_split_evidence(self):
-        match = blast_references._parse_blast_xml(
+    def test_complementary_same_gene_references_are_unresolved_not_structurally_conflicting(self):
+        match = self.parse(
             self.fixture("same_gene_split.xml"), "target", "Taxon A"
         )
-        self.assertEqual(match.status, "split_or_chimeric_alignment")
+        self.assertEqual(match.status, "insufficient_alignment")
+        self.assertEqual(match.sequence_relationship, "partial_unresolved")
+        self.assertEqual(
+            match.alignment_structure_status,
+            "complementary_multi_reference_evidence_unresolved",
+        )
         self.assertTrue(match.split_alignment)
         self.assertFalse(match.on_target)
         self.assertEqual(len(match.alignment_evidence), 2)
@@ -68,7 +86,13 @@ class BlastClassificationTests(unittest.TestCase):
             }
         ]
         matches = [
-            blast_references.RefBlastResult("confirmed_product", "target", "Taxon A"),
+            blast_references.RefBlastResult(
+                "gene_supported_expected_taxon",
+                "target",
+                "Taxon A",
+                target_support="supported",
+                taxon_support="supported",
+            ),
             blast_references.RefBlastResult("wrong_gene", "target", "Taxon A"),
         ]
         with mock.patch.object(
@@ -84,12 +108,88 @@ class BlastClassificationTests(unittest.TestCase):
         )
         self.assertFalse(runs[0]["genes"][0]["reference_match"]["on_target"])
 
+    def test_exact_reference_alignment_records_support_without_haplotype_truth(self):
+        xml = """<BlastOutput><BlastOutput_iterations><Iteration><Iteration_query-len>100</Iteration_query-len><Iteration_hits>
+        <Hit><Hit_def>target|Taxon_A|XR_007021210.2</Hit_def><Hit_len>100</Hit_len><Hit_hsps><Hsp><Hsp_bit-score>200</Hsp_bit-score><Hsp_identity>100</Hsp_identity><Hsp_align-len>100</Hsp_align-len><Hsp_gaps>0</Hsp_gaps><Hsp_query-from>1</Hsp_query-from><Hsp_query-to>100</Hsp_query-to><Hsp_hit-from>1</Hsp_hit-from><Hsp_hit-to>100</Hsp_hit-to></Hsp></Hit_hsps></Hit>
+        </Iteration_hits></Iteration></BlastOutput_iterations></BlastOutput>"""
+        match = self.parse(xml)
+        self.assertEqual(match.status, "gene_supported_expected_taxon")
+        self.assertEqual(match.target_support, "supported")
+        self.assertEqual(match.sequence_relationship, "reference_identical")
+        self.assertEqual(match.matched_accession, "XR_007021210.2")
+        self.assertEqual(match.haplotype_truth, "not_established")
+        self.assertEqual(match.read_support, "not_evaluated")
+
+    def test_opaque_subject_metadata_preserves_duplicate_labels_and_accession_underscores(self):
+        xml = """<BlastOutput><BlastOutput_iterations><Iteration><Iteration_query-len>100</Iteration_query-len><Iteration_hits>
+        <Hit><Hit_def>reference_000000</Hit_def><Hit_len>100</Hit_len><Hit_hsps><Hsp><Hsp_bit-score>200</Hsp_bit-score><Hsp_identity>100</Hsp_identity><Hsp_align-len>100</Hsp_align-len><Hsp_query-from>1</Hsp_query-from><Hsp_query-to>100</Hsp_query-to><Hsp_hit-from>1</Hsp_hit-from><Hsp_hit-to>100</Hsp_hit-to></Hsp></Hit_hsps></Hit>
+        <Hit><Hit_def>reference_000001</Hit_def><Hit_len>100</Hit_len><Hit_hsps><Hsp><Hsp_bit-score>200</Hsp_bit-score><Hsp_identity>100</Hsp_identity><Hsp_align-len>100</Hsp_align-len><Hsp_query-from>1</Hsp_query-from><Hsp_query-to>100</Hsp_query-to><Hsp_hit-from>1</Hsp_hit-from><Hsp_hit-to>100</Hsp_hit-to></Hsp></Hit_hsps></Hit>
+        </Iteration_hits></Iteration></BlastOutput_iterations></BlastOutput>"""
+        metadata = {
+            "reference_000000": {
+                "gene": "target", "taxon": "Taxon A", "accession": "XR_007021210.2",
+                "length": 100, "provenance": {"status": "verified"},
+            },
+            "reference_000001": {
+                "gene": "target", "taxon": "Taxon A", "accession": "XR_007021211.1",
+                "length": 100, "provenance": {"status": "verified"},
+            },
+        }
+        match = self.parse(
+            xml, "target", "Taxon A", reference_metadata=metadata
+        )
+        self.assertEqual(match.status, "gene_supported_expected_taxon")
+        self.assertEqual(match.matched_accession, "XR_007021210.2")
+        self.assertEqual(
+            {evidence["accession"] for evidence in match.alignment_evidence},
+            {"XR_007021210.2", "XR_007021211.1"},
+        )
+
+    def test_normal_snp_and_indel_alignment_retains_gene_support(self):
+        xml = """<BlastOutput><BlastOutput_iterations><Iteration><Iteration_query-len>99</Iteration_query-len><Iteration_hits>
+        <Hit><Hit_def>target|Taxon_A|ALLELE.1</Hit_def><Hit_len>100</Hit_len><Hit_hsps><Hsp><Hsp_bit-score>180</Hsp_bit-score><Hsp_identity>97</Hsp_identity><Hsp_align-len>100</Hsp_align-len><Hsp_gaps>1</Hsp_gaps><Hsp_query-from>1</Hsp_query-from><Hsp_query-to>99</Hsp_query-to><Hsp_hit-from>1</Hsp_hit-from><Hsp_hit-to>100</Hsp_hit-to><Hsp_qseq>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</Hsp_qseq><Hsp_hseq>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA</Hsp_hseq></Hsp></Hit_hsps></Hit>
+        </Iteration_hits></Iteration></BlastOutput_iterations></BlastOutput>"""
+        match = self.parse(xml)
+        self.assertEqual(match.status, "gene_supported_expected_taxon")
+        self.assertEqual(match.sequence_relationship, "aligned_differences")
+        self.assertEqual(match.query_coverage_pct, 100.0)
+        self.assertEqual(match.gap_count, 1)
+        self.assertEqual(match.query_gap_bases, 1)
+
+    def test_collinear_split_hsps_support_gene_without_chimera_claim(self):
+        xml = """<BlastOutput><BlastOutput_iterations><Iteration><Iteration_query-len>100</Iteration_query-len><Iteration_hits>
+        <Hit><Hit_def>target|Taxon_A|ALLELE.2</Hit_def><Hit_len>105</Hit_len><Hit_hsps>
+        <Hsp><Hsp_bit-score>90</Hsp_bit-score><Hsp_identity>45</Hsp_identity><Hsp_align-len>45</Hsp_align-len><Hsp_gaps>0</Hsp_gaps><Hsp_query-from>1</Hsp_query-from><Hsp_query-to>45</Hsp_query-to><Hsp_hit-from>1</Hsp_hit-from><Hsp_hit-to>45</Hsp_hit-to></Hsp>
+        <Hsp><Hsp_bit-score>110</Hsp_bit-score><Hsp_identity>55</Hsp_identity><Hsp_align-len>55</Hsp_align-len><Hsp_gaps>0</Hsp_gaps><Hsp_query-from>46</Hsp_query-from><Hsp_query-to>100</Hsp_query-to><Hsp_hit-from>51</Hsp_hit-from><Hsp_hit-to>105</Hsp_hit-to></Hsp>
+        </Hit_hsps></Hit></Iteration_hits></Iteration></BlastOutput_iterations></BlastOutput>"""
+        match = self.parse(xml)
+        self.assertEqual(match.status, "gene_supported_expected_taxon")
+        self.assertEqual(match.sequence_relationship, "aligned_differences")
+        self.assertEqual(match.alignment_structure_status, "coherent_collinear_multi_hsp")
+        self.assertTrue(match.split_alignment)
+        self.assertIsNone(match.chimeric_alignment)
+        self.assertEqual(match.inter_hsp_reference_gap_bases, 5)
+        self.assertEqual(match.unmatched_reference_regions, [[46, 50]])
+
+    def test_noncollinear_within_reference_hsps_are_structurally_conflicting(self):
+        xml = """<BlastOutput><BlastOutput_iterations><Iteration><Iteration_query-len>100</Iteration_query-len><Iteration_hits>
+        <Hit><Hit_def>target|Taxon_A|REARRANGED.1</Hit_def><Hit_len>100</Hit_len><Hit_hsps>
+        <Hsp><Hsp_bit-score>100</Hsp_bit-score><Hsp_identity>50</Hsp_identity><Hsp_align-len>50</Hsp_align-len><Hsp_query-from>1</Hsp_query-from><Hsp_query-to>50</Hsp_query-to><Hsp_hit-from>51</Hsp_hit-from><Hsp_hit-to>100</Hsp_hit-to></Hsp>
+        <Hsp><Hsp_bit-score>100</Hsp_bit-score><Hsp_identity>50</Hsp_identity><Hsp_align-len>50</Hsp_align-len><Hsp_query-from>51</Hsp_query-from><Hsp_query-to>100</Hsp_query-to><Hsp_hit-from>1</Hsp_hit-from><Hsp_hit-to>50</Hsp_hit-to></Hsp>
+        </Hit_hsps></Hit></Iteration_hits></Iteration></BlastOutput_iterations></BlastOutput>"""
+        match = self.parse(xml)
+        self.assertEqual(match.status, "structurally_conflicting")
+        self.assertEqual(match.sequence_relationship, "structurally_conflicting")
+        self.assertEqual(match.target_gene_absence, "not_established")
+        self.assertTrue(match.split_alignment)
+        self.assertIsNone(match.chimeric_alignment)
+
     def test_stronger_wrong_gene_beats_qualifying_expected_homolog(self):
         xml = """<BlastOutput><BlastOutput_iterations><Iteration><Iteration_query-len>100</Iteration_query-len><Iteration_hits>
         <Hit><Hit_def>target|Taxon_A|T</Hit_def><Hit_hsps><Hsp><Hsp_identity>98</Hsp_identity><Hsp_align-len>100</Hsp_align-len><Hsp_query-from>1</Hsp_query-from><Hsp_query-to>100</Hsp_query-to><Hsp_hit-from>1</Hsp_hit-from><Hsp_hit-to>100</Hsp_hit-to></Hsp></Hit_hsps></Hit>
         <Hit><Hit_def>other|Taxon_A|O</Hit_def><Hit_hsps><Hsp><Hsp_identity>99</Hsp_identity><Hsp_align-len>99</Hsp_align-len><Hsp_query-from>1</Hsp_query-from><Hsp_query-to>99</Hsp_query-to><Hsp_hit-from>1</Hsp_hit-from><Hsp_hit-to>99</Hsp_hit-to></Hsp></Hit_hsps></Hit>
         </Iteration_hits></Iteration></BlastOutput_iterations></BlastOutput>"""
-        match = blast_references._parse_blast_xml(xml, "target", "Taxon A")
+        match = self.parse(xml)
         self.assertEqual(match.status, "wrong_gene")
 
     def test_tied_taxa_are_not_species_confirmation(self):
@@ -97,7 +197,7 @@ class BlastClassificationTests(unittest.TestCase):
         <Hit><Hit_def>target|Taxon_A|A</Hit_def><Hit_hsps><Hsp><Hsp_identity>100</Hsp_identity><Hsp_align-len>100</Hsp_align-len><Hsp_query-from>1</Hsp_query-from><Hsp_query-to>100</Hsp_query-to><Hsp_hit-from>1</Hsp_hit-from><Hsp_hit-to>100</Hsp_hit-to></Hsp></Hit_hsps></Hit>
         <Hit><Hit_def>target|Taxon_B|B</Hit_def><Hit_hsps><Hsp><Hsp_identity>100</Hsp_identity><Hsp_align-len>100</Hsp_align-len><Hsp_query-from>1</Hsp_query-from><Hsp_query-to>100</Hsp_query-to><Hsp_hit-from>1</Hsp_hit-from><Hsp_hit-to>100</Hsp_hit-to></Hsp></Hit_hsps></Hit>
         </Iteration_hits></Iteration></BlastOutput_iterations></BlastOutput>"""
-        match = blast_references._parse_blast_xml(xml, "target", "Taxon A")
+        match = self.parse(xml)
         self.assertEqual(match.status, "ambiguous_taxon")
         self.assertFalse(match.on_target)
 
@@ -106,7 +206,7 @@ class BlastClassificationTests(unittest.TestCase):
         <Hsp><Hsp_identity>200</Hsp_identity><Hsp_align-len>200</Hsp_align-len><Hsp_query-from>1</Hsp_query-from><Hsp_query-to>200</Hsp_query-to><Hsp_hit-from>1</Hsp_hit-from><Hsp_hit-to>200</Hsp_hit-to></Hsp>
         <Hsp><Hsp_identity>200</Hsp_identity><Hsp_align-len>200</Hsp_align-len><Hsp_query-from>1</Hsp_query-from><Hsp_query-to>200</Hsp_query-to><Hsp_hit-from>201</Hsp_hit-from><Hsp_hit-to>400</Hsp_hit-to></Hsp>
         </Hit_hsps></Hit></Iteration_hits></Iteration></BlastOutput_iterations></BlastOutput>"""
-        match = blast_references._parse_blast_xml(xml, "target", "Taxon A")
+        match = self.parse(xml)
         self.assertEqual(match.status, "insufficient_alignment")
         self.assertFalse(match.on_target)
 
@@ -114,18 +214,157 @@ class BlastClassificationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             database = Path(directory) / "db"
             Path(f"{database}.reference_count").write_text("22")
+            metadata_path = Path(f"{database}.reference_metadata.json")
+            metadata_path.write_text(json.dumps({
+                f"reference_{index:06d}": {
+                    "gene": "target",
+                    "taxon": "Taxon A",
+                    "accession": f"A{index}.1",
+                    "length": 100,
+                    "sha256": "0" * 64,
+                    "provenance": {"status": "verified"},
+                }
+                for index in range(22)
+            }))
+            Path(f"{database}.reference_metadata.sha256").write_text(
+                hashlib.sha256(metadata_path.read_bytes()).hexdigest()
+            )
             completed = subprocess.CompletedProcess(
                 [], 0, self.fixture("wrong_gene.xml"), ""
             )
+            metadata = json.loads(metadata_path.read_text())
+            database_manifest = {
+                "reference_audit": {
+                    "verified": [
+                        {
+                            "gene": reference["gene"],
+                            "taxon": reference["taxon"],
+                            "accession": reference["accession"],
+                            "length": reference["length"],
+                            "sha256": reference["sha256"],
+                            "provenance": None,
+                            "source_taxid": None,
+                            "gene_assignment_basis": None,
+                            "contains_ambiguity": None,
+                        }
+                        for reference in metadata.values()
+                    ]
+                }
+            }
             with mock.patch.object(
                 blast_references.subprocess, "run", return_value=completed
-            ) as command:
+            ) as command, mock.patch.object(
+                blast_references,
+                "_load_metadata",
+                return_value=(metadata, {"metadata_sha256": "a"}),
+            ), mock.patch.object(
+                blast_references,
+                "_load_database_manifest",
+                return_value=(database_manifest, {"manifest_sha256": "b"}),
+            ):
                 blast_references.blast_against_references(
                     "A" * 100, database, "target", "Taxon A"
                 )
         arguments = command.call_args.args[0]
         self.assertEqual(arguments[arguments.index("-num_alignments") + 1], "22")
         self.assertNotIn("-max_target_seqs", arguments)
+
+    def test_swapped_database_artifact_fails_before_alignment_classification(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            database = root / "ref_db"
+            fasta_path = root / "references.fasta"
+            fasta_path.write_text(">reference_000000\n" + "A" * 100 + "\n")
+            Path(f"{database}.nhr").write_bytes(b"original database")
+            Path(f"{database}.reference_count").write_text("1")
+            source_region = {"kind": "public_record_region", "accession_version": "TEST_0.1"}
+            metadata = {
+                "reference_000000": {
+                    "gene": "target",
+                    "taxon": "Taxon A",
+                    "accession": "TEST_0.1",
+                    "length": 100,
+                    "sha256": hashlib.sha256(("A" * 100).encode()).hexdigest(),
+                    "provenance": {
+                        "source_region": source_region,
+                        "source_taxid": 1,
+                        "gene_assignment_basis": "panel_annotation",
+                        "contains_ambiguity": False,
+                    },
+                }
+            }
+            metadata_path = Path(f"{database}.reference_metadata.json")
+            metadata_path.write_text(json.dumps(metadata, sort_keys=True))
+            Path(f"{database}.reference_metadata.sha256").write_text(
+                hashlib.sha256(metadata_path.read_bytes()).hexdigest()
+            )
+            artifact_paths = sorted(root.glob("ref_db.*"))
+            manifest = {
+                "schema_version": 1,
+                "database_prefix": "ref_db",
+                "reference_fasta": blast_references._file_receipt(fasta_path),
+                "artifacts": [blast_references._file_receipt(path) for path in artifact_paths],
+                "reference_audit": {
+                    "audit_sha256": "audit",
+                    "verified": [{
+                        "gene": "target",
+                        "taxon": "Taxon A",
+                        "accession": "TEST_0.1",
+                        "length": 100,
+                        "sha256": metadata["reference_000000"]["sha256"],
+                        "provenance": source_region,
+                        "source_taxid": 1,
+                        "gene_assignment_basis": "panel_annotation",
+                        "contains_ambiguity": False,
+                    }],
+                },
+            }
+            manifest_path = Path(f"{database}.database_manifest.json")
+            manifest_path.write_text(json.dumps(manifest, sort_keys=True))
+            Path(f"{database}.database_manifest.sha256").write_text(
+                hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+            )
+            Path(f"{database}.nhr").write_bytes(b"swapped database")
+            with mock.patch.object(blast_references.subprocess, "run") as command:
+                match = blast_references.blast_against_references(
+                    "A" * 100, database, "target", "Taxon A"
+                )
+        self.assertEqual(match.status, "failed_run")
+        self.assertIn("artifact checksum differs", match.error)
+        command.assert_not_called()
+
+    def test_missing_verified_reference_is_explicit_not_a_biological_failure(self):
+        runs = [{
+            "success": True,
+            "genes": [{"gene": "target", "products": [{"product_index": 0, "sequence": "A" * 100}]}],
+        }]
+        blast_references.blast_all_products(
+            runs, None, "Taxon A", reference_genes=set()
+        )
+        match = runs[0]["genes"][0]["products"][0]["reference_match"]
+        self.assertEqual(match["status"], "no_verified_reference")
+        self.assertEqual(match["target_support"], "unavailable")
+        self.assertEqual(match["target_gene_absence"], "not_established")
+
+    def test_historic_confirmation_label_is_not_upgraded_to_current_support(self):
+        score = report._score_gene(
+            True,
+            "target",
+            "Taxon A",
+            {
+                "status": "confirmed_product",
+                "matched_gene": "target",
+                "matched_taxon": "Taxon A",
+            },
+            {"target": {"Taxon A"}},
+        )
+        self.assertEqual(score, "+*-")
+        self.assertNotIn("confirmed", report.SCORE_LEGEND.lower())
+
+    def test_sweep_summary_uses_alignment_support_language(self):
+        summary = sweep_summary.render_summary({}, 0)
+        self.assertNotIn("confirmed", summary.lower())
+        self.assertIn("alignment support", summary)
 
 
 class BenchmarkMetadataTests(unittest.TestCase):
@@ -222,6 +461,48 @@ class PerformanceReportTests(unittest.TestCase):
         self.assertEqual(row_cells[8].strip(), "1,300")
         self.assertEqual(row_cells[9].strip(), "14")
         self.assertEqual(row_cells[12].strip(), report._format_bytes(2048))
+
+
+class ReferenceReportTests(unittest.TestCase):
+    def test_reference_table_keeps_relationship_regions_gaps_and_truth_limits(self):
+        result = {
+            "samples": [{
+                "accession": "S1",
+                "taxon": "Taxon A",
+                "depths": [{
+                    "max_reads": 10,
+                    "success": True,
+                    "genes": [{
+                        "gene": "target",
+                        "recovered": True,
+                        "products": [{
+                            "product_index": 0,
+                            "reference_match": {
+                                "status": "gene_supported_expected_taxon",
+                                "target_support": "supported",
+                                "sequence_relationship": "aligned_differences",
+                                "matched_taxon": "Taxon A",
+                                "matched_accession": "A.1",
+                                "pct_identity": 98.0,
+                                "query_coverage_pct": 95.0,
+                                "unmatched_query_regions": [[1, 5]],
+                                "reference_coverage_pct": 90.0,
+                                "unmatched_reference_regions": [[96, 105]],
+                                "gap_count": 2,
+                                "haplotype_truth": "not_established",
+                                "read_support": "not_evaluated",
+                            },
+                        }],
+                    }],
+                }],
+            }],
+        }
+        rendered = "\n".join(report._reference_details(result, ["target"]))
+        self.assertIn("aligned_differences", rendered)
+        self.assertIn("1-5", rendered)
+        self.assertIn("96-105", rendered)
+        self.assertIn("not_established", rendered)
+        self.assertIn("not_evaluated", rendered)
 
 
 class CurrentRunManifestTests(unittest.TestCase):
@@ -571,6 +852,35 @@ class ResultStatusTests(unittest.TestCase):
             )
         statuses = {gene["gene"]: gene["evaluation_status"] for gene in built["samples"][0]["depths"][0]["genes"]}
         self.assertEqual(statuses, {"a": "failed_run", "b": "not_evaluated"})
+
+    def test_result_records_excluded_reference_provenance_without_claiming_support(self):
+        panel = {
+            "name": "panel",
+            "primers": [{"gene": "target"}],
+            "references": [{
+                "gene": "target",
+                "sequences": [{
+                    "taxon": "Taxon A", "accession": "UNVERSIONED", "sequence": "ACGT",
+                }],
+            }],
+        }
+        sample = {"accession": "X", "taxon": "Taxon A"}
+        run = {"max_reads": 10, "success": True, "genes": []}
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".yaml") as panel_file:
+            panel_file.write("name: panel\n")
+            panel_file.flush()
+            built = results.build_result(
+                Path(panel_file.name), panel, [(sample, [run])], "test"
+            )
+        references = built["provenance"]["references"]
+        self.assertEqual(references["verified_count"], 0)
+        self.assertEqual(references["excluded_count"], 1)
+        gene = built["samples"][0]["depths"][0]["genes"][0]
+        self.assertEqual(gene["reference_status"], "no_verified_reference")
+        rendered = "\n".join(report._reference_provenance_summary(built))
+        self.assertIn("Verified reference entries**: 0", rendered)
+        self.assertIn("Excluded/unverified entries**: 1", rendered)
+        self.assertIn("Gene labels remain panel annotations", rendered)
 
 
 if __name__ == "__main__":

@@ -21,7 +21,7 @@ name: reference_hydrozoa         # Required. Machine-readable panel identifier.
 
 schema_version: "2"               # Required in v2 panels. Must be the string "2".
 
-panel_version: 0.1.0              # Recommended. Semantic version (MAJOR.MINOR.PATCH).
+panel_version: 0.1.1              # Recommended. Semantic version (MAJOR.MINOR.PATCH).
                                   # Increment PATCH for primer tweaks, MINOR for new
                                   # primers, MAJOR for breaking changes.
 
@@ -60,6 +60,10 @@ maintainers:
     notes: "Primary contact for panel questions."
 
 changelog:
+  - panel_version: 0.1.1
+    date: 2026-09-13
+    sharkmer_version: "3.2.0-dev"
+    changes: "Reference-only provenance audit: quarantined the source-exact but annotation-conflicting Xenia 16S/mutS example; replaced it with the independently sourced Hydra 16S region from hydrozoa. Primers and validation samples unchanged."
   - panel_version: 0.1.0
     date: 2026-04-12
     sharkmer_version: "3.0.0"
@@ -249,8 +253,19 @@ validation:
 # `gene` must match the derived output name produced by sharkmer for the
 # corresponding primer entry. See "Output naming" in PCR.md.
 references:
-  - gene: "16S"
-    sequences:
-      - taxon: "Xenia sp."
-        accession: "XM_047005986"
-        sequence: "TTTACCAAAAACATAGCTCTCTGCTAAAGGTTACTGAAGTATAGAGGGTGAATTCTGCCCAATGGTTGTATAGTGAAACTAAGGACTAACGTCTAAAGCGAAACCCAACTGAATGGCCGCGGTAACTCTGACCGTGATAATGTAGCACAATAAATAGCCAATTAATTGTTGGCGGGTATGAATGGAACCACGAGGGTCTTACTGTCTCAAGAGG"
+- gene: 16S
+  sequences:
+  - taxon: Hydra vulgaris
+    accession: NC_011220.1
+    sequence: GCCCTCTAAAATATTGAAGGTGAAACCTGCCCAATGATATAAAAATAATTATAACCTAATTTAAATAATATTAAATGGATGCAGTAACTCTGACTGTAATAAAGTAGCATAATTAGTTGTCATTTAATTGATGGAGAGAATGAATGGTTACACGAATTTTTCACTGTCTTAAAAAAAATTTTTTAAAATTGAAATAATAGTTAAGATGCTATTTAAAATTGTAAGACGAAGAGACCCTATAGAGCTTTACTATAAACTTTTTTCTTAAAAATAATAAAAAATTATTAAAACTAGAAAGTTTGGTAGTTTAGTTGGGGCGACTGTTTTTTAAAAATAACAAAAATAAGCAATATAATAAATTTATTTATTGTATAATTAAACAATTTAACAATTACTATAGTAGGCTATAATGACCCGTTATTATAATAAATAATAAATAACGATTAATTGATAAAAGCTACCTTAGGGATAACAGGATAATTTTGTTTTAGAGTCCTTATCAAAAACAAAGTTTGTCA
+    provenance:
+      accession_version: NC_011220.1
+      end: 1804
+      kind: public_record_region
+      schema_version: 1
+      sequence_sha256: 672274dc31e88cec9e3ea1e0f3d994b11e09f99b14076293b8c4a56206337a05
+      source_length: 8194
+      source_sequence_sha256: d2fde29495b2e2d68250c644342f964d932c35979b0fb3a76bc4eb55c31b9a02
+      start: 1286
+      strand: +
+      wraps_origin: false

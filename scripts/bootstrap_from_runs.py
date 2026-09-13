@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
-Bootstrap reference sequences by running panel validations, collecting
+Collect regression-only Sharkmer sequences by running panel validations, collecting
 amplicons, and BLASTing them against NCBI nt with taxonomic restriction.
+
+These outputs are Sharkmer assemblies, not independent biological references.
+A BLAST hit annotates an assembly; its accession does not establish provenance
+for the entire query. Never promote these sequences into panel references.
 
 For each panel:
   1. Run sharkmer at the highest declared max_reads for each validation sample
@@ -376,15 +380,20 @@ def run_panel(
                 )
     print(f"\nTSV: {tsv_path}")
 
-    # YAML with sequences for reference population.
     yaml_path = BOOTSTRAP_DIR / f"{panel_name}_{stamp}.yaml"
     output = {
+        "schema_version": 1,
+        "purpose": "regression_only",
+        "source_kind": "sharkmer_assembly",
+        "independent_reference": False,
         "panel": panel_name,
         "date": datetime.now().strftime("%Y-%m-%d"),
         "amplicons": [],
     }
     for amp in amplicons:
         entry = {
+            "source_kind": "sharkmer_assembly",
+            "independent_reference": False,
             "gene": amp["gene"],
             "taxon": amp["taxon"],
             "sample_accession": amp["accession"],
@@ -405,7 +414,7 @@ def run_panel(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Bootstrap references by running validations and BLASTing results."
+        description="Collect regression-only Sharkmer assemblies and optional BLAST annotations."
     )
     parser.add_argument(
         "panels", nargs="*",

@@ -27,6 +27,7 @@ def build_result(
     executable_provenance: dict | None = None,
     evaluated_genes: list[str] | None = None,
     run_id: str | None = None,
+    reference_catalog_path: Path | None = None,
 ) -> dict:
     """Build the result dict from sample_results.
 
@@ -46,8 +47,11 @@ def build_result(
     runs_flat = [run for _, runs in sample_results for run in runs]
     actual_parameter_sets = [run.get("actual_parameters", {}) for run in runs_flat]
     parameters: dict = {"runs": actual_parameter_sets}
+    reference_provenance = blast_references.reference_checksums(
+        panel_data, reference_catalog_path
+    )
     reference_genes = {
-        reference["gene_name"] for reference in blast_references.extract_references(panel_data)
+        reference["gene"] for reference in reference_provenance["verified"]
     }
     if extra_args:
         parameters["extra_args"] = list(extra_args)
@@ -61,6 +65,13 @@ def build_result(
         "run_id": run_id,
         "parameters": parameters,
         "blast_mode": blast_mode,
+        "reference_evidence_scope": {
+            "target_support": "alignment support against verified external references",
+            "target_gene_absence": "not established by a competing or missing reference alignment",
+            "sequence_relationship": "relationship between product and selected reference alignment",
+            "haplotype_truth": "not established without explicit independent sample truth",
+            "read_support": "not evaluated by reference BLAST",
+        },
         "rustc_version": runner.get_rustc_version(),
         "provenance": {
             "executable": executable_provenance,
@@ -68,7 +79,7 @@ def build_result(
                 "path": str(panel_path.resolve()),
                 "sha256": runner._sha256_file(panel_path),
             },
-            "references": blast_references.reference_checksums(panel_data),
+            "references": reference_provenance,
         },
     }
 
@@ -105,9 +116,9 @@ def build_result(
                     "evaluation_status": "recovered"
                     if prod.get("recovered", bool(prod.get("products")))
                     else "no_product",
-                    "reference_status": "available"
+                    "reference_status": "verified_reference_available"
                     if prod["gene"] in reference_genes
-                    else "no_reference",
+                    else "no_verified_reference",
                 }
 
                 if prod.get("failure_reason"):
@@ -147,9 +158,9 @@ def build_result(
                             "gene": gene,
                             "recovered": False,
                             "evaluation_status": evaluation_status,
-                            "reference_status": "available"
+                            "reference_status": "verified_reference_available"
                             if gene in reference_genes
-                            else "no_reference",
+                            else "no_verified_reference",
                         }
                     )
 

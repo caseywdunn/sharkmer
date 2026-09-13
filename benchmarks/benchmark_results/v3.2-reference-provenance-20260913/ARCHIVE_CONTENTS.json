@@ -1,0 +1,501 @@
+{
+  "file_count": 99,
+  "files": [
+    {
+      "path": "annotation_decisions.json",
+      "sha256": "d3b7f4c3f0c195d575e1f6417b13a0eb88ac227c3b432f41e11378db3eda04ff",
+      "size_bytes": 4000
+    },
+    {
+      "path": "assembly-smoke.log",
+      "sha256": "b3ae4e6d19e44a49c6a1c84975491195e14d4796c69b8bacc9528a0052643fcb",
+      "size_bytes": 2782
+    },
+    {
+      "path": "assembly-smoke/before_cnidaria.yaml",
+      "sha256": "c7cebcaf6d2ce7fa9b6a23ef6a1e93e58adc8254334f006216eb4d4ddbb07b6d",
+      "size_bytes": 46559
+    },
+    {
+      "path": "assembly-smoke/k19_after.json",
+      "sha256": "42811478c16d7f92e6b9ea3572682626d87647a1da76f87e29af26b81bbd1872",
+      "size_bytes": 34022
+    },
+    {
+      "path": "assembly-smoke/k19_after/cnidaria_ERR571460_100k_2e2a979196eb/cnidaria_ERR571460_100k.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "assembly-smoke/k19_after/cnidaria_ERR571460_100k_2e2a979196eb/cnidaria_ERR571460_100k.manifest.yaml",
+      "sha256": "6e2a8e945986cc4cf0676464b1c7aa1ae438bcdaa8875f33d7e8af0ded834fe4",
+      "size_bytes": 893
+    },
+    {
+      "path": "assembly-smoke/k19_after/cnidaria_ERR571460_100k_2e2a979196eb/cnidaria_ERR571460_100k.stats.yaml",
+      "sha256": "10698b3718987037d4d7407c1ac906c6bc2ed675096d3443376d08307ff3fe3c",
+      "size_bytes": 9744
+    },
+    {
+      "path": "assembly-smoke/k19_after/cnidaria_ERR571460_100k_2e2a979196eb/cnidaria_ERR571460_100k.stderr.log",
+      "sha256": "b7702337dc2f4e9ddaa04c2c7445a7abfba4daf01206017fc96fab33237d7477",
+      "size_bytes": 624
+    },
+    {
+      "path": "assembly-smoke/k19_after/cnidaria_ERR571460_100k_2e2a979196eb/cnidaria_ERR571460_100k.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "assembly-smoke/k19_after/cnidaria_ERR571460_100k_2e2a979196eb/cnidaria_ERR571460_100k_cnidaria_18S.fasta",
+      "sha256": "0b4bba8444f0c1dba387b86448fbebfef05940dc36f9931484d59841788c46c3",
+      "size_bytes": 2004
+    },
+    {
+      "path": "assembly-smoke/k19_after/cnidaria_ERR571460_100k_2e2a979196eb/cnidaria_ERR571460_100k_cnidaria_28S_1.fasta",
+      "sha256": "432fe06b3bae83987f8352b6c5a27c47601e30ee7d16f00d7913d1d9a92cb7ff",
+      "size_bytes": 3523
+    },
+    {
+      "path": "assembly-smoke/k19_after/cnidaria_ERR571460_100k_2e2a979196eb/cnidaria_ERR571460_100k_cnidaria_28S_2.fasta",
+      "sha256": "55dcaeb1ec2e9761e99ddb654a5872062b223781b50473a57ca359d756381b82",
+      "size_bytes": 637
+    },
+    {
+      "path": "assembly-smoke/k19_after/cnidaria_ERR571460_100k_2e2a979196eb/cnidaria_ERR571460_100k_cnidaria_ITS_1.fasta",
+      "sha256": "ac21655cbf562b170971b0cc51b367f2fc0ea35fd803be817e8171b1900c1ef5",
+      "size_bytes": 1059
+    },
+    {
+      "path": "assembly-smoke/k19_after/cnidaria_ERR571460_100k_2e2a979196eb/cnidaria_ERR571460_100k_cnidaria_ITS_2.fasta",
+      "sha256": "0f50d2a07a254acfe8c3bcef33f859265d4b4d6b29b5e19dcb6195e15ad08c1d",
+      "size_bytes": 910
+    },
+    {
+      "path": "assembly-smoke/k19_after/cnidaria_ERR571460_100k_2e2a979196eb/resource_usage.txt",
+      "sha256": "9d630ae1bdca494d092c0a0fb24f77a3e1538e92857068819434ff197eb87f69",
+      "size_bytes": 1071
+    },
+    {
+      "path": "assembly-smoke/k19_before.json",
+      "sha256": "6928fc1267be76f848a5194e67b7e6c5520804b8912d5d1aed26e53936be13ac",
+      "size_bytes": 34182
+    },
+    {
+      "path": "assembly-smoke/k19_before/cnidaria_ERR571460_100k_89f1fb08ac03/cnidaria_ERR571460_100k.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "assembly-smoke/k19_before/cnidaria_ERR571460_100k_89f1fb08ac03/cnidaria_ERR571460_100k.manifest.yaml",
+      "sha256": "7fd4d02753d9b0bcf0efc93ccf1f940842bc7c23b45308e5fa8f981288fc45eb",
+      "size_bytes": 893
+    },
+    {
+      "path": "assembly-smoke/k19_before/cnidaria_ERR571460_100k_89f1fb08ac03/cnidaria_ERR571460_100k.stats.yaml",
+      "sha256": "bb13446893f43b48879ef767bae3771e3a8922e3c1deb78cac0682d4032d9403",
+      "size_bytes": 9795
+    },
+    {
+      "path": "assembly-smoke/k19_before/cnidaria_ERR571460_100k_89f1fb08ac03/cnidaria_ERR571460_100k.stderr.log",
+      "sha256": "be45d172b70fa081ca95ee3991783713a2049214a34019d22bd00ab610a4fc1b",
+      "size_bytes": 624
+    },
+    {
+      "path": "assembly-smoke/k19_before/cnidaria_ERR571460_100k_89f1fb08ac03/cnidaria_ERR571460_100k.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "assembly-smoke/k19_before/cnidaria_ERR571460_100k_89f1fb08ac03/cnidaria_ERR571460_100k_cnidaria_18S.fasta",
+      "sha256": "0b4bba8444f0c1dba387b86448fbebfef05940dc36f9931484d59841788c46c3",
+      "size_bytes": 2004
+    },
+    {
+      "path": "assembly-smoke/k19_before/cnidaria_ERR571460_100k_89f1fb08ac03/cnidaria_ERR571460_100k_cnidaria_28S_1.fasta",
+      "sha256": "432fe06b3bae83987f8352b6c5a27c47601e30ee7d16f00d7913d1d9a92cb7ff",
+      "size_bytes": 3523
+    },
+    {
+      "path": "assembly-smoke/k19_before/cnidaria_ERR571460_100k_89f1fb08ac03/cnidaria_ERR571460_100k_cnidaria_28S_2.fasta",
+      "sha256": "55dcaeb1ec2e9761e99ddb654a5872062b223781b50473a57ca359d756381b82",
+      "size_bytes": 637
+    },
+    {
+      "path": "assembly-smoke/k19_before/cnidaria_ERR571460_100k_89f1fb08ac03/cnidaria_ERR571460_100k_cnidaria_ITS_1.fasta",
+      "sha256": "ac21655cbf562b170971b0cc51b367f2fc0ea35fd803be817e8171b1900c1ef5",
+      "size_bytes": 1059
+    },
+    {
+      "path": "assembly-smoke/k19_before/cnidaria_ERR571460_100k_89f1fb08ac03/cnidaria_ERR571460_100k_cnidaria_ITS_2.fasta",
+      "sha256": "0f50d2a07a254acfe8c3bcef33f859265d4b4d6b29b5e19dcb6195e15ad08c1d",
+      "size_bytes": 910
+    },
+    {
+      "path": "assembly-smoke/k19_before/cnidaria_ERR571460_100k_89f1fb08ac03/resource_usage.txt",
+      "sha256": "684c250146effe27139a9437e3736b3a33d12620199c537199a4ec13c8958644",
+      "size_bytes": 1122
+    },
+    {
+      "path": "assembly-smoke/k31_after.json",
+      "sha256": "cc4db758b984c36e489aea0461c701ad5d7034e11840997fe5eb6934f5d51d9d",
+      "size_bytes": 20177
+    },
+    {
+      "path": "assembly-smoke/k31_after/cnidaria_ERR571460_100k_711149a81b62/cnidaria_ERR571460_100k.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "assembly-smoke/k31_after/cnidaria_ERR571460_100k_711149a81b62/cnidaria_ERR571460_100k.manifest.yaml",
+      "sha256": "55b4c66b99f5e30031ea86341695342605ac25d8e7bb629a9db681ab4994d16e",
+      "size_bytes": 510
+    },
+    {
+      "path": "assembly-smoke/k31_after/cnidaria_ERR571460_100k_711149a81b62/cnidaria_ERR571460_100k.stats.yaml",
+      "sha256": "c122be9956612217090f42bdb8346313c374b22a830b760fd7d4211b38e14529",
+      "size_bytes": 7694
+    },
+    {
+      "path": "assembly-smoke/k31_after/cnidaria_ERR571460_100k_711149a81b62/cnidaria_ERR571460_100k.stderr.log",
+      "sha256": "d67ecd3a96c3f808738768cba4627a25dbb9493efe7813960cee09a735dd1d56",
+      "size_bytes": 620
+    },
+    {
+      "path": "assembly-smoke/k31_after/cnidaria_ERR571460_100k_711149a81b62/cnidaria_ERR571460_100k.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "assembly-smoke/k31_after/cnidaria_ERR571460_100k_711149a81b62/cnidaria_ERR571460_100k_cnidaria_18S.fasta",
+      "sha256": "3a32d1471c8bfbabc5b161aeea54364ca66c75be89daa7c7d4bb37c14461b26a",
+      "size_bytes": 2004
+    },
+    {
+      "path": "assembly-smoke/k31_after/cnidaria_ERR571460_100k_711149a81b62/cnidaria_ERR571460_100k_cnidaria_28S_2.fasta",
+      "sha256": "ed5c0d2d08215b55c941065d68ae847fa5cdcf4fbd81640c12489e139dc9b46c",
+      "size_bytes": 637
+    },
+    {
+      "path": "assembly-smoke/k31_after/cnidaria_ERR571460_100k_711149a81b62/resource_usage.txt",
+      "sha256": "ab5d05ce9785368a3b023f7f8cbf125ac57ab582cc3af0ee686f9de861a20f98",
+      "size_bytes": 1071
+    },
+    {
+      "path": "assembly-smoke/k31_before.json",
+      "sha256": "b71a2ad1fa406dd3e0a544f0661474a4154a229cef61dfecf4528bae7e6d48a6",
+      "size_bytes": 20334
+    },
+    {
+      "path": "assembly-smoke/k31_before/cnidaria_ERR571460_100k_cebae0450e9e/cnidaria_ERR571460_100k.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "assembly-smoke/k31_before/cnidaria_ERR571460_100k_cebae0450e9e/cnidaria_ERR571460_100k.manifest.yaml",
+      "sha256": "a3702d25b887c39dadf5b558f3144413d4e0373594900d4dd9f21b3d2c8989a1",
+      "size_bytes": 509
+    },
+    {
+      "path": "assembly-smoke/k31_before/cnidaria_ERR571460_100k_cebae0450e9e/cnidaria_ERR571460_100k.stats.yaml",
+      "sha256": "64fa0bab2ac0f26432a17cbed02290da661cd318740acac14fd59976d7492743",
+      "size_bytes": 7744
+    },
+    {
+      "path": "assembly-smoke/k31_before/cnidaria_ERR571460_100k_cebae0450e9e/cnidaria_ERR571460_100k.stderr.log",
+      "sha256": "8ecee73f14104bfdbd840b573e0a7bce6ef43641f1f9027dd93020199c0d385c",
+      "size_bytes": 620
+    },
+    {
+      "path": "assembly-smoke/k31_before/cnidaria_ERR571460_100k_cebae0450e9e/cnidaria_ERR571460_100k.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "assembly-smoke/k31_before/cnidaria_ERR571460_100k_cebae0450e9e/cnidaria_ERR571460_100k_cnidaria_18S.fasta",
+      "sha256": "3a32d1471c8bfbabc5b161aeea54364ca66c75be89daa7c7d4bb37c14461b26a",
+      "size_bytes": 2004
+    },
+    {
+      "path": "assembly-smoke/k31_before/cnidaria_ERR571460_100k_cebae0450e9e/cnidaria_ERR571460_100k_cnidaria_28S_2.fasta",
+      "sha256": "ed5c0d2d08215b55c941065d68ae847fa5cdcf4fbd81640c12489e139dc9b46c",
+      "size_bytes": 637
+    },
+    {
+      "path": "assembly-smoke/k31_before/cnidaria_ERR571460_100k_cebae0450e9e/resource_usage.txt",
+      "sha256": "ccca3e57dcd189a2084502492baa8d216265e437cc0657a4c4a0e9aabfd77956",
+      "size_bytes": 1122
+    },
+    {
+      "path": "assembly-smoke/summary.json",
+      "sha256": "8604a4e21164696496db8e1dfd2f4723c81420a1e25024894f8c7dde88333dc6",
+      "size_bytes": 3970
+    },
+    {
+      "path": "assembly_smoke.py",
+      "sha256": "51062f207d9f9089e2b53aa396ea3eea7f83092dce8af6abfd3817fcb15967af",
+      "size_bytes": 2259
+    },
+    {
+      "path": "cargo-test-release.log",
+      "sha256": "c13644a08cf3e924a0ec7c11d7b3455d121409ebf7d93cb3438fb6cb73392736",
+      "size_bytes": 16566
+    },
+    {
+      "path": "catalog_nonunique_final.json",
+      "sha256": "8fc6baff7bcba93c43edc5ccc5058d2b01a604f9bf46a507c9f5cf6b86598217",
+      "size_bytes": 2414595
+    },
+    {
+      "path": "frozen_before/panels/angiospermae.yaml",
+      "sha256": "b41760aa28d0f0128ae06151fe1c265b50bb3ed612f51734ed3e911b58dda8c0",
+      "size_bytes": 21734
+    },
+    {
+      "path": "frozen_before/panels/bacteria.yaml",
+      "sha256": "3a3a9df11359cd1736f2edd52279d2ddb4c6a819dbf797fab59ba55ceae842ae",
+      "size_bytes": 2618
+    },
+    {
+      "path": "frozen_before/panels/c_elegans.yaml",
+      "sha256": "2636b09a670fbe136fcbd657ed6bf6e77f1a50b6b16623cc9c17160826282557",
+      "size_bytes": 26386
+    },
+    {
+      "path": "frozen_before/panels/cnidaria.yaml",
+      "sha256": "c7cebcaf6d2ce7fa9b6a23ef6a1e93e58adc8254334f006216eb4d4ddbb07b6d",
+      "size_bytes": 46559
+    },
+    {
+      "path": "frozen_before/panels/examples/reference.yaml",
+      "sha256": "4b849b9d9dcb1c836ffa96d6dce6841bf8b31499718d07ee34a5738919237848",
+      "size_bytes": 10378
+    },
+    {
+      "path": "frozen_before/panels/human.yaml",
+      "sha256": "ac4359b88bbf3202218066288d0caffd571884edff7d14a402b7c3038755fdc1",
+      "size_bytes": 28803
+    },
+    {
+      "path": "frozen_before/panels/hydrozoa.yaml",
+      "sha256": "f88422fe48f8a687b157d4172e4af2de222374887d83ab091426edf4c245fcef",
+      "size_bytes": 62365
+    },
+    {
+      "path": "frozen_before/panels/insecta.yaml",
+      "sha256": "043a4d224f8186d58459287c54bec7935d5f4921a5087c14a2136cfac42df874",
+      "size_bytes": 39038
+    },
+    {
+      "path": "frozen_before/panels/metazoa.yaml",
+      "sha256": "a024b2b9ee3b41495028fba53291236f8c576165459a6b5819f51bead4853314",
+      "size_bytes": 3265
+    },
+    {
+      "path": "frozen_before/panels/teleostei.yaml",
+      "sha256": "1c6a32b5c1e30c1881ee08c80352ac87810f4c8a8c6608ffe94f1d0e8c843e59",
+      "size_bytes": 9793
+    },
+    {
+      "path": "legacy_references.json",
+      "sha256": "0e23369c9dad3135d2e9e378af8fe9a95565b3d63e3ec41c3976d67d24d2ca17",
+      "size_bytes": 222230
+    },
+    {
+      "path": "migration_proposal_nonunique_final.json",
+      "sha256": "ba018792846099d736ae1fdcb4d4852f4febd177755e611d74c5b50e46c3f914",
+      "size_bytes": 154463
+    },
+    {
+      "path": "package_evidence.py",
+      "sha256": "612b0d57474eaffc6634c7a09523c2a6bc09f11509c1ea5f99cc67cceeff3b7d",
+      "size_bytes": 4174
+    },
+    {
+      "path": "python-tests.log",
+      "sha256": "3a3674709934ce70e5e733e0ea599d2a166f7741558a44630de45b921f6ab6b1",
+      "size_bytes": 1005
+    },
+    {
+      "path": "reclassification/audit_panel_migration.py",
+      "sha256": "0d77e0428a71841219112b625a9d83ba1f8633a42e6479d007d8a473fa4a860c",
+      "size_bytes": 6574
+    },
+    {
+      "path": "reclassification/panel_migration_audit.json",
+      "sha256": "26fd5ad927b38c170ce6988680c083f3ca7c6f7e32e3100f0fd9923377115e1a",
+      "size_bytes": 5428
+    },
+    {
+      "path": "reclassification/reclassify_saved_outputs.py",
+      "sha256": "0c6bef45141f40e10909c611197f55e8ad4c8ac876c059fa07ed78127efbc66d",
+      "size_bytes": 16132
+    },
+    {
+      "path": "reclassification/saved_output_reclassification.json",
+      "sha256": "13d33723682467ff2ff87b9ac628157d5cbd43af483a779a1d0c8eee3a808cdb",
+      "size_bytes": 1136910
+    },
+    {
+      "path": "reclassification/supported_identity_comparison.json",
+      "sha256": "a6dd6717d70272bc256adc0fa288ad9bf5fa3500a88d1af26c99fe9bcb88bcbf",
+      "size_bytes": 9484
+    },
+    {
+      "path": "source-archive/metadata.json",
+      "sha256": "9693f0fff5864f63d1e6c62169eed5ed2f0834ade6108abfde25c96f9e7207dd",
+      "size_bytes": 79912
+    },
+    {
+      "path": "source-archive/records.fasta",
+      "sha256": "5c8d41d4f18b058d3b265fae58b34523120f0bebbd130a80c749e96b956de59d",
+      "size_bytes": 2186398
+    },
+    {
+      "path": "source_tree/benchmarks/run_benchmark.py",
+      "sha256": "d6641e597e8ce92be5961e7cdaec2d1acfd6c6cd81bf47c75b8f81b424b728ae",
+      "size_bytes": 16804
+    },
+    {
+      "path": "source_tree/panels/angiospermae.yaml",
+      "sha256": "90c1cbdf163a43ac7eed3d9b52bdf7fd35fd14fbcfef15fa4abd6013fa4ee28b",
+      "size_bytes": 19628
+    },
+    {
+      "path": "source_tree/panels/bacteria.yaml",
+      "sha256": "3a3a9df11359cd1736f2edd52279d2ddb4c6a819dbf797fab59ba55ceae842ae",
+      "size_bytes": 2618
+    },
+    {
+      "path": "source_tree/panels/c_elegans.yaml",
+      "sha256": "5c6ac32a26a8eddce3f605f24e5f5e92269cd68903d1b89bac838a667480681d",
+      "size_bytes": 30551
+    },
+    {
+      "path": "source_tree/panels/cnidaria.yaml",
+      "sha256": "ea029c033de302a1d10a9036fd027cb10700cc9d8fdf77221972d00728c8e146",
+      "size_bytes": 19316
+    },
+    {
+      "path": "source_tree/panels/examples/reference.yaml",
+      "sha256": "2441a7ea422c8f45b912a432191f84bb5cd4b8930af6755ba53a9b2ac6b5b44d",
+      "size_bytes": 11382
+    },
+    {
+      "path": "source_tree/panels/human.yaml",
+      "sha256": "5219c2ae2a44a1ca0416f4fefe46fbe4d116c8cb64d31fc5805e23c900e95fd3",
+      "size_bytes": 32626
+    },
+    {
+      "path": "source_tree/panels/hydrozoa.yaml",
+      "sha256": "f72a4d86a631cd2e998741a7ff64f827808f216665e4753d38240028eb989854",
+      "size_bytes": 71587
+    },
+    {
+      "path": "source_tree/panels/insecta.yaml",
+      "sha256": "ce479186b77649c47616b1ffa9a0c21fa8dc3536367088b4df6459e5deb96519",
+      "size_bytes": 29391
+    },
+    {
+      "path": "source_tree/panels/metazoa.yaml",
+      "sha256": "a024b2b9ee3b41495028fba53291236f8c576165459a6b5819f51bead4853314",
+      "size_bytes": 3265
+    },
+    {
+      "path": "source_tree/panels/reference_sources.json.gz",
+      "sha256": "f6abbfa3ffab56cc0be24a0a9b560b33033c499de7c949ae6fff988f8f91f6c1",
+      "size_bytes": 605342
+    },
+    {
+      "path": "source_tree/panels/teleostei.yaml",
+      "sha256": "c56c87cc16079399398207f589db92cecc87853fc4f311e7be6b2353df26fa0c",
+      "size_bytes": 13452
+    },
+    {
+      "path": "source_tree/schemas/panel/v2.json",
+      "sha256": "b11f5e0cbd5293ab7af39e3dd0d757f5b9e7527eabd35e09541c254a0ca5f284",
+      "size_bytes": 15160
+    },
+    {
+      "path": "source_tree/scripts/audit_panel_references.py",
+      "sha256": "198f772ec327a237d30f2cdb7117832f0cccb0591ec92cde0018c79c32d947ae",
+      "size_bytes": 21875
+    },
+    {
+      "path": "source_tree/scripts/bootstrap_from_runs.py",
+      "sha256": "a6dc1fd82f9284b9d79dd8d21be01b107822717cd84a122a903ee37fbd1b7e15",
+      "size_bytes": 15047
+    },
+    {
+      "path": "source_tree/scripts/bootstrap_references.py",
+      "sha256": "e2b46f8f95cdb77aab5beef930dcb91acf17df502eab163268ac2871ece1db0b",
+      "size_bytes": 14189
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/__init__.py",
+      "sha256": "74055f81f13c98598121d62b30817d1c999959a803900c61da926b5e214d5d7c",
+      "size_bytes": 77
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/blast_references.py",
+      "sha256": "6437a51e4c3b8730b5d23daf2a9d37a77272c0d29f19576e6ebd4e369efbf1e1",
+      "size_bytes": 38617
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/primer_analysis.py",
+      "sha256": "cd856bfaa355297405dc5512511141087cd8f7930ee59980291139a67c7cc41f",
+      "size_bytes": 6944
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/reference_provenance.py",
+      "sha256": "00a5dafd0b02d37290ea122687cce8f07ce47f3098ec2e8de3860d8e9526732a",
+      "size_bytes": 10813
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/report.py",
+      "sha256": "88b24ee82aaaa96f096e1953c05c427b0537c75e05d36b33918600acbddffe71",
+      "size_bytes": 32034
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/results.py",
+      "sha256": "d93a5b84e50f57939455c156972daea19eb2433d2f0cb5eca95559b0ebde5beb",
+      "size_bytes": 9015
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/runner.py",
+      "sha256": "b19a74b2f5265b9963acfa6f48cd8b700ba82268db68e2dede4a5d640261b50e",
+      "size_bytes": 35681
+    },
+    {
+      "path": "source_tree/scripts/sweep_summary.py",
+      "sha256": "54fd3248286d591dacdf48f83730cd92dc94fdd5f9fe6c511b601ed1caa63f3f",
+      "size_bytes": 20451
+    },
+    {
+      "path": "source_tree/scripts/validate_panel.py",
+      "sha256": "0ce066557d0c3150580654d5be8a31227d84f167dd69d9fa81e537619feab32a",
+      "size_bytes": 14549
+    },
+    {
+      "path": "source_tree/src/pcr/preconfigured.rs",
+      "sha256": "1fbe095161c63a75f2ee93cd2e863430b2e35df9acb4bfd5f30f9eac86cd4ed1",
+      "size_bytes": 25543
+    },
+    {
+      "path": "source_tree/tests/test_reference_catalog.py",
+      "sha256": "2e1128520d2171f94ba8799e054352df8069073f0d67eb9850cb1478cd3e4297",
+      "size_bytes": 9990
+    },
+    {
+      "path": "source_tree/tests/test_reference_provenance.py",
+      "sha256": "9cdce0856e754670816e482d85ff97ca49fbcee6c41fc4187256e9d82e54bc3b",
+      "size_bytes": 8616
+    },
+    {
+      "path": "source_tree/tests/test_validation_harness.py",
+      "sha256": "6e6b4d0c16bcab242b026cabdd2f108dc31b3e747cf1aec30e909842da36d7fb",
+      "size_bytes": 47430
+    }
+  ],
+  "schema_version": 1
+}

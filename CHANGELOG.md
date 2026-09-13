@@ -13,11 +13,15 @@ and new nuclear/metagenomic inference policies belong to later releases.
 
 ### Added
 
-- Per-product validation with contiguous alignment coverage, explicit
-  wrong-gene/ambiguous/split/unreferenced outcomes, checksummed executable and
+- Per-product validation with collinear alignment coverage, explicit
+  wrong-gene/ambiguous/conflicting/unreferenced outcomes, checksummed executable and
   input provenance, stage timings, and separately identified allocator-heap
   and process-RSS measurements (#129). Historical inputs remain calibration
   data, not independently held-out biological validation.
+- Public-record reference catalog, exact extraction provenance, offline audit,
+  known annotation-conflict exclusions, and anti-promotion bootstrap guards
+  (#129). The complete audit preserves all 159 historical references separately;
+  active panels contain 99 independently sourced regions.
 - Current-run output manifests with run identity, completion state, and
   SHA-256 receipts. FASTA/stats publication is staged and coordinated by a
   per-sample lease; interrupted runs cannot be validated as complete (#134).
@@ -51,6 +55,12 @@ and new nuclear/metagenomic inference policies belong to later releases.
 
 ### Changed
 
+- Reference evaluation separates variant-tolerant gene support, sequence
+  relationship, unestablished haplotype truth, and unevaluated read support.
+  New outputs use `gene_supported_*`, not `confirmed_product`; compatible
+  split alignments alone are not chimeras. Legacy panels still load in the
+  updated binary, but new provenance-bearing panels require the updated loader
+  (#129). Counting and repeat policies are unchanged by this evaluation update.
 - Reruns invalidate only verified outputs owned by the same sample. Legacy,
   modified, unowned, and symlink collisions are preserved and refused; use a
   fresh output directory when upgrading or retaining prior results. Histogram

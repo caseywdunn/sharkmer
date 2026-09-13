@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 """
-Bootstrap gold-standard reference sequences for panel validation.
+Discover unverified public-reference candidates for subsequent provenance audit.
 
 For each (gene, taxon) combination in a panel's validation samples, searches
 NCBI Nucleotide for a reference sequence, extracts the expected amplicon by
-in-silico primer matching, and outputs a references: YAML block for pasting
-into the panel.
+in-silico primer matching, and outputs candidates for inspection. Direct panel
+publication is disabled: accession versions, exact public-region coordinates,
+source snapshots, and taxon provenance must be audited before use.
 
 Usage:
     python scripts/bootstrap_references.py panels/cnidaria.yaml
     python scripts/bootstrap_references.py panels/cnidaria.yaml --genes 16S CO1
-    python scripts/bootstrap_references.py panels/cnidaria.yaml --write
 
 Requires network access for NCBI queries. Uses E-utilities (esearch + efetch).
 """
@@ -351,50 +351,26 @@ def bootstrap_panel(panel_path: Path, gene_filter: list | None = None):
 
 
 def format_references_yaml(references: dict) -> str:
-    """Format references dict as YAML text for the references: block."""
-    lines = ["references:"]
-    for gene, refs in references.items():
-        lines.append(f"  - gene: \"{gene}\"")
-        lines.append(f"    sequences:")
-        for ref in refs:
-            lines.append(f"      - taxon: \"{ref['taxon']}\"")
-            lines.append(f"        accession: \"{ref['accession']}\"")
-            lines.append(f"        sequence: \"{ref['sequence']}\"")
-    return "\n".join(lines)
+    """Format candidates without presenting them as verified panel references."""
+    return yaml.safe_dump(
+        {
+            "schema_version": 1,
+            "purpose": "unverified_reference_candidates",
+            "reference_candidates": [
+                {"gene": gene, "sequences": entries}
+                for gene, entries in references.items()
+            ],
+        },
+        sort_keys=False,
+    )
 
 
 def write_references_to_panel(panel_path: Path, references: dict):
-    """Insert or replace references block in panel YAML using ruamel.yaml."""
-    from ruamel.yaml import YAML
-    from ruamel.yaml.comments import CommentedMap, CommentedSeq
-
-    ryaml = YAML()
-    ryaml.preserve_quotes = True
-    ryaml.width = 4096
-
-    with open(panel_path) as f:
-        data = ryaml.load(f)
-
-    # Build the references structure.
-    refs_list = CommentedSeq()
-    for gene, entries in references.items():
-        gene_block = CommentedMap()
-        gene_block["gene"] = gene
-        seqs = CommentedSeq()
-        for seq_entry in entries:
-            seq_block = CommentedMap()
-            seq_block["taxon"] = seq_entry["taxon"]
-            seq_block["accession"] = seq_entry["accession"]
-            seq_block["sequence"] = seq_entry["sequence"]
-            seqs.append(seq_block)
-        gene_block["sequences"] = seqs
-        refs_list.append(gene_block)
-
-    data["references"] = refs_list
-
-    with open(panel_path, "w") as f:
-        ryaml.dump(data, f)
-    print(f"References written to {panel_path}")
+    """Reject legacy unaudited promotion without changing the destination."""
+    raise ValueError(
+        "Direct reference publication is disabled. Audit candidates with "
+        "scripts/audit_panel_references.py and a pinned public-source catalog first."
+    )
 
 
 def main():
@@ -408,9 +384,11 @@ def main():
     )
     parser.add_argument(
         "--write", action="store_true",
-        help="Write references directly into the panel YAML file",
+        help="Disabled legacy option: candidate references require provenance audit",
     )
     args = parser.parse_args()
+    if args.write:
+        parser.error("--write is disabled; public-reference candidates require provenance audit")
 
     panel_path = Path(args.panel).resolve()
     if not panel_path.exists():
@@ -427,11 +405,8 @@ def main():
     total = sum(len(v) for v in references.values())
     print(f"\nFound {total} reference(s) across {len(references)} gene(s).")
 
-    if args.write:
-        write_references_to_panel(panel_path, references)
-    else:
-        print("\n" + format_references_yaml(references))
-        print(f"\nRerun with --write to insert into {panel_path}")
+    print("\n" + format_references_yaml(references))
+    print("\nCandidates are not validated panel references; run the provenance audit before publication.")
 
 
 if __name__ == "__main__":

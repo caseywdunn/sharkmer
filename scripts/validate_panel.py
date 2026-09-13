@@ -4,7 +4,7 @@ Validate a sharkmer panel against its declared ENA/SRA samples.
 
 Reads the panel's `validation.samples` block, runs sharkmer against each
 sample at each declared read depth, BLASTs recovered amplicons against the
-panel's gold-standard reference sequences, and emits a markdown report plus
+panel's independently sourced reference regions, and emits a markdown report plus
 a detailed YAML result file to panels/validation_results/.
 
 With --genes, only runs the specified gene(s). Useful when iterating on
@@ -178,6 +178,11 @@ def main():
         help="Skip BLAST validation against reference sequences.",
     )
     parser.add_argument(
+        "--reference-catalog",
+        type=Path,
+        help="Trusted public-record catalog for reference verification (default: panels/reference_sources.json.gz).",
+    )
+    parser.add_argument(
         "--executable",
         type=Path,
         help="Use and fingerprint this executable instead of building target/release/sharkmer.",
@@ -295,18 +300,21 @@ def main():
         tmpdir = Path(tempfile.mkdtemp(prefix="sharkmer_refs_"))
         ref_db = None
         if not args.no_blast:
-            ref_db = blast_references.build_reference_db(panel_data, tmpdir)
+            ref_db = blast_references.build_reference_db(panel_data, tmpdir, args.reference_catalog)
             if ref_db:
                 print(f"Reference BLAST DB built: {ref_db}")
             else:
-                refs = blast_references.extract_references(panel_data)
-                if not refs:
-                    print("No reference sequences in panel; skipping BLAST.")
+                audit = blast_references.reference_checksums(panel_data, args.reference_catalog)
+                if not audit["verified"]:
+                    print(
+                        "No verified external references; skipping BLAST. "
+                        f"Excluded: {audit['excluded_count']}; catalog: {audit['catalog']['status']}."
+                    )
                 # else: tool not available, warning already printed
         blast_mode = "references" if ref_db else "none"
         reference_genes = {
             reference["gene_name"]
-            for reference in blast_references.extract_references(panel_data)
+            for reference in blast_references.extract_references(panel_data, args.reference_catalog)
         }
 
         # Run sharkmer for each sample x max_reads.
@@ -365,6 +373,7 @@ def main():
                 runner.load_panel_yaml(panel_path_for_run)
             ),
             run_id=stamp,
+            reference_catalog_path=args.reference_catalog,
         )
         result_name = results.result_filename(
             panel_data, sharkmer_version, stamp, label=args.label
