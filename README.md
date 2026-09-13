@@ -121,6 +121,8 @@ The `--max-reads 1000000` argument indicates that the first million reads (indiv
 
 This analysis will generate one fasta file for each primer pair, named `{sample}_{gene}.fasta` (e.g., `Stenogorgia_casta_18S.fasta`). If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found. A YAML stats file (`{sample}.stats.yaml`) is also produced with run statistics, per-gene PCR results, and bounded diagnostics for each attempted coverage threshold. Threshold diagnostics record connectivity and search-limit observations, repeat-marker cause counts, and eligible or withheld complete candidate counts without serializing graph identifiers. A reached search quota records why enumeration stopped; it does not prove that another valid path exists beyond the quota.
 
+For developer investigation, the hidden opt-in `--diagnose-withheld-paths` flag adds bounded current-run withheld sequences and sequence-relative marker positions to the YAML stats, not the FASTA products. These are unsupported diagnostic hypotheses, not recovered sequences or complete read-bridge intervals. Default behavior is unchanged; retention limits and incomplete searches remain explicit. See [bounded withheld-path diagnostics](dev_docs/WITHHELD_PATH_DIAGNOSTICS.md).
+
 In stats, `n_reads_read` is the number of FASTQ records read.
 `n_subreads_ingested` is a legacy-named count of FASTQ records submitted to
 the kmer counter, not N-split segments; `N` breaks kmer windows within a

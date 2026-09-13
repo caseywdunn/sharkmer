@@ -1023,6 +1023,7 @@ mod tests {
             max_node_visits: DEFAULT_MAX_NODE_VISITS,
             high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
             tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
+            diagnose_withheld_paths: false,
             citation: String::new(),
             notes: String::new(),
             expected_length: None,

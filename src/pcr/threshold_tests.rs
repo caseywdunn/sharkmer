@@ -53,6 +53,7 @@ fn run_pcr(counts: &KmerCounts, params: &PCRParams) -> PcrOutcome {
         "/tmp/",
         None,
         10_000,
+        withheld_diagnostic_limits_for_gene(0, 1),
     )
     .unwrap()
 }
@@ -179,6 +180,7 @@ fn disconnected_graph_after_pruning_has_explicit_failure() {
         false,
         "/tmp/",
         None,
+        None,
     )
     .unwrap();
 
@@ -238,6 +240,7 @@ fn node_budget_failure_remains_explicit() {
         "/tmp/",
         None,
         1,
+        withheld_diagnostic_limits_for_gene(0, 1),
     )
     .unwrap();
 
@@ -306,6 +309,7 @@ fn threshold_diagnostics_serialization_is_bounded_and_contains_no_graph_ids() {
     assert!(outcome.threshold_diagnostics.len() <= COVERAGE_STEPS as usize);
     assert!(!serialized.contains("sub_kmer"));
     assert!(!serialized.contains("edge_id"));
+    assert!(!serialized.contains("withheld_path_diagnostics"));
     assert!(serialized.contains("completed_candidate_paths"));
     assert!(serialized.contains("retained_collision_edges"));
 }

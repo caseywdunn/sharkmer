@@ -182,6 +182,7 @@ fn run_repeat_pcr(
         "/tmp/",
         reads,
         10_000,
+        withheld_diagnostic_limits_for_gene(0, 1),
     )
     .unwrap()
 }
@@ -242,6 +243,61 @@ fn forty_base_homopolymer_never_emits_collapsed_product() {
             .iter()
             .any(|diagnostic| diagnostic.omitted_self_loop_nodes > 0)
     );
+}
+
+#[test]
+fn withheld_path_diagnostics_do_not_change_repeat_outcome_or_threshold_counters() {
+    let fixture = repeat_fixture(&"A".repeat(40));
+    let counts = repeat_counts(&[&fixture.target]);
+    let without_diagnostics = run_repeat_pcr(&counts, &fixture.params, None);
+    let mut diagnostic_params = fixture.params.clone();
+    diagnostic_params.diagnose_withheld_paths = true;
+    let with_diagnostics = run_repeat_pcr(&counts, &diagnostic_params, None);
+
+    assert_eq!(without_diagnostics.records, with_diagnostics.records);
+    assert_eq!(
+        without_diagnostics.failure_reason,
+        with_diagnostics.failure_reason
+    );
+    assert_eq!(
+        without_diagnostics.threshold_diagnostics.len(),
+        with_diagnostics.threshold_diagnostics.len()
+    );
+    for (without, with) in without_diagnostics
+        .threshold_diagnostics
+        .iter()
+        .zip(&with_diagnostics.threshold_diagnostics)
+    {
+        let mut normalized = with.clone();
+        normalized.withheld_path_diagnostics = None;
+        assert_eq!(*without, normalized);
+        assert!(without.withheld_path_diagnostics.is_none());
+    }
+    let payloads: Vec<_> = with_diagnostics
+        .threshold_diagnostics
+        .iter()
+        .filter_map(|diagnostic| diagnostic.withheld_path_diagnostics.as_ref())
+        .collect();
+    assert!(!payloads.is_empty());
+    assert!(
+        payloads
+            .iter()
+            .any(|payload| payload.observed_withheld_paths > 0)
+    );
+    assert!(
+        payloads
+            .iter()
+            .flat_map(|payload| &payload.paths)
+            .all(|record| record.marker_occurrences.len()
+                == record.omitted_self_loop_marker_occurrences
+                    + record.cyclic_scc_marker_occurrences
+                    + record.retained_collision_marker_occurrences)
+    );
+    let serialized = serde_yaml_ng::to_string(&with_diagnostics.threshold_diagnostics).unwrap();
+    assert!(serialized.contains("coordinate_system: zero_based_half_open"));
+    assert!(serialized.contains("sequence_sha256:"));
+    assert!(!serialized.contains("node_index"));
+    assert!(!serialized.contains("edge_index"));
 }
 
 #[test]
@@ -326,6 +382,7 @@ fn tandem_repeat_cycle_and_first_visit_shortcut_are_withheld() {
         &path_search_params(),
         None,
         &repeat_markers,
+        None,
     );
 
     assert!(result.paths.is_empty());
@@ -345,6 +402,7 @@ fn repeat_rejected_paths_do_not_consume_clean_path_quota() {
         &path_search_params(),
         None,
         &repeat_markers,
+        None,
     );
 
     assert_eq!(result.withheld_candidate_path_count, 32);
@@ -369,6 +427,7 @@ fn all_repetitive_search_remains_bounded_by_dfs_budget() {
         &params,
         None,
         &repeat_markers,
+        None,
     );
 
     assert!(result.paths.is_empty());
@@ -389,6 +448,7 @@ fn clean_candidates_still_consume_path_quota() {
         &params,
         None,
         &repeat_markers,
+        None,
     );
 
     assert_eq!(result.paths.len(), 2);
@@ -456,8 +516,14 @@ fn acyclic_merge_taints_only_the_collision_edge() {
     };
     let counts = path_search_counts();
     let params = path_search_params();
-    let result =
-        paths::search_assembly_paths(&graph, &counts.filtered_view(1), &params, None, &markers);
+    let result = paths::search_assembly_paths(
+        &graph,
+        &counts.filtered_view(1),
+        &params,
+        None,
+        &markers,
+        None,
+    );
 
     assert_eq!(result.completed_candidate_path_count, 2);
     assert_eq!(result.eligible_candidate_path_count, 1);
@@ -517,6 +583,40 @@ fn repeat_branch_does_not_suppress_disjoint_clean_path() {
         assert_eq!(outcome.records.len(), 1);
         assert_eq!(outcome.records[0].seq(), clean_target.as_bytes());
     }
+
+    let without_diagnostics = run_repeat_pcr(&counts, &fixture.params, None);
+    let mut diagnostic_params = fixture.params.clone();
+    diagnostic_params.diagnose_withheld_paths = true;
+    let with_diagnostics = run_repeat_pcr(&counts, &diagnostic_params, None);
+    let record_signatures = |outcome: &PcrOutcome| {
+        outcome
+            .records
+            .iter()
+            .map(|record| {
+                (
+                    record.id().to_string(),
+                    record.desc().map(str::to_string),
+                    record.seq().to_vec(),
+                )
+            })
+            .collect::<Vec<_>>()
+    };
+    assert_eq!(
+        record_signatures(&without_diagnostics),
+        record_signatures(&with_diagnostics)
+    );
+    assert!(
+        with_diagnostics
+            .threshold_diagnostics
+            .iter()
+            .any(|diagnostic| {
+                diagnostic.generated_products == 1
+                    && diagnostic
+                        .withheld_path_diagnostics
+                        .as_ref()
+                        .is_some_and(|payload| payload.observed_withheld_paths > 0)
+            })
+    );
 }
 
 #[test]

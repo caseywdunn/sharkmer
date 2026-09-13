@@ -134,6 +134,7 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
         max_primer_kmers: pcr::DEFAULT_MAX_NUM_PRIMER_KMERS,
         high_coverage_ratio: pcr::DEFAULT_HIGH_COVERAGE_RATIO,
         tip_coverage_fraction: pcr::DEFAULT_TIP_COVERAGE_FRACTION,
+        diagnose_withheld_paths: false,
     };
 
     Ok(pcr_params)
@@ -297,6 +298,14 @@ pub(crate) struct Args {
     /// moved into do_pcr() for per-gene streaming before public exposure.
     #[arg(long, help_heading = "PCR", hide = true)]
     pub(crate) read_threading: bool,
+
+    #[arg(
+        long,
+        help = "Retain bounded diagnostic records for repeat-withheld paths",
+        help_heading = "PCR",
+        hide = true
+    )]
+    pub(crate) diagnose_withheld_paths: bool,
 
     /// Treat input as paired-end reads (exactly 2 files required: R1, R2).
     /// Hidden: ingestion works, but the paired-end phasing pipeline it is
@@ -901,5 +910,17 @@ mod tests {
         let params = collect_pcr_params(&args).unwrap();
 
         validate_args(&args, &params).unwrap();
+    }
+
+    #[test]
+    fn test_withheld_path_diagnostics_flag_is_hidden_but_parseable() {
+        let args =
+            Args::try_parse_from(["sharkmer", "--diagnose-withheld-paths", "reads.fastq"]).unwrap();
+
+        assert!(args.diagnose_withheld_paths);
+        let help = Args::try_parse_from(["sharkmer", "--help"])
+            .unwrap_err()
+            .to_string();
+        assert!(!help.contains("--diagnose-withheld-paths"));
     }
 }

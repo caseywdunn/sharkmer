@@ -14,6 +14,15 @@ fn fixture_path() -> PathBuf {
         .join("ERR571460_100k_R1.fastq.gz")
 }
 
+fn deterministic_dna(mut state: u64, length: usize) -> String {
+    (0..length)
+        .map(|_| {
+            state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+            b"ACGT"[((state >> 32) & 3) as usize] as char
+        })
+        .collect()
+}
+
 /// Integration test: verify that sharkmer recovers 18S from ERR571460 (Porites lutea)
 /// using the cnidaria primer panel with 100k reads.
 #[test]
@@ -67,6 +76,81 @@ fn test_18s_recovery_from_err571460() {
     assert!(stats_content.contains("threshold_diagnostics:"));
     assert!(stats_content.contains("completed_candidate_paths:"));
     assert!(stats_content.contains("retained_collision_edges:"));
+}
+
+#[test]
+fn test_withheld_path_diagnostics_are_stats_only_and_default_off() {
+    let left_flank = deterministic_dna(157, 60);
+    let right_flank = deterministic_dna(158, 60);
+    let target = format!("{}{}{}", left_flank, "A".repeat(40), right_flank);
+    let reverse_primer =
+        String::from_utf8(bio::alphabets::dna::revcomp(&right_flank.as_bytes()[45..])).unwrap();
+    let input_dir = tempfile::tempdir().unwrap();
+    let input_path = input_dir.path().join("repeat.fastq");
+    let mut fastq = String::new();
+    for record_index in 0..4 {
+        fastq.push_str(&format!(
+            "@repeat_{record_index}\n{target}\n+\n{}\n",
+            "I".repeat(target.len())
+        ));
+    }
+    fs::write(&input_path, fastq).unwrap();
+    let primer_specification = format!(
+        "name=repeat,forward={},reverse={},trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        &left_flank[..15],
+        reverse_primer
+    );
+
+    let run = |outdir: &std::path::Path, diagnose: bool| {
+        let mut arguments = vec![
+            "-k".to_string(),
+            "19".to_string(),
+            "--pcr-primers".to_string(),
+            primer_specification.clone(),
+            "-s".to_string(),
+            "diagnostic_test".to_string(),
+            "-o".to_string(),
+            outdir.to_str().unwrap().to_string(),
+            input_path.to_str().unwrap().to_string(),
+        ];
+        if diagnose {
+            arguments.insert(0, "--diagnose-withheld-paths".to_string());
+        }
+        let output = Command::new(sharkmer_bin())
+            .args(arguments)
+            .output()
+            .unwrap();
+        assert!(
+            output.status.success(),
+            "sharkmer failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+    };
+
+    let default_output = tempfile::tempdir().unwrap();
+    let diagnostic_output = tempfile::tempdir().unwrap();
+    run(default_output.path(), false);
+    run(diagnostic_output.path(), true);
+
+    let default_stats =
+        fs::read_to_string(default_output.path().join("diagnostic_test.stats.yaml")).unwrap();
+    let diagnostic_stats =
+        fs::read_to_string(diagnostic_output.path().join("diagnostic_test.stats.yaml")).unwrap();
+    assert!(!default_stats.contains("withheld_path_diagnostics"));
+    assert!(diagnostic_stats.contains("withheld_path_diagnostics"));
+    assert!(diagnostic_stats.contains("diagnostic_only_unsupported_candidate_hypotheses"));
+    assert!(
+        diagnostic_stats
+            .contains("marker_covered_positions_not_complete_ambiguity_or_bridge_ready_intervals")
+    );
+    for directory in [default_output.path(), diagnostic_output.path()] {
+        let entries: Vec<String> = fs::read_dir(directory)
+            .unwrap()
+            .map(|entry| entry.unwrap().file_name().to_string_lossy().into_owned())
+            .collect();
+        assert!(!entries.iter().any(|name| name.contains("withheld")));
+        assert!(!entries.iter().any(|name| name.ends_with(".fasta")));
+    }
 }
 
 /// Verify that stats.yaml is produced and contains expected fields.

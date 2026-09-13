@@ -110,7 +110,10 @@ pub(crate) fn run_pcr(
     // Run PCR for each gene in parallel; kmer_counts_pcr and reads are read-only and shared
     let pcr_fasta_results: Vec<_> = pcr_runs
         .par_iter()
-        .map(|pcr_params| {
+        .enumerate()
+        .map(|(gene_index, pcr_params)| {
+            let diagnostic_limits =
+                pcr::withheld_diagnostic_limits_for_gene(gene_index, pcr_runs.len());
             let fasta = pcr::do_pcr(
                 &kmer_counts_pcr,
                 sample,
@@ -119,6 +122,7 @@ pub(crate) fn run_pcr(
                 directory,
                 reads,
                 max_nodes,
+                diagnostic_limits,
             );
             (pcr_params, fasta)
         })

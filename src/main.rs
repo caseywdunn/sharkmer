@@ -49,6 +49,7 @@ fn main() -> Result<()> {
         p.max_primer_kmers = args.max_primer_kmers;
         p.high_coverage_ratio = args.high_coverage_ratio;
         p.tip_coverage_fraction = args.tip_coverage_fraction;
+        p.diagnose_withheld_paths = args.diagnose_withheld_paths;
     }
 
     // Handle --validate-panels early: pure primer check, no sample/output needed

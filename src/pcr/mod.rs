@@ -5,6 +5,7 @@ use anyhow::{Context, Result};
 use bio::io::fasta;
 use log::{debug, trace};
 use petgraph::graph::NodeIndex;
+use serde::Serialize;
 use std::fs::File;
 use std::io::Write;
 
@@ -241,6 +242,8 @@ pub struct PCRParams {
     pub high_coverage_ratio: f64,
     #[serde(default = "default_tip_coverage_fraction")]
     pub tip_coverage_fraction: f64,
+    #[serde(skip, default)]
+    pub diagnose_withheld_paths: bool,
 }
 
 fn default_max_length() -> usize {
@@ -284,6 +287,15 @@ pub const DEFAULT_MAX_NODE_VISITS: usize = 2;
 pub const DEFAULT_MAX_NUM_PRIMER_KMERS: usize = 40;
 pub const DEFAULT_HIGH_COVERAGE_RATIO: f64 = 10.0;
 pub const DEFAULT_TIP_COVERAGE_FRACTION: f64 = 0.1;
+pub(crate) const WITHHELD_DIAGNOSTIC_THRESHOLD_PATH_CAP: usize = 32;
+pub(crate) const WITHHELD_DIAGNOSTIC_THRESHOLD_BASE_CAP: usize = 512 * 1024;
+pub(crate) const WITHHELD_DIAGNOSTIC_THRESHOLD_MARKER_CAP: usize = 4096;
+pub(crate) const WITHHELD_DIAGNOSTIC_GENE_PATH_CAP: usize = 64;
+pub(crate) const WITHHELD_DIAGNOSTIC_GENE_BASE_CAP: usize = 1024 * 1024;
+pub(crate) const WITHHELD_DIAGNOSTIC_GENE_MARKER_CAP: usize = 8192;
+pub(crate) const WITHHELD_DIAGNOSTIC_RUN_PATH_CAP: usize = 256;
+pub(crate) const WITHHELD_DIAGNOSTIC_RUN_BASE_CAP: usize = 4 * 1024 * 1024;
+pub(crate) const WITHHELD_DIAGNOSTIC_RUN_MARKER_CAP: usize = 32768;
 
 pub(crate) fn validate_primer_expansion(params: &PCRParams, kmer_length: usize) -> Result<()> {
     primers::validate_primer_expansion(params, kmer_length)
@@ -298,7 +310,101 @@ pub struct PcrOutcome {
     pub threshold_diagnostics: Vec<PcrThresholdDiagnostic>,
 }
 
-#[derive(Clone, Debug, Default, serde::Serialize)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldDiagnosticCapSet {
+    pub(crate) paths: usize,
+    pub(crate) sequence_bases: usize,
+    pub(crate) marker_occurrences: usize,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldDiagnosticLimits {
+    pub(crate) threshold: WithheldDiagnosticCapSet,
+    pub(crate) gene: WithheldDiagnosticCapSet,
+    pub(crate) run: WithheldDiagnosticCapSet,
+    pub(crate) allocated_run_share_for_gene: WithheldDiagnosticCapSet,
+    pub(crate) unused_share_is_not_redistributed: bool,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldDiagnosticUsage {
+    pub(crate) paths: usize,
+    pub(crate) sequence_bases: usize,
+    pub(crate) marker_occurrences: usize,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum WithheldMarkerCause {
+    PrePruneOmittedSelfLoopNode,
+    PrePruneCyclicSccNode,
+    RetainedCollisionEdge,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum WithheldMarkerIdentityKind {
+    OrientedNodeSequence,
+    OrientedEdgeSequence,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldMarkerOccurrence {
+    pub(crate) cause: WithheldMarkerCause,
+    pub(crate) identity_kind: WithheldMarkerIdentityKind,
+    pub(crate) identity_sequence: String,
+    pub(crate) identity_sha256: String,
+    pub(crate) start: usize,
+    pub(crate) end: usize,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldMarkerCoveredRun {
+    pub(crate) start: usize,
+    pub(crate) end: usize,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldPathRecord {
+    pub(crate) oriented_sequence: String,
+    pub(crate) sequence_sha256: String,
+    pub(crate) sequence_length: usize,
+    pub(crate) node_visit_limit: usize,
+    pub(crate) max_observed_node_visits: usize,
+    pub(crate) omitted_self_loop_marker_occurrences: usize,
+    pub(crate) cyclic_scc_marker_occurrences: usize,
+    pub(crate) retained_collision_marker_occurrences: usize,
+    pub(crate) marker_occurrences: Vec<WithheldMarkerOccurrence>,
+    pub(crate) marker_covered_runs: Vec<WithheldMarkerCoveredRun>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldPathDiagnostics {
+    pub(crate) schema_version: u32,
+    pub(crate) coordinate_system: String,
+    pub(crate) purpose: String,
+    pub(crate) marker_span_scope: String,
+    pub(crate) read_support_evaluation: String,
+    pub(crate) limits: WithheldDiagnosticLimits,
+    pub(crate) gene_usage_before_threshold: WithheldDiagnosticUsage,
+    pub(crate) gene_usage_after_threshold: WithheldDiagnosticUsage,
+    pub(crate) observed_withheld_paths: usize,
+    pub(crate) retained_paths: usize,
+    pub(crate) observed_not_retained_paths: usize,
+    pub(crate) retained_sequence_bases: usize,
+    pub(crate) retained_marker_occurrences: usize,
+    pub(crate) dropped_oversize_sequence: usize,
+    pub(crate) dropped_oversize_marker_set: usize,
+    pub(crate) dropped_path_cap: usize,
+    pub(crate) dropped_sequence_base_cap: usize,
+    pub(crate) dropped_marker_cap: usize,
+    pub(crate) node_visit_limit: usize,
+    pub(crate) node_visit_skips: usize,
+    pub(crate) retention_truncated: bool,
+    pub(crate) paths: Vec<WithheldPathRecord>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
 pub struct PcrThresholdDiagnostic {
     pub threshold: u32,
     pub connectivity_found: bool,
@@ -321,6 +427,48 @@ pub struct PcrThresholdDiagnostic {
     pub repeat_tainted_out_of_range_paths: usize,
     pub generated_products: usize,
     pub failure_reason: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) withheld_path_diagnostics: Option<WithheldPathDiagnostics>,
+}
+
+fn partition_cap(total: usize, gene_index: usize, gene_count: usize) -> usize {
+    if gene_count == 0 {
+        return 0;
+    }
+    total / gene_count + usize::from(gene_index < total % gene_count)
+}
+
+pub(crate) fn withheld_diagnostic_limits_for_gene(
+    gene_index: usize,
+    gene_count: usize,
+) -> WithheldDiagnosticLimits {
+    let run = WithheldDiagnosticCapSet {
+        paths: WITHHELD_DIAGNOSTIC_RUN_PATH_CAP,
+        sequence_bases: WITHHELD_DIAGNOSTIC_RUN_BASE_CAP,
+        marker_occurrences: WITHHELD_DIAGNOSTIC_RUN_MARKER_CAP,
+    };
+    let gene = WithheldDiagnosticCapSet {
+        paths: WITHHELD_DIAGNOSTIC_GENE_PATH_CAP,
+        sequence_bases: WITHHELD_DIAGNOSTIC_GENE_BASE_CAP,
+        marker_occurrences: WITHHELD_DIAGNOSTIC_GENE_MARKER_CAP,
+    };
+    WithheldDiagnosticLimits {
+        threshold: WithheldDiagnosticCapSet {
+            paths: WITHHELD_DIAGNOSTIC_THRESHOLD_PATH_CAP,
+            sequence_bases: WITHHELD_DIAGNOSTIC_THRESHOLD_BASE_CAP,
+            marker_occurrences: WITHHELD_DIAGNOSTIC_THRESHOLD_MARKER_CAP,
+        },
+        gene,
+        run,
+        allocated_run_share_for_gene: WithheldDiagnosticCapSet {
+            paths: partition_cap(run.paths, gene_index, gene_count).min(gene.paths),
+            sequence_bases: partition_cap(run.sequence_bases, gene_index, gene_count)
+                .min(gene.sequence_bases),
+            marker_occurrences: partition_cap(run.marker_occurrences, gene_index, gene_count)
+                .min(gene.marker_occurrences),
+        },
+        unused_share_is_not_redistributed: true,
+    }
 }
 
 /// Validate a primer pair and return a list of (error, suggestion) pairs.
@@ -520,6 +668,7 @@ fn evaluate_threshold_graph(
     dump_graph: bool,
     output_directory: &str,
     reads: Option<&[crate::io::ReadRecord]>,
+    diagnostic_budget: Option<&mut paths::WithheldDiagnosticBudget>,
 ) -> Result<ThresholdEvaluation> {
     let repeat_markers =
         graph::repeat_markers_before_pruning(&pruned_graph, extension_repeat_markers);
@@ -600,12 +749,13 @@ fn evaluate_threshold_graph(
     let edge_preferences = threading_annotations
         .as_ref()
         .map(|annotations| bubble::resolve_bubbles(&pruned_graph, annotations));
-    let path_search = paths::search_assembly_paths(
+    let mut path_search = paths::search_assembly_paths(
         &pruned_graph,
         kmer_counts,
         params,
         edge_preferences.as_ref(),
         &repeat_markers,
+        diagnostic_budget,
     );
 
     gene_info!(
@@ -663,6 +813,7 @@ fn evaluate_threshold_graph(
         repeat_tainted_out_of_range_paths: path_search.repeat_tainted_out_of_range_path_count,
         generated_products: 0,
         failure_reason: None,
+        withheld_path_diagnostics: path_search.withheld_path_diagnostics.take(),
     };
 
     if path_search.paths.is_empty() {
@@ -714,7 +865,7 @@ fn evaluate_threshold_graph(
     })
 }
 
-// The primary function for PCR
+#[allow(clippy::too_many_arguments)]
 pub fn do_pcr(
     kmer_counts: &FilteredKmerCounts,
     sample_name: &str,
@@ -723,6 +874,7 @@ pub fn do_pcr(
     output_directory: &str,
     reads: Option<&[crate::io::ReadRecord]>,
     max_num_nodes: usize,
+    withheld_diagnostic_limits: WithheldDiagnosticLimits,
 ) -> Result<PcrOutcome> {
     gene_info!(params.gene_name, "Running PCR");
 
@@ -848,6 +1000,9 @@ pub fn do_pcr(
     let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
     let mut failure_reason: Option<String> = Some("no path found".to_string());
     let mut threshold_diagnostics = Vec::with_capacity(coverage_thresholds.len());
+    let mut withheld_diagnostic_budget = params
+        .diagnose_withheld_paths
+        .then(|| paths::WithheldDiagnosticBudget::new(withheld_diagnostic_limits));
 
     // Coverage threshold sweep: at each min_count, clone the seed graph fresh
     // and extend at that threshold. Pruning + path-finding happens after each
@@ -906,6 +1061,9 @@ pub fn do_pcr(
                 omitted_self_loop_nodes: extension_repeat_markers.omitted_self_loop_sub_kmers.len(),
                 retained_collision_edges: extension_repeat_markers.retained_collision_edges.len(),
                 failure_reason: Some(threshold_failure.to_string()),
+                withheld_path_diagnostics: withheld_diagnostic_budget
+                    .as_ref()
+                    .map(|budget| budget.empty_threshold_diagnostics(params.max_node_visits)),
                 ..PcrThresholdDiagnostic::default()
             });
             continue;
@@ -920,6 +1078,7 @@ pub fn do_pcr(
             dump_graph,
             output_directory,
             reads,
+            withheld_diagnostic_budget.as_mut(),
         )?;
         evaluation.diagnostic.node_budget_reached = node_budget_reached;
 
@@ -1502,6 +1661,7 @@ mod tests {
             max_primer_kmers: DEFAULT_MAX_NUM_PRIMER_KMERS,
             high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
             tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
+            diagnose_withheld_paths: false,
         };
 
         (read_string, k, replicates, kmer_counts, params)
