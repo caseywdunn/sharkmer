@@ -15,6 +15,11 @@ public AK281180.1 is only 256 bp. Exact agreement with the embedded sequence is
 a regression oracle, not independent full-length biological confirmation.
 Historical classifier labels below are preserved, not upgraded to external truth.
 
+The [subsequent read-backed audit](READ_BACKED_AUDIT_RESULTS.md) distinguishes
+local structural support from missing observations and uncallable intervals
+on the exact consumed R1 prefixes. It does not change assembly policy or
+replace the historical runtime/recovery measurements below.
+
 ## #154: repeat-rejected path quota
 
 Sol implementation, independent Astra review, implementation commit
@@ -171,7 +176,7 @@ biological false negatives, but they cannot all be dismissed as errors.
 | Drosophila / 16S_2 | 590 | 5/2 | No significant hit | No |
 | Heliconius / ND1 | 263 | 17/9 | No significant hit | Yes, another sequence |
 | Gryllus / CO1_1 | 373 | 52/29 | Insufficient alignment | Yes, another sequence |
-| Gryllus / ITS_2 | 978 | 17/4 | Confirmed; exact AK281180 match | No |
+| Gryllus / ITS_2 | 978 | 17/4 | Historically classified confirmed; exact bootstrap-panel match labeled AK281180, not independent accession truth | No |
 
 The additional CO1_1/ND1 products are alternatives, not established minor
 alleles or low-abundance variants. Product index is not an abundance estimate.
@@ -182,7 +187,8 @@ All-gene counts are 86 -> 64; repeated timing observations are not multiplied
 into the unique product totals above.
 
 Gryllus ITS_2 remains absent in every candidate replicate. Its baseline
-978 bp sequence exactly equals frozen reference AK281180, SHA-256
+978 bp sequence exactly equals the frozen bootstrap reference labeled AK281180,
+not the 256 bp public record AK281180.1. The bootstrap sequence SHA-256 is
 `23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c`.
 At threshold 4, the candidate evaluates **180 complete candidates**, withholding
 all 180 because they touch pre-pruning SCC markers; none is withheld by a
@@ -375,8 +381,8 @@ The lower-threshold graphs are independently constructed, not guaranteed
 supersets of higher-threshold graphs. No primer-seed-specific count diagnostic
 in these receipts supports attributing the failure to seed discovery alone.
 
-A supplementary reference-only probe verifies that the exact 978 bp AK281180
-sequence has **961 distinct oriented 18-mers with no duplicates**; its 22-,
+A supplementary template-only probe verifies that the 978 bp bootstrap
+sequence labeled AK281180 has **961 distinct oriented 18-mers with no duplicates**; its 22-,
 26-, and 30-mers are likewise unique. The isolated reference path therefore
 does not revisit an identical oriented node even at k19. This is not a read
 graph: other templates, orientations, sequencing errors, and graph construction
