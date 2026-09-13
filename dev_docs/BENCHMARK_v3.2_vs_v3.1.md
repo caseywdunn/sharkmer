@@ -7,6 +7,13 @@
 
 ## Bottom line
 
+**2026-09-13 reference-provenance correction:** the panel's 978 bp ITS_2
+sequence labeled AK281180 is a bootstrap amplicon; the public accession is
+only 256 bp. Exact agreement below is with an embedded regression reference,
+not independent full-product biological truth. See the subsequent
+[public-record and controlled-template assessment](BENCHMARK_reference_gates.md).
+The original counts, sequence matches, and timing measurements remain unchanged.
+
 - No overall speedup or meaningful RAM reduction is demonstrated. Sum of
   primary per-sample median runtimes is **512.34 -> 515.91 seconds (+0.70%)**.
 - There are important output regressions: **179 -> 71 primary products**,

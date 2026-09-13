@@ -2,6 +2,14 @@
 
 Prepared 2026-09-09. **Development work only: awaiting user review, not release approval.**
 
+**2026-09-13 reference correction:** the [accessioned-reference assessment](BENCHMARK_reference_gates.md)
+finds that the 978 bp Gryllus ITS_2 reference is a bootstrap amplicon, not the
+256 bp public AK281180.1 record. The exact match cited below is therefore not
+independent full-length biological confirmation. All 22 public-corroborated
+hydrozoa templates reconstruct correctly before/after #132/current at k19/k31
+with diagnostic native-endpoint primers. This clean-template result does not
+prove real-data regressions absent; #129/#153 and user review remain open.
+
 **Subsequent direct-release benchmark:** [BENCHMARK_v3.2_vs_v3.1.md](BENCHMARK_v3.2_vs_v3.1.md)
 compares pristine released v3.1.0 with the candidate across 114 invocations.
 It finds roughly flat runtime/RAM but 179 -> 71 primary products, including a

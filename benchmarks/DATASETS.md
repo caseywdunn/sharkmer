@@ -7,6 +7,7 @@ Dataset roles are frozen before future assembly parameter tuning.
 - `benchmark.yaml` contains the historical real-data panel suite. These accessions and prior results have already informed implementation work, so they are calibration data.
 - `known_truth.yaml` contains the included `ERR571460` 100k-read fixture, pinned by SHA-256. Its exact count and established amplicon lengths are executable offline regression checks, not estimates of biological sensitivity.
 - Synthetic BLAST XML cases in `tests/fixtures/validation/` are validator correctness fixtures. They test identity, query coverage, wrong-gene, and split-alignment classification only.
+- A panel accession label does not establish that its entire embedded sequence was fetched from that accession. Bootstrap amplicons annotated by partial BLAST hits are regression oracles, not independent full-product truth. Record deposited-region version/coordinates/strand separately from bootstrap provenance; see the [2026-09-13 reference audit](../dev_docs/BENCHMARK_reference_gates.md#reference-provenance-discovery).
 
 Run the offline fixture in both modes:
 

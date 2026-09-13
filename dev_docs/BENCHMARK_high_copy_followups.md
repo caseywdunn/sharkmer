@@ -8,6 +8,13 @@ release blockers. Target annotations select candidates for review; they do
 not establish measured abundance, read support, or exact repeat-copy truth.
 No release is authorized by these measurements.
 
+The subsequent [accessioned-reference assessment](BENCHMARK_reference_gates.md)
+isolates removal of the 978 bp Gryllus ITS_2 sequence by #132, but discovers an
+important truth-label correction: the panel's sequence is a bootstrap amplicon;
+public AK281180.1 is only 256 bp. Exact agreement with the embedded sequence is
+a regression oracle, not independent full-length biological confirmation.
+Historical classifier labels below are preserved, not upgraded to external truth.
+
 ## #154: repeat-rejected path quota
 
 Sol implementation, independent Astra review, implementation commit
