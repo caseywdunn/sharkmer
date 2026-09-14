@@ -2,6 +2,10 @@
 
 Prepared 2026-09-09. **Development work only: awaiting user review, not release approval.**
 
+**Pause/resume status (2026-09-14):** see [HANDOFF.md](HANDOFF.md) for the
+latest code/evidence checkpoints and next investigation. Historical code and
+test totals below are not current totals; no release gate is waived.
+
 **2026-09-13 reference correction:** the [accessioned-reference assessment](BENCHMARK_reference_gates.md)
 finds that the 978 bp Gryllus ITS_2 reference is a bootstrap amplicon, not the
 256 bp public AK281180.1 record. The exact match cited below is therefore not
@@ -32,8 +36,9 @@ single-copy nuclear recovery losses are deferred, not current blockers.
 
 The v3.2 correctness implementation covers #129–138. The reviewed code point
 is `03c0fc62ee0521f85a527b86f78252a60be1500b`, package `3.2.0-dev`.
-Later review/evidence commits contain documentation and benchmark artifacts,
-not a different counting or assembly implementation.
+This is the original implementation checkpoint. Subsequent changes include
+the #154/#155 fixes and opt-in withheld-path diagnostics; see the handoff for
+the latest production-code and evidence commits.
 
 Incremental `--chunks` counting and histogram compatibility remain supported.
 The fast exact counter, bounded-memory replay/storage, low-coverage nuclear

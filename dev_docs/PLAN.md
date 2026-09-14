@@ -1,5 +1,10 @@
 # Development plan: scalable, reliable sPCR
 
+**Paused 2026-09-14. Resume with [HANDOFF.md](HANDOFF.md).** It records the
+latest reviewed evidence commit, saved artifacts, known limitations, and next
+unimplemented diagnostic. Release remains on hold; dated checkpoints below
+must not be mistaken for the latest code or validation totals.
+
 Status: v3.2 implementation and direct release-baseline benchmarking complete;
 release remains on hold for user review of substantial output losses and
 repeat/search-budget follow-ups. See [BENCHMARK_v3.2_vs_v3.1.md](BENCHMARK_v3.2_vs_v3.1.md)
@@ -146,7 +151,7 @@ The development package is `3.2.0-dev`, not a published release. Stop before
 merging to `master`, tagging, or publishing. Independent held-out registration
 under #129 remains open; calibration results do not close that gate.
 
-Final reviewed code: `03c0fc6`. Both hash backends pass 213 unit and 22
+Earlier implementation checkpoint: `03c0fc6`. Both hash backends pass 213 unit and 22
 integration tests, with 39 Python regressions. All 13 historical samples at a
 one-million-record cap preserve read/kmer totals and all 71 product hashes
 against the repaired warm baseline; both pinned fixture oracles pass. This is
