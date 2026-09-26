@@ -1,0 +1,35 @@
+test_all_declared_evidence_bounds_fail_closed (test_its_recruitment.RecruitmentTests) ... ok
+test_atomic_publication_and_output_bound (test_its_recruitment.RecruitmentTests) ... ok
+test_class_tie_is_ambiguous (test_its_recruitment.RecruitmentTests) ... ok
+test_cli_provenance_no_clobber_and_failure_receipt (test_its_recruitment.RecruitmentTests) ... ok
+test_decoy_both_strands_self_and_other_contexts (test_its_recruitment.RecruitmentTests) ... ok
+test_disconnected_support_and_wrong_flank_order (test_its_recruitment.RecruitmentTests) ... ok
+test_distance_and_traceback (test_its_recruitment.RecruitmentTests) ... ok
+test_exact_wins_over_approximate_flank_shifts (test_its_recruitment.RecruitmentTests) ... ok
+test_flank_and_span_edit_limits_and_flank_indels (test_its_recruitment.RecruitmentTests) ... ok
+test_four_edit_context_seeds_against_exhaustive_oracle (test_its_recruitment.RecruitmentTests) ... ok
+test_independent_distance_oracle (test_its_recruitment.RecruitmentTests) ... ok
+test_invalid_low_quality_and_outside_distance_summaries (test_its_recruitment.RecruitmentTests) ... ok
+test_low_quality_retained_but_not_qualified (test_its_recruitment.RecruitmentTests) ... ok
+test_malformed_fastq_and_input_mutation (test_its_recruitment.RecruitmentTests) ... ok
+test_manifest_validation (test_its_recruitment.RecruitmentTests) ... ok
+test_multiple_substitutions_and_indels (test_its_recruitment.RecruitmentTests) ... ok
+test_non_acgt_inner_does_not_discard_flanks (test_its_recruitment.RecruitmentTests) ... ok
+test_palindrome_keeps_both_orientations (test_its_recruitment.RecruitmentTests) ... ok
+test_prefix_identity_counts_and_recruited_cap (test_its_recruitment.RecruitmentTests) ... ok
+test_quality_boundary_reverse_and_qualified_competitor (test_its_recruitment.RecruitmentTests) ... ok
+test_repeat_copy_classes_do_not_collapse (test_its_recruitment.RecruitmentTests) ... ok
+test_repeat_placement_tie_and_pair_cap (test_its_recruitment.RecruitmentTests) ... ok
+test_reverse_orientation (test_its_recruitment.RecruitmentTests) ... ok
+test_seed_hits_match_exhaustive_oracle (test_its_recruitment.RecruitmentTests) ... ok
+test_shared_cross_locus_string_remains_descriptive (test_its_recruitment.RecruitmentTests) ... ok
+test_single_flank_and_nonspanning_distance_retained (test_its_recruitment.RecruitmentTests) ... ok
+test_source_change_blocks_publication (test_its_recruitment.RecruitmentTests) ... ok
+test_staged_identity_includes_unconsumed_suffix (test_its_recruitment.RecruitmentTests) ... ok
+test_unequal_mixture_and_duplicate_identifiers (test_its_recruitment.RecruitmentTests) ... ok
+
+----------------------------------------------------------------------
+Ran 29 tests in 5.293s
+
+OK
+{"output": "/tmp/tmp4jes_gxi/result.json", "recruited_records": 1}

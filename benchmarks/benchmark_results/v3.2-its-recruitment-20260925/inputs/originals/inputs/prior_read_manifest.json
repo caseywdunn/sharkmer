@@ -1,0 +1,3658 @@
+{
+  "candidate_identity": {
+    "accession": "SRR27962769",
+    "panel": "insecta",
+    "taxon": "Gryllus bimaculatus"
+  },
+  "candidates": [
+    {
+      "id": "SRR27962769_23163ca76f97f5d1",
+      "sequence": "CCTTCGGAAGGATCATTACCAAAGTTTTAACACAGCGCACACACACACGCTCTCTGCGCTAAAAAAAATCGAGAGCCCCGGGAGACCTGGCCGACCTCCCGGGAAGTCGCACACGGATGCGAAAACTCTAGAGAGAGACGCGCGTCGCATACGGCAGGGCGGCGACGCCTTCTCCCCAAGCGGTAGCGCGCGTTCTCTCCGACGAAACGAGACCCGGGGGGGTGACCTCCCGGGCAGTCGCACGCCGATGCGAAAAATTCGAGCGAGCGCGGTACTCGCTATAGAAAAGGCCGCGCAGGAGACCTGAGCTACCTCCTTTCGCAAAAGACTGCGATAAACACAGCGGGCGCGGTACTCGCTATATGAAACGGCCGCGAGAGACGGTCGCGACTGCGGCAAGGGAGCTGACACGGTAAAGCGAAAGCAATTTTTTTCCTCGGGAGCACCGGGAGTCGCTAGCCGGCTCTCGGGCGTCTCCGTCACACGCTCGCGCCCGCCTCCGGCGGCCGAGTGGGAATCAACGCGTCGGCGGGCCCTTCGGGGCCCGTCGGCGCGCTTTCGGCCGCCCTCGGCCAACTTCTTTCTCTTCTTTCATAGAGCATCGGCGGTGGACGCTGTGTCGATAGACGAAGGACTCGGCTGTAGCTTGTCGTGCGCCTCTGAACAGGTTCGGTACACCATCATCTGAAACTGGTGGGTGCTGTTCTAAAGCTTAAAAGGGATGTTGCGGAGCCAGAGGGTTCCTTCGGAACTTGGGCGCACGAGATTCGGGACGAGTAATAGTCTTAAACTCTGGTTACCATCGCTAAGCTTGCTCCTATACGCTCGCGTTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTACGGGGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTTCACGAGAATGCTGAACCGGCTGTAGCTTTACTCGGAACGCTCCTCAGTAAGGGCGA",
+      "sequence_sha256": "23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c",
+      "source_candidates": [
+        {
+          "gene": "ITS_2",
+          "length": 978,
+          "role": "withheld_lost_candidate",
+          "sequence_sha256": "23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c"
+        }
+      ]
+    },
+    {
+      "id": "SRR27962769_66686929b8d17dfa",
+      "sequence": "GAACTCAGATCATGTAAGAATTTAATGGTCGAACAGACCAATATATTGAGCTCCTGCACCCAATAATTTTCTTAATCCAACATCGAGGTCGCAATCCTTATTATCAATATGAACTCTCCAATAATATTACGCTGTTATCCCTAAGGTATCTTTATCTTTATTCCATAATAACAGGATCAATAAACCAATCATCATAGTAAAATAAAAAGAAGTTAAATTATTCCCTTGTCACCCCAACAAAACATTATATAATAAAATATATTAAATACTACTAAACATATATTTTAATATAATAATATTAAGATCTATAGGGTCTTCTCGTCCCCTGTTATTATTTAAGCTTTTTGACTTAAAAATAAAATTCAATTAATTACACCGAGACAGTTATTGTTTCGTCAAACCATTCATTCCAGCCTTCAATTAAAAGACTAATGATTATGCTACCTTTGCACGGTCAATATACCGCGGCCATTTAATAATTCAGTGGGCAGGCACGACTTCATATTAATTCAAGAAGACATGTTTTTGATAAAC",
+      "sequence_sha256": "66686929b8d17dfa5e1851e37d6a089bc385a664000b4f50bf5c1431a3c22db4",
+      "source_candidates": [
+        {
+          "gene": "16S_2",
+          "length": 534,
+          "role": "same-sample retained mitochondrial control",
+          "sequence_sha256": "66686929b8d17dfa5e1851e37d6a089bc385a664000b4f50bf5c1431a3c22db4"
+        }
+      ]
+    },
+    {
+      "id": "SRR27962769_8a88bc972180963c",
+      "sequence": "ATGTTACGACTTATCTCATCTTAAAACGAGAGCGACGGGCGATATGTACACATTCTAGAGCCCTAATCAATTAATCAATTTATATTAATTTACAATCAAATCCACCTTCAAATAAATTATTCAAAATATTATCCATATAAATATTTTTATTGTAATCCATCTCTACTTGATTATTAGCTACACCTTGACCTGACATAATATACATATCAAATATAATGAAATTTTATACTCTCAACAAGATAATCTTACTGACGGCGGTATATAAACTGATAACAAAATCAAGTTACATAAATCGTGTATTATCAATTACAGAACAGATTCCTCTGAAAGGACTAAAACACCGCCAAATTCTTTGGGTTTCAAGATCATAACTACTACTACCCTGATTTTAGTATTTACATAACTTATAATAGGGTATCTAAT",
+      "sequence_sha256": "8a88bc972180963c12a31346c26f60c6862fd516b5d6ccc2d120855c8e23d47c",
+      "source_candidates": [
+        {
+          "gene": "12S",
+          "length": 423,
+          "role": "same-sample retained mitochondrial control",
+          "sequence_sha256": "8a88bc972180963c12a31346c26f60c6862fd516b5d6ccc2d120855c8e23d47c"
+        }
+      ]
+    },
+    {
+      "id": "SRR27962769_e2d376bc5b0f09a9",
+      "sequence": "TGATATAGCATTTCCTCGAATAAATAATATAAGATTTTGACTTTTACCTCCATCATTAACCCTTTTATTAACCAGAAGAATAGTTGAAAATGGTGCAGGAACAGGATGAACAGTTTATCCACCTCTATCAACAGGAATTGCTCATGCAGGAGCATCCGTTGACTTAGCAATTTTTTCATTACATTTAGCGGGAATTTCTTCAATTCTAGGAGCTGTAAATTTTATTACCACTATAATTAATATACGAGCACCAGGAATATCACTAGATCAAACACCATTATTTGTTTGAGCAGTTGGAATTACAGCTCTTTTATTATTATTATCATTACCAGTCCTAGCCGGTGCTATTACC",
+      "sequence_sha256": "e2d376bc5b0f09a954f7dfb6083ff3e4a768a2b687685e18349f66dd25cfc9c0",
+      "source_candidates": [
+        {
+          "gene": "CO1_1",
+          "length": 352,
+          "role": "same_gene_retained_alternative",
+          "sequence_sha256": "e2d376bc5b0f09a954f7dfb6083ff3e4a768a2b687685e18349f66dd25cfc9c0"
+        },
+        {
+          "gene": "CO1_1",
+          "length": 352,
+          "role": "same-gene retained alternative",
+          "sequence_sha256": "e2d376bc5b0f09a954f7dfb6083ff3e4a768a2b687685e18349f66dd25cfc9c0"
+        }
+      ]
+    },
+    {
+      "id": "SRR27962769_e86a7ccf9e78adaf",
+      "sequence": "TGATATAGCATTTCCTCGAATAAATAATATAAGATTTTGACTTTTACCTCCATCATTAACCCTTTTATTAACCAGAAGAATAGTTGAAAATGGTGCAGGAACAGGATGAACAGTTTATCCACCTCTATCAACAGGAATTGCTCATGCAGGAGCATCCGTTGACTTAGCAATTTTTTCATTACATTTAGCGGGAATTTCTTCAATTCTAGGAGCTGTAAATTTTATTACCACTATAATTAATATACGAGCACCAGGAATATCACTAGATCAAACACCATTATTTGTTTGAGCAGTTGGAATTACAGCTCTTTTATTATTATTATCATTATCATTATTATTATTATCATTACCAGTCCTAGCCGGTGCTATTACC",
+      "sequence_sha256": "e86a7ccf9e78adaf259ec804eb05dadaf8557bc4a7c637b483dfacd330a7e3ba",
+      "source_candidates": [
+        {
+          "gene": "CO1_1",
+          "length": 373,
+          "role": "withheld_lost_candidate",
+          "sequence_sha256": "e86a7ccf9e78adaf259ec804eb05dadaf8557bc4a7c637b483dfacd330a7e3ba"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 120,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_101",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          80,
+          101
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          120,
+          141
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 101
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 140,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_121",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          100,
+          121
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          140,
+          161
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 121
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 160,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_141",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          120,
+          141
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          160,
+          181
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 141
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 180,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_161",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          140,
+          161
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          180,
+          201
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 161
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 200,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_181",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          160,
+          181
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          200,
+          221
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 181
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 220,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_201",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          180,
+          201
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          220,
+          241
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 201
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 40,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_21",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          0,
+          21
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          40,
+          61
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 21
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 240,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_221",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          200,
+          221
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          240,
+          261
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 221
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 260,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_241",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          220,
+          241
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          260,
+          281
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 241
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 280,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_261",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          240,
+          261
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          280,
+          301
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 261
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 300,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_281",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          260,
+          281
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          300,
+          321
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 281
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 320,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_301",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          280,
+          301
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          320,
+          341
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 301
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 340,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_321",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          300,
+          321
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          340,
+          361
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 321
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 360,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_341",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          320,
+          341
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          360,
+          381
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 341
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 380,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_361",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          340,
+          361
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          380,
+          401
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 361
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 400,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_381",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          360,
+          381
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          400,
+          421
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 381
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 420,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_401",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          380,
+          401
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          420,
+          441
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 401
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 60,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_41",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          20,
+          41
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          60,
+          81
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 41
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 440,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_421",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          400,
+          421
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          440,
+          461
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 421
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 460,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_441",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          420,
+          441
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          460,
+          481
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 441
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 480,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_461",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          440,
+          461
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          480,
+          501
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 461
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 500,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_481",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          460,
+          481
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          500,
+          521
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 481
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 520,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_501",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          480,
+          501
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          520,
+          541
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 501
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 540,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_521",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          500,
+          521
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          540,
+          561
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 521
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 560,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_541",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          520,
+          541
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          560,
+          581
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 541
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 580,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_561",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          540,
+          561
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          580,
+          601
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 561
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 600,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_581",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          560,
+          581
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          600,
+          621
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 581
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 620,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_601",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          580,
+          601
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          620,
+          641
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 601
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 80,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_61",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          40,
+          61
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          80,
+          101
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 61
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 640,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_621",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          600,
+          621
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          640,
+          661
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 621
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 660,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_641",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          620,
+          641
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          660,
+          681
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 641
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 680,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_661",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          640,
+          661
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          680,
+          701
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 661
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 700,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_681",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          660,
+          681
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          700,
+          721
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 681
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 720,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_701",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          680,
+          701
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          720,
+          741
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 701
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 740,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_721",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          700,
+          721
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          740,
+          761
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 721
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 760,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_741",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          720,
+          741
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          760,
+          781
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 741
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 780,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_761",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          740,
+          761
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          780,
+          801
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 761
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 800,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_781",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          760,
+          781
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          800,
+          821
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 781
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 820,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_801",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          780,
+          801
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          820,
+          841
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 801
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 100,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_81",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          60,
+          81
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          100,
+          121
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 81
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 840,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_821",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          800,
+          821
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          840,
+          861
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 821
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 860,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_841",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          820,
+          841
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          860,
+          881
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 841
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 880,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_861",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          840,
+          861
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          880,
+          901
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 861
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 900,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_881",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          860,
+          881
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          900,
+          921
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 881
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 920,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_901",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          880,
+          901
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          920,
+          941
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 901
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 940,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_921",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          900,
+          921
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          940,
+          961
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 921
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_group",
+      "end": 957,
+      "id": "SRR27962769_23163ca76f97f5d1_marginal_diagnostic_938",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          917,
+          938
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          957,
+          978
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 938
+    },
+    {
+      "candidate_id": "SRR27962769_23163ca76f97f5d1",
+      "comparison_group": "SRR27962769_ITS_2_frozen_alternatives",
+      "end": 978,
+      "id": "SRR27962769_23163ca76f97f5d1_primary_frozen_suspect_interval_0",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": false,
+        "has_full_right_flank": false,
+        "left_flank_span": [
+          0,
+          0
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          978,
+          978
+        ],
+        "status": "invalid_or_missing_required_flanks"
+      },
+      "role": "primary_frozen_suspect_interval",
+      "source": {
+        "interval_index": 0,
+        "kind": "frozen_suspect_interval"
+      },
+      "start": 0
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 120,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_101",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          80,
+          101
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          120,
+          141
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 101
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 140,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_121",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          100,
+          121
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          140,
+          161
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 121
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 160,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_141",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          120,
+          141
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          160,
+          181
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 141
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 180,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_161",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          140,
+          161
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          180,
+          201
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 161
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 200,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_181",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          160,
+          181
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          200,
+          221
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 181
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 220,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_201",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          180,
+          201
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          220,
+          241
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 201
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 40,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_21",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          0,
+          21
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          40,
+          61
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 21
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 240,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_221",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          200,
+          221
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          240,
+          261
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 221
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 260,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_241",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          220,
+          241
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          260,
+          281
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 241
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 280,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_261",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          240,
+          261
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          280,
+          301
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 261
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 300,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_281",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          260,
+          281
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          300,
+          321
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 281
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 320,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_301",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          280,
+          301
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          320,
+          341
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 301
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 340,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_321",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          300,
+          321
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          340,
+          361
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 321
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 360,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_341",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          320,
+          341
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          360,
+          381
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 341
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 380,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_361",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          340,
+          361
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          380,
+          401
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 361
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 400,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_381",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          360,
+          381
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          400,
+          421
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 381
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 420,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_401",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          380,
+          401
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          420,
+          441
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 401
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 60,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_41",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          20,
+          41
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          60,
+          81
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 41
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 440,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_421",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          400,
+          421
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          440,
+          461
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 421
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 460,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_441",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          420,
+          441
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          460,
+          481
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 441
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 480,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_461",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          440,
+          461
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          480,
+          501
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 461
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 500,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_481",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          460,
+          481
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          500,
+          521
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 481
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 513,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_494",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          473,
+          494
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          513,
+          534
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 494
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 80,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_61",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          40,
+          61
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          80,
+          101
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 61
+    },
+    {
+      "candidate_id": "SRR27962769_66686929b8d17dfa",
+      "comparison_group": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_group",
+      "end": 100,
+      "id": "SRR27962769_66686929b8d17dfa_marginal_diagnostic_81",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          60,
+          81
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          100,
+          121
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 81
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 120,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_101",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          80,
+          101
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          120,
+          141
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 101
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 140,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_121",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          100,
+          121
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          140,
+          161
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 121
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 160,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_141",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          120,
+          141
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          160,
+          181
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 141
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 180,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_161",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          140,
+          161
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          180,
+          201
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 161
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 200,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_181",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          160,
+          181
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          200,
+          221
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 181
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 220,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_201",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          180,
+          201
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          220,
+          241
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 201
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 40,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_21",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          0,
+          21
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          40,
+          61
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 21
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 240,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_221",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          200,
+          221
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          240,
+          261
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 221
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 260,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_241",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          220,
+          241
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          260,
+          281
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 241
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 280,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_261",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          240,
+          261
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          280,
+          301
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 261
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 300,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_281",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          260,
+          281
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          300,
+          321
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 281
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 320,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_301",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          280,
+          301
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          320,
+          341
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 301
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 340,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_321",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          300,
+          321
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          340,
+          361
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 321
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 360,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_341",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          320,
+          341
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          360,
+          381
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 341
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 380,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_361",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          340,
+          361
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          380,
+          401
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 361
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 400,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_381",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          360,
+          381
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          400,
+          421
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 381
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 402,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_383",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          362,
+          383
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          402,
+          423
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 383
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 60,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_41",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          20,
+          41
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          60,
+          81
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 41
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 80,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_61",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          40,
+          61
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          80,
+          101
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 61
+    },
+    {
+      "candidate_id": "SRR27962769_8a88bc972180963c",
+      "comparison_group": "SRR27962769_8a88bc972180963c_marginal_diagnostic_group",
+      "end": 100,
+      "id": "SRR27962769_8a88bc972180963c_marginal_diagnostic_81",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          60,
+          81
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          100,
+          121
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 81
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 120,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_101",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          80,
+          101
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          120,
+          141
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 101
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 140,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_121",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          100,
+          121
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          140,
+          161
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 121
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 160,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_141",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          120,
+          141
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          160,
+          181
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 141
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 180,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_161",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          140,
+          161
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          180,
+          201
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 161
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 200,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_181",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          160,
+          181
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          200,
+          221
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 181
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 220,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_201",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          180,
+          201
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          220,
+          241
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 201
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 40,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_21",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          0,
+          21
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          40,
+          61
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 21
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 240,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_221",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          200,
+          221
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          240,
+          261
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 221
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 260,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_241",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          220,
+          241
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          260,
+          281
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 241
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 280,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_261",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          240,
+          261
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          280,
+          301
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 261
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 300,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_281",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          260,
+          281
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          300,
+          321
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 281
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 320,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_301",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          280,
+          301
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          320,
+          341
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 301
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 331,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_312",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          291,
+          312
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          331,
+          352
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 312
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 60,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_41",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          20,
+          41
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          60,
+          81
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 41
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 80,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_61",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          40,
+          61
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          80,
+          101
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 61
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_group",
+      "end": 100,
+      "id": "SRR27962769_e2d376bc5b0f09a9_marginal_diagnostic_81",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          60,
+          81
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          100,
+          121
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 81
+    },
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_CO1_1_frozen_alternatives",
+      "end": 328,
+      "id": "SRR27962769_e2d376bc5b0f09a9_supplementary_retained_corresponding_interval",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          289,
+          310
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          328,
+          349
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "supplementary_retained_corresponding_interval",
+      "source": {
+        "kind": "exact_indel_shorter_template_corresponding_span"
+      },
+      "start": 310
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 120,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_101",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          80,
+          101
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          120,
+          141
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 101
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 140,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_121",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          100,
+          121
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          140,
+          161
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 121
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 160,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_141",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          120,
+          141
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          160,
+          181
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 141
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 180,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_161",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          140,
+          161
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          180,
+          201
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 161
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 200,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_181",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          160,
+          181
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          200,
+          221
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 181
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 220,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_201",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          180,
+          201
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          220,
+          241
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 201
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 40,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_21",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          0,
+          21
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          40,
+          61
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 21
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 240,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_221",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          200,
+          221
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          240,
+          261
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 221
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 260,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_241",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          220,
+          241
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          260,
+          281
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 241
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 280,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_261",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          240,
+          261
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          280,
+          301
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 261
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 300,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_281",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          260,
+          281
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          300,
+          321
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 281
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 320,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_301",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          280,
+          301
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          320,
+          341
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 301
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 340,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_321",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          300,
+          321
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          340,
+          361
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 321
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 352,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_333",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          312,
+          333
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          352,
+          373
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 333
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 60,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_41",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          20,
+          41
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          60,
+          81
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 41
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 80,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_61",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          40,
+          61
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          80,
+          101
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 61
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_group",
+      "end": 100,
+      "id": "SRR27962769_e86a7ccf9e78adaf_marginal_diagnostic_81",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          60,
+          81
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          100,
+          121
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 81
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_CO1_1_frozen_alternatives",
+      "end": 349,
+      "id": "SRR27962769_e86a7ccf9e78adaf_primary_complete_placement_union_0",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          289,
+          310
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          349,
+          370
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "primary_complete_placement_union",
+      "source": {
+        "equivalent_placements": [
+          [
+            310,
+            331
+          ],
+          [
+            311,
+            332
+          ],
+          [
+            312,
+            333
+          ],
+          [
+            313,
+            334
+          ],
+          [
+            314,
+            335
+          ],
+          [
+            315,
+            336
+          ],
+          [
+            316,
+            337
+          ],
+          [
+            317,
+            338
+          ],
+          [
+            318,
+            339
+          ],
+          [
+            319,
+            340
+          ],
+          [
+            320,
+            341
+          ],
+          [
+            321,
+            342
+          ],
+          [
+            322,
+            343
+          ],
+          [
+            323,
+            344
+          ],
+          [
+            324,
+            345
+          ],
+          [
+            325,
+            346
+          ],
+          [
+            326,
+            347
+          ],
+          [
+            327,
+            348
+          ],
+          [
+            328,
+            349
+          ]
+        ],
+        "kind": "exact_indel_placement_union"
+      },
+      "start": 310
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_CO1_1_frozen_alternatives",
+      "end": 349,
+      "id": "SRR27962769_e86a7ccf9e78adaf_supplementary_marginal_difference_1",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          307,
+          328
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          349,
+          370
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "supplementary_marginal_difference",
+      "source": {
+        "kind": "maximal_common_flank_difference"
+      },
+      "start": 328
+    }
+  ],
+  "not_separately_assayed_declarations": [
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "reason": "zero_length_deletion_junction_is_covered_by_the_retained_placement_union_event",
+      "role": "supplementary_retained_family_interval",
+      "span": [
+        328,
+        328
+      ]
+    }
+  ],
+  "purpose": "Frozen scanner candidates and intervals only; no read outcomes or haplotype conclusion.",
+  "schema_version": 1,
+  "source_candidate_manifest_sha256": "a8df6371680394dfc37b8aec62cd2aed0e2968306f36420a6858221046b59b4e",
+  "source_event_receipt_sha256": "0833a22948ba11380a395e43143d729d24ebdee35eba11438a383f6dce3166c6",
+  "source_input_manifest_sha256": "b5e55563052202abb7b32186f0a8ca527f395b944f82679d1730473fffbf40e1",
+  "source_protocol_v2_sha256": "5affa863c9d80be579436e26fcee628ea23dfc987adc2288f6a067b376c9396b",
+  "source_scanner_sha256": "f6f1371bb4884c2a8e9475e5c56b99a30b8c429267a294cdeba19905db411983"
+}

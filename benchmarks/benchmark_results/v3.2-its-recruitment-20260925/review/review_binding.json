@@ -1,0 +1,66 @@
+{
+  "biological_reads_examined": 0,
+  "files": [
+    {
+      "path": "scripts/audit_its_recruitment.py",
+      "sha256": "5c6268e840a626eb980713da8b0a1992030c50bad0e258241dcce703b3f0a75d",
+      "size_bytes": 33328
+    },
+    {
+      "path": "tests/test_its_recruitment.py",
+      "sha256": "0e3f8392659385c970fea136db716dfa52fc9f169976c8bc8738d2a4ce5c6a2e",
+      "size_bytes": 26237
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/manifest.json",
+      "sha256": "8a61d8a1982fb5e4f2ad2cd40585a150f533066ad09949f9213cf66ebf1bc582",
+      "size_bytes": 7160
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/INDEPENDENT_REVIEW.md",
+      "sha256": "92b54e50ceacf5f25311c907fdf252c8f75911dce674ada3c27d807a735dde32",
+      "size_bytes": 6062
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/independent_cli_results.initial.json",
+      "sha256": "00fedae46e2b25d4f45c65e74585aa3ff2377eb6fdcd71a3bcb7b5d9d5c68cf4",
+      "size_bytes": 710
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/independent_cli_review.py",
+      "sha256": "a05b279ef5ffb1d257172f75dd5ffb13e47c08096d288e38f797a867c7eb312f",
+      "size_bytes": 4069
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/independent_synthetic_results.final.json",
+      "sha256": "93a57911219fb6903c0eb538f45e99e49a9282e629c78f6fdcb1d3d73171c552",
+      "size_bytes": 19061
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/independent_synthetic_results.initial.json",
+      "sha256": "3e12e48e0bbfe07211d48e9f9d41b507b4cf6cd84db98d9cef95a5c0cd4c8776",
+      "size_bytes": 18372
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/independent_synthetic_results.updated.json",
+      "sha256": "a03d02b20d53320bd25e0c5da9122f49ede9c1645771f937f4f5cef113c1525d",
+      "size_bytes": 19062
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/independent_synthetic_review.py",
+      "sha256": "95a8b2ac9ebdee6970745e69975955dc46f33ee88907eaf2f9c551dc23cb2241",
+      "size_bytes": 11174
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/scanner_tests.final.log",
+      "sha256": "197da0273cc4cf21342818d45405d23a43fed86d934039c2c41a787c1da27ef9",
+      "size_bytes": 2771
+    }
+  ],
+  "pre_execution_protocol_corrections": [
+    "Reconcile protocol pair cap to 4096 before freeze; independent 315-pair synthetic controls justify the pre-outcome amendment.",
+    "Clarify that unique local status is within each declared region class set."
+  ],
+  "scope": "Standalone local diagnostic only; no production threading, repeat-copy, full-product phase, or genome-wide uniqueness conclusion.",
+  "status": "independent_scientific_and_implementation_review_pass"
+}

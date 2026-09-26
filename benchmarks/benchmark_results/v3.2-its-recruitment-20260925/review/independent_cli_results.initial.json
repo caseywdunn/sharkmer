@@ -1,0 +1,36 @@
+{
+  "biological_reads_examined": 0,
+  "checks": [
+    {
+      "case": "existing_output_refused",
+      "status": "passed"
+    },
+    {
+      "case": "duplicate_ids",
+      "exit_status": 0,
+      "status": "passed"
+    },
+    {
+      "case": "wrong_hash",
+      "exit_status": 1,
+      "status": "passed"
+    },
+    {
+      "case": "truncated",
+      "exit_status": 1,
+      "status": "passed"
+    },
+    {
+      "case": "malformed_quality",
+      "exit_status": 1,
+      "status": "passed"
+    },
+    {
+      "case": "read_length_bound",
+      "exit_status": 1,
+      "status": "passed"
+    }
+  ],
+  "scanner_sha256": "5c6268e840a626eb980713da8b0a1992030c50bad0e258241dcce703b3f0a75d",
+  "status": "passed"
+}

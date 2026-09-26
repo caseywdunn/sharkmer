@@ -2,7 +2,9 @@
 
 Prepared 2026-09-09. **Development work only: awaiting user review, not release approval.**
 
-**Pause/resume status (2026-09-14):** see [HANDOFF.md](HANDOFF.md) for the
+**Resume status (2026-09-26):** the isolated `experiment/its-read-threading`
+branch completes a [variation-aware ITS diagnostic](ITS_READ_RECRUITMENT_RESULTS.md)
+without changing production assembly or repeat admission. See [HANDOFF.md](HANDOFF.md) for the
 latest code/evidence checkpoints and next investigation. Historical code and
 test totals below are not current totals; no release gate is waived.
 

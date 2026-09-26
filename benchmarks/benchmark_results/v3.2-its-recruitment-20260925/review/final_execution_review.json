@@ -1,0 +1,61 @@
+{
+  "biological_reads_examined": 0,
+  "execution_requirements": [
+    "Freeze these sources, input identities, review evidence, and actual argv before scans.",
+    "Use a two-hour Slurm allocation for three separately bounded 1800-second commands.",
+    "Preserve failures and check unchanged CO1 compatibility counts before interpretation."
+  ],
+  "files": [
+    {
+      "path": "dev_docs/ITS_READ_RECRUITMENT_PROTOCOL.md",
+      "sha256": "21e713458e802d2a60cdc2c42873ab9de82706aa1bb25b4b4e65548c154c856d",
+      "size_bytes": 10588
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/run_experiment.py",
+      "sha256": "aa5151784d0b08b9242b9e9bd36f319c16602692d95c473c128fdfcbf4280743",
+      "size_bytes": 10446
+    },
+    {
+      "path": "scripts/audit_its_recruitment.py",
+      "sha256": "5c6268e840a626eb980713da8b0a1992030c50bad0e258241dcce703b3f0a75d",
+      "size_bytes": 33328
+    },
+    {
+      "path": "tests/test_its_recruitment.py",
+      "sha256": "0e3f8392659385c970fea136db716dfa52fc9f169976c8bc8738d2a4ce5c6a2e",
+      "size_bytes": 26237
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/manifest.json",
+      "sha256": "8a61d8a1982fb5e4f2ad2cd40585a150f533066ad09949f9213cf66ebf1bc582",
+      "size_bytes": 7160
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/FINAL_PROTOCOL_RUNNER_REVIEW.md",
+      "sha256": "0913647059c8f954b541dda24343626d6aaf95a3319193c61b8642587b0bb58d",
+      "size_bytes": 2870
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/test_runner_independent.py",
+      "sha256": "8f761882870142157368af65f20e980cfdb5df17fa3e4fffe00a06dfb9f64145",
+      "size_bytes": 10177
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/runner_synthetic_results.json",
+      "sha256": "eb2bbb325980b2537fb6ebd908fbd69b35d7c2e41e8e0ac6a12c2ba05d241b7a",
+      "size_bytes": 1526
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/review_binding.json",
+      "sha256": "5d20a90e94450c3e49a56391209424ec933f56801907406cf7e6a1839d7d72ba",
+      "size_bytes": 3001
+    }
+  ],
+  "prior_protocol_conditions": "Satisfied: 4096 pairs with synthetic justification, per-region uniqueness, and explicit resource limits.",
+  "review_date": "2026-09-26",
+  "runner_synthetic_tests": 13,
+  "schema_version": 1,
+  "scope": "Clear to freeze and execute the standalone diagnostic with exact restored prefix; no production or biological-inference approval.",
+  "status": "independent_pre_execution_review_pass"
+}

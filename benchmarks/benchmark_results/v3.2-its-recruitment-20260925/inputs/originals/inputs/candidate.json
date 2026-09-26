@@ -1,0 +1,70 @@
+{
+  "gene": "insecta_ITS_2",
+  "kmer_length": 19,
+  "prior_analysis_sha256": "307b7798ea111ed8329d8fe40a4ed576638442ec1254f0dc6312811430b4b462",
+  "purpose": "historical_graph_hypothesis_not_reference_or_truth",
+  "record": {
+    "cyclic_scc_marker_occurrences": 5,
+    "marker_covered_runs": [
+      {
+        "end": 112,
+        "start": 93
+      },
+      {
+        "end": 296,
+        "start": 276
+      }
+    ],
+    "marker_occurrences": [
+      {
+        "cause": "pre_prune_cyclic_scc_node",
+        "end": 111,
+        "identity_kind": "oriented_node_sequence",
+        "identity_sequence": "ACCTCCCGGGAAGTCGCA",
+        "identity_sha256": "806f894006e56aef2a73911e4069d57cac6dacf8efc2dca170adc0a9b9fc9fce",
+        "start": 93
+      },
+      {
+        "cause": "pre_prune_cyclic_scc_node",
+        "end": 112,
+        "identity_kind": "oriented_node_sequence",
+        "identity_sequence": "CCTCCCGGGAAGTCGCAC",
+        "identity_sha256": "cf4bd7f2c1244ca6482c248d36f131a36544219f4a960f903561bcbb4f97155a",
+        "start": 94
+      },
+      {
+        "cause": "pre_prune_cyclic_scc_node",
+        "end": 294,
+        "identity_kind": "oriented_node_sequence",
+        "identity_sequence": "CGCTATAGAAAAGGCCGC",
+        "identity_sha256": "a81834ecd29868b8f416aa6e831490a4689b785543d23e4361a342f9f62220aa",
+        "start": 276
+      },
+      {
+        "cause": "pre_prune_cyclic_scc_node",
+        "end": 295,
+        "identity_kind": "oriented_node_sequence",
+        "identity_sequence": "GCTATAGAAAAGGCCGCG",
+        "identity_sha256": "f37ecb13c36e936c5a44f30407b41a24b44257efb31340d7f8dee388f62f003a",
+        "start": 277
+      },
+      {
+        "cause": "pre_prune_cyclic_scc_node",
+        "end": 296,
+        "identity_kind": "oriented_node_sequence",
+        "identity_sequence": "CTATAGAAAAGGCCGCGC",
+        "identity_sha256": "70a62bf2b4cae859b52ffc4cfe340fd03d0a9b52d869cddc61b03ea5435249d9",
+        "start": 278
+      }
+    ],
+    "max_observed_node_visits": 1,
+    "node_visit_limit": 2,
+    "omitted_self_loop_marker_occurrences": 0,
+    "oriented_sequence": "CCTTCGGAAGGATCATTACCAAAGTTTTAACACAGCGCACACACACACGCTCTCTGCGCTAAAAAAAATCGAGAGCCCCGGGAGACCTGGCCGACCTCCCGGGAAGTCGCACACGGATGCGAAAACTCTAGAGAGAGACGCGCGTCGCATACGGCAGGGCGGCGACGCCTTCTCCCCAAGCGGTAGCGCGCGTTCTCTCCGACGAAACGAGACCCGGGGGGGTGACCTCCCGGGCAGTCGCACGCCGATGCGAAAAATTCGAGCGAGCGCGGTACTCGCTATAGAAAAGGCCGCGCAGGAGACCTGAGCTACCTCCTTTCGCAAAAGACTGCGATAAACACAGCGGGCGCGGTACTCGCTATATGAAACGGCCGCGAGAGACGGTCGCGACTGCGGCAAGGGAGCTGACACGGTAAAGCGAAAGCAATTTTTTTCCTCGGGAGCACCGGGAGTCGCTAGCCGGCTCTCGGGCGTCTCCGTCACACGCTCGCGCCCGCCTCCGGCGGCCGAGTGGGAATCAACGCGTCGGCGGGCCCTTCGGGGCCCGTCGGCGCGCTTTCGGCCGCCCTCGGCCAACTTCTTTCTCTTCTTTCATAGAGCATCGGCGGTGGACGCTGTGTCGATAGACGAAGGACTCGGCTGTAGCTTGTCGTGCGCCTCTGAACAGGTTCGGTACACCATCATCTGAAACTGGTGGGTGCTGTTCTAAAGCTTAAAAGGGATGTTGCGGAGCCAGAGGGTTCCTTCGGAACTTGGGCGCACGAGATTCGGGACGAGTAATAGTCTTAAACTCTGGTTACCATCGCTAAGCTTGCTCCTATACGCTCGCGTTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTACGGGGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTTCACGAGAATGCTGAACCGGCTGTAGCTTTACTCGGAACGCTCCTCAGTAAGGGCGA",
+    "retained_collision_marker_occurrences": 0,
+    "sequence_length": 978,
+    "sequence_sha256": "23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c"
+  },
+  "schema_version": 1,
+  "threshold": 4
+}

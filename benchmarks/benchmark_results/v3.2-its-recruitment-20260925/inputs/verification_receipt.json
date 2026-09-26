@@ -1,0 +1,145 @@
+{
+  "archive_and_restore_members_verified": 205,
+  "archive_contents_sha256": "dcf9821b93b1b993115890953b6c45a3ab82e7dda090e988100f2523a9deda10",
+  "archive_sha256": "14799e1b8da1c1efc8675647a8c5a26076edde9894e55107f37db0ec0ba6abc3",
+  "argv": [
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/verify_inputs.py",
+    "--archive-dir",
+    "benchmarks/benchmark_results/v3.2-its-scc-audit-20260913",
+    "--restore",
+    "tmp/its-recruitment-20260925/prior",
+    "--inputs",
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs",
+    "--receipt",
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/verification_receipt.json"
+  ],
+  "classes": [
+    {
+      "graph_memberships_verified": 2,
+      "id": "region_1_class_1",
+      "length": 61,
+      "self_context": [
+        {
+          "decoy_id": "SRR27962769_23163ca76f97f5d1",
+          "end": 133,
+          "start": 72,
+          "strand": "-"
+        }
+      ],
+      "sequence_sha256": "40404d364fae6911f8382db2872c32f7b5cd45341a5df60e648195681959a381"
+    },
+    {
+      "graph_memberships_verified": 2,
+      "id": "region_1_class_2",
+      "length": 124,
+      "self_context": [],
+      "sequence_sha256": "a83b1cc8a71e9ea691f0ff7cfb7df8e45bb7805e042505cbbf1bb6c61b6b1031"
+    },
+    {
+      "graph_memberships_verified": 2,
+      "id": "region_2_class_1",
+      "length": 62,
+      "self_context": [
+        {
+          "decoy_id": "SRR27962769_23163ca76f97f5d1",
+          "end": 317,
+          "start": 255,
+          "strand": "+"
+        }
+      ],
+      "sequence_sha256": "1554fc065a40de1e2781cf715a67d9983b6e30b66f5533b402cc94e67e641c8f"
+    },
+    {
+      "graph_memberships_verified": 2,
+      "id": "region_2_class_2",
+      "length": 147,
+      "self_context": [],
+      "sequence_sha256": "8375d374c9a026b86f71b11bfce1f2c86e1e1078ec510e8aac472cb4af4ed684"
+    },
+    {
+      "graph_memberships_verified": 0,
+      "id": "SRR27962769_e2d376bc5b0f09a9_supplementary_retained_corresponding_interval",
+      "length": 60,
+      "self_context": [
+        {
+          "decoy_id": "SRR27962769_e2d376bc5b0f09a9",
+          "end": 349,
+          "start": 289,
+          "strand": "+"
+        }
+      ],
+      "sequence_sha256": "33c6e4a1b7b5332c605fa6f1b4a837f0055ced0c8f8212202ada2c012372eaa7"
+    },
+    {
+      "graph_memberships_verified": 0,
+      "id": "SRR27962769_e86a7ccf9e78adaf_primary_complete_placement_union_0",
+      "length": 81,
+      "self_context": [
+        {
+          "decoy_id": "SRR27962769_e86a7ccf9e78adaf",
+          "end": 370,
+          "start": 289,
+          "strand": "+"
+        }
+      ],
+      "sequence_sha256": "5353bccb017b9cfcda109bab32ba04a03fb6a8a369c83269c57d3c58cf503d64"
+    }
+  ],
+  "decoys": [
+    {
+      "gene": "ITS_2",
+      "id": "SRR27962769_23163ca76f97f5d1",
+      "length": 978,
+      "roles": [
+        "withheld_lost_candidate"
+      ],
+      "sequence_sha256": "23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c"
+    },
+    {
+      "gene": "16S_2",
+      "id": "SRR27962769_66686929b8d17dfa",
+      "length": 534,
+      "roles": [
+        "same-sample retained mitochondrial control"
+      ],
+      "sequence_sha256": "66686929b8d17dfa5e1851e37d6a089bc385a664000b4f50bf5c1431a3c22db4"
+    },
+    {
+      "gene": "12S",
+      "id": "SRR27962769_8a88bc972180963c",
+      "length": 423,
+      "roles": [
+        "same-sample retained mitochondrial control"
+      ],
+      "sequence_sha256": "8a88bc972180963c12a31346c26f60c6862fd516b5d6ccc2d120855c8e23d47c"
+    },
+    {
+      "gene": "CO1_1",
+      "id": "SRR27962769_e2d376bc5b0f09a9",
+      "length": 352,
+      "roles": [
+        "same-gene retained alternative",
+        "same_gene_retained_alternative"
+      ],
+      "sequence_sha256": "e2d376bc5b0f09a954f7dfb6083ff3e4a768a2b687685e18349f66dd25cfc9c0"
+    },
+    {
+      "gene": "CO1_1",
+      "id": "SRR27962769_e86a7ccf9e78adaf",
+      "length": 373,
+      "roles": [
+        "withheld_lost_candidate"
+      ],
+      "sequence_sha256": "e86a7ccf9e78adaf259ec804eb05dadaf8557bc4a7c637b483dfacd330a7e3ba"
+    }
+  ],
+  "derivation_helper_sha256": "996fd74d4da08cf897542725bdb5731e039850fd2e9ecade9382970b38b073f4",
+  "derived_manifest_sha256": "8a61d8a1982fb5e4f2ad2cd40585a150f533066ad09949f9213cf66ebf1bc582",
+  "original_copies_verified": 7,
+  "provenance_sha256": "011ed471b587a3b4bc50bbf52887e69ede37d6a162aef3e8d734e83c12c738e6",
+  "schema_version": 1,
+  "scope": "Independent archive, restore, literal class, graph membership, and finite-decoy checks; no biological reads inspected.",
+  "status": "pass",
+  "verified_at_utc": "2026-09-26T02:04:53.392556+00:00",
+  "verifier_sha256": "f7263a2748189b9dbc831a53cebd855313597590b79101da365b8c70808bc217"
+}

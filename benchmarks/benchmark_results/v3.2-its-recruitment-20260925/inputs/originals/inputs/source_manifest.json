@@ -1,0 +1,34 @@
+{
+  "candidate.json": {
+    "prior_analysis_path": "/tmp/sharkmer-withheld-diagnostics-20260913/withheld_results.json",
+    "sha256": "3d3aac8b03478363c1c79413d855344d6908f1c6b7e415bc0d9f8dcc17581683"
+  },
+  "co1_control_manifest.json": {
+    "derivation": "exact two historical CO1 structural events; all five original candidate competitors retained",
+    "sha256": "3da888e302751668165c2a50e84cba19d3511203454ea5df7ba1a4aa3755254d"
+  },
+  "expected_prefix.json": {
+    "original_path": "/tmp/sharkmer-read-audit-20260913/scan_specs/SRR27962769.expected_prefix.json",
+    "sha256": "ad67cd0d405ba6ad76d768361ada1238ac4ea666e41f3d5a45f11d070a586810"
+  },
+  "focused_baseline_receipt.json": {
+    "original_path": "/tmp/sharkmer-withheld-diagnostics-20260913/execution/SRR27962769.changed_on_focused.receipt.json",
+    "sha256": "476df0fe3c1648d24766a948e81a4a9c914c20d6c04b8d070ca4cb865adcc6dc"
+  },
+  "focused_panel.yaml": {
+    "original_path": "/tmp/sharkmer-withheld-diagnostics-20260913/focused_panels/SRR27962769.insecta.focused.yaml",
+    "sha256": "686610b55c1732ca28dfaa2da61aade6b3b16ad1a11ed841b29dc8d42a6a72f2"
+  },
+  "previous_comparison_protocol.json": {
+    "original_path": "/tmp/sharkmer-withheld-diagnostics-20260913/protocol.json",
+    "sha256": "970550748a89cae5169f2f57c54681207137d251e66343a8966a84605871e62f"
+  },
+  "prior_read_manifest.json": {
+    "original_path": "/tmp/sharkmer-read-audit-20260913/scan_specs/SRR27962769.scanner_manifest.json",
+    "sha256": "7085036d70e9d9e8f85987fab561eec4946b36aabf776d6c15916e465500d608"
+  },
+  "scanner": {
+    "path": "/home/claude/repos/sharkmer/scripts/audit_read_bridges.py",
+    "sha256": "f6f1371bb4884c2a8e9475e5c56b99a30b8c429267a294cdeba19905db411983"
+  }
+}

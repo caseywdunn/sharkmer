@@ -1,0 +1,173 @@
+{
+  "artifacts": {
+    "co1_substitutions_0.json": {
+      "sha256": "e310309670fe3844a716bec944a05e98b4c9a8ec69efba7b09d7735385bdc77d",
+      "size_bytes": 42183
+    },
+    "co1_substitutions_0.receipt.json": {
+      "sha256": "c9f5469ad554f6b709fad07665790754e5cd7eb1e3f2e1bae05ded4cd410907d",
+      "size_bytes": 2233
+    },
+    "co1_substitutions_0.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "co1_substitutions_0.stdout.txt": {
+      "sha256": "60c2f11915129fc1648f0f00c493c511ddbf57d9be04de8d3f3f7d973ca46d75",
+      "size_bytes": 155
+    },
+    "co1_substitutions_0.time.txt": {
+      "sha256": "3f6aa40ac513fbe7748aa56c903e24dda3850aae0e66e8089fe33ca097ff9f96",
+      "size_bytes": 1388
+    },
+    "co1_substitutions_1.json": {
+      "sha256": "885bd8a4f0fe442ea746d83d70f7bc7ae2e0a3ef46d7b224e3f803ae96d87d72",
+      "size_bytes": 43506
+    },
+    "co1_substitutions_1.receipt.json": {
+      "sha256": "a9d0a116180d40f706578607f800e8132a954d72f5f3390e362c6ad5c59e57a1",
+      "size_bytes": 2231
+    },
+    "co1_substitutions_1.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "co1_substitutions_1.stdout.txt": {
+      "sha256": "f8dfb62210ea51d66125f96b2b51bb5b638b705b4c69e87827bb07bc4012a534",
+      "size_bytes": 155
+    },
+    "co1_substitutions_1.time.txt": {
+      "sha256": "92dcfa3bb7226e05f13b4fca0d51f97839606e231c0399330de1a1a04f5d8b15",
+      "size_bytes": 1387
+    },
+    "execution.json": {
+      "sha256": "8403b7adebc6d069bb08800c8fadb3e16db2d08450152b9113f14f4c76fedf21",
+      "size_bytes": 7601
+    },
+    "freeze.json": {
+      "sha256": "cb68a200f410a89980380cf7d4c290c3d825c7b501f43acf16736ec954abe600",
+      "size_bytes": 11133
+    },
+    "recruitment.json": {
+      "sha256": "d2d3792eed0574f2d3113dd7f23b8ea94e9e4a5be36a5491d3f02e3f253c9669",
+      "size_bytes": 3671227
+    },
+    "recruitment.receipt.json": {
+      "sha256": "0eef727ee955ac369bb10d29b61db63dcf9f500d9005b0a6c833c95d53cb12d9",
+      "size_bytes": 2119
+    },
+    "recruitment.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "recruitment.stdout.txt": {
+      "sha256": "ce11e8700a37a33be1dee5879805cba7484dbae5aefb8ce502f18184a8cb6920",
+      "size_bytes": 136
+    },
+    "recruitment.time.txt": {
+      "sha256": "88074b268d48b408cd1b6ace7562defd416d59569f5e36640820790f2be85087",
+      "size_bytes": 1339
+    },
+    "started.json": {
+      "sha256": "bdbc646fb90d0734f66129cbbb2c31d720e6eb08c8c81017ae67e7371a1f4023",
+      "size_bytes": 306
+    }
+  },
+  "checks": [
+    "source and snapshot hashes before and after review",
+    "freeze, argv, command receipts, output hashes and input bookends",
+    "each ledger ordinal/header/sequence/quality bound to the original frozen prefix",
+    "exhaustive control placements on each recorded control read, Q20, strands, footprints and competitor uniqueness",
+    "historical control counts retained 27 exact / 28 with one substitution; lost 0 in both"
+  ],
+  "commands_verified": 3,
+  "controls": [
+    {
+      "events": [
+        {
+          "ambiguous_records": 0,
+          "distinct_footprints": 15,
+          "distinct_ids": 27,
+          "distinct_sequences": 15,
+          "event_id": "SRR27962769_e2d376bc5b0f09a9_supplementary_retained_corresponding_interval",
+          "exact_records": 27,
+          "one_substitution_records": 0,
+          "records": 27,
+          "role": "supplementary_retained_corresponding_interval",
+          "unique_records": 27
+        },
+        {
+          "ambiguous_records": 0,
+          "distinct_footprints": 0,
+          "distinct_ids": 0,
+          "distinct_sequences": 0,
+          "event_id": "SRR27962769_e86a7ccf9e78adaf_primary_complete_placement_union_0",
+          "exact_records": 0,
+          "one_substitution_records": 0,
+          "records": 0,
+          "role": "primary_complete_placement_union",
+          "unique_records": 0
+        }
+      ],
+      "independently_recomputed_matches": 27,
+      "ledger_records": 27,
+      "max_substitutions": 0
+    },
+    {
+      "events": [
+        {
+          "ambiguous_records": 0,
+          "distinct_footprints": 15,
+          "distinct_ids": 28,
+          "distinct_sequences": 16,
+          "event_id": "SRR27962769_e2d376bc5b0f09a9_supplementary_retained_corresponding_interval",
+          "exact_records": 27,
+          "one_substitution_records": 1,
+          "records": 28,
+          "role": "supplementary_retained_corresponding_interval",
+          "unique_records": 28
+        },
+        {
+          "ambiguous_records": 0,
+          "distinct_footprints": 0,
+          "distinct_ids": 0,
+          "distinct_sequences": 0,
+          "event_id": "SRR27962769_e86a7ccf9e78adaf_primary_complete_placement_union_0",
+          "exact_records": 0,
+          "one_substitution_records": 0,
+          "records": 0,
+          "role": "primary_complete_placement_union",
+          "unique_records": 0
+        }
+      ],
+      "independently_recomputed_matches": 28,
+      "ledger_records": 28,
+      "max_substitutions": 1
+    }
+  ],
+  "frozen_sources_verified": 36,
+  "ledger_records_bound": {
+    "co1_substitutions_0": 27,
+    "co1_substitutions_1": 28,
+    "recruitment": 117
+  },
+  "limitations": [
+    "Ledger binding verifies every reported record; this review does not independently establish absence of unreported matches among non-ledger reads.",
+    "No production scanner was imported or rerun; only new results_review files were written."
+  ],
+  "maximum_read_length": 150,
+  "review_source": {
+    "sha256": "db2f4f71abf15adf79e13a3a186042623f864fdb9d22bc18d48d9663539ca801",
+    "size_bytes": 18775
+  },
+  "reviewed_utc": "2026-09-26T15:48:51.170435+00:00",
+  "snapshots_verified": 36,
+  "status": "pass",
+  "streamed_prefix": {
+    "bases": 150000000,
+    "records": 1000000,
+    "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+    "size_bytes": 365356898
+  },
+  "unique_ordinals_bound": 117
+}

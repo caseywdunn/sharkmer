@@ -1,24 +1,33 @@
 # Pause/resume handoff
 
-Updated 2026-09-14. **Project paused at the user's request. No release approval.**
+Updated 2026-09-26. **Resumed on an experiment branch at the user's request.
+No release approval.**
 Start here in a new session; this handoff does not require the previous chat
 or live coding agents. [PLAN.md](PLAN.md) remains the detailed execution plan.
 
 ## Saved state
 
-- Work branch: `dev`. Latest scientific evidence commit:
-  `539d2d81f954aff54cc57be3e6f7d10f6ba19700` (committed and pushed).
-  The containing handoff commit adds documentation only.
+- Work branch: `experiment/its-read-threading`, created from clean `dev`
+  `956e771437a2410a7bcbb1504b033c61dd1e11b6`. Keep `dev` as the fixed comparison
+  baseline while evaluating the experiment. The preceding SCC evidence commit
+  is `539d2d81f954aff54cc57be3e6f7d10f6ba19700` (committed and pushed).
+- The new [read-recruitment diagnostic](ITS_READ_RECRUITMENT_RESULTS.md) is
+  standalone Python; production threading and admission remain unchanged.
+  Its frozen scanner, 29 tests, independent algorithm checks, and 13 wrapper
+  tests pass. All three biological/control scans completed with matching
+  input/source identities; see the new evidence bundle for receipts.
 - Package remains `3.2.0-dev`. The latest production-code change is `ae9189a`,
   adding bounded, hidden, opt-in withheld-path diagnostics without changing
   admission gates or emitted FASTA recovery. The subsequent ITS graph exporter
   is scratch instrumentation archived as evidence, not a production feature.
-- Sol/Terra implementation and Astra independent review are complete for the
-  latest audit. No agent implementation or measurement is awaiting completion.
-- [CI for the evidence commit](https://github.com/caseywdunn/sharkmer/actions/runs/34779935567)
+- The previous SCC implementation and independent review were complete before
+  this resumption. Current experiment sources, review, and execution are saved
+  without requiring live agent memory.
+- [CI for the preceding evidence commit](https://github.com/caseywdunn/sharkmer/actions/runs/34779935567)
   passes Linux/macOS Rust tests, Clippy, formatting, and Python/reference
-  validation. Local production checks pass 234 unit and 23 integration tests;
-  the local Python suite runs 112 tests with one skip and no failures.
+  validation. That checkpoint's local production checks passed 234 unit and
+  23 integration tests; its Python suite ran 112 tests with one skip and no
+  failures. The new isolated diagnostic's checks are recorded separately above.
 
 ## What we know
 
@@ -46,6 +55,16 @@ full-length accession support. Cross-individual SNPs/indels need not mean a
 wrong product. Two plant trnV-atpE annotation/assay conflicts and an independent
 Agalma ITS source remain unresolved; do not fill them with Sharkmer products.
 
+The [new variation-aware recruitment](ITS_READ_RECRUITMENT_RESULTS.md)
+finds 27 ITS1 and 28 ITS2 recruited records. ITS1 has one low-quality
+extra-cycle alignment. ITS2 has two Q20 best alignments to the longer class,
+but the two complete read sequences and their unfiltered placements are
+identical. One Q20 alignment shortens its span with a terminal deletion to
+exclude a Q11 base. This is one observed sequence pattern, not two independent
+footprints or proof of repeat count. Both historical short classes still have
+zero qualifying alignments. The unchanged CO1 controls reproduce 27/28
+retained records and zero lost records. Keep the repeat gate unchanged.
+
 ## Where the evidence lives
 
 Read these in order as needed; older reports preserve historical checkpoints:
@@ -59,12 +78,22 @@ Read these in order as needed; older reports preserve historical checkpoints:
    quarantine, variation-aware assessment, and remaining reference gaps.
 4. [Read-backed audit](READ_BACKED_AUDIT_RESULTS.md),
    [withheld-path diagnostics](WITHHELD_PATH_DIAGNOSTICS_RESULTS.md), then
-   [ITS SCC/read audit](ITS_SCC_AUDIT_RESULTS.md): successive localization and
-   structural tests, their frozen protocols, limitations, and archive links.
+   [ITS SCC/read audit](ITS_SCC_AUDIT_RESULTS.md), then the
+   [variation-aware recruitment](ITS_READ_RECRUITMENT_RESULTS.md): successive
+   localization, structural, and alignment tests, with frozen protocols,
+   limitations, and archive links.
 5. [Pre-release review](REVIEW_v3.2.md): remaining all-panel, held-out, dependency,
    and release gates; implementation/test totals in older sections are historical.
 
-The [latest evidence archive](../benchmarks/benchmark_results/v3.2-its-scc-audit-20260913/README.md)
+The [new recruitment bundle](../benchmarks/benchmark_results/v3.2-its-recruitment-20260925/README.md)
+contains the frozen protocol/input/source plan, source snapshots, complete
+recruited-read ledger, unchanged CO1 reruns, and independent reviews. The
+directory retains its 2026-09-25 start date; scanning completed 2026-09-26.
+The prefix was restored from ENA and hash-verified, rather than assuming
+original temporary files survived. Its source freeze SHA-256 is
+`cb68a200f410a89980380cf7d4c290c3d825c7b501f43acf16736ec954abe600`.
+
+The [preceding SCC evidence archive](../benchmarks/benchmark_results/v3.2-its-scc-audit-20260913/README.md)
 contains 205 members, including methods, scratch source/patch, graphs, read
 ledgers, tests, receipts, and independent reviews. Its SHA-256 is
 `14799e1b8da1c1efc8675647a8c5a26076edde9894e55107f37db0ec0ba6abc3`.
@@ -85,15 +114,16 @@ documentation snapshots describe their pinned commit, not later handoff edits.
 
 ## Resume from here
 
-1. Check the current `dev` branch, local changes, remote updates, and open issue
+1. Check `experiment/its-read-threading`, local changes, remote updates, and open issue
    status. Do not assume this dated handoff is newer than subsequent work.
-2. Propose and freeze a **local read-recruitment/alignment diagnostic** around
-   both ITS SCCs before inspecting new results. Test coverage and substitution/
-   indel variation using both flanks, quality/orientation rules, and repeat-copy/
-   cross-locus controls. The next protocol and implementation do not yet exist.
-3. Keep the same-input experiment distinct from adding coverage, paired reads,
-   or longer reads. Missing matches remain unresolved; alignments must not
-   silently establish repeat count or concatenate local support into full phase.
+2. Review the completed diagnostic's single ITS2 sequence pattern and sparse
+   ITS1 support. Specify a narrowly scoped proposal for reconstructing and
+   testing read-supported longer alternatives on this branch. Production
+   read-threading changes have not been implemented by this experiment.
+3. More independently positioned support and linkage between regions remain
+   missing. Freeze any additional-coverage, paired-read, or longer-read study
+   separately. Local alignments must not silently establish repeat count or
+   concatenate support into full phase.
 4. Only positive evidence for the actual restrictions removed can motivate a
    separately reviewed reconstruction/admission change. It needs appropriate
    repeat/mixture controls and a fresh high-copy regression comparison.

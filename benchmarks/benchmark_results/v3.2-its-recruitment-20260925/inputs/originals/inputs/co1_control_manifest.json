@@ -1,0 +1,230 @@
+{
+  "candidate_identity": {
+    "accession": "SRR27962769",
+    "panel": "insecta",
+    "taxon": "Gryllus bimaculatus"
+  },
+  "candidates": [
+    {
+      "id": "SRR27962769_23163ca76f97f5d1",
+      "sequence": "CCTTCGGAAGGATCATTACCAAAGTTTTAACACAGCGCACACACACACGCTCTCTGCGCTAAAAAAAATCGAGAGCCCCGGGAGACCTGGCCGACCTCCCGGGAAGTCGCACACGGATGCGAAAACTCTAGAGAGAGACGCGCGTCGCATACGGCAGGGCGGCGACGCCTTCTCCCCAAGCGGTAGCGCGCGTTCTCTCCGACGAAACGAGACCCGGGGGGGTGACCTCCCGGGCAGTCGCACGCCGATGCGAAAAATTCGAGCGAGCGCGGTACTCGCTATAGAAAAGGCCGCGCAGGAGACCTGAGCTACCTCCTTTCGCAAAAGACTGCGATAAACACAGCGGGCGCGGTACTCGCTATATGAAACGGCCGCGAGAGACGGTCGCGACTGCGGCAAGGGAGCTGACACGGTAAAGCGAAAGCAATTTTTTTCCTCGGGAGCACCGGGAGTCGCTAGCCGGCTCTCGGGCGTCTCCGTCACACGCTCGCGCCCGCCTCCGGCGGCCGAGTGGGAATCAACGCGTCGGCGGGCCCTTCGGGGCCCGTCGGCGCGCTTTCGGCCGCCCTCGGCCAACTTCTTTCTCTTCTTTCATAGAGCATCGGCGGTGGACGCTGTGTCGATAGACGAAGGACTCGGCTGTAGCTTGTCGTGCGCCTCTGAACAGGTTCGGTACACCATCATCTGAAACTGGTGGGTGCTGTTCTAAAGCTTAAAAGGGATGTTGCGGAGCCAGAGGGTTCCTTCGGAACTTGGGCGCACGAGATTCGGGACGAGTAATAGTCTTAAACTCTGGTTACCATCGCTAAGCTTGCTCCTATACGCTCGCGTTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTACGGGGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTTCACGAGAATGCTGAACCGGCTGTAGCTTTACTCGGAACGCTCCTCAGTAAGGGCGA",
+      "sequence_sha256": "23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c",
+      "source_candidates": [
+        {
+          "gene": "ITS_2",
+          "length": 978,
+          "role": "withheld_lost_candidate",
+          "sequence_sha256": "23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c"
+        }
+      ]
+    },
+    {
+      "id": "SRR27962769_66686929b8d17dfa",
+      "sequence": "GAACTCAGATCATGTAAGAATTTAATGGTCGAACAGACCAATATATTGAGCTCCTGCACCCAATAATTTTCTTAATCCAACATCGAGGTCGCAATCCTTATTATCAATATGAACTCTCCAATAATATTACGCTGTTATCCCTAAGGTATCTTTATCTTTATTCCATAATAACAGGATCAATAAACCAATCATCATAGTAAAATAAAAAGAAGTTAAATTATTCCCTTGTCACCCCAACAAAACATTATATAATAAAATATATTAAATACTACTAAACATATATTTTAATATAATAATATTAAGATCTATAGGGTCTTCTCGTCCCCTGTTATTATTTAAGCTTTTTGACTTAAAAATAAAATTCAATTAATTACACCGAGACAGTTATTGTTTCGTCAAACCATTCATTCCAGCCTTCAATTAAAAGACTAATGATTATGCTACCTTTGCACGGTCAATATACCGCGGCCATTTAATAATTCAGTGGGCAGGCACGACTTCATATTAATTCAAGAAGACATGTTTTTGATAAAC",
+      "sequence_sha256": "66686929b8d17dfa5e1851e37d6a089bc385a664000b4f50bf5c1431a3c22db4",
+      "source_candidates": [
+        {
+          "gene": "16S_2",
+          "length": 534,
+          "role": "same-sample retained mitochondrial control",
+          "sequence_sha256": "66686929b8d17dfa5e1851e37d6a089bc385a664000b4f50bf5c1431a3c22db4"
+        }
+      ]
+    },
+    {
+      "id": "SRR27962769_8a88bc972180963c",
+      "sequence": "ATGTTACGACTTATCTCATCTTAAAACGAGAGCGACGGGCGATATGTACACATTCTAGAGCCCTAATCAATTAATCAATTTATATTAATTTACAATCAAATCCACCTTCAAATAAATTATTCAAAATATTATCCATATAAATATTTTTATTGTAATCCATCTCTACTTGATTATTAGCTACACCTTGACCTGACATAATATACATATCAAATATAATGAAATTTTATACTCTCAACAAGATAATCTTACTGACGGCGGTATATAAACTGATAACAAAATCAAGTTACATAAATCGTGTATTATCAATTACAGAACAGATTCCTCTGAAAGGACTAAAACACCGCCAAATTCTTTGGGTTTCAAGATCATAACTACTACTACCCTGATTTTAGTATTTACATAACTTATAATAGGGTATCTAAT",
+      "sequence_sha256": "8a88bc972180963c12a31346c26f60c6862fd516b5d6ccc2d120855c8e23d47c",
+      "source_candidates": [
+        {
+          "gene": "12S",
+          "length": 423,
+          "role": "same-sample retained mitochondrial control",
+          "sequence_sha256": "8a88bc972180963c12a31346c26f60c6862fd516b5d6ccc2d120855c8e23d47c"
+        }
+      ]
+    },
+    {
+      "id": "SRR27962769_e2d376bc5b0f09a9",
+      "sequence": "TGATATAGCATTTCCTCGAATAAATAATATAAGATTTTGACTTTTACCTCCATCATTAACCCTTTTATTAACCAGAAGAATAGTTGAAAATGGTGCAGGAACAGGATGAACAGTTTATCCACCTCTATCAACAGGAATTGCTCATGCAGGAGCATCCGTTGACTTAGCAATTTTTTCATTACATTTAGCGGGAATTTCTTCAATTCTAGGAGCTGTAAATTTTATTACCACTATAATTAATATACGAGCACCAGGAATATCACTAGATCAAACACCATTATTTGTTTGAGCAGTTGGAATTACAGCTCTTTTATTATTATTATCATTACCAGTCCTAGCCGGTGCTATTACC",
+      "sequence_sha256": "e2d376bc5b0f09a954f7dfb6083ff3e4a768a2b687685e18349f66dd25cfc9c0",
+      "source_candidates": [
+        {
+          "gene": "CO1_1",
+          "length": 352,
+          "role": "same_gene_retained_alternative",
+          "sequence_sha256": "e2d376bc5b0f09a954f7dfb6083ff3e4a768a2b687685e18349f66dd25cfc9c0"
+        },
+        {
+          "gene": "CO1_1",
+          "length": 352,
+          "role": "same-gene retained alternative",
+          "sequence_sha256": "e2d376bc5b0f09a954f7dfb6083ff3e4a768a2b687685e18349f66dd25cfc9c0"
+        }
+      ]
+    },
+    {
+      "id": "SRR27962769_e86a7ccf9e78adaf",
+      "sequence": "TGATATAGCATTTCCTCGAATAAATAATATAAGATTTTGACTTTTACCTCCATCATTAACCCTTTTATTAACCAGAAGAATAGTTGAAAATGGTGCAGGAACAGGATGAACAGTTTATCCACCTCTATCAACAGGAATTGCTCATGCAGGAGCATCCGTTGACTTAGCAATTTTTTCATTACATTTAGCGGGAATTTCTTCAATTCTAGGAGCTGTAAATTTTATTACCACTATAATTAATATACGAGCACCAGGAATATCACTAGATCAAACACCATTATTTGTTTGAGCAGTTGGAATTACAGCTCTTTTATTATTATTATCATTATCATTATTATTATTATCATTACCAGTCCTAGCCGGTGCTATTACC",
+      "sequence_sha256": "e86a7ccf9e78adaf259ec804eb05dadaf8557bc4a7c637b483dfacd330a7e3ba",
+      "source_candidates": [
+        {
+          "gene": "CO1_1",
+          "length": 373,
+          "role": "withheld_lost_candidate",
+          "sequence_sha256": "e86a7ccf9e78adaf259ec804eb05dadaf8557bc4a7c637b483dfacd330a7e3ba"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "comparison_group": "SRR27962769_CO1_1_frozen_alternatives",
+      "end": 328,
+      "id": "SRR27962769_e2d376bc5b0f09a9_supplementary_retained_corresponding_interval",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          289,
+          310
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          328,
+          349
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "supplementary_retained_corresponding_interval",
+      "source": {
+        "kind": "exact_indel_shorter_template_corresponding_span"
+      },
+      "start": 310
+    },
+    {
+      "candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "comparison_group": "SRR27962769_CO1_1_frozen_alternatives",
+      "end": 349,
+      "id": "SRR27962769_e86a7ccf9e78adaf_primary_complete_placement_union_0",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          289,
+          310
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          349,
+          370
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "primary_complete_placement_union",
+      "source": {
+        "equivalent_placements": [
+          [
+            310,
+            331
+          ],
+          [
+            311,
+            332
+          ],
+          [
+            312,
+            333
+          ],
+          [
+            313,
+            334
+          ],
+          [
+            314,
+            335
+          ],
+          [
+            315,
+            336
+          ],
+          [
+            316,
+            337
+          ],
+          [
+            317,
+            338
+          ],
+          [
+            318,
+            339
+          ],
+          [
+            319,
+            340
+          ],
+          [
+            320,
+            341
+          ],
+          [
+            321,
+            342
+          ],
+          [
+            322,
+            343
+          ],
+          [
+            323,
+            344
+          ],
+          [
+            324,
+            345
+          ],
+          [
+            325,
+            346
+          ],
+          [
+            326,
+            347
+          ],
+          [
+            327,
+            348
+          ],
+          [
+            328,
+            349
+          ]
+        ],
+        "kind": "exact_indel_placement_union"
+      },
+      "start": 310
+    }
+  ],
+  "not_separately_assayed_declarations": [
+    {
+      "candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "reason": "zero_length_deletion_junction_is_covered_by_the_retained_placement_union_event",
+      "role": "supplementary_retained_family_interval",
+      "span": [
+        328,
+        328
+      ]
+    }
+  ],
+  "purpose": "unchanged_CO1_structural_control_recheck_all_original_competitors_retained",
+  "schema_version": 1,
+  "source_candidate_manifest_sha256": "a8df6371680394dfc37b8aec62cd2aed0e2968306f36420a6858221046b59b4e",
+  "source_event_receipt_sha256": "0833a22948ba11380a395e43143d729d24ebdee35eba11438a383f6dce3166c6",
+  "source_input_manifest_sha256": "b5e55563052202abb7b32186f0a8ca527f395b944f82679d1730473fffbf40e1",
+  "source_protocol_v2_sha256": "5affa863c9d80be579436e26fcee628ea23dfc987adc2288f6a067b376c9396b",
+  "source_scanner_sha256": "f6f1371bb4884c2a8e9475e5c56b99a30b8c429267a294cdeba19905db411983"
+}
