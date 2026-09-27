@@ -1,6 +1,6 @@
 # Pause/resume handoff
 
-Updated 2026-09-26. **Resumed on an experiment branch at the user's request.
+Updated 2026-09-27. **Resumed on an experiment branch at the user's request.
 No release approval.**
 Start here in a new session; this handoff does not require the previous chat
 or live coding agents. [PLAN.md](PLAN.md) remains the detailed execution plan.
@@ -11,11 +11,17 @@ or live coding agents. [PLAN.md](PLAN.md) remains the detailed execution plan.
   `956e771437a2410a7bcbb1504b033c61dd1e11b6`. Keep `dev` as the fixed comparison
   baseline while evaluating the experiment. The preceding SCC evidence commit
   is `539d2d81f954aff54cc57be3e6f7d10f6ba19700` (committed and pushed).
-- The new [read-recruitment diagnostic](ITS_READ_RECRUITMENT_RESULTS.md) is
+- The preceding [read-recruitment diagnostic](ITS_READ_RECRUITMENT_RESULTS.md),
+  committed as `69104d2`, is
   standalone Python; production threading and admission remain unchanged.
   Its frozen scanner, 29 tests, independent algorithm checks, and 13 wrapper
   tests pass. All three biological/control scans completed with matching
   input/source identities; see the new evidence bundle for receipts.
+- The subsequent [ordered-history prototype](READ_HISTORY_RESULTS.md) is
+  implemented and evaluated on the same branch. Its 25 tests, 861 independent
+  checks and 20 wrapper tests pass; both frozen graph scans complete. The
+  independent full-prefix/ledger review and complete evidence are archived.
+  This is standalone Python, not a production threading/admission change.
 - Package remains `3.2.0-dev`. The latest production-code change is `ae9189a`,
   adding bounded, hidden, opt-in withheld-path diagnostics without changing
   admission gates or emitted FASTA recovery. The subsequent ITS graph exporter
@@ -65,6 +71,15 @@ footprints or proof of repeat count. Both historical short classes still have
 zero qualifying alignments. The unchanged CO1 controls reproduce 27/28
 retained records and zero lost records. Keep the repeat gate unchanged.
 
+The [ordered-history experiment](READ_HISTORY_RESULTS.md) preserves repeat
+visits and linked branch choices that can disappear in aggregate edge/pair
+counts. On the fixed prefix it retains 773 graph-matching records before
+pruning and 284 afterward. All four classes remain represented, but all have
+zero complete exact/Q20 witnesses. The three previously identified spanning
+reads have identical histories before/after pruning: their specific exact-walk
+breaks already exist in the earlier graph. The known gapped ITS2 pattern is
+outside exact-walk sensitivity; this is not evidence of biological absence.
+
 ## Where the evidence lives
 
 Read these in order as needed; older reports preserve historical checkpoints:
@@ -79,7 +94,8 @@ Read these in order as needed; older reports preserve historical checkpoints:
 4. [Read-backed audit](READ_BACKED_AUDIT_RESULTS.md),
    [withheld-path diagnostics](WITHHELD_PATH_DIAGNOSTICS_RESULTS.md), then
    [ITS SCC/read audit](ITS_SCC_AUDIT_RESULTS.md), then the
-   [variation-aware recruitment](ITS_READ_RECRUITMENT_RESULTS.md): successive
+   [variation-aware recruitment](ITS_READ_RECRUITMENT_RESULTS.md), then
+   [ordered read histories](READ_HISTORY_RESULTS.md): successive
    localization, structural, and alignment tests, with frozen protocols,
    limitations, and archive links.
 5. [Pre-release review](REVIEW_v3.2.md): remaining all-panel, held-out, dependency,
@@ -92,6 +108,14 @@ directory retains its 2026-09-25 start date; scanning completed 2026-09-26.
 The prefix was restored from ENA and hash-verified, rather than assuming
 original temporary files survived. Its source freeze SHA-256 is
 `cb68a200f410a89980380cf7d4c290c3d825c7b501f43acf16736ec954abe600`.
+
+The [ordered-history bundle](../benchmarks/benchmark_results/v3.2-read-histories-20260926/README.md)
+adds the frozen design, standalone prototype, actual graph inputs, synthetic
+controls, complete retained-read/run ledgers, and independent reviews.
+Its source freeze SHA-256 is
+`337e27452472e6bbe99371b0ee12e3d41709a0079c1677ead72ff249180c45e9`.
+The directory retains its 2026-09-26 start date; final review completed
+2026-09-27. Both bundles include per-member inventories and checksums.
 
 The [preceding SCC evidence archive](../benchmarks/benchmark_results/v3.2-its-scc-audit-20260913/README.md)
 contains 205 members, including methods, scratch source/patch, graphs, read
@@ -116,11 +140,14 @@ documentation snapshots describe their pinned commit, not later handoff edits.
 
 1. Check `experiment/its-read-threading`, local changes, remote updates, and open issue
    status. Do not assume this dated handoff is newer than subsequent work.
-2. Review the completed diagnostic's single ITS2 sequence pattern and sparse
-   ITS1 support. Specify a narrowly scoped proposal for reconstructing and
-   testing read-supported longer alternatives on this branch. Production
-   read-threading changes have not been implemented by this experiment.
-3. More independently positioned support and linkage between regions remain
+2. Review the [completed prototype](READ_HISTORY_RESULTS.md) and its
+   [frozen integration/comparison criteria](READ_HISTORY_EXPERIMENT.md).
+   Implement bounded, quality-preserving replay and positioned history
+   collection under #145/#116 as an opt-in experiment, with feature-off
+   count/product compatibility. Production threading has not changed yet.
+3. Specify variant-aware graph mapping before reconstruction: preserve
+   competing indel placements and missing graph sequence as uncertainty.
+   More independently positioned support and linkage between regions remain
    missing. Freeze any additional-coverage, paired-read, or longer-read study
    separately. Local alignments must not silently establish repeat count or
    concatenate support into full phase.

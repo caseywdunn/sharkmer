@@ -1,0 +1,15 @@
+{
+  "checker": {
+    "sha256": "f22bfb7ce204318d60bde8368a533228bd2165e2503fe942bb4861034c645a29",
+    "size_bytes": 32754
+  },
+  "exit_code": 0,
+  "scope": "Two synthetic graph executions and twelve synthetic records only; archived exact-control metadata read without biological FASTQ scans",
+  "status": "pass",
+  "stderr": "",
+  "stdout": "{\"status\": \"pass\", \"synthetic_end_to_end_graphs\": 2, \"synthetic_prefix_records\": 12, \"independent_matching_networks\": 200, \"mutation_rejections\": 9, \"checker\": {\"size_bytes\": 32754, \"sha256\": \"f22bfb7ce204318d60bde8368a533228bd2165e2503fe942bb4861034c645a29\"}}\n{\"archived_exact_controls_verified\": {\"source\": \"archived read_summary.json, max_substitutions=0\", \"identity\": {\"size_bytes\": 8889, \"sha256\": \"9e9aca405e8fb8638970f1cfb033d16b267474e5ee5e118467ccf46a26b87249\"}, \"q20_exact_records\": {\"region_1_class_1\": 0, \"region_1_class_2\": 0, \"region_2_class_1\": 0, \"region_2_class_2\": 0}}}\n",
+  "test_source": {
+    "sha256": "7e39fe6937c8ee7b67cba4f278d1639513e8930c2011e412204cfb3dcdc9ad73",
+    "size_bytes": 6665
+  }
+}

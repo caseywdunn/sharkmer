@@ -1,0 +1,40 @@
+{
+  "errors": [],
+  "failures": [],
+  "limitations": "Tests verify published receipts and hashes, not storage recovery after power loss or hostile concurrent filesystem writes.",
+  "python": "3.9.21 (main, May 11 2026, 00:00:00) \n[GCC 11.5.0 20240719 (Red Hat 11.5.0-5)]",
+  "reviewed_utc": "2026-09-27T01:24:06.227090+00:00",
+  "runner": {
+    "sha256": "b6021262d89fa3360505becb7bab749eb2f023d3a13f06aaeb9ac733cb2c8c20",
+    "size_bytes": 12636
+  },
+  "scope": "Temporary synthetic files only; no biological data scanned or opened.",
+  "status": "pass",
+  "test_ids": [
+    "__main__.RunnerChecks.test_failed_freeze_is_durable_and_cannot_be_overwritten",
+    "__main__.RunnerChecks.test_failed_review_cannot_authorize_execution",
+    "__main__.RunnerChecks.test_freeze_mutation_after_command",
+    "__main__.RunnerChecks.test_input_mutation_after_command",
+    "__main__.RunnerChecks.test_invalid_review_paths_rejected",
+    "__main__.RunnerChecks.test_launch_setup_error_is_recorded",
+    "__main__.RunnerChecks.test_missing_executable",
+    "__main__.RunnerChecks.test_no_clobber_output",
+    "__main__.RunnerChecks.test_no_clobber_receipt_inline_failure_is_durable",
+    "__main__.RunnerChecks.test_no_clobber_timing",
+    "__main__.RunnerChecks.test_nonzero_exit",
+    "__main__.RunnerChecks.test_preverification_mismatch_stops_remaining_commands",
+    "__main__.RunnerChecks.test_repeat_execution_preserves_receipts",
+    "__main__.RunnerChecks.test_resource_limit_inherited",
+    "__main__.RunnerChecks.test_review_binds_exact_source_bytes",
+    "__main__.RunnerChecks.test_review_requires_all_mandatory_sources",
+    "__main__.RunnerChecks.test_short_timeout",
+    "__main__.RunnerChecks.test_snapshot_mutation_after_command",
+    "__main__.RunnerChecks.test_source_mutation_after_command",
+    "__main__.RunnerChecks.test_success_and_durable_receipts"
+  ],
+  "test_source": {
+    "sha256": "ae14b4d3dd66f36f4072fe49f477638e2af1b04cbf01121ce2137cd90410fb01",
+    "size_bytes": 13951
+  },
+  "tests_run": 20
+}

@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "scope": "Post-run independent review only; unchanged checker and biological outputs",
+  "checker_sha256": "f22bfb7ce204318d60bde8368a533228bd2165e2503fe942bb4861034c645a29",
+  "submission": {
+    "cwd": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer",
+    "partition": "day",
+    "cpus": 1,
+    "memory": "40G",
+    "wall_time": "00:35:00",
+    "address_space_limit_kib": 41943040,
+    "timeout_seconds": 1800
+  },
+  "attempts": [
+    {
+      "slurm_job_id": 27649979,
+      "status": "failed",
+      "argv": [
+        "python3",
+        "benchmarks/benchmark_results/v3.2-read-histories-20260926/results_review/provenance_ledger_review.py",
+        "--freeze",
+        "benchmarks/benchmark_results/v3.2-read-histories-20260926/freeze.json",
+        "--output",
+        "benchmarks/benchmark_results/v3.2-read-histories-20260926/results_review/provenance_ledger_review.json"
+      ],
+      "receipt": "benchmarks/benchmark_results/v3.2-read-histories-20260926/results_review/provenance_ledger_review.json.failure.json",
+      "reason": "Final artifact-list reporting requires an absolute freeze path"
+    },
+    {
+      "slurm_job_id": 27650157,
+      "status": "pass",
+      "argv": [
+        "python3",
+        "benchmarks/benchmark_results/v3.2-read-histories-20260926/results_review/provenance_ledger_review.py",
+        "--freeze",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-histories-20260926/freeze.json",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-histories-20260926/results_review/provenance_ledger_review.retry1.json"
+      ],
+      "receipt": "benchmarks/benchmark_results/v3.2-read-histories-20260926/results_review/provenance_ledger_review.retry1.json"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "context_source": "prior_recruitment_manifest.json",
+  "context_usage": "Archived self_context annotations and full candidates are lineage metadata only; no decoy matching is performed by this prototype.",
+  "regions": [
+    {
+      "classes": [
+        {
+          "candidate_id": "region_1_class_1",
+          "id": "region_1_class_1",
+          "kind": "historical_local_window",
+          "self_context": [
+            {
+              "decoy_id": "SRR27962769_23163ca76f97f5d1",
+              "end": 133,
+              "start": 72,
+              "strand": "-"
+            }
+          ],
+          "sequence": "CTCTAGAGTTTTCGCATCCGTGTGCGACTTCCCGGGAGGTCGGCCAGGTCTCCCGGGGCTC",
+          "sequence_sha256": "40404d364fae6911f8382db2872c32f7b5cd45341a5df60e648195681959a381",
+          "window_start": 0
+        },
+        {
+          "candidate_id": "region_1_class_2",
+          "id": "region_1_class_2",
+          "kind": "extra_cycle_local_window",
+          "self_context": [],
+          "sequence": "CTCTAGAGTTTTCGCATCCGTGTGCGACTTCCCGGGAGGTGCACCAAGCCTCCCGGGGCACGTGGTAAAAATGTTTCGCATCCAGTGCGACTTCCCGGGAGGTCGGCCAGGTCTCCCGGGGCTC",
+          "sequence_sha256": "a83b1cc8a71e9ea691f0ff7cfb7df8e45bb7805e042505cbbf1bb6c61b6b1031",
+          "window_start": 0
+        }
+      ],
+      "id": "region_1"
+    },
+    {
+      "classes": [
+        {
+          "candidate_id": "region_2_class_1",
+          "id": "region_2_class_1",
+          "kind": "historical_local_window",
+          "self_context": [
+            {
+              "decoy_id": "SRR27962769_23163ca76f97f5d1",
+              "end": 317,
+              "start": 255,
+              "strand": "+"
+            }
+          ],
+          "sequence": "AATTCGAGCGAGCGCGGTACTCGCTATAGAAAAGGCCGCGCAGGAGACCTGAGCTACCTCCT",
+          "sequence_sha256": "1554fc065a40de1e2781cf715a67d9983b6e30b66f5533b402cc94e67e641c8f",
+          "window_start": 0
+        },
+        {
+          "candidate_id": "region_2_class_2",
+          "id": "region_2_class_2",
+          "kind": "extra_cycle_local_window",
+          "self_context": [],
+          "sequence": "AATTCGAGCGAGCGCGGTACTCGCTATAGAAAAGGCCGCGCGAGAAACACAGAGGGCGTCTTGGACCACCGCCACTAGCTGCGGGTAGCCCAGCGGGCGCGGTACCCGCTATAGAAAAGGCCGCGCAGGAGACCTGAGCTACCTCCT",
+          "sequence_sha256": "8375d374c9a026b86f71b11bfce1f2c86e1e1078ec510e8aac472cb4af4ed684",
+          "window_start": 0
+        }
+      ],
+      "id": "region_2"
+    }
+  ],
+  "schema_version": 1
+}

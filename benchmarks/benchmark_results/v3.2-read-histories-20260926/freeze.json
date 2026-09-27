@@ -1,0 +1,153 @@
+{
+  "address_space_bytes": 42949672960,
+  "baseline": "956e771437a2410a7bcbb1504b033c61dd1e11b6",
+  "branch": "experiment/its-read-threading",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_histories.py",
+        "--fastq",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/data/its-recruitment-20260925/SRR27962769.first1M_R1.retry1.fastq",
+        "--graph",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/graph_pre.json",
+        "--manifest",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/its_manifest.json",
+        "--expected-prefix",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/expected_prefix.json",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/read-histories-20260926/run-v1/histories_pre.json"
+      ],
+      "id": "histories_pre"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_histories.py",
+        "--fastq",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/data/its-recruitment-20260925/SRR27962769.first1M_R1.retry1.fastq",
+        "--graph",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/graph_post.json",
+        "--manifest",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/its_manifest.json",
+        "--expected-prefix",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/expected_prefix.json",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/read-histories-20260926/run-v1/histories_post.json"
+      ],
+      "id": "histories_post"
+    }
+  ],
+  "fastq": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/data/its-recruitment-20260925/SRR27962769.first1M_R1.retry1.fastq",
+  "frozen_utc": "2026-09-27T01:47:58.068020+00:00",
+  "independent_review": {
+    "sha256": "c07453abfb20792e775bdcb060086c20a32579b859dc19377c191ea52dafbf98",
+    "size_bytes": 5117
+  },
+  "input_identity": {
+    "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+    "size_bytes": 365356898
+  },
+  "preceding_diagnostic_checkpoint": "69104d2",
+  "python": "3.9.21 (main, May 11 2026, 00:00:00) \n[GCC 11.5.0 20240719 (Red Hat 11.5.0-5)]",
+  "root": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer",
+  "run_dir": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/read-histories-20260926/run-v1",
+  "schema_version": 1,
+  "source_snapshot_root": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/read-histories-20260926/run-v1/source_snapshot",
+  "sources": {
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/archive_contents.json": {
+      "sha256": "dcf9821b93b1b993115890953b6c45a3ab82e7dda090e988100f2523a9deda10",
+      "size_bytes": 37191
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/expected_prefix.json": {
+      "sha256": "ad67cd0d405ba6ad76d768361ada1238ac4ea666e41f3d5a45f11d070a586810",
+      "size_bytes": 154
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/graph_archive_manifest.json": {
+      "sha256": "0000602640a763c72b562c1febc2676e618d6587fe3738f32998bfcf730c9780",
+      "size_bytes": 102684
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/graph_post.json": {
+      "sha256": "b23e89f11d6ed653c7d8113a3f2c07506932049c8ed2397d4083a2f5fd5dfd40",
+      "size_bytes": 775953
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/graph_pre.json": {
+      "sha256": "0810b40673c4e4bdc7dcad0573bbe7f3f49e8a0b4542ff5789bd7ce2ec545bf9",
+      "size_bytes": 1752228
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/its_manifest.json": {
+      "sha256": "029ee64efc499f444a0ad64561dd2d54945d8529513a3a81bea67591b6aa0183",
+      "size_bytes": 2448
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/originals/region_1.scanner_manifest.json": {
+      "sha256": "b0e7e4c9b25b9dbce9a06570a87e80ccf41f473b2a24c637dec8a109b75edd82",
+      "size_bytes": 13898
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/originals/region_2.scanner_manifest.json": {
+      "sha256": "33d7921f42c9d20f1536e632fdead3cabd430b207c0dfcc648c38124d79a41d2",
+      "size_bytes": 15650
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/prior_recruitment_manifest.json": {
+      "sha256": "8a61d8a1982fb5e4f2ad2cd40585a150f533066ad09949f9213cf66ebf1bc582",
+      "size_bytes": 7160
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/provenance.json": {
+      "sha256": "e7f86eeb47f59411edede87f65994a1efbc1ed2507a1466a2b72293c1d75bd45",
+      "size_bytes": 4060
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/inputs/scc_analysis.json": {
+      "sha256": "0084a204c6622badd2cb61ab644cba42d84c43267a380153d54850366599d3c8",
+      "size_bytes": 92176
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/prepare_inputs.py": {
+      "sha256": "a221b3913f5989315f68ad0e3b81e8a9c486e4c4b834e554ec053db83151fdd7",
+      "size_bytes": 7832
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/review/PRE_EXECUTION_REVIEW.md": {
+      "sha256": "764362b3b50927bdbb7eb169518be18acc0e2903552477dedc6178bcfa496181",
+      "size_bytes": 7106
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/review/final_execution_review.json": {
+      "sha256": "c07453abfb20792e775bdcb060086c20a32579b859dc19377c191ea52dafbf98",
+      "size_bytes": 5117
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/review/independent_history_results.final.json": {
+      "sha256": "0852f016994efa9e8383253f1f797700a8bc71daccc39976fc2f01ff1069ccd8",
+      "size_bytes": 80038
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/review/independent_history_results.initial.json": {
+      "sha256": "372c6ac96193299615da716f3d8fbf576c655f7572c7002941d3e16b1431a13e",
+      "size_bytes": 76444
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/review/independent_history_review.py": {
+      "sha256": "be7ac631c35ae0e7d2f95c031c2f54e5b956f08cd56fc2492d293cbe0bdd870a",
+      "size_bytes": 29005
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/review/runner_synthetic_results.json": {
+      "sha256": "5eb6907d442aaddb540d844e580ef495c1deb60263266d82159cf9fa29d08c5a",
+      "size_bytes": 2018
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/review/test_runner_independent.py": {
+      "sha256": "ae14b4d3dd66f36f4072fe49f477638e2af1b04cbf01121ce2137cd90410fb01",
+      "size_bytes": 13951
+    },
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/run_experiment.py": {
+      "sha256": "b6021262d89fa3360505becb7bab749eb2f023d3a13f06aaeb9ac733cb2c8c20",
+      "size_bytes": 12636
+    },
+    "dev_docs/READ_HISTORY_EXPERIMENT.md": {
+      "sha256": "1e98060af85620034f2b20c0dc8dbf6a91313f7a39e14cd45927a49110c5d3fc",
+      "size_bytes": 14152
+    },
+    "scripts/audit_read_histories.py": {
+      "sha256": "feb61bdb227a14fa51ff5a3b5c2faa789ae4ff92e15a4eedb9f5413befee0c27",
+      "size_bytes": 27608
+    },
+    "tests/test_read_histories.py": {
+      "sha256": "f4c93d0fa546512f4e39c1d8ed0ebc91c07c2fe68255f36b2a7255576b454afa",
+      "size_bytes": 20514
+    }
+  },
+  "statement": "Method, graph/class inputs, sources, synthetic review and actual argv frozen before biological graph scans; decoys are lineage metadata only",
+  "timeout_seconds_per_command": 1800
+}
