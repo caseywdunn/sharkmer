@@ -1,0 +1,44 @@
+{
+  "accession": "SRR31887760",
+  "elapsed_seconds": 39.45560993603431,
+  "expected": {
+    "bases": 101000000,
+    "records": 1000000,
+    "sha256": "b952eb9be7212ae79da85b0548b1c74a0343637d8af400ae9a08968b297638ae",
+    "size_bytes": 267366976
+  },
+  "input_manifest_sha256": "cccead23eaafb91494241bf19470dd8cdd9a9e1c060b0f7d65e9016091f2f2f6",
+  "limits": {
+    "compressed_bytes": 536870912,
+    "elapsed_seconds": 1800,
+    "line_bytes": 4096
+  },
+  "observed": {
+    "bases": 101000000,
+    "records": 1000000,
+    "sha256": "b952eb9be7212ae79da85b0548b1c74a0343637d8af400ae9a08968b297638ae",
+    "size_bytes": 267366976
+  },
+  "output": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/reads/SRR31887760.first1M_R1.retry1.fastq",
+  "scope": "Only exact consumed first1M R1; complete compressed upstream checksum and former longer staged-file identity are not verified",
+  "source_sha256": "d49717be97a53db7c2501f92e129e0226ee649d8c95cc12566c1b0d3836198d1",
+  "status": "verified",
+  "transport": {
+    "compressed_bytes_consumed": 81604283,
+    "headers": {
+      "Accept-Ranges": "bytes",
+      "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+      "Access-Control-Allow-Methods": "GET,OPTIONS",
+      "Access-Control-Allow-Origin": "*",
+      "Connection": "close",
+      "Content-Length": "1449336386",
+      "Content-Type": "application/x-gzip",
+      "Date": "Sun, 27 Sep 2026 20:23:29 GMT",
+      "ETag": "\"56631e42-62dfe4aac1a80\"",
+      "Last-Modified": "Thu, 13 Feb 2025 04:14:18 GMT",
+      "Server": "Apache"
+    },
+    "status": 200,
+    "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "author_methods": 8,
+  "independent_methods": 6,
+  "independent_omission_subcases": 9,
+  "repeated_controls_not_new_independent_evidence": true,
+  "reviewed_artifacts": {
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/test_packaging_independent.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/test_packaging_independent.py",
+      "sha256": "e547d13ba7ac5f5d1127c297c4346b3ad7a14af641f3f7c2fdf6ad75f677fd06",
+      "size_bytes": 4962
+    },
+    "tmp/uncertain-products-20260927/package_evidence.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/package_evidence.py",
+      "sha256": "14842211d583c94d2210b7e26ea14e430ef1cd805a79b8edbbf5faaba316e420",
+      "size_bytes": 21469
+    },
+    "tmp/uncertain-products-20260927/test_package_evidence.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/test_package_evidence.py",
+      "sha256": "c80d31b69d48543c2b8cb49a5224cf9d59591e2dd316eccc52d27b843793f8a2",
+      "size_bytes": 12587
+    }
+  },
+  "scope": "Packaging omission correction only; unchanged biological outcomes not rerun.",
+  "shared_author_fixture_for_independent_setup": true,
+  "source_bookends_equal": true,
+  "status": "pass",
+  "steps": [
+    {
+      "log": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/independent_packaging-v2.log",
+        "sha256": "32007053307669621f3c65f596be004d0a6e59243545f5b7613b04b235bd02f8",
+        "size_bytes": 687
+      },
+      "name": "independent_packaging",
+      "returncode": 0
+    },
+    {
+      "log": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/author_packaging-v2.log",
+        "sha256": "e71c2e684836d6ee9b8e33a2ff03a5a540a900a9824c9f04ffc2f63211c71c83",
+        "size_bytes": 808
+      },
+      "name": "author_packaging",
+      "returncode": 0
+    }
+  ]
+}

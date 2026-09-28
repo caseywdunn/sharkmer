@@ -1,0 +1,47 @@
+{
+  "exact_historical_fasta_records": 5,
+  "json_counts_parity_costs_and_limits_match_independent_review": true,
+  "read_scan_performed": false,
+  "reviewed_artifacts": {
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/derivation.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/derivation.json",
+      "sha256": "2f3fa86e5f9661493bf89c4494922854984926ca5926e308a9e76002ecb7d6ba",
+      "size_bytes": 1897
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/derive_summary.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/derive_summary.py",
+      "sha256": "a619770d015adffe0bd3228574ca3d2662a3dc2399f3228c8119c55f9dab68bf",
+      "size_bytes": 17279
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/historical_exact_uncertain.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/historical_exact_uncertain.fasta",
+      "sha256": "ea10c880233d7d6b26e6e53d9aa74795d36eee57ba4862b653ce005874965f2f",
+      "size_bytes": 4811
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/historical_losses.tsv": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/historical_losses.tsv",
+      "sha256": "73b10d8d2e9b2227dead3858262e9bd164b5593bfd4780b74414d5bf0be07a12",
+      "size_bytes": 8315
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/sample_runs.tsv": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/sample_runs.tsv",
+      "sha256": "d92db7e812cc6df6c188fe1c9b106a1f1f9aa9a7be8f50afcd80ee151b9364ca",
+      "size_bytes": 991
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/summary.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/summary.json",
+      "sha256": "0fe9e98dd022d257db0374555cd9a32acbe1d56c4a0f5f22a812629b90faa6e5",
+      "size_bytes": 511991
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/uncertain_genes.tsv": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/uncertain_genes.tsv",
+      "sha256": "eba09e098666cba442c4a8bc3a2abce6430397e7048de1ff0e5339bef8f45a0f",
+      "size_bytes": 50095
+    }
+  },
+  "status": "pass",
+  "summary_gene_rows": 63,
+  "summary_run_rows": 9,
+  "tsv_values_match_json": true,
+  "uncertain_products": 34
+}

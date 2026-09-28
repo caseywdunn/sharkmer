@@ -1,0 +1,67 @@
+{
+  "archive": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/evidence.tar.gz",
+    "sha256": "c9f71e952720cc40a21e8f3a1774a7eac261a11312ac0737db88b85d4831c780",
+    "size_bytes": 24742787
+  },
+  "corrected_prior_attempt": {
+    "missing21scripts_now_present": true,
+    "sha256": "f2a58ef4e253c2cc81f651409f3f23caa09b820541e54f1518dd8feb33c7870e",
+    "status": "byte-integrity passed but source coverage incomplete; superseded by this archive"
+  },
+  "fastq_payloads": [
+    "candidate_source/tests/fixtures/ERR571460_100k_R1.fastq.gz",
+    "checked_source/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+  ],
+  "final_results_review": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/final_results_review.json",
+    "sha256": "9eb6c898799c95bda58fe8c7d4cf9b208cd4ec54efd3dcc9f3555ff9fa35b1b1",
+    "size_bytes": 134202
+  },
+  "fixture_note": "Two identical copies of the small committed100k integration fixture occur in compiled-source and checked-source namespaces; no external million-read prefix is included.",
+  "independently_verified": {
+    "all_passing_checked_source_payloads": 85,
+    "all_uncompressed_member_sizes_and_sha256": true,
+    "archived_plan_inventory_and_final_review_equal_external_copies": true,
+    "candidate_compiled_snapshot_files": 52,
+    "compiled_binaries_targets_toolchain_caches_excluded": true,
+    "exact_tar_member_set": true,
+    "external_million_read_fastq_excluded": true,
+    "member_path_safety_and_regular_file_types": true,
+    "older_nested_archive_payloads_excluded": true,
+    "prior_incomplete_archive_receipts_and_review_preserved": true,
+    "published_copy_equals_original": true,
+    "python_and_supporting_script_payloads": 21,
+    "selected_checks_builds_comparison_outputs_final_docs_present": true,
+    "selected_original_file_hashes_unchanged": true
+  },
+  "member_count": 458,
+  "recorded_utc": "2026-09-28T05:28:29.874646+00:00",
+  "reviewed_sidecars": {
+    "ARCHIVE_CONTENTS.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_CONTENTS.json",
+      "sha256": "75e6edc4044f99e1b64b94e8fda9b74e0dae7c8b6f3e7ef0ed07cb635439c67f",
+      "size_bytes": 144382
+    },
+    "ARCHIVE_PLAN.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_PLAN.json",
+      "sha256": "052e020938c976a4a406140cfb86227c0032b219e5727604d8307961454df627",
+      "size_bytes": 426569
+    },
+    "ARCHIVE_PUBLICATION.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_PUBLICATION.json",
+      "sha256": "3f35be4759157953e2e48d259a456483cea8c822859e521ef2b825598a1d5991",
+      "size_bytes": 1686
+    },
+    "ARCHIVE_RECEIPT.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_RECEIPT.json",
+      "sha256": "1a4f08ea3460924556732154ce72fc3480611a888c29323f4efd0f90baa89ed9",
+      "size_bytes": 876
+    }
+  },
+  "schema_version": 1,
+  "scope": "Archive identity, source/output coverage and publication-copy review; biological result interpretation remains the separately bound final results review. This receipt is external to the archive to avoid a checksum cycle.",
+  "selected_payload_count": 456,
+  "status": "pass",
+  "uncompressed_selected_payload_bytes": 37671706
+}

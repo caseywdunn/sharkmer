@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "sbatch",
+    "--parsable",
+    "--export=ALL,CARGO_HOME=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/cargo,RUSTUP_HOME=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup",
+    "--output=tmp/uncertain-products-20260927/slurm/comparison-v1-%j.log",
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/comparison.sbatch",
+    "--checks",
+    "tmp/uncertain-products-20260927/checks-v3/checks.json",
+    "--baseline-build",
+    "tmp/uncertain-products-20260927/builds/baseline-v3/build.json",
+    "--candidate-build",
+    "tmp/uncertain-products-20260927/builds/candidate-v1/build.json",
+    "--review",
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/final_execution_review.json",
+    "--attempt-dir",
+    "tmp/uncertain-products-20260927/comparison-v1"
+  ],
+  "attempt_directory_already_exists": false,
+  "compiled_summary": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/validation/compiled_summary.json",
+    "sha256": "f1c71b344653317b0db9b44a52fc50aa7ccd169e93dec27802837c85b90dd695",
+    "size_bytes": 5974
+  },
+  "planned_at_utc": "2026-09-28T04:21:15.032586+00:00",
+  "status": "awaiting_final_independent_review",
+  "submission_owner": "root"
+}

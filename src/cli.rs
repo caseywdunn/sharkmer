@@ -135,6 +135,7 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
         high_coverage_ratio: pcr::DEFAULT_HIGH_COVERAGE_RATIO,
         tip_coverage_fraction: pcr::DEFAULT_TIP_COVERAGE_FRACTION,
         diagnose_withheld_paths: false,
+        emit_uncertain: false,
     };
 
     Ok(pcr_params)
@@ -306,6 +307,10 @@ pub(crate) struct Args {
         hide = true
     )]
     pub(crate) diagnose_withheld_paths: bool,
+
+    /// Write bounded repeat-uncertain graph hypotheses to separate .uncertain.fasta files
+    #[arg(long, help_heading = "PCR")]
+    pub(crate) emit_uncertain: bool,
 
     /// Treat input as paired-end reads (exactly 2 files required: R1, R2).
     /// Hidden: ingestion works, but the paired-end phasing pipeline it is
@@ -599,7 +604,29 @@ pub(crate) fn collect_pcr_params(args: &Args) -> Result<Vec<pcr::PCRParams>> {
         );
     }
 
+    // Collection precedes ENA sample resolution, so this also guards remote
+    // input work before validate_args is called by main.
+    validate_uncertain_output_names(args, &pcr_runs)?;
     Ok(pcr_runs)
+}
+
+fn validate_uncertain_output_names(args: &Args, pcr_runs: &[pcr::PCRParams]) -> Result<()> {
+    if args.emit_uncertain {
+        let names: std::collections::HashSet<&str> = pcr_runs
+            .iter()
+            .map(|params| params.gene_name.as_str())
+            .collect();
+        for params in pcr_runs {
+            let uncertain_name = format!("{}.uncertain", params.gene_name);
+            ensure!(
+                !names.contains(uncertain_name.as_str()),
+                "--emit-uncertain output for gene '{}' conflicts with standard output for gene '{}'; rename one target",
+                params.gene_name,
+                uncertain_name
+            );
+        }
+    }
+    Ok(())
 }
 
 /// Print validation output for all collected primer pairs and exit.
@@ -676,6 +703,7 @@ pub(crate) fn resolve_sample_name(args: &Args) -> Result<(String, Option<EnaResu
 /// Validate CLI arguments: k, histo_max, min_kmer_count, input file existence,
 /// --ena vs input conflicts, and panel file paths.
 pub(crate) fn validate_args(args: &Args, pcr_runs: &[pcr::PCRParams]) -> Result<()> {
+    validate_uncertain_output_names(args, pcr_runs)?;
     let k = args.k;
 
     ensure!(
@@ -813,6 +841,12 @@ pub(crate) fn handle_dry_run(
     }
     for pcr_params in pcr_runs {
         eprintln!("  {}{}_{}.fasta", directory, sample, pcr_params.gene_name);
+        if args.emit_uncertain {
+            eprintln!(
+                "  {}{}_{}.uncertain.fasta (if uncertain hypotheses are retained)",
+                directory, sample, pcr_params.gene_name
+            );
+        }
     }
 
     if !pcr_runs.is_empty() {
@@ -922,5 +956,54 @@ mod tests {
             .unwrap_err()
             .to_string();
         assert!(!help.contains("--diagnose-withheld-paths"));
+    }
+
+    #[test]
+    fn test_emit_uncertain_flag_is_public_and_default_off() {
+        let default_args = Args::try_parse_from(["sharkmer", "reads.fastq"]).unwrap();
+        assert!(!default_args.emit_uncertain);
+        let enabled =
+            Args::try_parse_from(["sharkmer", "--emit-uncertain", "reads.fastq"]).unwrap();
+        assert!(enabled.emit_uncertain);
+        assert!(!enabled.diagnose_withheld_paths);
+        let help = Args::try_parse_from(["sharkmer", "--help"])
+            .unwrap_err()
+            .to_string();
+        assert!(help.contains("--emit-uncertain"));
+    }
+
+    #[test]
+    fn uncertain_output_name_collisions_fail_before_input_resolution_only_when_enabled() {
+        let specifications = [
+            "name=A,forward=ACGTACGTACGTACGTACGT,reverse=TGCATGCATGCATGCATGCA",
+            "name=A.uncertain,forward=ACGTACGTACGTACGTACGT,reverse=TGCATGCATGCATGCATGCA",
+        ];
+        let params: Vec<_> = specifications
+            .iter()
+            .map(|specification| parse_pcr_primers_string(specification).unwrap())
+            .collect();
+        let enabled =
+            Args::try_parse_from(["sharkmer", "--emit-uncertain", "/absent/read.fastq"]).unwrap();
+        let error = validate_args(&enabled, &params).unwrap_err().to_string();
+        assert!(error.contains("conflicts with standard output"));
+        assert!(!error.contains("Input file does not exist"));
+        let disabled = Args::try_parse_from(["sharkmer", "--sample", "test"]).unwrap();
+        validate_args(&disabled, &params).unwrap();
+
+        let mut before_ena = Args::try_parse_from([
+            "sharkmer",
+            "--emit-uncertain",
+            "--ena",
+            "SRR1",
+            "--pcr-primers",
+            specifications[0],
+            "--pcr-primers",
+            specifications[1],
+        ])
+        .unwrap();
+        let error = collect_pcr_params(&before_ena).unwrap_err().to_string();
+        assert!(error.contains("conflicts with standard output"), "{error}");
+        before_ena.emit_uncertain = false;
+        assert_eq!(collect_pcr_params(&before_ena).unwrap().len(), 2);
     }
 }

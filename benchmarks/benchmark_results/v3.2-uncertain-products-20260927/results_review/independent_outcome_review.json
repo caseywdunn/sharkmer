@@ -1,0 +1,2327 @@
+{
+  "comparisons": [
+    {
+      "accession": "SRR27962769",
+      "standard_parity": true,
+      "standard_products": 11,
+      "uncertain_products": 17
+    },
+    {
+      "accession": "SRR31887760",
+      "standard_parity": true,
+      "standard_products": 9,
+      "uncertain_products": 4
+    },
+    {
+      "accession": "SRR1057608",
+      "standard_parity": true,
+      "standard_products": 6,
+      "uncertain_products": 13
+    }
+  ],
+  "freeze": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/freeze.json",
+    "sha256": "ab139c02c2a14874fb66c41322268bdf5c690b837120c113f95f2ef2fe4cbb79",
+    "size_bytes": 547987
+  },
+  "gene_retention": {
+    "SRR1057608": [
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 13,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_12S",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 13,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_16S_1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 13,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CO1_1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 13,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CO2_1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CytB",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ND1",
+        "node_visit_skips": 697,
+        "observed_withheld_paths": 1,
+        "retained_path_records": 1,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 1,
+        "uncertain_products": 1
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 14437,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ND4",
+        "node_visit_skips": 2960,
+        "observed_withheld_paths": 14449,
+        "retained_path_records": 12,
+        "retention_truncated": true,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 12
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ND5",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_16S_2",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CO1_2",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CO2_2",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_NADH",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_Fz4",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_Gpdh",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_Pgi",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_Yp2",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_18S_1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_28S",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_18S_2",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ITS_1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ITS_2",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 0,
+        "uncertain_products": 0
+      }
+    ],
+    "SRR27962769": [
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 13,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_12S",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 13,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_16S_1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 13,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 1,
+        "gene": "insecta_CO1_1",
+        "node_visit_skips": 1,
+        "observed_withheld_paths": 2,
+        "retained_path_records": 2,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 1,
+        "uncertain_products": 1
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 13,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CO2_1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CytB",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ND1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ND4",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ND5",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_16S_2",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CO1_2",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CO2_2",
+        "node_visit_skips": 3196,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_NADH",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_Fz4",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_Gpdh",
+        "node_visit_skips": 5596,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_Pgi",
+        "node_visit_skips": 1318,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 325,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_Yp2",
+        "node_visit_skips": 4613,
+        "observed_withheld_paths": 328,
+        "retained_path_records": 3,
+        "retention_truncated": true,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 3
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 17,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_18S_1",
+        "node_visit_skips": 26502,
+        "observed_withheld_paths": 18,
+        "retained_path_records": 1,
+        "retention_truncated": true,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 1
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_28S",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_18S_2",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ITS_1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 168,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ITS_2",
+        "node_visit_skips": 5,
+        "observed_withheld_paths": 180,
+        "retained_path_records": 12,
+        "retention_truncated": true,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 12
+      }
+    ],
+    "SRR31887760": [
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 13,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 23,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_12S",
+        "node_visit_skips": 587,
+        "observed_withheld_paths": 26,
+        "retained_path_records": 3,
+        "retention_truncated": true,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 3
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 13,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_16S_1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 13,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CO1_1",
+        "node_visit_skips": 128,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 13,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CO2_1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CytB",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ND1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ND4",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1561,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ND5",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_16S_2",
+        "node_visit_skips": 771,
+        "observed_withheld_paths": 1,
+        "retained_path_records": 1,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 1
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CO1_2",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_CO2_2",
+        "node_visit_skips": 217,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_NADH",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_Fz4",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_Gpdh",
+        "node_visit_skips": 1347,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_Pgi",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199729
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_Yp2",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_18S_1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_28S",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_18S_2",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": false,
+        "standard_products": 1,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ITS_1",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      },
+      {
+        "allocated_share": {
+          "marker_occurrences": 1560,
+          "paths": 12,
+          "sequence_bases": 199728
+        },
+        "dropped_path_records": 0,
+        "exact_duplicate_path_records": 0,
+        "excluded_standard_equivalent_path_records": 0,
+        "gene": "insecta_ITS_2",
+        "node_visit_skips": 0,
+        "observed_withheld_paths": 0,
+        "retained_path_records": 0,
+        "retention_truncated": false,
+        "search_limits_reached": true,
+        "standard_products": 0,
+        "uncertain_products": 0
+      }
+    ]
+  },
+  "historical_losses": [
+    {
+      "accession": "SRR1057608",
+      "gene": "ND1",
+      "length": 263,
+      "matches": {
+        "baseline_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_on": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [
+              "uncertain_SRR1057608_insecta_ND1.uncertain_0 assembly_status=uncertain uncertainty=repeat_structure repeat_length=unresolved read_support=not_evaluated hypothesis_length=263 sequence_sha256=3ba955f286a5468dbd65fc5e81601dbd53f0d898189a6c576c91bc744098728f causes=pre_prune_cyclic_scc_node thresholds=7 source_path_records=1 enumeration=bounded limit_scope=gene search_limits_reached=true retention_truncated=false"
+            ],
+            "reverse_complement_only": []
+          }
+        }
+      },
+      "sequence_sha256": "3ba955f286a5468dbd65fc5e81601dbd53f0d898189a6c576c91bc744098728f"
+    },
+    {
+      "accession": "SRR27962769",
+      "gene": "CO1_1",
+      "length": 373,
+      "matches": {
+        "baseline_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_on": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [
+              "uncertain_SRR27962769_insecta_CO1_1.uncertain_0 assembly_status=uncertain uncertainty=repeat_structure repeat_length=unresolved read_support=not_evaluated hypothesis_length=373 sequence_sha256=e86a7ccf9e78adaf259ec804eb05dadaf8557bc4a7c637b483dfacd330a7e3ba causes=pre_prune_cyclic_scc_node thresholds=18 source_path_records=1 enumeration=bounded limit_scope=gene search_limits_reached=true retention_truncated=false"
+            ],
+            "reverse_complement_only": []
+          }
+        }
+      },
+      "sequence_sha256": "e86a7ccf9e78adaf259ec804eb05dadaf8557bc4a7c637b483dfacd330a7e3ba"
+    },
+    {
+      "accession": "SRR27962769",
+      "gene": "ITS_2",
+      "length": 978,
+      "matches": {
+        "baseline_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_on": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [
+              "uncertain_SRR27962769_insecta_ITS_2.uncertain_0 assembly_status=uncertain uncertainty=repeat_structure repeat_length=unresolved read_support=not_evaluated hypothesis_length=978 sequence_sha256=23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c causes=pre_prune_cyclic_scc_node thresholds=4 source_path_records=1 enumeration=bounded limit_scope=gene search_limits_reached=true retention_truncated=true"
+            ],
+            "reverse_complement_only": []
+          }
+        }
+      },
+      "sequence_sha256": "23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c"
+    },
+    {
+      "accession": "SRR31887760",
+      "gene": "12S",
+      "length": 475,
+      "matches": {
+        "baseline_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_on": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [
+              "uncertain_SRR31887760_insecta_12S.uncertain_2 assembly_status=uncertain uncertainty=repeat_structure repeat_length=unresolved read_support=not_evaluated hypothesis_length=475 sequence_sha256=bde6ccaf771a24982439c53e7d38c45748cb2773f6ce05660c2a31a85d9203be causes=pre_prune_cyclic_scc_node,retained_collision_edge thresholds=2 source_path_records=1 enumeration=bounded limit_scope=gene search_limits_reached=true retention_truncated=true"
+            ],
+            "reverse_complement_only": []
+          }
+        }
+      },
+      "sequence_sha256": "bde6ccaf771a24982439c53e7d38c45748cb2773f6ce05660c2a31a85d9203be"
+    },
+    {
+      "accession": "SRR31887760",
+      "gene": "12S",
+      "length": 499,
+      "matches": {
+        "baseline_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_on": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        }
+      },
+      "sequence_sha256": "c1a643a6313600b14ac0faae530e4fd93b48fa5007978c93ae81f089efa04148"
+    },
+    {
+      "accession": "SRR31887760",
+      "gene": "12S",
+      "length": 487,
+      "matches": {
+        "baseline_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_on": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        }
+      },
+      "sequence_sha256": "d147d2a3d79608354456b94cbfeb6df52eae820d135852530fb2d8798d54b39c"
+    },
+    {
+      "accession": "SRR31887760",
+      "gene": "16S_2",
+      "length": 590,
+      "matches": {
+        "baseline_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_off": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          }
+        },
+        "changed_on": {
+          "standard": {
+            "exact_oriented": [],
+            "reverse_complement_only": []
+          },
+          "uncertain": {
+            "exact_oriented": [
+              "uncertain_SRR31887760_insecta_16S_2.uncertain_0 assembly_status=uncertain uncertainty=repeat_structure repeat_length=unresolved read_support=not_evaluated hypothesis_length=590 sequence_sha256=6d6a1fe8e2de508afa9a757ceca421c0796eb2e7a70dcdd39b357190764f4049 causes=pre_prune_cyclic_scc_node,retained_collision_edge thresholds=2 source_path_records=1 enumeration=bounded limit_scope=gene search_limits_reached=true retention_truncated=false"
+            ],
+            "reverse_complement_only": []
+          }
+        }
+      },
+      "sequence_sha256": "6d6a1fe8e2de508afa9a757ceca421c0796eb2e7a70dcdd39b357190764f4049"
+    }
+  ],
+  "limitations": [
+    "Reads were not rescanned; exact prefix identities/counts come from independently verified preexecution byte hashes and frozen per-run before/after receipts.",
+    "Transaction and metadata schema validation reuses the reviewed production validator; retention conservation and output parity/exact-match classifications were independently recalculated.",
+    "No graph reconstruction or biological repeat-length/read-support validation. Non-observation is restricted by unchanged search and 21-target retention shares.",
+    "Single sequential trio per sample; runtime and RSS are descriptive only."
+  ],
+  "observed_costs": [
+    {
+      "accession": "SRR27962769",
+      "maximum_rss_bytes": 4569038848,
+      "role": "baseline_off",
+      "wall_seconds": 99.92088527115993
+    },
+    {
+      "accession": "SRR27962769",
+      "maximum_rss_bytes": 4569423872,
+      "role": "changed_off",
+      "wall_seconds": 99.61628878116608
+    },
+    {
+      "accession": "SRR27962769",
+      "maximum_rss_bytes": 4569030656,
+      "role": "changed_on",
+      "wall_seconds": 99.97946299705654
+    },
+    {
+      "accession": "SRR31887760",
+      "maximum_rss_bytes": 2287538176,
+      "role": "changed_on",
+      "wall_seconds": 63.90564353810623
+    },
+    {
+      "accession": "SRR31887760",
+      "maximum_rss_bytes": 2287292416,
+      "role": "baseline_off",
+      "wall_seconds": 61.26157525298186
+    },
+    {
+      "accession": "SRR31887760",
+      "maximum_rss_bytes": 2287685632,
+      "role": "changed_off",
+      "wall_seconds": 60.91101853991859
+    },
+    {
+      "accession": "SRR1057608",
+      "maximum_rss_bytes": 2287685632,
+      "role": "changed_off",
+      "wall_seconds": 42.58353732479736
+    },
+    {
+      "accession": "SRR1057608",
+      "maximum_rss_bytes": 2287534080,
+      "role": "changed_on",
+      "wall_seconds": 44.097108473069966
+    },
+    {
+      "accession": "SRR1057608",
+      "maximum_rss_bytes": 2287685632,
+      "role": "baseline_off",
+      "wall_seconds": 42.63942444883287
+    }
+  ],
+  "reviewed_artifacts": {
+    "tmp/uncertain-products-20260927/comparison-v1/freeze.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/freeze.json",
+      "sha256": "ab139c02c2a14874fb66c41322268bdf5c690b837120c113f95f2ef2fe4cbb79",
+      "size_bytes": 547987
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/orchestration.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/orchestration.json",
+      "sha256": "5af6cc761901064db8e2190f686acb2cf887cd1bea4b8af9e85942ae6b3f211e",
+      "size_bytes": 8188
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608.baseline_off.receipt.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608.baseline_off.receipt.json",
+      "sha256": "1d9b3468b4c5662e1a21c0db6904a56a98f536f2d2eff91dc61306cbd0beffcd",
+      "size_bytes": 72057
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608.changed_off.receipt.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608.changed_off.receipt.json",
+      "sha256": "8d56fa06728894b36af582a74ac1b106a8cad262254bf07cdf068c8f1fb559a4",
+      "size_bytes": 72024
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608.changed_on.receipt.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608.changed_on.receipt.json",
+      "sha256": "050c878003684953a68ecc79f81a5d2d29502579b02f4d7ea98b5fb28bfa8795",
+      "size_bytes": 515596
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/process_constraints.json",
+      "sha256": "38ea3b1b144f8deb8f8e25d50f1ea7be14fcf52d98c7b932df51782acd1d8d0a",
+      "size_bytes": 849
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/stderr.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/stderr.txt",
+      "sha256": "1fce2c190e948f5bc42fbb094c7dc1152a90f1a12dc3c5b172904d332648fee3",
+      "size_bytes": 1883
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/stdout.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/time.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/time.txt",
+      "sha256": "e242c4a5d9d6f577dfb00978f3c9e839de03ec94c346a841a8bf940b51c906c0",
+      "size_bytes": 1694
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608.lock": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608.manifest.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608.manifest.yaml",
+      "sha256": "c9c4f71b46710b6107fe4400e5876bd1c80f47c36e3c5dd8c92f50419f841cc7",
+      "size_bytes": 993
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608.stats.yaml",
+      "sha256": "0437d80c9150a21cafd8095fa0471288c6747edea1790b5277be8ae7e3a0911e",
+      "size_bytes": 41052
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608_insecta_CO1_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608_insecta_CO1_1.fasta",
+      "sha256": "c149ee64d4f3a14fa1e837149275094fcba7f347ca495f23f4e3f8c8464ac3a0",
+      "size_bytes": 509
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608_insecta_CO1_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608_insecta_CO1_2.fasta",
+      "sha256": "671758abeac58712bee625cb1d5aa59231b25d1315a31422b2524706e7610260",
+      "size_bytes": 1067
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608_insecta_CO2_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608_insecta_CO2_1.fasta",
+      "sha256": "67ace583f73e076d190937b554b30f975d043de85b2d6ede7bcefad7b8164ccd",
+      "size_bytes": 493
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608_insecta_CytB.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608_insecta_CytB.fasta",
+      "sha256": "19f022a828e8b9a24e67b4db8c1ff612c1d72638e204c9f9c8d1c36daaeef763",
+      "size_bytes": 608
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608_insecta_ND1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608_insecta_ND1.fasta",
+      "sha256": "abf2d2594dd4646224fcfa358cda365fa6020428ea179f464a86c4a93957e5e3",
+      "size_bytes": 435
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608_insecta_ND5.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/baseline_off/uncertain_SRR1057608_insecta_ND5.fasta",
+      "sha256": "5098060404035337262d1a5820e5dd6e400fb1fbbd23977e2fa5218d38d753b4",
+      "size_bytes": 498
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/process_constraints.json",
+      "sha256": "3d21b68dc207fc93f9829cf70c103356c9e918f78bcad5c65287f1aae4b81c63",
+      "size_bytes": 848
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/stderr.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/stderr.txt",
+      "sha256": "a669d3b506102895dd909653a9206ae499eeec0e43bcc5bee5cb9336e2fe5baf",
+      "size_bytes": 1883
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/stdout.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/time.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/time.txt",
+      "sha256": "c94e2fe0a013ff95deee973c400fbf13d576fecf114348acafcabb284db471c2",
+      "size_bytes": 1693
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608.lock": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608.manifest.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608.manifest.yaml",
+      "sha256": "41e2bb4c846f3a68c70cc0c9d43c1cfd804fbf5a579c5117af1e81abf3f2f1ea",
+      "size_bytes": 993
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608.stats.yaml",
+      "sha256": "3fbcba2911da60056ea8f1c686cff1a600b4009cffffd148eb638fd7b6a9a418",
+      "size_bytes": 41037
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608_insecta_CO1_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608_insecta_CO1_1.fasta",
+      "sha256": "c149ee64d4f3a14fa1e837149275094fcba7f347ca495f23f4e3f8c8464ac3a0",
+      "size_bytes": 509
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608_insecta_CO1_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608_insecta_CO1_2.fasta",
+      "sha256": "671758abeac58712bee625cb1d5aa59231b25d1315a31422b2524706e7610260",
+      "size_bytes": 1067
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608_insecta_CO2_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608_insecta_CO2_1.fasta",
+      "sha256": "67ace583f73e076d190937b554b30f975d043de85b2d6ede7bcefad7b8164ccd",
+      "size_bytes": 493
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608_insecta_CytB.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608_insecta_CytB.fasta",
+      "sha256": "19f022a828e8b9a24e67b4db8c1ff612c1d72638e204c9f9c8d1c36daaeef763",
+      "size_bytes": 608
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608_insecta_ND1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608_insecta_ND1.fasta",
+      "sha256": "abf2d2594dd4646224fcfa358cda365fa6020428ea179f464a86c4a93957e5e3",
+      "size_bytes": 435
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608_insecta_ND5.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_off/uncertain_SRR1057608_insecta_ND5.fasta",
+      "sha256": "5098060404035337262d1a5820e5dd6e400fb1fbbd23977e2fa5218d38d753b4",
+      "size_bytes": 498
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/process_constraints.json",
+      "sha256": "9a710eb519fa81e3b159602c498813979e2cbe2105a83e1f8c1a1d78ee36dae1",
+      "size_bytes": 872
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/stderr.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/stderr.txt",
+      "sha256": "73804271b27ad1e0f0c6d9fdcb4e297a6744c75868481b49bad6941306c282db",
+      "size_bytes": 2128
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/stdout.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/time.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/time.txt",
+      "sha256": "4b9f69d364a39e6c2fb74a01d65e954fb27fe0b9f05a2e00bda7e1baea561ff3",
+      "size_bytes": 1708
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608.lock": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608.manifest.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608.manifest.yaml",
+      "sha256": "7e92069f25bd834e32081b75f6fb0ea8560ed4617948a5378c6af404b9189c78",
+      "size_bytes": 1257
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608.stats.yaml",
+      "sha256": "49eca2a22693b224d8d5d32533eed3b8415d3aa2370b163f5301bcf07433a8b4",
+      "size_bytes": 325605
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_CO1_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_CO1_1.fasta",
+      "sha256": "c149ee64d4f3a14fa1e837149275094fcba7f347ca495f23f4e3f8c8464ac3a0",
+      "size_bytes": 509
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_CO1_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_CO1_2.fasta",
+      "sha256": "671758abeac58712bee625cb1d5aa59231b25d1315a31422b2524706e7610260",
+      "size_bytes": 1067
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_CO2_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_CO2_1.fasta",
+      "sha256": "67ace583f73e076d190937b554b30f975d043de85b2d6ede7bcefad7b8164ccd",
+      "size_bytes": 493
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_CytB.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_CytB.fasta",
+      "sha256": "19f022a828e8b9a24e67b4db8c1ff612c1d72638e204c9f9c8d1c36daaeef763",
+      "size_bytes": 608
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_ND1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_ND1.fasta",
+      "sha256": "abf2d2594dd4646224fcfa358cda365fa6020428ea179f464a86c4a93957e5e3",
+      "size_bytes": 435
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_ND1.uncertain.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_ND1.uncertain.fasta",
+      "sha256": "345b2fb1e3084c95443854ae81aa8a1d757bdb505af66e5b137920ecf46ba64d",
+      "size_bytes": 681
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_ND4.uncertain.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_ND4.uncertain.fasta",
+      "sha256": "dee668cd1180cfeebbafb4ced1232c3cd6e605db38307e4c537c0265a392fad9",
+      "size_bytes": 6904
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_ND5.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR1057608/changed_on/uncertain_SRR1057608_insecta_ND5.fasta",
+      "sha256": "5098060404035337262d1a5820e5dd6e400fb1fbbd23977e2fa5218d38d753b4",
+      "size_bytes": 498
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769.baseline_off.receipt.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769.baseline_off.receipt.json",
+      "sha256": "c3a13e1a25c861ee9a1f69d13abd332be43d869f9f7563a2b8dc5df45f1dcc87",
+      "size_bytes": 63824
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769.changed_off.receipt.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769.changed_off.receipt.json",
+      "sha256": "6fc15284f4fda4d3a49dd09f5063fe0c52d48a74c83b3ea361ddcf85b325666c",
+      "size_bytes": 63802
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769.changed_on.receipt.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769.changed_on.receipt.json",
+      "sha256": "06f96f0841af96caae99f9039afa0d1da16e9df225b0d508eb4791e329adfd91",
+      "size_bytes": 1317716
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/process_constraints.json",
+      "sha256": "b6557d419333abc3fa4310e8b087f5cbefae06e392e9e828696bbea89ba99aa7",
+      "size_bytes": 850
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/stderr.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/stderr.txt",
+      "sha256": "37118da4735fa3b7c8d157b78577fd4b83b3f49869964f0c5b85d270eeed66ac",
+      "size_bytes": 2529
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/stdout.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/time.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/time.txt",
+      "sha256": "8d345ad79af91bb61dacf0e9dbc20e8676bfdfcd9733a3172b4fb287763f4f86",
+      "size_bytes": 1698
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769.lock": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769.manifest.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769.manifest.yaml",
+      "sha256": "34fb61ea47aeca6ca69aa8f66b62de9d4233681e5d55d36315a7bad57e45b73f",
+      "size_bytes": 1621
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769.stats.yaml",
+      "sha256": "fa926cdb82db7a2ef2b549b494232f842cda87f5c0d15aa25e871a24b3bad567",
+      "size_bytes": 31494
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_12S.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_12S.fasta",
+      "sha256": "027ae5054401e141415eb8f2f5a1fbaffc94eb9ef557bcd2f3eee8e58a51f2c0",
+      "size_bytes": 624
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_16S_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_16S_1.fasta",
+      "sha256": "c3613dbc49802054abc94abaa8673262e998a68ccac0c6cd9422a98ce9575f76",
+      "size_bytes": 580
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_16S_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_16S_2.fasta",
+      "sha256": "9b39b0d576183ffdb8fc2d9415e0ca4debe24b21fed747a4954e1e036e6e93de",
+      "size_bytes": 740
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_CO1_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_CO1_1.fasta",
+      "sha256": "4fee671f61f3f6002fb518df607303b78caa5a2f73bd0517c0faa9d08202ba9a",
+      "size_bytes": 558
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_CO1_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_CO1_2.fasta",
+      "sha256": "f2face4846e721d65b815565a1317441ee1bff1742cf2492acfdd34e8aa9a7bb",
+      "size_bytes": 1065
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_CO2_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_CO2_1.fasta",
+      "sha256": "554f65418a0a043169933d81568c677f09f1bd1b45cc553e28961c820ef8da09",
+      "size_bytes": 491
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_CytB.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_CytB.fasta",
+      "sha256": "9fc673d662a1805a0a618a6333900e71638752e4baa1cc6549ecbaa1eee61d4f",
+      "size_bytes": 606
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_NADH.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_NADH.fasta",
+      "sha256": "bc9633b42ec85f99673058eb5ff881208f8d6d43b7762ad368e4b3dcc780a6f4",
+      "size_bytes": 748
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_ND1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_ND1.fasta",
+      "sha256": "b72cc7d9bab685d8a408d9013bf9bf4eb686072a7096364d65ed74c82a5393aa",
+      "size_bytes": 440
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_ND4.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_ND4.fasta",
+      "sha256": "a529eba59aa51af7185ccb53ab926205cf09a6f5dc14e11cf4aaf74d0bc60837",
+      "size_bytes": 440
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_ND5.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/baseline_off/uncertain_SRR27962769_insecta_ND5.fasta",
+      "sha256": "fd3944fa92fd7d058e4a0949a2a8a6b96e46d658de135be81ba006d761757b79",
+      "size_bytes": 500
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/process_constraints.json",
+      "sha256": "c963b54e0399b6db61940356c313bb5e7c146a8e791a614b82a0bb623ca00f87",
+      "size_bytes": 850
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/stderr.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/stderr.txt",
+      "sha256": "c6182614920ab985076f3efcdedffe1c0575c65a97c76a721194fc9fbb559b64",
+      "size_bytes": 2529
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/stdout.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/time.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/time.txt",
+      "sha256": "708866ae56645420cbde6732ff623441c5b80bb44ac94ddfa34a93454a9e54bd",
+      "size_bytes": 1697
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769.lock": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769.manifest.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769.manifest.yaml",
+      "sha256": "7f35be525b71aac6b66defa34ddaed881454984afbb69b63f466f4f6b7d3eb84",
+      "size_bytes": 1621
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769.stats.yaml",
+      "sha256": "c09598726ad4b5c477203032739bb74660a96459732782d41869bb01802f55e7",
+      "size_bytes": 31494
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_12S.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_12S.fasta",
+      "sha256": "027ae5054401e141415eb8f2f5a1fbaffc94eb9ef557bcd2f3eee8e58a51f2c0",
+      "size_bytes": 624
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_16S_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_16S_1.fasta",
+      "sha256": "c3613dbc49802054abc94abaa8673262e998a68ccac0c6cd9422a98ce9575f76",
+      "size_bytes": 580
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_16S_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_16S_2.fasta",
+      "sha256": "9b39b0d576183ffdb8fc2d9415e0ca4debe24b21fed747a4954e1e036e6e93de",
+      "size_bytes": 740
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_CO1_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_CO1_1.fasta",
+      "sha256": "4fee671f61f3f6002fb518df607303b78caa5a2f73bd0517c0faa9d08202ba9a",
+      "size_bytes": 558
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_CO1_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_CO1_2.fasta",
+      "sha256": "f2face4846e721d65b815565a1317441ee1bff1742cf2492acfdd34e8aa9a7bb",
+      "size_bytes": 1065
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_CO2_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_CO2_1.fasta",
+      "sha256": "554f65418a0a043169933d81568c677f09f1bd1b45cc553e28961c820ef8da09",
+      "size_bytes": 491
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_CytB.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_CytB.fasta",
+      "sha256": "9fc673d662a1805a0a618a6333900e71638752e4baa1cc6549ecbaa1eee61d4f",
+      "size_bytes": 606
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_NADH.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_NADH.fasta",
+      "sha256": "bc9633b42ec85f99673058eb5ff881208f8d6d43b7762ad368e4b3dcc780a6f4",
+      "size_bytes": 748
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_ND1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_ND1.fasta",
+      "sha256": "b72cc7d9bab685d8a408d9013bf9bf4eb686072a7096364d65ed74c82a5393aa",
+      "size_bytes": 440
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_ND4.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_ND4.fasta",
+      "sha256": "a529eba59aa51af7185ccb53ab926205cf09a6f5dc14e11cf4aaf74d0bc60837",
+      "size_bytes": 440
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_ND5.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_off/uncertain_SRR27962769_insecta_ND5.fasta",
+      "sha256": "fd3944fa92fd7d058e4a0949a2a8a6b96e46d658de135be81ba006d761757b79",
+      "size_bytes": 500
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/process_constraints.json",
+      "sha256": "e020c59c305a587f9722b17a53d2eb1ce57b802b23e603d4ebd4340e6d6da2f0",
+      "size_bytes": 874
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/stderr.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/stderr.txt",
+      "sha256": "ba9c495e0a9e4715acffd762b0e54f2577fbf2a7030f03914193fe187dc072e8",
+      "size_bytes": 3034
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/stdout.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/time.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/time.txt",
+      "sha256": "68d6bb1b9a12030f8b61966ea48d493abab1b32ecb75069fd426db936bea915a",
+      "size_bytes": 1713
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769.lock": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769.manifest.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769.manifest.yaml",
+      "sha256": "fe26ba065ac53581f94ba6d0703443c18c57551f9e0723204431dc3ae58ae950",
+      "size_bytes": 2159
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769.stats.yaml",
+      "sha256": "06185556827b9407da4a4351acf538960d63a71578d8be467d5bc51eb4eb9292",
+      "size_bytes": 821134
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_12S.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_12S.fasta",
+      "sha256": "027ae5054401e141415eb8f2f5a1fbaffc94eb9ef557bcd2f3eee8e58a51f2c0",
+      "size_bytes": 624
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_16S_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_16S_1.fasta",
+      "sha256": "c3613dbc49802054abc94abaa8673262e998a68ccac0c6cd9422a98ce9575f76",
+      "size_bytes": 580
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_16S_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_16S_2.fasta",
+      "sha256": "9b39b0d576183ffdb8fc2d9415e0ca4debe24b21fed747a4954e1e036e6e93de",
+      "size_bytes": 740
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_18S_1.uncertain.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_18S_1.uncertain.fasta",
+      "sha256": "e71a3a6a233a2dd9391ad7c2aae1d667041bd1e48b32782f52e19f18a6705b32",
+      "size_bytes": 1350
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_CO1_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_CO1_1.fasta",
+      "sha256": "4fee671f61f3f6002fb518df607303b78caa5a2f73bd0517c0faa9d08202ba9a",
+      "size_bytes": 558
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_CO1_1.uncertain.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_CO1_1.uncertain.fasta",
+      "sha256": "cecaa1fe46f8d0176a93c8ac30fa05d31fd9f694aa4f6b7af61e62cdddc00534",
+      "size_bytes": 796
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_CO1_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_CO1_2.fasta",
+      "sha256": "f2face4846e721d65b815565a1317441ee1bff1742cf2492acfdd34e8aa9a7bb",
+      "size_bytes": 1065
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_CO2_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_CO2_1.fasta",
+      "sha256": "554f65418a0a043169933d81568c677f09f1bd1b45cc553e28961c820ef8da09",
+      "size_bytes": 491
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_CytB.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_CytB.fasta",
+      "sha256": "9fc673d662a1805a0a618a6333900e71638752e4baa1cc6549ecbaa1eee61d4f",
+      "size_bytes": 606
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_ITS_2.uncertain.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_ITS_2.uncertain.fasta",
+      "sha256": "ffbef790de004a64fc241f88d4eac9f22edb7ad8e115db9c65fc8e5a7a763ba3",
+      "size_bytes": 16883
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_NADH.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_NADH.fasta",
+      "sha256": "bc9633b42ec85f99673058eb5ff881208f8d6d43b7762ad368e4b3dcc780a6f4",
+      "size_bytes": 748
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_ND1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_ND1.fasta",
+      "sha256": "b72cc7d9bab685d8a408d9013bf9bf4eb686072a7096364d65ed74c82a5393aa",
+      "size_bytes": 440
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_ND4.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_ND4.fasta",
+      "sha256": "a529eba59aa51af7185ccb53ab926205cf09a6f5dc14e11cf4aaf74d0bc60837",
+      "size_bytes": 440
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_ND5.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_ND5.fasta",
+      "sha256": "fd3944fa92fd7d058e4a0949a2a8a6b96e46d658de135be81ba006d761757b79",
+      "size_bytes": 500
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_Yp2.uncertain.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR27962769/changed_on/uncertain_SRR27962769_insecta_Yp2.uncertain.fasta",
+      "sha256": "53d670d5c445f11ca4152b5965c8d9f661e6e7df02d4e3920a3ac3a608a65549",
+      "size_bytes": 3198
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760.baseline_off.receipt.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760.baseline_off.receipt.json",
+      "sha256": "1c0991659f129e25d88aaf6bb63ce17c04786fd19e433101299ec8041442aed5",
+      "size_bytes": 74734
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760.changed_off.receipt.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760.changed_off.receipt.json",
+      "sha256": "918f3e7a2f1980efe4650c564307291cbb5e37a77229a8da18dd9136d990ae20",
+      "size_bytes": 74713
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760.changed_on.receipt.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760.changed_on.receipt.json",
+      "sha256": "e946986ef182a23ed40b2aed25d921740531a4978a75be941d28be982f021b8b",
+      "size_bytes": 983100
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/process_constraints.json",
+      "sha256": "8529d40443c2c911fad07e88ec82f7cb38e0399f18b72a525acad3a219270d86",
+      "size_bytes": 859
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/stderr.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/stderr.txt",
+      "sha256": "0386d15e0e509336f74bec705c2d5065c1a9396352f95517247e309ffc02032b",
+      "size_bytes": 2099
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/stdout.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/time.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/time.txt",
+      "sha256": "04a908242d4817e7314d4d5ecd2406e13a6132376f9d847ac44865e74fa1f26a",
+      "size_bytes": 1706
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760.lock": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760.manifest.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760.manifest.yaml",
+      "sha256": "028a239ff505131f09b72053a4b3e3b418e14e772f8d66ee50c9070c8c33024c",
+      "size_bytes": 1376
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760.stats.yaml",
+      "sha256": "6ec6ff5ccec9eb364b9f2ad7f2f4cc536ae0269a4d8a379b92346e76e7a33336",
+      "size_bytes": 39075
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_18S_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_18S_1.fasta",
+      "sha256": "93be2f028a222b3ed0c110ed4872b54732a5fbcb26b077e6adcc6ec434196aa6",
+      "size_bytes": 869
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_18S_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_18S_2.fasta",
+      "sha256": "3670a1991322a55041874b21e7b72d63d21fbffd21a1e34625028063fb253695",
+      "size_bytes": 2202
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_CO1_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_CO1_1.fasta",
+      "sha256": "b26d27d887728f075bc2bbe48a6da643021131521f323efbb8c5c1df99f5268b",
+      "size_bytes": 556
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_CO1_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_CO1_2.fasta",
+      "sha256": "f25e9ffbbbadd7dbd9b011d4a0444a8da7c41d097071236f1e690232b1d4478b",
+      "size_bytes": 1069
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_CO2_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_CO2_1.fasta",
+      "sha256": "9a437c6d273c7180a9fc8ce11dc186c8651cb5620e21a0c42eaf7066d12d298c",
+      "size_bytes": 494
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_CO2_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_CO2_2.fasta",
+      "sha256": "900db21e7932a3b3cb21145d936314a0cb5079a4cacc27ede6f0c4d56612e01f",
+      "size_bytes": 985
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_CytB.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_CytB.fasta",
+      "sha256": "2900007e1c4dfd60390de25dfc1d2b3e48647f36bfb007b3b3ed75485f2a3c08",
+      "size_bytes": 605
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_ND4.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_ND4.fasta",
+      "sha256": "22c76ba10ca2435dd9eab5fccfd55b28ab32b565454f39855893c279ad50b38b",
+      "size_bytes": 436
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_ND5.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/baseline_off/uncertain_SRR31887760_insecta_ND5.fasta",
+      "sha256": "32c6cc7620c6ba139032af7070f0f7c8970d0e60713516f5550dfcc1b3af6c2f",
+      "size_bytes": 500
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/process_constraints.json",
+      "sha256": "ddcd2681905ae76aa7e9196200bd5847a00e991d491dfbfad0f2d90fb88820de",
+      "size_bytes": 859
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/stderr.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/stderr.txt",
+      "sha256": "0386d15e0e509336f74bec705c2d5065c1a9396352f95517247e309ffc02032b",
+      "size_bytes": 2099
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/stdout.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/time.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/time.txt",
+      "sha256": "0791c66ed8e7592c47e376fc2b2870c072c0a662ade978dcabf555fdb34ea0b8",
+      "size_bytes": 1705
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760.lock": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760.manifest.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760.manifest.yaml",
+      "sha256": "ec55a9bc73c85c21ab73ecb8d9e63b98d92c1c865e03a2c2616bcf9e1e717cbc",
+      "size_bytes": 1376
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760.stats.yaml",
+      "sha256": "7f892c3582a5ffe9097978724ed4438e723049327e5e253f5e7a19f23559d8d8",
+      "size_bytes": 39075
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_18S_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_18S_1.fasta",
+      "sha256": "93be2f028a222b3ed0c110ed4872b54732a5fbcb26b077e6adcc6ec434196aa6",
+      "size_bytes": 869
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_18S_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_18S_2.fasta",
+      "sha256": "3670a1991322a55041874b21e7b72d63d21fbffd21a1e34625028063fb253695",
+      "size_bytes": 2202
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_CO1_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_CO1_1.fasta",
+      "sha256": "b26d27d887728f075bc2bbe48a6da643021131521f323efbb8c5c1df99f5268b",
+      "size_bytes": 556
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_CO1_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_CO1_2.fasta",
+      "sha256": "f25e9ffbbbadd7dbd9b011d4a0444a8da7c41d097071236f1e690232b1d4478b",
+      "size_bytes": 1069
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_CO2_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_CO2_1.fasta",
+      "sha256": "9a437c6d273c7180a9fc8ce11dc186c8651cb5620e21a0c42eaf7066d12d298c",
+      "size_bytes": 494
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_CO2_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_CO2_2.fasta",
+      "sha256": "900db21e7932a3b3cb21145d936314a0cb5079a4cacc27ede6f0c4d56612e01f",
+      "size_bytes": 985
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_CytB.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_CytB.fasta",
+      "sha256": "2900007e1c4dfd60390de25dfc1d2b3e48647f36bfb007b3b3ed75485f2a3c08",
+      "size_bytes": 605
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_ND4.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_ND4.fasta",
+      "sha256": "22c76ba10ca2435dd9eab5fccfd55b28ab32b565454f39855893c279ad50b38b",
+      "size_bytes": 436
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_ND5.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_off/uncertain_SRR31887760_insecta_ND5.fasta",
+      "sha256": "32c6cc7620c6ba139032af7070f0f7c8970d0e60713516f5550dfcc1b3af6c2f",
+      "size_bytes": 500
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/process_constraints.json",
+      "sha256": "44859b321247b88c226b49d1cbf5786df24473de7bea5b99c845c8a8cb25ded7",
+      "size_bytes": 882
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/stderr.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/stderr.txt",
+      "sha256": "7c57b4b36644a2209f1421027fb00d7a69f0409fbe0358f90724947763ce1ca4",
+      "size_bytes": 2349
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/stdout.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/stdout.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/time.txt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/time.txt",
+      "sha256": "92f395b2b2137ae65f9ae52a2b56f0b83a01555680fc31bfe18cd9d50e821121",
+      "size_bytes": 1721
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760.lock": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760.manifest.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760.manifest.yaml",
+      "sha256": "24f7cd60ac781123b714d40fa272cec599206a1a43dded7e7669fbf76c437fba",
+      "size_bytes": 1644
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760.stats.yaml",
+      "sha256": "fe479b1212c873d6f261bdd4eecba6539e0d46cc3c9240c3616f2d2567499674",
+      "size_bytes": 619497
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_12S.uncertain.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_12S.uncertain.fasta",
+      "sha256": "8dd8bfd9e3c969daa1a98d0c10f76d0785ea3e5f5493e938daac62371bff4d72",
+      "size_bytes": 2793
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_16S_2.uncertain.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_16S_2.uncertain.fasta",
+      "sha256": "744ad9899ceae06b437c879c196409c8ddeb30d686054f6e47a7623beaa79c13",
+      "size_bytes": 1039
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_18S_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_18S_1.fasta",
+      "sha256": "93be2f028a222b3ed0c110ed4872b54732a5fbcb26b077e6adcc6ec434196aa6",
+      "size_bytes": 869
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_18S_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_18S_2.fasta",
+      "sha256": "3670a1991322a55041874b21e7b72d63d21fbffd21a1e34625028063fb253695",
+      "size_bytes": 2202
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_CO1_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_CO1_1.fasta",
+      "sha256": "b26d27d887728f075bc2bbe48a6da643021131521f323efbb8c5c1df99f5268b",
+      "size_bytes": 556
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_CO1_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_CO1_2.fasta",
+      "sha256": "f25e9ffbbbadd7dbd9b011d4a0444a8da7c41d097071236f1e690232b1d4478b",
+      "size_bytes": 1069
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_CO2_1.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_CO2_1.fasta",
+      "sha256": "9a437c6d273c7180a9fc8ce11dc186c8651cb5620e21a0c42eaf7066d12d298c",
+      "size_bytes": 494
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_CO2_2.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_CO2_2.fasta",
+      "sha256": "900db21e7932a3b3cb21145d936314a0cb5079a4cacc27ede6f0c4d56612e01f",
+      "size_bytes": 985
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_CytB.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_CytB.fasta",
+      "sha256": "2900007e1c4dfd60390de25dfc1d2b3e48647f36bfb007b3b3ed75485f2a3c08",
+      "size_bytes": 605
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_ND4.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_ND4.fasta",
+      "sha256": "22c76ba10ca2435dd9eab5fccfd55b28ab32b565454f39855893c279ad50b38b",
+      "size_bytes": 436
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_ND5.fasta": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/SRR31887760/changed_on/uncertain_SRR31887760_insecta_ND5.fasta",
+      "sha256": "32c6cc7620c6ba139032af7070f0f7c8970d0e60713516f5550dfcc1b3af6c2f",
+      "size_bytes": 500
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/assessment.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/assessment.json",
+      "sha256": "cfe7cfe5b9a1b81c318741e9c48c600dd059950ddd850a7b810214682f2efa02",
+      "size_bytes": 1904066
+    },
+    "tmp/uncertain-products-20260927/comparison-v1/runs/execution.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/comparison-v1/runs/execution.json",
+      "sha256": "9e137c2d42a307172ce54d8ade8e83b798e766262260ff310cfac7cf4974d986",
+      "size_bytes": 4536
+    }
+  },
+  "source": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/independent_outcome_review.py",
+    "sha256": "68ee06ae31701eb0081d7708ff73527b0fb205379c400fabf7f95022c0ee3bb7",
+    "size_bytes": 16916
+  },
+  "status": "pass"
+}

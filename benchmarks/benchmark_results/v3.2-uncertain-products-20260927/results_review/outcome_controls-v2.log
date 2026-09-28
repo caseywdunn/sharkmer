@@ -1,0 +1,9 @@
+test_exact_reverse_and_near_are_distinct (__main__.RecountControls.test_exact_reverse_and_near_are_distinct) ... ok
+test_palindrome_is_not_double_counted (__main__.RecountControls.test_palindrome_is_not_double_counted) ... ok
+test_retention_positive (__main__.RecountControls.test_retention_positive) ... ok
+test_usage_discontinuity_and_missing_sources_rejected (__main__.RecountControls.test_usage_discontinuity_and_missing_sources_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.001s
+
+OK

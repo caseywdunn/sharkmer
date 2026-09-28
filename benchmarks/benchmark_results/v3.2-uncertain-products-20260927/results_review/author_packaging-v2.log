@@ -1,0 +1,13 @@
+test_checked_runtime_source_payloads_are_archived_and_bound (__main__.PackagingControls) ... ok
+test_checked_source_bookends_must_match (__main__.PackagingControls) ... ok
+test_output_must_be_disjoint_from_prepared_evidence_roots (__main__.PackagingControls) ... ok
+test_prepare_rejects_failed_assessment_and_symlinked_explicit_evidence (__main__.PackagingControls) ... ok
+test_prepare_requires_bound_final_artifacts_and_retains_selected_receipts (__main__.PackagingControls) ... ok
+test_report_pruning_is_limited_to_panels (__main__.PackagingControls) ... ok
+test_roundtrip_no_clobber_and_changed_source (__main__.PackagingControls) ... ok
+test_symlink_evidence_is_refused (__main__.PackagingControls) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.111s
+
+OK

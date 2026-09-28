@@ -979,6 +979,7 @@ mod tests {
             high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
             tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
             diagnose_withheld_paths: false,
+            emit_uncertain: false,
         }
     }
 

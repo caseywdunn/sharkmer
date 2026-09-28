@@ -1,0 +1,89 @@
+{
+  "schema_version": 1,
+  "status": "superseded_packaging_attempt",
+  "reason": "Byte/member integrity passed, but Python validator sources were omitted; no comparison result or production source failure.",
+  "original_archive_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v1",
+  "publication_receipt": {
+    "schema_version": 1,
+    "status": "verified_copy",
+    "files": [
+      {
+        "source": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v1/evidence.tar.gz",
+        "published": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/evidence.tar.gz",
+        "sha256": "f2a58ef4e253c2cc81f651409f3f23caa09b820541e54f1518dd8feb33c7870e",
+        "size_bytes": 13076561
+      },
+      {
+        "source": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v1/ARCHIVE_PLAN.json",
+        "published": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_PLAN.json",
+        "sha256": "b05eec8dd6e5c0e2941e058efe166a6db788b84c02dc8a10d921f58f9e5b02bd",
+        "size_bytes": 373425
+      },
+      {
+        "source": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v1/ARCHIVE_CONTENTS.json",
+        "published": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_CONTENTS.json",
+        "sha256": "2f599d6104eb596d0ecf47239d9975566b0af18e122dd3bcc0fd4ed2f647b3be",
+        "size_bytes": 123345
+      },
+      {
+        "source": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v1/ARCHIVE_RECEIPT.json",
+        "published": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_RECEIPT.json",
+        "sha256": "6bc53760cbcb4764c95740025b1685853a443905eaa6993a191d265c89591704",
+        "size_bytes": 876
+      }
+    ]
+  },
+  "packaging_receipt": {
+    "all_selected_source_bookends_equal": true,
+    "archive": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v1/evidence.tar.gz",
+      "sha256": "f2a58ef4e253c2cc81f651409f3f23caa09b820541e54f1518dd8feb33c7870e",
+      "size_bytes": 13076561
+    },
+    "member_inventory": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v1/ARCHIVE_CONTENTS.json",
+      "sha256": "2f599d6104eb596d0ecf47239d9975566b0af18e122dd3bcc0fd4ed2f647b3be",
+      "size_bytes": 123345
+    },
+    "plan": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v1/ARCHIVE_PLAN.json",
+      "sha256": "b05eec8dd6e5c0e2941e058efe166a6db788b84c02dc8a10d921f58f9e5b02bd",
+      "size_bytes": 373425
+    },
+    "schema_version": 1,
+    "status": "verified",
+    "verified_member_count": 377
+  },
+  "preserved_publication_files": [
+    {
+      "original_published_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/evidence.tar.gz",
+      "preserved_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-publication-v1/evidence.tar.gz",
+      "sha256": "f2a58ef4e253c2cc81f651409f3f23caa09b820541e54f1518dd8feb33c7870e",
+      "size_bytes": 13076561
+    },
+    {
+      "original_published_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_PLAN.json",
+      "preserved_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-publication-v1/ARCHIVE_PLAN.json",
+      "sha256": "b05eec8dd6e5c0e2941e058efe166a6db788b84c02dc8a10d921f58f9e5b02bd",
+      "size_bytes": 373425
+    },
+    {
+      "original_published_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_CONTENTS.json",
+      "preserved_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-publication-v1/ARCHIVE_CONTENTS.json",
+      "sha256": "2f599d6104eb596d0ecf47239d9975566b0af18e122dd3bcc0fd4ed2f647b3be",
+      "size_bytes": 123345
+    },
+    {
+      "original_published_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_RECEIPT.json",
+      "preserved_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-publication-v1/ARCHIVE_RECEIPT.json",
+      "sha256": "6bc53760cbcb4764c95740025b1685853a443905eaa6993a191d265c89591704",
+      "size_bytes": 876
+    },
+    {
+      "original_published_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_PUBLICATION.json",
+      "preserved_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-publication-v1/ARCHIVE_PUBLICATION.json",
+      "sha256": "d73c0dae44d16eb756a6868c2f2b433249a55d7cda737b9526aeab40c6920272",
+      "size_bytes": 1649
+    }
+  ]
+}

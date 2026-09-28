@@ -2,7 +2,28 @@
 
 Prepared 2026-09-09. **Development work only: awaiting user review, not release approval.**
 
-**Resume status (2026-09-27):** the isolated `experiment/its-read-threading`
+**Current work (2026-09-28):** [#157](https://github.com/caseywdunn/sharkmer/issues/157)
+is implemented and its nine frozen baseline/off/on comparisons are complete on
+`experiment/uncertain-products`. The
+[output contract and comparison protocol](UNCERTAIN_PRODUCTS.md) preserve
+standard admission/counts and expose bounded graph-path hypotheses in separate
+labelled FASTA and stats. Both hash backends pass 246 unit and 26 integration
+tests, formatting and Clippy; Python runs 184 tests with one existing skip,
+and all 156 references verify across ten panels.
+
+The [new results](UNCERTAIN_PRODUCTS_RESULTS.md) show unchanged standard
+sequences and counts (11 Gryllus, 9 Drosophila, 6 Heliconius), with 17/4/13
+additional uncertain hypotheses. Five of seven exact historical identities
+appear in this separate output: Gryllus CO1_1 373 bp and ITS_2 978 bp,
+Heliconius ND1 263 bp, and Drosophila 12S 475 bp and 16S_2 590 bp. Drosophila
+12S 487/499 bp remain unobserved under the fixed search/retention bounds.
+Emission does not validate repeat structure or restore standard recovery.
+Independent outcome review passes; the bundle records final results and
+archive verification receipts. The
+experiment remains unmerged, `dev` stays at `956e771`, and reconstruction,
+seven-loss disposition, held-out validation and release decisions remain open.
+
+**Preceding diagnostic status (2026-09-27):** the isolated `experiment/its-read-threading`
 branch completes the [variation-aware ITS diagnostic](ITS_READ_RECRUITMENT_RESULTS.md)
 and a [positioned read-history prototype](READ_HISTORY_RESULTS.md).
 The latter preserves information lost by aggregate threading counts, but all

@@ -121,7 +121,24 @@ The `--max-reads 1000000` argument indicates that the first million reads (indiv
 
 This analysis will generate one fasta file for each primer pair, named `{sample}_{gene}.fasta` (e.g., `Stenogorgia_casta_18S.fasta`). If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found. A YAML stats file (`{sample}.stats.yaml`) is also produced with run statistics, per-gene PCR results, and bounded diagnostics for each attempted coverage threshold. Threshold diagnostics record connectivity and search-limit observations, repeat-marker cause counts, and eligible or withheld complete candidate counts without serializing graph identifiers. A reached search quota records why enumeration stopped; it does not prove that another valid path exists beyond the quota.
 
-For developer investigation, the hidden opt-in `--diagnose-withheld-paths` flag adds bounded current-run withheld sequences and sequence-relative marker positions to the YAML stats, not the FASTA products. These are unsupported diagnostic hypotheses, not recovered sequences or complete read-bridge intervals. Default behavior is unchanged; retention limits and incomplete searches remain explicit. See [bounded withheld-path diagnostics](dev_docs/WITHHELD_PATH_DIAGNOSTICS.md).
+Add `--emit-uncertain` to also save a bounded selection of completed candidates
+with unresolved repeat structure to `{sample}_{gene}.uncertain.fasta`. Every
+header includes `assembly_status=uncertain`, `repeat_length=unresolved`, and
+`read_support=not_evaluated`. The emitted sequence and its length describe a
+graph-path hypothesis; the biological repeat length may differ. Ordinary FASTA
+files, gene success, and standard product counts keep their existing meaning.
+A gene can therefore have uncertain candidates while its standard status is
+`fail`. The separate `uncertain_products` stats field records the candidates,
+uncertainty-marker positions, source thresholds, and search/retention limits.
+An empty collection does not establish absence, and the bounded search does
+not enumerate every repeat alternative. See [uncertain output](dev_docs/UNCERTAIN_PRODUCTS.md)
+and the [implementation assessment](dev_docs/UNCERTAIN_PRODUCTS_RESULTS.md).
+
+For developer investigation, the hidden opt-in `--diagnose-withheld-paths` flag
+adds bounded current-run withheld sequences and sequence-relative marker
+positions to the YAML stats. It can be used independently of, or together with,
+`--emit-uncertain`; both use the same collection budget. See
+[bounded withheld-path diagnostics](dev_docs/WITHHELD_PATH_DIAGNOSTICS.md).
 
 In stats, `n_reads_read` is the number of FASTQ records read.
 `n_subreads_ingested` is a legacy-named count of FASTQ records submitted to

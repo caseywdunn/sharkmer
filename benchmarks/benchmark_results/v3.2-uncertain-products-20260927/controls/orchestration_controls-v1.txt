@@ -1,0 +1,13 @@
+test_check_inventory_prunes_generated_panel_outputs (__main__.Controls) ... ok
+test_failure_is_receipted_and_not_overwritten (__main__.Controls) ... ok
+test_incomplete_checks_gate_rejected (__main__.Controls) ... ok
+test_log_cap_fails_closed (__main__.Controls) ... ok
+test_orchestration_refuses_missing_review_without_launch (__main__.Controls) ... ok
+test_outer_timeout_and_spawn_failure_have_receipts (__main__.Controls) ... ok
+test_successful_step_is_receipted (__main__.Controls) ... ok
+test_timeout_is_receipted (__main__.Controls) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.204s
+
+OK

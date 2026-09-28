@@ -1,0 +1,32 @@
+{
+  "recorded_at_utc": "2026-09-27T20:50:25.889672+00:00",
+  "environment_modules": [
+    "Python/3.12.3-GCCcore-13.3.0",
+    "PyYAML/6.0.2-GCCcore-13.3.0"
+  ],
+  "python_suite": {
+    "command": "python3 -m unittest discover -s tests -p 'test_*.py'",
+    "exit_code": 0,
+    "tests_run": 184,
+    "skipped": 1,
+    "failures": 0,
+    "reported_duration_seconds": 12.059
+  },
+  "reference_audit": {
+    "command": "python3 scripts/audit_panel_references.py --verify-existing",
+    "exit_code": 0,
+    "panel_count": 10,
+    "verified_references": 156,
+    "failure_count": 0
+  },
+  "source_hash_scope": "Relevant parser/CI sources hashed after passing checks; no changes to these files between run and receipt.",
+  "source_sha256": {
+    "scripts/sharkmer_validate/runner.py": "5a3ed0f8b31cdd63527e70f7e5152d3bfdf1c1275ce30c2da57e126da5381562",
+    "scripts/sharkmer_validate/uncertain.py": "77302e4f8b06648d91f75781ea1ba48c2b51cccab7b6e0d1a2fc0a1a350721d4",
+    "tests/test_uncertain_output.py": "b9a2f62cb0b14ffffc57d60852d2627edec2d47cdd9c3507be02d0210f15928e"
+  },
+  "limitations": [
+    "Compiler-dependent tests and biological comparisons remain pending.",
+    "This summarizes observed command output; it is not a raw log."
+  ]
+}

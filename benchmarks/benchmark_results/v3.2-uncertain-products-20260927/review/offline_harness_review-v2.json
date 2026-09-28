@@ -1,0 +1,124 @@
+{
+  "biological_execution_clearance": false,
+  "biological_scans_performed": false,
+  "compiled_code_validated": false,
+  "control_limits": [
+    "Capture/check-receipt/frozen-plan unit controls mock preceding validation to isolate contracts; their synthetic pass receipts are not compiled-check evidence.",
+    "Actual process controls use synthetic Python children only; no assembler or biological input was invoked.",
+    "Existing rerun controls are not additional independent evidence."
+  ],
+  "python_executable": "/apps/software/2024a/software/Python/3.12.3-GCCcore-13.3.0/bin/python",
+  "python_version": "3.12.3 (main, Mar  4 2026, 16:38:56) [GCC 13.3.0]",
+  "reason_for_rerun": "Builder/check source inventory now excludes generated panel outputs and orchestration gating was added",
+  "reviewed_artifacts": {
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build.sbatch",
+      "sha256": "3507e06ca6abcd5e73f8b9d295aa5d141b73537814f0052a1e0003217cc0a451",
+      "size_bytes": 463
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build_snapshot.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build_snapshot.py",
+      "sha256": "edb077d170f8e485bcc19647ce8ab231be1abbff377e77595951d52d02110ff8",
+      "size_bytes": 10292
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/checks.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/checks.sbatch",
+      "sha256": "65ffbc884725621673326789a8166c929ca6fc260320a964d6b0d00ffe7ca3c6",
+      "size_bytes": 549
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/comparison.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/comparison.sbatch",
+      "sha256": "19a63dba93f6ad71e78f133705fb4c9eb565809aec4d038a2cb935ef612d5da0",
+      "size_bytes": 550
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+      "sha256": "33ae477d0684c2618384993c80b1c92730414b47094168b3b5c26645774182e7",
+      "size_bytes": 1438
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/prepare_inputs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/prepare_inputs.py",
+      "sha256": "8dd9c85628a8b274f30999f9683a2497d45584623aac728d73ff9255ac4a5561",
+      "size_bytes": 7672
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/restore_prefix.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/restore_prefix.py",
+      "sha256": "d49717be97a53db7c2501f92e129e0226ee649d8c95cc12566c1b0d3836198d1",
+      "size_bytes": 5841
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/test_harness_independent.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/test_harness_independent.py",
+      "sha256": "3bd7940099e04e7ddf2822971d350cc5f13190e2ed3c144882df1ec8fc67454d",
+      "size_bytes": 17553
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/test_orchestration_independent.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/test_orchestration_independent.py",
+      "sha256": "16e5c1e18faae0bd603d4d209824f77c9a32935cf65ec6ac28eaf03c6c881417",
+      "size_bytes": 7074
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_allocated_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_allocated_comparison.py",
+      "sha256": "a79d38030fde747012595b337eb69777956b3b1081c643b381a5213d3ba71df2",
+      "size_bytes": 7492
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_comparison.py",
+      "sha256": "87bee0cdfb912dd583c940c13c61d4887ce6cde847930059fbd0bcb7fc2b178c",
+      "size_bytes": 27558
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_compiled_checks.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_compiled_checks.py",
+      "sha256": "65e407f0867c5af36bb1d4279f049557190c8f06c94d84eef48810d7b636314c",
+      "size_bytes": 9437
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/test_orchestration.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/test_orchestration.py",
+      "sha256": "e8976a9413683289bd346f1546b6fef813c02881992a469f74a630b691064504",
+      "size_bytes": 4856
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/test_run_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/test_run_comparison.py",
+      "sha256": "78207e75da313688d61d4a786c864947480cbed10a2855e6f9e4b82e8f3a4cde",
+      "size_bytes": 16898
+    },
+    "dev_docs/UNCERTAIN_PRODUCTS.md": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/dev_docs/UNCERTAIN_PRODUCTS.md",
+      "sha256": "762c4cd0e12dc8070e12dd98a77cec17afea730d4fbeeb8bf5b634f8c65a6092",
+      "size_bytes": 7694
+    }
+  },
+  "scope": "Revised offline source and synthetic harness/orchestration review only",
+  "source_bookends_equal": true,
+  "status": "pass",
+  "suites": [
+    {
+      "name": "independent_harness_review_v2",
+      "skipped": 0,
+      "status": "pass",
+      "table_driven_subcases": 33,
+      "test_methods": 20
+    },
+    {
+      "name": "author_harness_controls_v2",
+      "skipped": 0,
+      "status": "pass",
+      "table_driven_subcases": 23,
+      "test_methods": 24
+    },
+    {
+      "name": "independent_orchestration_review",
+      "skipped": 0,
+      "status": "pass",
+      "table_driven_subcases": 21,
+      "test_methods": 8
+    },
+    {
+      "name": "author_orchestration_controls",
+      "skipped": 0,
+      "status": "pass",
+      "table_driven_subcases": 2,
+      "test_methods": 8
+    }
+  ],
+  "supersedes_for_source_binding": "offline_harness_review.json"
+}

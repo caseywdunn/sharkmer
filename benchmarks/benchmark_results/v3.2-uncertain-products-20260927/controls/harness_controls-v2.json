@@ -1,0 +1,33 @@
+{
+  "status": "pass",
+  "command": [
+    "/usr/bin/python3",
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/test_run_comparison.py"
+  ],
+  "returncode": 0,
+  "elapsed_seconds": 0.29879802698269486,
+  "sources": {
+    "build_snapshot.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build_snapshot.py",
+      "sha256": "b77e0852017062939621b0fcbf7b40dc8d3c704af1a4599c34c3f2db4814c360",
+      "size_bytes": 10107
+    },
+    "run_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_comparison.py",
+      "sha256": "87bee0cdfb912dd583c940c13c61d4887ce6cde847930059fbd0bcb7fc2b178c",
+      "size_bytes": 27558
+    },
+    "launch_bounded.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+      "sha256": "33ae477d0684c2618384993c80b1c92730414b47094168b3b5c26645774182e7",
+      "size_bytes": 1438
+    },
+    "test_run_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/test_run_comparison.py",
+      "sha256": "499b8604d67a3e7bff69cd3fb2847fd6469642daacc8cb70c924c72eceebb851",
+      "size_bytes": 15887
+    }
+  },
+  "output_sha256": "c536924ba374209a5f245fe48b828efcd715484042fe387b0a1fd0be1b16878a",
+  "biological_scans_performed": false
+}

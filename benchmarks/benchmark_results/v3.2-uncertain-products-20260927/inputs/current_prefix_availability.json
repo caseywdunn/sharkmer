@@ -1,0 +1,49 @@
+{
+  "recorded_at_utc": "2026-09-27T21:34:01.451794+00:00",
+  "samples": [
+    {
+      "accession": "SRR27962769",
+      "expected_prefix": {
+        "bases": 150000000,
+        "records": 1000000,
+        "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+        "size_bytes": 365356898
+      },
+      "file": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/data/its-recruitment-20260925/SRR27962769.first1M_R1.retry1.fastq",
+        "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+        "size_bytes": 365356898
+      }
+    },
+    {
+      "accession": "SRR31887760",
+      "expected_prefix": {
+        "bases": 101000000,
+        "records": 1000000,
+        "sha256": "b952eb9be7212ae79da85b0548b1c74a0343637d8af400ae9a08968b297638ae",
+        "size_bytes": 267366976
+      },
+      "file": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/reads/SRR31887760.first1M_R1.retry1.fastq",
+        "sha256": "b952eb9be7212ae79da85b0548b1c74a0343637d8af400ae9a08968b297638ae",
+        "size_bytes": 267366976
+      }
+    },
+    {
+      "accession": "SRR1057608",
+      "expected_prefix": {
+        "bases": 89994628,
+        "records": 1000000,
+        "sha256": "a65515c2b54d585ca1028f2c865381aed16f4da9f7cc956f1c8d3fdcda8ca3e0",
+        "size_bytes": 211767048
+      },
+      "file": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/reads/SRR1057608.first1M_R1.fastq",
+        "sha256": "a65515c2b54d585ca1028f2c865381aed16f4da9f7cc956f1c8d3fdcda8ca3e0",
+        "size_bytes": 211767048
+      }
+    }
+  ],
+  "scope": "Current byte hashes and file sizes match archived consumed prefixes; final freeze separately reparses FASTQ counts and qualities.",
+  "status": "verified_bytes"
+}

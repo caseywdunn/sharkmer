@@ -1,0 +1,66 @@
+{
+  "archive": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/evidence.tar.gz",
+    "sha256": "f2a58ef4e253c2cc81f651409f3f23caa09b820541e54f1518dd8feb33c7870e",
+    "size_bytes": 13076561
+  },
+  "archive_bytes_and_all_member_hashes_verified": true,
+  "candidate_compiled_snapshot_files_verified": 52,
+  "committed_fixture_is_only_fastq_payload": [
+    "candidate_source/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+  ],
+  "external_fastq_binaries_targets_caches_nested_archives_excluded": true,
+  "member_count": 377,
+  "missing_reviewed_script_payloads": [
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_its_recruitment.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_panel_references.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_histories.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/bootstrap_from_runs.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/bootstrap_references.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/compare_jellyfish.sh",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/pre-commit",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/__init__.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/blast_references.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/primer_analysis.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/reference_provenance.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/reference_targets.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/report.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/results.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/runner.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/uncertain.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sweep_summary.py",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/validate_all_panels.sh",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/validate_all_panels_slurm.sh",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/validate_panel.py"
+  ],
+  "published_copy_matches_original": true,
+  "recorded_utc": "2026-09-28T05:21:36.188285+00:00",
+  "resolution_required": "Preserve this byte-verified archive; add reviewed Python validator and supporting scripts as supplemental source evidence or produce a new complete archive attempt.",
+  "reviewed_sidecars": {
+    "ARCHIVE_CONTENTS.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_CONTENTS.json",
+      "sha256": "2f599d6104eb596d0ecf47239d9975566b0af18e122dd3bcc0fd4ed2f647b3be",
+      "size_bytes": 123345
+    },
+    "ARCHIVE_PLAN.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_PLAN.json",
+      "sha256": "b05eec8dd6e5c0e2941e058efe166a6db788b84c02dc8a10d921f58f9e5b02bd",
+      "size_bytes": 373425
+    },
+    "ARCHIVE_PUBLICATION.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_PUBLICATION.json",
+      "sha256": "d73c0dae44d16eb756a6868c2f2b433249a55d7cda737b9526aeab40c6920272",
+      "size_bytes": 1649
+    },
+    "ARCHIVE_RECEIPT.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_RECEIPT.json",
+      "sha256": "6bc53760cbcb4764c95740025b1685853a443905eaa6993a191d265c89591704",
+      "size_bytes": 876
+    }
+  },
+  "schema_version": 1,
+  "selected_build_check_comparison_outputs_and_final_documentation_present": true,
+  "selected_payload_count": 375,
+  "status": "incomplete_source_payloads"
+}

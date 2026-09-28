@@ -1,0 +1,21 @@
+{
+  "all_selected_source_bookends_equal": true,
+  "archive": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v2/evidence.tar.gz",
+    "sha256": "c9f71e952720cc40a21e8f3a1774a7eac261a11312ac0737db88b85d4831c780",
+    "size_bytes": 24742787
+  },
+  "member_inventory": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v2/ARCHIVE_CONTENTS.json",
+    "sha256": "75e6edc4044f99e1b64b94e8fda9b74e0dae7c8b6f3e7ef0ed07cb635439c67f",
+    "size_bytes": 144382
+  },
+  "plan": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v2/ARCHIVE_PLAN.json",
+    "sha256": "052e020938c976a4a406140cfb86227c0032b219e5727604d8307961454df627",
+    "size_bytes": 426569
+  },
+  "schema_version": 1,
+  "status": "verified",
+  "verified_member_count": 458
+}

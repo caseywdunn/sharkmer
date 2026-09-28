@@ -50,6 +50,7 @@ fn main() -> Result<()> {
         p.high_coverage_ratio = args.high_coverage_ratio;
         p.tip_coverage_fraction = args.tip_coverage_fraction;
         p.diagnose_withheld_paths = args.diagnose_withheld_paths;
+        p.emit_uncertain = args.emit_uncertain;
     }
 
     // Handle --validate-panels early: pure primer check, no sample/output needed

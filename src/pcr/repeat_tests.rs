@@ -301,6 +301,128 @@ fn withheld_path_diagnostics_do_not_change_repeat_outcome_or_threshold_counters(
 }
 
 #[test]
+fn uncertain_emission_preserves_standard_outcome_and_keeps_diagnostics_independent() {
+    let fixture = repeat_fixture(&"A".repeat(40));
+    let counts = repeat_counts(&[&fixture.target]);
+    let baseline = run_repeat_pcr(&counts, &fixture.params, None);
+    assert!(baseline.uncertain_products.is_none());
+
+    let mut emit_params = fixture.params.clone();
+    emit_params.emit_uncertain = true;
+    let emitted = run_repeat_pcr(&counts, &emit_params, None);
+    assert_eq!(baseline.records, emitted.records);
+    assert_eq!(baseline.failure_reason, emitted.failure_reason);
+    assert_eq!(
+        baseline.threshold_diagnostics,
+        emitted.threshold_diagnostics
+    );
+    let uncertainty = emitted.uncertain_products.as_ref().unwrap();
+    assert!(uncertainty.unique_products > 0);
+    assert_eq!(uncertainty.unique_products, uncertainty.products.len());
+    for product in &uncertainty.products {
+        assert!(
+            (emit_params.min_length..=emit_params.max_length).contains(&product.sequence_length)
+        );
+        assert_eq!(product.oriented_sequence.len(), product.sequence_length);
+        for source in &product.sources {
+            for marker in &source.marker_occurrences {
+                assert_eq!(
+                    &product.oriented_sequence[marker.start..marker.end],
+                    marker.identity_sequence
+                );
+            }
+        }
+    }
+
+    emit_params.diagnose_withheld_paths = true;
+    let both = run_repeat_pcr(&counts, &emit_params, None);
+    assert_eq!(emitted.uncertain_products, both.uncertain_products);
+    assert!(
+        both.threshold_diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.withheld_path_diagnostics.is_some())
+    );
+}
+
+#[test]
+fn zero_uncertain_run_share_preserves_search_and_reports_dropped_candidates() {
+    let fixture = repeat_fixture(&"A".repeat(40));
+    let counts = repeat_counts(&[&fixture.target]);
+    let mut params = fixture.params.clone();
+    params.emit_uncertain = true;
+    let limits = withheld_diagnostic_limits_for_gene(999, 1000);
+    assert_eq!(limits.allocated_run_share_for_gene.paths, 0);
+    let outcome = do_pcr(
+        &counts.filtered_view(2),
+        "repeat",
+        &params,
+        false,
+        "/tmp/",
+        None,
+        10_000,
+        limits,
+    )
+    .unwrap();
+    let baseline = run_repeat_pcr(&counts, &fixture.params, None);
+    assert_eq!(outcome.records, baseline.records);
+    assert_eq!(outcome.failure_reason, baseline.failure_reason);
+    assert_eq!(
+        outcome.threshold_diagnostics,
+        baseline.threshold_diagnostics
+    );
+    let uncertainty = outcome.uncertain_products.unwrap();
+    assert_eq!(uncertainty.unique_products, 0);
+    assert!(uncertainty.retention_truncated);
+    assert!(uncertainty.thresholds.iter().any(|threshold| {
+        threshold
+            .retention
+            .as_ref()
+            .is_some_and(|retention| retention.dropped_path_cap > 0)
+    }));
+}
+
+#[test]
+fn uncertain_early_outcomes_report_zero_without_search_or_fabricated_candidates() {
+    let fixture = repeat_fixture(&"A".repeat(40));
+    let counts = repeat_counts(&[&fixture.target]);
+    let mut params = fixture.params.clone();
+    params.emit_uncertain = true;
+    params.max_length = 18;
+    let too_short = run_repeat_pcr(&counts, &params, None);
+    let uncertainty = too_short.uncertain_products.unwrap();
+    assert_eq!(uncertainty.unique_products, 0);
+    assert!(!uncertainty.path_search_evaluated);
+    assert!(uncertainty.thresholds.is_empty());
+
+    params.max_length = 220;
+    let empty_counts = KmerCounts::new(&19);
+    let no_primers = run_repeat_pcr(&empty_counts, &params, None);
+    let uncertainty = no_primers.uncertain_products.unwrap();
+    assert_eq!(uncertainty.unique_products, 0);
+    assert!(!uncertainty.path_search_evaluated);
+    assert!(uncertainty.thresholds.is_empty());
+}
+
+#[test]
+fn uncertain_emission_does_not_include_out_of_range_collapsed_paths() {
+    let fixture = repeat_fixture(&"A".repeat(40));
+    let counts = repeat_counts(&[&fixture.target]);
+    let mut params = fixture.params.clone();
+    params.emit_uncertain = true;
+    params.min_length = fixture.target.len();
+    params.max_length = fixture.target.len();
+    let outcome = run_repeat_pcr(&counts, &params, None);
+    assert!(outcome.records.is_empty());
+    assert_eq!(outcome.uncertain_products.unwrap().unique_products, 0);
+    assert!(
+        outcome
+            .threshold_diagnostics
+            .iter()
+            .any(|diagnostic| diagnostic.repeat_tainted_out_of_range_paths > 0)
+    );
+}
+
+#[test]
 fn repeat_uncertainty_precedes_collapsed_length_rejection() {
     let mut fixture = repeat_fixture(&"A".repeat(40));
     fixture.params.min_length = 155;
@@ -617,6 +739,19 @@ fn repeat_branch_does_not_suppress_disjoint_clean_path() {
                         .is_some_and(|payload| payload.observed_withheld_paths > 0)
             })
     );
+
+    let mut emit_params = fixture.params.clone();
+    emit_params.emit_uncertain = true;
+    let emitted = run_repeat_pcr(&counts, &emit_params, None);
+    assert_eq!(
+        record_signatures(&without_diagnostics),
+        record_signatures(&emitted)
+    );
+    assert_eq!(
+        without_diagnostics.threshold_diagnostics,
+        emitted.threshold_diagnostics
+    );
+    assert!(emitted.uncertain_products.unwrap().unique_products > 0);
 }
 
 #[test]

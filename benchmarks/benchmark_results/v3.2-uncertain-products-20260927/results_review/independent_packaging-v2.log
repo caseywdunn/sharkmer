@@ -1,0 +1,11 @@
+test_changed_receipted_output_rejected_before_archiving (__main__.IndependentPackagingChecks) ... ok
+test_compiled_candidate_copy_must_match_snapshot (__main__.IndependentPackagingChecks) ... ok
+test_duplicate_jobs_rejected_even_with_refreshed_review_hash (__main__.IndependentPackagingChecks) ... ok
+test_each_selected_evidence_category_requires_review_coverage (__main__.IndependentPackagingChecks) ... ok
+test_symlinked_output_ancestor_refused (__main__.IndependentPackagingChecks) ... ok
+test_two_archives_from_same_plan_are_byte_identical (__main__.IndependentPackagingChecks) ... ok
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.107s
+
+OK

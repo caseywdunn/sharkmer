@@ -1,0 +1,162 @@
+{
+  "builds": {
+    "baseline": {
+      "binary": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/builds/baseline-v3/sharkmer",
+        "sha256": "bbf418d8e3b83f7eb7bf94f294f906a666fcf92babede2c46772a5d31e3caec6",
+        "size_bytes": 6924472
+      },
+      "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+      "receipt": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/builds/baseline-v3/build.json",
+        "sha256": "5ff4fd9179bbcfcb3f403daf304b512bc2e6fe9a751fc8a1860f7e534b4fb790",
+        "size_bytes": 205808
+      },
+      "rustc_version": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+      "snapshot": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/builds/baseline-v3/snapshot.json",
+        "sha256": "355dd61197de8d7c23d9906d6ea7d06ec4b525b6d85496b15d6e2e892884e2a8",
+        "size_bytes": 101140
+      }
+    },
+    "candidate": {
+      "binary": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/builds/candidate-v1/sharkmer",
+        "sha256": "ef6074b4e817dcafce209b9ccce40ab33c70a6ebb1c47dd3b6240acc3f6c3ca2",
+        "size_bytes": 7025784
+      },
+      "cargo_version": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+      "receipt": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/builds/candidate-v1/build.json",
+        "sha256": "5e3e44e3464e3543187db46e541138316468279f36ff96d1afffb6825bdb4293",
+        "size_bytes": 35466
+      },
+      "rustc_version": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+      "snapshot": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/builds/candidate-v1/snapshot.json",
+        "sha256": "ff944167c6c5f9575f6f214905e62d49cb047ee80b923342bad6d52b4c534c64",
+        "size_bytes": 15759
+      }
+    }
+  },
+  "checks_receipt": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/checks-v3/checks.json",
+    "sha256": "bf7ddb11a4134bf75b1089a03bae6407c7accc1ac7d94d450e6d185d05b12c8b",
+    "size_bytes": 76933
+  },
+  "schema_version": 1,
+  "source_files": 85,
+  "status": "pass",
+  "steps": [
+    {
+      "elapsed_seconds": 5.678685243939981,
+      "log": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/checks-v3/format.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      "name": "format",
+      "status": "pass"
+    },
+    {
+      "elapsed_seconds": 204.25184927182272,
+      "log": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/checks-v3/clippy-default.log",
+        "sha256": "927a5e2b078669bb312e744651e7793b6c2f9666f468c73be7d9631197f552d1",
+        "size_bytes": 5796
+      },
+      "name": "clippy-default",
+      "status": "pass"
+    },
+    {
+      "elapsed_seconds": 257.71714968886226,
+      "log": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/checks-v3/release-tests-default.log",
+        "sha256": "f5ee084418c21854d6893af8382f1dd6cb397ddea0fbc5668d4c66ff6117ecf4",
+        "size_bytes": 25150
+      },
+      "name": "release-tests-default",
+      "rust_suites": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 246
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 23
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 3
+        }
+      ],
+      "status": "pass"
+    },
+    {
+      "elapsed_seconds": 6.769995187874883,
+      "log": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/checks-v3/clippy-fxhashmap.log",
+        "sha256": "b55eeab3aae5ac287b9b7096fd9f98bdfe0b599a66726ac1e8d62dcdfbe38763",
+        "size_bytes": 181
+      },
+      "name": "clippy-fxhashmap",
+      "status": "pass"
+    },
+    {
+      "elapsed_seconds": 72.9030000991188,
+      "log": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/checks-v3/release-tests-fxhashmap.log",
+        "sha256": "79700259fed1f01472178c6424e994fe13d528e1d8bb30c6681a6a239cb52d3e",
+        "size_bytes": 19537
+      },
+      "name": "release-tests-fxhashmap",
+      "rust_suites": [
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 246
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 23
+        },
+        {
+          "failed": 0,
+          "ignored": 0,
+          "passed": 3
+        }
+      ],
+      "status": "pass"
+    },
+    {
+      "elapsed_seconds": 9.229639847995713,
+      "log": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/checks-v3/python-tests.log",
+        "sha256": "122ac4d939288e2a5a98414cc42045586c46d830fa9d813a669c30f57b429233",
+        "size_bytes": 1271
+      },
+      "name": "python-tests",
+      "skipped": 1,
+      "status": "pass",
+      "tests_run": 184
+    },
+    {
+      "elapsed_seconds": 1.0674626301042736,
+      "failure_count": 0,
+      "log": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/checks-v3/reference-audit.log",
+        "sha256": "339cd9753d4236a558a40101f58cbc6d3fb5f21895298588eac8d16442a098cf",
+        "size_bytes": 2023
+      },
+      "name": "reference-audit",
+      "panel_count": 10,
+      "status": "pass",
+      "total_references": 156,
+      "verified_references": 156
+    }
+  ]
+}

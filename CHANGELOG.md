@@ -7,12 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Development target: **3.2.0**. These changes are on `dev`; this is not a release.
+Development target: **3.2.0**. This is not a release. The uncertainty-output
+addition is implemented and assessed on `experiment/uncertain-products`,
+awaiting integration review; preceding
+production changes are on `dev`.
 Incremental k-mer counting remains supported. Faster bounded-memory counting
 and new nuclear/metagenomic inference policies belong to later releases.
 
 ### Added
 
+- Opt-in `--emit-uncertain` output for bounded, completed graph paths with
+  unresolved repeat structure. Separate `.uncertain.fasta` files and stats
+  preserve explicit uncertainty, source coordinates, and collection limits;
+  standard output and recovery counts are unchanged. Uncertain records are
+  excluded from standard validation and reference-bootstrap inputs (#157).
 - Per-product validation with collinear alignment coverage, explicit
   wrong-gene/ambiguous/conflicting/unreferenced outcomes, checksummed executable and
   input provenance, stage timings, and separately identified allocator-heap

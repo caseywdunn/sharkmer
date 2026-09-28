@@ -39,8 +39,10 @@ mod pruning;
 mod repeat_tests;
 #[cfg(test)]
 mod threshold_tests;
+mod uncertain;
 
 pub use graph::compute_node_budget;
+pub(crate) use uncertain::UncertainProducts;
 pub(crate) mod threading;
 
 // Constants that may require tuning
@@ -244,6 +246,9 @@ pub struct PCRParams {
     pub tip_coverage_fraction: f64,
     #[serde(skip, default)]
     pub diagnose_withheld_paths: bool,
+    /// Runtime-only opt-in output of labelled, unsupported repeat hypotheses.
+    #[serde(skip, default)]
+    pub emit_uncertain: bool,
 }
 
 fn default_max_length() -> usize {
@@ -308,6 +313,7 @@ pub struct PcrOutcome {
     /// Short description of why no product was found (None if successful)
     pub failure_reason: Option<String>,
     pub threshold_diagnostics: Vec<PcrThresholdDiagnostic>,
+    pub(crate) uncertain_products: Option<UncertainProducts>,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize)]
@@ -887,6 +893,9 @@ pub fn do_pcr(
                 kmer_counts.get_k()
             )),
             threshold_diagnostics: Vec::new(),
+            uncertain_products: params
+                .emit_uncertain
+                .then(|| UncertainProducts::empty(withheld_diagnostic_limits)),
         });
     }
 
@@ -916,6 +925,9 @@ pub fn do_pcr(
             records: Vec::new(),
             failure_reason: Some(format!("{} not found", which)),
             threshold_diagnostics: Vec::new(),
+            uncertain_products: params
+                .emit_uncertain
+                .then(|| UncertainProducts::empty(withheld_diagnostic_limits)),
         });
     }
 
@@ -1000,8 +1012,7 @@ pub fn do_pcr(
     let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
     let mut failure_reason: Option<String> = Some("no path found".to_string());
     let mut threshold_diagnostics = Vec::with_capacity(coverage_thresholds.len());
-    let mut withheld_diagnostic_budget = params
-        .diagnose_withheld_paths
+    let mut withheld_diagnostic_budget = (params.diagnose_withheld_paths || params.emit_uncertain)
         .then(|| paths::WithheldDiagnosticBudget::new(withheld_diagnostic_limits));
 
     // Coverage threshold sweep: at each min_count, clone the seed graph fresh
@@ -1157,10 +1168,21 @@ pub fn do_pcr(
             "  - The primers may have non-specific binding and are not close enough to generate a product. Consider increasing the primer trim length from the default to create a more specific primer."
         );
 
+        let uncertain_products = params.emit_uncertain.then(|| {
+            uncertain::collect(
+                sample_name,
+                &params.gene_name,
+                params.diagnose_withheld_paths,
+                withheld_diagnostic_limits,
+                &[],
+                &mut threshold_diagnostics,
+            )
+        });
         return Ok(PcrOutcome {
             records: Vec::new(),
             failure_reason,
             threshold_diagnostics,
+            uncertain_products,
         });
     }
 
@@ -1168,7 +1190,7 @@ pub fn do_pcr(
 
     // Re-number products sequentially (0, 1, 2, ...) after dedup so IDs are
     // deterministic regardless of thread count or path enumeration order.
-    let records = records
+    let records: Vec<fasta::Record> = records
         .into_iter()
         .enumerate()
         .map(|(i, record)| {
@@ -1194,10 +1216,21 @@ pub fn do_pcr(
         })
         .collect();
 
+    let uncertain_products = params.emit_uncertain.then(|| {
+        uncertain::collect(
+            sample_name,
+            &params.gene_name,
+            params.diagnose_withheld_paths,
+            withheld_diagnostic_limits,
+            &records,
+            &mut threshold_diagnostics,
+        )
+    });
     Ok(PcrOutcome {
         records,
         failure_reason: None,
         threshold_diagnostics,
+        uncertain_products,
     })
 }
 
@@ -1662,6 +1695,7 @@ mod tests {
             high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
             tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
             diagnose_withheld_paths: false,
+            emit_uncertain: false,
         };
 
         (read_string, k, replicates, kmer_counts, params)

@@ -9,6 +9,17 @@ use log::{info, warn};
 use rayon::prelude::*;
 use serde::Serialize;
 
+/// Separate publication metadata for bounded repeat-uncertain hypotheses.
+#[derive(Serialize)]
+pub(crate) struct UncertainProductOutput {
+    pub(crate) n_products: usize,
+    pub(crate) product_lengths: Vec<usize>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) output_file: Option<String>,
+    #[serde(flatten)]
+    pub(crate) assessment: pcr::UncertainProducts,
+}
+
 /// Stats for a single PCR gene result, included in the YAML stats output.
 #[derive(Serialize)]
 pub(crate) struct PcrGeneResult {
@@ -23,6 +34,8 @@ pub(crate) struct PcrGeneResult {
     pub(crate) failure_reason: Option<String>,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub(crate) threshold_diagnostics: Vec<pcr::PcrThresholdDiagnostic>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) uncertain_products: Option<UncertainProductOutput>,
 }
 
 #[derive(Serialize)]
@@ -136,7 +149,47 @@ pub(crate) fn run_pcr(
             records,
             failure_reason,
             threshold_diagnostics,
+            uncertain_products,
         } = outcome;
+
+        let uncertain_products = uncertain_products
+            .map(|assessment| -> Result<UncertainProductOutput> {
+                let n_products = assessment.products.len();
+                anyhow::ensure!(
+                    n_products == assessment.unique_products,
+                    "Uncertain product count differs from its retained records"
+                );
+                let product_lengths = assessment
+                    .products
+                    .iter()
+                    .map(|product| product.oriented_sequence.len())
+                    .collect();
+                let output_file = if n_products > 0 {
+                    let basename = format!("{}_{}.uncertain.fasta", sample, pcr_params.gene_name);
+                    output_transaction.stage_file(&basename, |file| {
+                        for product in &assessment.products {
+                            let record = bio::io::fasta::Record::with_attrs(
+                                &product.id,
+                                Some(&product.description),
+                                product.oriented_sequence.as_bytes(),
+                            );
+                            write_fasta_record(file, &record)
+                                .context("Failed to write uncertain candidate FASTA record")?;
+                        }
+                        Ok(())
+                    })?;
+                    Some(basename)
+                } else {
+                    None
+                };
+                Ok(UncertainProductOutput {
+                    n_products,
+                    product_lengths,
+                    output_file,
+                    assessment,
+                })
+            })
+            .transpose()?;
 
         if !records.is_empty() {
             let fasta_basename = format!("{}_{}.fasta", sample, pcr_params.gene_name);
@@ -159,6 +212,7 @@ pub(crate) fn run_pcr(
                 output_file: Some(fasta_basename),
                 failure_reason: None,
                 threshold_diagnostics,
+                uncertain_products,
             });
         } else {
             // Ensure failure_reason is always populated when status=="fail"
@@ -177,6 +231,7 @@ pub(crate) fn run_pcr(
                 output_file: None,
                 failure_reason,
                 threshold_diagnostics,
+                uncertain_products,
             });
         }
     }
@@ -188,6 +243,16 @@ pub(crate) fn run_pcr(
         ("+", "-")
     };
     for result in &pcr_results {
+        if let Some(uncertain) = &result.uncertain_products
+            && uncertain.n_products > 0
+        {
+            warn!(
+                "  ? {} ({} uncertain candidate(s), repeat structure unresolved; {})",
+                result.gene_name,
+                uncertain.n_products,
+                uncertain.output_file.as_deref().unwrap_or_default()
+            );
+        }
         if result.status == "success" {
             let lengths: Vec<String> = result
                 .product_lengths

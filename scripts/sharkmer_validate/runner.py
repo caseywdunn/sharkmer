@@ -18,6 +18,8 @@ from pathlib import Path
 
 import yaml
 
+from . import uncertain
+
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 SHARKMER_BIN = REPO_ROOT / "target" / "release" / "sharkmer"
 PANELS_DIR = REPO_ROOT / "panels"
@@ -376,6 +378,14 @@ def parse_fasta_products(
                     }
                 )
 
+        labelled = [record for record in sequence_records if uncertain.uncertain_header(record["header"])]
+        if labelled:
+            if output_files is not None:
+                raise ValueError("Uncertain candidate appears in a declared standard FASTA")
+            sequence_records = [record for record in sequence_records
+                                if not uncertain.uncertain_header(record["header"])]
+            if not sequence_records:
+                continue
         products.append(
             {
                 "gene": gene_name,
@@ -536,6 +546,7 @@ def _validate_stats_manifest(
         raise ValueError("Counting-only run unexpectedly reported PCR results")
     output_files = []
     for entry in pcr_results:
+        uncertain.validate_metadata(entry, sample_prefix)
         status = entry.get("status")
         if status not in {"success", "fail"}:
             raise ValueError(f"Invalid PCR status for {entry.get('gene_name')}: {status}")
@@ -581,6 +592,11 @@ def _validate_output_manifest(stats: dict, sample_prefix: str, output_dir: Path)
         raise ValueError("Stats and output manifest identify different or incomplete runs")
     expected_files = {f"{sample_prefix}.stats.yaml"}
     for entry in stats.get("pcr_results", []):
+        uncertain_file = uncertain.validate_metadata(entry, sample_prefix)
+        if uncertain_file is not None:
+            if uncertain_file in expected_files:
+                raise ValueError("Stats has duplicate uncertain output paths")
+            expected_files.add(uncertain_file)
         if entry.get("status") == "success":
             output_file = entry.get("output_file")
             gene_name = entry.get("gene_name")
@@ -625,6 +641,8 @@ def _validate_output_manifest(stats: dict, sample_prefix: str, output_dir: Path)
         observed_files.add(file_name)
     if observed_files != expected_files:
         raise ValueError("Output manifest receipt set disagrees with current-run stats")
+    for entry in stats.get("pcr_results", []):
+        uncertain.validate_fasta(entry, output_dir)
     return manifest
 
 

@@ -1,13 +1,47 @@
 # Pause/resume handoff
 
-Updated 2026-09-27. **Resumed on an experiment branch at the user's request.
-No release approval.**
+Updated 2026-09-28. **Uncertainty-output implementation and nine-run evaluation
+complete and independently reviewed on the experiment branch. The opt-in
+feature awaits the user's integration decision; no release approval.**
 Start here in a new session; this handoff does not require the previous chat
 or live coding agents. [PLAN.md](PLAN.md) remains the detailed execution plan.
 
 ## Saved state
 
-- Work branch: `experiment/its-read-threading`, created from clean `dev`
+- Work branch: `experiment/uncertain-products`, created from the completed
+  diagnostic branch at `3cc48a3`. The user prioritized emitting explicitly
+  uncertain sequences over further production read-threading integration.
+  [Issue #157](https://github.com/caseywdunn/sharkmer/issues/157) tracks the
+  implementation and assessment; [the protocol](UNCERTAIN_PRODUCTS.md)
+  defines the output and frozen comparison. `--emit-uncertain` now writes
+  separate labelled FASTA and structured provenance for bounded actual graph
+  paths; standard admission and threshold stopping remain unchanged. Both
+  hash backends pass 246 unit and 26 integration tests, formatting and Clippy.
+  Full Python suite: 184 tests, one existing skip; reference audit: 156/156
+  verified across ten panels. Independent parser review: 18 methods,
+  69 subcases. See the new comparison bundle's validation and review receipts.
+- The [comparison checkpoint](../benchmarks/benchmark_results/v3.2-uncertain-products-20260927/README.md)
+  contains the fixed first-million R1 inputs' identities, reviewed harness,
+  successful baseline-v3/candidate-v1 build receipts, passing checks-v3, and
+  all nine completed baseline/off/on runs. Standard sequences and counts match:
+  11 Gryllus, 9 Drosophila and 6 Heliconius products. Opt-in emission adds
+  17, 4 and 13 separately labelled uncertain hypotheses, respectively.
+  Five of seven exact historical hypotheses are re-emitted; see
+  [the results report](UNCERTAIN_PRODUCTS_RESULTS.md). The two earlier failing
+  test-fixture attempts and passing focused probes are preserved. The bundle's
+  final results review and archive receipts document evidence verification.
+  Changes remain unmerged on the experiment branch.
+- Toolchain blocker resolved at the user's request: project-local Rust/Cargo
+  1.98.1, rustfmt 1.9.0, and Clippy 0.1.98 are installed. From this repository,
+  run `source tmp/uncertain-products-20260927/toolchain/activate.sh` to set the
+  isolated Cargo/Rustup homes and PATH. Compiled checks and both comparison
+  builds completed with the same effective toolchain and configuration;
+  `validation/toolchain_install.json` in the new evidence bundle records
+  installer integrity and actual tool versions. Rust 1.86 remains unsuitable
+  for existing baseline let-chain syntax; its failed probe is retained.
+  Python checks use modules `Python/3.12.3-GCCcore-13.3.0` and
+  `PyYAML/6.0.2-GCCcore-13.3.0`.
+- Preceding branch: `experiment/its-read-threading`, created from clean `dev`
   `956e771437a2410a7bcbb1504b033c61dd1e11b6`. Keep `dev` as the fixed comparison
   baseline while evaluating the experiment. The preceding SCC evidence commit
   is `539d2d81f954aff54cc57be3e6f7d10f6ba19700` (committed and pushed).
@@ -22,7 +56,8 @@ or live coding agents. [PLAN.md](PLAN.md) remains the detailed execution plan.
   checks and 20 wrapper tests pass; both frozen graph scans complete. The
   independent full-prefix/ledger review and complete evidence are archived.
   This is standalone Python, not a production threading/admission change.
-- Package remains `3.2.0-dev`. The latest production-code change is `ae9189a`,
+- Package remains `3.2.0-dev`. Before the #157 change, the latest
+  production-code change was `ae9189a`,
   adding bounded, hidden, opt-in withheld-path diagnostics without changing
   admission gates or emitted FASTA recovery. The subsequent ITS graph exporter
   is scratch instrumentation archived as evidence, not a production feature.
@@ -42,6 +77,18 @@ high-copy products**, not demonstrated recovery parity. Counts are unchanged;
 runtime is broadly similar and RAM is not meaningfully reduced. Do not confuse
 later diagnostic-on/off parity with parity against the released version.
 The seven lost identities are not seven proven incorrect sequences.
+
+The [new uncertainty-output comparison](UNCERTAIN_PRODUCTS_RESULTS.md) used
+the full 21-target insect panel at k=19, the same first million R1 records,
+two CPUs, and no read threading. All nine runs completed and the standard
+parity assessment passed. The separate output includes exact historical
+Gryllus CO1_1 (373 bp) and ITS_2 (978 bp), Heliconius ND1 (263 bp), and
+Drosophila 12S (475 bp) and 16S_2 (590 bp) hypotheses. The 487 bp and 499 bp
+Drosophila 12S identities were not observed under the unchanged search and
+retention bounds. These are available sequence hypotheses with unresolved
+repeat structure and unevaluated read support, not five newly validated
+biological products. The standard 71-to-64 release comparison and reconstruction
+questions remain open.
 
 The latest [ITS SCC/read findings](ITS_SCC_AUDIT_RESULTS.md) use **k=19,
 threshold 4, the same first million 150 bp Gryllus R1 reads**. Both relevant
@@ -98,7 +145,12 @@ Read these in order as needed; older reports preserve historical checkpoints:
    [ordered read histories](READ_HISTORY_RESULTS.md): successive
    localization, structural, and alignment tests, with frozen protocols,
    limitations, and archive links.
-5. [Pre-release review](REVIEW_v3.2.md): remaining all-panel, held-out, dependency,
+5. [Uncertainty-output results](UNCERTAIN_PRODUCTS_RESULTS.md) and
+   [comparison bundle](../benchmarks/benchmark_results/v3.2-uncertain-products-20260927/README.md):
+   implemented opt-in output, compiled checks, nine-run standard parity,
+   separately reported hypotheses, and exact historical-identity assessment.
+   Consult the bundle's final results review and archive verification receipts.
+6. [Pre-release review](REVIEW_v3.2.md): remaining all-panel, held-out, dependency,
    and release gates; implementation/test totals in older sections are historical.
 
 The [new recruitment bundle](../benchmarks/benchmark_results/v3.2-its-recruitment-20260925/README.md)
@@ -138,14 +190,21 @@ documentation snapshots describe their pinned commit, not later handoff edits.
 
 ## Resume from here
 
-1. Check `experiment/its-read-threading`, local changes, remote updates, and open issue
-   status. Do not assume this dated handoff is newer than subsequent work.
-2. Review the [completed prototype](READ_HISTORY_RESULTS.md) and its
-   [frozen integration/comparison criteria](READ_HISTORY_EXPERIMENT.md).
-   Implement bounded, quality-preserving replay and positioned history
-   collection under #145/#116 as an opt-in experiment, with feature-off
-   count/product compatibility. Production threading has not changed yet.
-3. Specify variant-aware graph mapping before reconstruction: preserve
+1. Check `experiment/uncertain-products`, local changes, and the new benchmark
+   bundle. #157 implementation, compiled validation and all nine preregistered
+   comparisons are complete and independently reviewed. Check the bundle's
+   final results review, archive receipt, and checksums when reconstructing
+   evidence. Preserve failed attempts and old evidence; do not rerun
+   successful frozen comparisons without cause.
+2. Present [the results](UNCERTAIN_PRODUCTS_RESULTS.md) for the user's decision
+   about incorporating the opt-in feature. Standard parity, five exact
+   historical hypotheses and the two bounded non-observations are separate
+   findings; none establishes biological repeat correctness.
+   Keep `dev` at `956e771` for the comparison and user integration decision.
+   The [completed read-history prototype](READ_HISTORY_RESULTS.md) remains a
+   diagnostic; production integration under #145/#116 is deferred while
+   labelled output awaits that decision.
+3. For later reconstruction, specify variant-aware graph mapping: preserve
    competing indel placements and missing graph sequence as uncertainty.
    More independently positioned support and linkage between regions remain
    missing. Freeze any additional-coverage, paired-read, or longer-read study

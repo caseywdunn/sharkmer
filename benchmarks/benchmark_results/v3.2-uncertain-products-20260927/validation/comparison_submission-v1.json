@@ -1,0 +1,25 @@
+{
+  "schema_version": 1,
+  "status": "submitted",
+  "job_id": "27727704",
+  "argv": [
+    "sbatch",
+    "--parsable",
+    "--export=ALL,CARGO_HOME=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/cargo,RUSTUP_HOME=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup",
+    "--output=tmp/uncertain-products-20260927/slurm/comparison-v1-%j.log",
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/comparison.sbatch",
+    "--checks",
+    "tmp/uncertain-products-20260927/checks-v3/checks.json",
+    "--baseline-build",
+    "tmp/uncertain-products-20260927/builds/baseline-v3/build.json",
+    "--candidate-build",
+    "tmp/uncertain-products-20260927/builds/candidate-v1/build.json",
+    "--review",
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/final_execution_review.json",
+    "--attempt-dir",
+    "tmp/uncertain-products-20260927/comparison-v1"
+  ],
+  "review": "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/final_execution_review.json",
+  "review_sha256": "c981d0fa96a02b6cf15e4f2536af45e57d77953977495569acef8f8d2c506da8",
+  "recorded_at_utc": "2026-09-28T04:37:23.956876+00:00"
+}
