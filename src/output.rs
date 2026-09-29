@@ -6,7 +6,7 @@ use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Component, Path, PathBuf};
 
-const MANIFEST_SCHEMA_VERSION: u32 = 1;
+const MANIFEST_SCHEMA_VERSION: u32 = 2;
 const MANIFEST_PRODUCER: &str = "sharkmer";
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -278,7 +278,7 @@ fn read_previous_manifest(path: &Path, sample: &str) -> Result<Option<OutputMani
     let manifest: OutputManifest = serde_yaml_ng::from_reader(file)
         .with_context(|| format!("Failed to parse output manifest {}", path.display()))?;
     ensure!(
-        manifest.schema_version == MANIFEST_SCHEMA_VERSION
+        matches!(manifest.schema_version, 1 | MANIFEST_SCHEMA_VERSION)
             && manifest.producer == MANIFEST_PRODUCER
             && manifest.sample == sample,
         "Refusing foreign or unsupported output manifest {}",
@@ -625,6 +625,53 @@ mod tests {
 
         assert!(!directory.path().join("sample_gene.fasta").exists());
         assert!(directory.path().join("sample.stats.yaml").exists());
+    }
+
+    #[test]
+    fn schema_one_split_outputs_migrate_and_modified_owned_sidecars_are_protected() {
+        for modified in [false, true] {
+            let directory = tempfile::tempdir().unwrap();
+            let mut first = OutputTransaction::begin(directory.path(), "sample").unwrap();
+            stage_text(&mut first, "sample_gene.fasta", "standard");
+            stage_text(&mut first, "sample_gene.uncertain.fasta", "uncertain");
+            stage_text(&mut first, "sample.stats.yaml", "legacy stats");
+            first.commit().unwrap();
+            let manifest_path = directory.path().join("sample.manifest.yaml");
+            let mut legacy = read_manifest(directory.path(), "sample");
+            legacy.schema_version = 1;
+            write_manifest_atomic(directory.path(), &manifest_path, &legacy).unwrap();
+            let manifest_before = fs::read(&manifest_path).unwrap();
+            let sidecar = directory.path().join("sample_gene.uncertain.fasta");
+            let unowned = directory.path().join("sample_unowned.uncertain.fasta");
+            fs::write(&unowned, "user file").unwrap();
+            if modified {
+                fs::write(&sidecar, "user edit").unwrap();
+                let error = OutputTransaction::begin(directory.path(), "sample")
+                    .err()
+                    .unwrap();
+                assert!(error.to_string().contains("modified prior output"));
+                assert_eq!(fs::read(&manifest_path).unwrap(), manifest_before);
+                assert_eq!(fs::read_to_string(&sidecar).unwrap(), "user edit");
+                assert_eq!(
+                    fs::read_to_string(directory.path().join("sample_gene.fasta")).unwrap(),
+                    "standard"
+                );
+            } else {
+                let mut next = OutputTransaction::begin(directory.path(), "sample").unwrap();
+                stage_text(
+                    &mut next,
+                    "sample_gene.fasta",
+                    "combined classified records",
+                );
+                stage_text(&mut next, "sample.stats.yaml", "new stats");
+                next.commit().unwrap();
+                assert!(!sidecar.exists());
+                let current = read_manifest(directory.path(), "sample");
+                assert_eq!(current.schema_version, 2);
+                assert_eq!(current.files.len(), 2);
+            }
+            assert_eq!(fs::read_to_string(unowned).unwrap(), "user file");
+        }
     }
 
     #[test]

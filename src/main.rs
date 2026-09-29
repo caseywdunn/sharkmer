@@ -50,7 +50,7 @@ fn main() -> Result<()> {
         p.high_coverage_ratio = args.high_coverage_ratio;
         p.tip_coverage_fraction = args.tip_coverage_fraction;
         p.diagnose_withheld_paths = args.diagnose_withheld_paths;
-        p.emit_uncertain = args.emit_uncertain;
+        p.emit_uncertain = args.emit_uncertain || !args.no_emit_uncertain;
     }
 
     // Handle --validate-panels early: pure primer check, no sample/output needed
@@ -223,6 +223,8 @@ fn main() -> Result<()> {
         run_id: output_transaction.run_id().to_string(),
         output_manifest: output_transaction.manifest_basename().to_string(),
         run_status: "complete".to_string(),
+        product_output_schema_version: 2,
+        product_output_layout: "combined_classified".to_string(),
         input_source,
         kmer_length: args.k,
         chunks: args.chunks,

@@ -226,7 +226,9 @@ pub(super) fn collect(
     }
 
     for (index, mut product) in products.into_values().enumerate() {
-        product.id = format!("{}_{}.uncertain_{}", sample_name, gene_name, index);
+        // Standard IDs always end in an integer. A terminal status suffix
+        // avoids collisions even when a different gene ends in `.uncertain`.
+        product.id = format!("{}_{}_{}.uncertain", sample_name, gene_name, index);
         let thresholds = product
             .sources
             .iter()

@@ -1,4 +1,4 @@
-"""Validate separately published uncertain hypotheses without promoting them."""
+"""Validate classified products while keeping uncertain hypotheses separate in consumers."""
 
 import hashlib
 import re
@@ -36,7 +36,65 @@ def uncertain_header(header):
     return "assembly_status=uncertain" in shlex.split(header)
 
 
-def validate_metadata(entry, sample_prefix):
+def combined_output(stats):
+    """Dispatch explicitly; incomplete/new schema declarations cannot fall back to legacy."""
+    fields = ("product_output_schema_version", "product_output_layout")
+    entries = stats.get("pcr_results", [])
+    _require(isinstance(entries, list) and all(isinstance(entry, dict) for entry in entries),
+             "invalid target result rows")
+    if not any(field in stats for field in fields):
+        _require(not any("n_standard_products" in entry or "n_uncertain_products" in entry
+                         for entry in entries),
+                 "classified counts lack an output schema")
+        return False
+    _require(type(stats.get(fields[0])) is int and stats[fields[0]] == 2
+             and stats.get(fields[1]) == "combined_classified", "unsupported product output schema")
+    genes = [entry.get("gene_name") for entry in entries]
+    _require(all(isinstance(gene, str) and gene for gene in genes)
+             and len(genes) == len(set(genes)), "missing or duplicate classified target names")
+    return True
+
+
+def assembly_status(header):
+    """Require exactly one recognized class, including when tokens are quoted."""
+    labels = [token.split("=", 1)[1] for token in shlex.split(header)
+              if token.startswith("assembly_status=")]
+    _require(len(labels) == 1 and labels[0] in {"standard", "uncertain"},
+             "record must have exactly one recognized assembly_status")
+    return labels[0]
+
+
+def validate_combined_metadata(entry, sample_prefix):
+    """Validate inclusive counts and the single shared output file for schema 2."""
+    for key in ("n_products", "n_standard_products", "n_uncertain_products"):
+        _require(_count(entry.get(key)), f"invalid {key}")
+    total, standard, count = (entry[key] for key in
+                              ("n_products", "n_standard_products", "n_uncertain_products"))
+    _require(total == standard + count, "classified counts do not sum to total")
+    lengths = entry.get("product_lengths", [])
+    _require(isinstance(lengths, list) and len(lengths) == total
+             and all(_count(length) and length > 0 for length in lengths),
+             "inclusive product lengths mismatch")
+    gene = entry.get("gene_name")
+    _require(isinstance(gene, str) and gene, "missing gene")
+    expected_status = "success" if standard else "uncertain" if count else "fail"
+    _require(entry.get("status") == expected_status, "status disagrees with classified counts")
+    if expected_status == "uncertain":
+        _require(isinstance(entry.get("failure_reason"), str) and entry["failure_reason"],
+                 "uncertain-only target lacks standard failure reason")
+    filename = f"{sample_prefix}_{gene}.fasta" if total else None
+    _require(entry.get("output_file") == filename, "combined output path does not match sample/gene/count")
+    uncertain_file = validate_metadata(entry, sample_prefix, combined=True)
+    value = entry.get("uncertain_products")
+    _require(count == (value["n_products"] if value is not None else 0),
+             "uncertain count disagrees with assessment")
+    _require(lengths[standard:] == (value["product_lengths"] if value is not None else []),
+             "uncertain lengths disagree with inclusive suffix")
+    _require(uncertain_file == (filename if count else None), "uncertain output is not the shared file")
+    return filename
+
+
+def validate_metadata(entry, sample_prefix, combined=False):
     """Return the declared uncertain filename, or None for absent/empty output."""
     if "uncertain_products" not in entry:
         return None
@@ -68,14 +126,17 @@ def validate_metadata(entry, sample_prefix):
     gene = entry.get("gene_name")
     _require(isinstance(gene, str) and gene, "missing gene")
     filename = value.get("output_file")
-    _require(filename == (f"{sample_prefix}_{gene}.uncertain.fasta" if count else None),
+    suffix = ".fasta" if combined else ".uncertain.fasta"
+    _require(filename == (f"{sample_prefix}_{gene}{suffix}" if count else None),
              "output path does not match sample/gene/count")
 
     ids, sequences, source_count = set(), set(), 0
     for index, (product, length) in enumerate(zip(products, lengths)):
         _require(isinstance(product, dict), "product must be a mapping")
         identifier = product.get("id")
-        _require(identifier == f"{sample_prefix}_{gene}.uncertain_{index}" and identifier not in ids,
+        expected_id = (f"{sample_prefix}_{gene}_{index}.uncertain" if combined
+                       else f"{sample_prefix}_{gene}.uncertain_{index}")
+        _require(identifier == expected_id and identifier not in ids,
                  "invalid or duplicate product ID")
         ids.add(identifier)
         sequence = product.get("oriented_sequence")
@@ -158,15 +219,16 @@ def validate_metadata(entry, sample_prefix):
     return filename
 
 
-def validate_fasta(entry, output_dir):
-    """Bind every uncertain FASTA record to its separate structured metadata."""
+def validate_fasta(entry, output_dir, combined=False):
+    """Bind uncertain records to metadata and validate the whole combined-file partition."""
     value = entry.get("uncertain_products")
-    if not value or not value.get("output_file"):
+    filename = entry.get("output_file") if combined else (value or {}).get("output_file")
+    if not filename:
         return
     expected = [(product["id"] + " " + product["description"], product["oriented_sequence"])
-                for product in value["products"]]
+                for product in (value or {}).get("products", [])]
     observed, header, sequence = [], None, []
-    with (output_dir / value["output_file"]).open() as stream:
+    with (output_dir / filename).open() as stream:
         for raw in stream:
             line = raw.strip()
             if line.startswith(">"):
@@ -178,4 +240,15 @@ def validate_fasta(entry, output_dir):
                 sequence.append(line)
     if header is not None:
         observed.append((header, "".join(sequence)))
+    if combined:
+        count = entry["n_standard_products"]
+        _require(len(observed) == entry["n_products"]
+                 and [len(sequence) for _, sequence in observed] == entry.get("product_lengths", []),
+                 "combined FASTA count or lengths disagree with stats")
+        _require([assembly_status(header) for header, _ in observed]
+                 == ["standard"] * count + ["uncertain"] * entry["n_uncertain_products"],
+                 "combined FASTA classification or order disagrees with stats")
+        ids = [shlex.split(header)[0] for header, _ in observed]
+        _require(len(ids) == len(set(ids)), "duplicate combined FASTA identifiers")
+        observed = observed[count:]
     _require(observed == expected, "FASTA records disagree with structured candidates")

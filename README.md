@@ -121,23 +121,31 @@ The `--max-reads 1000000` argument indicates that the first million reads (indiv
 
 This analysis will generate one fasta file for each primer pair, named `{sample}_{gene}.fasta` (e.g., `Stenogorgia_casta_18S.fasta`). If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found. A YAML stats file (`{sample}.stats.yaml`) is also produced with run statistics, per-gene PCR results, and bounded diagnostics for each attempted coverage threshold. Threshold diagnostics record connectivity and search-limit observations, repeat-marker cause counts, and eligible or withheld complete candidate counts without serializing graph identifiers. A reached search quota records why enumeration stopped; it does not prove that another valid path exists beyond the quota.
 
-Add `--emit-uncertain` to also save a bounded selection of completed candidates
-with unresolved repeat structure to `{sample}_{gene}.uncertain.fasta`. Every
-header includes `assembly_status=uncertain`, `repeat_length=unresolved`, and
-`read_support=not_evaluated`. The emitted sequence and its length describe a
-graph-path hypothesis; the biological repeat length may differ. Ordinary FASTA
-files, gene success, and standard product counts keep their existing meaning.
-A gene can therefore have uncertain candidates while its standard status is
-`fail`. The separate `uncertain_products` stats field records the candidates,
-uncertainty-marker positions, source thresholds, and search/retention limits.
-An empty collection does not establish absence, and the bounded search does
-not enumerate every repeat alternative. See [uncertain output](dev_docs/UNCERTAIN_PRODUCTS.md)
-and the [implementation assessment](dev_docs/UNCERTAIN_PRODUCTS_RESULTS.md).
+By default, each target's FASTA contains both standard products and a bounded
+selection of completed hypotheses with unresolved repeat structure. Every
+header has `assembly_status=standard` or `assembly_status=uncertain`.
+Uncertain records also carry `repeat_length=unresolved` and
+`read_support=not_evaluated`; their sequence length is a hypothesis, and the
+biological repeat length may differ. Use `--no-emit-uncertain` to request only
+standard products, or filter an existing FASTA with:
+
+```sh
+awk '/^>/ {keep = / assembly_status=standard( |$)/} keep' sample_gene.fasta > sample_gene.standard.fasta
+```
+
+Stats count all delivered records in `n_products` and report separate
+`n_standard_products` and `n_uncertain_products` counts. A target with only
+uncertain hypotheses has status `uncertain` and a normal output FASTA.
+The `uncertain_products` field records source paths, uncertainty-marker
+positions, thresholds, and search/retention limits. An empty collection does
+not establish absence; bounded search does not enumerate every repeat
+alternative. See [inclusive output](dev_docs/INCLUSIVE_OUTPUT.md) and the
+[sequence assessment](dev_docs/INCLUSIVE_OUTPUT_RESULTS.md).
 
 For developer investigation, the hidden opt-in `--diagnose-withheld-paths` flag
 adds bounded current-run withheld sequences and sequence-relative marker
-positions to the YAML stats. It can be used independently of, or together with,
-`--emit-uncertain`; both use the same collection budget. See
+positions to the YAML stats. It shares the default output's collection budget
+and also works with `--no-emit-uncertain`. See
 [bounded withheld-path diagnostics](dev_docs/WITHHELD_PATH_DIAGNOSTICS.md).
 
 In stats, `n_reads_read` is the number of FASTQ records read.
@@ -155,9 +163,10 @@ interruption: `in_progress`, `publishing`, and `failed` runs are not complete.
 
 Rerunning the same sample/output directory invalidates its previous owned
 FASTA and stats files, including products from genes no longer selected.
-Modified, unowned, legacy, and symlink collisions are preserved and rejected
-rather than overwritten; use a fresh directory to retain previous results or
-when upgrading an old output directory. Concurrent runs with the same output
+Verified owned schema-1 outputs migrate to the combined format, removing old
+uncertainty sidecars. Modified, unowned, and symlink collisions, including
+unowned legacy files, are preserved and rejected rather than overwritten; use
+a fresh directory to retain previous results. Concurrent runs with the same output
 identity are serialized. Histograms and diagnostic DOT files are outside this
 transaction and are not covered by its completion or cleanup guarantees.
 Argument-validation failures occur before a new transaction starts and leave
@@ -262,12 +271,13 @@ Keep in mind that a reported product requires an assembled kmer path meeting the
 
 ### Repeat-length uncertainty
 
-The unreleased v3.2 development version withholds candidate products that
-cross unresolved homopolymer or tandem-repeat regions instead of reporting
-a shortened sequence as a complete amplicon. These failures include
-`repeat length unresolved` in the per-gene stats. This intentionally removes
-some previously emitted, incorrectly shortened products; it is not evidence
-that the target is absent. Omitted self-loops and nodes in cyclic graph
+The unreleased v3.2 development version labels bounded candidate sequences
+that cross unresolved homopolymer or tandem-repeat regions as uncertain.
+They are included in the normal FASTA by default, with explicit uncertainty
+headers, and remain excluded from standard admission and validation.
+A shortened repeat-containing hypothesis is not a resolved complete amplicon.
+Per-gene stats retain the reason standard admission failed, including
+`repeat length unresolved`. Omitted self-loops and nodes in cyclic graph
 components remain conservative path-local uncertainty markers. A retained
 high-coverage edge that collides with an existing graph node marks that exact
 edge rather than both endpoint nodes, so a separate acyclic route may share an

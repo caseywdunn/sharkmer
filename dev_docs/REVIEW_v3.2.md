@@ -2,7 +2,19 @@
 
 Prepared 2026-09-09. **Development work only: awaiting user review, not release approval.**
 
-**Current work (2026-09-28):** [#157](https://github.com/caseywdunn/sharkmer/issues/157)
+**Current checkpoint (2026-09-29):** the user requested default inclusive delivery:
+standard and uncertain records together in the normal target FASTA, explicit
+header labels, and a standard-only opt-out. [The revised contract](INCLUSIVE_OUTPUT.md)
+defines combined schema-2 delivery and inclusive total counts. Implementation
+and all six default/opt-out regressions pass: 60 records by default (26 standard,
+34 uncertain), exactly the preceding sequences, with the same five of seven
+historical identities available as uncertain hypotheses. Both Rust backends
+pass 247 unit and 29 integration tests, formatting and Clippy; Python runs 197
+tests with one skip and all 156 references verify. See [the results](INCLUSIVE_OUTPUT_RESULTS.md)
+and linked review/archive receipts. The earlier completed split-output
+evaluation below is a preserved checkpoint; no merge or release is authorized.
+
+**Preceding checkpoint (2026-09-28):** [#157](https://github.com/caseywdunn/sharkmer/issues/157)
 is implemented and its nine frozen baseline/off/on comparisons are complete on
 `experiment/uncertain-products`. The
 [output contract and comparison protocol](UNCERTAIN_PRODUCTS.md) preserve

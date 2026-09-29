@@ -1,12 +1,29 @@
 # Pause/resume handoff
 
-Updated 2026-09-28. **Uncertainty-output implementation and nine-run evaluation
-complete and independently reviewed on the experiment branch. The opt-in
-feature awaits the user's integration decision; no release approval.**
+Updated 2026-09-29. **Default inclusive delivery in one normal FASTA per target
+is implemented and all six output regressions pass on the experiment branch;
+no merge or release approval.**
 Start here in a new session; this handoff does not require the previous chat
 or live coding agents. [PLAN.md](PLAN.md) remains the detailed execution plan.
 
 ## Saved state
+
+- Completed revision after `f0b7949`: standard and repeat-uncertain records belong
+  together in the normal target FASTA by default, with explicit status headers
+  and `--no-emit-uncertain` for standard-only output. [AGENTS.md](../AGENTS.md)
+  records the user's simple, inclusive default preference. The
+  [new output contract](INCLUSIVE_OUTPUT.md) versions the combined format and
+  makes total stats counts match all delivered records, with separate class
+  counts. All six default/opt-out runs pass: 60 records by default (26 standard,
+  34 uncertain), 26 with the opt-out, and five of seven historical identities
+  available as uncertain hypotheses. Both Rust backends pass 247 unit and 29
+  integration tests, formatting and Clippy; Python runs 197 tests with one
+  existing skip; 156/156 references verify. See [the results](INCLUSIVE_OUTPUT_RESULTS.md)
+  and [evidence bundle](../benchmarks/benchmark_results/v3.2-inclusive-output-20260929/README.md)
+  for source review, completed outcome review and archive receipts. The
+  preceding split-output evidence below remains immutable history.
+
+### Preceding completed checkpoint (`f0b7949`)
 
 - Work branch: `experiment/uncertain-products`, created from the completed
   diagnostic branch at `3cc48a3`. The user prioritized emitting explicitly
@@ -190,20 +207,25 @@ documentation snapshots describe their pinned commit, not later handoff edits.
 
 ## Resume from here
 
+The user selected [default combined delivery](INCLUSIVE_OUTPUT.md), and its
+[six-run regression](INCLUSIVE_OUTPUT_RESULTS.md) is complete. Preserve old
+evidence and keep assembly/repeat gates unchanged. More output is not evidence
+of validated repeat structure or restored standard recovery.
+
 1. Check `experiment/uncertain-products`, local changes, and the new benchmark
-   bundle. #157 implementation, compiled validation and all nine preregistered
-   comparisons are complete and independently reviewed. Check the bundle's
-   final results review, archive receipt, and checksums when reconstructing
+   bundle. #157 default combined delivery, compiled validation and all six
+   default/opt-out regressions are complete. Check the bundle's independent
+   outcome review, archive receipt, and checksums when reconstructing
    evidence. Preserve failed attempts and old evidence; do not rerun
    successful frozen comparisons without cause.
-2. Present [the results](UNCERTAIN_PRODUCTS_RESULTS.md) for the user's decision
-   about incorporating the opt-in feature. Standard parity, five exact
-   historical hypotheses and the two bounded non-observations are separate
-   findings; none establishes biological repeat correctness.
-   Keep `dev` at `956e771` for the comparison and user integration decision.
+2. Review [the inclusive results](INCLUSIVE_OUTPUT_RESULTS.md) for a later
+   branch-integration decision. The default/output decision is already made;
+   do not ask the user to decide it again. Standard parity, five exact historical
+   hypotheses and two bounded non-observations do not establish repeat correctness.
+   Keep `dev` at `956e771` until integration is authorized.
    The [completed read-history prototype](READ_HISTORY_RESULTS.md) remains a
-   diagnostic; production integration under #145/#116 is deferred while
-   labelled output awaits that decision.
+   diagnostic; production integration under #145/#116 is a separate future
+   evidence/reconstruction task, not required for inclusive delivery.
 3. For later reconstruction, specify variant-aware graph mapping: preserve
    competing indel placements and missing graph sequence as uncertainty.
    More independently positioned support and linkage between regions remain

@@ -9,7 +9,7 @@ use log::{info, warn};
 use rayon::prelude::*;
 use serde::Serialize;
 
-/// Separate publication metadata for bounded repeat-uncertain hypotheses.
+/// Provenance for the uncertain subset of a target's combined FASTA.
 #[derive(Serialize)]
 pub(crate) struct UncertainProductOutput {
     pub(crate) n_products: usize,
@@ -26,6 +26,8 @@ pub(crate) struct PcrGeneResult {
     pub(crate) gene_name: String,
     pub(crate) status: String,
     pub(crate) n_products: usize,
+    pub(crate) n_standard_products: usize,
+    pub(crate) n_uncertain_products: usize,
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub(crate) product_lengths: Vec<usize>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -64,6 +66,8 @@ pub(crate) struct RunStats {
     pub(crate) run_id: String,
     pub(crate) output_manifest: String,
     pub(crate) run_status: String,
+    pub(crate) product_output_schema_version: u32,
+    pub(crate) product_output_layout: String,
     pub(crate) input_source: InputSourceStats,
     pub(crate) kmer_length: usize,
     pub(crate) chunks: usize,
@@ -152,6 +156,8 @@ pub(crate) fn run_pcr(
             uncertain_products,
         } = outcome;
 
+        let n_standard_products = records.len();
+        let fasta_basename = format!("{}_{}.fasta", sample, pcr_params.gene_name);
         let uncertain_products = uncertain_products
             .map(|assessment| -> Result<UncertainProductOutput> {
                 let n_products = assessment.products.len();
@@ -164,24 +170,7 @@ pub(crate) fn run_pcr(
                     .iter()
                     .map(|product| product.oriented_sequence.len())
                     .collect();
-                let output_file = if n_products > 0 {
-                    let basename = format!("{}_{}.uncertain.fasta", sample, pcr_params.gene_name);
-                    output_transaction.stage_file(&basename, |file| {
-                        for product in &assessment.products {
-                            let record = bio::io::fasta::Record::with_attrs(
-                                &product.id,
-                                Some(&product.description),
-                                product.oriented_sequence.as_bytes(),
-                            );
-                            write_fasta_record(file, &record)
-                                .context("Failed to write uncertain candidate FASTA record")?;
-                        }
-                        Ok(())
-                    })?;
-                    Some(basename)
-                } else {
-                    None
-                };
+                let output_file = (n_products > 0).then(|| fasta_basename.clone());
                 Ok(UncertainProductOutput {
                     n_products,
                     product_lengths,
@@ -190,50 +179,73 @@ pub(crate) fn run_pcr(
                 })
             })
             .transpose()?;
-
-        if !records.is_empty() {
-            let fasta_basename = format!("{}_{}.fasta", sample, pcr_params.gene_name);
-
-            let product_lengths: Vec<usize> =
-                records.iter().map(|record| record.seq().len()).collect();
-
+        let n_uncertain_products = uncertain_products
+            .as_ref()
+            .map_or(0, |uncertain| uncertain.n_products);
+        let n_products = n_standard_products + n_uncertain_products;
+        let mut product_lengths: Vec<usize> =
+            records.iter().map(|record| record.seq().len()).collect();
+        if let Some(uncertain) = &uncertain_products {
+            product_lengths.extend(&uncertain.product_lengths);
+        }
+        let output_file = if n_products > 0 {
             output_transaction.stage_file(&fasta_basename, |file| {
                 for record in &records {
-                    write_fasta_record(file, record).context("Failed to write FASTA record")?;
+                    let description = match record.desc() {
+                        Some(description) => format!("{description} assembly_status=standard"),
+                        None => "assembly_status=standard".to_string(),
+                    };
+                    let classified = bio::io::fasta::Record::with_attrs(
+                        record.id(),
+                        Some(&description),
+                        record.seq(),
+                    );
+                    write_fasta_record(file, &classified)
+                        .context("Failed to write standard FASTA record")?;
+                }
+                if let Some(uncertain) = &uncertain_products {
+                    for product in &uncertain.assessment.products {
+                        let record = bio::io::fasta::Record::with_attrs(
+                            &product.id,
+                            Some(&product.description),
+                            product.oriented_sequence.as_bytes(),
+                        );
+                        write_fasta_record(file, &record)
+                            .context("Failed to write uncertain FASTA record")?;
+                    }
                 }
                 Ok(())
             })?;
-
-            pcr_results.push(PcrGeneResult {
-                gene_name: pcr_params.gene_name.clone(),
-                status: "success".to_string(),
-                n_products: product_lengths.len(),
-                product_lengths,
-                output_file: Some(fasta_basename),
-                failure_reason: None,
-                threshold_diagnostics,
-                uncertain_products,
-            });
+            Some(fasta_basename)
         } else {
-            // Ensure failure_reason is always populated when status=="fail"
-            // so the YAML stats file is never ambiguous about *why* a gene
-            // failed. do_pcr should set this in every empty-records path,
-            // but default it here rather than silently leaving None if a
-            // new failure path is added upstream without updating the
-            // outcome.
-            let failure_reason = failure_reason
-                .or_else(|| Some("unknown (no reason reported by PCR pipeline)".to_string()));
-            pcr_results.push(PcrGeneResult {
-                gene_name: pcr_params.gene_name.clone(),
-                status: "fail".to_string(),
-                n_products: 0,
-                product_lengths: Vec::new(),
-                output_file: None,
-                failure_reason,
-                threshold_diagnostics,
-                uncertain_products,
-            });
-        }
+            None
+        };
+        let status = if n_standard_products > 0 {
+            "success"
+        } else if n_uncertain_products > 0 {
+            "uncertain"
+        } else {
+            "fail"
+        };
+        // An uncertain-only output retains the reason standard admission failed.
+        let failure_reason = if n_standard_products > 0 {
+            None
+        } else {
+            failure_reason
+                .or_else(|| Some("unknown (no reason reported by PCR pipeline)".to_string()))
+        };
+        pcr_results.push(PcrGeneResult {
+            gene_name: pcr_params.gene_name.clone(),
+            status: status.to_string(),
+            n_products,
+            n_standard_products,
+            n_uncertain_products,
+            product_lengths,
+            output_file,
+            failure_reason,
+            threshold_diagnostics,
+            uncertain_products,
+        });
     }
 
     // Print gene result table
@@ -243,30 +255,34 @@ pub(crate) fn run_pcr(
         ("+", "-")
     };
     for result in &pcr_results {
-        if let Some(uncertain) = &result.uncertain_products
-            && uncertain.n_products > 0
-        {
-            warn!(
-                "  ? {} ({} uncertain candidate(s), repeat structure unresolved; {})",
-                result.gene_name,
-                uncertain.n_products,
-                uncertain.output_file.as_deref().unwrap_or_default()
-            );
-        }
-        if result.status == "success" {
+        if result.n_products > 0 {
             let lengths: Vec<String> = result
                 .product_lengths
                 .iter()
                 .map(|l| l.to_string())
                 .collect();
             warn!(
-                "  {} {} ({} product{}, {} bp)",
-                sym_pass,
+                "  {} {} ({} product{}: {} standard, {} uncertain; {} bp)",
+                if result.n_standard_products > 0 {
+                    sym_pass
+                } else {
+                    "?"
+                },
                 result.gene_name,
                 result.n_products,
                 if result.n_products == 1 { "" } else { "s" },
+                result.n_standard_products,
+                result.n_uncertain_products,
                 lengths.join(", ")
             );
+            if result.n_uncertain_products > 0 {
+                warn!(
+                    "    Uncertain records have unresolved repeat structure and unevaluated read support."
+                );
+            }
+            if let Some(reason) = &result.failure_reason {
+                warn!("    Standard admission: {}", reason);
+            }
         } else {
             if let Some(ref reason) = result.failure_reason {
                 warn!(
@@ -302,16 +318,16 @@ pub(crate) fn print_summary(run_stats: &RunStats, elapsed: std::time::Duration) 
     let reads_str = format_count(run_stats.n_reads_read);
 
     if !run_stats.pcr_results.is_empty() {
-        let n_success = run_stats
+        let n_with_output = run_stats
             .pcr_results
             .iter()
-            .filter(|r| r.status == "success")
+            .filter(|r| r.n_products > 0)
             .count();
         let n_total = run_stats.pcr_results.len();
         let gene_names: Vec<&str> = run_stats
             .pcr_results
             .iter()
-            .filter(|r| r.status == "success")
+            .filter(|r| r.n_products > 0)
             .map(|r| r.gene_name.as_str())
             .collect();
         let genes_detail = if gene_names.is_empty() {
@@ -325,12 +341,25 @@ pub(crate) fn print_summary(run_stats: &RunStats, elapsed: std::time::Duration) 
                 gene_names.len() - 10
             )
         };
+        let n_standard: usize = run_stats
+            .pcr_results
+            .iter()
+            .map(|result| result.n_standard_products)
+            .sum();
+        let n_uncertain: usize = run_stats
+            .pcr_results
+            .iter()
+            .map(|result| result.n_uncertain_products)
+            .sum();
         warn!(
-            "sharkmer complete: {} reads, {}/{} genes amplified{}, allocator peak {}, {}",
+            "sharkmer complete: {} reads, {}/{} targets with output{}, {} records ({} standard, {} uncertain), allocator peak {}, {}",
             reads_str,
-            n_success,
+            n_with_output,
             n_total,
             genes_detail,
+            n_standard + n_uncertain,
+            n_standard,
+            n_uncertain,
             format_bytes(run_stats.peak_memory_bytes),
             elapsed_str
         );

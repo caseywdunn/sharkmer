@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
-"""CI copy of independently developed parser/publication controls; synthetic data only.
+"""Synthetic parser/publication regression controls.
 
-The later copy in tests/test_uncertain_output.py is a CI regression copy of
-these controls, not additional independent evidence.
+UncertainIsolationTests preserves the original independently developed controls
+as CI regressions; this copy is not additional independent evidence.
+CombinedOutputTests adds implementation-author regressions for combined delivery.
 """
 
 import hashlib
+import copy
 from pathlib import Path
 import sys
+import subprocess
 import tempfile
 import unittest
+from unittest import mock
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 from sharkmer_validate import runner, uncertain
+from bootstrap_from_runs import collect_amplicons_from_runs
 
 
 def digest(text):
@@ -95,14 +100,241 @@ def transaction(directory, standard=True, empty=False):
 
 
 def publish(directory, stats, files):
-    (directory / "sample.stats.yaml").write_text(yaml.safe_dump(stats))
-    manifest = {"schema_version": 1, "producer": "sharkmer", "sample": "sample",
+    prefix = stats["sample"]
+    (directory / f"{prefix}.stats.yaml").write_text(yaml.safe_dump(stats))
+    manifest = {"schema_version": stats.get("product_output_schema_version", 1),
+                "producer": "sharkmer", "sample": prefix,
                 "run_id": stats["run_id"], "status": "complete", "files": [
                     {"path": name, "sha256": runner._sha256_file(directory / name)}
-                    for name in ["sample.stats.yaml", *files]
+                    for name in [f"{prefix}.stats.yaml", *files]
                 ]}
-    (directory / "sample.manifest.yaml").write_text(yaml.safe_dump(manifest))
+    (directory / f"{prefix}.manifest.yaml").write_text(yaml.safe_dump(manifest))
     return manifest
+
+
+def combined_transaction(directory, standard=True, empty=False, disabled=False,
+                         prefix="sample", gene="gene"):
+    value = None if disabled else assessment(empty=empty)
+    count = 0 if value is None else value["n_products"]
+    total = int(standard) + count
+    filename = f"{prefix}_{gene}.fasta"
+    entry = {"gene_name": gene, "status": "success" if standard else "uncertain" if count else "fail",
+             "n_products": total, "n_standard_products": int(standard),
+             "n_uncertain_products": count,
+             "product_lengths": ([4] if standard else []) + ([5] if count else [])}
+    contents = (f">{prefix}_{gene}_0 assembly_status=standard product=0 length=4\nACGT\n"
+                if standard else "")
+    if not standard:
+        entry["failure_reason"] = "repeat structure unresolved"
+    if value is not None:
+        entry["uncertain_products"] = value
+        if count:
+            value["output_file"] = filename
+            product = value["products"][0]
+            product["id"] = f"{prefix}_{gene}_0.uncertain"
+            contents += f'>{product["id"]} {product["description"]}\n{product["oriented_sequence"]}\n'
+    if total:
+        entry["output_file"] = filename
+        (directory / filename).write_text(contents)
+    stats = {"sharkmer_version": "3.2.0-dev", "sample": prefix, "kmer_length": 19,
+             "command": "synthetic fixture", "run_id": "combined-control",
+             "run_status": "complete", "output_manifest": f"{prefix}.manifest.yaml",
+             "product_output_schema_version": 2, "product_output_layout": "combined_classified",
+             "pcr_results": [entry]}
+    publish(directory, stats, [filename] if total else [])
+    return stats
+
+
+class CombinedOutputTests(unittest.TestCase):
+    def test_mixed_file_validates_all_records_but_returns_only_standard(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            stats = combined_transaction(directory)
+            runner._validate_stats_manifest(stats, "sample", 19, {"gene"}, "end-to-end")
+            self.assertEqual(stats["pcr_results"][0]["n_products"], 2)
+            for files in (None, ["sample_gene.fasta"]):
+                parsed = runner.parse_fasta_products("sample", directory, files)
+                self.assertEqual(parsed[0]["sequences"], ["ACGT"])
+                self.assertEqual(parsed[0]["n_products"], 1)
+                self.assertEqual(parsed[0]["lengths"], [4])
+
+    def test_uncertain_only_file_is_valid_and_not_a_standard_recovery(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            stats = combined_transaction(directory, standard=False)
+            runner._validate_stats_manifest(stats, "sample", 19, {"gene"}, "end-to-end")
+            self.assertEqual(stats["pcr_results"][0]["status"], "uncertain")
+            self.assertEqual(runner.parse_fasta_products("sample", directory), [])
+            self.assertEqual(runner.parse_fasta_products("sample", directory, ["sample_gene.fasta"]), [])
+
+    def test_enabled_empty_disabled_and_zero_output(self):
+        for standard in (False, True):
+            for disabled in (False, True):
+                with self.subTest(standard=standard, disabled=disabled), tempfile.TemporaryDirectory() as temporary:
+                    directory = Path(temporary)
+                    stats = combined_transaction(directory, standard=standard, empty=True, disabled=disabled)
+                    runner._validate_stats_manifest(stats, "sample", 19, {"gene"}, "end-to-end")
+                    parsed = runner.parse_fasta_products("sample", directory)
+                    self.assertEqual(sum(row["n_products"] for row in parsed), int(standard))
+
+    def test_malformed_classification_rejected_even_with_recomputed_receipts(self):
+        for label in ("", "assembly_status=other", "assembly_status=uncertain",
+                      "assembly_status=standard assembly_status=uncertain",
+                      "assembly_status=standard assembly_status=standard"):
+            with self.subTest(label=label), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                stats = combined_transaction(directory)
+                path = directory / "sample_gene.fasta"
+                path.write_text(path.read_text().replace("assembly_status=standard", label, 1))
+                publish(directory, stats, [path.name])
+                with self.assertRaises(ValueError):
+                    runner.parse_fasta_products("sample", directory)
+
+    def test_partition_order_length_and_metadata_binding_rejected(self):
+        for mutation in ("order", "length", "uncertain_sequence", "id", "extra", "uncertain_label"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                stats = combined_transaction(directory)
+                path = directory / "sample_gene.fasta"
+                original = path.read_text()
+                if mutation == "order":
+                    parts = original.split(">")
+                    changed = ">" + parts[2] + ">" + parts[1]
+                elif mutation == "length":
+                    changed = original.replace("\nACGT\n", "\nACG\n")
+                elif mutation == "uncertain_sequence":
+                    changed = original.replace("\nACGTT\n", "\nACGTA\n")
+                elif mutation == "id":
+                    changed = original.replace("sample_gene_0.uncertain", "wrong")
+                elif mutation == "extra":
+                    changed = original + ">extra assembly_status=standard\nACGT\n"
+                else:
+                    changed = original.replace("assembly_status=uncertain", "assembly_status=standard")
+                path.write_text(changed)
+                publish(directory, stats, [path.name])
+                with self.assertRaises(ValueError):
+                    runner.parse_fasta_products("sample", directory)
+
+    def test_inclusive_metadata_invariants(self):
+        mutations = [
+            ("n_products", 1), ("n_products", True), ("n_standard_products", 2),
+            ("n_uncertain_products", -1), ("product_lengths", [5, 4]),
+            ("status", "uncertain"), ("output_file", "sample_other.fasta"),
+            ("uncertain_products", None),
+        ]
+        for key, value in mutations:
+            with self.subTest(key=key), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                stats = combined_transaction(directory)
+                stats["pcr_results"][0][key] = value
+                publish(directory, stats, ["sample_gene.fasta"])
+                with self.assertRaises(ValueError):
+                    runner.parse_fasta_products("sample", directory)
+
+    def test_uncertain_only_requires_standard_failure_reason(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            stats = combined_transaction(directory, standard=False)
+            del stats["pcr_results"][0]["failure_reason"]
+            publish(directory, stats, ["sample_gene.fasta"])
+            with self.assertRaises(ValueError):
+                runner.parse_fasta_products("sample", directory)
+
+    def test_manifest_version_must_agree_with_explicit_schema(self):
+        for mutation in ("missing_version", "missing_layout", "wrong_layout", "wrong_version", "old_manifest", "downgrade"):
+            with self.subTest(mutation=mutation), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                stats = combined_transaction(directory)
+                if mutation == "missing_version":
+                    del stats["product_output_schema_version"]
+                elif mutation == "missing_layout":
+                    del stats["product_output_layout"]
+                elif mutation == "wrong_layout":
+                    stats["product_output_layout"] = "separate"
+                elif mutation == "wrong_version":
+                    stats["product_output_schema_version"] = True
+                elif mutation == "downgrade":
+                    del stats["product_output_schema_version"]
+                    del stats["product_output_layout"]
+                manifest = publish(directory, stats, ["sample_gene.fasta"])
+                if mutation == "old_manifest":
+                    manifest["schema_version"] = 1
+                    (directory / "sample.manifest.yaml").write_text(yaml.safe_dump(manifest))
+                with self.assertRaises(ValueError):
+                    runner.parse_fasta_products("sample", directory)
+
+    def test_missing_or_surplus_receipt_rejected(self):
+        for extra in (False, True):
+            with self.subTest(extra=extra), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                stats = combined_transaction(directory)
+                if extra:
+                    (directory / "sample_gene.uncertain.fasta").write_text(">stale\nACGT\n")
+                publish(directory, stats, ["sample_gene.fasta", "sample_gene.uncertain.fasta"] if extra else [])
+                with self.assertRaises(ValueError):
+                    runner.parse_fasta_products("sample", directory)
+
+    def test_shared_file_does_not_allow_cross_gene_alias(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            stats = combined_transaction(directory)
+            other = copy.deepcopy(stats["pcr_results"][0])
+            other["gene_name"] = "other"
+            stats["pcr_results"].append(other)
+            publish(directory, stats, ["sample_gene.fasta"])
+            with self.assertRaises(ValueError):
+                runner.parse_fasta_products("sample", directory)
+
+    def test_uncertain_gene_suffix_and_identifiers_do_not_change_classification(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            combined_transaction(directory, gene="gene.uncertain")
+            parsed = runner.parse_fasta_products("sample", directory)
+            self.assertEqual(parsed[0]["gene"], "gene.uncertain")
+            self.assertEqual(parsed[0]["sequences"], ["ACGT"])
+
+    def test_bootstrap_only_collects_standard_records(self):
+        panel = {"name": "panel", "primers": [{"gene": "gene", "forward": "ACGT", "reverse": "TGCA"}],
+                 "validation": {"samples": [{"accession": "A", "taxon": "Taxon", "max_reads": [1000]}]}}
+        for standard in (False, True):
+            with self.subTest(standard=standard), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                combined_transaction(directory, standard=standard, prefix="panel_A_1k", gene="panel_gene")
+                rows = collect_amplicons_from_runs(panel, directory, "panel")
+                self.assertEqual([row["sequence"] for row in rows], ["ACGT"] if standard else [])
+
+    def test_run_result_uses_standard_partition_for_recovery_and_bootstrap(self):
+        for standard, empty, disabled in ((True, False, False), (False, False, False),
+                                          (False, True, False), (True, True, True)):
+            with self.subTest(standard=standard, empty=empty, disabled=disabled), tempfile.TemporaryDirectory() as temporary:
+                directory = Path(temporary)
+                panel = {"name": "panel", "primers": [{"gene": "gene", "forward": "ACGT", "reverse": "TGCA"}],
+                         "validation": {"samples": [{"accession": "A", "taxon": "Taxon", "max_reads": [1000]}]}}
+                panel_path = directory / "panel.yaml"
+                panel_path.write_text(yaml.safe_dump(panel))
+                fastq = directory / "reads.fastq"
+                fastq.write_text("@read\nACGT\n+\nIIII\n")
+
+                def simulated_process(command, resource_path):
+                    output_dir = Path(command[command.index("-o") + 1])
+                    prefix = command[command.index("-s") + 1]
+                    stats = combined_transaction(output_dir, standard=standard, empty=empty,
+                                                 disabled=disabled, prefix=prefix, gene="panel_gene")
+                    stats.update(command=" ".join(command), n_reads_read=1, n_bases_read=4,
+                                 input_source={"kind": "local_files", "inputs": [str(fastq)],
+                                               "paired": False, "max_reads": 1000})
+                    publish(output_dir, stats, [g["output_file"] for g in stats["pcr_results"] if g.get("output_file")])
+                    return subprocess.CompletedProcess(command, 0, "", ""), None, "synthetic"
+
+                with mock.patch.object(runner, "_run_with_rss", side_effect=simulated_process):
+                    run = runner.run_sharkmer(panel_path, "panel", "A", 1000, directory / "runs",
+                                              executable=directory / "unused", input_path=fastq)
+                self.assertTrue(run["success"], run.get("failure"))
+                self.assertEqual(run["genes"][0]["recovered"], standard)
+                self.assertEqual(run["genes"][0]["n_products"], int(standard))
+                self.assertEqual(run["genes"][0]["sequences"], ["ACGT"] if standard else [])
+                rows = collect_amplicons_from_runs(panel, directory / "runs", "panel", {("A", 1000): run})
+                self.assertEqual([row["sequence"] for row in rows], ["ACGT"] if standard else [])
 
 
 class UncertainIsolationTests(unittest.TestCase):

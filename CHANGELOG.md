@@ -8,19 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Development target: **3.2.0**. This is not a release. The uncertainty-output
-addition is implemented and assessed on `experiment/uncertain-products`,
-awaiting integration review; preceding
+addition defaults to inclusive delivery and is assessed on
+`experiment/uncertain-products`, awaiting branch integration; preceding
 production changes are on `dev`.
 Incremental k-mer counting remains supported. Faster bounded-memory counting
 and new nuclear/metagenomic inference policies belong to later releases.
 
 ### Added
 
-- Opt-in `--emit-uncertain` output for bounded, completed graph paths with
-  unresolved repeat structure. Separate `.uncertain.fasta` files and stats
-  preserve explicit uncertainty, source coordinates, and collection limits;
-  standard output and recovery counts are unchanged. Uncertain records are
-  excluded from standard validation and reference-bootstrap inputs (#157).
+- Default inclusion of bounded repeat-uncertain hypotheses in each target's
+  normal FASTA, with explicit `assembly_status` headers on every record and
+  `--no-emit-uncertain` for standard-only output. Stats describe total output
+  and separate standard/uncertain counts; uncertain-only targets report that
+  status. Schema-2 manifests distinguish the new combined format. Standard
+  assembly gates, validation and reference-bootstrap selection remain
+  unchanged; previous owned split outputs migrate safely (#157).
 - Per-product validation with collinear alignment coverage, explicit
   wrong-gene/ambiguous/conflicting/unreferenced outcomes, checksummed executable and
   input provenance, stage timings, and separately identified allocator-heap
@@ -46,8 +48,9 @@ and new nuclear/metagenomic inference policies belong to later releases.
 - Retry lower coverage thresholds until a valid in-range amplicon is found,
   rather than stopping at graph connectivity. Retain shared high-coverage
   primer backbones without overriding the configured coverage ratio (#131).
-- Withhold products crossing unresolved repeat-length regions instead of
-  confidently reporting shortened homopolymer/tandem-repeat products (#132).
+- Exclude paths crossing unresolved repeat-length regions from standard
+  admission instead of confidently reporting shortened homopolymer/tandem-repeat
+  products (#132).
 - Keep repeat-rejected candidates from consuming the valid-product path
   quota; continue searching for clean routes within the existing DFS, length,
   and node-visit limits (#154).
@@ -75,9 +78,9 @@ and new nuclear/metagenomic inference policies belong to later releases.
 - Reviewed indexed targets share gene-level reference evidence without claiming
   primer-region identity. ITS grouping is restricted to reviewed panel/primer
   definitions; arbitrary external ITS labels remain distinct (#129).
-- Reruns invalidate only verified outputs owned by the same sample. Legacy,
-  modified, unowned, and symlink collisions are preserved and refused; use a
-  fresh output directory when upgrading or retaining prior results. Histogram
+- Reruns invalidate only verified outputs owned by the same sample. Modified,
+  unowned, and symlink collisions, including unowned legacy files, are preserved
+  and refused; use a fresh output directory to retain prior results. Histogram
   and DOT files are outside the output transaction (#134).
 - Cache-wide leases currently serialize whole runs sharing a directory.
   Clearing preserves the directory/lock and ambiguous or modified entries;

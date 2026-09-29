@@ -103,6 +103,7 @@ fn test_withheld_path_diagnostics_are_stats_only_and_default_off() {
 
     let run = |outdir: &std::path::Path, diagnose: bool| {
         let mut arguments = vec![
+            "--no-emit-uncertain".to_string(),
             "-k".to_string(),
             "19".to_string(),
             "--pcr-primers".to_string(),

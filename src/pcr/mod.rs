@@ -246,7 +246,7 @@ pub struct PCRParams {
     pub tip_coverage_fraction: f64,
     #[serde(skip, default)]
     pub diagnose_withheld_paths: bool,
-    /// Runtime-only opt-in output of labelled, unsupported repeat hypotheses.
+    /// Runtime-only delivery of labelled repeat hypotheses; set from the CLI.
     #[serde(skip, default)]
     pub emit_uncertain: bool,
 }

@@ -1,0 +1,133 @@
+{
+  "date": "2026-09-29",
+  "findings": [
+    "Standard-first mixed publication, inclusive totals/lengths, explicit partition counts, and success/uncertain/fail statuses agree across Rust and schema-2 consumers.",
+    "Terminal _INDEX.uncertain IDs separate uncertainty records from ordinary numeric-index IDs, including a valid target ending in .uncertain.",
+    "Whole transaction and complete mixed FASTA are validated before standard filtering, including when callers request only another standard file.",
+    "Current validation and bootstrap retain only standard products; uncertain-only output remains delivered but is not standard recovery.",
+    "Manifest schema 2 is explicit, old current-run readers reject it, updated readers preserve schema-1/legacy compatibility, and owned migration protects modified or foreign files.",
+    "Harness compares exact old standard content after removing only the new class field; uncertainty normalization ignores only intentional ID/path changes. It verifies shell filtering, all new/prior output identities, per-job receipt identities, input-prefix bookends, constraints, compiler/runtime/configuration and source identities.",
+    "No assembly/search/repeat-admission/quota change was found in the reviewed diff; actual identity parity remains a required outcome of the six-run regression."
+  ],
+  "independent_controls": {
+    "command": [
+      "python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "benchmarks/benchmark_results/v3.2-inclusive-output-20260929/review",
+      "-p",
+      "test_combined_independent.py",
+      "-v"
+    ],
+    "elapsed_seconds": 0.145,
+    "environment": "Python/3.12.3-GCCcore-13.3.0 and PyYAML/6.0.2-GCCcore-13.3.0 modules",
+    "errors": 0,
+    "failures": 0,
+    "fixture_provenance": "Fixture construction explicitly borrowed from implementation-author tests/test_uncertain_output.py; scenarios/assertions independently written; synthetic fixtures are not biological truth.",
+    "log_note": "Normalized passing unittest lines transcribed from the captured tool output; module-system warnings omitted.",
+    "status": "pass",
+    "tests": [
+      "class_partition_cannot_hide_duplicate_id",
+      "outer_schema2_and_inner_assessment_schema1_are_distinct",
+      "quoted_duplicate_and_empty_status_are_not_classes",
+      "relabeling_stats_as_legacy_cannot_admit_manifest2",
+      "requested_standard_file_does_not_bypass_other_uncertain_only_validation",
+      "suffix_named_target_has_disjoint_record_ids_and_standard_selection",
+      "unowned_legacy_sidecar_is_ignored_but_cannot_join_current_receipts"
+    ],
+    "tests_run": 7
+  },
+  "limitations": [
+    "This source review is not compiled-test or actual-data completion evidence.",
+    "The original 18 parser controls in tests/test_uncertain_output.py were independently developed earlier; the new 13 CombinedOutputTests methods are implementation-author regressions, not additional independent controls. The module docstring now states this distinction. That docstring-only change followed the independent run and does not change its tested behavior.",
+    "Emission preserves bounded hypotheses with unresolved repeat length and unevaluated read support; it does not establish biological correctness or exhaustive recovery."
+  ],
+  "reviewed_sources": {
+    "AGENTS.md": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/AGENTS.md",
+      "sha256": "3c373af332903dd9a3a7ea4fc62995956b5eaff7b5065fbf6fa4a3078aa75373",
+      "size_bytes": 1126
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-output-20260929/review/independent_controls.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-output-20260929/review/independent_controls.log",
+      "sha256": "d553e22fa8716ad1d2805b5577b765a5ee437c0b4f21cf7e6a108f859a742b68",
+      "size_bytes": 906
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-output-20260929/review/test_combined_independent.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-output-20260929/review/test_combined_independent.py",
+      "sha256": "ee8b346b74051cf1bbee014c2a0215e09143b43700017375e7ac4ec9289be450",
+      "size_bytes": 6028
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-output-20260929/test_verify_delivery.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-output-20260929/test_verify_delivery.py",
+      "sha256": "a4efb556e5068008c29ee2dc00a5290f21b3ecd3ed9c5aa21556196f4ffcfa06",
+      "size_bytes": 3141
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-output-20260929/verify_delivery.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-output-20260929/verify_delivery.py",
+      "sha256": "6e158932095a1c269389c3c17df07b6cb18012034c991cad01c7cef38ebc1ac8",
+      "size_bytes": 17282
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-output-20260929/verify_delivery.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-output-20260929/verify_delivery.sbatch",
+      "sha256": "6919d1596540454a3320285d8ac1e0ecf6ee62a8420d1e7c4908c961c9a2f037",
+      "size_bytes": 378
+    },
+    "dev_docs/INCLUSIVE_OUTPUT.md": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/dev_docs/INCLUSIVE_OUTPUT.md",
+      "sha256": "e0140a3398ad63b223948c38ff9435a59ecc42e02329475ee69fdc92ed658a1f",
+      "size_bytes": 5047
+    },
+    "scripts/sharkmer_validate/runner.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/runner.py",
+      "sha256": "3c2446757e7020c96699d5b9b9ee74114027f1ab44aa957f5d9dc787ce1124fc",
+      "size_bytes": 37696
+    },
+    "scripts/sharkmer_validate/uncertain.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/uncertain.py",
+      "sha256": "5d26bfc1227dc14c1a43e8ec4a84f0458db1161b8e27d33981fee28ba87b7df3",
+      "size_bytes": 13842
+    },
+    "src/cli.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/cli.rs",
+      "sha256": "453b8d52521f4c8e9a3ce7b957983a6179b295c8b631fecf44b455f5ba55e8f6",
+      "size_bytes": 37457
+    },
+    "src/main.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/main.rs",
+      "sha256": "e6f857b52ef0dfd8f3fb2e79847c94d5122f7186d7ff6c4ea000a9af431cb838",
+      "size_bytes": 8778
+    },
+    "src/output.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/output.rs",
+      "sha256": "df610ba8dcdc82cca0f54530206cbe8d024a7dc246f97e00faf8336e41fbd349",
+      "size_bytes": 32198
+    },
+    "src/pcr/uncertain.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/uncertain.rs",
+      "sha256": "206510ed385cce76440c2e69e7f084d19011f4360fbb0ecb651c1818dc01b294",
+      "size_bytes": 18732
+    },
+    "src/stats.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/stats.rs",
+      "sha256": "810501d20d637c5df84e3f21ffb1eee84028288d05cfb76cec69f17212b77ef7",
+      "size_bytes": 13887
+    },
+    "tests/test_uncertain_output.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_uncertain_output.py",
+      "sha256": "161979fa7f384ad924e9e0bf05e2a44df03bfbf48e80d932e7888e0835cbdfec",
+      "size_bytes": 33725
+    },
+    "tests/uncertain_products.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/uncertain_products.rs",
+      "sha256": "62fd2817a512cdeee39390b54dbc6832823cc23d71e0c16b878e7d82b4da5989",
+      "size_bytes": 21003
+    }
+  },
+  "reviewer": "independent requirements/source reviewer",
+  "schema_version": 1,
+  "scope": "Static inclusive-output producer/consumer/harness review plus seven synthetic consumer controls; compiled checks and six actual regressions are separately required and not claimed here.",
+  "status": "pass"
+}

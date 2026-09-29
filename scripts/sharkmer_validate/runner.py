@@ -301,6 +301,7 @@ def parse_fasta_products(
     products = []
     transaction = None
     run_stats = None
+    combined = False
     stats_path = output_dir / f"{sample_prefix}.stats.yaml"
     manifest_path = output_dir / f"{sample_prefix}.manifest.yaml"
     if (
@@ -310,11 +311,12 @@ def parse_fasta_products(
         run_stats = _parse_stats_yaml(stats_path)
         if run_stats.get("sample") != sample_prefix:
             raise ValueError("Stats sample does not match requested products")
+        combined = uncertain.combined_output(run_stats)
         transaction = _validate_output_manifest(run_stats, sample_prefix, output_dir)
         current_files = [
             entry["output_file"]
             for entry in run_stats.get("pcr_results", [])
-            if entry.get("status") == "success"
+            if entry.get("output_file") and (combined or entry.get("status") == "success")
         ]
         if output_files is None:
             output_files = current_files
@@ -380,7 +382,7 @@ def parse_fasta_products(
 
         labelled = [record for record in sequence_records if uncertain.uncertain_header(record["header"])]
         if labelled:
-            if output_files is not None:
+            if output_files is not None and not combined:
                 raise ValueError("Uncertain candidate appears in a declared standard FASTA")
             sequence_records = [record for record in sequence_records
                                 if not uncertain.uncertain_header(record["header"])]
@@ -544,8 +546,14 @@ def _validate_stats_manifest(
         )
     if benchmark_scope == "counting-only" and pcr_results:
         raise ValueError("Counting-only run unexpectedly reported PCR results")
+    combined = uncertain.combined_output(stats)
     output_files = []
     for entry in pcr_results:
+        if combined:
+            filename = uncertain.validate_combined_metadata(entry, sample_prefix)
+            if filename:
+                output_files.append(filename)
+            continue
         uncertain.validate_metadata(entry, sample_prefix)
         status = entry.get("status")
         if status not in {"success", "fail"}:
@@ -561,13 +569,14 @@ def _validate_stats_manifest(
 
 
 def _validate_output_manifest(stats: dict, sample_prefix: str, output_dir: Path) -> dict | None:
+    combined = uncertain.combined_output(stats)
     manifest_name = f"{sample_prefix}.manifest.yaml"
     manifest_path = output_dir / manifest_name
     version = re.match(r"(\d+)\.(\d+)", str(stats.get("sharkmer_version", "")))
     requires_transaction = version is not None and tuple(map(int, version.groups())) >= (3, 2)
     has_transaction = any(field in stats for field in ("run_id", "run_status", "output_manifest"))
     if not (
-        requires_transaction or has_transaction or manifest_path.exists() or manifest_path.is_symlink()
+        combined or requires_transaction or has_transaction or manifest_path.exists() or manifest_path.is_symlink()
     ):
         return None
     if manifest_path.is_symlink() or not manifest_path.is_file():
@@ -575,7 +584,7 @@ def _validate_output_manifest(stats: dict, sample_prefix: str, output_dir: Path)
     manifest = _parse_stats_yaml(manifest_path)
     if (
         type(manifest.get("schema_version")) is not int
-        or manifest["schema_version"] != 1
+        or manifest["schema_version"] != (2 if combined else 1)
         or manifest.get("producer") != "sharkmer"
         or manifest.get("sample") != sample_prefix
     ):
@@ -592,6 +601,13 @@ def _validate_output_manifest(stats: dict, sample_prefix: str, output_dir: Path)
         raise ValueError("Stats and output manifest identify different or incomplete runs")
     expected_files = {f"{sample_prefix}.stats.yaml"}
     for entry in stats.get("pcr_results", []):
+        if combined:
+            output_file = uncertain.validate_combined_metadata(entry, sample_prefix)
+            if output_file is not None:
+                if output_file in expected_files:
+                    raise ValueError("Stats has duplicate combined output paths")
+                expected_files.add(output_file)
+            continue
         uncertain_file = uncertain.validate_metadata(entry, sample_prefix)
         if uncertain_file is not None:
             if uncertain_file in expected_files:
@@ -642,7 +658,7 @@ def _validate_output_manifest(stats: dict, sample_prefix: str, output_dir: Path)
     if observed_files != expected_files:
         raise ValueError("Output manifest receipt set disagrees with current-run stats")
     for entry in stats.get("pcr_results", []):
-        uncertain.validate_fasta(entry, output_dir)
+        uncertain.validate_fasta(entry, output_dir, combined=combined)
     return manifest
 
 
@@ -893,8 +909,12 @@ def run_sharkmer(
                 }
             stripped.append({**products_by_file[output_file], "gene": gene, "recovered": True})
             parsed = stripped[-1]
-            expected_count = gene_result.get("n_products")
-            expected_lengths = gene_result.get("product_lengths", [])
+            if uncertain.combined_output(run_stats):
+                expected_count = gene_result["n_standard_products"]
+                expected_lengths = gene_result.get("product_lengths", [])[:expected_count]
+            else:
+                expected_count = gene_result.get("n_products")
+                expected_lengths = gene_result.get("product_lengths", [])
             if parsed["n_products"] != expected_count or parsed["lengths"] != expected_lengths:
                 error = f"FASTA content disagrees with stats manifest for gene {gene}"
                 return {
