@@ -1,0 +1,51 @@
+{
+  "anchors": {
+    "availability": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/availability.json",
+      "sha256": "ace7f5f07658447126c6a71329498c781f88147d1241e2769229c20b2f1a24d9",
+      "size_bytes": 25956
+    },
+    "builds": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/builds.json",
+      "sha256": "d6e8ea35597586993c4209c2123c7ddb5055667ddecb4f107808747d75fe5709",
+      "size_bytes": 2353
+    },
+    "dros_controls": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/build-v1/rust-controls.json",
+      "sha256": "9c8f3ade38fcebb65d69a97a0f1bd3794b6d9d4c03230625aaac1090bd585ca8",
+      "size_bytes": 55014
+    },
+    "dros_receipt": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/replay-v1/replay.receipt.json",
+      "sha256": "ad105709fd52e27b754159777b46c0daa8341a5bd9beed07fbc2b14a069942ae",
+      "size_bytes": 86902
+    },
+    "execution": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/execution.json",
+      "sha256": "0d596400b5d567f7038e4b9c4cd8c96aa30e65034d6326f9049bb6ceb723cab3",
+      "size_bytes": 21161151
+    },
+    "outcome_review": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/outcome_review.json",
+      "sha256": "fed44738fd1d6df1c144d16218b3deb248f86e490285e7c4871b2319d503203c",
+      "size_bytes": 569639
+    },
+    "report": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report-v2/report.json",
+      "sha256": "24656a219118a6c0801c0c3f598ccdb3b43fe922fcdc3920d78734fb5ce7c74f",
+      "size_bytes": 869276
+    }
+  },
+  "archive": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/evidence.tar.gz",
+    "sha256": "edc1b638ef896575a86a7da972bead7b2be9ea25bb074e05d00c400a1570ec58",
+    "size_bytes": 41922729
+  },
+  "embedded_manifest_sha256": "2bea8310a2dc0e9d73d90ddf178e80a67d3621008d3eb25ae37a36a31ea851e4",
+  "independent_reopen_hash_verification": "pass",
+  "member_count": 1303,
+  "payload_bytes": 100699432,
+  "schema_version": 1,
+  "source_bookends_equal": true,
+  "status": "pass"
+}

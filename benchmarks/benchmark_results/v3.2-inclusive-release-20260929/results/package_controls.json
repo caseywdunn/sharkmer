@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "/usr/bin/python3",
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/test_package_evidence.py",
+    "-v"
+  ],
+  "elapsed_seconds": 0.1982783731073141,
+  "returncode": 0,
+  "scope": "Tiny synthetic controls only; no actual benchmark collection, packaging or new biological scans",
+  "sources_after": {
+    "package_evidence.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/package_evidence.py",
+      "sha256": "91be260b049ff4cffe41e93d3ecd01ee244643b6897a6c4c3b8a4850c51e7671",
+      "size_bytes": 17436
+    },
+    "test_package_evidence.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/test_package_evidence.py",
+      "sha256": "6a9f85b8d06522e6feeb2b4c959b5de177ad20fc9b2e929b8146073252eddf03",
+      "size_bytes": 9349
+    }
+  },
+  "sources_before": {
+    "package_evidence.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/package_evidence.py",
+      "sha256": "91be260b049ff4cffe41e93d3ecd01ee244643b6897a6c4c3b8a4850c51e7671",
+      "size_bytes": 17436
+    },
+    "test_package_evidence.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/test_package_evidence.py",
+      "sha256": "6a9f85b8d06522e6feeb2b4c959b5de177ad20fc9b2e929b8146073252eddf03",
+      "size_bytes": 9349
+    }
+  },
+  "status": "pass",
+  "stderr": "test_changed_bound_payload_rejected (__main__.PackageTests) ... ok\ntest_complete_collection_includes_exact_source_fixtures_and_failed_logs (__main__.PackageTests) ... ok\ntest_incomplete_main_execution_rejected (__main__.PackageTests) ... ok\ntest_missing_reviewed_document_rejected (__main__.PackageTests) ... ok\ntest_reopen_rejects_corrupt_or_duplicate_member (__main__.PackageTests) ... ok\ntest_symlink_rejected (__main__.PackageTests) ... ok\ntest_tiny_archive_reopen_listing_and_no_clobber (__main__.PackageTests) ... ok\n\n----------------------------------------------------------------------\nRan 7 tests in 0.088s\n\nOK\n",
+  "stdout": ""
+}

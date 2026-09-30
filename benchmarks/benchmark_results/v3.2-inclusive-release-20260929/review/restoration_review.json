@@ -1,0 +1,96 @@
+{
+  "author_controls": "16 synthetic methods passed, including complete first source plus partial last; receipt is bound above. These are implementation-author controls, not extra independent tests.",
+  "date": "2026-09-29",
+  "independent_checks": [
+    "All ten ordered source plans were recomputed independently from original archived source_consumption, truncating only the final consumed source.",
+    "Every expected raw prefix hash, byte count, record count and base count equals the original archived 1M request identity.",
+    "All five materialized historical panel payloads match their original pinned hashes.",
+    "Human requires EOF-complete streams of 30024,39247,39247 records; Liriodendron requires EOF-complete R1 656431 plus partial R2 343569.",
+    "Helper code enforces external inventory SHA, ordered source records, prior-source EOF, complete-source compressed identity, exact consumed raw identity, bounded network/read/deadline limits, immutable attempt receipts and no-clobber final publication."
+  ],
+  "limitations": [
+    "Existing insect prefixes were not rescanned by this review; restoration and measurement helpers independently require exact byte identities before use.",
+    "No assembler invocation, reference classification, network transfer or large-input scan was performed by this review."
+  ],
+  "resolved_findings": [
+    {
+      "finding": "Initial inventory wrongly requested 1M Liriodendron records from R1 alone and validator forbade a partial final concatenated source.",
+      "resolution": "Plans are now mechanically derived from archived source_consumption; earlier sources require EOF and final source may be partial. Rejected initial inventory preserved."
+    }
+  ],
+  "reviewed_sources": {
+    "benchmarks/benchmark_results/v3.2-high-copy-final-20260911/provenance.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-high-copy-final-20260911/provenance.json",
+      "sha256": "4c792367c14891fb2285bf25898e7872f3ff489ec49a46b7d3b650614e63facc",
+      "size_bytes": 81172
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/derive_restoration_sources.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/derive_restoration_sources.py",
+      "sha256": "5eec28b75d180fd1a83144848c69bd33dc37c2ca6bb17e32b33141fcb2cc4f99",
+      "size_bytes": 1631
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/inventory.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/inventory.json",
+      "sha256": "0e6e6edbebc7430c70519c37fd2bcdd8c2312ddc1b977dfb8b83200e5c1e9ddc",
+      "size_bytes": 72176
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/inventory.prereview-v1.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/inventory.prereview-v1.json",
+      "sha256": "48423bd83781498e7d2c74b99ca6a8db3fbbb847c308016a87ae59b62ec819f3",
+      "size_bytes": 71254
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/angiospermae.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/angiospermae.yaml",
+      "sha256": "b41760aa28d0f0128ae06151fe1c265b50bb3ed612f51734ed3e911b58dda8c0",
+      "size_bytes": 21734
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/cnidaria.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/cnidaria.yaml",
+      "sha256": "c7cebcaf6d2ce7fa9b6a23ef6a1e93e58adc8254334f006216eb4d4ddbb07b6d",
+      "size_bytes": 46559
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/human.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/human.yaml",
+      "sha256": "ac4359b88bbf3202218066288d0caffd571884edff7d14a402b7c3038755fdc1",
+      "size_bytes": 28803
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/insecta.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/insecta.yaml",
+      "sha256": "043a4d224f8186d58459287c54bec7935d5f4921a5087c14a2136cfac42df874",
+      "size_bytes": 39038
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/teleostei.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/teleostei.yaml",
+      "sha256": "1c6a32b5c1e30c1881ee08c80352ac87810f4c8a8c6608ffe94f1d0e8c843e59",
+      "size_bytes": 9793
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restoration_controls.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restoration_controls.json",
+      "sha256": "0a82316fc54e884c1e8c3c0f47094cacf4278dee1a5038b12d798296753870ee",
+      "size_bytes": 5019
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs.py",
+      "sha256": "0e921ba136ee8d22abce2a3c0be99e1ad03394ccc6026b465e910f7face2a18a",
+      "size_bytes": 16690
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs.sbatch",
+      "sha256": "54f1a793167733431b67d6e370e06f716c2d5de5b70df470ac7a7a1834df07e7",
+      "size_bytes": 377
+    },
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_restore_inputs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_restore_inputs.py",
+      "sha256": "4b42bf93da9ccc42ec4f91b27116274f05f4f5be76fdd4a8a7e92224e4d825eb",
+      "size_bytes": 8291
+    },
+    "benchmarks/benchmark_results/v3.2-release-comparison-20260909/inputs.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-release-comparison-20260909/inputs.json",
+      "sha256": "4763732cebacd43d3e295afe17ff903bdd1a6fc07449de24a03cd263b692cacf",
+      "size_bytes": 45269
+    }
+  },
+  "schema_version": 1,
+  "scope": "Early source/control clearance for exact input restoration only; not a claim that network restoration or later benchmark execution is complete.",
+  "status": "pass"
+}

@@ -1,0 +1,10 @@
+test_archive_oracle_is_reproducible_from_authenticated_members (independent_review.IndependentComparisonControls.test_archive_oracle_is_reproducible_from_authenticated_members) ... ok
+test_class_precedence_retains_competing_orientation_evidence (independent_review.IndependentComparisonControls.test_class_precedence_retains_competing_orientation_evidence) ... ok
+test_failed_or_repeated_pair_cannot_satisfy_sixty_run_total (independent_review.IndependentComparisonControls.test_failed_or_repeated_pair_cannot_satisfy_sixty_run_total) ... ok
+test_repeat_state_and_paired_input_counts_cannot_be_silently_selected (independent_review.IndependentComparisonControls.test_repeat_state_and_paired_input_counts_cannot_be_silently_selected) ... ok
+test_summary_counts_records_identities_scope_and_paired_changes_separately (independent_review.IndependentComparisonControls.test_summary_counts_records_identities_scope_and_paired_changes_separately) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.226s
+
+OK

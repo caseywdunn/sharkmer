@@ -1,0 +1,20 @@
+test_archive_oracle_is_reproducible_from_authenticated_members (independent.IndependentComparisonControls.test_archive_oracle_is_reproducible_from_authenticated_members) ... ok
+test_candidate_historical_standard_changes_are_reported_not_rejected (independent.IndependentComparisonControls.test_candidate_historical_standard_changes_are_reported_not_rejected) ... ok
+test_class_precedence_retains_competing_orientation_evidence (independent.IndependentComparisonControls.test_class_precedence_retains_competing_orientation_evidence) ... ok
+test_failed_or_repeated_pair_cannot_satisfy_sixty_run_total (independent.IndependentComparisonControls.test_failed_or_repeated_pair_cannot_satisfy_sixty_run_total) ... ok
+test_released_oracle_requires_literal_order_class_multiplicity_and_gene (independent.IndependentComparisonControls.test_released_oracle_requires_literal_order_class_multiplicity_and_gene) ... ok
+test_repeat_state_and_paired_input_counts_cannot_be_silently_selected (independent.IndependentComparisonControls.test_repeat_state_and_paired_input_counts_cannot_be_silently_selected) ... ok
+test_summary_counts_records_identities_scope_and_paired_changes_separately (independent.IndependentComparisonControls.test_summary_counts_records_identities_scope_and_paired_changes_separately) ... ok
+test_candidate_capture_checks_mixed_uncertain_only_empty_and_opt_out (author.ReleaseComparisonControls.test_candidate_capture_checks_mixed_uncertain_only_empty_and_opt_out) ... ok
+test_classification_rejects_ambiguous_headers_and_invalid_sequence (author.ReleaseComparisonControls.test_classification_rejects_ambiguous_headers_and_invalid_sequence) ... ok
+test_dispositions_preserve_classes_orientation_and_gene (author.ReleaseComparisonControls.test_dispositions_preserve_classes_orientation_and_gene) ... ok
+test_failed_and_timed_out_children_are_not_measurements (author.ReleaseComparisonControls.test_failed_and_timed_out_children_are_not_measurements) ... ok
+test_legacy_half_median_and_file_stats_consistency (author.ReleaseComparisonControls.test_legacy_half_median_and_file_stats_consistency) ... ok
+test_measured_child_and_constraints_are_bound (author.ReleaseComparisonControls.test_measured_child_and_constraints_are_bound) ... ok
+test_released_identity_gate_is_mandatory_and_candidate_changes_are_reported (author.ReleaseComparisonControls.test_released_identity_gate_is_mandatory_and_candidate_changes_are_reported) ... ok
+test_summary_requires_all_repeats_and_does_not_multiply_identities (author.ReleaseComparisonControls.test_summary_requires_all_repeats_and_does_not_multiply_identities) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.773s
+
+OK

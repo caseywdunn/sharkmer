@@ -8,9 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Development target: **3.2.0**. This is not a release. The uncertainty-output
-addition defaults to inclusive delivery and is assessed on
-`experiment/uncertain-products`, awaiting branch integration; preceding
-production changes are on `dev`.
+addition defaults to inclusive delivery and is integrated into `dev` after
+assessment on `experiment/uncertain-products`. All 60 fresh release-comparison
+invocations pass: 64 standard and 62 uncertain records, including five of
+seven formerly lost high-copy identities. Both remaining identities are
+generated but discarded by retention. Runtime follow-ups remain; this is
+not release approval. See `dev_docs/INCLUSIVE_RELEASE_RESULTS.md`.
 Incremental k-mer counting remains supported. Faster bounded-memory counting
 and new nuclear/metagenomic inference policies belong to later releases.
 

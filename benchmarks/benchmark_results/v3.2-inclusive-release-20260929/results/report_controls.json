@@ -1,0 +1,47 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/test_report_comparison.py",
+    "-v"
+  ],
+  "elapsed_seconds": 0.12071764306165278,
+  "returncode": 0,
+  "scope": "Author synthetic report controls; no biological inputs or real benchmark outcomes read",
+  "sources_after": {
+    "package_plan.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/package_plan.json",
+      "sha256": "8817d4a1dedfc4e0af01ee8d65af3a2d3618b565d804733ca5fa962c0736f8c1",
+      "size_bytes": 4914
+    },
+    "report_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_comparison.py",
+      "sha256": "50efe204f40812f79edd89589759a9365eeba8d5ef42e5fcbac04c43ec9ab609",
+      "size_bytes": 19037
+    },
+    "test_report_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/test_report_comparison.py",
+      "sha256": "1fb637863ed8811eb9437aaa65434ed7d1f17780f4c9338b2eee03cd94102f11",
+      "size_bytes": 10035
+    }
+  },
+  "sources_before": {
+    "package_plan.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/package_plan.json",
+      "sha256": "8817d4a1dedfc4e0af01ee8d65af3a2d3618b565d804733ca5fa962c0736f8c1",
+      "size_bytes": 4914
+    },
+    "report_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_comparison.py",
+      "sha256": "50efe204f40812f79edd89589759a9365eeba8d5ef42e5fcbac04c43ec9ab609",
+      "size_bytes": 19037
+    },
+    "test_report_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/test_report_comparison.py",
+      "sha256": "1fb637863ed8811eb9437aaa65434ed7d1f17780f4c9338b2eee03cd94102f11",
+      "size_bytes": 10035
+    }
+  },
+  "status": "pass",
+  "stderr": "test_artifact_generation_and_no_clobber (__main__.ReporterTests) ... ok\ntest_changed_capture_or_summary_rejected (__main__.ReporterTests) ... ok\ntest_changed_historical_release_or_wall_sum_rejected (__main__.ReporterTests) ... ok\ntest_complete_synthetic_matrix_and_historical_subset (__main__.ReporterTests) ... ok\ntest_disposition_priority_and_gains (__main__.ReporterTests) ... ok\ntest_duplicate_and_orientation_count_meanings (__main__.ReporterTests) ... ok\ntest_incomplete_or_duplicate_invocations_rejected (__main__.ReporterTests) ... ok\ntest_resources_keep_paired_ratios_separate_from_medians (__main__.ReporterTests) ... ok\ntest_same_literal_in_both_classes_keeps_standard_priority (__main__.ReporterTests) ... ok\ntest_zero_baseline_resources_preserve_undefined_relative_change (__main__.ReporterTests) ... ok\n\n----------------------------------------------------------------------\nRan 10 tests in 0.038s\n\nOK\n",
+  "stdout": ""
+}

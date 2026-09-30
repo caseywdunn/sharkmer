@@ -1,0 +1,2566 @@
+{
+  "build_provenance": {
+    "baseline": {
+      "binary": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/baseline/sharkmer",
+        "sha256": "e751e5eeca9150495e8d74d95bf27e4109466cad4ccf862e470fe271351d5899",
+        "size_bytes": 6552160
+      },
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json-render-diagnostics",
+        "-j",
+        "2"
+      ],
+      "commit": "5a664680c91ad59f32b8c2a847b8fef37f34a0ae"
+    },
+    "candidate": {
+      "binary": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/candidate/sharkmer",
+        "sha256": "68ea253a5b03740d7a9083c18465c9143fed31aaf1a0b8b378ce669f35d4f992",
+        "size_bytes": 7030224
+      },
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json-render-diagnostics",
+        "-j",
+        "2"
+      ],
+      "commit": "ed04bdec5178d055b47cc8085135ee5ae2600998"
+    }
+  },
+  "cells": [
+    {
+      "accession": "SRR9278435",
+      "counts": {
+        "baseline": {
+          "standard": 7,
+          "uncertain": 0
+        },
+        "candidate": {
+          "standard": 7,
+          "uncertain": 0
+        }
+      },
+      "resource_changes": {
+        "peak_rss_bytes": {
+          "absolute_delta": 782336,
+          "increase": true,
+          "percent": 0.017126957382562757,
+          "priority_review": false
+        },
+        "wall_seconds": {
+          "absolute_delta": 0.5700000000000003,
+          "increase": true,
+          "percent": 1.3487931850449497,
+          "priority_review": false
+        }
+      },
+      "taxon": "Xenia sp.",
+      "wall_seconds": {
+        "baseline": {
+          "max": 42.34,
+          "median": 42.26,
+          "min": 41.75,
+          "values": [
+            42.34,
+            42.26,
+            41.75
+          ]
+        },
+        "candidate": {
+          "max": 43.02,
+          "median": 42.83,
+          "min": 42.3,
+          "values": [
+            42.83,
+            43.02,
+            42.3
+          ]
+        }
+      }
+    },
+    {
+      "accession": "SRR25099394",
+      "counts": {
+        "baseline": {
+          "standard": 5,
+          "uncertain": 0
+        },
+        "candidate": {
+          "standard": 5,
+          "uncertain": 0
+        }
+      },
+      "resource_changes": {
+        "peak_rss_bytes": {
+          "absolute_delta": 212992,
+          "increase": true,
+          "percent": 0.004662259635868082,
+          "priority_review": false
+        },
+        "wall_seconds": {
+          "absolute_delta": 0.060000000000002274,
+          "increase": true,
+          "percent": 0.15835312747427555,
+          "priority_review": false
+        }
+      },
+      "taxon": "Agalma elegans",
+      "wall_seconds": {
+        "baseline": {
+          "max": 38.2,
+          "median": 37.89,
+          "min": 37.71,
+          "values": [
+            38.2,
+            37.89,
+            37.71
+          ]
+        },
+        "candidate": {
+          "max": 38.74,
+          "median": 37.95,
+          "min": 37.77,
+          "values": [
+            38.74,
+            37.95,
+            37.77
+          ]
+        }
+      }
+    },
+    {
+      "accession": "SRR8617500",
+      "counts": {
+        "baseline": {
+          "standard": 5,
+          "uncertain": 0
+        },
+        "candidate": {
+          "standard": 5,
+          "uncertain": 0
+        }
+      },
+      "resource_changes": {
+        "peak_rss_bytes": {
+          "absolute_delta": 401408,
+          "increase": true,
+          "percent": 0.008786550480976985,
+          "priority_review": false
+        },
+        "wall_seconds": {
+          "absolute_delta": 2.6600000000000037,
+          "increase": true,
+          "percent": 6.063369044905409,
+          "priority_review": true
+        }
+      },
+      "taxon": "Rhopilema esculentum",
+      "wall_seconds": {
+        "baseline": {
+          "max": 44.53,
+          "median": 43.87,
+          "min": 43.81,
+          "values": [
+            43.87,
+            44.53,
+            43.81
+          ]
+        },
+        "candidate": {
+          "max": 47.28,
+          "median": 46.53,
+          "min": 44.65,
+          "values": [
+            46.53,
+            44.65,
+            47.28
+          ]
+        }
+      }
+    },
+    {
+      "accession": "SRR17535371",
+      "counts": {
+        "baseline": {
+          "standard": 5,
+          "uncertain": 0
+        },
+        "candidate": {
+          "standard": 5,
+          "uncertain": 0
+        }
+      },
+      "resource_changes": {
+        "peak_rss_bytes": {
+          "absolute_delta": -155648,
+          "increase": false,
+          "percent": -0.6713780918727874,
+          "priority_review": false
+        },
+        "wall_seconds": {
+          "absolute_delta": 2.74,
+          "increase": true,
+          "percent": 176.77419354838707,
+          "priority_review": true
+        }
+      },
+      "taxon": "Homo sapiens",
+      "wall_seconds": {
+        "baseline": {
+          "max": 1.71,
+          "median": 1.55,
+          "min": 1.27,
+          "values": [
+            1.55,
+            1.71,
+            1.27
+          ]
+        },
+        "candidate": {
+          "max": 7.07,
+          "median": 4.29,
+          "min": 3.75,
+          "values": [
+            7.07,
+            3.75,
+            4.29
+          ]
+        }
+      }
+    },
+    {
+      "accession": "SRR22396603",
+      "counts": {
+        "baseline": {
+          "standard": 4,
+          "uncertain": 0
+        },
+        "candidate": {
+          "standard": 4,
+          "uncertain": 0
+        }
+      },
+      "resource_changes": {
+        "peak_rss_bytes": {
+          "absolute_delta": 323584,
+          "increase": true,
+          "percent": 0.0070830800459775745,
+          "priority_review": false
+        },
+        "wall_seconds": {
+          "absolute_delta": 0.5399999999999991,
+          "increase": true,
+          "percent": 1.528446079818857,
+          "priority_review": false
+        }
+      },
+      "taxon": "Nomeus gronovii",
+      "wall_seconds": {
+        "baseline": {
+          "max": 35.89,
+          "median": 35.33,
+          "min": 34.54,
+          "values": [
+            34.54,
+            35.89,
+            35.33
+          ]
+        },
+        "candidate": {
+          "max": 36.65,
+          "median": 35.87,
+          "min": 35.35,
+          "values": [
+            36.65,
+            35.87,
+            35.35
+          ]
+        }
+      }
+    },
+    {
+      "accession": "SRR25378184",
+      "counts": {
+        "baseline": {
+          "standard": 6,
+          "uncertain": 0
+        },
+        "candidate": {
+          "standard": 6,
+          "uncertain": 27
+        }
+      },
+      "resource_changes": {
+        "peak_rss_bytes": {
+          "absolute_delta": 8192,
+          "increase": true,
+          "percent": 0.0001793081931378282,
+          "priority_review": false
+        },
+        "wall_seconds": {
+          "absolute_delta": 4.169999999999995,
+          "increase": true,
+          "percent": 7.923237697130903,
+          "priority_review": true
+        }
+      },
+      "taxon": "Liriodendron tulipifera",
+      "wall_seconds": {
+        "baseline": {
+          "max": 54.23,
+          "median": 52.63,
+          "min": 51.96,
+          "values": [
+            52.63,
+            54.23,
+            51.96
+          ]
+        },
+        "candidate": {
+          "max": 56.84,
+          "median": 56.8,
+          "min": 56.01,
+          "values": [
+            56.8,
+            56.01,
+            56.84
+          ]
+        }
+      }
+    },
+    {
+      "accession": "ERR14009273",
+      "counts": {
+        "baseline": {
+          "standard": 6,
+          "uncertain": 0
+        },
+        "candidate": {
+          "standard": 6,
+          "uncertain": 1
+        }
+      },
+      "resource_changes": {
+        "peak_rss_bytes": {
+          "absolute_delta": 4096,
+          "increase": true,
+          "percent": 0.00017913634784427757,
+          "priority_review": false
+        },
+        "wall_seconds": {
+          "absolute_delta": 0.7200000000000024,
+          "increase": true,
+          "percent": 2.929210740439392,
+          "priority_review": false
+        }
+      },
+      "taxon": "Acer monspessulanum",
+      "wall_seconds": {
+        "baseline": {
+          "max": 25.21,
+          "median": 24.58,
+          "min": 24.39,
+          "values": [
+            25.21,
+            24.39,
+            24.58
+          ]
+        },
+        "candidate": {
+          "max": 47.19,
+          "median": 25.3,
+          "min": 25.28,
+          "values": [
+            47.19,
+            25.3,
+            25.28
+          ]
+        }
+      }
+    },
+    {
+      "accession": "SRR31887760",
+      "counts": {
+        "baseline": {
+          "standard": 13,
+          "uncertain": 0
+        },
+        "candidate": {
+          "standard": 9,
+          "uncertain": 4
+        }
+      },
+      "resource_changes": {
+        "peak_rss_bytes": {
+          "absolute_delta": 221184,
+          "increase": true,
+          "percent": 0.009672600389043495,
+          "priority_review": false
+        },
+        "wall_seconds": {
+          "absolute_delta": 1.6199999999999974,
+          "increase": true,
+          "percent": 2.729570345408594,
+          "priority_review": false
+        }
+      },
+      "taxon": "Drosophila melanogaster",
+      "wall_seconds": {
+        "baseline": {
+          "max": 63.88,
+          "median": 59.35,
+          "min": 59.24,
+          "values": [
+            63.88,
+            59.35,
+            59.24
+          ]
+        },
+        "candidate": {
+          "max": 61.24,
+          "median": 60.97,
+          "min": 59.52,
+          "values": [
+            59.52,
+            61.24,
+            60.97
+          ]
+        }
+      }
+    },
+    {
+      "accession": "SRR1057608",
+      "counts": {
+        "baseline": {
+          "standard": 7,
+          "uncertain": 0
+        },
+        "candidate": {
+          "standard": 6,
+          "uncertain": 13
+        }
+      },
+      "resource_changes": {
+        "peak_rss_bytes": {
+          "absolute_delta": 225280,
+          "increase": true,
+          "percent": 0.009851722618470227,
+          "priority_review": false
+        },
+        "wall_seconds": {
+          "absolute_delta": 2.479999999999997,
+          "increase": true,
+          "percent": 5.962971868237554,
+          "priority_review": true
+        }
+      },
+      "taxon": "Heliconius pachinus",
+      "wall_seconds": {
+        "baseline": {
+          "max": 42.32,
+          "median": 41.59,
+          "min": 41.42,
+          "values": [
+            41.59,
+            41.42,
+            42.32
+          ]
+        },
+        "candidate": {
+          "max": 44.12,
+          "median": 44.07,
+          "min": 42.34,
+          "values": [
+            44.12,
+            44.07,
+            42.34
+          ]
+        }
+      }
+    },
+    {
+      "accession": "SRR27962769",
+      "counts": {
+        "baseline": {
+          "standard": 28,
+          "uncertain": 0
+        },
+        "candidate": {
+          "standard": 11,
+          "uncertain": 17
+        }
+      },
+      "resource_changes": {
+        "peak_rss_bytes": {
+          "absolute_delta": 569344,
+          "increase": true,
+          "percent": 0.012462980911909227,
+          "priority_review": false
+        },
+        "wall_seconds": {
+          "absolute_delta": 0.5,
+          "increase": true,
+          "percent": 0.5265374894692476,
+          "priority_review": false
+        }
+      },
+      "taxon": "Gryllus bimaculatus",
+      "wall_seconds": {
+        "baseline": {
+          "max": 96.26,
+          "median": 94.96,
+          "min": 94.31,
+          "values": [
+            94.31,
+            96.26,
+            94.96
+          ]
+        },
+        "candidate": {
+          "max": 97.26,
+          "median": 95.46,
+          "min": 95.23,
+          "values": [
+            95.23,
+            95.46,
+            97.26
+          ]
+        }
+      }
+    }
+  ],
+  "conditions": {
+    "address_space_limit_bytes": 42949672960,
+    "affinity": [
+      0,
+      2
+    ],
+    "completed_cli_invocations": 60,
+    "human_input_records": 108518,
+    "paired_repeats_per_cell": 3,
+    "read_threading_enabled": false
+  },
+  "findings": [
+    "The four >5% median-wall flags are observed regressions in this batch and remain open. No median-RSS increase exceeds the protocol's 2% priority trigger. These are review triggers, not significance tests or acceptance allowances.",
+    "Human median wall increases 1.55 to 4.29 seconds (+2.74 seconds, +176.77%), while summed user+system CPU median increases 0.65 to 0.71 seconds. All five output sequences remain standard; no uncertain sequence is emitted. The complete saved input has 108518 reads, reaching EOF below the one-million-read cap. A small denominator enlarges its percentage but does not erase the absolute slowdown.",
+    "Rhopilema also emits zero uncertainty records. Its CPU median increases 64.36 to 64.81 seconds versus wall 43.87 to 46.53 seconds. Therefore uncertain-sequence serialization cannot explain either zero-uncertainty cell on its own.",
+    "Liriodendron emits six standard plus 27 uncertain records; CPU median increases 87.43 to 88.79 seconds and wall 52.63 to 56.80 seconds. Heliconius emits six standard plus 13 uncertain records; CPU median increases 71.66 to 72.28 seconds and wall 41.59 to 44.07 seconds. Additional retained payload and search changes are possible costs, not isolated causes.",
+    "Candidate stats::run_pcr includes parallel assembly followed by sequential FASTA staging. main.rs times this entire call as pcr_s, so pcr_s is not an assembly-only measurement. pipeline_total_s is captured before stats serialization, transaction commit and reporting. GNU wall minus pipeline_total_s also includes process startup and cleanup and timing quantization; it is not a measured fsync duration.",
+    "Candidate output.rs flushes and syncs staged files, synchronizes manifests/directories, hashes output files and transactionally publishes them. Baseline stats.rs writes FASTA files directly. This provides a plausible source-level contributor to wall time outside CPU-heavy assembly, but saved evidence has no syscall/storage/scheduler profiling to establish its contribution.",
+    "This compares released v3.1.0 with ed04bde, spanning threshold/admission/repeat-diagnostic and output-publication changes. It is not an inclusive-output on/off ablation, and read threading is disabled. Attribute the measured change to the compared builds, not uniquely to inclusive delivery.",
+    "Three paired same-host repetitions show variability: Rhopilema pair 2 is +0.27% and Heliconius pair 3 is +0.047%; the unflagged ERR14009273 candidate has a 47.19-second first repeat versus 25.30/25.28 seconds later. Saved data cannot establish portability or stable causal effect sizes.",
+    "CPU seconds sum user and system time across threads and can exceed wall time; subtracting them from wall is not a blocked-time measurement. Peak RSS can be dominated by the count table, so a non-priority RSS result does not establish zero memory overhead.",
+    "All54 additional literal identities are high-copy uncertainty records. The seven high-copy standard losses are five exact uncertainty re-emissions and two Drosophila12S identities absent from these normal outputs. Exact identity and greater output count do not validate repeat length, haplotypes or biological correctness. The separate retention observer is outside this resource comparison."
+  ],
+  "flagged_sample_saved_runs": {
+    "SRR1057608": {
+      "baseline": [
+        {
+          "allocator_peak_bytes": 2281766313,
+          "cpu_seconds": 71.74,
+          "fasta_files": 6,
+          "pair": 1,
+          "peak_rss_bytes": 2286141440,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair1_baseline.json",
+          "stage_timings": null,
+          "stats_size_bytes": 2781,
+          "system_seconds": 0.67,
+          "user_seconds": 71.07,
+          "wall_minus_pipeline_seconds": null,
+          "wall_seconds": 41.59
+        },
+        {
+          "allocator_peak_bytes": 2281766313,
+          "cpu_seconds": 71.42999999999999,
+          "fasta_files": 6,
+          "pair": 2,
+          "peak_rss_bytes": 2286923776,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair2_baseline.json",
+          "stage_timings": null,
+          "stats_size_bytes": 2781,
+          "system_seconds": 0.69,
+          "user_seconds": 70.74,
+          "wall_minus_pipeline_seconds": null,
+          "wall_seconds": 41.42
+        },
+        {
+          "allocator_peak_bytes": 2281766313,
+          "cpu_seconds": 71.66000000000001,
+          "fasta_files": 6,
+          "pair": 3,
+          "peak_rss_bytes": 2286706688,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair3_baseline.json",
+          "stage_timings": null,
+          "stats_size_bytes": 2781,
+          "system_seconds": 0.68,
+          "user_seconds": 70.98,
+          "wall_minus_pipeline_seconds": null,
+          "wall_seconds": 42.32
+        }
+      ],
+      "candidate": [
+        {
+          "allocator_peak_bytes": 2281767852,
+          "cpu_seconds": 72.06,
+          "fasta_files": 7,
+          "pair": 1,
+          "peak_rss_bytes": 2287116288,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair1_candidate.json",
+          "stage_timings": {
+            "count_finalize_s": 3.217270475,
+            "pcr_s": 32.690079796,
+            "pipeline_total_s": 42.283624189,
+            "read_ingest_s": 6.349539388,
+            "read_threading_input_s": null
+          },
+          "stats_size_bytes": 327087,
+          "system_seconds": 0.69,
+          "user_seconds": 71.37,
+          "wall_minus_pipeline_seconds": 1.8363758109999964,
+          "wall_seconds": 44.12
+        },
+        {
+          "allocator_peak_bytes": 2281767852,
+          "cpu_seconds": 72.38000000000001,
+          "fasta_files": 7,
+          "pair": 2,
+          "peak_rss_bytes": 2286931968,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair2_candidate.json",
+          "stage_timings": {
+            "count_finalize_s": 3.278430114,
+            "pcr_s": 32.91049403,
+            "pipeline_total_s": 43.150807543,
+            "read_ingest_s": 6.563611508,
+            "read_threading_input_s": null
+          },
+          "stats_size_bytes": 327086,
+          "system_seconds": 0.7,
+          "user_seconds": 71.68,
+          "wall_minus_pipeline_seconds": 0.9191924570000012,
+          "wall_seconds": 44.07
+        },
+        {
+          "allocator_peak_bytes": 2281767852,
+          "cpu_seconds": 72.28,
+          "fasta_files": 7,
+          "pair": 3,
+          "peak_rss_bytes": 2286931968,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair3_candidate.json",
+          "stage_timings": {
+            "count_finalize_s": 3.145037961,
+            "pcr_s": 32.132868499,
+            "pipeline_total_s": 42.048270681,
+            "read_ingest_s": 6.518190598,
+            "read_threading_input_s": null
+          },
+          "stats_size_bytes": 327087,
+          "system_seconds": 0.69,
+          "user_seconds": 71.59,
+          "wall_minus_pipeline_seconds": 0.2917293190000052,
+          "wall_seconds": 42.34
+        }
+      ]
+    },
+    "SRR17535371": {
+      "baseline": [
+        {
+          "allocator_peak_bytes": 17882736,
+          "cpu_seconds": 0.65,
+          "fasta_files": 5,
+          "pair": 1,
+          "peak_rss_bytes": 22802432,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair1_baseline.json",
+          "stage_timings": null,
+          "stats_size_bytes": 1680,
+          "system_seconds": 0.02,
+          "user_seconds": 0.63,
+          "wall_minus_pipeline_seconds": null,
+          "wall_seconds": 1.55
+        },
+        {
+          "allocator_peak_bytes": 17882736,
+          "cpu_seconds": 0.65,
+          "fasta_files": 5,
+          "pair": 2,
+          "peak_rss_bytes": 23187456,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair2_baseline.json",
+          "stage_timings": null,
+          "stats_size_bytes": 1680,
+          "system_seconds": 0.02,
+          "user_seconds": 0.63,
+          "wall_minus_pipeline_seconds": null,
+          "wall_seconds": 1.71
+        },
+        {
+          "allocator_peak_bytes": 17882736,
+          "cpu_seconds": 0.66,
+          "fasta_files": 5,
+          "pair": 3,
+          "peak_rss_bytes": 23183360,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair3_baseline.json",
+          "stage_timings": null,
+          "stats_size_bytes": 1680,
+          "system_seconds": 0.01,
+          "user_seconds": 0.65,
+          "wall_minus_pipeline_seconds": null,
+          "wall_seconds": 1.27
+        }
+      ],
+      "candidate": [
+        {
+          "allocator_peak_bytes": 17884261,
+          "cpu_seconds": 0.7000000000000001,
+          "fasta_files": 5,
+          "pair": 1,
+          "peak_rss_bytes": 23187456,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair1_candidate.json",
+          "stage_timings": {
+            "count_finalize_s": 0.011617828,
+            "pcr_s": 2.393483075,
+            "pipeline_total_s": 3.945887516,
+            "read_ingest_s": 0.314351488,
+            "read_threading_input_s": null
+          },
+          "stats_size_bytes": 73283,
+          "system_seconds": 0.03,
+          "user_seconds": 0.67,
+          "wall_minus_pipeline_seconds": 3.1241124840000003,
+          "wall_seconds": 7.07
+        },
+        {
+          "allocator_peak_bytes": 17884261,
+          "cpu_seconds": 0.7100000000000001,
+          "fasta_files": 5,
+          "pair": 2,
+          "peak_rss_bytes": 22810624,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair2_candidate.json",
+          "stage_timings": {
+            "count_finalize_s": 0.012523351,
+            "pcr_s": 0.731240584,
+            "pipeline_total_s": 1.982996248,
+            "read_ingest_s": 0.312970896,
+            "read_threading_input_s": null
+          },
+          "stats_size_bytes": 73283,
+          "system_seconds": 0.03,
+          "user_seconds": 0.68,
+          "wall_minus_pipeline_seconds": 1.767003752,
+          "wall_seconds": 3.75
+        },
+        {
+          "allocator_peak_bytes": 17884261,
+          "cpu_seconds": 0.72,
+          "fasta_files": 5,
+          "pair": 3,
+          "peak_rss_bytes": 23027712,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair3_candidate.json",
+          "stage_timings": {
+            "count_finalize_s": 0.013346461,
+            "pcr_s": 1.210969735,
+            "pipeline_total_s": 2.374566275,
+            "read_ingest_s": 0.319116162,
+            "read_threading_input_s": null
+          },
+          "stats_size_bytes": 73283,
+          "system_seconds": 0.03,
+          "user_seconds": 0.69,
+          "wall_minus_pipeline_seconds": 1.9154337250000002,
+          "wall_seconds": 4.29
+        }
+      ]
+    },
+    "SRR25378184": {
+      "baseline": [
+        {
+          "allocator_peak_bytes": 4563459531,
+          "cpu_seconds": 87.42999999999999,
+          "fasta_files": 6,
+          "pair": 1,
+          "peak_rss_bytes": 4568272896,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair1_baseline.json",
+          "stage_timings": null,
+          "stats_size_bytes": 1856,
+          "system_seconds": 1.36,
+          "user_seconds": 86.07,
+          "wall_minus_pipeline_seconds": null,
+          "wall_seconds": 52.63
+        },
+        {
+          "allocator_peak_bytes": 4563459531,
+          "cpu_seconds": 88.48,
+          "fasta_files": 6,
+          "pair": 2,
+          "peak_rss_bytes": 4568670208,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair2_baseline.json",
+          "stage_timings": null,
+          "stats_size_bytes": 1856,
+          "system_seconds": 1.36,
+          "user_seconds": 87.12,
+          "wall_minus_pipeline_seconds": null,
+          "wall_seconds": 54.23
+        },
+        {
+          "allocator_peak_bytes": 4563459531,
+          "cpu_seconds": 85.98,
+          "fasta_files": 6,
+          "pair": 3,
+          "peak_rss_bytes": 4568670208,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair3_baseline.json",
+          "stage_timings": null,
+          "stats_size_bytes": 1856,
+          "system_seconds": 1.29,
+          "user_seconds": 84.69,
+          "wall_minus_pipeline_seconds": null,
+          "wall_seconds": 51.96
+        }
+      ],
+      "candidate": [
+        {
+          "allocator_peak_bytes": 4563461112,
+          "cpu_seconds": 89.56,
+          "fasta_files": 9,
+          "pair": 1,
+          "peak_rss_bytes": 4568678400,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair1_candidate.json",
+          "stage_timings": {
+            "count_finalize_s": 4.520627034,
+            "pcr_s": 38.605793318,
+            "pipeline_total_s": 54.965111731,
+            "read_ingest_s": 11.819947116,
+            "read_threading_input_s": null
+          },
+          "stats_size_bytes": 1859068,
+          "system_seconds": 1.37,
+          "user_seconds": 88.19,
+          "wall_minus_pipeline_seconds": 1.8348882689999968,
+          "wall_seconds": 56.8
+        },
+        {
+          "allocator_peak_bytes": 4563461112,
+          "cpu_seconds": 88.44,
+          "fasta_files": 9,
+          "pair": 2,
+          "peak_rss_bytes": 4568834048,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair2_candidate.json",
+          "stage_timings": {
+            "count_finalize_s": 4.521369176,
+            "pcr_s": 38.029616269,
+            "pipeline_total_s": 54.717034518,
+            "read_ingest_s": 11.650085486,
+            "read_threading_input_s": null
+          },
+          "stats_size_bytes": 1859068,
+          "system_seconds": 1.34,
+          "user_seconds": 87.1,
+          "wall_minus_pipeline_seconds": 1.2929654819999996,
+          "wall_seconds": 56.01
+        },
+        {
+          "allocator_peak_bytes": 4563461112,
+          "cpu_seconds": 88.79,
+          "fasta_files": 9,
+          "pair": 3,
+          "peak_rss_bytes": 4568670208,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair3_candidate.json",
+          "stage_timings": {
+            "count_finalize_s": 4.423435312,
+            "pcr_s": 38.049699219,
+            "pipeline_total_s": 54.372050745,
+            "read_ingest_s": 11.73975972,
+            "read_threading_input_s": null
+          },
+          "stats_size_bytes": 1859067,
+          "system_seconds": 1.34,
+          "user_seconds": 87.45,
+          "wall_minus_pipeline_seconds": 2.4679492550000006,
+          "wall_seconds": 56.84
+        }
+      ]
+    },
+    "SRR8617500": {
+      "baseline": [
+        {
+          "allocator_peak_bytes": 4563458198,
+          "cpu_seconds": 64.36,
+          "fasta_files": 5,
+          "pair": 1,
+          "peak_rss_bytes": 4568260608,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair1_baseline.json",
+          "stage_timings": null,
+          "stats_size_bytes": 1467,
+          "system_seconds": 1.39,
+          "user_seconds": 62.97,
+          "wall_minus_pipeline_seconds": null,
+          "wall_seconds": 43.87
+        },
+        {
+          "allocator_peak_bytes": 4563458198,
+          "cpu_seconds": 64.71,
+          "fasta_files": 5,
+          "pair": 2,
+          "peak_rss_bytes": 4568436736,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair2_baseline.json",
+          "stage_timings": null,
+          "stats_size_bytes": 1467,
+          "system_seconds": 1.39,
+          "user_seconds": 63.32,
+          "wall_minus_pipeline_seconds": null,
+          "wall_seconds": 44.53
+        },
+        {
+          "allocator_peak_bytes": 4563458198,
+          "cpu_seconds": 64.07000000000001,
+          "fasta_files": 5,
+          "pair": 3,
+          "peak_rss_bytes": 4568821760,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair3_baseline.json",
+          "stage_timings": null,
+          "stats_size_bytes": 1467,
+          "system_seconds": 1.37,
+          "user_seconds": 62.7,
+          "wall_minus_pipeline_seconds": null,
+          "wall_seconds": 43.81
+        }
+      ],
+      "candidate": [
+        {
+          "allocator_peak_bytes": 4563459738,
+          "cpu_seconds": 64.99,
+          "fasta_files": 5,
+          "pair": 1,
+          "peak_rss_bytes": 4568838144,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair1_candidate.json",
+          "stage_timings": {
+            "count_finalize_s": 5.2398886319999995,
+            "pcr_s": 27.952143221,
+            "pipeline_total_s": 45.536969827,
+            "read_ingest_s": 12.31887739,
+            "read_threading_input_s": null
+          },
+          "stats_size_bytes": 39638,
+          "system_seconds": 1.42,
+          "user_seconds": 63.57,
+          "wall_minus_pipeline_seconds": 0.9930301730000011,
+          "wall_seconds": 46.53
+        },
+        {
+          "allocator_peak_bytes": 4563459738,
+          "cpu_seconds": 64.81,
+          "fasta_files": 5,
+          "pair": 2,
+          "peak_rss_bytes": 4568838144,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair2_candidate.json",
+          "stage_timings": {
+            "count_finalize_s": 5.34254632,
+            "pcr_s": 27.074018686,
+            "pipeline_total_s": 44.476503853,
+            "read_ingest_s": 11.791977263,
+            "read_threading_input_s": null
+          },
+          "stats_size_bytes": 39631,
+          "system_seconds": 1.41,
+          "user_seconds": 63.4,
+          "wall_minus_pipeline_seconds": 0.1734961470000016,
+          "wall_seconds": 44.65
+        },
+        {
+          "allocator_peak_bytes": 4563459738,
+          "cpu_seconds": 63.510000000000005,
+          "fasta_files": 5,
+          "pair": 3,
+          "peak_rss_bytes": 4568829952,
+          "receipt": "tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair3_candidate.json",
+          "stage_timings": {
+            "count_finalize_s": 5.123441406,
+            "pcr_s": 27.646943963,
+            "pipeline_total_s": 44.396358796,
+            "read_ingest_s": 11.555845891,
+            "read_threading_input_s": null
+          },
+          "stats_size_bytes": 39632,
+          "system_seconds": 1.34,
+          "user_seconds": 62.17,
+          "wall_minus_pipeline_seconds": 2.883641204,
+          "wall_seconds": 47.28
+        }
+      ]
+    }
+  },
+  "median_wall_sum_seconds": {
+    "baseline": 434.01,
+    "candidate": 450.07
+  },
+  "priority_flags_resolved": false,
+  "review_type": "saved_evidence_resource_assessment",
+  "reviewed_artifacts": {
+    "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/assess_saved_resources.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/assess_saved_resources.py",
+      "sha256": "b69472314a899aad3c26429966ad6f686279eae38b54a4807310105564e5c008",
+      "size_bytes": 14083
+    },
+    "dev_docs/INCLUSIVE_RELEASE_PROTOCOL.md": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/dev_docs/INCLUSIVE_RELEASE_PROTOCOL.md",
+      "sha256": "0eb5e85dad659080c60e1497393e13a5160838f1bf48b6edb2f6a4fb8a656373",
+      "size_bytes": 5076
+    },
+    "tmp/inclusive-release-20260929/build-v1/baseline/build.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/baseline/build.json",
+      "sha256": "1609776f5fec9f1eb16cff5cbe7681faf083a833ebd760089c998b297b758d06",
+      "size_bytes": 24707
+    },
+    "tmp/inclusive-release-20260929/build-v1/baseline/sharkmer": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/baseline/sharkmer",
+      "sha256": "e751e5eeca9150495e8d74d95bf27e4109466cad4ccf862e470fe271351d5899",
+      "size_bytes": 6552160
+    },
+    "tmp/inclusive-release-20260929/build-v1/baseline/snapshot.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/baseline/snapshot.json",
+      "sha256": "caae38b385ec2837f669f112c58183ebe28ee67686fbbaffd78d89c572284c24",
+      "size_bytes": 10800
+    },
+    "tmp/inclusive-release-20260929/build-v1/baseline/source/src/main.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/baseline/source/src/main.rs",
+      "sha256": "bdc93bc5eba9ff83131903d34c618ebd973862233ca58d0ddd34877f72267e0c",
+      "size_bytes": 6619
+    },
+    "tmp/inclusive-release-20260929/build-v1/baseline/source/src/pcr/mod.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/baseline/source/src/pcr/mod.rs",
+      "sha256": "8936028c97c93a62eef7214508c9b1c7194553534d4882a79a8b9778c960db12",
+      "size_bytes": 49782
+    },
+    "tmp/inclusive-release-20260929/build-v1/baseline/source/src/pcr/paths.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/baseline/source/src/pcr/paths.rs",
+      "sha256": "15bac42dabed2c611761644dd5f9f3c5cd7fd71a7bed9c666aa3d5e4318bacf7",
+      "size_bytes": 23970
+    },
+    "tmp/inclusive-release-20260929/build-v1/baseline/source/src/stats.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/baseline/source/src/stats.rs",
+      "sha256": "48d4582fe5eba67223c101b4eb6033f882ead6ef3955f8ad0112d596cf9add21",
+      "size_bytes": 8979
+    },
+    "tmp/inclusive-release-20260929/build-v1/candidate/build.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/candidate/build.json",
+      "sha256": "3af983ff08f4d19bf7e4af4befea94ea96a85c257e6d5e63a7e56a086432c7f1",
+      "size_bytes": 35240
+    },
+    "tmp/inclusive-release-20260929/build-v1/candidate/sharkmer": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/candidate/sharkmer",
+      "sha256": "68ea253a5b03740d7a9083c18465c9143fed31aaf1a0b8b378ce669f35d4f992",
+      "size_bytes": 7030224
+    },
+    "tmp/inclusive-release-20260929/build-v1/candidate/snapshot.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/candidate/snapshot.json",
+      "sha256": "abc2b23998a4094843b21ac8742b656a4e20982b1d28b952300d3c161922523f",
+      "size_bytes": 16061
+    },
+    "tmp/inclusive-release-20260929/build-v1/candidate/source/src/main.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/candidate/source/src/main.rs",
+      "sha256": "e6f857b52ef0dfd8f3fb2e79847c94d5122f7186d7ff6c4ea000a9af431cb838",
+      "size_bytes": 8778
+    },
+    "tmp/inclusive-release-20260929/build-v1/candidate/source/src/output.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/candidate/source/src/output.rs",
+      "sha256": "df610ba8dcdc82cca0f54530206cbe8d024a7dc246f97e00faf8336e41fbd349",
+      "size_bytes": 32198
+    },
+    "tmp/inclusive-release-20260929/build-v1/candidate/source/src/pcr/mod.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/candidate/source/src/pcr/mod.rs",
+      "sha256": "296c12825f01071e40c10ef3c02a73f8366b955ea8eea33c786b6998ba0add04",
+      "size_bytes": 66804
+    },
+    "tmp/inclusive-release-20260929/build-v1/candidate/source/src/pcr/paths.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/candidate/source/src/pcr/paths.rs",
+      "sha256": "5e04df471002c3c95a209709aa72d674e9e6ca19012f6300cf7cc04eef93b4cd",
+      "size_bytes": 69462
+    },
+    "tmp/inclusive-release-20260929/build-v1/candidate/source/src/stats.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/candidate/source/src/stats.rs",
+      "sha256": "810501d20d637c5df84e3f21ffb1eee84028288d05cfb76cec69f17212b77ef7",
+      "size_bytes": 13887
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/000_cnidaria_SRR9278435_1000000_pair1_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/000_cnidaria_SRR9278435_1000000_pair1_baseline.json",
+      "sha256": "8bdd26f63dbdcca905980d3548980e96fea966d088247baf935286267bbac001",
+      "size_bytes": 22669
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/000_cnidaria_SRR9278435_1000000_pair1_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/000_cnidaria_SRR9278435_1000000_pair1_candidate.json",
+      "sha256": "c3cc82c74ab6a34aa965adee0a11c25583972b73c22feeb627763e43757f8995",
+      "size_bytes": 57791
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/000_cnidaria_SRR9278435_1000000_pair2_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/000_cnidaria_SRR9278435_1000000_pair2_baseline.json",
+      "sha256": "1d65312e31d2dad833d581f987eec70a734fd6a725bd2e4bf5094015e46be791",
+      "size_bytes": 22668
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/000_cnidaria_SRR9278435_1000000_pair2_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/000_cnidaria_SRR9278435_1000000_pair2_candidate.json",
+      "sha256": "6e00a007377fcb155abb78c961e6d83d8881373ac113e82bafcfdcd35587403c",
+      "size_bytes": 57791
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/000_cnidaria_SRR9278435_1000000_pair3_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/000_cnidaria_SRR9278435_1000000_pair3_baseline.json",
+      "sha256": "c2d1efb3a803a8eb355bc9c7d3cd3d79bc0b49332708ee4e37dfb3bbb05d8329",
+      "size_bytes": 22669
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/000_cnidaria_SRR9278435_1000000_pair3_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/000_cnidaria_SRR9278435_1000000_pair3_candidate.json",
+      "sha256": "49a73e03301c456a5d833bfa11f6105c8f23c705a169b86b71f1b91501e1e181",
+      "size_bytes": 57790
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/001_cnidaria_SRR25099394_1000000_pair1_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/001_cnidaria_SRR25099394_1000000_pair1_baseline.json",
+      "sha256": "5f82e8661d3926b9a2b202dbc3f0fc19514492b770e36ff21420b8f93f032b62",
+      "size_bytes": 19262
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/001_cnidaria_SRR25099394_1000000_pair1_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/001_cnidaria_SRR25099394_1000000_pair1_candidate.json",
+      "sha256": "363bf30455049b451b9074fbfbaaf5e874b2b2a37a019bae3e0530eae36ce41a",
+      "size_bytes": 68968
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/001_cnidaria_SRR25099394_1000000_pair2_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/001_cnidaria_SRR25099394_1000000_pair2_baseline.json",
+      "sha256": "7cdea399745996f3d41fda1d592064ced130a754742aeb7c1c7ce1bc2bc9c559",
+      "size_bytes": 19264
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/001_cnidaria_SRR25099394_1000000_pair2_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/001_cnidaria_SRR25099394_1000000_pair2_candidate.json",
+      "sha256": "60ae5a6a8ad87ea3ca7f42b24d47c29c8f2b8f6e0ff21520f8315bc255965712",
+      "size_bytes": 68968
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/001_cnidaria_SRR25099394_1000000_pair3_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/001_cnidaria_SRR25099394_1000000_pair3_baseline.json",
+      "sha256": "303a08c257339fd5da794662919d32ccbe0d6f7bf76664eb91b9835ee0f1bb98",
+      "size_bytes": 19262
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/001_cnidaria_SRR25099394_1000000_pair3_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/001_cnidaria_SRR25099394_1000000_pair3_candidate.json",
+      "sha256": "0255a3724fa223cebc6f59d316fd0137876cb8700d810c9332b4fe597c1269a3",
+      "size_bytes": 68968
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair1_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair1_baseline.json",
+      "sha256": "e4f35895d3f21e2c8b2f3de8ad8b1dfcceea510c1461da4ef5efb730a56a1358",
+      "size_bytes": 19363
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair1_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair1_candidate.json",
+      "sha256": "797f730f4bbc4ede6e95ec552801884c40c7c440d140e5914ad394f5313e4387",
+      "size_bytes": 71994
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair2_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair2_baseline.json",
+      "sha256": "05c1632b1193f290d5a840be7367791bd774b33b29bc538390abcd7d435552ef",
+      "size_bytes": 19363
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair2_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair2_candidate.json",
+      "sha256": "c5dcf3a136370d10b3fd9ffb6e88971c1efeea34c998ef7e22a9f623ab0b6fe9",
+      "size_bytes": 71992
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair3_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair3_baseline.json",
+      "sha256": "facda6925af2d760e639d55775f27e52f15219c743c9d24ff1f0908078b67fdb",
+      "size_bytes": 19362
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair3_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/002_cnidaria_SRR8617500_1000000_pair3_candidate.json",
+      "sha256": "fe8c912baebeea4390d185fe232729f605312f66424f3f9f2fcaeeb45d0f36e6",
+      "size_bytes": 71994
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair1_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair1_baseline.json",
+      "sha256": "8d07b06efe01da5a47f007541f3c5003b3fdf081b971107ce3b4588c37e631e6",
+      "size_bytes": 23741
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair1_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair1_candidate.json",
+      "sha256": "add176285aecf38a61c6353855c8db76e63fb9dc755018ffc1f5e065d440d870",
+      "size_bytes": 122218
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair2_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair2_baseline.json",
+      "sha256": "1c57ae4aad08410d30f449cee30a2d8c336d0950fd55e3f77e474688a9e08751",
+      "size_bytes": 23742
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair2_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair2_candidate.json",
+      "sha256": "8337863da254929b3dfbb2694a9b15dc236a91d684ca2df26acd1ffffcaa9d60",
+      "size_bytes": 122219
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair3_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair3_baseline.json",
+      "sha256": "1dd3da501de74c2ad24af42a51602280d8aaccb12ef55ec98d6751aace129e2c",
+      "size_bytes": 23741
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair3_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/003_human_SRR17535371_1000000_pair3_candidate.json",
+      "sha256": "3c59873de8f23cc5ad07892dfa4ee9b3b262ccc29698e946a86edabc6139a5ce",
+      "size_bytes": 122220
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/004_teleostei_SRR22396603_1000000_pair1_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/004_teleostei_SRR22396603_1000000_pair1_baseline.json",
+      "sha256": "a54680f122d11ea6431f4d95c42087f67b69e8054939e05b96fec2f3ca6539fa",
+      "size_bytes": 13201
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/004_teleostei_SRR22396603_1000000_pair1_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/004_teleostei_SRR22396603_1000000_pair1_candidate.json",
+      "sha256": "eb8180ec804cd7cafd5736175f23e0bdf4fac7d027d292299b2eb63a2e3cf6ef",
+      "size_bytes": 44584
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/004_teleostei_SRR22396603_1000000_pair2_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/004_teleostei_SRR22396603_1000000_pair2_baseline.json",
+      "sha256": "333e4c8fd8c15e04eb758196d671fbfa35fa97fb37eee98c4a9f30659ebb37ec",
+      "size_bytes": 13201
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/004_teleostei_SRR22396603_1000000_pair2_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/004_teleostei_SRR22396603_1000000_pair2_candidate.json",
+      "sha256": "ae2630633cdd4a529e1451d8026b12b6bde426ef65995a025ab34d8f0c238e24",
+      "size_bytes": 44583
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/004_teleostei_SRR22396603_1000000_pair3_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/004_teleostei_SRR22396603_1000000_pair3_baseline.json",
+      "sha256": "568acf40c44c56de5929fb60af696e2f56fe66bbb41a68a29ebd46ddfa9b5fa5",
+      "size_bytes": 13203
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/004_teleostei_SRR22396603_1000000_pair3_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/004_teleostei_SRR22396603_1000000_pair3_candidate.json",
+      "sha256": "4a7a9c601f4db0403bca0a03b4d958c6d8c89e4045967d4a555b374480364c2c",
+      "size_bytes": 44583
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair1_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair1_baseline.json",
+      "sha256": "77a27b169508d7c0f87a614caf394b19dc3ddf84c7ef5e232d379c96db40467b",
+      "size_bytes": 19312
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair1_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair1_candidate.json",
+      "sha256": "7af384f305fda6cea08c7fe2b9b1eca1350b724f7911c44d2ef6a91617d5f2a3",
+      "size_bytes": 2865814
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair2_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair2_baseline.json",
+      "sha256": "5cef1e8db5a389d2c7181acb2c38f4c5f409557998cee7f4aade8d0488fa71d4",
+      "size_bytes": 19313
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair2_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair2_candidate.json",
+      "sha256": "059f7e36f245d85b780692c546452ffed5927bc6644dfcb8b65148dbdb46e5a9",
+      "size_bytes": 2865814
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair3_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair3_baseline.json",
+      "sha256": "5f44626d54c9184c3c03631cfa6960aad71ced83a6cfb319a27fb96ff1fb58df",
+      "size_bytes": 19312
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair3_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/005_angiospermae_SRR25378184_1000000_pair3_candidate.json",
+      "sha256": "ef5212704a992de5596bea00da268dd8fd6e903555c50d1130875f9616175b1c",
+      "size_bytes": 2865815
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/006_angiospermae_ERR14009273_1000000_pair1_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/006_angiospermae_ERR14009273_1000000_pair1_baseline.json",
+      "sha256": "76468071c78c1c87d534a77072c007444599c3d3d20746cb013ee54c1816b0aa",
+      "size_bytes": 18597
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/006_angiospermae_ERR14009273_1000000_pair1_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/006_angiospermae_ERR14009273_1000000_pair1_candidate.json",
+      "sha256": "017ae018fba757886dcff947bfe0ab7f6087ed3eb732ac8e19a0937bf0e6f3c2",
+      "size_bytes": 318604
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/006_angiospermae_ERR14009273_1000000_pair2_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/006_angiospermae_ERR14009273_1000000_pair2_baseline.json",
+      "sha256": "cd7edd095aa1485da2ed6868fe9fcc31286d24222452e583515776eb382de516",
+      "size_bytes": 18596
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/006_angiospermae_ERR14009273_1000000_pair2_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/006_angiospermae_ERR14009273_1000000_pair2_candidate.json",
+      "sha256": "f47e472b56fbe0920daf44432f6dd84f587e68a318a5e08f0d3d51af7b12c652",
+      "size_bytes": 318604
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/006_angiospermae_ERR14009273_1000000_pair3_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/006_angiospermae_ERR14009273_1000000_pair3_baseline.json",
+      "sha256": "e8283051ec8b09a6f6e2f5eccbb77eff855e88f7d09d615a3d3e7d1b2c16a040",
+      "size_bytes": 18596
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/006_angiospermae_ERR14009273_1000000_pair3_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/006_angiospermae_ERR14009273_1000000_pair3_candidate.json",
+      "sha256": "19cdcad3867d49884f23cc517bb4028897fe1843a30e89e733ad9a19dac876d1",
+      "size_bytes": 318605
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/007_insecta_SRR31887760_1000000_pair1_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/007_insecta_SRR31887760_1000000_pair1_baseline.json",
+      "sha256": "0a2e1bb2e4079658af7cef9b5eb971d316c8d3bd9bf833af77e70641ded7460f",
+      "size_bytes": 29516
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/007_insecta_SRR31887760_1000000_pair1_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/007_insecta_SRR31887760_1000000_pair1_candidate.json",
+      "sha256": "3eb88df0f0fb668d9e828a6d8683be922a7afd8ba9fb17f7dba059beea91d221",
+      "size_bytes": 950858
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/007_insecta_SRR31887760_1000000_pair2_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/007_insecta_SRR31887760_1000000_pair2_baseline.json",
+      "sha256": "a43894d6fddc6d6536c76c2427ee2c38147d4b3d9851dad5092b5c96b305eeac",
+      "size_bytes": 29516
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/007_insecta_SRR31887760_1000000_pair2_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/007_insecta_SRR31887760_1000000_pair2_candidate.json",
+      "sha256": "0e4bd976d32bf7ee60400bed26ea9e0478dbb568c3190abb69ab6a743d3b7c41",
+      "size_bytes": 950857
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/007_insecta_SRR31887760_1000000_pair3_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/007_insecta_SRR31887760_1000000_pair3_baseline.json",
+      "sha256": "5d373d98c17d0013c696f2f38e35a2dac995b1b72a8faacd47825df5e09a7684",
+      "size_bytes": 29516
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/007_insecta_SRR31887760_1000000_pair3_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/007_insecta_SRR31887760_1000000_pair3_candidate.json",
+      "sha256": "45f49b86b3e68e03ccdd701b242affd26b7e7093144af9f63e32a9579ea56e80",
+      "size_bytes": 950857
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair1_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair1_baseline.json",
+      "sha256": "d90c3d65a57e63d4a09227f3988234cf96f533e74a53f86711dfad8111974d68",
+      "size_bytes": 18590
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair1_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair1_candidate.json",
+      "sha256": "f5dd8f3ca2c3a8c23dddc13ef66b2d02030d6bed87eedddc5ad18262873e29db",
+      "size_bytes": 501902
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair2_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair2_baseline.json",
+      "sha256": "a1384d5561695e08596d8569cdfc08cfa19f004cd3a37d5683deea71ad021e2d",
+      "size_bytes": 18589
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair2_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair2_candidate.json",
+      "sha256": "d8bfe587dbb6d11ddf40e0b4d312a821028433d29c264862f378186f3bdf15f2",
+      "size_bytes": 501901
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair3_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair3_baseline.json",
+      "sha256": "6264e3e281a44f8e323195780a1dc7764ec8e8c9e44fdb7228b81466747c1e66",
+      "size_bytes": 18589
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair3_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/008_insecta_SRR1057608_1000000_pair3_candidate.json",
+      "sha256": "e67b025a86e9cf7dea27d6268af781858bc03a2703361be039c393bcb11c8e49",
+      "size_bytes": 501902
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/009_insecta_SRR27962769_1000000_pair1_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/009_insecta_SRR27962769_1000000_pair1_baseline.json",
+      "sha256": "103c2586897c5a2e2f2b944a2b4d350f4e2e8da98fc297c2bf5ac49b8a0117b3",
+      "size_bytes": 46773
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/009_insecta_SRR27962769_1000000_pair1_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/009_insecta_SRR27962769_1000000_pair1_candidate.json",
+      "sha256": "0bc37ec82b8d32fca94c856129e5e742eeca567265a3571144cdbc58d95b8ec5",
+      "size_bytes": 1279152
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/009_insecta_SRR27962769_1000000_pair2_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/009_insecta_SRR27962769_1000000_pair2_baseline.json",
+      "sha256": "9def5cc2507f30ffdf33a490ba1e2d11aa71d4b71bf55501591bf727bd948e38",
+      "size_bytes": 46773
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/009_insecta_SRR27962769_1000000_pair2_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/009_insecta_SRR27962769_1000000_pair2_candidate.json",
+      "sha256": "9c153894542fcb54b0115fa6154f43fa6ecb6565f4590f36b8eb528db9cf78cc",
+      "size_bytes": 1279152
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/009_insecta_SRR27962769_1000000_pair3_baseline.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/009_insecta_SRR27962769_1000000_pair3_baseline.json",
+      "sha256": "f5a0be1ab0ab0e5b5bb270353019764f9ba51e133b98f11111ae9f8fc2b35ed8",
+      "size_bytes": 46773
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/009_insecta_SRR27962769_1000000_pair3_candidate.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/009_insecta_SRR27962769_1000000_pair3_candidate.json",
+      "sha256": "d9e2bf2893a7ab612192ee60ba4f40984fc0cde93dc2fe79999edcae4969a313",
+      "size_bytes": 1279152
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/execution.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/execution.json",
+      "sha256": "0d596400b5d567f7038e4b9c4cd8c96aa30e65034d6326f9049bb6ceb723cab3",
+      "size_bytes": 21161151
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/plan.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/plan.json",
+      "sha256": "bd7ae7016a42c202f5f191bf6443f3800e6e12eed1e19bd602d486878d212c26",
+      "size_bytes": 156368
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair1_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair1_baseline/process_constraints.json",
+      "sha256": "d8298efa4c01d375e8b8770a45b42676c4e9809fd4678ca7eecb891115612150",
+      "size_bytes": 1198
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair1_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair1_baseline/time.json",
+      "sha256": "a430ccbd34aa96d2e04422632f2cdafe61852ca308b12de2e0c24b8a0fdcadc2",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair1_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair1_candidate/process_constraints.json",
+      "sha256": "7ca3a77af71db59997d288dee703fe61034d4160c76c019c99a87be7fd137aa4",
+      "size_bytes": 1201
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair1_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair1_candidate/time.json",
+      "sha256": "17bdc8840e6d4e9af69db130a0ef7aed1710cb323a577801ef2ac0db72e7ad26",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair2_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair2_baseline/process_constraints.json",
+      "sha256": "9fa381cadd00a6629be315ada3c601a4dfbafc472c1833b6a4df12eb38599652",
+      "size_bytes": 1197
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair2_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair2_baseline/time.json",
+      "sha256": "045660bad862a4bb4ba78469cea061b420a25989dc2989cb13e28c5c62a6e045",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair2_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair2_candidate/process_constraints.json",
+      "sha256": "af8f130b8bcaab81c044dfdf3f91e751863133a0f69e7727ea2d53c695e894bc",
+      "size_bytes": 1201
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair2_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair2_candidate/time.json",
+      "sha256": "d4e9c790c12de1325349102e32fe9d2c4a9fd640c5ce07f3320c82ceda8d32ec",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair3_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair3_baseline/process_constraints.json",
+      "sha256": "4b2e50e5381c6be5d3d68a360e3112c28703d45c899ff306c6d9cb46bfa7361b",
+      "size_bytes": 1198
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair3_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair3_baseline/time.json",
+      "sha256": "384abf6ceb9ef393513bcede72326b6218cac8f99ef903660d60069c03b4e67d",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair3_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair3_candidate/process_constraints.json",
+      "sha256": "27de43d9aa64c52c5997a179c58147d13c30a60b0a472502fbcb802b00ec023a",
+      "size_bytes": 1201
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair3_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/000_cnidaria_SRR9278435_1000000_pair3_candidate/time.json",
+      "sha256": "cef3b25d0f2f14940f9a41e4ec6964107318bddd507d1ad0a98d2facfe6b7761",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair1_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair1_baseline/process_constraints.json",
+      "sha256": "702a96d4a762d30a23e6f58b80edad8bd1c4ca5a326c76d1aa0c7873d1c0d73e",
+      "size_bytes": 1202
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair1_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair1_baseline/time.json",
+      "sha256": "fd50a0e6a0907897f6e8eded0707594102e5b6e214856295f3902a881e0e711b",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair1_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair1_candidate/process_constraints.json",
+      "sha256": "165d09fb3c06e4207948ecb751a34f2a2ebdd8d26beefb6868b40aa1a84b7044",
+      "size_bytes": 1205
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair1_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair1_candidate/time.json",
+      "sha256": "f746c82deabc4aab7c0c055d1850a51a3ba0cbaef0fbe1ab9277875af5201c21",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair2_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair2_baseline/process_constraints.json",
+      "sha256": "55ebf6292b76fbf44ab9dbdf53dd92d70444e2921055ab102dbbbac0f4affad7",
+      "size_bytes": 1202
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair2_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair2_baseline/time.json",
+      "sha256": "6db23a06ac838d098bf8bf80c4295670acd19912592cae5310a70dcb9c85d1ae",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair2_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair2_candidate/process_constraints.json",
+      "sha256": "34406b0b7c1eada78a4d6b91c4b624c12e62af4798c337262b36277484781628",
+      "size_bytes": 1205
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair2_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair2_candidate/time.json",
+      "sha256": "152fe07bd7023c80e1ee87327daaf89608d000ccf04551878a547eac3adbbf1f",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair3_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair3_baseline/process_constraints.json",
+      "sha256": "7c58b5eda880e2cd7b8aef0a0fea54d05703874594dbd17d4966c426deef62ed",
+      "size_bytes": 1202
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair3_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair3_baseline/time.json",
+      "sha256": "264d15d80ba66419d2d6df8e8554591ba2b1f55c56da6369c0588e55cd0839c0",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair3_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair3_candidate/process_constraints.json",
+      "sha256": "94d1b77926426d63c3537337e3e1843a6f603733b21be70567ef15c02bebea2c",
+      "size_bytes": 1205
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair3_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/001_cnidaria_SRR25099394_1000000_pair3_candidate/time.json",
+      "sha256": "f5128117ef1ad8753f83fd370a3367c32043fd038b8bdeaa88c3b04713b166c8",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_baseline/outputs/cnidaria_SRR8617500_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_baseline/outputs/cnidaria_SRR8617500_1000000.stats.yaml",
+      "sha256": "2e39dabc485298e56c874fa8828e144a13540bb7c9bb2a95d2a7932202e4067f",
+      "size_bytes": 1467
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_baseline/process_constraints.json",
+      "sha256": "7c90229a2eb2a2590db499ea16950f15d548db320bcf23f10e0a18e838a51192",
+      "size_bytes": 1198
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_baseline/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_baseline/stderr.log",
+      "sha256": "e89dbfd1998bbe2507ee3684fc063a0cdde17defecaaffd7953cf27fb6fbfe2b",
+      "size_bytes": 451
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_baseline/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_baseline/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_baseline/time.json",
+      "sha256": "b831819833a2c9c143dfe00fb1d3d43031b02b4b4af2a4aa2f6bbf7d0bea8f69",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/outputs/cnidaria_SRR8617500_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/outputs/cnidaria_SRR8617500_1000000.stats.yaml",
+      "sha256": "534b135dff59f1e324ee94f2a75f5b7a4572453ec247fd840400176cd96cab99",
+      "size_bytes": 39638
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/process_constraints.json",
+      "sha256": "c4e032f8bbe6e974c421e43960dd9a2a40eac4908cd9bc9fab86368fa61efb11",
+      "size_bytes": 1201
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/stderr.log",
+      "sha256": "6aff4d0f17ed9292e22bc8283021b25c93309c233c8c40e7bb4d87c9dddd14d5",
+      "size_bytes": 630
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/time.json",
+      "sha256": "2b2c01338672e255a3b82a066c6f913a05a08833059534bc9576effd788e7263",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_baseline/outputs/cnidaria_SRR8617500_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_baseline/outputs/cnidaria_SRR8617500_1000000.stats.yaml",
+      "sha256": "662d1448bc0789712d72d87fc47e68e6c6d67ff6bb4b750cf060afccc7c06456",
+      "size_bytes": 1467
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_baseline/process_constraints.json",
+      "sha256": "c56073181edf86f64552214fe5be7f5efe27a6bbe29fd196699355629200fb86",
+      "size_bytes": 1198
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_baseline/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_baseline/stderr.log",
+      "sha256": "6cb73cfd3c3c1611d60d8118cf70c99dca37cba79340069c740c57022b149a49",
+      "size_bytes": 451
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_baseline/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_baseline/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_baseline/time.json",
+      "sha256": "73238156983445777408f87d35d254b868a8c34ed48037739500a9585dfca252",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_candidate/outputs/cnidaria_SRR8617500_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_candidate/outputs/cnidaria_SRR8617500_1000000.stats.yaml",
+      "sha256": "c0bfce09a737adbc426cffb01d973ce88d6154d15ee0de509ec602d9342796a3",
+      "size_bytes": 39631
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_candidate/process_constraints.json",
+      "sha256": "c90d4f5518549e2e56f27e920c260ff5b44d6e57c2d22d7ed7b305642eb05875",
+      "size_bytes": 1201
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_candidate/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_candidate/stderr.log",
+      "sha256": "0a02d2127e978cfe77c82e7e267e48bff6c30ec5826e792ebd2a27e132732c95",
+      "size_bytes": 630
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_candidate/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_candidate/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair2_candidate/time.json",
+      "sha256": "69843d2c2805fbc514e22608c1e35960401d64a2491465eafe1f09279a314c1d",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_baseline/outputs/cnidaria_SRR8617500_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_baseline/outputs/cnidaria_SRR8617500_1000000.stats.yaml",
+      "sha256": "0d5c61e1e60c774f3babc10aedd4d9a0730160c3274c50b3dde78d7109830ac1",
+      "size_bytes": 1467
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_baseline/process_constraints.json",
+      "sha256": "2cb7a4a884b2c62641e5bf04bbf176b605f426a250dd56972fabaaa240a3fdfe",
+      "size_bytes": 1198
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_baseline/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_baseline/stderr.log",
+      "sha256": "916c142e8838ba5bcb9840200356d0bef8f5f35def986166ca54be7e93489bb5",
+      "size_bytes": 451
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_baseline/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_baseline/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_baseline/time.json",
+      "sha256": "3deab5bc92927f6d4f22e97f040f6cdc87ead725db46a18f3c25df47f4ef6f58",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_candidate/outputs/cnidaria_SRR8617500_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_candidate/outputs/cnidaria_SRR8617500_1000000.stats.yaml",
+      "sha256": "c45ea64a8d268f13019e3855bd127d25290a9f7859237358b450745389d37056",
+      "size_bytes": 39632
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_candidate/process_constraints.json",
+      "sha256": "68b876046c37cf632c9b30174cff6fc7683586639de17de74061d5fd4078e565",
+      "size_bytes": 1201
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_candidate/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_candidate/stderr.log",
+      "sha256": "f2a20a8f7ea3461aaf613502c554b2abba7b3fdac0be76f84af8f2155a3579b6",
+      "size_bytes": 630
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_candidate/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_candidate/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/002_cnidaria_SRR8617500_1000000_pair3_candidate/time.json",
+      "sha256": "4fc78d0d8c9a19d6deef8d71941cd048a35ba446bc4d61bbdcfb493814b54470",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_baseline/outputs/human_SRR17535371_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_baseline/outputs/human_SRR17535371_1000000.stats.yaml",
+      "sha256": "4ba7bc391a797a8e7efac28f11e7d26608d04de77165f3c5ca5750adc380d077",
+      "size_bytes": 1680
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_baseline/process_constraints.json",
+      "sha256": "a9c3d0662a5da83f3a63d4edb25015aea60485c32b1c1fb5e62b67bd393287e3",
+      "size_bytes": 1190
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_baseline/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_baseline/stderr.log",
+      "sha256": "f1ae2d742b2f9bbf63c142d141dd5fb5faa202ae668daecb6e123b70a2ab5d59",
+      "size_bytes": 618
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_baseline/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_baseline/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_baseline/time.json",
+      "sha256": "ed47d9c5728ef1b1390bfd82f21255b83a79e7671d873f60ad789a85605730b1",
+      "size_bytes": 98
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_candidate/outputs/human_SRR17535371_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_candidate/outputs/human_SRR17535371_1000000.stats.yaml",
+      "sha256": "e61915e8200a1d18ee41ce08e1d43c9d6c7cd8a62bac9ed95d008573f2869311",
+      "size_bytes": 73283
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_candidate/process_constraints.json",
+      "sha256": "86a0cae474de96c8b1b880c4d1524cef6cc57c765996d6365a8032a4c1c58a77",
+      "size_bytes": 1192
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_candidate/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_candidate/stderr.log",
+      "sha256": "4f0b68b6e0f6c6c9d0ea91b6fa61d286195bcfc8a27b0214fb8033d29ad2551f",
+      "size_bytes": 970
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_candidate/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_candidate/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair1_candidate/time.json",
+      "sha256": "110822b691e4cc0a8201c9a5dcb1b11fb60832cb5e30aba9fcbc74011f6173cc",
+      "size_bytes": 98
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_baseline/outputs/human_SRR17535371_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_baseline/outputs/human_SRR17535371_1000000.stats.yaml",
+      "sha256": "4fb1c0d72c40484ce4137423225355848a2d7d532c9cbfd955cacb2cd27347d4",
+      "size_bytes": 1680
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_baseline/process_constraints.json",
+      "sha256": "11df4d9d1b94813de331af543352c723134c07f14e3064c5fa9182e99e754ce5",
+      "size_bytes": 1190
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_baseline/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_baseline/stderr.log",
+      "sha256": "36a7155749e757f9eb7bc358b486fdc9f24e3cd9cc67fcad5ca221b7561ee451",
+      "size_bytes": 618
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_baseline/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_baseline/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_baseline/time.json",
+      "sha256": "f95142f34466f03b8b040383a0a112d0e0ab5f57b7defeb15ab2496c40a2578d",
+      "size_bytes": 98
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_candidate/outputs/human_SRR17535371_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_candidate/outputs/human_SRR17535371_1000000.stats.yaml",
+      "sha256": "cacc69fd156f451b6a070f05c118e558675475c32475662fc3ea005d2a94f0a1",
+      "size_bytes": 73283
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_candidate/process_constraints.json",
+      "sha256": "3e85c101de668c63cd7bd092693029e02145b89170d35bf694dd8d2edeb1bd62",
+      "size_bytes": 1193
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_candidate/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_candidate/stderr.log",
+      "sha256": "d98384c6017b97a22c745388f9bdb953d1a5c9f610e11dddf3f16900b21dc070",
+      "size_bytes": 970
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_candidate/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_candidate/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair2_candidate/time.json",
+      "sha256": "f5bb3b752d08c414de235a0bc90a6415cbde4d8d8088c255b176a5ae2204ac15",
+      "size_bytes": 98
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_baseline/outputs/human_SRR17535371_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_baseline/outputs/human_SRR17535371_1000000.stats.yaml",
+      "sha256": "333683ee3072aa15adc60f7460817ee722144f63e11e324b61572cd06f9a4a8c",
+      "size_bytes": 1680
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_baseline/process_constraints.json",
+      "sha256": "99c2ef7cd7f07676428f6b59d5a391e44d3dd6040b44913e268d199b35abdaea",
+      "size_bytes": 1190
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_baseline/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_baseline/stderr.log",
+      "sha256": "793c32ae78c1c5b92689a0f3ae49db95aea070acc6651a6ef744f7cc732e3f53",
+      "size_bytes": 618
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_baseline/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_baseline/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_baseline/time.json",
+      "sha256": "7d661f38e1dac928d2f1a286d7b6a381c2cbfa8092f809665ae654ad7e06eb68",
+      "size_bytes": 98
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_candidate/outputs/human_SRR17535371_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_candidate/outputs/human_SRR17535371_1000000.stats.yaml",
+      "sha256": "bdf966dccfe5a4fc5a5c33f7c7c47fbd86e5c845a426b0892e23c3b907a89988",
+      "size_bytes": 73283
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_candidate/process_constraints.json",
+      "sha256": "40b0819b1a15950f7456c1055417df2b576abd94ea4c08fc55d910812f7df29f",
+      "size_bytes": 1193
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_candidate/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_candidate/stderr.log",
+      "sha256": "ad7d40c4fd24c515dc42314c89fa6ed571ed1a5afcea338099df06ab06903e63",
+      "size_bytes": 970
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_candidate/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_candidate/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/003_human_SRR17535371_1000000_pair3_candidate/time.json",
+      "sha256": "e567e5229541c01d83a09a134a90a3c59c8b7abd4755162825887c3ea2083108",
+      "size_bytes": 98
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair1_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair1_baseline/process_constraints.json",
+      "sha256": "20a16ffb15e2ce057352fe8c3d2ea3c023f8995d53d00e211c0dbbfcbe06c99e",
+      "size_bytes": 1206
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair1_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair1_baseline/time.json",
+      "sha256": "99b2ccdd2bf9ef396c8575600e2e63b2bf3284b510a8200c0dd8a7e3a3f3aeaf",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair1_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair1_candidate/process_constraints.json",
+      "sha256": "0a50610e456c79aa853fd95c47759584b57e7e3e77d3e4229091f22192d3b8b5",
+      "size_bytes": 1209
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair1_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair1_candidate/time.json",
+      "sha256": "b1cfced0ef305799766aa694f4e9ef7260a6f6532c7177e52e218f5b1b96f71b",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair2_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair2_baseline/process_constraints.json",
+      "sha256": "02212bd7e4b34a2c226b3f2faf4b2d07f15ad89e6e59cf80a80010d7b9c4de0f",
+      "size_bytes": 1205
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair2_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair2_baseline/time.json",
+      "sha256": "4c5863508605f3c6d721f08dfd22a71a79bb8a1aabc1ee333e2484854982dff7",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair2_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair2_candidate/process_constraints.json",
+      "sha256": "058eb5ff77248442c1ca6713da57b3f003883536b854c536678343baccaf4311",
+      "size_bytes": 1209
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair2_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair2_candidate/time.json",
+      "sha256": "af34c2e2cac6c99aadd2b57c3909943c51e9fad34eabb9dc68bd83a9f0c1a824",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair3_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair3_baseline/process_constraints.json",
+      "sha256": "8188da2feed7880ba1d2f98cbbba6bceea048c6a7c5e75609b086c6a0672c9ad",
+      "size_bytes": 1206
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair3_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair3_baseline/time.json",
+      "sha256": "68a501a12da62c0dd3bfe20554c86eabd5124152dd276fdc66acaab6da4b0f63",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair3_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair3_candidate/process_constraints.json",
+      "sha256": "77837392ab153c4e4df05ac5274576e775dcfafa0e2121e06548005b8fa95c6c",
+      "size_bytes": 1209
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair3_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/004_teleostei_SRR22396603_1000000_pair3_candidate/time.json",
+      "sha256": "5a23b623fb3302efc883f23d2106afbe510cae90e1a454b0b13dbcd1170ae2a9",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_baseline/outputs/angiospermae_SRR25378184_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_baseline/outputs/angiospermae_SRR25378184_1000000.stats.yaml",
+      "sha256": "e02b67c7f39c3263a381b23b78692ccce0fd6a7711dd895d17cd4bf0a75636ef",
+      "size_bytes": 1856
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_baseline/process_constraints.json",
+      "sha256": "b7de162b5a40afb37dd4383f3638bf0a29d8bc9be10d24d0ded3109dff630237",
+      "size_bytes": 1217
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_baseline/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_baseline/stderr.log",
+      "sha256": "0b1c5b51399a3c40595467a128c7898bf5270642db0f1b88bc3ee27d5c9a5460",
+      "size_bytes": 757
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_baseline/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_baseline/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_baseline/time.json",
+      "sha256": "327560e567e2a18d1a3de94512d58e2d2cac279f3c43ab0124f4fbb14ffb6b79",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/outputs/angiospermae_SRR25378184_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/outputs/angiospermae_SRR25378184_1000000.stats.yaml",
+      "sha256": "1f11a389e662b2741f7ddd909be2ea061d17e158ba6fc2f41ae60dda94b87632",
+      "size_bytes": 1859068
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/process_constraints.json",
+      "sha256": "b695d37de3a5463cca39b4d37502247ac7c4965ebf718d7697ddc5c5dca3b44a",
+      "size_bytes": 1221
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/stderr.log",
+      "sha256": "282cd881bd0f9bdc35935178f7633987010118ac6888dc7ee5b773a540105906",
+      "size_bytes": 3013
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/time.json",
+      "sha256": "ef2edd86ac1663bcde0513ce355866cb57b1cf020bcefda107b0bbe6627feee4",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_baseline/outputs/angiospermae_SRR25378184_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_baseline/outputs/angiospermae_SRR25378184_1000000.stats.yaml",
+      "sha256": "8f4187a9e6752a537f6f7114b1e96d6396bab75dfe7feace5425c5c4f0b7df82",
+      "size_bytes": 1856
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_baseline/process_constraints.json",
+      "sha256": "29948e7b8ef66050d23e154398790defbc8ba2aee1985aefa81aa83b171c7ec3",
+      "size_bytes": 1218
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_baseline/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_baseline/stderr.log",
+      "sha256": "903a4f94eb93f1c1895aa1eb778869f91bc16ea79db25b12d4bc1227a8a00f62",
+      "size_bytes": 757
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_baseline/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_baseline/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_baseline/time.json",
+      "sha256": "4ef683edf57244b3388bbe9508e5b0e5d3394c1d7cd7793178bbb37489031419",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_candidate/outputs/angiospermae_SRR25378184_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_candidate/outputs/angiospermae_SRR25378184_1000000.stats.yaml",
+      "sha256": "ac5dd63ec473bd59ba70d8472548d20f69cd8a425f99364ee93311bdce47e184",
+      "size_bytes": 1859068
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_candidate/process_constraints.json",
+      "sha256": "8527b4836ba1e75e02fa7551c8d3f28b85d21852ab8d0641a285842d3674c645",
+      "size_bytes": 1221
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_candidate/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_candidate/stderr.log",
+      "sha256": "1a78484dff377574e2b4964247aff0dc27ea9967593a5aca5bca8036f7e4e311",
+      "size_bytes": 3013
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_candidate/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_candidate/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair2_candidate/time.json",
+      "sha256": "1a42f98f9f67803ae2fcc99dbfa85ed674b9ac64eefa0302e53b925ba7d314cf",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_baseline/outputs/angiospermae_SRR25378184_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_baseline/outputs/angiospermae_SRR25378184_1000000.stats.yaml",
+      "sha256": "201cdb8298d5490ee0b3e95cda580a76c9e8b8c38f5ad0e948c00a1e4ef79330",
+      "size_bytes": 1856
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_baseline/process_constraints.json",
+      "sha256": "44a9e33ad9912ec062d5ea3c0a0503d5b46fae529a075d8902cc2d0bf07b2f50",
+      "size_bytes": 1217
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_baseline/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_baseline/stderr.log",
+      "sha256": "9e5c202a5c9b1c511b77d5f25a1564132dac7a36ce0438bb83176499a9f1e1a4",
+      "size_bytes": 757
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_baseline/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_baseline/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_baseline/time.json",
+      "sha256": "d15fca39bc143c924f4da3047d9fdb8b8a51729e76ac32ef0c1e5dbca95a67ec",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_candidate/outputs/angiospermae_SRR25378184_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_candidate/outputs/angiospermae_SRR25378184_1000000.stats.yaml",
+      "sha256": "485faa54486fee257ca3db91f3365b4825d2a7daba6a351a1f4727890f22e530",
+      "size_bytes": 1859067
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_candidate/process_constraints.json",
+      "sha256": "6a210d1f1fae35939f7f128f2368ad56b34f45af1dbc29dd6da6340702874035",
+      "size_bytes": 1221
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_candidate/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_candidate/stderr.log",
+      "sha256": "282cd881bd0f9bdc35935178f7633987010118ac6888dc7ee5b773a540105906",
+      "size_bytes": 3013
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_candidate/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_candidate/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/005_angiospermae_SRR25378184_1000000_pair3_candidate/time.json",
+      "sha256": "c2d2496f4232087f493ced50cc1751e16137420560ef8290b8b46e96c0388513",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair1_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair1_baseline/process_constraints.json",
+      "sha256": "071880ed1679e84e390a3a5a46115e84acb82b562d60a25fcd9b632338f9e4bd",
+      "size_bytes": 1217
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair1_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair1_baseline/time.json",
+      "sha256": "1a515d4175ec4376b6ba5c6f87e8e1f868975c94bfe6b495d77dc7877c246d8f",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair1_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair1_candidate/process_constraints.json",
+      "sha256": "96379dae8bdd161363331e05bd30ddd89e1f1e2fd7144d7735c4efd70137963d",
+      "size_bytes": 1221
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair1_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair1_candidate/time.json",
+      "sha256": "8fd5a034943a7bb0ae8b335e2ae5f59d14ff367cc3aa92fe92cf2e2acfc8adbf",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair2_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair2_baseline/process_constraints.json",
+      "sha256": "43a8c84706584fa9d0023c9f1c53d8651cd026af850b35281af2889f73567569",
+      "size_bytes": 1218
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair2_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair2_baseline/time.json",
+      "sha256": "1d68b9f8836755058beab3ddbc97267ca1b51c66d8bf5f2b71166e6871c070ef",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair2_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair2_candidate/process_constraints.json",
+      "sha256": "86376a6f64e83014604e51bc8fb6a5e057640d3d4424f258e6cc945cb493b081",
+      "size_bytes": 1221
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair2_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair2_candidate/time.json",
+      "sha256": "2d90e849f747edc5b5c9cca0506d7d91b2ea6c631f80bb341b556557bc98f7e3",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair3_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair3_baseline/process_constraints.json",
+      "sha256": "9139d92a8f393a3c18ca7fc3d86925a75405113781d56965668366c69592f898",
+      "size_bytes": 1218
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair3_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair3_baseline/time.json",
+      "sha256": "6192112c7238a506afd544e3482067249cb8499544d777d8b08dda3f1f7508c1",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair3_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair3_candidate/process_constraints.json",
+      "sha256": "1acbfb0213b8673278f435057cd72dc70a7167c4dc8c01390e92206c44ff5ca9",
+      "size_bytes": 1220
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair3_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/006_angiospermae_ERR14009273_1000000_pair3_candidate/time.json",
+      "sha256": "2bfd03dfcb79ad00360e81ea9f369096e302981c3bcd2af5e4a15b302bd44bd3",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair1_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair1_baseline/process_constraints.json",
+      "sha256": "868c2d6f19e71d3748e3754d63c85775872138fe9953c9fc17357e85e4a46a6c",
+      "size_bytes": 1212
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair1_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair1_baseline/time.json",
+      "sha256": "f06a95ad24a88280c027fb8d91be866630ab11db0b538ceab7137a7a36db6a3d",
+      "size_bytes": 103
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair1_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair1_candidate/process_constraints.json",
+      "sha256": "8bae368d7a8d8ec396d61863ac15bfa37cb4f352f3a4a0df31df98f3d78621b9",
+      "size_bytes": 1215
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair1_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair1_candidate/time.json",
+      "sha256": "f2a802f5ff62c3ddbd2cdb11960a4c0a1ac75639d0c23bec1399492ea53e0211",
+      "size_bytes": 103
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair2_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair2_baseline/process_constraints.json",
+      "sha256": "8b9e6e199e43dc0bf9a763e3384efb63143e1b084886948ae36d71a7fad6e732",
+      "size_bytes": 1212
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair2_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair2_baseline/time.json",
+      "sha256": "ee74b4585d8eb6535cc68a746a21ad0930aa01ee0cfa246e8796a12ae0c374a3",
+      "size_bytes": 103
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair2_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair2_candidate/process_constraints.json",
+      "sha256": "e42d964f61550c62d710f182a92c7ca1b69af6218108cdc8e39c276c65ae5278",
+      "size_bytes": 1214
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair2_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair2_candidate/time.json",
+      "sha256": "19f73520c0add0deddd73630380cc1828821c1ecd2b518c461e81ac9b28fbbfc",
+      "size_bytes": 103
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair3_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair3_baseline/process_constraints.json",
+      "sha256": "bae958c8f682fd4243f3e68f82dad907b414ab3ddd5f0b4de9a52c7d268b09c2",
+      "size_bytes": 1212
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair3_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair3_baseline/time.json",
+      "sha256": "adcc1129b46621353fa49db6d8d36e964542ebbcc6058dd13e1bb02513f5ffb8",
+      "size_bytes": 103
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair3_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair3_candidate/process_constraints.json",
+      "sha256": "ed4629280aed0a842535ca8a00cff36bf3162aacf1b9fa0838263838d4e8ef3e",
+      "size_bytes": 1215
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair3_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/007_insecta_SRR31887760_1000000_pair3_candidate/time.json",
+      "sha256": "cf5a731e420fc9de6be88f3e17fb5aa6097303429cad049f4c5e3b426c972a82",
+      "size_bytes": 103
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_baseline/outputs/insecta_SRR1057608_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_baseline/outputs/insecta_SRR1057608_1000000.stats.yaml",
+      "sha256": "61eab8129c2ae920547dea6efd6073ed1ffa4a2f1c0500e26ed5cf96cc71b18a",
+      "size_bytes": 2781
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_baseline/process_constraints.json",
+      "sha256": "2ca376408cec8980d9512f78dff998e14bfe53408e0f3d5fcbeb4e787ecf6a7c",
+      "size_bytes": 1200
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_baseline/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_baseline/stderr.log",
+      "sha256": "dc88377605bf1ffefdf4af95a1a4843e70191a55c41401f59f08377daaaae9a9",
+      "size_bytes": 1164
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_baseline/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_baseline/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_baseline/time.json",
+      "sha256": "514fa35c7b153342cf1323ee52156610d533126b50b4a75f988d2e9139ac3078",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_candidate/outputs/insecta_SRR1057608_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_candidate/outputs/insecta_SRR1057608_1000000.stats.yaml",
+      "sha256": "34491d7bdaa0b72721403eafb2d7bf05cb078997ebf274dc7647438958c37638",
+      "size_bytes": 327087
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_candidate/process_constraints.json",
+      "sha256": "054a6e1e7cb61bcc3c73380459855be26258fe8495322b4806e37637a8b128be",
+      "size_bytes": 1203
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_candidate/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_candidate/stderr.log",
+      "sha256": "75ed8ce15ea80f0ba42a1760d4aead8c37a3ab1c36ac243178184abcd408dd0c",
+      "size_bytes": 2377
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_candidate/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_candidate/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair1_candidate/time.json",
+      "sha256": "4753f02bbf097616a7c681fde633cff387fad669b8d2c7b7feb73bd0184d69d8",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_baseline/outputs/insecta_SRR1057608_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_baseline/outputs/insecta_SRR1057608_1000000.stats.yaml",
+      "sha256": "5cb626dfcd561248c8f136bb453e7b2b0088cb1d506d1fc449ebe0860c82bd95",
+      "size_bytes": 2781
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_baseline/process_constraints.json",
+      "sha256": "b548220fdab10e647c04cbfd5da5c9a1724160bcb9294d757ed982b6eb32263b",
+      "size_bytes": 1201
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_baseline/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_baseline/stderr.log",
+      "sha256": "18888320f67237433333168d0112525b7a8f6e78e7f99823923e9a0b63bda985",
+      "size_bytes": 1164
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_baseline/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_baseline/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_baseline/time.json",
+      "sha256": "f416753f3e13b8ef16dc4159bd030a048b7ebd859a68369d148887b640d983cc",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_candidate/outputs/insecta_SRR1057608_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_candidate/outputs/insecta_SRR1057608_1000000.stats.yaml",
+      "sha256": "aa79140c083c8900118680aefb52d6116e89cf3445dcfe5e2be624e06a3d541a",
+      "size_bytes": 327086
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_candidate/process_constraints.json",
+      "sha256": "d355309586b13569378225895e9b0473662fdfb72dacffefbeceb27842767359",
+      "size_bytes": 1203
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_candidate/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_candidate/stderr.log",
+      "sha256": "75ed8ce15ea80f0ba42a1760d4aead8c37a3ab1c36ac243178184abcd408dd0c",
+      "size_bytes": 2377
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_candidate/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_candidate/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair2_candidate/time.json",
+      "sha256": "d0b1adb79715e053c5d6a5d1b96bd0ce88203b4d742af282ac4dd04425453592",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_baseline/outputs/insecta_SRR1057608_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_baseline/outputs/insecta_SRR1057608_1000000.stats.yaml",
+      "sha256": "b96261f9d69ca3c629bbc8b651a5df8e6c1f5482da83de02dd7535ba3642f294",
+      "size_bytes": 2781
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_baseline/process_constraints.json",
+      "sha256": "7d5344c750e94e169af64d8189dc98fb919e8012794b8b1701d7fb6cf4c79fc6",
+      "size_bytes": 1201
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_baseline/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_baseline/stderr.log",
+      "sha256": "9dc96e1c1d1c235ab9834271d6d2937420fc1e28f1272870897a2b6d0d5ef8f9",
+      "size_bytes": 1164
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_baseline/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_baseline/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_baseline/time.json",
+      "sha256": "d00b12e0994ba69876e45a7fcb5865b29b20c47d55af43179bc11ba3b5585285",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_candidate/outputs/insecta_SRR1057608_1000000.stats.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_candidate/outputs/insecta_SRR1057608_1000000.stats.yaml",
+      "sha256": "43f91c63827e536833a4b91f75043ef270002c5b7fefd7c9b2f907cdb9e45000",
+      "size_bytes": 327087
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_candidate/process_constraints.json",
+      "sha256": "5b9256d8ca88b5453e215392933b8fc548290a3a274860e2a2e5005312c087eb",
+      "size_bytes": 1204
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_candidate/stderr.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_candidate/stderr.log",
+      "sha256": "8ccdecd3819e4f960ba94c73821a590ac197e72321055f14ccd67abe94f6d889",
+      "size_bytes": 2377
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_candidate/stdout.log": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_candidate/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/008_insecta_SRR1057608_1000000_pair3_candidate/time.json",
+      "sha256": "0ab81c35ba6078b6eff8dd00f91513443f6cc3bb78a6abfc62984d8d43d1b87d",
+      "size_bytes": 102
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair1_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair1_baseline/process_constraints.json",
+      "sha256": "3aa6fe945b904e6993f29c2b48112e30be43122c9917bde6b2302fa5eb61bd78",
+      "size_bytes": 1204
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair1_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair1_baseline/time.json",
+      "sha256": "e2510413d4344202f51866cf7785a7f511b5a7cb5eefc7039a8d397dd8b2cf7a",
+      "size_bytes": 103
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair1_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair1_candidate/process_constraints.json",
+      "sha256": "45da558f6bd71657601ab7d0851f80f833ac2c9146a61790488350fe68907d75",
+      "size_bytes": 1207
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair1_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair1_candidate/time.json",
+      "sha256": "69e1ab3f2d57ca09f22fd452d60ac0ab9ee2024d5718a03c3e27b5df13de3278",
+      "size_bytes": 103
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair2_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair2_baseline/process_constraints.json",
+      "sha256": "8d56f1a78d70793bca1577e36ade4ee39793652b48f1afda60e0be6c73a5e086",
+      "size_bytes": 1204
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair2_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair2_baseline/time.json",
+      "sha256": "61db838e9a1df187d1dd2c481e773e0f9dc68a18607a9fa4e3781dafe27f06c3",
+      "size_bytes": 103
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair2_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair2_candidate/process_constraints.json",
+      "sha256": "3c98d3586baff87b46cc369fe270749b71bbfbda549581cfe674566b98d5c778",
+      "size_bytes": 1207
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair2_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair2_candidate/time.json",
+      "sha256": "4c210e33f0400293b9f6db74ecc70b2da7c020e4122affba0651b0e659b0d5c0",
+      "size_bytes": 103
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair3_baseline/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair3_baseline/process_constraints.json",
+      "sha256": "dee1ac7c547819055bba29cf69619db98073b14b13aaa53969be8d8989abba11",
+      "size_bytes": 1204
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair3_baseline/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair3_baseline/time.json",
+      "sha256": "31bb00d3d1845dfb4c02140146a0c0086ad1db4e92948df6c2e92ae3f1340da9",
+      "size_bytes": 103
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair3_candidate/process_constraints.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair3_candidate/process_constraints.json",
+      "sha256": "081c7399f34affca344423746e43fec6c4d32c30c87ce9d10c7ebbb61efb0abf",
+      "size_bytes": 1207
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair3_candidate/time.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/runs/009_insecta_SRR27962769_1000000_pair3_candidate/time.json",
+      "sha256": "8a6d98e649c87beffcdf86af83a6af482850e6f6344fbf00995ba4612e1362ca",
+      "size_bytes": 103
+    },
+    "tmp/inclusive-release-20260929/comparison-v1/summary.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/comparison-v1/summary.json",
+      "sha256": "be2a0b50df2f9393c5480d1b6ea06f3cbc290ae84da92a74376941f4cd9d3366",
+      "size_bytes": 107795
+    }
+  },
+  "schema_version": 1,
+  "scope": "Read-only numerical/source assessment; no rerun, new assay, production edit, or causal experiment.",
+  "sequence_arithmetic": {
+    "biological_support": "unassessed",
+    "candidate_historical_ordered_standard_checks_passed": 30,
+    "high_copy_standard_losses": [
+      {
+        "accession": "SRR31887760",
+        "disposition": "uncertain_exact",
+        "gene": "insecta_12S",
+        "length": 475,
+        "sha256": "bde6ccaf771a24982439c53e7d38c45748cb2773f6ce05660c2a31a85d9203be"
+      },
+      {
+        "accession": "SRR31887760",
+        "disposition": "unobserved",
+        "gene": "insecta_12S",
+        "length": 499,
+        "sha256": "c1a643a6313600b14ac0faae530e4fd93b48fa5007978c93ae81f089efa04148"
+      },
+      {
+        "accession": "SRR31887760",
+        "disposition": "unobserved",
+        "gene": "insecta_12S",
+        "length": 487,
+        "sha256": "d147d2a3d79608354456b94cbfeb6df52eae820d135852530fb2d8798d54b39c"
+      },
+      {
+        "accession": "SRR31887760",
+        "disposition": "uncertain_exact",
+        "gene": "insecta_16S_2",
+        "length": 590,
+        "sha256": "6d6a1fe8e2de508afa9a757ceca421c0796eb2e7a70dcdd39b357190764f4049"
+      },
+      {
+        "accession": "SRR1057608",
+        "disposition": "uncertain_exact",
+        "gene": "insecta_ND1",
+        "length": 263,
+        "sha256": "3ba955f286a5468dbd65fc5e81601dbd53f0d898189a6c576c91bc744098728f"
+      },
+      {
+        "accession": "SRR27962769",
+        "disposition": "uncertain_exact",
+        "gene": "insecta_CO1_1",
+        "length": 373,
+        "sha256": "e86a7ccf9e78adaf259ec804eb05dadaf8557bc4a7c637b483dfacd330a7e3ba"
+      },
+      {
+        "accession": "SRR27962769",
+        "disposition": "uncertain_exact",
+        "gene": "insecta_ITS_2",
+        "length": 978,
+        "sha256": "23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c"
+      }
+    ],
+    "literal_gains_by_cell": [
+      {
+        "accession": "SRR9278435",
+        "classes": {},
+        "literal_gains": 0
+      },
+      {
+        "accession": "SRR25099394",
+        "classes": {},
+        "literal_gains": 0
+      },
+      {
+        "accession": "SRR8617500",
+        "classes": {},
+        "literal_gains": 0
+      },
+      {
+        "accession": "SRR17535371",
+        "classes": {},
+        "literal_gains": 0
+      },
+      {
+        "accession": "SRR22396603",
+        "classes": {},
+        "literal_gains": 0
+      },
+      {
+        "accession": "SRR25378184",
+        "classes": {
+          "uncertain": 27
+        },
+        "literal_gains": 27
+      },
+      {
+        "accession": "ERR14009273",
+        "classes": {
+          "uncertain": 1
+        },
+        "literal_gains": 1
+      },
+      {
+        "accession": "SRR31887760",
+        "classes": {
+          "uncertain": 2
+        },
+        "literal_gains": 2
+      },
+      {
+        "accession": "SRR1057608",
+        "classes": {
+          "uncertain": 12
+        },
+        "literal_gains": 12
+      },
+      {
+        "accession": "SRR27962769",
+        "classes": {
+          "uncertain": 12
+        },
+        "literal_gains": 12
+      }
+    ],
+    "new_literal_identities": {
+      "uncertain": 54
+    },
+    "released_dispositions": {
+      "standard_exact": 64,
+      "uncertain_exact": 8,
+      "unobserved": 14
+    },
+    "scope_dispositions": {
+      "deferred_or_unclassified": {
+        "uncertain_exact": 3,
+        "unobserved": 12
+      },
+      "high_copy_candidate": {
+        "standard_exact": 64,
+        "uncertain_exact": 5,
+        "unobserved": 2
+      }
+    },
+    "scope_totals": {
+      "baseline": {
+        "deferred_or_unclassified": {
+          "standard": 15,
+          "uncertain": 0
+        },
+        "high_copy_candidate": {
+          "standard": 71,
+          "uncertain": 0
+        }
+      },
+      "candidate": {
+        "deferred_or_unclassified": {
+          "standard": 0,
+          "uncertain": 3
+        },
+        "high_copy_candidate": {
+          "standard": 64,
+          "uncertain": 59
+        }
+      }
+    },
+    "totals": {
+      "baseline": {
+        "standard": 86,
+        "uncertain": 0
+      },
+      "candidate": {
+        "standard": 64,
+        "uncertain": 62
+      }
+    }
+  },
+  "source_locations": {
+    "baseline/src/stats.rs": [
+      104,
+      108
+    ],
+    "candidate/src/main.rs": [
+      91,
+      202,
+      215,
+      245,
+      250,
+      251
+    ],
+    "candidate/src/output.rs": [
+      152,
+      166,
+      191,
+      469,
+      486,
+      497,
+      545
+    ],
+    "candidate/src/stats.rs": [
+      127,
+      148,
+      192
+    ]
+  },
+  "status": "pass"
+}

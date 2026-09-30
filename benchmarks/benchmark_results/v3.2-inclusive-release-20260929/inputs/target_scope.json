@@ -1,0 +1,398 @@
+{
+  "deferred_historical_loss": {
+    "gene": "Yp2",
+    "sample": "SRR27962769",
+    "sequences": 15
+  },
+  "historical_unique_all_gene_products": {
+    "baseline": 86,
+    "candidate": 64
+  },
+  "historical_unique_high_copy_products": {
+    "baseline": 71,
+    "candidate": 64
+  },
+  "interpretation": "Historical classification scopes, not independently established abundance or biological truth.",
+  "schema_version": 1,
+  "source": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-high-copy-final-20260911/provenance.json",
+    "sha256": "4c792367c14891fb2285bf25898e7872f3ff489ec49a46b7d3b650614e63facc",
+    "size_bytes": 81172
+  },
+  "target_metadata": {
+    "angiospermae": [
+      {
+        "compartment": "plastid:chloroplast",
+        "copy_number": null,
+        "gene": "psbA-trnH",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "plastid:chloroplast",
+        "copy_number": null,
+        "gene": "rpl36-infA-rps8",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "plastid:chloroplast",
+        "copy_number": null,
+        "gene": "trnK-rps16",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "plastid:chloroplast",
+        "copy_number": null,
+        "gene": "trnV-atpE",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "plastid:chloroplast",
+        "copy_number": null,
+        "gene": "trnC-ycf6",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "plastid:chloroplast",
+        "copy_number": null,
+        "gene": "ycf6-psbM",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "plastid:chloroplast",
+        "copy_number": null,
+        "gene": "psbM-trnD",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "plastid:chloroplast",
+        "copy_number": null,
+        "gene": "atpB-rbcL",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "plastid:chloroplast",
+        "copy_number": null,
+        "gene": "trnL-F",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": null,
+        "copy_number": "high_copy",
+        "gene": "ITS",
+        "gene_type": "ITS",
+        "scope": "high_copy_candidate"
+      }
+    ],
+    "cnidaria": [
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "16S",
+        "gene_type": "rRNA_LSU",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "CO1",
+        "gene_type": "protein_coding",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": null,
+        "copy_number": "high_copy",
+        "gene": "18S",
+        "gene_type": "rRNA_SSU",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": null,
+        "copy_number": "high_copy",
+        "gene": "28S_1",
+        "gene_type": "rRNA_LSU",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": null,
+        "copy_number": "high_copy",
+        "gene": "ITS_1",
+        "gene_type": "ITS",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": null,
+        "copy_number": "high_copy",
+        "gene": "ITS_2",
+        "gene_type": "ITS",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": null,
+        "copy_number": "high_copy",
+        "gene": "28S_2",
+        "gene_type": "rRNA_LSU",
+        "scope": "high_copy_candidate"
+      }
+    ],
+    "human": [
+      {
+        "compartment": "mitochondrion",
+        "copy_number": null,
+        "gene": "mt-1404-3947",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": null,
+        "gene": "mt-3734-6739",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": null,
+        "gene": "mt-6511-9220",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": null,
+        "gene": "mt-8910-10648",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": null,
+        "gene": "mt-10360-12226",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": null,
+        "gene": "mt-11977-13830",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": null,
+        "gene": "mt-13477-15349",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": null,
+        "gene": "mt-14898-151",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": null,
+        "gene": "mt-16488-1677",
+        "gene_type": null,
+        "scope": "high_copy_candidate"
+      }
+    ],
+    "insecta": [
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "12S",
+        "gene_type": "rRNA_SSU",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "16S_1",
+        "gene_type": "rRNA_LSU",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "CO1_1",
+        "gene_type": "protein_coding",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "CO2_1",
+        "gene_type": "protein_coding",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "CytB",
+        "gene_type": "protein_coding",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "ND1",
+        "gene_type": "protein_coding",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "ND4",
+        "gene_type": "protein_coding",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "ND5",
+        "gene_type": "protein_coding",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "16S_2",
+        "gene_type": "rRNA_LSU",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "CO1_2",
+        "gene_type": "protein_coding",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "CO2_2",
+        "gene_type": "protein_coding",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "NADH",
+        "gene_type": "protein_coding",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": null,
+        "copy_number": "single_copy",
+        "gene": "Fz4",
+        "gene_type": "protein_coding",
+        "scope": "deferred_or_unclassified"
+      },
+      {
+        "compartment": null,
+        "copy_number": "single_copy",
+        "gene": "Gpdh",
+        "gene_type": "protein_coding",
+        "scope": "deferred_or_unclassified"
+      },
+      {
+        "compartment": null,
+        "copy_number": "single_copy",
+        "gene": "Pgi",
+        "gene_type": "protein_coding",
+        "scope": "deferred_or_unclassified"
+      },
+      {
+        "compartment": null,
+        "copy_number": "single_copy",
+        "gene": "Yp2",
+        "gene_type": "protein_coding",
+        "scope": "deferred_or_unclassified"
+      },
+      {
+        "compartment": null,
+        "copy_number": "high_copy",
+        "gene": "18S_1",
+        "gene_type": "rRNA_SSU",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": null,
+        "copy_number": "high_copy",
+        "gene": "28S",
+        "gene_type": "rRNA_LSU",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": null,
+        "copy_number": "high_copy",
+        "gene": "18S_2",
+        "gene_type": "rRNA_SSU",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": null,
+        "copy_number": "high_copy",
+        "gene": "ITS_1",
+        "gene_type": "ITS",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": null,
+        "copy_number": "high_copy",
+        "gene": "ITS_2",
+        "gene_type": "ITS",
+        "scope": "high_copy_candidate"
+      }
+    ],
+    "teleostei": [
+      {
+        "compartment": null,
+        "copy_number": "high_copy",
+        "gene": "18S",
+        "gene_type": "rRNA_SSU",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "16S",
+        "gene_type": "rRNA_LSU",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "CO1",
+        "gene_type": "protein_coding",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "CytB",
+        "gene_type": "protein_coding",
+        "scope": "high_copy_candidate"
+      },
+      {
+        "compartment": "mitochondrion",
+        "copy_number": "high_copy",
+        "gene": "12S",
+        "gene_type": "rRNA_SSU",
+        "scope": "high_copy_candidate"
+      }
+    ]
+  }
+}

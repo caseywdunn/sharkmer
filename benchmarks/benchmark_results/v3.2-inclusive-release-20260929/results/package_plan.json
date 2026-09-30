@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "status": "proposal_not_executed",
+  "purpose": "One compact archive containing reviewable source and outcome evidence for the inclusive release comparison",
+  "reuse": "Adapt Selection, per-member MANIFEST.json, source bookends and verify_archive from the completed inclusive-output package_evidence.py; keep collection specific to this experiment",
+  "prerequisites": [
+    "All sixty main invocations and execution.json/summary.json pass",
+    "Completed paired builds identify exact baseline and candidate commits and identical effective compiler/configuration",
+    "All ten prefixes have a final merged availability receipt retaining successful and failed source attempts",
+    "Focused Drosophila audit receipts, tables and limitations are final",
+    "Posthoc report.json and final independent outcome review pass",
+    "Independent outcome review binds execution, posthoc report, focused audit and every final documentation file"
+  ],
+  "payload_selection": [
+    {
+      "source": "execution.json bindings",
+      "include": "Every bound repository source, test, panel, protocol, helper and small receipt",
+      "verify": "Require exact path/size/SHA256; keep external binary, input and archive identities as manifest exclusions"
+    },
+    {
+      "source": "builds.json versions baseline/candidate",
+      "include": "Each snapshot.json, build.json and build log; every exact snapshot.files payload, including Cargo files, Rust source, panels and tests",
+      "verify": "Snapshot file map equals build source_before and source_after; omit binary/compiler and source.tar because expanded tracked source payloads are included"
+    },
+    {
+      "source": "execution.json jobs",
+      "include": "All sixty individual invocation receipts, run plans, stdout/stderr/timing/constraint logs, statistics, product manifests and FASTAs",
+      "verify": "Saved receipt equals embedded job without its receipt field; all captured output and execution-file fingerprints match"
+    },
+    {
+      "source": "restoration availability source_attempts",
+      "include": "Initial failed aggregate, all individual initial receipts, two-sample corrected retry, merged availability, Slurm logs, v1/v2 source and both control/review receipts",
+      "verify": "Keep failed transport identities and correction lineage; exclude every downloaded FASTQ and failed FASTQ partial"
+    },
+    {
+      "source": "historical identity oracle",
+      "include": "Full historical_identities.json, extraction source, original provenance and member inventory; optionally materialize only referenced historical FASTA members as ordinary verified archive payloads",
+      "verify": "If materializing historical members, verify member bytes against invocation_evidence first; never nest the old evidence archive"
+    },
+    {
+      "source": "compiled/source checks and focused Drosophila audit",
+      "include": "Exact checked source payloads, all check logs/receipts, diagnostic source/test payloads, captured diagnostic outputs, focused audit results and independent reviews",
+      "verify": "Bind each receipt's complete source map, not only current top-level source names; keep tested attempt lineage"
+    },
+    {
+      "source": "new bundle and new scratch attempts",
+      "include": "Remaining small evidence files, failed-attempt receipts/logs, final posthoc tables and reviewed documentation",
+      "verify": "No symlinks; enforce the exclusion policy and list every omitted path with a reason"
+    }
+  ],
+  "exclusions": [
+    "External benchmark FASTQ/FQ inputs, compressed input streams and .fastq.partial/.fq.partial failed transfers",
+    "Cargo target directories, Rust toolchain/registry caches, .git and Python bytecode",
+    "Compiled executables and ELF binaries",
+    "Nested .tar, .tar.gz, .tgz and .zip archives",
+    "The destination archive and its receipt while collecting"
+  ],
+  "exclusion_exception": "A small FASTQ fixture explicitly present in an exact checked-source map is source payload and must be included; distinguish it from external benchmark reads",
+  "publication": [
+    "Refuse existing archive, receipt or temporary publication paths",
+    "Record every selected payload's absolute original path, archive member path, size, SHA256 and inclusion reason",
+    "Bookend selected source/evidence fingerprints before and after writing",
+    "Close archive, reopen independently, reject duplicate/non-file/unexpected members and hash every actual member stream",
+    "Require exact member-set equality and exact embedded MANIFEST.json equality",
+    "Publish a compact receipt containing archive identity, member count, payload bytes, execution/review bindings and independent reopen/hash result"
+  ],
+  "interpretation": "Packaging preserves evidence and review lineage. It does not convert uncertain hypotheses into validated products or grant release approval."
+}

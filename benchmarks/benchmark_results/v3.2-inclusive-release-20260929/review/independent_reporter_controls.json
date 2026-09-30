@@ -1,0 +1,54 @@
+{
+  "independent_methods": 3,
+  "log": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/independent_reporter_controls.log",
+    "sha256": "a253efbcfe430c053d1cd8b419de58e38e84a524fd6bf9f18d61d32b2022cd28",
+    "size_bytes": 465
+  },
+  "scope": "Synthetic reporting artifact-binding controls, supplementing10 author methods; no actual comparison outcomes or FASTQ scan",
+  "sources_after": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_comparison.py",
+      "sha256": "50efe204f40812f79edd89589759a9365eeba8d5ef42e5fcbac04c43ec9ab609",
+      "size_bytes": 19037
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_controls.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_controls.json",
+      "sha256": "82d8e742db46bedf2cd5ad20f09a69659010e36ebdb25c823610fedd9683ec64",
+      "size_bytes": 3142
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/test_report_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/test_report_comparison.py",
+      "sha256": "1fb637863ed8811eb9437aaa65434ed7d1f17780f4c9338b2eee03cd94102f11",
+      "size_bytes": 10035
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/test_independent_reporter.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/test_independent_reporter.py",
+      "sha256": "84c42bcc1338be7e534628672bdfac270eaf15496a5e881adf7b1440212a8447",
+      "size_bytes": 3705
+    }
+  },
+  "sources_before": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_comparison.py",
+      "sha256": "50efe204f40812f79edd89589759a9365eeba8d5ef42e5fcbac04c43ec9ab609",
+      "size_bytes": 19037
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_controls.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_controls.json",
+      "sha256": "82d8e742db46bedf2cd5ad20f09a69659010e36ebdb25c823610fedd9683ec64",
+      "size_bytes": 3142
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/test_report_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/test_report_comparison.py",
+      "sha256": "1fb637863ed8811eb9437aaa65434ed7d1f17780f4c9338b2eee03cd94102f11",
+      "size_bytes": 10035
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/test_independent_reporter.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/test_independent_reporter.py",
+      "sha256": "84c42bcc1338be7e534628672bdfac270eaf15496a5e881adf7b1440212a8447",
+      "size_bytes": 3705
+    }
+  },
+  "status": "pass"
+}

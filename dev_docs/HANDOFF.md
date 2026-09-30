@@ -1,12 +1,45 @@
 # Pause/resume handoff
 
-Updated 2026-09-29. **Default inclusive delivery in one normal FASTA per target
-is implemented and all six output regressions pass on the experiment branch;
-no merge or release approval.**
+Updated 2026-09-30. **Development integration and all 60 release-comparison
+invocations are complete. `dev` includes inclusive output at `ed04bde`.
+The focused Drosophila diagnostic found both missing 12S identities in search
+completions, discarded by retention. Independent raw outcome review passes;
+archive identity and verification are recorded in the evidence bundle.
+No release or publication is authorized.**
 Start here in a new session; this handoff does not require the previous chat
 or live coding agents. [PLAN.md](PLAN.md) remains the detailed execution plan.
 
 ## Saved state
+
+- Completed execution: [inclusive release results](INCLUSIVE_RELEASE_RESULTS.md)
+  follow the [frozen protocol](INCLUSIVE_RELEASE_PROTOCOL.md). All 60 runs in
+  the original ten-sample/five-panel matrix pass against pristine v3.1.0.
+  Default delivery has 64 standard and 62 uncertain records (126 total);
+  69/71 released high-copy identities are available (64 standard, five
+  uncertain). Two high-copy and 12 deferred Yp2 identities remain absent.
+  All ten median runtimes increase; four exceed the 5% review threshold,
+  while no RSS increase exceeds 2%. Biological support remains unassessed.
+  Evidence: `benchmarks/benchmark_results/v3.2-inclusive-release-20260929/`;
+  scratch: `tmp/inclusive-release-20260929/`. Clean paired builds `build-v1`
+  pass (Slurm `27910574`); restored inputs are verified in `availability.json`;
+  `comparison-v1/execution.json` passes all 60 runs (Slurm `27936421`).
+  Failed restoration/report attempts remain preserved. The bundle's final
+  outcome review binds the report and documentation; `archive_receipt.json`
+  records the archive identity and independent member verification.
+- [Drosophila retention diagnosis](DROS12S_RETENTION_RESULTS.md) is complete
+  and independently reviewed: 26 unique completed 12S paths, three retained
+  and 23 marker-cap omissions. Exact 499/487 bp historical paths occur at
+  ordinals 13/19 and exceed the remaining 287 slots in the fixed 1,561-marker
+  run share. Normal output remains nine standard plus four uncertain; neither
+  missing sequence is emitted in production. Review the bounded retention
+  policy next, alongside the resource regressions; do not infer validated
+  repeat structure or silently increase caps from this diagnostic.
+- Integration is complete: `dev` fast-forwarded from `956e771` to `ed04bde`.
+  `baseline/pre-inclusive-dev-20260929` preserves the former dev commit;
+  `experiment/uncertain-products` preserves the evaluated checkpoint. The
+  earlier instruction to hold `dev` fixed is superseded by this authorization.
+
+### Completed inclusive-output checkpoint (`ed04bde`)
 
 - Completed revision after `f0b7949`: standard and repeat-uncertain records belong
   together in the normal target FASTA by default, with explicit status headers
@@ -89,23 +122,22 @@ or live coding agents. [PLAN.md](PLAN.md) remains the detailed execution plan.
 
 ## What we know
 
-The scoped released-v3.1.0 versus development comparison still has **71 -> 64
-high-copy products**, not demonstrated recovery parity. Counts are unchanged;
-runtime is broadly similar and RAM is not meaningfully reduced. Do not confuse
-later diagnostic-on/off parity with parity against the released version.
-The seven lost identities are not seven proven incorrect sequences.
+The [current release comparison](INCLUSIVE_RELEASE_RESULTS.md) has **64/71
+released high-copy identities retained as standard and 69/71 available with
+uncertain delivery**. All 60 runs pass with unchanged aggregate input counts.
+The 126 delivered records contain 64 standard and 62 uncertain hypotheses;
+62/126 (49.2%) are uncertain. No biological correctness assessment is implied.
+All ten median runtimes increase; Rhopilema, Human, Liriodendron and Heliconius
+exceed the 5% investigation threshold. No median peak-RSS increase exceeds 2%.
 
-The [new uncertainty-output comparison](UNCERTAIN_PRODUCTS_RESULTS.md) used
-the full 21-target insect panel at k=19, the same first million R1 records,
-two CPUs, and no read threading. All nine runs completed and the standard
-parity assessment passed. The separate output includes exact historical
-Gryllus CO1_1 (373 bp) and ITS_2 (978 bp), Heliconius ND1 (263 bp), and
-Drosophila 12S (475 bp) and 16S_2 (590 bp) hypotheses. The 487 bp and 499 bp
-Drosophila 12S identities were not observed under the unchanged search and
-retention bounds. These are available sequence hypotheses with unresolved
-repeat structure and unevaluated read support, not five newly validated
-biological products. The standard 71-to-64 release comparison and reconstruction
-questions remain open.
+Five historical high-copy sequences are available as exact uncertain
+hypotheses: Gryllus CO1_1 (373 bp) and ITS_2 (978 bp), Heliconius ND1 (263 bp),
+and Drosophila 12S (475 bp) and 16S_2 (590 bp). The separate pre-retention
+observer now establishes that Drosophila 12S 487/499 bp are also generated,
+then discarded by the marker-retention budget. They remain absent from
+production FASTA output. These are unresolved repeat hypotheses with
+unevaluated full-product read support, not newly validated products.
+Standard admission and biological reconstruction questions remain open.
 
 The latest [ITS SCC/read findings](ITS_SCC_AUDIT_RESULTS.md) use **k=19,
 threshold 4, the same first million 150 bp Gryllus R1 reads**. Both relevant
@@ -207,32 +239,44 @@ documentation snapshots describe their pinned commit, not later handoff edits.
 
 ## Resume from here
 
-The user selected [default combined delivery](INCLUSIVE_OUTPUT.md), and its
-[six-run regression](INCLUSIVE_OUTPUT_RESULTS.md) is complete. Preserve old
-evidence and keep assembly/repeat gates unchanged. More output is not evidence
-of validated repeat structure or restored standard recovery.
+The user selected default combined delivery, then authorized integration and
+the [release comparison](INCLUSIVE_RELEASE_RESULTS.md). Integration, the
+earlier [six-run regression](INCLUSIVE_OUTPUT_RESULTS.md), all 60 new comparison
+runs and the independently reviewed Drosophila diagnostic are complete.
+Use the new bundle's final review and archive receipt for the saved evidence.
+Preserve old evidence and keep production assembly/repeat gates unchanged.
 
-1. Check `experiment/uncertain-products`, local changes, and the new benchmark
+1. Check `dev`, local changes, and the new inclusive-release benchmark
    bundle. #157 default combined delivery, compiled validation and all six
    default/opt-out regressions are complete. Check the bundle's independent
    outcome review, archive receipt, and checksums when reconstructing
    evidence. Preserve failed attempts and old evidence; do not rerun
    successful frozen comparisons without cause.
-2. Review [the inclusive results](INCLUSIVE_OUTPUT_RESULTS.md) for a later
-   branch-integration decision. The default/output decision is already made;
-   do not ask the user to decide it again. Standard parity, five exact historical
-   hypotheses and two bounded non-observations do not establish repeat correctness.
-   Keep `dev` at `956e771` until integration is authorized.
+2. Default/output and development-integration decisions are already made;
+   do not ask the user to decide them again. Report the new complete release
+   comparison separately from the three-sample interface regression. Standard
+   recovery, uncertain availability, bounded non-observations and biological
+   correctness remain distinct. Keep the saved `956e771` baseline ref intact.
    The [completed read-history prototype](READ_HISTORY_RESULTS.md) remains a
    diagnostic; production integration under #145/#116 is a separate future
    evidence/reconstruction task, not required for inclusive delivery.
-3. For later reconstruction, specify variant-aware graph mapping: preserve
+3. The next production decision concerns bounded retention: completed useful
+   uncertain sequences can be lost because repeated marker provenance consumes
+   a fixed per-target share. Assess compact provenance or another explicit
+   bounded policy before changing caps. The observed 12S omission is not a
+   search failure or biological validation result. Any new implementation
+   needs its own controls and comparison.
+4. Investigate the four current runtime flags. Preserve the original three
+   pairs and distinguish CPU, filesystem/publication and other waiting costs.
+   Compare suitably frozen versions to isolate causes; this release-baseline
+   matrix cannot assign the cost specifically to uncertain emission.
+5. For later reconstruction, specify variant-aware graph mapping: preserve
    competing indel placements and missing graph sequence as uncertainty.
    More independently positioned support and linkage between regions remain
    missing. Freeze any additional-coverage, paired-read, or longer-read study
    separately. Local alignments must not silently establish repeat count or
    concatenate support into full phase.
-4. Only positive evidence for the actual restrictions removed can motivate a
+6. Only positive evidence for the actual restrictions removed can motivate a
    separately reviewed reconstruction/admission change. It needs appropriate
    repeat/mixture controls and a fresh high-copy regression comparison.
 

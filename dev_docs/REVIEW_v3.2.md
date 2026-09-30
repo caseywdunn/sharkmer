@@ -2,6 +2,18 @@
 
 Prepared 2026-09-09. **Development work only: awaiting user review, not release approval.**
 
+**Active assessment (2026-09-30):** development integration and all 60 fresh
+[inclusive release comparison](INCLUSIVE_RELEASE_RESULTS.md) invocations pass.
+`dev` now contains `ed04bde`; `baseline/pre-inclusive-dev-20260929` preserves
+`956e771`. Default output contains 64 standard and 62 uncertain records;
+69/71 released high-copy identities are available, including five recovered
+uncertain hypotheses. The [Drosophila diagnostic](DROS12S_RETENTION_RESULTS.md)
+finds both remaining 12S identities enumerated then discarded by marker
+retention. Four runtime increases exceed the 5% priority threshold; none of
+the RSS increases exceeds 2%. Independent raw outcome review passes; the
+evidence bundle records final report and archive verification receipts.
+Earlier integration holds below are historical; no release is authorized.
+
 **Current checkpoint (2026-09-29):** the user requested default inclusive delivery:
 standard and uncertain records together in the normal target FASTA, explicit
 header labels, and a standard-only opt-out. [The revised contract](INCLUSIVE_OUTPUT.md)
