@@ -1,0 +1,11 @@
+accession	standard	old_uncertain	new_uncertain	new_uncertain_identities	gained_targets
+SRR9278435	7	0	0	0	
+SRR25099394	5	0	0	0	
+SRR8617500	5	0	0	0	
+SRR17535371	5	0	0	0	
+SRR22396603	4	0	0	0	
+SRR25378184	6	27	91	64	angiospermae_psbA-trnH:32,angiospermae_trnV-atpE:32
+ERR14009273	6	1	1	0	
+SRR31887760	9	4	27	23	insecta_12S:23
+SRR1057608	6	13	45	32	insecta_ND4:32
+SRR27962769	11	17	98	81	insecta_18S_1:17,insecta_ITS_2:32,insecta_Yp2:32

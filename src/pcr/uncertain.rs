@@ -13,9 +13,17 @@ use super::{
     WithheldPathRecord,
 };
 
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum MarkerDetail {
+    Complete,
+    SummaryOnly,
+}
+
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub(crate) struct UncertainProductSource {
     pub(crate) threshold: u32,
+    pub(crate) marker_detail: MarkerDetail,
     pub(crate) node_visit_limit: usize,
     pub(crate) max_observed_node_visits: usize,
     pub(crate) omitted_self_loop_marker_occurrences: usize,
@@ -45,6 +53,9 @@ pub(crate) struct UncertainRetentionSummary {
     pub(crate) observed_not_retained_paths: usize,
     pub(crate) retained_sequence_bases: usize,
     pub(crate) retained_marker_occurrences: usize,
+    pub(crate) retained_summary_only_paths: usize,
+    pub(crate) omitted_detailed_marker_occurrences: usize,
+    pub(crate) marker_detail_truncated: bool,
     pub(crate) dropped_oversize_sequence: usize,
     pub(crate) dropped_oversize_marker_set: usize,
     pub(crate) dropped_path_cap: usize,
@@ -65,6 +76,9 @@ impl From<&WithheldPathDiagnostics> for UncertainRetentionSummary {
             observed_not_retained_paths: value.observed_not_retained_paths,
             retained_sequence_bases: value.retained_sequence_bases,
             retained_marker_occurrences: value.retained_marker_occurrences,
+            retained_summary_only_paths: value.retained_summary_only_paths,
+            omitted_detailed_marker_occurrences: value.omitted_detailed_marker_occurrences,
+            marker_detail_truncated: value.marker_detail_truncated,
             dropped_oversize_sequence: value.dropped_oversize_sequence,
             dropped_oversize_marker_set: value.dropped_oversize_marker_set,
             dropped_path_cap: value.dropped_path_cap,
@@ -101,6 +115,7 @@ pub(crate) struct UncertainProducts {
     pub(crate) search_limit_scope: String,
     pub(crate) search_limits_reached: bool,
     pub(crate) retention_truncated: bool,
+    pub(crate) marker_detail_truncated: bool,
     pub(crate) thresholds: Vec<UncertainThresholdSummary>,
     pub(crate) retained_path_records: usize,
     pub(crate) excluded_standard_equivalent_path_records: usize,
@@ -113,12 +128,11 @@ pub(crate) struct UncertainProducts {
 impl UncertainProducts {
     pub(super) fn empty(limits: WithheldDiagnosticLimits) -> Self {
         Self {
-            schema_version: 1,
+            schema_version: 2,
             purpose: "uncertain_repeat_structure_graph_path_hypotheses".to_string(),
             coordinate_system: "zero_based_half_open_in_emitted_oriented_sequence".to_string(),
-            marker_span_scope:
-                "marker_covered_positions_not_complete_ambiguity_or_bridge_ready_intervals"
-                    .to_string(),
+            marker_span_scope: "marker_covered_positions_only_for_complete_detail_sources"
+                .to_string(),
             read_support_evaluation: "not_evaluated".to_string(),
             repeat_length_evaluation: "unresolved".to_string(),
             deduplication_policy:
@@ -131,6 +145,7 @@ impl UncertainProducts {
             search_limit_scope: "all_attempted_thresholds_for_gene".to_string(),
             search_limits_reached: false,
             retention_truncated: false,
+            marker_detail_truncated: false,
             thresholds: Vec::new(),
             retained_path_records: 0,
             excluded_standard_equivalent_path_records: 0,
@@ -151,8 +166,14 @@ fn canonical_sequence(sequence: &[u8]) -> Vec<u8> {
 }
 
 fn source(threshold: u32, path: WithheldPathRecord) -> UncertainProductSource {
+    let marker_detail = if path.marker_occurrences.is_empty() {
+        MarkerDetail::SummaryOnly
+    } else {
+        MarkerDetail::Complete
+    };
     UncertainProductSource {
         threshold,
+        marker_detail,
         node_visit_limit: path.node_visit_limit,
         max_observed_node_visits: path.max_observed_node_visits,
         omitted_self_loop_marker_occurrences: path.omitted_self_loop_marker_occurrences,
@@ -192,6 +213,7 @@ pub(super) fn collect(
         if let Some(ref retention) = retention {
             output.search_limits_reached |= retention.node_visit_skips > 0;
             output.retention_truncated |= retention.retention_truncated;
+            output.marker_detail_truncated |= retention.marker_detail_truncated;
         }
         output
             .thresholds
@@ -240,7 +262,11 @@ pub(super) fn collect(
             .collect::<Vec<_>>()
             .join(",");
         let mut causes = BTreeSet::new();
+        let mut marker_detail = MarkerDetail::Complete;
         for source in &product.sources {
+            if source.marker_detail == MarkerDetail::SummaryOnly {
+                marker_detail = MarkerDetail::SummaryOnly;
+            }
             if source.omitted_self_loop_marker_occurrences > 0 {
                 causes.insert("pre_prune_omitted_self_loop_node");
             }
@@ -252,7 +278,12 @@ pub(super) fn collect(
             }
         }
         product.description = format!(
-            "assembly_status=uncertain uncertainty=repeat_structure repeat_length=unresolved read_support=not_evaluated hypothesis_length={} sequence_sha256={} causes={} thresholds={} source_path_records={} enumeration=bounded limit_scope=gene search_limits_reached={} retention_truncated={}",
+            "assembly_status=uncertain uncertainty=repeat_structure repeat_length=unresolved read_support=not_evaluated marker_detail={} hypothesis_length={} sequence_sha256={} causes={} thresholds={} source_path_records={} enumeration=bounded limit_scope=gene search_limits_reached={} retention_truncated={}",
+            if marker_detail == MarkerDetail::Complete {
+                "complete"
+            } else {
+                "summary_only"
+            },
             product.sequence_length,
             product.sequence_sha256,
             causes.into_iter().collect::<Vec<_>>().join(","),
@@ -434,6 +465,38 @@ mod tests {
                 .dropped_path_cap,
             1
         );
+    }
+
+    #[test]
+    fn summary_provenance_preserves_sequence_and_labels_header() {
+        let mut summary_path = path("ACGTA");
+        summary_path.marker_occurrences.clear();
+        summary_path.marker_covered_runs.clear();
+        let mut diagnostic = threshold(2, vec![summary_path]);
+        let retention = diagnostic.withheld_path_diagnostics.as_mut().unwrap();
+        retention.retained_summary_only_paths = 1;
+        retention.omitted_detailed_marker_occurrences = 1;
+        retention.marker_detail_truncated = true;
+        let output = collect_test(&mut [diagnostic], &[], false);
+        assert_eq!(output.schema_version, 2);
+        assert_eq!(output.unique_products, 1);
+        assert!(output.marker_detail_truncated);
+        assert_eq!(output.products[0].oriented_sequence, "ACGTA");
+        assert_eq!(
+            output.products[0].sources[0].marker_detail,
+            MarkerDetail::SummaryOnly
+        );
+        assert!(
+            output.products[0]
+                .description
+                .contains("marker_detail=summary_only")
+        );
+        assert!(
+            output.products[0]
+                .description
+                .contains("assembly_status=uncertain")
+        );
+        assert!(!output.retention_truncated);
     }
 
     #[test]

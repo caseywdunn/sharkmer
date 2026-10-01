@@ -1,17 +1,17 @@
 # Development plan: scalable, reliable sPCR
 
-**Updated 2026-09-30 on `dev`; see [HANDOFF.md](HANDOFF.md).** It records the
+**Updated 2026-10-01 on `experiment/sequence-first-retention`; see [HANDOFF.md](HANDOFF.md).** It records the
 latest reviewed evidence commit, saved artifacts, known limitations, and next
 unimplemented integration step. Release remains on hold; dated checkpoints below
 must not be mistaken for the latest code or validation totals.
 
-Status: default inclusive delivery is integrated, and all 60 fresh release
-comparison invocations pass. Independent raw outcome review passes; final
-report and archive receipts are recorded in the evidence bundle.
-The [new results](INCLUSIVE_RELEASE_RESULTS.md) recover five of seven lost
-high-copy identities as uncertain hypotheses; the two remaining identities
-are generated but discarded by retention. Four sample runtime increases
-require investigation. Release remains on hold for these follow-ups and
+Status: default inclusive delivery is integrated on `dev`. A separate
+[sequence-first retention candidate](SEQUENCE_RETENTION_RESULTS.md) passes a
+new 60-run comparison, preserves old output, and makes all 71 released
+high-copy identities available (64 standard, seven uncertain). It adds 200
+bounded uncertain identities across the ten samples and is not merged into
+`dev`. Four earlier v3.1-to-inclusive runtime flags still require
+investigation. Release remains on hold for these follow-ups and
 biological validation. See [BENCHMARK_v3.2_vs_v3.1.md](BENCHMARK_v3.2_vs_v3.1.md)
 and the remaining validation/security gates in [REVIEW_v3.2.md](REVIEW_v3.2.md).
 Work follows the 2026-09-08 review of
@@ -137,7 +137,8 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
   - [x] Implement the user's #157 decision for [default inclusive delivery](INCLUSIVE_OUTPUT.md): one normal FASTA per target containing labelled standard and uncertain records, an explicit opt-out, inclusive total counts with separate class counts, and versioned consumer handling. Record the simple/inclusive preference in [AGENTS.md](../AGENTS.md). All six [default/opt-out regressions](INCLUSIVE_OUTPUT_RESULTS.md) match the preceding sequences: 60 default records (26 standard, 34 uncertain), 26 with opt-out, five of seven historical identities available as uncertain hypotheses. Both hash backends pass 247 unit and 29 integration tests, formatting and Clippy; Python runs 197 tests with one skip and 156/156 references verify. At that checkpoint `dev` was held at `956e771`; the following authorized integration supersedes that hold. This output decision does not close #148/#153/#129 or authorize release.
   - [x] User-approved development integration: fast-forward `dev` to inclusive checkpoint `ed04bde`; preserve `956e771` as `baseline/pre-inclusive-dev-20260929`. The earlier hold on the dev branch is superseded; release remains unauthorized.
   - [x] Complete the [fresh inclusive release comparison](INCLUSIVE_RELEASE_RESULTS.md): all 60 original ten-sample/five-panel invocations pass with exact historical inputs and panels. Independent review verifies 126 delivered records (64 standard, 62 uncertain), 69/71 released high-copy identities available and 54 new uncertain identities. The [scratch observer](DROS12S_RETENTION_RESULTS.md) finds exact Drosophila 12S 487/499 bp completions discarded by retention. Source/attempt lineage and reviews are preserved; production search and retention remain unchanged.
-  - [ ] Review bounded uncertain-sequence retention after the diagnosed 12S marker-budget omissions, and investigate the four runtime increases exceeding 5% (Human, Liriodendron, Rhopilema, Heliconius). Do not infer biological correctness from re-emission or attribute the whole-release timing difference specifically to uncertainty output. A new implementation requires its own checks and comparison.
+  - [x] Implement and assess [bounded sequence-first retention](SEQUENCE_RETENTION_RESULTS.md) on its own branch. A first candidate was rejected for losing an old plant identity; the corrected two-allowance design preserves all old output and adds 200 labelled uncertain identities in 60 passing paired runs. The Drosophila 12S 487/499 bp and 12 deferred Gryllus Yp2 identities reappear exactly. No per-sample wall or RSS priority flag is triggered by this change. Integration and release remain separate decisions; sequence availability is not biological validation.
+  - [ ] Investigate the four earlier v3.1-to-inclusive runtime increases exceeding 5% (Human, Liriodendron, Rhopilema, Heliconius). Do not attribute that whole-release timing difference specifically to uncertain output.
   - [ ] Separate future reconstruction task: integrate bounded quality-preserving replay and positioned histories under #145/#116 behind an experimental opt-in path, with feature-off compatibility against its frozen baseline. Separately specify ambiguity-preserving variant-aware mapping before reconstructing observed alternatives; do not repair missing edges or relax repeat gates from marginal coverage. Any admission change still needs cause-specific positive evidence, repeat/mixture controls, and fresh released-v3.1.0 high-copy comparison.
 - [x] [#154](https://github.com/caseywdunn/sharkmer/issues/154) — Keep repeat-rejected candidates from exhausting the valid-product path budget, with bounded search and a clean-route regression.
   - [x] Sol implementation and independent Astra review: reject complete repeat-tainted candidates before quota accounting; 32 higher-ranked rejected routes no longer hide a clean route. Both hash backends pass 216 unit and 22 integration tests plus Clippy; existing repeat controls remain conservative.

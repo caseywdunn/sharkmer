@@ -52,6 +52,11 @@ pub(super) struct PathSearchResult {
 pub(super) struct WithheldDiagnosticBudget {
     limits: WithheldDiagnosticLimits,
     usage: WithheldDiagnosticUsage,
+    sequence_first: bool,
+    legacy_limits: WithheldDiagnosticLimits,
+    legacy_usage: WithheldDiagnosticUsage,
+    extra_limits: WithheldDiagnosticLimits,
+    extra_usage: WithheldDiagnosticUsage,
 }
 
 impl WithheldDiagnosticBudget {
@@ -59,6 +64,33 @@ impl WithheldDiagnosticBudget {
         Self {
             limits,
             usage: WithheldDiagnosticUsage::default(),
+            sequence_first: false,
+            legacy_limits: limits,
+            legacy_usage: WithheldDiagnosticUsage::default(),
+            extra_limits: WithheldDiagnosticLimits::default(),
+            extra_usage: WithheldDiagnosticUsage::default(),
+        }
+    }
+
+    pub(super) fn for_emission(legacy_limits: WithheldDiagnosticLimits) -> Self {
+        let mut extra_limits = legacy_limits;
+        extra_limits.run.paths = extra_limits
+            .run
+            .paths
+            .saturating_mul(super::UNCERTAIN_SEQUENCE_PATH_SHARE_MULTIPLIER);
+        extra_limits.allocated_run_share_for_gene.paths = extra_limits
+            .allocated_run_share_for_gene
+            .paths
+            .saturating_mul(super::UNCERTAIN_SEQUENCE_PATH_SHARE_MULTIPLIER)
+            .min(extra_limits.gene.paths);
+        Self {
+            limits: super::inclusive_sequence_limits(legacy_limits),
+            usage: WithheldDiagnosticUsage::default(),
+            sequence_first: true,
+            legacy_limits,
+            legacy_usage: WithheldDiagnosticUsage::default(),
+            extra_limits,
+            extra_usage: WithheldDiagnosticUsage::default(),
         }
     }
 
@@ -67,12 +99,15 @@ impl WithheldDiagnosticBudget {
         node_visit_limit: usize,
     ) -> WithheldPathDiagnostics {
         WithheldPathDiagnostics {
-            schema_version: 1,
+            schema_version: if self.sequence_first { 2 } else { 1 },
             coordinate_system: "zero_based_half_open".to_string(),
             purpose: "diagnostic_only_unsupported_candidate_hypotheses".to_string(),
-            marker_span_scope:
+            marker_span_scope: if self.sequence_first {
+                "marker_covered_positions_only_for_complete_detail_sources"
+            } else {
                 "marker_covered_positions_not_complete_ambiguity_or_bridge_ready_intervals"
-                    .to_string(),
+            }
+            .to_string(),
             read_support_evaluation: "not_evaluated".to_string(),
             limits: self.limits,
             gene_usage_before_threshold: self.usage,
@@ -86,6 +121,8 @@ impl WithheldDiagnosticBudget {
 struct ThresholdDiagnosticCollector<'a> {
     budget: &'a mut WithheldDiagnosticBudget,
     payload: WithheldPathDiagnostics,
+    legacy_threshold_usage: WithheldDiagnosticUsage,
+    extra_threshold_usage: WithheldDiagnosticUsage,
 }
 
 #[derive(Clone, Copy)]
@@ -101,10 +138,55 @@ impl WithheldPathCauseCounts {
     }
 }
 
+fn retention_drop_reason(
+    limits: WithheldDiagnosticLimits,
+    threshold_usage: WithheldDiagnosticUsage,
+    gene_usage: WithheldDiagnosticUsage,
+    sequence_length: usize,
+    marker_count: usize,
+    require_marker_detail: bool,
+) -> Option<&'static str> {
+    let threshold = limits.threshold;
+    let allocated = limits.allocated_run_share_for_gene;
+    if sequence_length > threshold.sequence_bases || sequence_length > allocated.sequence_bases {
+        Some("oversize_sequence")
+    } else if require_marker_detail
+        && (marker_count > threshold.marker_occurrences
+            || marker_count > allocated.marker_occurrences)
+    {
+        Some("oversize_marker_set")
+    } else if threshold_usage.paths >= threshold.paths || gene_usage.paths >= allocated.paths {
+        Some("path_cap")
+    } else if threshold_usage
+        .sequence_bases
+        .saturating_add(sequence_length)
+        > threshold.sequence_bases
+        || gene_usage.sequence_bases.saturating_add(sequence_length) > allocated.sequence_bases
+    {
+        Some("sequence_base_cap")
+    } else if require_marker_detail
+        && (threshold_usage
+            .marker_occurrences
+            .saturating_add(marker_count)
+            > threshold.marker_occurrences
+            || gene_usage.marker_occurrences.saturating_add(marker_count)
+                > allocated.marker_occurrences)
+    {
+        Some("marker_cap")
+    } else {
+        None
+    }
+}
+
 impl<'a> ThresholdDiagnosticCollector<'a> {
     fn new(budget: &'a mut WithheldDiagnosticBudget, node_visit_limit: usize) -> Self {
         let payload = budget.empty_threshold_diagnostics(node_visit_limit);
-        Self { budget, payload }
+        Self {
+            budget,
+            payload,
+            legacy_threshold_usage: WithheldDiagnosticUsage::default(),
+            extra_threshold_usage: WithheldDiagnosticUsage::default(),
+        }
     }
 
     fn record_node_visit_skip(&mut self) {
@@ -120,6 +202,17 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
         visit_counts: &AHashMap<NodeIndex, usize>,
         cause_counts: WithheldPathCauseCounts,
     ) {
+        if self.budget.sequence_first {
+            self.observe_sequence_first(
+                graph,
+                path,
+                kmer_length,
+                repeat_markers,
+                visit_counts,
+                cause_counts,
+            );
+            return;
+        }
         self.payload.observed_withheld_paths += 1;
         let sequence_length = path.len().saturating_add(kmer_length).saturating_sub(2);
         let marker_occurrence_count = cause_counts.total();
@@ -130,8 +223,9 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
             || sequence_length > allocated.sequence_bases
         {
             Some("oversize_sequence")
-        } else if marker_occurrence_count > threshold.marker_occurrences
-            || marker_occurrence_count > allocated.marker_occurrences
+        } else if !self.budget.sequence_first
+            && (marker_occurrence_count > threshold.marker_occurrences
+                || marker_occurrence_count > allocated.marker_occurrences)
         {
             Some("oversize_marker_set")
         } else if self.payload.retained_paths >= threshold.paths
@@ -151,17 +245,18 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
                 > allocated.sequence_bases
         {
             Some("sequence_base_cap")
-        } else if self
-            .payload
-            .retained_marker_occurrences
-            .saturating_add(marker_occurrence_count)
-            > threshold.marker_occurrences
-            || self
-                .budget
-                .usage
-                .marker_occurrences
+        } else if !self.budget.sequence_first
+            && (self
+                .payload
+                .retained_marker_occurrences
                 .saturating_add(marker_occurrence_count)
-                > allocated.marker_occurrences
+                > threshold.marker_occurrences
+                || self
+                    .budget
+                    .usage
+                    .marker_occurrences
+                    .saturating_add(marker_occurrence_count)
+                    > allocated.marker_occurrences)
         {
             Some("marker_cap")
         } else {
@@ -183,15 +278,34 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
         }
 
         let oriented_sequence = reconstruct_path_sequence(graph, path, kmer_length);
-        let marker_occurrences = collect_marker_occurrences(
-            graph,
-            path,
-            kmer_length,
-            repeat_markers,
-            &oriented_sequence,
-        );
-        debug_assert_eq!(marker_occurrences.len(), marker_occurrence_count);
-        let marker_covered_runs = merge_marker_covered_runs(&marker_occurrences);
+        let detail_fits = self
+            .payload
+            .retained_marker_occurrences
+            .saturating_add(marker_occurrence_count)
+            <= threshold.marker_occurrences
+            && self
+                .budget
+                .usage
+                .marker_occurrences
+                .saturating_add(marker_occurrence_count)
+                <= allocated.marker_occurrences;
+        let (marker_occurrences, marker_covered_runs) = if detail_fits {
+            let occurrences = collect_marker_occurrences(
+                graph,
+                path,
+                kmer_length,
+                repeat_markers,
+                &oriented_sequence,
+            );
+            debug_assert_eq!(occurrences.len(), marker_occurrence_count);
+            let runs = merge_marker_covered_runs(&occurrences);
+            (occurrences, runs)
+        } else {
+            self.payload.retained_summary_only_paths += 1;
+            self.payload.omitted_detailed_marker_occurrences += marker_occurrence_count;
+            self.payload.marker_detail_truncated = true;
+            (Vec::new(), Vec::new())
+        };
         let max_observed_node_visits = path
             .iter()
             .filter_map(|(node, _)| visit_counts.get(node).copied())
@@ -201,10 +315,110 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
 
         self.payload.retained_paths += 1;
         self.payload.retained_sequence_bases += sequence_length;
-        self.payload.retained_marker_occurrences += marker_occurrence_count;
+        if detail_fits {
+            self.payload.retained_marker_occurrences += marker_occurrence_count;
+            self.budget.usage.marker_occurrences += marker_occurrence_count;
+        }
         self.budget.usage.paths += 1;
         self.budget.usage.sequence_bases += sequence_length;
-        self.budget.usage.marker_occurrences += marker_occurrence_count;
+        self.payload.paths.push(WithheldPathRecord {
+            oriented_sequence,
+            sequence_sha256,
+            sequence_length,
+            node_visit_limit: self.payload.node_visit_limit,
+            max_observed_node_visits,
+            omitted_self_loop_marker_occurrences: cause_counts.omitted_self_loop,
+            cyclic_scc_marker_occurrences: cause_counts.cyclic_scc,
+            retained_collision_marker_occurrences: cause_counts.retained_collision,
+            marker_occurrences,
+            marker_covered_runs,
+        });
+    }
+
+    fn observe_sequence_first(
+        &mut self,
+        graph: &StableDiGraph<DBNode, DBEdge>,
+        path: &[PathStep],
+        kmer_length: usize,
+        repeat_markers: &RepeatMarkers,
+        visit_counts: &AHashMap<NodeIndex, usize>,
+        cause_counts: WithheldPathCauseCounts,
+    ) {
+        self.payload.observed_withheld_paths += 1;
+        let sequence_length = path.len().saturating_add(kmer_length).saturating_sub(2);
+        let marker_count = cause_counts.total();
+        debug_assert!(marker_count > 0);
+        let legacy_reason = retention_drop_reason(
+            self.budget.legacy_limits,
+            self.legacy_threshold_usage,
+            self.budget.legacy_usage,
+            sequence_length,
+            marker_count,
+            true,
+        );
+        let retained_with_detail = legacy_reason.is_none();
+        if !retained_with_detail {
+            let extra_reason = retention_drop_reason(
+                self.budget.extra_limits,
+                self.extra_threshold_usage,
+                self.budget.extra_usage,
+                sequence_length,
+                marker_count,
+                false,
+            );
+            if let Some(reason) = extra_reason {
+                self.payload.observed_not_retained_paths += 1;
+                match reason {
+                    "oversize_sequence" => self.payload.dropped_oversize_sequence += 1,
+                    "path_cap" => self.payload.dropped_path_cap += 1,
+                    "sequence_base_cap" => self.payload.dropped_sequence_base_cap += 1,
+                    _ => unreachable!(),
+                }
+                self.payload.retention_truncated = true;
+                return;
+            }
+        }
+
+        let oriented_sequence = reconstruct_path_sequence(graph, path, kmer_length);
+        let (marker_occurrences, marker_covered_runs) = if retained_with_detail {
+            let occurrences = collect_marker_occurrences(
+                graph,
+                path,
+                kmer_length,
+                repeat_markers,
+                &oriented_sequence,
+            );
+            debug_assert_eq!(occurrences.len(), marker_count);
+            let runs = merge_marker_covered_runs(&occurrences);
+            self.legacy_threshold_usage.paths += 1;
+            self.legacy_threshold_usage.sequence_bases += sequence_length;
+            self.legacy_threshold_usage.marker_occurrences += marker_count;
+            self.budget.legacy_usage.paths += 1;
+            self.budget.legacy_usage.sequence_bases += sequence_length;
+            self.budget.legacy_usage.marker_occurrences += marker_count;
+            self.payload.retained_marker_occurrences += marker_count;
+            self.budget.usage.marker_occurrences += marker_count;
+            (occurrences, runs)
+        } else {
+            self.extra_threshold_usage.paths += 1;
+            self.extra_threshold_usage.sequence_bases += sequence_length;
+            self.budget.extra_usage.paths += 1;
+            self.budget.extra_usage.sequence_bases += sequence_length;
+            self.payload.retained_summary_only_paths += 1;
+            self.payload.omitted_detailed_marker_occurrences += marker_count;
+            self.payload.marker_detail_truncated = true;
+            (Vec::new(), Vec::new())
+        };
+        let max_observed_node_visits = path
+            .iter()
+            .filter_map(|(node, _)| visit_counts.get(node).copied())
+            .max()
+            .unwrap_or(0);
+        let sequence_sha256 = sha256_text(&oriented_sequence);
+        self.payload.retained_paths += 1;
+        self.payload.retained_sequence_bases += sequence_length;
+        self.budget.usage.paths += 1;
+        self.budget.usage.sequence_bases += sequence_length;
         self.payload.paths.push(WithheldPathRecord {
             oriented_sequence,
             sequence_sha256,
@@ -1366,6 +1580,91 @@ mod tests {
     }
 
     #[test]
+    fn inclusive_retention_keeps_sequence_when_marker_budget_is_full() {
+        let graph = sequence_graph("ACGTA", 3);
+        let nodes: Vec<NodeIndex> = graph.node_indices().collect();
+        let path = vec![
+            (nodes[0], None),
+            (nodes[1], graph.find_edge(nodes[0], nodes[1])),
+            (nodes[2], graph.find_edge(nodes[1], nodes[2])),
+            (nodes[3], graph.find_edge(nodes[2], nodes[3])),
+        ];
+        let markers = RepeatMarkers {
+            omitted_self_loop_sub_kmers: AHashSet::from_iter([graph[nodes[1]].sub_kmer]),
+            cyclic_scc_sub_kmers: AHashSet::new(),
+            retained_collision_edges: AHashSet::new(),
+        };
+        let mut limits = diagnostic_limits(1, 100, 1);
+        limits.threshold.paths = 3;
+        let mut budget = WithheldDiagnosticBudget::for_emission(limits);
+        let visit_counts = path_visit_counts(&path);
+        let mut collector = ThresholdDiagnosticCollector::new(&mut budget, 2);
+        for _ in 0..3 {
+            collector.observe_withheld_path(
+                &graph,
+                &path,
+                3,
+                &markers,
+                &visit_counts,
+                cause_counts(1, 0, 0),
+            );
+        }
+        let diagnostic = collector.finish();
+        assert_eq!(diagnostic.schema_version, 2);
+        assert_eq!(diagnostic.observed_withheld_paths, 3);
+        assert_eq!(diagnostic.retained_paths, 2);
+        assert_eq!(diagnostic.dropped_path_cap, 1);
+        assert_eq!(diagnostic.dropped_marker_cap, 0);
+        assert_eq!(diagnostic.retained_marker_occurrences, 1);
+        assert_eq!(diagnostic.retained_summary_only_paths, 1);
+        assert_eq!(diagnostic.omitted_detailed_marker_occurrences, 1);
+        assert!(diagnostic.marker_detail_truncated);
+        assert_eq!(diagnostic.paths[0].oriented_sequence, "ACGTA");
+        assert_eq!(diagnostic.paths[0].marker_occurrences.len(), 1);
+        assert_eq!(diagnostic.paths[1].oriented_sequence, "ACGTA");
+        assert!(diagnostic.paths[1].marker_occurrences.is_empty());
+        assert!(diagnostic.paths[1].marker_covered_runs.is_empty());
+        assert_eq!(diagnostic.paths[1].omitted_self_loop_marker_occurrences, 1);
+    }
+
+    #[test]
+    fn extra_paths_cannot_displace_a_later_legacy_detail_path() {
+        let graph = sequence_graph("ACGTA", 3);
+        let nodes: Vec<NodeIndex> = graph.node_indices().collect();
+        let path = vec![
+            (nodes[0], None),
+            (nodes[1], graph.find_edge(nodes[0], nodes[1])),
+            (nodes[2], graph.find_edge(nodes[1], nodes[2])),
+            (nodes[3], graph.find_edge(nodes[2], nodes[3])),
+        ];
+        let markers = RepeatMarkers {
+            omitted_self_loop_sub_kmers: AHashSet::from_iter([graph[nodes[1]].sub_kmer]),
+            cyclic_scc_sub_kmers: AHashSet::new(),
+            retained_collision_edges: AHashSet::new(),
+        };
+        let mut budget = WithheldDiagnosticBudget::for_emission(diagnostic_limits(1, 100, 1));
+        let visit_counts = path_visit_counts(&path);
+        let mut collector = ThresholdDiagnosticCollector::new(&mut budget, 2);
+        for count in [2, 2, 1] {
+            collector.observe_withheld_path(
+                &graph,
+                &path,
+                3,
+                &markers,
+                &visit_counts,
+                cause_counts(count, 0, 0),
+            );
+        }
+        let diagnostic = collector.finish();
+        assert_eq!(diagnostic.observed_withheld_paths, 3);
+        assert_eq!(diagnostic.retained_paths, 2);
+        assert_eq!(diagnostic.retained_summary_only_paths, 1);
+        assert_eq!(diagnostic.dropped_path_cap, 1);
+        assert!(diagnostic.paths[0].marker_occurrences.is_empty());
+        assert_eq!(diagnostic.paths[1].marker_occurrences.len(), 1);
+    }
+
+    #[test]
     fn diagnostic_gene_budget_carries_across_thresholds() {
         let graph = sequence_graph("ACGTA", 3);
         let path_nodes: Vec<NodeIndex> = graph.node_indices().collect();
@@ -1462,6 +1761,30 @@ mod tests {
                 .map(|gene_index| withheld_diagnostic_limits_for_gene(gene_index, gene_count))
                 .collect::<Vec<_>>()
         );
+    }
+
+    #[test]
+    fn inclusive_sequence_shares_are_bounded_and_fit_full_panel_12s() {
+        let allocations: Vec<_> = (0..21)
+            .map(|index| {
+                super::super::inclusive_sequence_limits(withheld_diagnostic_limits_for_gene(
+                    index, 21,
+                ))
+            })
+            .collect();
+        assert_eq!(allocations[0].run.paths, 1024);
+        assert_eq!(
+            allocations
+                .iter()
+                .map(|limits| limits.allocated_run_share_for_gene.paths)
+                .sum::<usize>(),
+            1024
+        );
+        assert!(allocations.iter().all(|limits| {
+            limits.allocated_run_share_for_gene.paths >= 32
+                && limits.threshold.paths == 64
+                && limits.allocated_run_share_for_gene.marker_occurrences <= 1561
+        }));
     }
 
     /// Diamond graph: start -> {a, b} -> end. Should find two paths.

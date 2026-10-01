@@ -76,6 +76,24 @@ def assessment(sequence="ACGTT", empty=False):
     return value
 
 
+def sequence_first_assessment(marker_detail="complete"):
+    value = assessment()
+    value["schema_version"] = 2
+    value["marker_span_scope"] = "marker_covered_positions_only_for_complete_detail_sources"
+    value["marker_detail_truncated"] = marker_detail == "summary_only"
+    product = value["products"][0]
+    source = product["sources"][0]
+    source["marker_detail"] = marker_detail
+    product["description"] = product["description"].replace(
+        "read_support=not_evaluated ",
+        f"read_support=not_evaluated marker_detail={marker_detail} ",
+    )
+    if marker_detail == "summary_only":
+        source["marker_occurrences"] = []
+        source["marker_covered_runs"] = []
+    return value
+
+
 def transaction(directory, standard=True, empty=False):
     uncertain = assessment(empty=empty)
     entry = {"gene_name": "gene", "status": "success" if standard else "fail",
@@ -146,6 +164,37 @@ def combined_transaction(directory, standard=True, empty=False, disabled=False,
 
 
 class CombinedOutputTests(unittest.TestCase):
+    def test_sequence_first_detail_and_summary_sources_validate(self):
+        for detail in ("complete", "summary_only"):
+            with self.subTest(detail=detail):
+                value = sequence_first_assessment(detail)
+                value["output_file"] = "sample_gene.fasta"
+                value["products"][0]["id"] = "sample_gene_0.uncertain"
+                entry = {"gene_name": "gene", "uncertain_products": value}
+                self.assertEqual(
+                    uncertain.validate_metadata(entry, "sample", combined=True),
+                    "sample_gene.fasta",
+                )
+                if detail == "summary_only":
+                    bad = copy.deepcopy(entry)
+                    bad["uncertain_products"]["marker_detail_truncated"] = False
+                    with self.assertRaises(ValueError):
+                        uncertain.validate_metadata(bad, "sample", combined=True)
+                    bad = copy.deepcopy(entry)
+                    bad["uncertain_products"]["products"][0]["sources"][0][
+                        "cyclic_scc_marker_occurrences"
+                    ] = 0
+                    with self.assertRaises(ValueError):
+                        uncertain.validate_metadata(bad, "sample", combined=True)
+                    bad = copy.deepcopy(entry)
+                    bad["uncertain_products"]["products"][0]["description"] = bad[
+                        "uncertain_products"
+                    ]["products"][0]["description"].replace(
+                        "marker_detail=summary_only", "marker_detail=complete"
+                    )
+                    with self.assertRaises(ValueError):
+                        uncertain.validate_metadata(bad, "sample", combined=True)
+
     def test_mixed_file_validates_all_records_but_returns_only_standard(self):
         with tempfile.TemporaryDirectory() as temporary:
             directory = Path(temporary)

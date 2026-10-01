@@ -299,6 +299,9 @@ pub(crate) const WITHHELD_DIAGNOSTIC_GENE_PATH_CAP: usize = 64;
 pub(crate) const WITHHELD_DIAGNOSTIC_GENE_BASE_CAP: usize = 1024 * 1024;
 pub(crate) const WITHHELD_DIAGNOSTIC_GENE_MARKER_CAP: usize = 8192;
 pub(crate) const WITHHELD_DIAGNOSTIC_RUN_PATH_CAP: usize = 256;
+// Inclusive delivery has a separate bounded sequence-only allowance alongside
+// the original diagnostic reserve, so extra paths cannot displace old output.
+pub(crate) const UNCERTAIN_SEQUENCE_PATH_SHARE_MULTIPLIER: usize = 3;
 pub(crate) const WITHHELD_DIAGNOSTIC_RUN_BASE_CAP: usize = 4 * 1024 * 1024;
 pub(crate) const WITHHELD_DIAGNOSTIC_RUN_MARKER_CAP: usize = 32768;
 
@@ -384,6 +387,14 @@ pub(crate) struct WithheldPathRecord {
     pub(crate) marker_covered_runs: Vec<WithheldMarkerCoveredRun>,
 }
 
+fn is_zero_usize(value: &usize) -> bool {
+    *value == 0
+}
+
+fn is_false(value: &bool) -> bool {
+    !*value
+}
+
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
 pub(crate) struct WithheldPathDiagnostics {
     pub(crate) schema_version: u32,
@@ -399,6 +410,12 @@ pub(crate) struct WithheldPathDiagnostics {
     pub(crate) observed_not_retained_paths: usize,
     pub(crate) retained_sequence_bases: usize,
     pub(crate) retained_marker_occurrences: usize,
+    #[serde(skip_serializing_if = "is_zero_usize")]
+    pub(crate) retained_summary_only_paths: usize,
+    #[serde(skip_serializing_if = "is_zero_usize")]
+    pub(crate) omitted_detailed_marker_occurrences: usize,
+    #[serde(skip_serializing_if = "is_false")]
+    pub(crate) marker_detail_truncated: bool,
     pub(crate) dropped_oversize_sequence: usize,
     pub(crate) dropped_oversize_marker_set: usize,
     pub(crate) dropped_path_cap: usize,
@@ -475,6 +492,34 @@ pub(crate) fn withheld_diagnostic_limits_for_gene(
         },
         unused_share_is_not_redistributed: true,
     }
+}
+
+pub(crate) fn inclusive_sequence_limits(
+    mut limits: WithheldDiagnosticLimits,
+) -> WithheldDiagnosticLimits {
+    let extra_share = limits
+        .allocated_run_share_for_gene
+        .paths
+        .saturating_mul(UNCERTAIN_SEQUENCE_PATH_SHARE_MULTIPLIER)
+        .min(limits.gene.paths);
+    limits.threshold.paths = limits.threshold.paths.saturating_mul(2);
+    limits.gene.paths = limits.gene.paths.saturating_mul(2);
+    limits.run.paths = limits
+        .run
+        .paths
+        .saturating_mul(1 + UNCERTAIN_SEQUENCE_PATH_SHARE_MULTIPLIER);
+    limits.allocated_run_share_for_gene.paths = limits
+        .allocated_run_share_for_gene
+        .paths
+        .saturating_add(extra_share);
+    limits.threshold.sequence_bases = limits.threshold.sequence_bases.saturating_mul(2);
+    limits.gene.sequence_bases = limits.gene.sequence_bases.saturating_mul(2);
+    limits.run.sequence_bases = limits.run.sequence_bases.saturating_mul(2);
+    limits.allocated_run_share_for_gene.sequence_bases = limits
+        .allocated_run_share_for_gene
+        .sequence_bases
+        .saturating_mul(2);
+    limits
 }
 
 /// Validate a primer pair and return a list of (error, suggestion) pairs.
@@ -883,6 +928,11 @@ pub fn do_pcr(
     withheld_diagnostic_limits: WithheldDiagnosticLimits,
 ) -> Result<PcrOutcome> {
     gene_info!(params.gene_name, "Running PCR");
+    let emission_limits = if params.emit_uncertain {
+        inclusive_sequence_limits(withheld_diagnostic_limits)
+    } else {
+        withheld_diagnostic_limits
+    };
 
     if params.max_length < kmer_counts.get_k() {
         return Ok(PcrOutcome {
@@ -895,7 +945,7 @@ pub fn do_pcr(
             threshold_diagnostics: Vec::new(),
             uncertain_products: params
                 .emit_uncertain
-                .then(|| UncertainProducts::empty(withheld_diagnostic_limits)),
+                .then(|| UncertainProducts::empty(emission_limits)),
         });
     }
 
@@ -927,7 +977,7 @@ pub fn do_pcr(
             threshold_diagnostics: Vec::new(),
             uncertain_products: params
                 .emit_uncertain
-                .then(|| UncertainProducts::empty(withheld_diagnostic_limits)),
+                .then(|| UncertainProducts::empty(emission_limits)),
         });
     }
 
@@ -1013,7 +1063,13 @@ pub fn do_pcr(
     let mut failure_reason: Option<String> = Some("no path found".to_string());
     let mut threshold_diagnostics = Vec::with_capacity(coverage_thresholds.len());
     let mut withheld_diagnostic_budget = (params.diagnose_withheld_paths || params.emit_uncertain)
-        .then(|| paths::WithheldDiagnosticBudget::new(withheld_diagnostic_limits));
+        .then(|| {
+            if params.emit_uncertain {
+                paths::WithheldDiagnosticBudget::for_emission(withheld_diagnostic_limits)
+            } else {
+                paths::WithheldDiagnosticBudget::new(withheld_diagnostic_limits)
+            }
+        });
 
     // Coverage threshold sweep: at each min_count, clone the seed graph fresh
     // and extend at that threshold. Pruning + path-finding happens after each
@@ -1173,7 +1229,7 @@ pub fn do_pcr(
                 sample_name,
                 &params.gene_name,
                 params.diagnose_withheld_paths,
-                withheld_diagnostic_limits,
+                emission_limits,
                 &[],
                 &mut threshold_diagnostics,
             )
@@ -1221,7 +1277,7 @@ pub fn do_pcr(
             sample_name,
             &params.gene_name,
             params.diagnose_withheld_paths,
-            withheld_diagnostic_limits,
+            emission_limits,
             &records,
             &mut threshold_diagnostics,
         )

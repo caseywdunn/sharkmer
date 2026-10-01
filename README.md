@@ -126,7 +126,12 @@ selection of completed hypotheses with unresolved repeat structure. Every
 header has `assembly_status=standard` or `assembly_status=uncertain`.
 Uncertain records also carry `repeat_length=unresolved` and
 `read_support=not_evaluated`; their sequence length is a hypothesis, and the
-biological repeat length may differ. Use `--no-emit-uncertain` to request only
+biological repeat length may differ. `marker_detail=complete` means the
+structured assessment includes per-marker identities and positions;
+`marker_detail=summary_only` means the path used the extra sequence allowance,
+so detailed marker identities and positions were omitted while the sequence,
+hash, repeat-cause counts, and source threshold were retained.
+Use `--no-emit-uncertain` to request only
 standard products, or filter an existing FASTA with:
 
 ```sh
@@ -136,16 +141,19 @@ awk '/^>/ {keep = / assembly_status=standard( |$)/} keep' sample_gene.fasta > sa
 Stats count all delivered records in `n_products` and report separate
 `n_standard_products` and `n_uncertain_products` counts. A target with only
 uncertain hypotheses has status `uncertain` and a normal output FASTA.
-The `uncertain_products` field records source paths, uncertainty-marker
-positions, thresholds, and search/retention limits. An empty collection does
+The `uncertain_products` field records source paths, thresholds, and
+search/retention limits. Marker positions are present for complete-detail
+sources; summary-only sources report cause counts and omitted detail instead.
+An empty collection does
 not establish absence; bounded search does not enumerate every repeat
 alternative. See [inclusive output](dev_docs/INCLUSIVE_OUTPUT.md) and the
-[sequence assessment](dev_docs/INCLUSIVE_OUTPUT_RESULTS.md).
+[sequence retention assessment](dev_docs/SEQUENCE_RETENTION_RESULTS.md).
 
 For developer investigation, the hidden opt-in `--diagnose-withheld-paths` flag
 adds bounded current-run withheld sequences and sequence-relative marker
 positions to the YAML stats. It shares the default output's collection budget
-and also works with `--no-emit-uncertain`. See
+when uncertainty is emitted. With `--no-emit-uncertain`, it retains the original
+diagnostic limits and format. See
 [bounded withheld-path diagnostics](dev_docs/WITHHELD_PATH_DIAGNOSTICS.md).
 
 In stats, `n_reads_read` is the number of FASTQ records read.

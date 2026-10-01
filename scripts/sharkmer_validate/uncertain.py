@@ -100,8 +100,15 @@ def validate_metadata(entry, sample_prefix, combined=False):
         return None
     value = entry["uncertain_products"]
     _require(isinstance(value, dict), "assessment must be a mapping")
-    _require(type(value.get("schema_version")) is int and value["schema_version"] == 1,
+    _require(type(value.get("schema_version")) is int and value["schema_version"] in (1, 2),
              "unsupported schema")
+    sequence_first = value["schema_version"] == 2
+    if sequence_first:
+        _require(value.get("marker_span_scope")
+                 == "marker_covered_positions_only_for_complete_detail_sources",
+                 "invalid marker span scope")
+        _require(type(value.get("marker_detail_truncated")) is bool,
+                 "missing marker detail status")
     for key, expected in (
         ("purpose", "uncertain_repeat_structure_graph_path_hypotheses"),
         ("coordinate_system", "zero_based_half_open_in_emitted_oriented_sequence"),
@@ -131,6 +138,7 @@ def validate_metadata(entry, sample_prefix, combined=False):
              "output path does not match sample/gene/count")
 
     ids, sequences, source_count = set(), set(), 0
+    summary_sources = 0
     for index, (product, length) in enumerate(zip(products, lengths)):
         _require(isinstance(product, dict), "product must be a mapping")
         identifier = product.get("id")
@@ -151,6 +159,7 @@ def validate_metadata(entry, sample_prefix, combined=False):
         _require(isinstance(sources, list) and sources, "missing source paths")
         source_count += len(sources)
         causes, thresholds = set(), set()
+        product_summary = False
         for source in sources:
             _require(isinstance(source, dict) and _count(source.get("threshold"))
                      and source["threshold"] > 0, "invalid source threshold")
@@ -160,7 +169,17 @@ def validate_metadata(entry, sample_prefix, combined=False):
                      and 1 <= node_visits <= node_limit, "invalid source node visit bounds")
             thresholds.add(source["threshold"])
             markers = source.get("marker_occurrences")
-            _require(isinstance(markers, list) and markers, "missing uncertainty markers")
+            marker_detail = source.get("marker_detail") if sequence_first else "complete"
+            _require(marker_detail in ("complete", "summary_only")
+                     and (sequence_first or marker_detail == "complete"),
+                     "invalid marker detail level")
+            _require(isinstance(markers, list)
+                     and (markers or marker_detail == "summary_only"),
+                     "missing uncertainty markers")
+            if marker_detail == "summary_only":
+                _require(not markers, "summary-only source carries detailed markers")
+                summary_sources += 1
+                product_summary = True
             observed = Counter()
             spans = []
             for marker in markers:
@@ -179,8 +198,13 @@ def validate_metadata(entry, sample_prefix, combined=False):
                 causes.add(cause)
                 spans.append((start, end))
             for cause, field in CAUSE_COUNTS.items():
-                _require(_count(source.get(field)) and source[field] == observed[cause],
+                _require(_count(source.get(field))
+                         and (marker_detail == "summary_only" or source[field] == observed[cause]),
                          "marker cause count mismatch")
+                if source[field] > 0:
+                    causes.add(cause)
+            _require(sum(source[field] for field in CAUSE_COUNTS.values()) > 0,
+                     "source lacks repeat uncertainty markers")
             expected_runs = []
             for start, end in sorted(spans):
                 if expected_runs and start <= expected_runs[-1]["end"]:
@@ -212,8 +236,13 @@ def validate_metadata(entry, sample_prefix, combined=False):
             "limit_scope": "gene", "search_limits_reached": str(value["search_limits_reached"]).lower(),
             "retention_truncated": str(value["retention_truncated"]).lower(),
         }
+        if sequence_first:
+            expected_fields["marker_detail"] = "summary_only" if product_summary else "complete"
         _require(all(fields.get(key) == expected for key, expected in expected_fields.items()),
                  "header disagrees with assessment")
+    if sequence_first:
+        _require(not summary_sources or value["marker_detail_truncated"],
+                 "summary-only sources lack aggregate detail flag")
     _require(source_count == value["retained_path_records"]
              - value["excluded_standard_equivalent_path_records"], "source path count mismatch")
     return filename

@@ -1,16 +1,34 @@
 # Pause/resume handoff
 
-Updated 2026-09-30. **Development integration and all 60 release-comparison
-invocations are complete. `dev` includes inclusive output at `ed04bde`.
-The focused Drosophila diagnostic found both missing 12S identities in search
-completions, discarded by retention. Independent raw outcome review passes;
-archive identity and verification are recorded in the evidence bundle.
-No release or publication is authorized.**
+Updated 2026-10-01. **Sequence-first uncertain retention has been implemented
+and evaluated on `experiment/sequence-first-retention`; `dev` remains the
+fixed inclusive baseline at `b5a6c7e` (including `ed04bde`). All 60 corrected
+paired invocations pass: the branch adds 200 labelled uncertain identities,
+preserves every old standard and uncertain identity, and recovers the two
+historical Drosophila 12S sequences. No release or publication is authorized.**
 Start here in a new session; this handoff does not require the previous chat
 or live coding agents. [PLAN.md](PLAN.md) remains the detailed execution plan.
 
 ## Saved state
 
+- [Sequence-first retention results](SEQUENCE_RETENTION_RESULTS.md) follow the
+  [protocol](SEQUENCE_RETENTION_PROTOCOL.md). The corrected branch delivers
+  64 standard and 262 uncertain records across the ten samples (326 total),
+  versus 64 + 62 on `dev`. All 71 released high-copy candidate identities
+  are now available (64 standard, seven uncertain); all 15 deferred identities
+  are available as uncertain, including 12 previously absent Gryllus Yp2.
+  The first candidate was rejected after it displaced one old plant identity;
+  its partial run is preserved. The corrected design reserves old detailed
+  paths independently of extra summary-only sequences. Focused plant/Drosophila
+  replays, an identical real-input standard-only/hidden-diagnostic opt-out
+  control, both hash backends, Python consumers, the reference audit, and the
+  completed three-pair matrix pass. Sum of median wall times rises 1.8% from
+  the old inclusive build; no sample crosses 5% wall or 2% RSS review flags.
+  Five genes still report retention truncation; these are bounded hypotheses,
+  not validated repeat structures. See the
+  [evidence bundle](../benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/README.md)
+  and scratch `tmp/sequence-retention-20261001/` for raw receipts. The branch
+  is not merged into `dev` or released.
 - Completed execution: [inclusive release results](INCLUSIVE_RELEASE_RESULTS.md)
   follow the [frozen protocol](INCLUSIVE_RELEASE_PROTOCOL.md). All 60 runs in
   the original ten-sample/five-panel matrix pass against pristine v3.1.0.
@@ -122,7 +140,7 @@ or live coding agents. [PLAN.md](PLAN.md) remains the detailed execution plan.
 
 ## What we know
 
-The [current release comparison](INCLUSIVE_RELEASE_RESULTS.md) has **64/71
+The fixed `dev` [release comparison](INCLUSIVE_RELEASE_RESULTS.md) has **64/71
 released high-copy identities retained as standard and 69/71 available with
 uncertain delivery**. All 60 runs pass with unchanged aggregate input counts.
 The 126 delivered records contain 64 standard and 62 uncertain hypotheses;
@@ -133,9 +151,10 @@ exceed the 5% investigation threshold. No median peak-RSS increase exceeds 2%.
 Five historical high-copy sequences are available as exact uncertain
 hypotheses: Gryllus CO1_1 (373 bp) and ITS_2 (978 bp), Heliconius ND1 (263 bp),
 and Drosophila 12S (475 bp) and 16S_2 (590 bp). The separate pre-retention
-observer now establishes that Drosophila 12S 487/499 bp are also generated,
-then discarded by the marker-retention budget. They remain absent from
-production FASTA output. These are unresolved repeat hypotheses with
+observer established that Drosophila 12S 487/499 bp are also generated,
+then discarded by `dev`'s marker-retention budget. The isolated sequence-first
+branch now emits both, along with the previously absent Yp2 identities, with
+explicit uncertainty labels. These are unresolved repeat hypotheses with
 unevaluated full-product read support, not newly validated products.
 Standard admission and biological reconstruction questions remain open.
 
