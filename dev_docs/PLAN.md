@@ -14,6 +14,10 @@ bounded uncertain identities across the ten samples and is not merged into
 investigation. Release remains on hold for these follow-ups and
 biological validation. See [BENCHMARK_v3.2_vs_v3.1.md](BENCHMARK_v3.2_vs_v3.1.md)
 and the remaining validation/security gates in [REVIEW_v3.2.md](REVIEW_v3.2.md).
+An exploratory local reference check of the 200 new uncertain identities
+found no qualifying full-query 90% coverage/90% identity HSP in the pinned
+catalog; [its scope and limitations](SEQUENCE_RETENTION_RESULTS.md) leave the
+biological-validation gate open.
 Work follows the 2026-09-08 review of
 `5a66468` (Sharkmer 3.1.0).
 Tracking issue: [#152](https://github.com/caseywdunn/sharkmer/issues/152).

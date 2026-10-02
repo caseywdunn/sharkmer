@@ -1,6 +1,6 @@
 # Pause/resume handoff
 
-Updated 2026-10-01. **Sequence-first uncertain retention has been implemented
+Updated 2026-10-02. **Sequence-first uncertain retention has been implemented
 and evaluated on `experiment/sequence-first-retention`; `dev` remains the
 fixed inclusive baseline at `b5a6c7e` (including `ed04bde`). All 60 corrected
 paired invocations pass: the branch adds 200 labelled uncertain identities,
@@ -8,6 +8,14 @@ preserves every old standard and uncertain identity, and recovers the two
 historical Drosophila 12S sequences. No release or publication is authorized.**
 Start here in a new session; this handoff does not require the previous chat
 or live coding agents. [PLAN.md](PLAN.md) remains the detailed execution plan.
+
+Post-comparison update (2026-10-02): an independent audit of the exploratory
+local BLAST check of all 200 gained uncertain identities passes. None has a
+single HSP at both 90% query coverage and 90% identity in the pinned 121-source
+catalog or 61 relevant panel references. This limited absence of qualifying
+reference support is not a biological rejection or read-support assessment.
+See [the results](SEQUENCE_RETENTION_RESULTS.md) and the
+[BLAST review](../benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/README.md).
 
 ## Saved state
 

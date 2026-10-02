@@ -100,3 +100,36 @@ remain schema 1 with the original fields and limits.
 
 No release, merge into `dev`, or biological correctness claim follows from
 this branch assessment alone.
+
+## Post-comparison reference check (2026-10-02)
+
+The 200 newly emitted uncertain identities were compared with the pinned
+121-record public-source catalog and the 61 verified reference regions in the
+two relevant panels. This is an exploratory, local reference check, separate
+from the frozen paired comparison. The candidate FASTA sequences were bound to
+the gain table by full-length SHA-256 before query creation. An independent
+review then checked all 200 query hashes against the gain table, all 121 source
+sequences against the pinned catalog, saved file receipts, and every raw BLAST
+row. See the [review files](../benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/README.md).
+
+With BLASTN 2.17.0+ (`dust=no`, E-value at most `1e-10`, at most 121 targets
+and 20 HSPs per target), 168 queries have at least one public-source HSP and
+88 have a panel-reference HSP. Across 5,289 public-source HSPs, **none**
+combines at least 90% of the query in one HSP with at least 90% identity; none
+of 1,103 panel HSPs does either. The five public-source HSPs that cover at
+least 90% of a query all map Gryllus 18S hypotheses to a Drosophila source at
+about 64% identity. Seventy-eight public-source HSPs reach 90% identity over
+shorter segments. No full query is an exact forward or reverse-complement
+substring of a catalog source assigned to the same taxon.
+
+These results mean **no new identity has qualifying full-query reference
+support in this bounded catalog under this search and criterion**. They do
+not show that the hypotheses are false, that no relevant public record exists,
+or that any repeat length is correct. Panel targets and public catalog records
+have uneven organism and locus coverage; the catalog is a pinned local
+snapshot, not a live exhaustive database. Multiple local HSPs may reflect
+partial homology or repeats without establishing a coherent full-length
+sequence. Full-product read support and independent same-sample truth are
+still unevaluated. The earlier panel-only `blast-gains-v1`/`v2` summaries are
+preserved as exploratory attempts; their `no_verified_reference` and
+`no_significant_hit` statuses are not claims of biological absence.

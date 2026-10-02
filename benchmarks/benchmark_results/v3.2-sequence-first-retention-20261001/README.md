@@ -55,3 +55,12 @@ the corrected raw outputs, scripts, checks, and review files. The archive
 omits the large FASTQ inputs; their exact SHA-256, sizes, record and base
 counts remain in the run receipts and prior input inventory. All archive
 members are rehashed after packaging.
+
+## Post-comparison local BLAST review
+
+The [v3 review](blast-gains-v3/README.md) checks the 200 newly emitted
+identities against the pinned public-source catalog and panel references. Its
+saved raw HSP tables and independent audit support only a bounded reference
+statement. This follow-up is separate from the paired comparison and its
+existing `evidence.tar.gz` receipt. The earlier `blast-gains-v1` and `v2`
+outputs are preserved as superseded exploratory checks.

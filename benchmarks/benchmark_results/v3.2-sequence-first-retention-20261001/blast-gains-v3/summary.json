@@ -1,0 +1,135 @@
+{
+  "blastn_version": "blastn: 2.17.0+",
+  "by_target": {
+    "SRR1057608:insecta_ND4": {
+      "count": 32,
+      "exact_full_query_same_taxon": 0,
+      "panel_hit_any": 16,
+      "public_hit_any": 32,
+      "strong_expected_target_single_hsp": 0,
+      "strong_public_single_hsp": 0,
+      "strong_same_taxon_single_hsp": 0
+    },
+    "SRR25378184:angiospermae_psbA-trnH": {
+      "count": 32,
+      "exact_full_query_same_taxon": 0,
+      "panel_hit_any": 0,
+      "public_hit_any": 0,
+      "strong_expected_target_single_hsp": 0,
+      "strong_public_single_hsp": 0,
+      "strong_same_taxon_single_hsp": 0
+    },
+    "SRR25378184:angiospermae_trnV-atpE": {
+      "count": 32,
+      "exact_full_query_same_taxon": 0,
+      "panel_hit_any": 0,
+      "public_hit_any": 32,
+      "strong_expected_target_single_hsp": 0,
+      "strong_public_single_hsp": 0,
+      "strong_same_taxon_single_hsp": 0
+    },
+    "SRR27962769:insecta_18S_1": {
+      "count": 17,
+      "exact_full_query_same_taxon": 0,
+      "panel_hit_any": 17,
+      "public_hit_any": 17,
+      "strong_expected_target_single_hsp": 0,
+      "strong_public_single_hsp": 0,
+      "strong_same_taxon_single_hsp": 0
+    },
+    "SRR27962769:insecta_ITS_2": {
+      "count": 32,
+      "exact_full_query_same_taxon": 0,
+      "panel_hit_any": 0,
+      "public_hit_any": 32,
+      "strong_expected_target_single_hsp": 0,
+      "strong_public_single_hsp": 0,
+      "strong_same_taxon_single_hsp": 0
+    },
+    "SRR27962769:insecta_Yp2": {
+      "count": 32,
+      "exact_full_query_same_taxon": 0,
+      "panel_hit_any": 32,
+      "public_hit_any": 32,
+      "strong_expected_target_single_hsp": 0,
+      "strong_public_single_hsp": 0,
+      "strong_same_taxon_single_hsp": 0
+    },
+    "SRR31887760:insecta_12S": {
+      "count": 23,
+      "exact_full_query_same_taxon": 0,
+      "panel_hit_any": 23,
+      "public_hit_any": 23,
+      "strong_expected_target_single_hsp": 0,
+      "strong_public_single_hsp": 0,
+      "strong_same_taxon_single_hsp": 0
+    }
+  },
+  "catalog": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/reference_sources.json.gz",
+    "record_count": 121,
+    "sha256": "bc277321831258c00b6794a51b0289445c837f99b2399e54aa43fe5e60b0f49a",
+    "status": "verified_local_snapshot",
+    "trust_basis": "pinned_local_catalog; not live public-record authentication"
+  },
+  "counts": {
+    "exact_full_query_same_taxon": 0,
+    "strong_expected_target_single_hsp": 0,
+    "strong_public_single_hsp": 0,
+    "strong_same_taxon_single_hsp": 0
+  },
+  "makeblastdb_version": "makeblastdb: 2.17.0+",
+  "panel": {
+    "angiospermae": {
+      "hits": {
+        "path": "benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_reference_hits.tsv",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      "reference_count": 19,
+      "references": {
+        "path": "benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references.fasta",
+        "sha256": "b104654a5087f62f6daefdc31896b8ae06ebd400dc516738a00a58cb2567894c",
+        "size_bytes": 13505
+      }
+    },
+    "insecta": {
+      "hits": {
+        "path": "benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_reference_hits.tsv",
+        "sha256": "b374d0237b9f9a1909732fe3bf3b7e68161b873f1ccf94de3783e42db8e6adf3",
+        "size_bytes": 80635
+      },
+      "reference_count": 42,
+      "references": {
+        "path": "benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references.fasta",
+        "sha256": "f8ac4a8e8ab0f4c25a4673d0a587404c205865d21f3e8068e81b00d321f96a1a",
+        "size_bytes": 42620
+      }
+    }
+  },
+  "query_fasta": {
+    "path": "benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/gained_queries.fasta",
+    "sha256": "6815689b6e81f7f8d33c06cd5ed149e4aba4d18f68a2641242642c21eaba3054",
+    "size_bytes": 120268
+  },
+  "schema_version": 1,
+  "settings": {
+    "dust": "no",
+    "evalue": "1e-10",
+    "max_hsps": 20,
+    "max_target_seqs": 121,
+    "strong_single_hsp": ">=90% query coverage and >=90% identity",
+    "task": "blastn"
+  },
+  "source_fasta": {
+    "path": "benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources.fasta",
+    "sha256": "a48333bf65caf739e4a95c87d01fe70558125fb63b2377397d055014ed658d34",
+    "size_bytes": 2262754
+  },
+  "source_hits": {
+    "path": "benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_hits.tsv",
+    "sha256": "c88977796e2468bcabf54b1a9544c9dfa67e11184b4ed5420309ec98234cec4f",
+    "size_bytes": 396265
+  },
+  "total": 200
+}
