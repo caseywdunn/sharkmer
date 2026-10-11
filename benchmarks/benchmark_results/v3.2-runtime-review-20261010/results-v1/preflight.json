@@ -1,0 +1,69 @@
+{
+  "cpus": [
+    32,
+    36
+  ],
+  "local_root": "/tmp/sharkmer-runtime-29012047-nqhkakk1",
+  "machine": {
+    "machine": "x86_64",
+    "node": "c1106u05n03.mghpcc.ycrc.yale.edu",
+    "processor": "x86_64",
+    "release": "5.14.0-570.140.1.el9_6.x86_64",
+    "system": "Linux",
+    "version": "#1 SMP PREEMPT_DYNAMIC Mon Sep 7 09:47:52 EDT 2026"
+  },
+  "mounts": {
+    "input": {
+      "filesystems": [
+        {
+          "fstype": "nfs",
+          "options": "rw,relatime,vers=3,rsize=1048576,wsize=1048576,namlen=255,hard,rdirplus=force,forcerdirplus,proto=rdma,nconnect=4,port=20049,timeo=600,retrans=2,sec=sys,mountaddr=10.184.0.47,mountvers=3,mountproto=tcp,local_lock=none,remoteports=dns,spread_reads,spread_writes,addr=10.184.0.47",
+          "source": "10.184.0.47:/project",
+          "target": "/nfs/roberts/project"
+        }
+      ]
+    },
+    "local_output": {
+      "filesystems": [
+        {
+          "fstype": "ext4",
+          "options": "rw,relatime",
+          "source": "/dev/sda5",
+          "target": "/tmp"
+        }
+      ]
+    },
+    "nfs_output": {
+      "filesystems": [
+        {
+          "fstype": "nfs",
+          "options": "rw,relatime,vers=3,rsize=1048576,wsize=1048576,namlen=255,hard,rdirplus=force,forcerdirplus,proto=rdma,nconnect=4,port=20049,timeo=600,retrans=2,sec=sys,mountaddr=10.184.0.47,mountvers=3,mountproto=tcp,local_lock=none,remoteports=dns,spread_reads,spread_writes,addr=10.184.0.47",
+          "source": "10.184.0.47:/project",
+          "target": "/nfs/roberts/project"
+        }
+      ]
+    }
+  },
+  "protocol": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/protocol-v1.json",
+    "sha256": "00f3261a9e9ad9a7d5cb4c5735fcbdc42be5e968081c948d8e14fa4b2e7588d2",
+    "size_bytes": 15497
+  },
+  "python": "3.12.3 (main, Mar  4 2026, 16:38:56) [GCC 13.3.0]",
+  "pyyaml": "6.0.2",
+  "slurm_job_id": "29012047",
+  "start_unix_time": 1791654474.8994951,
+  "status": "failed",
+  "topology": [
+    {
+      "core": 17,
+      "cpu": 32,
+      "socket": 0
+    },
+    {
+      "core": 18,
+      "cpu": 36,
+      "socket": 0
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+scope	sample_id	variant	total	standard	uncertain	target_total	target_standard	target_uncertain	wall_seconds	peak_rss_bytes
+synthetic	NC_008326.1	before	0	0	0	0	0	0	0.78	5898240
+synthetic	NC_008326.1	after	1	1	0	1	1	0	0.3	6291456
+synthetic	NC_056221.1	before	0	0	0	0	0	0	0.25	5898240
+synthetic	NC_056221.1	after	1	1	0	1	1	0	0.2	6291456
+real	SRR25378184	before	97	6	91	41	0	41	109.53	4568780800
+real	SRR25378184	after	57	7	50	1	1	0	107.69	4568526848
+real	ERR14009273	before	7	6	1	0	0	0	48.08	2286772224
+real	ERR14009273	after	8	7	1	1	1	0	71.26	2286940160

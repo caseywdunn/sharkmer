@@ -1,0 +1,30 @@
+sharkmer 3.2.0-dev (dry run)
+
+Input:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+
+Configuration:
+  Sample:         schema_probe
+  Output dir:     /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/bacteria-1-dry-output/
+  Kmer length:    19
+  Chunks:         0
+  Threads:        2
+  Min kmer count: 2
+  PCR output:     standard and labelled uncertain products
+
+Output files:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/bacteria-1-dry-output/schema_probe.stats.yaml
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/bacteria-1-dry-output/schema_probe_bacteria_16S-341F-785R.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/bacteria-1-dry-output/schema_probe_bacteria_16S-PRK341F-PRK806R.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/bacteria-1-dry-output/schema_probe_bacteria_16S-515F-806R.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/bacteria-1-dry-output/schema_probe_bacteria_16S-515F-806RB.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/bacteria-1-dry-output/schema_probe_bacteria_16S-68F-783Rabc.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/bacteria-1-dry-output/schema_probe_bacteria_16S-341F-783Rabc.fasta
+
+PCR primers (6 genes):
+  bacteria_16S-341F-785R (fwd: CCTACGGG...GCAG, rev: GACTACHV...ATCC, len: 200-500)
+  bacteria_16S-PRK341F-PRK806R (fwd: CCTACGGG...SCAG, rev: GGACTACY...TAAT, len: 200-500)
+  bacteria_16S-515F-806R (fwd: GTGCCAGC...GTAA, rev: GGACTACH...TAAT, len: 200-500)
+  bacteria_16S-515F-806RB (fwd: GTGCCAGC...GTAA, rev: GGACTACN...TAAT, len: 200-500)
+  bacteria_16S-68F-783Rabc (fwd: TNANACAT...RRCG, rev: CTACCAGG...CCTG, len: 200-500)
+  bacteria_16S-341F-783Rabc (fwd: CCTACGGG...GCAG, rev: CTACCAGG...CCTG, len: 200-500)

@@ -1,0 +1,477 @@
+{
+  "coordinate_system": "zero_based_half_open_in_emitted_oriented_sequences",
+  "largest_nearest_window": 40,
+  "limitations": [
+    "Only the 200 saved gained sequences are compared; the nearest neighbor is restricted to gains in the same accession and target.",
+    "Canonical k-mer sets ignore multiplicity, order, orientation, and long-range linkage; identical sets do not establish identical biological products.",
+    "Differing windows use the longest exact common prefix, then a common suffix that does not overlap that prefix. This is a single-window representation, not an alignment or edit distance.",
+    "Nearest means minimizing maximum allele-window length, then total allele-window length, then neighbor SHA-256. Original emitted sequence orientation is used.",
+    "Flanks are up to 19 exact common bases per side. Their uniqueness and suitability for read recruitment have not been evaluated; repeat-related indels may have other equally valid placements.",
+    "No read support, biological correctness, repeat copy number, full-product phase, or target specificity is established. No production behavior changes."
+  ],
+  "nearest_window_count": 200,
+  "producer_sha256": "1c8e217e8501f959c47727def611f31c2bea920bfb6c405fdb5271f1a7a3e857",
+  "purpose": "saved_sequence_structure_triage_without_read_support_evaluation",
+  "queries_with_nearest_window_at_most_5_bases": 143,
+  "result_files": {
+    "nearest_windows.tsv": {
+      "bytes": 51393,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/nearest_windows.tsv",
+      "sha256": "85c65f03b12f2aa7ab5b01f40711c023304dd2e3f9547da0bcc4074808089e12"
+    },
+    "target_summary.tsv": {
+      "bytes": 710,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/target_summary.tsv",
+      "sha256": "5d58b27d6e743bb97925b65aca0a3ac8c7ae0625ce7f716340a94030531ced19"
+    }
+  },
+  "schema_version": 1,
+  "source_files": {
+    "fasta": {
+      "bytes": 120268,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/gained_queries.fasta",
+      "sha256": "6815689b6e81f7f8d33c06cd5ed149e4aba4d18f68a2641242642c21eaba3054"
+    },
+    "gains": {
+      "bytes": 19600,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/report-v3/uncertain_gains.tsv",
+      "sha256": "9585462dd788a791fabc612c8ab2d92bf09423beacc350ce9569fc0bf940d94c"
+    },
+    "mapping": {
+      "bytes": 279786,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/per_sequence.json",
+      "sha256": "48c58d94713a33539617489c550510e8e23c14a08784d1557e87682c5a6b75d4"
+    }
+  },
+  "target_groups": 7,
+  "targets": [
+    {
+      "accession": "SRR1057608",
+      "gains": 32,
+      "gene": "insecta_ND4",
+      "kmer_sets": [
+        {
+          "distinct_sets": 32,
+          "k": 19,
+          "shared_groups": []
+        },
+        {
+          "distinct_sets": 32,
+          "k": 31,
+          "shared_groups": []
+        },
+        {
+          "distinct_sets": 32,
+          "k": 51,
+          "shared_groups": []
+        }
+      ],
+      "largest_nearest_window": 11,
+      "length_counts": {
+        "150": 1,
+        "156": 1,
+        "157": 1,
+        "159": 3,
+        "160": 2,
+        "161": 5,
+        "163": 3,
+        "164": 2,
+        "165": 1,
+        "166": 1,
+        "167": 6,
+        "168": 1,
+        "170": 1,
+        "173": 1,
+        "181": 2,
+        "184": 1
+      },
+      "max_length": 184,
+      "min_length": 150,
+      "nearest_window_max_allele_length_counts": {
+        "1": 7,
+        "2": 6,
+        "4": 6,
+        "5": 5,
+        "6": 5,
+        "8": 1,
+        "9": 1,
+        "11": 1
+      },
+      "queries_with_nearest_window_at_most_3_bases": 13,
+      "queries_with_nearest_window_at_most_5_bases": 24,
+      "windows_with_edge_limited_flanks": 2,
+      "windows_with_two_full_19bp_flanks": 30
+    },
+    {
+      "accession": "SRR25378184",
+      "gains": 32,
+      "gene": "angiospermae_psbA-trnH",
+      "kmer_sets": [
+        {
+          "distinct_sets": 32,
+          "k": 19,
+          "shared_groups": []
+        },
+        {
+          "distinct_sets": 32,
+          "k": 31,
+          "shared_groups": []
+        },
+        {
+          "distinct_sets": 32,
+          "k": 51,
+          "shared_groups": []
+        }
+      ],
+      "largest_nearest_window": 22,
+      "length_counts": {
+        "342": 1,
+        "364": 1,
+        "372": 1,
+        "385": 1,
+        "392": 1,
+        "394": 2,
+        "407": 2,
+        "414": 1,
+        "416": 1,
+        "430": 1,
+        "442": 1,
+        "452": 2,
+        "464": 1,
+        "472": 1,
+        "473": 1,
+        "474": 1,
+        "495": 3,
+        "515": 2,
+        "517": 2,
+        "530": 1,
+        "550": 1,
+        "552": 2,
+        "572": 1,
+        "574": 1
+      },
+      "max_length": 574,
+      "min_length": 342,
+      "nearest_window_max_allele_length_counts": {
+        "4": 14,
+        "10": 6,
+        "22": 12
+      },
+      "queries_with_nearest_window_at_most_3_bases": 0,
+      "queries_with_nearest_window_at_most_5_bases": 14,
+      "windows_with_edge_limited_flanks": 0,
+      "windows_with_two_full_19bp_flanks": 32
+    },
+    {
+      "accession": "SRR25378184",
+      "gains": 32,
+      "gene": "angiospermae_trnV-atpE",
+      "kmer_sets": [
+        {
+          "distinct_sets": 32,
+          "k": 19,
+          "shared_groups": []
+        },
+        {
+          "distinct_sets": 32,
+          "k": 31,
+          "shared_groups": []
+        },
+        {
+          "distinct_sets": 32,
+          "k": 51,
+          "shared_groups": []
+        }
+      ],
+      "largest_nearest_window": 18,
+      "length_counts": {
+        "548": 1,
+        "565": 1,
+        "566": 2,
+        "584": 1,
+        "585": 1,
+        "599": 1,
+        "600": 1,
+        "601": 1,
+        "602": 1,
+        "634": 1,
+        "635": 1,
+        "651": 1,
+        "652": 1,
+        "653": 1,
+        "669": 1,
+        "670": 3,
+        "671": 2,
+        "704": 1,
+        "705": 2,
+        "721": 1,
+        "739": 1,
+        "740": 2,
+        "755": 1,
+        "756": 2,
+        "757": 1
+      },
+      "max_length": 757,
+      "min_length": 548,
+      "nearest_window_max_allele_length_counts": {
+        "1": 29,
+        "3": 1,
+        "17": 1,
+        "18": 1
+      },
+      "queries_with_nearest_window_at_most_3_bases": 30,
+      "queries_with_nearest_window_at_most_5_bases": 30,
+      "windows_with_edge_limited_flanks": 0,
+      "windows_with_two_full_19bp_flanks": 32
+    },
+    {
+      "accession": "SRR27962769",
+      "gains": 17,
+      "gene": "insecta_18S_1",
+      "kmer_sets": [
+        {
+          "distinct_sets": 17,
+          "k": 19,
+          "shared_groups": []
+        },
+        {
+          "distinct_sets": 17,
+          "k": 31,
+          "shared_groups": []
+        },
+        {
+          "distinct_sets": 17,
+          "k": 51,
+          "shared_groups": []
+        }
+      ],
+      "largest_nearest_window": 8,
+      "length_counts": {
+        "887": 1,
+        "890": 1,
+        "891": 1,
+        "892": 1,
+        "893": 2,
+        "894": 1,
+        "896": 1,
+        "897": 3,
+        "898": 2,
+        "899": 1,
+        "900": 3
+      },
+      "max_length": 900,
+      "min_length": 887,
+      "nearest_window_max_allele_length_counts": {
+        "1": 12,
+        "2": 1,
+        "4": 1,
+        "5": 2,
+        "8": 1
+      },
+      "queries_with_nearest_window_at_most_3_bases": 13,
+      "queries_with_nearest_window_at_most_5_bases": 16,
+      "windows_with_edge_limited_flanks": 0,
+      "windows_with_two_full_19bp_flanks": 17
+    },
+    {
+      "accession": "SRR27962769",
+      "gains": 32,
+      "gene": "insecta_ITS_2",
+      "kmer_sets": [
+        {
+          "distinct_sets": 32,
+          "k": 19,
+          "shared_groups": []
+        },
+        {
+          "distinct_sets": 32,
+          "k": 31,
+          "shared_groups": []
+        },
+        {
+          "distinct_sets": 32,
+          "k": 51,
+          "shared_groups": []
+        }
+      ],
+      "largest_nearest_window": 5,
+      "length_counts": {
+        "977": 9,
+        "978": 17,
+        "979": 6
+      },
+      "max_length": 979,
+      "min_length": 977,
+      "nearest_window_max_allele_length_counts": {
+        "1": 30,
+        "5": 2
+      },
+      "queries_with_nearest_window_at_most_3_bases": 30,
+      "queries_with_nearest_window_at_most_5_bases": 32,
+      "windows_with_edge_limited_flanks": 0,
+      "windows_with_two_full_19bp_flanks": 32
+    },
+    {
+      "accession": "SRR27962769",
+      "gains": 32,
+      "gene": "insecta_Yp2",
+      "kmer_sets": [
+        {
+          "distinct_sets": 28,
+          "k": 19,
+          "shared_groups": [
+            {
+              "distinct_kmers": 495,
+              "lengths": [
+                619
+              ],
+              "query_ids": [
+                "q169",
+                "q179"
+              ],
+              "set_sha256": "abea763e468b36f89e912bd830bb60810edcfbe1cd53aefa4310675985663754"
+            },
+            {
+              "distinct_kmers": 520,
+              "lengths": [
+                645
+              ],
+              "query_ids": [
+                "q170",
+                "q172"
+              ],
+              "set_sha256": "668e0f191d4d7e66dafb76fb0ef0a3d0a9a47c79d3359725cf0345ef6057cff1"
+            },
+            {
+              "distinct_kmers": 481,
+              "lengths": [
+                603
+              ],
+              "query_ids": [
+                "q186",
+                "q190"
+              ],
+              "set_sha256": "3f18a13a063aa897763351c138f01738cca468ae461d474276fa93064118836c"
+            },
+            {
+              "distinct_kmers": 492,
+              "lengths": [
+                607
+              ],
+              "query_ids": [
+                "q191",
+                "q192"
+              ],
+              "set_sha256": "3c6f1511fbaf584888d1303a8042c25b860bde4bda61ca96fe57686cf4a4a32c"
+            }
+          ]
+        },
+        {
+          "distinct_sets": 32,
+          "k": 31,
+          "shared_groups": []
+        },
+        {
+          "distinct_sets": 32,
+          "k": 51,
+          "shared_groups": []
+        }
+      ],
+      "largest_nearest_window": 20,
+      "length_counts": {
+        "601": 2,
+        "603": 2,
+        "605": 2,
+        "607": 4,
+        "609": 2,
+        "611": 1,
+        "613": 2,
+        "617": 1,
+        "619": 3,
+        "621": 1,
+        "623": 1,
+        "625": 3,
+        "629": 1,
+        "633": 1,
+        "635": 1,
+        "637": 1,
+        "645": 2,
+        "649": 1,
+        "661": 1
+      },
+      "max_length": 661,
+      "min_length": 601,
+      "nearest_window_max_allele_length_counts": {
+        "1": 8,
+        "4": 6,
+        "12": 12,
+        "13": 2,
+        "16": 3,
+        "20": 1
+      },
+      "queries_with_nearest_window_at_most_3_bases": 8,
+      "queries_with_nearest_window_at_most_5_bases": 14,
+      "windows_with_edge_limited_flanks": 0,
+      "windows_with_two_full_19bp_flanks": 32
+    },
+    {
+      "accession": "SRR31887760",
+      "gains": 23,
+      "gene": "insecta_12S",
+      "kmer_sets": [
+        {
+          "distinct_sets": 23,
+          "k": 19,
+          "shared_groups": []
+        },
+        {
+          "distinct_sets": 23,
+          "k": 31,
+          "shared_groups": []
+        },
+        {
+          "distinct_sets": 23,
+          "k": 51,
+          "shared_groups": []
+        }
+      ],
+      "largest_nearest_window": 40,
+      "length_counts": {
+        "473": 1,
+        "478": 1,
+        "479": 1,
+        "483": 2,
+        "485": 1,
+        "487": 1,
+        "490": 2,
+        "491": 2,
+        "495": 4,
+        "496": 2,
+        "497": 4,
+        "499": 2
+      },
+      "max_length": 499,
+      "min_length": 473,
+      "nearest_window_max_allele_length_counts": {
+        "1": 10,
+        "4": 2,
+        "5": 1,
+        "7": 2,
+        "8": 1,
+        "9": 1,
+        "11": 1,
+        "12": 1,
+        "14": 2,
+        "17": 1,
+        "40": 1
+      },
+      "queries_with_nearest_window_at_most_3_bases": 10,
+      "queries_with_nearest_window_at_most_5_bases": 13,
+      "windows_with_edge_limited_flanks": 0,
+      "windows_with_two_full_19bp_flanks": 23
+    }
+  ],
+  "verified_gain_queries": 200,
+  "windows_with_edge_limited_flanks": 2,
+  "windows_with_two_full_19bp_flanks": 198
+}

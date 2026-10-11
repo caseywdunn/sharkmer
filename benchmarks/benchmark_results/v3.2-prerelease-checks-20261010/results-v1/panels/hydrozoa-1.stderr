@@ -1,0 +1,26 @@
+sharkmer 3.2.0-dev (dry run)
+
+Input:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+
+Configuration:
+  Sample:         schema_probe
+  Output dir:     /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/hydrozoa-1-dry-output/
+  Kmer length:    19
+  Chunks:         0
+  Threads:        2
+  Min kmer count: 2
+  PCR output:     standard and labelled uncertain products
+
+Output files:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/hydrozoa-1-dry-output/schema_probe.stats.yaml
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/hydrozoa-1-dry-output/schema_probe_hydrozoa_16S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/hydrozoa-1-dry-output/schema_probe_hydrozoa_CO1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/hydrozoa-1-dry-output/schema_probe_hydrozoa_18S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/hydrozoa-1-dry-output/schema_probe_hydrozoa_28S.fasta
+
+PCR primers (4 genes):
+  hydrozoa_16S (fwd: GRCTGTTT...CATA, rev: AATTSAWS...GAGG, len: 500-700)
+  hydrozoa_CO1 (fwd: GGTCAACA...TTGG, rev: TAAACTTC...ATCA, len: 580-750)
+  hydrozoa_18S (fwd: AACCTGGT...CAGT, rev: TGATCCTT...CTAC, len: 1600-2000)
+  hydrozoa_28S (fwd: CCYYAGTA...GAGT, rev: SWACAGAT...TTCG, len: 2900-3500)

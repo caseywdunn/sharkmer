@@ -1,0 +1,9 @@
+{
+  "NC_008326.1.expected-corrected.fasta": "95af541c076d7379a653a985dfb4cc4088fd8e1d16187fd59f05ca683c5c722f",
+  "NC_008326.1.synthetic.fastq": "ab4cfa3709bfe02b296e39c121ae95c42cc3d1af467939eeb24f9bd1902eb3c4",
+  "NC_056221.1.expected-corrected.fasta": "d032e1186b1bcd737f40df919f1b3be3dd37b6483f803675375862983e5b36fb",
+  "NC_056221.1.synthetic.fastq": "d110be1cf4f0cbceba775d6fd11fd0c97c57e407fc7278d17f9dff9b66adbeab",
+  "angiospermae-after.yaml": "17405ffa82fd8c24f792920a62a1c2118da2385046960a8e4d2ec6985cb15382",
+  "angiospermae-before.yaml": "9ff46bf3d343920c33a2a5c41b0858f0d8401f67729d737f17e73350dae365de",
+  "mapping.json": "50c19c42a226b9719eac0ed062e461c2c88d6cb2b2d90eb6576e11c39523674e"
+}

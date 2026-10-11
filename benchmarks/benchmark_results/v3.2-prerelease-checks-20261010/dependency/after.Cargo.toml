@@ -1,0 +1,46 @@
+[package]
+name = "sharkmer"
+version = "3.2.0-dev"
+authors = ["Casey Dunn <casey.dunn@yale.edu>"]
+description = "In silico PCR (sPCR) and incremental kmer counting from whole-genome shotgun reads"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+repository = "https://github.com/caseywdunn/sharkmer"
+
+# Hash map backend for kmer counting. ahashmap (default) uses AES-NI hardware
+# acceleration and is significantly faster than fxhashmap on modern CPUs.
+# ahash is also used unconditionally in pcr/graph.rs and pcr/pruning.rs as
+# the hot-path hash backend for graph traversal data structures, so it is
+# always pulled in regardless of which kmer-counting backend is selected.
+[features]
+default = ["ahashmap"]
+fxhashmap = ["dep:rustc-hash"]
+ahashmap = []
+
+
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[dependencies]
+clap = { version = "4.2.7", features = ["derive"]}
+clap_complete = { version = "4" }
+rand = { version = "0.8.6"}
+rayon = { version = "1.7.0"}
+petgraph = { version = "0.6.4"}
+bio = { version = "1.4.0"}
+rustc-hash = { version = "1.1", optional = true }
+ahash = { version = "0.8" }
+anyhow = { version = "1" }
+serde = { version = "1", features = ["derive"] }
+serde_yaml_ng = { version = "0.10" }
+flate2 = { version = "1" }
+log = { version = "0.4" }
+env_logger = { version = "0.11" }
+indicatif = { version = "0.17" }
+ureq = { version = "2" }
+peak_alloc = { version = "0.3" }
+dirs = { version = "6" }
+fs2 = { version = "0.4" }
+sha2 = { version = "0.10" }
+tempfile = { version = "3" }
+smallvec = { version = "1" }

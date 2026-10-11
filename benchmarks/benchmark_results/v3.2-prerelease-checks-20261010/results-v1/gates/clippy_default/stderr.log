@@ -1,0 +1,10 @@
+    Checking rand v0.8.6
+    Checking rustls-webpki v0.103.13
+    Checking rustls v0.23.37
+    Checking rand_distr v0.4.3
+    Checking nalgebra v0.29.0
+    Checking ureq v2.12.1
+    Checking statrs v0.16.1
+    Checking bio v1.6.0
+    Checking sharkmer v3.2.0-dev (/nfs/roberts/project/pi_cwd7/cwd7/sharkmer)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 42.07s

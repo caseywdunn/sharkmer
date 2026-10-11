@@ -1,0 +1,74 @@
+{
+  "artifacts": {
+    "analyze_linkage.py": {
+      "bytes": 21053,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/analyze_linkage.py",
+      "sha256": "94b844543ce07f93f4a52a1d83fea2b297ae6d6c456f7e8d3984d83751d9dcde"
+    },
+    "independent_review.py": {
+      "bytes": 12542,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/independent_review.py",
+      "sha256": "db3122d2653f6dd371853c3e23fb9db3897308ff89d43022bf634a82df0c5f72"
+    },
+    "run-v1/block_combinations.tsv": {
+      "bytes": 1334,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/block_combinations.tsv",
+      "sha256": "553dbaa1671856544ca1c01e31335162980f3446d7f02c7a1f14e679b0ab52d7"
+    },
+    "run-v1/candidate_disposition.tsv": {
+      "bytes": 4201,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/candidate_disposition.tsv",
+      "sha256": "92dc952df75468a3d923a0fade151dc312c27ab58695445f608dfc5953e69102"
+    },
+    "run-v1/checksums.json": {
+      "bytes": 1082,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/checksums.json",
+      "sha256": "35dfff9eea51b7b1240ace47dd0735da75e3c209fb33c795b162288df30517ef"
+    },
+    "run-v1/report.json": {
+      "bytes": 721259,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/report.json",
+      "sha256": "51c9e0fd6512942dfbc56d15557de5410f4281ea26bc7a746d24face3eebc687"
+    },
+    "run-v1/summary.json": {
+      "bytes": 13153,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/summary.json",
+      "sha256": "225ebf3d0f4fe1ae6ef6f0fef84ab5013d2f9717041f4a06e84de46198d1c3bd"
+    },
+    "run-v1/tests.log": {
+      "bytes": 1093,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/tests.log",
+      "sha256": "29ccf04e724fc18281c10ac65a6a16f5fdf395b41e5d6cc620ff25a543b2029c"
+    },
+    "run-v1/verification.json": {
+      "bytes": 1190,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/verification.json",
+      "sha256": "dae1889f08e30b14c273c8abac60ae776fecd2e08051288a8b9eab633d412730"
+    },
+    "test_linkage.py": {
+      "bytes": 4875,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/test_linkage.py",
+      "sha256": "80b2cfaebb37a5932bb236f96f9f0b1bc67077548be777756d967ae8abfd974c"
+    }
+  },
+  "candidate_contexts": 33,
+  "candidate_placements_reconstructed": 286,
+  "candidate_segment_assays_recounted": 231,
+  "complete_anchor_placements_recounted": 8,
+  "conclusion": "Nearby exact Q20 co-occurrence is observed for 15 gains (11 with full 21-base flanks); the remaining 17 are unobserved in this selected saved ledger. All full hypotheses remain unresolved.",
+  "controls": "All eight ITS and two CO1 original event counts reproduce; CO1 27/0 preserved",
+  "full_candidate_phase_established": 0,
+  "gains_with_full_flanked_local_span": 11,
+  "gains_with_variable_core_including_partial_flanks": 15,
+  "limitations": [
+    "The saved reads were selected for original local positive windows; zeros cannot estimate prevalence or establish absence in the prefix.",
+    "Observed literal spans may match multiple hypotheses and do not establish biological target, independent molecules, polymorphism, correct repeats, or full-product phase.",
+    "Direct exact ungapped placement does not exhaust alternate gapped alignments; the report preserves mismatches and ambiguous seed placements."
+  ],
+  "production_fix_assessment": "No concrete production failure demonstrated: bounded uncertain output does not promise exhaustive candidates or validated phase; a novel local read string is not evidence that emission or admission is broken.",
+  "saved_ITS_reads": 25,
+  "scope": "Independent review of frozen run-v1; no FASTQ rescan",
+  "status": "pass",
+  "synthetic_verification": "11 reported tests pass; source/log receipts and deterministic replay verified",
+  "variable_core_placements_recounted": 8
+}

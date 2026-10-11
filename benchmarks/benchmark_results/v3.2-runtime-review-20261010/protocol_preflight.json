@@ -1,0 +1,21 @@
+{
+  "fixture_output_parsers_pass": [
+    "release",
+    "retention"
+  ],
+  "human_input": {
+    "bases": 18093925,
+    "records": 108518,
+    "sha256": "5f6230177848a7fb58e3cfe5a8de2aa43b9239466c87f07fec3a057fc5ab429f",
+    "size_bytes": 39517474
+  },
+  "no_sharkmer_executions": true,
+  "normal_runs": 12,
+  "protocol": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/protocol-v1.json",
+    "sha256": "00f3261a9e9ad9a7d5cb4c5735fcbdc42be5e968081c948d8e14fa4b2e7588d2",
+    "size_bytes": 15497
+  },
+  "status": "pass",
+  "traced_runs": 4
+}

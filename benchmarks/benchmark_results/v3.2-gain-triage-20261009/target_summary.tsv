@@ -1,0 +1,8 @@
+accession	gene	gains	min_length	max_length	k19_distinct_sets	k31_distinct_sets	k51_distinct_sets	queries_with_nearest_window_at_most_3_bases	queries_with_nearest_window_at_most_5_bases	largest_nearest_window	windows_with_two_full_19bp_flanks	windows_with_edge_limited_flanks
+SRR1057608	insecta_ND4	32	150	184	32	32	32	13	24	11	30	2
+SRR25378184	angiospermae_psbA-trnH	32	342	574	32	32	32	0	14	22	32	0
+SRR25378184	angiospermae_trnV-atpE	32	548	757	32	32	32	30	30	18	32	0
+SRR27962769	insecta_18S_1	17	887	900	17	17	17	13	16	8	17	0
+SRR27962769	insecta_ITS_2	32	977	979	32	32	32	30	32	5	32	0
+SRR27962769	insecta_Yp2	32	601	661	28	32	32	8	14	20	32	0
+SRR31887760	insecta_12S	23	473	499	23	23	23	10	13	40	23	0

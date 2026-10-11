@@ -1,0 +1,504 @@
+{
+  "candidates": [
+    {
+      "id": "SRR31887760_4421359eb30276c4",
+      "sequence": "TGATATAGCATTCCCACGAATAAATAATATAAGATTTTGACTTCTACCTCCTGCTCTTTCTTTACTATTAGTAAGTAGAATAGTTGAAAATGGAGCTGGGACAGGATGAACTGTTTATCCACCTCTATCCGCTGGAATTGCTCATGGTGGAGCTTCAGTTGATTTAGCTATTTTTTCTCTACATTTAGCAGGAATTTCTTCAATTTTAGGAGCTGTAAATTTTATTACAACTGTAATTAATATACGATCAACAGGAATTTCATTAGATCGTATACCTTTATTTGTTTGATCAGTAGTTATTACTGCTTTATTATTATTATTATCACTTCCAGTACTAGCAGGAGCTATTACT",
+      "sequence_sha256": "4421359eb30276c48af559081691c91a74d132155b4192c72cd44eac885f4af4",
+      "source_candidates": [
+        {
+          "gene": "CO1_1",
+          "length": 352,
+          "role": "same-sample retained mitochondrial control",
+          "sequence_sha256": "4421359eb30276c48af559081691c91a74d132155b4192c72cd44eac885f4af4"
+        }
+      ]
+    },
+    {
+      "id": "SRR31887760_6d6a1fe8e2de508a",
+      "sequence": "GAACACATATCACGTATACGCCGCGTACCACTTACTCACACACACACACGCAGACACACACACACACTCACCCACACACACACACAAACAACACAAAAAGAAAACAAAAAAAAAAAAAAAATTCAAAAAAAAAAAAAAGAACAAAAAAAAAAAAAAAATTCAAAAAAAAAAAAAAGAACAAAAAAAAAAAAAATAAAATAATAATAATAATAAAAAAAAAAAAAAAAGAGGAGAAAAAAAGAGAAGAAAAAAAAAGAGAAAAAAAAAAAAAAAGACAAAAAAAGAAAAGAAAAGGAAAAGAAAAGAAAAGAGAGGAAAAGAGAAGAAAAGAGGAGAAAAGAAAAGAAAAGGAAAAGAAAAGAAAAGAGAGGAAAAGAGAAGAAAAGAGGAGAAAAGAAAAGAGAAAAAAAGAAAAAAAAAGGAAAAAAGAAAAGAAGAGAGAAGAGAAAAGAGAAAAGAGAAGAAGAGAAAAGAAAAAAAAAGAGAGAAAAAAAAAAAAAAAGACAAAAAAAGAAAAGAAAAAACAAGAAAAAAAAAAAAAAACGGGCCAAAAAAAAAAAAAGAAAGAAAGAAAAATGTATTTGTTATAC",
+      "sequence_sha256": "6d6a1fe8e2de508afa9a757ceca421c0796eb2e7a70dcdd39b357190764f4049",
+      "source_candidates": [
+        {
+          "gene": "16S_2",
+          "length": 590,
+          "role": "withheld_lost_candidate",
+          "sequence_sha256": "6d6a1fe8e2de508afa9a757ceca421c0796eb2e7a70dcdd39b357190764f4049"
+        }
+      ]
+    },
+    {
+      "id": "SRR31887760_bde6ccaf771a2498",
+      "sequence": "TAGTTGCGACTTATTTTACATATTTACATACATATGTATGTATATATATGTATATGTATATATATGTATATGTATATATATGTATGTATGTACGTATGTATGTATGTATATACATATATGTATGTATATATGTATGTATATGTGTATATATATATATATAATATATATATATATATACACATATACATATGTATATATGTATATATATACATATGTATGTGTGTGTGTGTGGGTGAGTGTGTGTGTGTGTATGTTTGTGTGTGTGTGTGCGAGAGAGTGTGTTTGTGTGTGTGTTTATGTGTGTGCGTGTGTGTATGTGTGTGTATGTGTGTGGGTGTGTGAGTGAGTGTGTGTGTGTTTGTGTGAGTGTGAGTGTGAGTGTGAGTGTGTGTGTGTTTGTGTGAGTGTGAGTGTGTGTGTGTTGGTGTGTGTGTGTGTGCGTCTGTGTGTGTGTGTGGAAAAAAGGGTGACTAAT",
+      "sequence_sha256": "bde6ccaf771a24982439c53e7d38c45748cb2773f6ce05660c2a31a85d9203be",
+      "source_candidates": [
+        {
+          "gene": "12S",
+          "length": 475,
+          "role": "withheld_lost_candidate",
+          "sequence_sha256": "bde6ccaf771a24982439c53e7d38c45748cb2773f6ce05660c2a31a85d9203be"
+        }
+      ]
+    },
+    {
+      "id": "SRR31887760_c1a643a6313600b1",
+      "sequence": "TAGTTGCGACTTATTTTACATATTTACATACATATGTATGTATATATATGTATATGTATATATATGTATATGTATATATATGTATGTATGTACGTATGTATGTATGTATATACATATATGTATGTATATATGTATGTATATGTGTATATATATATATATAATATATATATATATATACACATATACATATGTATATATGTATATATATACATATGTATGTGTGTGTGTGTGGGTGAGTGTGTGTGTGTGTATGTTTGTGTGTGTGTGTGCGAGAGAGTGTGTTTGTGTGTGTGTTTATGTGTGTGCGTGTGTGTATGTGTGTGTATGTGTGTGGGTGTGTGAGTGAGTGTGTGTGTGTTTGTGTGAGTGTGAGTGTGAGTGTGAGTGTGTGTGTGTTTGTGTGAGTGTGAGTGTGTGTGTGTTGGTGTGTGTGTGTGCGTGTGTATGTGTGTGTGCGTGTGTGATTGTGTGTGTGTGTGTGGAAAAAAGGGTGACTAAT",
+      "sequence_sha256": "c1a643a6313600b14ac0faae530e4fd93b48fa5007978c93ae81f089efa04148",
+      "source_candidates": [
+        {
+          "gene": "12S",
+          "length": 499,
+          "role": "withheld_lost_candidate",
+          "sequence_sha256": "c1a643a6313600b14ac0faae530e4fd93b48fa5007978c93ae81f089efa04148"
+        }
+      ]
+    },
+    {
+      "id": "SRR31887760_d147d2a3d7960835",
+      "sequence": "TAGTTGCGACTTATTTTACATATTTACATACATATGTATGTATATATATGTATATGTATATATATGTATATGTATATATATGTATGTATGTACGTATGTATGTATGTATATACATATATGTATGTATATATGTATGTATATGTGTATATATATATATATAATATATATATATATATACACATATACATATGTATATATGTATATATATACATATGTATGTGTGTGTGTGTGGGTGAGTGTGTGTGTGTGTATGTTTGTGTGTGTGTGTGCGAGAGAGTGTGTTTGTGTGTGTGTTTATGTGTGTGCGTGTGTGTATGTGTGTGTATGTGTGTGGGTGTGTGAGTGAGTGTGTGTGTGTTTGTGTGAGTGTGAGTGTGAGTGTGAGTGTGTGTGTGTTTGTGTGAGTGTGAGTGTGTGTGTGTTGGTGTGTGTGTTGGTGTGTGTGTGTGTGCGTCTGTGTGTGTGTGTGGAAAAAAGGGTGACTAAT",
+      "sequence_sha256": "d147d2a3d79608354456b94cbfeb6df52eae820d135852530fb2d8798d54b39c",
+      "source_candidates": [
+        {
+          "gene": "12S",
+          "length": 487,
+          "role": "withheld_lost_candidate",
+          "sequence_sha256": "d147d2a3d79608354456b94cbfeb6df52eae820d135852530fb2d8798d54b39c"
+        }
+      ]
+    }
+  ],
+  "events": [
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 120,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_101",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          80,
+          101
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          120,
+          141
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 101
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 140,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_121",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          100,
+          121
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          140,
+          161
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 121
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 160,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_141",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          120,
+          141
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          160,
+          181
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 141
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 180,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_161",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          140,
+          161
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          180,
+          201
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 161
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 200,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_181",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          160,
+          181
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          200,
+          221
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 181
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 220,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_201",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          180,
+          201
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          220,
+          241
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 201
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 40,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_21",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          0,
+          21
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          40,
+          61
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 21
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 240,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_221",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          200,
+          221
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          240,
+          261
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 221
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 260,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_241",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          220,
+          241
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          260,
+          281
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 241
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 280,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_261",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          240,
+          261
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          280,
+          301
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 261
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 300,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_281",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          260,
+          281
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          300,
+          321
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 281
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 320,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_301",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          280,
+          301
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          320,
+          341
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 301
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 331,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_312",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          291,
+          312
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          331,
+          352
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 312
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 60,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_41",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          20,
+          41
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          60,
+          81
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 41
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 80,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_61",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          40,
+          61
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          80,
+          101
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 61
+    },
+    {
+      "candidate_id": "SRR31887760_4421359eb30276c4",
+      "comparison_group": "SRR31887760_4421359eb30276c4_marginal_diagnostic_group",
+      "end": 100,
+      "id": "SRR31887760_4421359eb30276c4_marginal_diagnostic_81",
+      "preflight": {
+        "flank_bases_each_side": 21,
+        "has_full_left_flank": true,
+        "has_full_right_flank": true,
+        "left_flank_span": [
+          60,
+          81
+        ],
+        "literal_acgt_window": true,
+        "right_flank_span": [
+          100,
+          121
+        ],
+        "status": "eligible_for_scanner_window"
+      },
+      "role": "marginal_diagnostic",
+      "source": {
+        "kind": "protocol_v2_uniform_marginal_diagnostic",
+        "scope": "local occurrence control only; not a structural bridge or gate-rescue event"
+      },
+      "start": 81
+    }
+  ],
+  "schema_version": 1
+}

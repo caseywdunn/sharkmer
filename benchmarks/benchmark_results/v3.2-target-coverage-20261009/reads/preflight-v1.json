@@ -1,0 +1,55 @@
+{
+  "samples": [
+    {
+      "accession": "ERR14009273",
+      "candidate_tile_schedules_verified": 3,
+      "events": 98,
+      "projection_limit": "Excludes real match density, FASTQ parsing, quality checks, hashing and output; hard execution limits remain necessary",
+      "random_matcher_seconds": 0.35758616705425084,
+      "random_only_million_read_projection_seconds": 178.79308352712542,
+      "synthetic_151base_reads": 2000,
+      "synthetic_pattern_orientation_quality_cases": 392
+    },
+    {
+      "accession": "SRR1057608",
+      "candidate_tile_schedules_verified": 46,
+      "events": 158,
+      "projection_limit": "Excludes real match density, FASTQ parsing, quality checks, hashing and output; hard execution limits remain necessary",
+      "random_matcher_seconds": 0.25519590312615037,
+      "random_only_million_read_projection_seconds": 127.59795156307518,
+      "synthetic_151base_reads": 2000,
+      "synthetic_pattern_orientation_quality_cases": 632
+    },
+    {
+      "accession": "SRR25378184",
+      "candidate_tile_schedules_verified": 93,
+      "events": 444,
+      "projection_limit": "Excludes real match density, FASTQ parsing, quality checks, hashing and output; hard execution limits remain necessary",
+      "random_matcher_seconds": 1.1685387080069631,
+      "random_only_million_read_projection_seconds": 584.2693540034816,
+      "synthetic_151base_reads": 2000,
+      "synthetic_pattern_orientation_quality_cases": 1776
+    },
+    {
+      "accession": "SRR27962769",
+      "candidate_tile_schedules_verified": 20,
+      "events": 133,
+      "projection_limit": "Excludes real match density, FASTQ parsing, quality checks, hashing and output; hard execution limits remain necessary",
+      "random_matcher_seconds": 0.30001903092488647,
+      "random_only_million_read_projection_seconds": 150.00951546244323,
+      "synthetic_151base_reads": 2000,
+      "synthetic_pattern_orientation_quality_cases": 532
+    }
+  ],
+  "sources": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/check_manifests.py": "3b434ddee3ca5c93f9e8ae40b433bc1cb0af8d83db24595c8369cd44a4cea9ab",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/manifests-v1/ERR14009273.json": "39a3205b1147f280de6f0278c287110e62ead3b42cd8f3d770f88569977cb235",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/manifests-v1/SRR1057608.json": "a149d8faef3e609c06abe8dcef9af44126bd7a1b9dc6fb0a224abf97d464e68f",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/manifests-v1/SRR25378184.json": "859c065ce30dfe83f3c7fd1aa61a118b675e70b3efbb6cefaf6832f4814a4095",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/manifests-v1/SRR27962769.json": "e3604bc32829bbc0fd9a23c423651f3c799e14136917768c06495221db57a03a",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/prepare_assays.py": "0f1d4f35f67e647c74a0309acf0101dcf0fd23c63e54f1e59f5c65888c3b90d8",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run_assay.py": "f64f826553875c70d533396a6226841a0e79c2c64c14b505a308f6b865de4830",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/scan_exact.py": "1f41db14003317fb66ec68d9d64724f2f4c515ba3d6a77733e48f86d50046894"
+  },
+  "status": "pass"
+}

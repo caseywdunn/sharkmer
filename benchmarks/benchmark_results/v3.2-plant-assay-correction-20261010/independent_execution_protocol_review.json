@@ -1,0 +1,15 @@
+{
+  "artifacts": {
+    "implementation-v1/tests.log": "1c2418a2a42a21f464a5e6a3500374c7a0540679c93473b5a75edfe5bc3eec53",
+    "implementation-v1/verification.json": "e13d02d2d4389bb03fa5b17e801423ffea5559e802a552a2b897d92a45f4f179",
+    "protocol-v2.json": "80f5f935e0fde11bea7f0937e8e86350ca85c9151ad0c68e665e6d370e63d222"
+  },
+  "conditions": [
+    "Bind final binary and exact invocation resource limits in execution receipts.",
+    "Report standard/uncertain classes, literal full-sequence identity and target outcome changes separately.",
+    "Actual user release remains unauthorized; these are development checks."
+  ],
+  "protocol_sha256": "80f5f935e0fde11bea7f0937e8e86350ca85c9151ad0c68e665e6d370e63d222",
+  "review": "Separate2GiB synthetic and12GiB real address-space caps resolve the predictable real-data OOM concern. Scientific before/after design remains the reviewed proposal; focused source/provenance/negative regressions pass and production panel equals approved snapshot.",
+  "status": "approved_for_bounded_validation"
+}

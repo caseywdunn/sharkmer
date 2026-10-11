@@ -1,0 +1,694 @@
+{
+  "emitted_identities": 326,
+  "joined_output_count": 7,
+  "source_binding_scope": "Receipt-bound inputs rechecked; additional evidence links are explicitly labeled artifact snapshots.",
+  "source_count": 137,
+  "sources": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run-v1/results/report.json": {
+      "binding": "join_input_receipt",
+      "sha256": "63e8e6c0df1c61dc70915308cd6718bff8fc378a2f46aa055c350855fcbda990",
+      "size_bytes": 13463
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/summary.json": {
+      "binding": "join_input_receipt",
+      "sha256": "a998fa38f4f2384790ad5fc794ea1970e32ecbe9338e5acd20a503a4f5b990ea",
+      "size_bytes": 22267
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-high-copy-final-20260911/ARCHIVE_CONTENTS.json": {
+      "binding": "join_input_receipt",
+      "sha256": "5aa5dab06a2913e1ed31cd30eb6a6a252864679f1ff3d22e354fdc497e57975c",
+      "size_bytes": 249125
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-high-copy-final-20260911/evidence.tar.gz": {
+      "binding": "join_input_receipt",
+      "sha256": "ef3ee0b65f77548ad2673f50856b19d5401f4296345c643093cacf3b522fb144",
+      "size_bytes": 783068
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-high-copy-final-20260911/provenance.json": {
+      "binding": "join_input_receipt",
+      "sha256": "4c792367c14891fb2285bf25898e7872f3ff489ec49a46b7d3b650614e63facc",
+      "size_bytes": 81172
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/extract_historical_identities.py": {
+      "binding": "join_input_receipt",
+      "sha256": "ebbecb75f25bbdfb4a396c8dc67ada0c50f099f06306df66dcdd12edf2522bcf",
+      "size_bytes": 8431
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/historical_identities.json": {
+      "binding": "join_input_receipt",
+      "sha256": "0b0ca2ce3678a2f36c5d24814db507b17e290462002ce37a5afb49516b2493d1",
+      "size_bytes": 420719
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/inventory.json": {
+      "binding": "join_input_receipt",
+      "sha256": "0e6e6edbebc7430c70519c37fd2bcdd8c2312ddc1b977dfb8b83200e5c1e9ddc",
+      "size_bytes": 72176
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/angiospermae.yaml": {
+      "binding": "join_input_receipt",
+      "sha256": "b41760aa28d0f0128ae06151fe1c265b50bb3ed612f51734ed3e911b58dda8c0",
+      "size_bytes": 21734
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/cnidaria.yaml": {
+      "binding": "join_input_receipt",
+      "sha256": "c7cebcaf6d2ce7fa9b6a23ef6a1e93e58adc8254334f006216eb4d4ddbb07b6d",
+      "size_bytes": 46559
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/human.yaml": {
+      "binding": "join_input_receipt",
+      "sha256": "ac4359b88bbf3202218066288d0caffd571884edff7d14a402b7c3038755fdc1",
+      "size_bytes": 28803
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/insecta.yaml": {
+      "binding": "join_input_receipt",
+      "sha256": "043a4d224f8186d58459287c54bec7935d5f4921a5087c14a2136cfac42df874",
+      "size_bytes": 39038
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/teleostei.yaml": {
+      "binding": "join_input_receipt",
+      "sha256": "1c6a32b5c1e30c1881ee08c80352ac87810f4c8a8c6608ffe94f1d0e8c843e59",
+      "size_bytes": 9793
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/report.json": {
+      "binding": "join_input_receipt",
+      "sha256": "51c9e0fd6512942dfbc56d15557de5410f4281ea26bc7a746d24face3eebc687",
+      "size_bytes": 721259
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-public-replacements-20260913/ARCHIVE_CONTENTS.json": {
+      "binding": "join_input_receipt",
+      "sha256": "d0485f8481da7269bae7ab398e41734f7a51ae48113af31a685458453a49b4d5",
+      "size_bytes": 27413
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-public-replacements-20260913/README.md": {
+      "binding": "linked_artifact_snapshot",
+      "sha256": "06d1e41e75d27d30ad11fb6b25ba0f0ad3901ee8f7249258f45bb4f701c8cedc",
+      "size_bytes": 5586
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-public-replacements-20260913/SHA256SUMS": {
+      "binding": "join_input_receipt",
+      "sha256": "57bf2ddae4af2929c67c75960c8afa740219ed7eedb53fa040501469ed8aa6c6",
+      "size_bytes": 170
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-public-replacements-20260913/evidence.tar.gz": {
+      "binding": "join_input_receipt",
+      "sha256": "a17562f0b3a05fc40d8c0b8d2e2364d51d772d8f5ad0a343614240bb2a726fcc",
+      "size_bytes": 3755836
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-backed-audit-20260913/ARCHIVE_CONTENTS.json": {
+      "binding": "join_input_receipt",
+      "sha256": "2d51fbf7c7e277c232963503a756594976e60f68e6d855d1a061b49b646cbb81",
+      "size_bytes": 21545
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-backed-audit-20260913/README.md": {
+      "binding": "linked_artifact_snapshot",
+      "sha256": "1dfaaae299418dfa3881e9a4a1100388fe4d204c15e41493fbd918c6ab9f4a6b",
+      "size_bytes": 4590
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-backed-audit-20260913/SHA256SUMS": {
+      "binding": "join_input_receipt",
+      "sha256": "bc03be3148b05d31de16ec58e9adee15a362b18ed953b0299d70a76a86186c52",
+      "size_bytes": 170
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-backed-audit-20260913/evidence.tar.gz": {
+      "binding": "join_input_receipt",
+      "sha256": "54fe073709c27d7cba87ee608641fe778903d06e97ac49715b9868f4b877dfc2",
+      "size_bytes": 650217
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/per_sequence.json": {
+      "binding": "join_input_receipt",
+      "sha256": "48c58d94713a33539617489c550510e8e23c14a08784d1557e87682c5a6b75d4",
+      "size_bytes": 279786
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/build_matrix.py": {
+      "binding": "final_join_verification",
+      "sha256": "ccf3f7dd30f17ff9de3b18d205b81041e2969a29d9acb843ebba9c48ad649f42",
+      "size_bytes": 17741
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/historical_inventory.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "5f0bcc3fc9ab9925a330d88e2c6c0f1a140826b421d6946173eb4fd4c527f54d",
+      "size_bytes": 81853
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/historical_inventory.json": {
+      "binding": "join_input_receipt",
+      "sha256": "e650a2cab6418abe2d58628c9ebbfce975170a4a2c46752946b3bd8b8644a82d",
+      "size_bytes": 149717
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/historical_inventory.tsv": {
+      "binding": "join_input_receipt",
+      "sha256": "cca7d484975f97f867a850eda64eda3b263684a4ac87dde271cdb4bd38adb272",
+      "size_bytes": 128585
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/join_evidence_v2.py": {
+      "binding": "final_join_verification",
+      "sha256": "e80e05847bc129edbf89f3ed9f9efb053bea66b0e0c022c0c02488ffc1d54c76",
+      "size_bytes": 17713
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/novel_target_inventory.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "6720887a268d73504f3e10fe737383725cf1e9b0a89867157dc9ef117f68ab89",
+      "size_bytes": 89079
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/novel_target_inventory.json": {
+      "binding": "join_input_receipt",
+      "sha256": "969e33eb3671156d1d79b4329480c4ac21c9c7e826ed9e2ec405bc7cd278cb0d",
+      "size_bytes": 311002
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/novel_target_inventory.tsv": {
+      "binding": "join_input_receipt",
+      "sha256": "d208b77561e02dcf4b7a8fa1903b7b92c06aae396055f0013d531c8a09d6c104",
+      "size_bytes": 226882
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/prepare_control_overlay.py": {
+      "binding": "control_overlay_receipt",
+      "sha256": "589b716ba08f6bd359920bea83614d3c3672941252578ac94a98ff090b185efc",
+      "size_bytes": 1898
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/sequence_inventory.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "8848057a00375f9aec5b9fa7ce2a355933a273a6ef8fec70c062a39f7e36c6e5",
+      "size_bytes": 245900
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/sequence_inventory.json": {
+      "binding": "control_overlay_receipt",
+      "sha256": "45443cd27646735ca62034835af6f9b1fff04c2e8fa957c77a2321ec6cac90d3",
+      "size_bytes": 688838
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/sequence_inventory.tsv": {
+      "binding": "join_input_receipt",
+      "sha256": "a98751692535bded529635a3b69f8512659096b4deca60f796296b4eaeae0c1b",
+      "size_bytes": 511719
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/target_matrix.json": {
+      "binding": "join_input_receipt",
+      "sha256": "920e3dac5934e9abe3b2b60f444db4b6b66dc1a3fcb8bbb63bc6e5d3f75f55cd",
+      "size_bytes": 149062
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/target_matrix.tsv": {
+      "binding": "join_input_receipt",
+      "sha256": "b996d08bd40364d647fa619559b3b65c8dc028ddbbb2a0ad011c5818e99eea4f",
+      "size_bytes": 70066
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/validation.json": {
+      "binding": "join_input_receipt",
+      "sha256": "45e346680271d981befe9ddc2184f9a28c5a11755db9b3faa8e469e12093bd55",
+      "size_bytes": 94522
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/verify_joined_sources.py": {
+      "binding": "final_join_verification",
+      "sha256": "4265b9f9077a9acb86de1598abc2d9b897a9f841b46fbbafcb43453cb3713a78",
+      "size_bytes": 3529
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/per_candidate.tsv": {
+      "binding": "linked_artifact_snapshot",
+      "sha256": "81414aa2667bfd51381322bcc0c0fa7849dd445c941972b9d6117b57c8e5d084",
+      "size_bytes": 28506
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/summary.json": {
+      "binding": "control_overlay_receipt",
+      "sha256": "2310823acfd230142823b70e231b485b50cc0771682658abcef1b2e89b1b15a4",
+      "size_bytes": 22128
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/ERR14009273/raw.json": {
+      "binding": "linked_artifact_snapshot",
+      "sha256": "c44ca7efc8967c30616a09c7fb2ddde65a8e0e5aea8e6a2140104b44c0775daa",
+      "size_bytes": 340349
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR1057608/raw.json": {
+      "binding": "linked_artifact_snapshot",
+      "sha256": "5b363696035923322cc71dc6395c2b7e3f1f8968246014ca8aa5476456b1f56f",
+      "size_bytes": 292515
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR25378184/raw.json": {
+      "binding": "linked_artifact_snapshot",
+      "sha256": "eebc91f8988efdbd9bcb5ba65d3aab754a95608adbcb540dc9a2e3f0dff14486",
+      "size_bytes": 1591154
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR27962769/raw.json": {
+      "binding": "linked_artifact_snapshot",
+      "sha256": "ae97d384f2ef89b36ea32b73d82dae02a4c63f04f4949c20dada076f1ee363dd",
+      "size_bytes": 401169
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/assessment-v2/report.json": {
+      "binding": "linked_artifact_snapshot",
+      "sha256": "b45609ca830b99c7eca49d84a32feaf6a571b9ecd154c2474e2eddb25f2f0008",
+      "size_bytes": 286752
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/dev_docs/PUBLIC_REFERENCE_REPLACEMENTS.md": {
+      "binding": "linked_artifact_snapshot",
+      "sha256": "dac172c0020671b611e7d9f518b8b91d809b3c98ea1349cf2c0857606c347871",
+      "size_bytes": 19062
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/dev_docs/READ_BACKED_AUDIT_RESULTS.md": {
+      "binding": "linked_artifact_snapshot",
+      "sha256": "d2e60df9e8c4ffa6df038007ca0fb25a6e36633e49d8b392eb93377c15d1be09",
+      "size_bytes": 13475
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/000_cnidaria_SRR9278435_1000000_pair1_candidate.json": {
+      "binding": "join_input_receipt",
+      "sha256": "6b90a10e0996ef5937be7ad64e2ae468150dbf83887dc8acedd797c4a9c5e400",
+      "size_bytes": 58790
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/001_cnidaria_SRR25099394_1000000_pair1_candidate.json": {
+      "binding": "join_input_receipt",
+      "sha256": "c9c1eaa8effa8580aa0a0e3ceb4de3ce30f7229285203857c89462a145d7a294",
+      "size_bytes": 70766
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/002_cnidaria_SRR8617500_1000000_pair1_candidate.json": {
+      "binding": "join_input_receipt",
+      "sha256": "5cb734038c40264d39b119004a04dde5d7e97bf13a480d20f95da84472eb12c8",
+      "size_bytes": 73950
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/003_human_SRR17535371_1000000_pair1_candidate.json": {
+      "binding": "join_input_receipt",
+      "sha256": "b101d85eb33dbf8a1344a412142e879100900314671b719a0f9e284788b42ab9",
+      "size_bytes": 126436
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/004_teleostei_SRR22396603_1000000_pair1_candidate.json": {
+      "binding": "join_input_receipt",
+      "sha256": "154dbfa2c888a6ffae3d028163f0e54acd29f539af5d90c5dc014784969d0a4c",
+      "size_bytes": 45530
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/005_angiospermae_SRR25378184_1000000_pair1_candidate.json": {
+      "binding": "join_input_receipt",
+      "sha256": "4fa03fb1c1d7cf9dff90acda08aeb30fc27039864960e03247675a70c4be64c5",
+      "size_bytes": 3082741
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/006_angiospermae_ERR14009273_1000000_pair1_candidate.json": {
+      "binding": "join_input_receipt",
+      "sha256": "e63226c19730b7bb1ed925cdec18c748d6b370ba2ee89b2dfe603b245b4e611e",
+      "size_bytes": 323251
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/007_insecta_SRR31887760_1000000_pair1_candidate.json": {
+      "binding": "join_input_receipt",
+      "sha256": "8f9d6a3e1975ffc2ddea344765afc37502f2a69cb1a7bd049c35d0e87d54d194",
+      "size_bytes": 1031359
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/008_insecta_SRR1057608_1000000_pair1_candidate.json": {
+      "binding": "join_input_receipt",
+      "sha256": "123147f6cc1dde1ce40dfc5a8127c65d6da6d8048d51961f02a62cb532fadf46",
+      "size_bytes": 589479
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/009_insecta_SRR27962769_1000000_pair1_candidate.json": {
+      "binding": "join_input_receipt",
+      "sha256": "35a5805413985d73dad454c248c7e9b792a0d358275474732a1af30962d47bc2",
+      "size_bytes": 1592377
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/000_cnidaria_SRR9278435_1000000_pair1_candidate/outputs/cnidaria_SRR9278435_1000000_cnidaria_16S.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "c95fa30a2eb38c73d7457f19311267dfe33adbf38004c42ccd4b06e273edee5f",
+      "size_bytes": 863
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/000_cnidaria_SRR9278435_1000000_pair1_candidate/outputs/cnidaria_SRR9278435_1000000_cnidaria_18S.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "c1236a48c33249a4e95c133bb2efc8d7d16fb2fe7a568b301dae09d9c266514d",
+      "size_bytes": 2065
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/000_cnidaria_SRR9278435_1000000_pair1_candidate/outputs/cnidaria_SRR9278435_1000000_cnidaria_28S_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "03b4ebdbe2283c11ac444dac7b98b03bb5c7c124f5abbd46e7d1e312ea947874",
+      "size_bytes": 3514
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/000_cnidaria_SRR9278435_1000000_pair1_candidate/outputs/cnidaria_SRR9278435_1000000_cnidaria_28S_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "268c9a7afca913dbb9e8f1eac239259f93b7c359366eb73535fff8d766e5da99",
+      "size_bytes": 658
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/000_cnidaria_SRR9278435_1000000_pair1_candidate/outputs/cnidaria_SRR9278435_1000000_cnidaria_CO1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "f25e22f0de018ca7047a307953e386f15b95c49cf8394b31753ee71a3778e06d",
+      "size_bytes": 934
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/000_cnidaria_SRR9278435_1000000_pair1_candidate/outputs/cnidaria_SRR9278435_1000000_cnidaria_ITS_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "eb13e354344a25fd9775d2e53d929ee377fc3a8463d8f7bd2f6fa44a5426779d",
+      "size_bytes": 1149
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/000_cnidaria_SRR9278435_1000000_pair1_candidate/outputs/cnidaria_SRR9278435_1000000_cnidaria_ITS_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "d779a983b187575b03dc1ab083929e80d0f0abbbe9ad1630b543ac65f88c1b6b",
+      "size_bytes": 996
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/001_cnidaria_SRR25099394_1000000_pair1_candidate/outputs/cnidaria_SRR25099394_1000000_cnidaria_18S.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "790fba1c27507598b3e5e79d2a72a60b9a3cc4f88a1783d3c5041a22909ab522",
+      "size_bytes": 2050
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/001_cnidaria_SRR25099394_1000000_pair1_candidate/outputs/cnidaria_SRR25099394_1000000_cnidaria_28S_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "3c8311b99dd774a1aae0f93151105b517d5ff29213c10af49bcca3478786679e",
+      "size_bytes": 3516
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/001_cnidaria_SRR25099394_1000000_pair1_candidate/outputs/cnidaria_SRR25099394_1000000_cnidaria_28S_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "d2c79275e52a6ce1356f7616cf499ca5e1980f604cbdd8966a7e82a4575574d0",
+      "size_bytes": 668
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/001_cnidaria_SRR25099394_1000000_pair1_candidate/outputs/cnidaria_SRR25099394_1000000_cnidaria_ITS_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "a0042d65a3a977b09b6531d9431eb4ec02a5b6dfd59bb1f91c85b0f3351a753c",
+      "size_bytes": 1073
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/001_cnidaria_SRR25099394_1000000_pair1_candidate/outputs/cnidaria_SRR25099394_1000000_cnidaria_ITS_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "cfdd4d877d1933e9fce260336ee08fc9cde08e12186a751523ccca7f84fe5636",
+      "size_bytes": 925
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/outputs/cnidaria_SRR8617500_1000000_cnidaria_18S.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "047fd5a5868b7d8790f92befe2e4a437094c6731a7be86bf3ba79e7503fd798f",
+      "size_bytes": 2054
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/outputs/cnidaria_SRR8617500_1000000_cnidaria_28S_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "f4664d336d18de76cbcd31a11e2af0f422a27f98a97d3c3b8245a34e4428d9bd",
+      "size_bytes": 3538
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/outputs/cnidaria_SRR8617500_1000000_cnidaria_28S_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "b4f171521f0f38ad28cdc489714a78f1d30a0dc01378cc6716d28479ca4728a7",
+      "size_bytes": 672
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/outputs/cnidaria_SRR8617500_1000000_cnidaria_CO1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "36447fbe525eee92ad060fbcbb13b4c668dd3a395d1a7a59b8219725bbdf0027",
+      "size_bytes": 934
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/002_cnidaria_SRR8617500_1000000_pair1_candidate/outputs/cnidaria_SRR8617500_1000000_cnidaria_ITS_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "bffe37016750d1b24f68320dbf5e8c9d56e644112dc067dac1d4dd8b30165c67",
+      "size_bytes": 1179
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/003_human_SRR17535371_1000000_pair1_candidate/outputs/human_SRR17535371_1000000_human_mt-10360-12226.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "e32a8ef6c6903733310e7551809a1e0b7222fca0484fc65db3e09228dd37f6cd",
+      "size_bytes": 2132
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/003_human_SRR17535371_1000000_pair1_candidate/outputs/human_SRR17535371_1000000_human_mt-14898-151.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "3a92f486a37dbafd2a5ffe03a09bee59bf64442be9defc86d32280d8fec330a7",
+      "size_bytes": 2083
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/003_human_SRR17535371_1000000_pair1_candidate/outputs/human_SRR17535371_1000000_human_mt-3734-6739.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "ca55515ea2448c8a6593dcf2c8aac5bf08b83c8638f0bb876370d5e0df2f4502",
+      "size_bytes": 3277
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/003_human_SRR17535371_1000000_pair1_candidate/outputs/human_SRR17535371_1000000_human_mt-6511-9220.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "67e21f272e25132482ac2d56beacfe82c3b487bcadbe187b61fc7fa8fbe099b8",
+      "size_bytes": 2982
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/003_human_SRR17535371_1000000_pair1_candidate/outputs/human_SRR17535371_1000000_human_mt-8910-10648.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "ce52b95ef07b3b3daade02192567ff33435ac131a59f1ec3c96664926ec2e4e0",
+      "size_bytes": 1998
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/004_teleostei_SRR22396603_1000000_pair1_candidate/outputs/teleostei_SRR22396603_1000000_teleostei_12S.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "d498b90e7c1e67f68a73541af7a283e2990c24a144182eb8e5e8f06dc78f4edc",
+      "size_bytes": 665
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/004_teleostei_SRR22396603_1000000_pair1_candidate/outputs/teleostei_SRR22396603_1000000_teleostei_16S.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "0f34043140b78f209a8e32e7fe36a78058cd6d5e7cbb50f5c7b1760a4fb8934e",
+      "size_bytes": 852
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/004_teleostei_SRR22396603_1000000_pair1_candidate/outputs/teleostei_SRR22396603_1000000_teleostei_18S.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "233ea082369ea78e1b902fec8b77174a158b807e669a9404ae19383aa6e86b88",
+      "size_bytes": 718
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/004_teleostei_SRR22396603_1000000_pair1_candidate/outputs/teleostei_SRR22396603_1000000_teleostei_CO1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "290f2dc25d056426a2cb09a864ea316db3a3595ffac2c065129e3fed5ea28ece",
+      "size_bytes": 933
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/outputs/angiospermae_SRR25378184_1000000_angiospermae_atpB-rbcL.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "5b17055be53e23c5805f462adbed009b2f44cf3d12f341a974dfdb5a9e0da1bc",
+      "size_bytes": 1282
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/outputs/angiospermae_SRR25378184_1000000_angiospermae_psbA-trnH.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "e7c1554febce7be1d5dc2d5ce83928edb2082dfabca4de38bb952e514ca43269",
+      "size_bytes": 42986
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/outputs/angiospermae_SRR25378184_1000000_angiospermae_psbM-trnD.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "4ffb1562c1f15f5a5b9b2f01606b0310ff59bab5307abe9c0f3ff6aa28166307",
+      "size_bytes": 1569
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/outputs/angiospermae_SRR25378184_1000000_angiospermae_rpl36-infA-rps8.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "47e2a10b36d400c0a2b32fb6ea2dd8dd7bd4c99299f1cd1f969c4a9fea6beec8",
+      "size_bytes": 835
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/outputs/angiospermae_SRR25378184_1000000_angiospermae_trnC-ycf6.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "48072d27e3267a27e1d37886d6e5da14dc17be87ae824c293e35055c0c6e625c",
+      "size_bytes": 1378
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/outputs/angiospermae_SRR25378184_1000000_angiospermae_trnK-rps16.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "e1da8e4198d57b6b3fdf445fb2c8537fd9dd497831ce33741d46f86915fc7f66",
+      "size_bytes": 932
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/outputs/angiospermae_SRR25378184_1000000_angiospermae_trnL-F.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "e300b78cd57702e833938b56fe5e86b5063a2422bd8bbd08add1c2e690c9a802",
+      "size_bytes": 698
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/outputs/angiospermae_SRR25378184_1000000_angiospermae_trnV-atpE.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "12d38cce0660ae3e6a605255866f8244d17683204dbfce26672685c127be241e",
+      "size_bytes": 45679
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/005_angiospermae_SRR25378184_1000000_pair1_candidate/outputs/angiospermae_SRR25378184_1000000_angiospermae_ycf6-psbM.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "5f0aa3ca679f5eeea95a2735b13ab4ff715dc7ebf90815d983490cd38790737e",
+      "size_bytes": 1203
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/006_angiospermae_ERR14009273_1000000_pair1_candidate/outputs/angiospermae_ERR14009273_1000000_angiospermae_ITS.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "06e0a66baaeee2a9eb118829a61d10bea4acbf037e720af2d45dc63804f4dfd7",
+      "size_bytes": 1016
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/006_angiospermae_ERR14009273_1000000_pair1_candidate/outputs/angiospermae_ERR14009273_1000000_angiospermae_atpB-rbcL.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "d74dd98023b6dcb7ba18bb9a581183565c61de766bcc5585ddc77cc522627fff",
+      "size_bytes": 1086
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/006_angiospermae_ERR14009273_1000000_pair1_candidate/outputs/angiospermae_ERR14009273_1000000_angiospermae_psbA-trnH.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "c22f21d622c1d86e49e6defd7eadc6a6607df36a7f3ad9dd5de7b9beb297a7e6",
+      "size_bytes": 778
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/006_angiospermae_ERR14009273_1000000_pair1_candidate/outputs/angiospermae_ERR14009273_1000000_angiospermae_psbM-trnD.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "a60c1fbf2daa74eb2eb947c9ab0b3d569afafb29bafd804a74756a9753c7d1a7",
+      "size_bytes": 971
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/006_angiospermae_ERR14009273_1000000_pair1_candidate/outputs/angiospermae_ERR14009273_1000000_angiospermae_trnC-ycf6.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "ea17b3722112d42f4e30f385417785f906ced243e719b347467a83e5df0061c2",
+      "size_bytes": 864
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/006_angiospermae_ERR14009273_1000000_pair1_candidate/outputs/angiospermae_ERR14009273_1000000_angiospermae_trnL-F.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "bc527c5f51d8b6c5b2031c917112d6f46f6ff3cd4d6ff741381e4423f7b093fa",
+      "size_bytes": 1088
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/006_angiospermae_ERR14009273_1000000_pair1_candidate/outputs/angiospermae_ERR14009273_1000000_angiospermae_ycf6-psbM.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "c79dcf365355275b754d96581217674ded6899dc555fa67164dceefe39e9e6e6",
+      "size_bytes": 1212
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/007_insecta_SRR31887760_1000000_pair1_candidate/outputs/insecta_SRR31887760_1000000_insecta_12S.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "b361c1fa39a4e46fbf2a433878340133084c35b70fb913844b1053dbcb453b55",
+      "size_bytes": 25201
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/007_insecta_SRR31887760_1000000_pair1_candidate/outputs/insecta_SRR31887760_1000000_insecta_16S_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "7efe93cd5d19ce72a57c61aa66608230a8b0912eebc5208d580266f719486f90",
+      "size_bytes": 1068
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/007_insecta_SRR31887760_1000000_pair1_candidate/outputs/insecta_SRR31887760_1000000_insecta_18S_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "2812e767e2d2a80654b4c8cf875cf4654d01707646e2999889ae2ca491882935",
+      "size_bytes": 906
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/007_insecta_SRR31887760_1000000_pair1_candidate/outputs/insecta_SRR31887760_1000000_insecta_18S_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "24cbf1d706f8d4341f68677f9eb3c4c944476dcf5b60e075094b28faf3a0261a",
+      "size_bytes": 2239
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/007_insecta_SRR31887760_1000000_pair1_candidate/outputs/insecta_SRR31887760_1000000_insecta_CO1_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "180ca6eb6a62ab9078c30c8320b86b7ef53c17a4f9aec560c418d7c03edb70b2",
+      "size_bytes": 593
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/007_insecta_SRR31887760_1000000_pair1_candidate/outputs/insecta_SRR31887760_1000000_insecta_CO1_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "1534e3c13c60c6927c119e537fb512bb4508a61bab655557b3d59b6a2a596d60",
+      "size_bytes": 1106
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/007_insecta_SRR31887760_1000000_pair1_candidate/outputs/insecta_SRR31887760_1000000_insecta_CO2_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "8d9a5cb3f910aaf1bd30ffc5cf64fe41816f21550b4b5a630201c27252f8af91",
+      "size_bytes": 531
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/007_insecta_SRR31887760_1000000_pair1_candidate/outputs/insecta_SRR31887760_1000000_insecta_CO2_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "d4599900b1063c8eb17d0ee81ca4f6aba5448a830da53939e9b4e5008c4f4b97",
+      "size_bytes": 1022
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/007_insecta_SRR31887760_1000000_pair1_candidate/outputs/insecta_SRR31887760_1000000_insecta_CytB.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "f796a987bb0e150ed528181cf93c55868b2d070502e894b79c27652d09e85de5",
+      "size_bytes": 642
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/007_insecta_SRR31887760_1000000_pair1_candidate/outputs/insecta_SRR31887760_1000000_insecta_ND4.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "b1940524bb43a1be357732a19404968250a61a4cc6dd77144b63dd1d4d2281ad",
+      "size_bytes": 473
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/007_insecta_SRR31887760_1000000_pair1_candidate/outputs/insecta_SRR31887760_1000000_insecta_ND5.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "351a77cadc6718b45cd85bbd902b78f250290e17b4805ea9501b64a94182dddb",
+      "size_bytes": 537
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/008_insecta_SRR1057608_1000000_pair1_candidate/outputs/insecta_SRR1057608_1000000_insecta_CO1_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "3f73256162a7b6eed02d66848e2ef5325f9df0e1f325d0ab37deb7bdad09ba16",
+      "size_bytes": 546
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/008_insecta_SRR1057608_1000000_pair1_candidate/outputs/insecta_SRR1057608_1000000_insecta_CO1_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "ad5a69b7edf316ae32311b5ad66fe9740dadcc21d028bf0e11c1f1f5baee0df6",
+      "size_bytes": 1104
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/008_insecta_SRR1057608_1000000_pair1_candidate/outputs/insecta_SRR1057608_1000000_insecta_CO2_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "1de06e868ad03b51a9b128dd0b7f910b3aa0eeb0971b14665f0596c9a3996fbb",
+      "size_bytes": 530
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/008_insecta_SRR1057608_1000000_pair1_candidate/outputs/insecta_SRR1057608_1000000_insecta_CytB.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "cebf4e115d44108562b277bfbcd65bd6d9261e753909d2c67fae429112bb6720",
+      "size_bytes": 645
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/008_insecta_SRR1057608_1000000_pair1_candidate/outputs/insecta_SRR1057608_1000000_insecta_ND1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "1a7acff519ccdbd28100ea44687c4a1e6d4c66c8037be6fe12536cbdeb600b1a",
+      "size_bytes": 1182
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/008_insecta_SRR1057608_1000000_pair1_candidate/outputs/insecta_SRR1057608_1000000_insecta_ND4.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "42ab9e816eb02d801e937ad6a1c9b8cad1c2aeb435e44b44175eaefb7044346e",
+      "size_bytes": 27012
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/008_insecta_SRR1057608_1000000_pair1_candidate/outputs/insecta_SRR1057608_1000000_insecta_ND5.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "90aad830a0f92a04fd4a23fda43f15add81cafe35e5235941840aea6e7cd9644",
+      "size_bytes": 535
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_12S.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "77cf0dfe30faeda39d66ff51f8c4c9832c2b699cb84e9d43d37b8ea0dcad93be",
+      "size_bytes": 661
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_16S_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "7739f5a0f59ed60e985b907230e5fe501c1c45f5e5fe8f476dc1a3caaa213c74",
+      "size_bytes": 617
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_16S_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "6a741f904970f73fb0343cf66b6441a636497cc5c77226070b5818194940da10",
+      "size_bytes": 777
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_18S_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "0a510e0b541442bab9220c09a1bc8967374e284bff3e2a2e50645ee061431326",
+      "size_bytes": 24872
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_CO1_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "c693d0f55fcad3fa4c3af8f8c2cc800e256543357dda9b038bd1e37a7c88ed3c",
+      "size_bytes": 1420
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_CO1_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "8b5cee6a8e9974ee5e243193afcbd90d78dd96a7caedae9422d3b737fd47f85c",
+      "size_bytes": 1102
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_CO2_1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "bc7626089d55d5181f7c95e93546fc0eda4d80237a9de9e48db5995de571bd09",
+      "size_bytes": 528
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_CytB.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "9fcd0bbfbbc53658a0863f0ccfbc08e497d9eb11a7ffb647eb86cdf9781e0e1e",
+      "size_bytes": 643
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_ITS_2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "61fe62eb98fc8a085746a9ae2252d84adca16e650c1baf4bea66bd4cb63dbaba",
+      "size_bytes": 63340
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_NADH.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "f3a5861ef8c1296c125eae4c538c04d8e05f7fb85380226bad6f6bdc1e7ac94a",
+      "size_bytes": 785
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_ND1.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "6e90e6e67f5e1effd8969f377d4a231024208519fbf4cf5ffcc42312ea20ee69",
+      "size_bytes": 477
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_ND4.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "9bc86e608112a8470822ab558f0b12f21fa3593cfe982c5a6904bc4e7c0a1434",
+      "size_bytes": 477
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_ND5.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "27b0af17e29a225b6e528ba5624d002b3b0383f39aa9b085c86cc8c5893db006",
+      "size_bytes": 537
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/full-v3/runs/009_insecta_SRR27962769_1000000_pair1_candidate/outputs/insecta_SRR27962769_1000000_insecta_Yp2.fasta": {
+      "binding": "join_input_receipt",
+      "sha256": "21804671379a037ae8f9fcc5f250fed93c4cc39b9d6e0fa151287d9790dba110",
+      "size_bytes": 38470
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/control_evidence_overlay.json": {
+      "binding": "join_input_receipt",
+      "sha256": "7fd435000fb19f86ef1fe9c5058a332171384e0990942a44f3547b74cfbf894e",
+      "size_bytes": 13448
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/final-v1/validation.json": {
+      "binding": "final_join_verification",
+      "sha256": "7b0152e39015306d122b3a96b72d9e0e4ac0ea2a066569454ff38c6716642135",
+      "size_bytes": 40471
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/evidence_overlay.json": {
+      "binding": "join_input_receipt",
+      "sha256": "11e19978872ad2420bd9741dc41ca35c04ea40a0874cbeb658f48d6f3bbd9e4a",
+      "size_bytes": 232299
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/annotation_overlay.json": {
+      "binding": "join_input_receipt",
+      "sha256": "94d7cdec2348e918ec0ee7331d4d0daa19f3c1545313830d3244e2605f0af871",
+      "size_bytes": 5091
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/assessment-v2/reference_overlay.json": {
+      "binding": "join_input_receipt",
+      "sha256": "0813409c1c3a34f9f845d3036f18cf35e4d10258119a998d1a322a70f3c0619d",
+      "size_bytes": 159533
+    }
+  },
+  "status": "pass"
+}

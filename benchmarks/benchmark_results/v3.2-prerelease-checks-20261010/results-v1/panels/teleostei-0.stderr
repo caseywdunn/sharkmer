@@ -1,0 +1,28 @@
+sharkmer 3.2.0-dev (dry run)
+
+Input:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+
+Configuration:
+  Sample:         schema_probe
+  Output dir:     /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/teleostei-0-dry-output/
+  Kmer length:    19
+  Chunks:         0
+  Threads:        2
+  Min kmer count: 2
+  PCR output:     standard and labelled uncertain products
+
+Output files:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/teleostei-0-dry-output/schema_probe.stats.yaml
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/teleostei-0-dry-output/schema_probe_teleostei_18S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/teleostei-0-dry-output/schema_probe_teleostei_16S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/teleostei-0-dry-output/schema_probe_teleostei_CO1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/teleostei-0-dry-output/schema_probe_teleostei_CytB.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/teleostei-0-dry-output/schema_probe_teleostei_12S.fasta
+
+PCR primers (5 genes):
+  teleostei_18S (fwd: TAACATAT...AAAG, rev: CCTGTATT...TCAC, len: 300-700)
+  teleostei_16S (fwd: CGCCTGTT...ACAT, rev: CCGGTCTG...ACGT, len: 400-700)
+  teleostei_CO1 (fwd: TCAACCAA...GCAC, rev: TAGACTTC...ATCA, len: 500-800)
+  teleostei_CytB (fwd: AAAGCTTC...GAAA, rev: AAACTGCA...CTCA, len: 300-600)
+  teleostei_12S (fwd: ACTGGGAT...TATG, rev: GAGAGTGA...GTGT, len: 200-500)

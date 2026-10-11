@@ -1,0 +1,26 @@
+schema_version: 2
+producer: sharkmer
+sample: real_SRR25378184_after
+run_id: 18dd7db6f41d128f-2910e-d4be5911184950a6
+status: complete
+files:
+- path: real_SRR25378184_after.stats.yaml
+  sha256: 5cd5574db85d02aff69062a1320bb0793da05ec8e2c976555497fa978b07bc0a
+- path: real_SRR25378184_after_angiospermae_atpB-rbcL.fasta
+  sha256: 6bf2cd9d5df69fbd2caaeb1a03801cc7994f4a125038589416a667fcbbb2fed3
+- path: real_SRR25378184_after_angiospermae_psbA-trnH.fasta
+  sha256: 23568ac44c5a3d85ce05960e5d743e3cd655b01f6a044ee9bad4916a73b0e5f6
+- path: real_SRR25378184_after_angiospermae_psbM-trnD.fasta
+  sha256: 339415042a6e57c1c12d38e2430c41aec6bf9f99e5d531c3f480d52495df45cd
+- path: real_SRR25378184_after_angiospermae_rpl36-infA-rps8.fasta
+  sha256: cf4d5bf90ccd9400d022e3efe613fba0eb67a67e8345256b03aabca9c3366381
+- path: real_SRR25378184_after_angiospermae_trnC-ycf6.fasta
+  sha256: a8ee4d764e585d19233b7ea315ba16928fdb34d1cdfb2856d5c5475ff4923e46
+- path: real_SRR25378184_after_angiospermae_trnK-rps16.fasta
+  sha256: 8eb23ab442a93cb81c05d62a390b1ea065e9f6e710ca81f5b2226ef5feef9103
+- path: real_SRR25378184_after_angiospermae_trnL-F.fasta
+  sha256: 85316a08d79ccd9825f52cd882d0a9a1b41a80a2bf0957e3c17ebe33dd29d4d1
+- path: real_SRR25378184_after_angiospermae_trnV-atpE.fasta
+  sha256: df0efe39d68e0fb2946f10a63f9f3c8586766c81c7c2a374f8bac6d8434fb08d
+- path: real_SRR25378184_after_angiospermae_ycf6-psbM.fasta
+  sha256: 52b5a3dc4748ee38f1ddd2b54648a4d50925d28453217933fcd9d6494d16d161

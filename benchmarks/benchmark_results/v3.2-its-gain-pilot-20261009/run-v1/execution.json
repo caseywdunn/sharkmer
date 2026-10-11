@@ -1,0 +1,86 @@
+{
+  "address_space_limit_bytes": 2147483648,
+  "command": [
+    "/usr/bin/timeout",
+    "--kill-after=5s",
+    "300s",
+    "/usr/bin/time",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/run-v1/time.json",
+    "-f",
+    "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+    "/usr/bin/prlimit",
+    "--as=2147483648",
+    "--",
+    "/usr/bin/python3",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py",
+    "--fastq",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/data/its-recruitment-20260925/SRR27962769.first1M_R1.retry1.fastq",
+    "--events",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/manifest.json",
+    "--expected-prefix",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/expected_prefix.json",
+    "--max-substitutions",
+    "0",
+    "--output",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/run-v1/raw.json"
+  ],
+  "cpu_affinity": [
+    10
+  ],
+  "observer_elapsed_seconds": 28.69053203985095,
+  "outputs": {
+    "raw.json": {
+      "bytes": 173537,
+      "sha256": "cbb8dcb6b9bc1840df8f04659cab66e40cd07241dd7d9afcb375c5802366cba1"
+    },
+    "stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout.log": {
+      "bytes": 169,
+      "sha256": "745d35d5ce7ffefbe236b9199274306130a5adfd57444831726c4d87a2ffbdcc"
+    },
+    "time.json": {
+      "bytes": 100,
+      "sha256": "b028c7e10413699ead56811a134b399dd939339406b9841b2d12952cea1c8dd5"
+    }
+  },
+  "returncode": 0,
+  "slurm_job_id": "28875555",
+  "source_hashes_after": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/nearest_windows.tsv": "85c65f03b12f2aa7ab5b01f40711c023304dd2e3f9547da0bcc4074808089e12",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/report.json": "d0584ef0e0053458f95e9eccfb4575deb19e0b99d26f6aa0ff98d921407372c4",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/triage_saved_gains.py": "1c8e217e8501f959c47727def611f31c2bea920bfb6c405fdb5271f1a7a3e857",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/derivation.json": "8a580cd8babc048492b5d1ca1ee50cfce45d560271e1c542fb68a03a5caf6478",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/expected_prefix.json": "ad67cd0d405ba6ad76d768361ada1238ac4ea666e41f3d5a45f11d070a586810",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/manifest.json": "298b0299d15e1c8224308431f7f87fbc2ac0f23721f00618f905a59efca1582a",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/prepare_pilot.py": "766815339a432fd266a108bfc9623476a9a8b853f5ba490749b83e0fcb711728",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/co1_control_manifest.json": "3da888e302751668165c2a50e84cba19d3511203454ea5df7ba1a4aa3755254d",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/expected_prefix.json": "ad67cd0d405ba6ad76d768361ada1238ac4ea666e41f3d5a45f11d070a586810",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/gained_queries.fasta": "6815689b6e81f7f8d33c06cd5ed149e4aba4d18f68a2641242642c21eaba3054",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/per_sequence.json": "48c58d94713a33539617489c550510e8e23c14a08784d1557e87682c5a6b75d4",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/report-v3/uncertain_gains.tsv": "9585462dd788a791fabc612c8ab2d92bf09423beacc350ce9569fc0bf940d94c",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py": "f6f1371bb4884c2a8e9475e5c56b99a30b8c429267a294cdeba19905db411983"
+  },
+  "source_hashes_before": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/nearest_windows.tsv": "85c65f03b12f2aa7ab5b01f40711c023304dd2e3f9547da0bcc4074808089e12",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/report.json": "d0584ef0e0053458f95e9eccfb4575deb19e0b99d26f6aa0ff98d921407372c4",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/triage_saved_gains.py": "1c8e217e8501f959c47727def611f31c2bea920bfb6c405fdb5271f1a7a3e857",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/derivation.json": "8a580cd8babc048492b5d1ca1ee50cfce45d560271e1c542fb68a03a5caf6478",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/expected_prefix.json": "ad67cd0d405ba6ad76d768361ada1238ac4ea666e41f3d5a45f11d070a586810",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/manifest.json": "298b0299d15e1c8224308431f7f87fbc2ac0f23721f00618f905a59efca1582a",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/prepare_pilot.py": "766815339a432fd266a108bfc9623476a9a8b853f5ba490749b83e0fcb711728",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/co1_control_manifest.json": "3da888e302751668165c2a50e84cba19d3511203454ea5df7ba1a4aa3755254d",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/expected_prefix.json": "ad67cd0d405ba6ad76d768361ada1238ac4ea666e41f3d5a45f11d070a586810",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/gained_queries.fasta": "6815689b6e81f7f8d33c06cd5ed149e4aba4d18f68a2641242642c21eaba3054",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/per_sequence.json": "48c58d94713a33539617489c550510e8e23c14a08784d1557e87682c5a6b75d4",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/report-v3/uncertain_gains.tsv": "9585462dd788a791fabc612c8ab2d92bf09423beacc350ce9569fc0bf940d94c",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py": "f6f1371bb4884c2a8e9475e5c56b99a30b8c429267a294cdeba19905db411983"
+  },
+  "sources_unchanged": true,
+  "started_utc": "2026-10-09T22:05:25.377215+00:00",
+  "status": "pass",
+  "time_limit_seconds": 300
+}

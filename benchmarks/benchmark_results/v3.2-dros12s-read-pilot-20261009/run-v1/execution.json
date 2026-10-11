@@ -1,0 +1,86 @@
+{
+  "address_space_limit_bytes": 2147483648,
+  "command": [
+    "/usr/bin/timeout",
+    "--kill-after=5s",
+    "600s",
+    "/usr/bin/time",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/run-v1/time.json",
+    "-f",
+    "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+    "/usr/bin/prlimit",
+    "--as=2147483648",
+    "--",
+    "/usr/bin/python3",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/scan_prefiltered.py",
+    "--fastq",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/reads/SRR31887760.first1M_R1.retry1.fastq",
+    "--output",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/run-v1/raw.json"
+  ],
+  "cpu_affinity": [
+    10
+  ],
+  "observer_elapsed_seconds": 96.92158370791003,
+  "outputs": {
+    "raw.json": {
+      "bytes": 537738,
+      "sha256": "98974e443662b849726a429cc3acdb4c407b814d856525ede0900630f34f9f26"
+    },
+    "stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout.log": {
+      "bytes": 287,
+      "sha256": "fc2b01806da0eba7656e43dc5bdd9a99072cc363155272c499919cd1b94356e2"
+    },
+    "time.json": {
+      "bytes": 100,
+      "sha256": "72604f28595f1618da1abe3fcbf0c86148f02a65cc06b69f0f43f82e34675cff"
+    }
+  },
+  "returncode": 0,
+  "slurm_job_id": "28875555",
+  "source_hashes_after": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/check_prefilter.py": "3a8fedea8cb1ba8aa4fb246425e297a326bdc2cbfa2bdb9ba381c2f8f03141ba",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/derivation.json": "b640922b12705714877c089f6d6621e901bae7f03f408d5014df331dc24155a1",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/expected_prefix.json": "e51485a70b451ab04ea46fe76bd0084d1e2cc0a917098b093cacedf539082b90",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/manifest.json": "b95c3ba4e6503ce991c40f94b4e191e7da2b8c859a41fddffe722bbcc96b53e7",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/prefilter_controls.json": "675ca6b2bf3d024e07c7045a38ba5236c771c0064184201625fd4e4c614204d1",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/prepare_pilot.py": "f176503f384e92a12dca371c379e96872eb2bccef6c7b7253e888eeb2a83be29",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/run_pilot.py": "d393548c657569f9b9fe30497b20e2407d242fb7e4086e3619a791e1c0dc6480",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/scan_prefiltered.py": "799baed7b953ecdb938d6fd7cc2002944219c488498c84c81e3cf06976d1195b",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/triage_saved_gains.py": "1c8e217e8501f959c47727def611f31c2bea920bfb6c405fdb5271f1a7a3e857",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-backed-audit-20260913/SHA256SUMS": "bc03be3148b05d31de16ec58e9adee15a362b18ed953b0299d70a76a86186c52",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-backed-audit-20260913/evidence.tar.gz": "54fe073709c27d7cba87ee608641fe778903d06e97ac49715b9868f4b877dfc2",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/SHA256SUMS": "3622cfb23785712ba4653cfe25d50c91149cbce5ce608d04a4221c1cc176dcae",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/per_sequence.json": "48c58d94713a33539617489c550510e8e23c14a08784d1557e87682c5a6b75d4",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/evidence.tar.gz": "ea8f3d4722d706c1fd8bfea0be0bb6621a825132a17ec4d3167ca07c0d48b30e",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/inputs/restoration/SRR31887760.first1M_R1.retry1.fastq.restore.json": "cfab6af57526a1e19115f205d99aea370085b8159dcd9ea6c9472aca8af74bfc",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py": "f6f1371bb4884c2a8e9475e5c56b99a30b8c429267a294cdeba19905db411983"
+  },
+  "source_hashes_before": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/check_prefilter.py": "3a8fedea8cb1ba8aa4fb246425e297a326bdc2cbfa2bdb9ba381c2f8f03141ba",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/derivation.json": "b640922b12705714877c089f6d6621e901bae7f03f408d5014df331dc24155a1",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/expected_prefix.json": "e51485a70b451ab04ea46fe76bd0084d1e2cc0a917098b093cacedf539082b90",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/manifest.json": "b95c3ba4e6503ce991c40f94b4e191e7da2b8c859a41fddffe722bbcc96b53e7",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/prefilter_controls.json": "675ca6b2bf3d024e07c7045a38ba5236c771c0064184201625fd4e4c614204d1",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/prepare_pilot.py": "f176503f384e92a12dca371c379e96872eb2bccef6c7b7253e888eeb2a83be29",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/run_pilot.py": "d393548c657569f9b9fe30497b20e2407d242fb7e4086e3619a791e1c0dc6480",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/scan_prefiltered.py": "799baed7b953ecdb938d6fd7cc2002944219c488498c84c81e3cf06976d1195b",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/triage_saved_gains.py": "1c8e217e8501f959c47727def611f31c2bea920bfb6c405fdb5271f1a7a3e857",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-backed-audit-20260913/SHA256SUMS": "bc03be3148b05d31de16ec58e9adee15a362b18ed953b0299d70a76a86186c52",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-read-backed-audit-20260913/evidence.tar.gz": "54fe073709c27d7cba87ee608641fe778903d06e97ac49715b9868f4b877dfc2",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/SHA256SUMS": "3622cfb23785712ba4653cfe25d50c91149cbce5ce608d04a4221c1cc176dcae",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/per_sequence.json": "48c58d94713a33539617489c550510e8e23c14a08784d1557e87682c5a6b75d4",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/evidence.tar.gz": "ea8f3d4722d706c1fd8bfea0be0bb6621a825132a17ec4d3167ca07c0d48b30e",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/inputs/restoration/SRR31887760.first1M_R1.retry1.fastq.restore.json": "cfab6af57526a1e19115f205d99aea370085b8159dcd9ea6c9472aca8af74bfc",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py": "f6f1371bb4884c2a8e9475e5c56b99a30b8c429267a294cdeba19905db411983"
+  },
+  "sources_unchanged": true,
+  "started_utc": "2026-10-09T23:25:00.772391+00:00",
+  "status": "pass",
+  "time_limit_seconds": 600
+}

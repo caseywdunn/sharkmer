@@ -1,0 +1,377 @@
+{
+  "Cargo.lock": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/Cargo.lock",
+    "sha256": "248d51af7c3121ba3387af71e9766b5e5c1bba01becc7a599212215981eb3558",
+    "size_bytes": 57390
+  },
+  "Cargo.toml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/Cargo.toml",
+    "sha256": "99d2b50c12c9928bb96ab7b113eb21d54917fd8b44905b3f39533374c4a4efba",
+    "size_bytes": 1582
+  },
+  "benchmarks/known_truth.yaml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/known_truth.yaml",
+    "sha256": "4bd32f3a5eb5205a06bf77eb31be172902386dfe1a6199d7b21fa3a4e2d045a3",
+    "size_bytes": 811
+  },
+  "panels/angiospermae.yaml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/angiospermae.yaml",
+    "sha256": "99d1c629953a0d0a9e70f4c0414047c7d7b9e0a69d07d88bedff1c47b107b14e",
+    "size_bytes": 31657
+  },
+  "panels/bacteria.yaml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/bacteria.yaml",
+    "sha256": "3a3a9df11359cd1736f2edd52279d2ddb4c6a819dbf797fab59ba55ceae842ae",
+    "size_bytes": 2618
+  },
+  "panels/c_elegans.yaml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/c_elegans.yaml",
+    "sha256": "08127fcf98cf374b07dcbfffc321bb2c179c413019d0c23f7e4fb33421125dc0",
+    "size_bytes": 32377
+  },
+  "panels/cnidaria.yaml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/cnidaria.yaml",
+    "sha256": "95e8e3c4c4285c3e00767714af6b4ab34cc782af08cd0ef6c13c65794c5f58f8",
+    "size_bytes": 66332
+  },
+  "panels/examples/reference.yaml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/examples/reference.yaml",
+    "sha256": "2441a7ea422c8f45b912a432191f84bb5cd4b8930af6755ba53a9b2ac6b5b44d",
+    "size_bytes": 11382
+  },
+  "panels/human.yaml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/human.yaml",
+    "sha256": "5219c2ae2a44a1ca0416f4fefe46fbe4d116c8cb64d31fc5805e23c900e95fd3",
+    "size_bytes": 32626
+  },
+  "panels/hydrozoa.yaml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/hydrozoa.yaml",
+    "sha256": "69eded39844fc460c96ea2636b10b720551cd3dfb6690e3e4ed7c5417019d879",
+    "size_bytes": 72868
+  },
+  "panels/insecta.yaml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/insecta.yaml",
+    "sha256": "a28cd3b2d045270b3f6bf3e2e6f9362a4dfb6d55c6adb42d445461ec95a64160",
+    "size_bytes": 72108
+  },
+  "panels/metazoa.yaml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/metazoa.yaml",
+    "sha256": "a024b2b9ee3b41495028fba53291236f8c576165459a6b5819f51bead4853314",
+    "size_bytes": 3265
+  },
+  "panels/reference_sources.json.gz": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/reference_sources.json.gz",
+    "sha256": "bc277321831258c00b6794a51b0289445c837f99b2399e54aa43fe5e60b0f49a",
+    "size_bytes": 643168
+  },
+  "panels/teleostei.yaml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/teleostei.yaml",
+    "sha256": "ad077a381996f6d50cd548a88aa683464fefb409d6686e51cc2a49e033aba67c",
+    "size_bytes": 16053
+  },
+  "schemas/panel/v2.json": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/schemas/panel/v2.json",
+    "sha256": "b11f5e0cbd5293ab7af39e3dd0d757f5b9e7527eabd35e09541c254a0ca5f284",
+    "size_bytes": 15160
+  },
+  "scripts/audit_its_recruitment.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_its_recruitment.py",
+    "sha256": "5c6268e840a626eb980713da8b0a1992030c50bad0e258241dcce703b3f0a75d",
+    "size_bytes": 33328
+  },
+  "scripts/audit_panel_references.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_panel_references.py",
+    "sha256": "198f772ec327a237d30f2cdb7117832f0cccb0591ec92cde0018c79c32d947ae",
+    "size_bytes": 21875
+  },
+  "scripts/audit_read_bridges.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py",
+    "sha256": "f6f1371bb4884c2a8e9475e5c56b99a30b8c429267a294cdeba19905db411983",
+    "size_bytes": 14031
+  },
+  "scripts/audit_read_histories.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_histories.py",
+    "sha256": "feb61bdb227a14fa51ff5a3b5c2faa789ae4ff92e15a4eedb9f5413befee0c27",
+    "size_bytes": 27608
+  },
+  "scripts/bootstrap_from_runs.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/bootstrap_from_runs.py",
+    "sha256": "a6dc1fd82f9284b9d79dd8d21be01b107822717cd84a122a903ee37fbd1b7e15",
+    "size_bytes": 15047
+  },
+  "scripts/bootstrap_references.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/bootstrap_references.py",
+    "sha256": "e2b46f8f95cdb77aab5beef930dcb91acf17df502eab163268ac2871ece1db0b",
+    "size_bytes": 14189
+  },
+  "scripts/compare_jellyfish.sh": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/compare_jellyfish.sh",
+    "sha256": "7f26f1f0d6d4f32c88504401dd79c50051718aac550ef7da3ce8f68a29c5869c",
+    "size_bytes": 3933
+  },
+  "scripts/pre-commit": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/pre-commit",
+    "sha256": "b552ebde89f338d46b763b5802f8fed846a10a36d35bc59a72013fe7e497948a",
+    "size_bytes": 498
+  },
+  "scripts/sharkmer_validate/__init__.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/__init__.py",
+    "sha256": "74055f81f13c98598121d62b30817d1c999959a803900c61da926b5e214d5d7c",
+    "size_bytes": 77
+  },
+  "scripts/sharkmer_validate/blast_references.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/blast_references.py",
+    "sha256": "010ff7ed543bc30e0b28392e615c95d95fa672bae2246766bd03d36d91368aa0",
+    "size_bytes": 43601
+  },
+  "scripts/sharkmer_validate/primer_analysis.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/primer_analysis.py",
+    "sha256": "cd856bfaa355297405dc5512511141087cd8f7930ee59980291139a67c7cc41f",
+    "size_bytes": 6944
+  },
+  "scripts/sharkmer_validate/reference_provenance.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/reference_provenance.py",
+    "sha256": "00a5dafd0b02d37290ea122687cce8f07ce47f3098ec2e8de3860d8e9526732a",
+    "size_bytes": 10813
+  },
+  "scripts/sharkmer_validate/reference_targets.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/reference_targets.py",
+    "sha256": "62c1871cc284ec4891f244acaa2f6ce44ab280fbf3e7ef724c3ab107bb401956",
+    "size_bytes": 3373
+  },
+  "scripts/sharkmer_validate/report.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/report.py",
+    "sha256": "84f62833807e05190712e863b7048a0af1d1405228bc9dfe20a0f6e94942662c",
+    "size_bytes": 35095
+  },
+  "scripts/sharkmer_validate/results.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/results.py",
+    "sha256": "96b3e6beb633fc33646cfa62989361f16ec4120ea59da7a028438e7850e10929",
+    "size_bytes": 9832
+  },
+  "scripts/sharkmer_validate/runner.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/runner.py",
+    "sha256": "3c2446757e7020c96699d5b9b9ee74114027f1ab44aa957f5d9dc787ce1124fc",
+    "size_bytes": 37696
+  },
+  "scripts/sharkmer_validate/uncertain.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/uncertain.py",
+    "sha256": "bfaaa44e69ef1d6ba776d5d83961ccd638508f8424bc8e6e295fb7299d5ccd38",
+    "size_bytes": 15412
+  },
+  "scripts/sweep_summary.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sweep_summary.py",
+    "sha256": "54fd3248286d591dacdf48f83730cd92dc94fdd5f9fe6c511b601ed1caa63f3f",
+    "size_bytes": 20451
+  },
+  "scripts/validate_all_panels.sh": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/validate_all_panels.sh",
+    "sha256": "cf5e1631c9468de360259936cf1bea2f417c1e73c492885165e10e09afe1c878",
+    "size_bytes": 1215
+  },
+  "scripts/validate_all_panels_slurm.sh": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/validate_all_panels_slurm.sh",
+    "sha256": "9be6e3e2f7d4d979e554a5169815fcf7561e1cc9060fb36dead3d481e29b8567",
+    "size_bytes": 8922
+  },
+  "scripts/validate_panel.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/validate_panel.py",
+    "sha256": "9a7deefd14a03fb178b92ccf6d71919b27ce69f85e046eb2d41f0bd16e1cd422",
+    "size_bytes": 14692
+  },
+  "src/cache.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/cache.rs",
+    "sha256": "eedee1f06177c339305a15d74a2bab136f67e710ff103937241915a1a4a50fda",
+    "size_bytes": 43295
+  },
+  "src/cli.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/cli.rs",
+    "sha256": "453b8d52521f4c8e9a3ce7b957983a6179b295c8b631fecf44b455f5ba55e8f6",
+    "size_bytes": 37457
+  },
+  "src/format.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/format.rs",
+    "sha256": "85e1e708eadf78d84019a940e2f4ece5eec45a3d0e7094710c773a5dbb4d7dd1",
+    "size_bytes": 2805
+  },
+  "src/io.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/io.rs",
+    "sha256": "86daf8b13f2ea8e75fe4a3c10d30da5a135d0d5358866804a919afbf4a0f79a1",
+    "size_bytes": 47378
+  },
+  "src/kmer/chunk.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/kmer/chunk.rs",
+    "sha256": "05c4c4548025234ec42960b1373874d14da469d5230dbf974e6ac9502e6e7b4a",
+    "size_bytes": 1020
+  },
+  "src/kmer/counting.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/kmer/counting.rs",
+    "sha256": "f01851c7d2824b5ff068a6cd3ff665596926067d271b0c4783ab1073545e4f68",
+    "size_bytes": 17373
+  },
+  "src/kmer/encoding.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/kmer/encoding.rs",
+    "sha256": "64411d1730f59054b0cc2b52ac3ff00525172ba5253ee059c8c8f8bc6dbd246f",
+    "size_bytes": 13158
+  },
+  "src/kmer/histogram.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/kmer/histogram.rs",
+    "sha256": "b42a5223c2bfc749e4c2f15f2a304e84fc6f7f2a48bfe5fedcfef9cf55493d0a",
+    "size_bytes": 4557
+  },
+  "src/kmer/mod.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/kmer/mod.rs",
+    "sha256": "440eb7d0e80fcb8e10bc6cb1e52feda15f25925149bc39cb0e83af8ff816304e",
+    "size_bytes": 9913
+  },
+  "src/main.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/main.rs",
+    "sha256": "e6f857b52ef0dfd8f3fb2e79847c94d5122f7186d7ff6c4ea000a9af431cb838",
+    "size_bytes": 8778
+  },
+  "src/output.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/output.rs",
+    "sha256": "df610ba8dcdc82cca0f54530206cbe8d024a7dc246f97e00faf8336e41fbd349",
+    "size_bytes": 32198
+  },
+  "src/pcr/bubble.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/bubble.rs",
+    "sha256": "dd825744243a004318cbae2810cad68e5c001197a2a5cdb0d69c271e5599336f",
+    "size_bytes": 17906
+  },
+  "src/pcr/graph.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/graph.rs",
+    "sha256": "c2290a54585c21f4a71f7728d888ac5153e3370ab1f7083ca87f16d933e92e4e",
+    "size_bytes": 34614
+  },
+  "src/pcr/mod.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/mod.rs",
+    "sha256": "d095ce5e1e0490ffcde4b97e9d4c1283740435fa7f203cf7e25e75640cd5084e",
+    "size_bytes": 68885
+  },
+  "src/pcr/paths.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/paths.rs",
+    "sha256": "d95e67418b7956b7601b2b382b0f2a5729700a38409801c81c36c18c37d19e53",
+    "size_bytes": 82936
+  },
+  "src/pcr/preconfigured.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/preconfigured.rs",
+    "sha256": "1fbe095161c63a75f2ee93cd2e863430b2e35df9acb4bfd5f30f9eac86cd4ed1",
+    "size_bytes": 25543
+  },
+  "src/pcr/primers.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/primers.rs",
+    "sha256": "77040755dbd78ac8e9cfb173b069dc4c52740ac18784caede5f2a1a21f5770b2",
+    "size_bytes": 37559
+  },
+  "src/pcr/pruning.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/pruning.rs",
+    "sha256": "af7bd0d8dfada14f52521eb6661cd46fa8b56577a5116bb6525f95387d4713fd",
+    "size_bytes": 12232
+  },
+  "src/pcr/repeat_tests.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/repeat_tests.rs",
+    "sha256": "d03b972f1755cbe324ffc53f7fa3bc04d0bb6c6c2b8a264251397ea65c555d0d",
+    "size_bytes": 25718
+  },
+  "src/pcr/threading.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/threading.rs",
+    "sha256": "850acaacafca0be3d7737fe12d7cf2c408072cae714fe97c5266eb65b6be6185",
+    "size_bytes": 21650
+  },
+  "src/pcr/threshold_tests.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/threshold_tests.rs",
+    "sha256": "a1fcfaf37f0b3ffa1044d676bdc53519d848498e5909cfef4b1ac404753953a0",
+    "size_bytes": 9386
+  },
+  "src/pcr/uncertain.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/uncertain.rs",
+    "sha256": "610301ccf6e4e65b7d101ae465d2936d5934f4187ca4e30bc66289cb767c3578",
+    "size_bytes": 21264
+  },
+  "src/stats.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/stats.rs",
+    "sha256": "810501d20d637c5df84e3f21ffb1eee84028288d05cfb76cec69f17212b77ef7",
+    "size_bytes": 13887
+  },
+  "tests/fixtures/ERR571460_100k_R1.fastq.gz": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz",
+    "sha256": "3d554c9bad681c519c2c0f5a77e87bd6d7bd06a0ffff845a4b9cb22ced8e3eef",
+    "size_bytes": 10710465
+  },
+  "tests/fixtures/test_panel.yaml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/test_panel.yaml",
+    "sha256": "6bb5785c055666c0c58cd440315e8d98711310da20f47774ea3aa9f74ac983cb",
+    "size_bytes": 328
+  },
+  "tests/fixtures/validation/same_gene_split.xml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/validation/same_gene_split.xml",
+    "sha256": "616e3c7f59c0f0d2d90b8057725e804bb5fb118390f5d73c87a83f35c7634b5e",
+    "size_bytes": 733
+  },
+  "tests/fixtures/validation/short_fragment.xml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/validation/short_fragment.xml",
+    "sha256": "9d7d964d1f27e972d45684c62c897287e2fa0cb5c130463b77c2037db539b292",
+    "size_bytes": 449
+  },
+  "tests/fixtures/validation/wrong_gene.xml": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/validation/wrong_gene.xml",
+    "sha256": "13227159125dd41a46fb19634630880fb350f355560ac3954dfc03755654e1e2",
+    "size_bytes": 456
+  },
+  "tests/spcr_18s.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/spcr_18s.rs",
+    "sha256": "a829b11a0f208ad588ab17287f51f138dbbfaff5306ea0f20bed0751149e5e4c",
+    "size_bytes": 27582
+  },
+  "tests/test_its_recruitment.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_its_recruitment.py",
+    "sha256": "0e3f8392659385c970fea136db716dfa52fc9f169976c8bc8738d2a4ce5c6a2e",
+    "size_bytes": 26237
+  },
+  "tests/test_public_reference_replacements.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_public_reference_replacements.py",
+    "sha256": "df14684e6b94ef0cc3d21c2ef85f16f8451ef943510f83f9998390fe17613259",
+    "size_bytes": 6296
+  },
+  "tests/test_read_bridges.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_read_bridges.py",
+    "sha256": "7011db475b149cf92fc07660fba91dc660406a2be5af4e95a81a55302499b2ab",
+    "size_bytes": 11165
+  },
+  "tests/test_read_histories.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_read_histories.py",
+    "sha256": "f4c93d0fa546512f4e39c1d8ed0ebc91c07c2fe68255f36b2a7255576b454afa",
+    "size_bytes": 20514
+  },
+  "tests/test_reference_catalog.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_reference_catalog.py",
+    "sha256": "2e1128520d2171f94ba8799e054352df8069073f0d67eb9850cb1478cd3e4297",
+    "size_bytes": 9990
+  },
+  "tests/test_reference_provenance.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_reference_provenance.py",
+    "sha256": "9cdce0856e754670816e482d85ff97ca49fbcee6c41fc4187256e9d82e54bc3b",
+    "size_bytes": 8616
+  },
+  "tests/test_reference_targets.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_reference_targets.py",
+    "sha256": "34e71637364c3d55687d7e457eff80ab476c1a4dcacb6f6cf306deb2a6232de4",
+    "size_bytes": 16821
+  },
+  "tests/test_uncertain_output.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_uncertain_output.py",
+    "sha256": "9ecd859dc41f2ad13983806fa469c9157f86ba8b7f438ca4bc286074564ef370",
+    "size_bytes": 36173
+  },
+  "tests/test_validation_harness.py": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_validation_harness.py",
+    "sha256": "f511814d7174389a53b0292c56e04cc7ea4e27dc11bd4e7584efc2cdb175502d",
+    "size_bytes": 48060
+  },
+  "tests/uncertain_products.rs": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/uncertain_products.rs",
+    "sha256": "62fd2817a512cdeee39390b54dbc6832823cc23d71e0c16b878e7d82b4da5989",
+    "size_bytes": 21003
+  }
+}

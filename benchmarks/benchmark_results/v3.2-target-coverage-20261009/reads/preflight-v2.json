@@ -1,0 +1,55 @@
+{
+  "samples": [
+    {
+      "accession": "ERR14009273",
+      "candidate_tile_schedules_verified": 3,
+      "events": 98,
+      "projection_limit": "Excludes real match density, FASTQ parsing, quality checks, hashing and output; hard execution limits remain necessary",
+      "random_matcher_seconds": 0.04152677394449711,
+      "random_only_million_read_projection_seconds": 20.763386972248554,
+      "synthetic_151base_reads": 2000,
+      "synthetic_pattern_orientation_quality_cases": 392
+    },
+    {
+      "accession": "SRR1057608",
+      "candidate_tile_schedules_verified": 46,
+      "events": 158,
+      "projection_limit": "Excludes real match density, FASTQ parsing, quality checks, hashing and output; hard execution limits remain necessary",
+      "random_matcher_seconds": 0.03219706588424742,
+      "random_only_million_read_projection_seconds": 16.09853294212371,
+      "synthetic_151base_reads": 2000,
+      "synthetic_pattern_orientation_quality_cases": 632
+    },
+    {
+      "accession": "SRR25378184",
+      "candidate_tile_schedules_verified": 93,
+      "events": 444,
+      "projection_limit": "Excludes real match density, FASTQ parsing, quality checks, hashing and output; hard execution limits remain necessary",
+      "random_matcher_seconds": 0.053549158154055476,
+      "random_only_million_read_projection_seconds": 26.774579077027738,
+      "synthetic_151base_reads": 2000,
+      "synthetic_pattern_orientation_quality_cases": 1776
+    },
+    {
+      "accession": "SRR27962769",
+      "candidate_tile_schedules_verified": 20,
+      "events": 133,
+      "projection_limit": "Excludes real match density, FASTQ parsing, quality checks, hashing and output; hard execution limits remain necessary",
+      "random_matcher_seconds": 0.030776392901316285,
+      "random_only_million_read_projection_seconds": 15.388196450658143,
+      "synthetic_151base_reads": 2000,
+      "synthetic_pattern_orientation_quality_cases": 532
+    }
+  ],
+  "sources": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/check_manifests_v2.py": "7de6b26fcd572e1e1ed0d4bb550d8db9ee9ab531092f97072984c7af103b65ce",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/manifests-v2/ERR14009273.json": "889d4ae65bf7864260d9058e1d02bb89b89008532f1ef8e2ad15c599f5ba4c8d",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/manifests-v2/SRR1057608.json": "bcb14839c966e8eb7d66b449118e5a4aff64358b61e5dcacbd66697a54e743a3",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/manifests-v2/SRR25378184.json": "a6b5047fe58f644850936802e0129d3a18b679c592f579a439efe713fa72a3b1",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/manifests-v2/SRR27962769.json": "f4b4653d16d83fb10772a784024a75b652834144e2a152d617881b95d65d44f5",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/prepare_assays_v2.py": "161422bf0d4e4456f6b0427d84b243d0949a44f60af5f687d327a170bf82f1dd",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run_assay_v2.py": "f2a9951dee1029db26cb4b0d84e248318c1866728ca9eba35bdc9c3cf19d0b94",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/scan_exact_v2.py": "7c842a406f0f2d90facd85e788ac565a9235315d41c14505968a36cd76a8347c"
+  },
+  "status": "pass"
+}

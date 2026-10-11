@@ -1,0 +1,264 @@
+{
+  "command": [
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/checks-v3/sharkmer",
+    "-k",
+    "19",
+    "-t",
+    "2",
+    "--chunks",
+    "0",
+    "--max-reads",
+    "1000000",
+    "-o",
+    "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/outputs/",
+    "-s",
+    "human_SRR17535371_1000000",
+    "--pcr-panel-file",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/human.yaml",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v2/SRR17535371.fastq"
+  ],
+  "finished_unix_time": 1791654535.7373986,
+  "input_preflight": {
+    "bases": 18093925,
+    "records": 108518,
+    "sha256": "5f6230177848a7fb58e3cfe5a8de2aa43b9239466c87f07fec3a057fc5ab429f",
+    "size_bytes": 39517474
+  },
+  "launch_command": [
+    "/usr/bin/prlimit",
+    "--as=12884901888",
+    "--",
+    "/apps/software/2024a/software/Python/3.12.3-GCCcore-13.3.0/bin/python3.12",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+    "--receipt",
+    "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/process_constraints.json",
+    "--expected-cpus",
+    "32,36",
+    "--expected-as",
+    "12884901888",
+    "--",
+    "/usr/bin/time",
+    "-o",
+    "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/time.json",
+    "-f",
+    "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+    "--",
+    "/usr/bin/strace",
+    "-ff",
+    "-ttt",
+    "-T",
+    "-yy",
+    "-s",
+    "0",
+    "-o",
+    "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/trace",
+    "-e",
+    "trace=fsync,fdatasync,rename,renameat,renameat2,openat,close,write,pwrite64,writev,newfstatat,unlink,unlinkat,mkdir,mkdirat",
+    "--",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/checks-v3/sharkmer",
+    "-k",
+    "19",
+    "-t",
+    "2",
+    "--chunks",
+    "0",
+    "--max-reads",
+    "1000000",
+    "-o",
+    "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/outputs/",
+    "-s",
+    "human_SRR17535371_1000000",
+    "--pcr-panel-file",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/human.yaml",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v2/SRR17535371.fastq"
+  ],
+  "metrics": {
+    "cpu_seconds": 0.78,
+    "exit_code": 0,
+    "max_rss_kib": 22108,
+    "system_seconds": 0.1,
+    "user_seconds": 0.68,
+    "wall_seconds": 0.65
+  },
+  "observer_wall_seconds": 0.8523979177698493,
+  "output_path_during_timing": "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/outputs",
+  "outputs": {
+    "allocator_peak_bytes": 17883758,
+    "counts": {
+      "n_bases_ingested": 18092177,
+      "n_bases_read": 18093925,
+      "n_kmers": 16138457,
+      "n_reads_read": 108518,
+      "n_subreads_ingested": 108518
+    },
+    "files": [
+      {
+        "path": "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/outputs/human_SRR17535371_1000000.lock",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      {
+        "path": "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/outputs/human_SRR17535371_1000000.manifest.yaml",
+        "sha256": "d17418f1fbb82e82a14b97a544837af5dcbf9a8a8e6217b4a2e379f6c400f470",
+        "size_bytes": 937
+      },
+      {
+        "path": "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/outputs/human_SRR17535371_1000000.stats.yaml",
+        "sha256": "bbee8849613b6cf813d4f7bd77da698f6d88eea7814db5e44e3435a2e94314f8",
+        "size_bytes": 76774
+      },
+      {
+        "path": "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/outputs/human_SRR17535371_1000000_human_mt-10360-12226.fasta",
+        "sha256": "e32a8ef6c6903733310e7551809a1e0b7222fca0484fc65db3e09228dd37f6cd",
+        "size_bytes": 2132
+      },
+      {
+        "path": "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/outputs/human_SRR17535371_1000000_human_mt-14898-151.fasta",
+        "sha256": "3a92f486a37dbafd2a5ffe03a09bee59bf64442be9defc86d32280d8fec330a7",
+        "size_bytes": 2083
+      },
+      {
+        "path": "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/outputs/human_SRR17535371_1000000_human_mt-3734-6739.fasta",
+        "sha256": "ca55515ea2448c8a6593dcf2c8aac5bf08b83c8638f0bb876370d5e0df2f4502",
+        "size_bytes": 3277
+      },
+      {
+        "path": "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/outputs/human_SRR17535371_1000000_human_mt-6511-9220.fasta",
+        "sha256": "67e21f272e25132482ac2d56beacfe82c3b487bcadbe187b61fc7fa8fbe099b8",
+        "size_bytes": 2982
+      },
+      {
+        "path": "/tmp/sharkmer-runtime-29012047-nqhkakk1/14_traced_local_retention/outputs/human_SRR17535371_1000000_human_mt-8910-10648.fasta",
+        "sha256": "ce52b95ef07b3b3daade02192567ff33435ac131a59f1ec3c96664926ec2e4e0",
+        "size_bytes": 1998
+      }
+    ],
+    "records": [
+      {
+        "assembly_status": "standard",
+        "gene": "human_mt-10360-12226",
+        "length": 1853,
+        "sha256": "f9651761bd4d462f95252358ed1a75ed69ac98a6f3385335eedc0cd5be2f0672"
+      },
+      {
+        "assembly_status": "standard",
+        "gene": "human_mt-14898-151",
+        "length": 1808,
+        "sha256": "17631adad883fb91c1c7dc2c40233d42d1597486836869404853a5adde23f17f"
+      },
+      {
+        "assembly_status": "standard",
+        "gene": "human_mt-3734-6739",
+        "length": 2990,
+        "sha256": "03c2cbd791702dced1f7555a120979ffb77c287346322b426d798ef9a4e05edf"
+      },
+      {
+        "assembly_status": "standard",
+        "gene": "human_mt-6511-9220",
+        "length": 2694,
+        "sha256": "60afa17b355c59cc5f00360660ef540b79a487b3bd18377ed9862a7708830efd"
+      },
+      {
+        "assembly_status": "standard",
+        "gene": "human_mt-8910-10648",
+        "length": 1725,
+        "sha256": "1b92f0a3473f8b0742e24d495ea8e9d1cf6035cce55823a4169b261765606c73"
+      }
+    ],
+    "stage_timings": {
+      "count_finalize_s": 0.011586732,
+      "pcr_s": 0.211864816,
+      "pipeline_total_s": 0.615400786,
+      "read_ingest_s": 0.38744613,
+      "read_threading_input_s": null
+    }
+  },
+  "preserved_local_files": [
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/outputs/human_SRR17535371_1000000.lock",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/outputs/human_SRR17535371_1000000.manifest.yaml",
+      "sha256": "d17418f1fbb82e82a14b97a544837af5dcbf9a8a8e6217b4a2e379f6c400f470",
+      "size_bytes": 937
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/outputs/human_SRR17535371_1000000.stats.yaml",
+      "sha256": "bbee8849613b6cf813d4f7bd77da698f6d88eea7814db5e44e3435a2e94314f8",
+      "size_bytes": 76774
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/outputs/human_SRR17535371_1000000_human_mt-10360-12226.fasta",
+      "sha256": "e32a8ef6c6903733310e7551809a1e0b7222fca0484fc65db3e09228dd37f6cd",
+      "size_bytes": 2132
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/outputs/human_SRR17535371_1000000_human_mt-14898-151.fasta",
+      "sha256": "3a92f486a37dbafd2a5ffe03a09bee59bf64442be9defc86d32280d8fec330a7",
+      "size_bytes": 2083
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/outputs/human_SRR17535371_1000000_human_mt-3734-6739.fasta",
+      "sha256": "ca55515ea2448c8a6593dcf2c8aac5bf08b83c8638f0bb876370d5e0df2f4502",
+      "size_bytes": 3277
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/outputs/human_SRR17535371_1000000_human_mt-6511-9220.fasta",
+      "sha256": "67e21f272e25132482ac2d56beacfe82c3b487bcadbe187b61fc7fa8fbe099b8",
+      "size_bytes": 2982
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/outputs/human_SRR17535371_1000000_human_mt-8910-10648.fasta",
+      "sha256": "ce52b95ef07b3b3daade02192567ff33435ac131a59f1ec3c96664926ec2e4e0",
+      "size_bytes": 1998
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/process_constraints.json",
+      "sha256": "7b0ca6a2d7ce0d337fe56dbb583ca2a6beb714a9e49f4cceff1cce08ef10a6aa",
+      "size_bytes": 1367
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/stderr.log",
+      "sha256": "f712ef7a359bc8b717bfc216ec290bdc947bdf9b0eebf93be5889a965a27c65b",
+      "size_bytes": 970
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/time.json",
+      "sha256": "f95a44974e76424cf25e722535fb08350d1ebefcecd9fd0146045945b133768e",
+      "size_bytes": 98
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/trace.1518885",
+      "sha256": "0a43842859ce0eb6aa81e2231a7d303dd578c1d8a138e03f288b3fc16d749e4f",
+      "size_bytes": 228489
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/trace.1518954",
+      "sha256": "f29006b933faf63f2ac27b0d56f5fe8bbedd7c7604f57c286f01a463bd98eaeb",
+      "size_bytes": 40
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/14_traced_local_retention/local_artifacts/trace.1518955",
+      "sha256": "ad6ff9aedc7a1add306cdc8fb9fba9a1f1bcd66c97249922a62d527b4aa895de",
+      "size_bytes": 40
+    }
+  ],
+  "returncode": 0,
+  "schedule": {
+    "block": null,
+    "id": "14_traced_local_retention",
+    "location": "local",
+    "role": "retention",
+    "traced": true
+  },
+  "start_unix_time": 1791654531.436877,
+  "status": "pass",
+  "timing_scope": "traced diagnostic including tracer overhead"
+}

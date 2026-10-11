@@ -1,0 +1,123 @@
+{
+  "CO1_Q20_record_range": [
+    9,
+    24
+  ],
+  "Q20_and_unfiltered_positive_12s_strings": 0,
+  "all_candidate_tile_memberships_verified": 568,
+  "artifacts": {
+    "check_prefilter.py": {
+      "bytes": 2867,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/check_prefilter.py",
+      "sha256": "3a8fedea8cb1ba8aa4fb246425e297a326bdc2cbfa2bdb9ba381c2f8f03141ba"
+    },
+    "derivation.json": {
+      "bytes": 237081,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/derivation.json",
+      "sha256": "b640922b12705714877c089f6d6621e901bae7f03f408d5014df331dc24155a1"
+    },
+    "expected_prefix.json": {
+      "bytes": 154,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/expected_prefix.json",
+      "sha256": "e51485a70b451ab04ea46fe76bd0084d1e2cc0a917098b093cacedf539082b90"
+    },
+    "independent_review.py": {
+      "bytes": 11558,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/independent_review.py",
+      "sha256": "943aa6b9c1fa339050a43d4ccd8c8e4e3184efc2e3dff45ee79403e3f43ef9f0"
+    },
+    "manifest.json": {
+      "bytes": 62918,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/manifest.json",
+      "sha256": "b95c3ba4e6503ce991c40f94b4e191e7da2b8c859a41fddffe722bbcc96b53e7"
+    },
+    "per_candidate.tsv": {
+      "bytes": 4401,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/per_candidate.tsv",
+      "sha256": "bbe9f5637a48ae3066b5e585b8b369ea160c45df717b6d04c7d2a0025c6fddf0"
+    },
+    "per_event.tsv": {
+      "bytes": 11171,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/per_event.tsv",
+      "sha256": "98e01d2485010d70d1c7c5116f22b6888d74f1087421cd36bd150950d3910694"
+    },
+    "prefilter_controls.json": {
+      "bytes": 697,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/prefilter_controls.json",
+      "sha256": "675ca6b2bf3d024e07c7045a38ba5236c771c0064184201625fd4e4c614204d1"
+    },
+    "prepare_pilot.py": {
+      "bytes": 11093,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/prepare_pilot.py",
+      "sha256": "f176503f384e92a12dca371c379e96872eb2bccef6c7b7253e888eeb2a83be29"
+    },
+    "run-v1/execution.json": {
+      "bytes": 8114,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/run-v1/execution.json",
+      "sha256": "9fbac77ec32e78b3c9d1539d06424fcf74a109858febebb8a5512cb75274c28e"
+    },
+    "run-v1/raw.json": {
+      "bytes": 537738,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/run-v1/raw.json",
+      "sha256": "98974e443662b849726a429cc3acdb4c407b814d856525ede0900630f34f9f26"
+    },
+    "run-v1/time.json": {
+      "bytes": 100,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/run-v1/time.json",
+      "sha256": "72604f28595f1618da1abe3fcbf0c86148f02a65cc06b69f0f43f82e34675cff"
+    },
+    "run_pilot.py": {
+      "bytes": 3449,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/run_pilot.py",
+      "sha256": "d393548c657569f9b9fe30497b20e2407d242fb7e4086e3619a791e1c0dc6480"
+    },
+    "scan_prefiltered.py": {
+      "bytes": 4633,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/scan_prefiltered.py",
+      "sha256": "799baed7b953ecdb938d6fd7cc2002944219c488498c84c81e3cf06976d1195b"
+    },
+    "summarize_pilot.py": {
+      "bytes": 11070,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/summarize_pilot.py",
+      "sha256": "3898816cd0ef27dc0ded3c4911d1a3d99db260941338e00fbf232bdd177ce96c"
+    },
+    "summary.json": {
+      "bytes": 22267,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/summary.json",
+      "sha256": "a998fa38f4f2384790ad5fc794ea1970e32ecbe9338e5acd20a503a4f5b990ea"
+    }
+  },
+  "current_12s_candidates_verified": 26,
+  "events_verified": 139,
+  "exact_match_placements_recounted": 265,
+  "gained_candidates": 23,
+  "historical_full_sequence_lengths_verified": [
+    475,
+    487,
+    499
+  ],
+  "interpretation": "The recovered 487/499 and historical475 sequences, together with all26current12S hypotheses, lack corroboration in the assayed local exact strings. Quality exclusion does not explain those zeros; mismatches, indels, sampling, target identity and whole-product validity remain unresolved.",
+  "limits": [
+    "An independent saved-ledger recount verifies positive observations but cannot independently establish which records were omitted from the prefix. Source completeness proof, frozen execution, consumed-prefix hash and positive controls support the full-prefix negative result.",
+    "Supplemental quality-unfiltered positive reads were not all saved, so those counts cannot all be reconstructed from the Q20 ledger. Their counter was source-reviewed and tested independently on835synthetic cases.",
+    "The CO1 controls establish successful scanning of matching sample reads; no standard12S positive sequence exists in this comparison.",
+    "No genotype, locus, correct repeat length, biological absence or filtering policy follows from these bounded exact-string observations."
+  ],
+  "local_strings_verified": 117,
+  "nearest_endpoint_memberships_verified": 52,
+  "positive_CO1_controls_reproduced": 16,
+  "prefilter_completeness_review": "Every exact oriented pattern contains its first19 bases. Literal equal-length seed alternatives cannot shadow distinct same-position seeds; overlapping lookahead retains every position. Event ordering is preserved when calling the unchanged scanner.",
+  "production_fix_assessment": "No sequence-spelling defect demonstrated by this assay. A separately recorded bounded19mer invariant check can investigate observed graph words versus unsupported longer combinations.",
+  "saved_Q20_reads_independently_recounted": 135,
+  "scope": "Frozen exact occurrence pilot; source/control review and independent saved-ledger recount, no full-prefix rescan",
+  "status": "pass",
+  "uncallable_structural_window_lengths": [
+    123,
+    123,
+    146
+  ],
+  "verification_evidence": {
+    "direct_scanner_prefilter_equality_cases": 1835,
+    "supplemental_raw_count_equality_cases": 835
+  }
+}

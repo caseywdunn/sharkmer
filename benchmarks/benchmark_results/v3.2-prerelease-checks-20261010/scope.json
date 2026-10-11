@@ -1,0 +1,21 @@
+{
+  "created_utc": "2026-10-11T13:10:14.727078+00:00",
+  "authorization": "Proceed with plant assay correction, runtime investigation and prerelease validation. Do not initiate actual release; collaborators will assess performance before release.",
+  "head": "1ea21c977455fdf126426e3e000133c02c3f0b32",
+  "release_actions_authorized": false,
+  "assembly_and_output_policy_change": false,
+  "source_changes": [
+    "Plant assay and independently sourced references with explicit panel version",
+    "Minimum patches for four known dependency alerts",
+    "Focused plant reference regressions"
+  ],
+  "remaining_external_acceptance": [
+    "Collaborator performance assessment",
+    "User release authorization"
+  ],
+  "validation_claim_limits": [
+    "Historical datasets are calibration, not held-out biological truth",
+    "Schema/loader tests do not establish all-panel biological accuracy",
+    "Slurm resource caps do not demonstrate laptop performance"
+  ]
+}

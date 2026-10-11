@@ -1,0 +1,224 @@
+{
+  "command": [
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/checks-v3/sharkmer",
+    "-k",
+    "19",
+    "-t",
+    "2",
+    "--chunks",
+    "0",
+    "--max-reads",
+    "1000000",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/outputs/",
+    "-s",
+    "human_SRR17535371_1000000",
+    "--pcr-panel-file",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/human.yaml",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v2/SRR17535371.fastq"
+  ],
+  "finished_unix_time": 1791654545.237889,
+  "input_preflight": {
+    "bases": 18093925,
+    "records": 108518,
+    "sha256": "5f6230177848a7fb58e3cfe5a8de2aa43b9239466c87f07fec3a057fc5ab429f",
+    "size_bytes": 39517474
+  },
+  "launch_command": [
+    "/usr/bin/prlimit",
+    "--as=12884901888",
+    "--",
+    "/apps/software/2024a/software/Python/3.12.3-GCCcore-13.3.0/bin/python3.12",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+    "--receipt",
+    "/tmp/sharkmer-runtime-29012047-nqhkakk1/15_traced_nfs_retention/process_constraints.json",
+    "--expected-cpus",
+    "32,36",
+    "--expected-as",
+    "12884901888",
+    "--",
+    "/usr/bin/time",
+    "-o",
+    "/tmp/sharkmer-runtime-29012047-nqhkakk1/15_traced_nfs_retention/time.json",
+    "-f",
+    "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+    "--",
+    "/usr/bin/strace",
+    "-ff",
+    "-ttt",
+    "-T",
+    "-yy",
+    "-s",
+    "0",
+    "-o",
+    "/tmp/sharkmer-runtime-29012047-nqhkakk1/15_traced_nfs_retention/trace",
+    "-e",
+    "trace=fsync,fdatasync,rename,renameat,renameat2,openat,close,write,pwrite64,writev,newfstatat,unlink,unlinkat,mkdir,mkdirat",
+    "--",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/checks-v3/sharkmer",
+    "-k",
+    "19",
+    "-t",
+    "2",
+    "--chunks",
+    "0",
+    "--max-reads",
+    "1000000",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/outputs/",
+    "-s",
+    "human_SRR17535371_1000000",
+    "--pcr-panel-file",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/human.yaml",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v2/SRR17535371.fastq"
+  ],
+  "metrics": {
+    "cpu_seconds": 0.86,
+    "exit_code": 0,
+    "max_rss_kib": 22680,
+    "system_seconds": 0.13,
+    "user_seconds": 0.73,
+    "wall_seconds": 5.96
+  },
+  "observer_wall_seconds": 6.105001105926931,
+  "output_path_during_timing": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/outputs",
+  "outputs": {
+    "allocator_peak_bytes": 17884240,
+    "counts": {
+      "n_bases_ingested": 18092177,
+      "n_bases_read": 18093925,
+      "n_kmers": 16138457,
+      "n_reads_read": 108518,
+      "n_subreads_ingested": 108518
+    },
+    "files": [
+      {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/outputs/human_SRR17535371_1000000.lock",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/outputs/human_SRR17535371_1000000.manifest.yaml",
+        "sha256": "ffb2d20b46dfb23d67f872bbf71e9f0922e528e2bf96df7b7c2c5876db61c38b",
+        "size_bytes": 937
+      },
+      {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/outputs/human_SRR17535371_1000000.stats.yaml",
+        "sha256": "983bfb5fd4fc6b3b4b064b3818a0a90ff806b37c0d10c0a4bae06548b1e8d949",
+        "size_bytes": 76852
+      },
+      {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/outputs/human_SRR17535371_1000000_human_mt-10360-12226.fasta",
+        "sha256": "e32a8ef6c6903733310e7551809a1e0b7222fca0484fc65db3e09228dd37f6cd",
+        "size_bytes": 2132
+      },
+      {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/outputs/human_SRR17535371_1000000_human_mt-14898-151.fasta",
+        "sha256": "3a92f486a37dbafd2a5ffe03a09bee59bf64442be9defc86d32280d8fec330a7",
+        "size_bytes": 2083
+      },
+      {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/outputs/human_SRR17535371_1000000_human_mt-3734-6739.fasta",
+        "sha256": "ca55515ea2448c8a6593dcf2c8aac5bf08b83c8638f0bb876370d5e0df2f4502",
+        "size_bytes": 3277
+      },
+      {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/outputs/human_SRR17535371_1000000_human_mt-6511-9220.fasta",
+        "sha256": "67e21f272e25132482ac2d56beacfe82c3b487bcadbe187b61fc7fa8fbe099b8",
+        "size_bytes": 2982
+      },
+      {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/outputs/human_SRR17535371_1000000_human_mt-8910-10648.fasta",
+        "sha256": "ce52b95ef07b3b3daade02192567ff33435ac131a59f1ec3c96664926ec2e4e0",
+        "size_bytes": 1998
+      }
+    ],
+    "records": [
+      {
+        "assembly_status": "standard",
+        "gene": "human_mt-10360-12226",
+        "length": 1853,
+        "sha256": "f9651761bd4d462f95252358ed1a75ed69ac98a6f3385335eedc0cd5be2f0672"
+      },
+      {
+        "assembly_status": "standard",
+        "gene": "human_mt-14898-151",
+        "length": 1808,
+        "sha256": "17631adad883fb91c1c7dc2c40233d42d1597486836869404853a5adde23f17f"
+      },
+      {
+        "assembly_status": "standard",
+        "gene": "human_mt-3734-6739",
+        "length": 2990,
+        "sha256": "03c2cbd791702dced1f7555a120979ffb77c287346322b426d798ef9a4e05edf"
+      },
+      {
+        "assembly_status": "standard",
+        "gene": "human_mt-6511-9220",
+        "length": 2694,
+        "sha256": "60afa17b355c59cc5f00360660ef540b79a487b3bd18377ed9862a7708830efd"
+      },
+      {
+        "assembly_status": "standard",
+        "gene": "human_mt-8910-10648",
+        "length": 1725,
+        "sha256": "1b92f0a3473f8b0742e24d495ea8e9d1cf6035cce55823a4169b261765606c73"
+      }
+    ],
+    "stage_timings": {
+      "count_finalize_s": 0.012124519,
+      "pcr_s": 3.8353861350000003,
+      "pipeline_total_s": 5.011849881,
+      "read_ingest_s": 0.404870385,
+      "read_threading_input_s": null
+    }
+  },
+  "preserved_local_files": [
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/local_artifacts/process_constraints.json",
+      "sha256": "df4e7c2a79230290c7012cf1dff5c935ba85a9be73ccd83f8d06a496e4f317bf",
+      "size_bytes": 1433
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/local_artifacts/stderr.log",
+      "sha256": "aa718ffb4543c82a0f7a5f54d7c4e6ce85ae8b1ff48e8ef5b2cdadc2ae49e46a",
+      "size_bytes": 970
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/local_artifacts/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/local_artifacts/time.json",
+      "sha256": "450ef3cfd5a26423eb5d6bc4d64709050eab7c86eb50f36560d0637935e6732f",
+      "size_bytes": 98
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/local_artifacts/trace.1522718",
+      "sha256": "aaff660bb0573b0221061f62bdaa04db790c312d322f10f3923a0e50f9224dbe",
+      "size_bytes": 257449
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/local_artifacts/trace.1523379",
+      "sha256": "68de8a9d2f77cfa96fffe4c055ed9899c88551ba9adcee08e7356936b6e7d9e3",
+      "size_bytes": 40
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/15_traced_nfs_retention/local_artifacts/trace.1523380",
+      "sha256": "eeedb561186ad695ae85b4d8cf813b871619864d1427938c637b19ea8d6b2a20",
+      "size_bytes": 40
+    }
+  ],
+  "returncode": 0,
+  "schedule": {
+    "block": null,
+    "id": "15_traced_nfs_retention",
+    "location": "nfs",
+    "role": "retention",
+    "traced": true
+  },
+  "start_unix_time": 1791654535.8340986,
+  "status": "pass",
+  "timing_scope": "traced diagnostic including tracer overhead"
+}

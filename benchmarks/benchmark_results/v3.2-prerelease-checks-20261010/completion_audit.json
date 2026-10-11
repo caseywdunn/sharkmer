@@ -1,0 +1,221 @@
+{
+  "artifacts": [
+    {
+      "bytes": 964,
+      "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/scope.json",
+      "sha256": "34b5c553f53a0f72109bef085480a977d1b8dfa2eb5a2daed57e75ad4c06e150"
+    },
+    {
+      "bytes": 65308,
+      "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/plan-v2.json",
+      "sha256": "bda19fa8e6164ed689605713454663a18caa0fdb2f896770aafcc109c4dbf0c0"
+    },
+    {
+      "bytes": 37124,
+      "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/result.json",
+      "sha256": "0900616b4531c22a1f59fb37f452c9704e10842177aed28d1b877512c84ad5d9"
+    },
+    {
+      "bytes": 4603,
+      "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/RESULTS.md",
+      "sha256": "bd7e829370bb9b89c70f2c61dd9c333dbbe8041d9a21f9c4ceaf7931fd836c35"
+    },
+    {
+      "bytes": 86044,
+      "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/summary-v1/summary.json",
+      "sha256": "395167b849c8b9c33f8c10671a98968658591bc2059dd128ab26c3891f1f906b"
+    },
+    {
+      "bytes": 343,
+      "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/slurm-29147703-accounting.json",
+      "sha256": "d3a6447cf3302ad8dcd3c665eb8b4abd2454b516623d07a6e68aad6eac22c6a3"
+    },
+    {
+      "bytes": 14058,
+      "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2-receipt.json",
+      "sha256": "6ef7bbaea6d2579f914972a938f3477e845f0fa788c2723df97ddb607339ac5f"
+    },
+    {
+      "bytes": 461,
+      "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2-import-check.json",
+      "sha256": "9a97971e631e1902a9ad8b53123ba0832e89d04cfb8e364c5056959ab0a0c090"
+    },
+    {
+      "bytes": 13890,
+      "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate.patch",
+      "sha256": "000c38f5cf222389adfc1195983e91c235fdf7c80e37b026f5344f57c1d94310"
+    },
+    {
+      "bytes": 590948,
+      "path": "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/assessment-v1/report.json",
+      "sha256": "959e3706197d3fdda46eaecc7184982a115b977ad217b907569e458e28e71608"
+    },
+    {
+      "bytes": 311023,
+      "path": "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/assessment-v1/derived_combined_inventory.json",
+      "sha256": "6eebefbb472f5f7804effaa3bee195028b953d1cac4f2862d93971dffb76ef12"
+    },
+    {
+      "bytes": 9273,
+      "path": "benchmarks/benchmark_results/v3.2-runtime-review-20261010/SAVED_FINDINGS.md",
+      "sha256": "71731f794d41bc820ea5f5ae5e164176e73f298477896b3f163af009aa7003cf"
+    },
+    {
+      "bytes": 5794,
+      "path": "benchmarks/benchmark_results/v3.2-runtime-review-20261010/HUMAN_FINDINGS.md",
+      "sha256": "62d9c165e8666932cf663400047ca5c7e547e3cf03fa474eb2c73c950ddc8c3c"
+    },
+    {
+      "bytes": 47260,
+      "path": "benchmarks/benchmark_results/v3.2-runtime-review-20261010/bundle_manifest.json",
+      "sha256": "2a11da8970b8aba3c6b301e9a1825a697c489a3c635657b1d6eebb8decbcb85e"
+    },
+    {
+      "bytes": 2477,
+      "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/independent_plan_v2_review.json",
+      "sha256": "f06c203e16ecf6f95a500b000b4bbb31f1f846da58bef35f6738679604033ce6"
+    },
+    {
+      "bytes": 202408,
+      "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/independent_results_review.json",
+      "sha256": "5b77bdabd3893203f31216b53210d7dc6b68778d750bab183276a72697b7e776"
+    },
+    {
+      "bytes": 5453,
+      "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/dependency/independent_review.json",
+      "sha256": "10369e1507643466e6a52ebb42214a1013bb6a2fc56a3754bbc2d09cf3933e9d"
+    },
+    {
+      "bytes": 7356,
+      "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/independent_handoff_review.json",
+      "sha256": "b91e4539a2c6687a7464ec2ced0525a066e91a5e2f63b62b133fd997ff0e9139"
+    },
+    {
+      "bytes": 695,
+      "path": "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_proposal_v2_review.json",
+      "sha256": "90e2d6c6b068a602a7da413be6cab32974c35da016427dec62a1d2cde76bd9eb"
+    },
+    {
+      "bytes": 7858,
+      "path": "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_runner_review.json",
+      "sha256": "c3be9a62dd6b99b939edefb3a5ca5c04c5c9a88df5e9fff6b032b34314b86158"
+    },
+    {
+      "bytes": 41236,
+      "path": "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_assessment_review.json",
+      "sha256": "7977b15c8932a9e1bafbe6c791053c0d22d684967a48f9762aad1d24a2ee406f"
+    },
+    {
+      "bytes": 1219,
+      "path": "benchmarks/benchmark_results/v3.2-runtime-review-20261010/independent_saved_review.json",
+      "sha256": "647a23e49dbe2793b724ea71d31bc6e96ce2f375be06224587ed21b5505193e4"
+    },
+    {
+      "bytes": 72047,
+      "path": "benchmarks/benchmark_results/v3.2-runtime-review-20261010/independent_human_results_review.json",
+      "sha256": "3889d953de5e75c7883fb72e25ac4e68c9366a8d5a6297596a35354cb2e369db"
+    }
+  ],
+  "assembly_retention_output_code_changed": false,
+  "authorization": "Proceed with plant assay correction, runtime investigation and prerelease validation. Do not initiate actual release; collaborators will assess performance before release.",
+  "branch": "experiment/sequence-first-retention",
+  "collaborator_archive": {
+    "bytes": 11689605,
+    "members_verified": 85,
+    "path": "benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz",
+    "sha256": "ccb49fe8df50d63c3a97ec753aade5384c12de2e094679f1c4d7005c907cf948"
+  },
+  "commit_merge_push_tag_publication_performed": false,
+  "completed_utc": "2026-10-11T14:56:42.097934+00:00",
+  "completed_work": [
+    "Plant correction and eight real/synthetic comparisons",
+    "Four-flag saved runtime investigation and bounded Human output-location experiment",
+    "All eleven final local validation gates",
+    "Independently reviewed collaborator source snapshot and handoff"
+  ],
+  "derived_inventory": {
+    "assembly_policy_or_performance_comparison": "not_established_by_this_derived_view",
+    "new_vs_release": 201,
+    "release_identities_lost": 0,
+    "release_identities_retained": 86,
+    "represented_targets": 75,
+    "source_composition": "Eight samples from the saved final-v1 matrix; two newly run plants use final patched-dependency binary and plant panel2.0.0.",
+    "standard": 66,
+    "status": "derived_mixed_age_inventory_not_fresh_ten_sample_benchmark",
+    "target_identity_compatibility": "trnV-atpE name is retained but its assay boundaries changed from panel1.x to2.0.0.",
+    "target_rows": 118,
+    "total": 287,
+    "uncertain": 221
+  },
+  "documents": [
+    {
+      "bytes": 20475,
+      "path": "CHANGELOG.md",
+      "sha256": "565a3816e1079b405906b02849961482eea87e769deff679ff4c8268e80e4b82"
+    },
+    {
+      "bytes": 3854,
+      "path": "benchmarks/DATASETS.md",
+      "sha256": "40de6752dbd00c7066600a8bc09a9de270f02c95ad220a45be66a27651d350e0"
+    },
+    {
+      "bytes": 32172,
+      "path": "dev_docs/HANDOFF.md",
+      "sha256": "762bc55ef6dc6b71b1a24c722a8dd729ad0819506ae71a8d35d8dcb4956ecc7e"
+    },
+    {
+      "bytes": 49263,
+      "path": "dev_docs/PLAN.md",
+      "sha256": "f8cd5799fee5a733e4f3d123550979ddcb059b06ae75932b852944dd4be7002e"
+    },
+    {
+      "bytes": 23241,
+      "path": "dev_docs/PUBLIC_REFERENCE_REPLACEMENTS.md",
+      "sha256": "2d170fd34e92bc4194742177befbda0308cf769431f0a75a1965d137eb35bfbd"
+    },
+    {
+      "bytes": 30909,
+      "path": "dev_docs/REVIEW_v3.2.md",
+      "sha256": "75fd47766b122febf65d851b9b65435214146401a163edc5927c06b693ce38ef"
+    },
+    {
+      "bytes": 27021,
+      "path": "dev_docs/SEQUENCE_RETENTION_RESULTS.md",
+      "sha256": "b2c9eacae465acdcda767f274f302eb49489f308a03263c58b1ad81911bd60ce"
+    }
+  ],
+  "final_validation_gates": 11,
+  "final_validation_job": "29147703",
+  "git_diff_check": "pass",
+  "head": "1ea21c977455fdf126426e3e000133c02c3f0b32",
+  "historical_receipt_note": "dependency/update-receipt.json retains its pre-validation pending status; this completion receipt and independent_results_review.json record final PASS.",
+  "new_local_document_links_checked": 65,
+  "plant_invocations": 8,
+  "production_scope": [
+    "Versioned plant assay correction and two exact public references",
+    "Minimal rand and rustls-webpki dependency patches",
+    "Focused reference regression tests"
+  ],
+  "release_initiated": false,
+  "remaining_evidence_limits": [
+    "Independent held-out biological validation and wider all-panel biological calibration remain outstanding",
+    "No final macOS CI or physical-laptop performance claim",
+    "Independent Agalma ITS source remains missing",
+    "Combined 287-record inventory uses eight saved samples and two fresh corrected-assay plants; not a fresh ten-sample final-build benchmark"
+  ],
+  "remaining_external_acceptance": [
+    "Collaborator final-build performance assessment",
+    "Explicit user authorization before any release"
+  ],
+  "runtime_new_invocations": 16,
+  "runtime_saved_invocations_reviewed": 48,
+  "source_integrity": {
+    "archive_source_and_support_files": 84,
+    "frozen_sources": 75,
+    "source_binary_archive_hashes_match": true,
+    "supplemental_helpers": "Exact bytes from base commit, verified during archive correction; not part of the 75-file recorded pre/post validation freeze.",
+    "tool_bindings_verified_by_terminal_review": 178
+  },
+  "status": "pass",
+  "superseded_archive": "candidate-source.tar.gz retained; candidate-source-v2.tar.gz adds three unchanged base-commit benchmark/environment helpers missing from original."
+}

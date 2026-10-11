@@ -1,0 +1,9 @@
+{
+  "status": "pass",
+  "scope": "Archive extraction and test discovery/imports only; no repeated tests, builds, or benchmarks.",
+  "archive_sha256": "ccb49fe8df50d63c3a97ec753aade5384c12de2e094679f1c4d7005c907cf948",
+  "returncode": 0,
+  "stdout": "{\"discovered_tests\": 200, \"import_errors\": []}\n",
+  "stderr": "",
+  "environment": "Existing Python 3.14 validation environment plus workspace jsonschema dependencies; cwd is isolated extracted archive."
+}

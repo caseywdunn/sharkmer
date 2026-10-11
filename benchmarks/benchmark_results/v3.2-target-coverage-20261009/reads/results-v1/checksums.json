@@ -1,0 +1,30 @@
+{
+  "contrasts.tsv": {
+    "bytes": 79788,
+    "sha256": "27b8369db264bc2d504ea1e007e8cda1e4ae7faac0b903fb8d4705d0c1b4d3b7"
+  },
+  "evidence_overlay.json": {
+    "bytes": 232299,
+    "sha256": "11e19978872ad2420bd9741dc41ca35c04ea40a0874cbeb658f48d6f3bbd9e4a"
+  },
+  "per_candidate.json": {
+    "bytes": 128437,
+    "sha256": "c2b7c2f4525b227d6305d863629bbf8b5acac538d9fc6e6548dcf630bfc673b8"
+  },
+  "per_candidate.tsv": {
+    "bytes": 28506,
+    "sha256": "81414aa2667bfd51381322bcc0c0fa7849dd445c941972b9d6117b57c8e5d084"
+  },
+  "per_event.tsv": {
+    "bytes": 116888,
+    "sha256": "998ce52e87f85dfdb9fa42eeea73bb9c8e4041b15f6fe77506b0d2a8fedab6c4"
+  },
+  "summary.json": {
+    "bytes": 22128,
+    "sha256": "2310823acfd230142823b70e231b485b50cc0771682658abcef1b2e89b1b15a4"
+  },
+  "target_summary.tsv": {
+    "bytes": 595,
+    "sha256": "e38a64bbcb598355f2c406166863b6910e61179ce57a3329ed61efafe3e4266f"
+  }
+}

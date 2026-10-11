@@ -1,0 +1,1 @@
+{"events": 139, "matching_q20_records": 135, "prefilter": {"seed_length": 19, "distinct_oriented_seeds": 157, "records_examined": 1000000, "records_with_any_seed": 571, "exact_only": true, "semantic_delegate": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py"}}

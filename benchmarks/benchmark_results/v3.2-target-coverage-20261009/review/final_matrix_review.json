@@ -1,0 +1,28 @@
+{
+  "archive_member_receipts_verified": 7,
+  "caveats": [
+    "Assessed is not supported. Reference and local read evidence remain separate; target summaries do not validate untested products.",
+    "Only one of the154 new-target candidates has exact full annotated public target support plus local Q20 tiles; this does not establish a single full sample molecule.",
+    "All44 zero-output targets are actual assembly failures with explicit reasons, not biological negative detections.",
+    "All326 whole_product_validation fields remain not_established. trnV-atpE annotation/length concern is a target note with unchanged emitted identities."
+  ],
+  "current_identity_count": 326,
+  "findings": "Frozen counts and all exact identities unchanged. Every available old evidence entry and every new full-identity overlay is preserved; each target count/status/limit flag and scoped assessment count agrees with source.",
+  "historical_gene_supported_identities_preserved": 51,
+  "read_assessed_candidates": 228,
+  "read_unassessed_candidates": 98,
+  "reference_assessed_candidates": 313,
+  "reference_unassessed_candidates": 13,
+  "reviewed_component_receipts": {
+    "annotation_review.json": "f53f3e4a60dcf11f6a0d1a4857a06281feda1bfe3f21f243e0b279d57045c56f",
+    "matrix_review.json": "4577859e647df01c230fcf36b9283c6ac8faa68a1c0254cb487605d40c0983e7",
+    "read_assay_review.json": "d8fe6dc55ca886ce76d03727647175c9ba98c9f0f83bbcc7b3c02c638083817e",
+    "read_export_review.json": "00335089677b12b6a4e538611c654abd4c2b3548dedc28553410e2f998b46bea",
+    "reference_review.json": "5e6ad71e4c66fd65f9f4dcb705a67f4142972dcc917ed34ef669d73c69ef7714"
+  },
+  "reviewer_source_sha256": "9f96cabb4143fb37c445217d9ee07f139b69a6e117fd556d3e1f8fccace917e8",
+  "source_receipts_verified": 121,
+  "status": "pass",
+  "target_rows": 118,
+  "validation_sha256": "7b0152e39015306d122b3a96b72d9e0e4ac0ea2a066569454ff38c6716642135"
+}

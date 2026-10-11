@@ -1,0 +1,84 @@
+{
+  "command": [
+    "cargo",
+    "clippy",
+    "--all-targets",
+    "--locked",
+    "--offline",
+    "-j",
+    "2",
+    "--no-default-features",
+    "--features",
+    "fxhashmap",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "files": [
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_fxhash/constraints.json",
+      "sha256": "c7e30ce6b1d7ca6159cb6ca2d7b3da2e148b42028b26ded3bdb1652c9162e79d",
+      "size_bytes": 705
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_fxhash/stderr.log",
+      "sha256": "70c93b108edd110cc451429e09ad7be2571647e9e583f7767f58f25a80ef0334",
+      "size_bytes": 150
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_fxhash/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_fxhash/time.json",
+      "sha256": "ddde9529e73861085d6ee9af6e8b36b5527d813f04c31aeb636cc9517363d3cd",
+      "size_bytes": 99
+    }
+  ],
+  "launch_command": [
+    "/usr/bin/prlimit",
+    "--as=12884901888",
+    "--",
+    "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+    "--receipt",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_fxhash/constraints.json",
+    "--expected-cpus",
+    "25,40",
+    "--expected-as",
+    "12884901888",
+    "--",
+    "/usr/bin/time",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_fxhash/time.json",
+    "-f",
+    "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+    "--",
+    "cargo",
+    "clippy",
+    "--all-targets",
+    "--locked",
+    "--offline",
+    "-j",
+    "2",
+    "--no-default-features",
+    "--features",
+    "fxhashmap",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "metrics": {
+    "exit_code": 0,
+    "max_rss_kib": 437240,
+    "system_seconds": 0.63,
+    "user_seconds": 5.8,
+    "wall_seconds": 5.72
+  },
+  "name": "clippy_fxhash",
+  "observer_wall_seconds": 5.888854455668479,
+  "returncode": 0,
+  "status": "pass",
+  "timeout_seconds": 1200
+}

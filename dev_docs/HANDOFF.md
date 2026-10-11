@@ -1,13 +1,99 @@
 # Pause/resume handoff
 
-Updated 2026-10-02. **Sequence-first uncertain retention has been implemented
-and evaluated on `experiment/sequence-first-retention`; `dev` remains the
-fixed inclusive baseline at `b5a6c7e` (including `ed04bde`). All 60 corrected
-paired invocations pass: the branch adds 200 labelled uncertain identities,
-preserves every old standard and uncertain identity, and recovers the two
-historical Drosophila 12S sequences. No release or publication is authorized.**
+Updated 2026-10-11. **The authorized plant correction, runtime investigation
+and local validation are complete. No release was initiated.** The user will
+have collaborators assess performance before release. The user has authorized
+committing the reviewed candidate and integrating it into **`dev`**. Collaborators
+should use `dev` and record `git rev-parse HEAD` with their results. The tested
+source originated on `experiment/sequence-first-retention`, base `1ea21c9`;
+the earlier freezes and completion receipts describe that pre-integration state.
+
+Plant panel 2.0.0 uses published 6R and two exact public references. In the
+eight reviewed before/after runs, Liriodendron trnV-atpE changes from 41
+uncertain hypotheses to one exact-reference 909 bp standard product; Acer
+changes from no product to one 929 bp standard product matching the related
+Acer opalus reference. Both synthetic positives pass; all nine other targets
+retain their sequences, statuses and diagnostics. Assembly, admission,
+retention and inclusive output policy are unchanged.
+
+The derived inventory combining these two corrected plant runs with eight
+saved samples contains 287 records (66 standard, 221 uncertain), with all 86
+release identities retained, zero lost and 201 new. It represents 75/118
+targets. This combines different run dates and a changed plant assay; it is
+not a fresh ten-sample final-build benchmark. The original unchanged-assay
+comparison remains 326 records and 240 new identities.
+
+The four-flag runtime investigation and bounded Human output-location check
+are complete and independently reviewed. The Human diagnostic shows a
+release-to-retention wall increase of 0.43 s with NFS output and 0.04 s locally;
+historical causality and final-build performance acceptance remain open.
+Minimum rand/webpki security patches are applied. All 11 final local gates
+pass: 280 Rust tests per backend, 200 Python tests with no skips, 158 public
+references, panel/schema/fixture checks and all eight plant runs. The
+[independent terminal review](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/independent_results_review.json)
+confirms results and unchanged source bindings.
+
+Start with [the current review](REVIEW_v3.2.md#current-assessment-2026-10-11)
+and its [tested source archive](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz)
+for collaborators. Performance acceptance, wider/held-out biological
+validation and an independent Agalma ITS reference remain outstanding;
+the review distinguishes these scopes. The authorized integration into `dev`
+does not authorize a merge to `master`, release tag or package publication.
+No release is authorized.
+
+## Earlier checkpoints
+
+Completed prior checkpoint (2026-10-10): **Recommendations 1–3 are complete: the implementation is
+frozen, the full 118-row comparison is recorded, and all 154 hypotheses on
+six newly represented targets have bounded reference/read assessments.**
+The work remains on `experiment/sequence-first-retention` at `1ea21c9`;
+`dev` remains the inclusive baseline at `b5a6c7e` (including `ed04bde`).
 Start here in a new session; this handoff does not require the previous chat
 or live coding agents. [PLAN.md](PLAN.md) remains the detailed execution plan.
+
+At that checkpoint, [findings](SEQUENCE_RETENTION_RESULTS.md#complete-target-comparison-and-six-new-targets-2026-10-10)
+and [complete comparison CSV](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/final-v1/target_matrix_compact.csv):
+within the matched ten-sample scope, all **86 v3.1.0 sequences are retained,
+zero are lost, and 240 are new**. Output was 64 standard plus 262
+uncertain records. Targets with any output increase 68 → 74 of 118; the
+remaining 44 have no output, often after reaching search bounds. The older
+200-gain comparison uses the intermediate inclusive build as baseline.
+
+One newly represented target has strong corroboration: the 812 bp
+Liriodendron atpB-rbcL hypothesis exactly matches two annotated public
+plastomes, and all 37 tested local tiles occur at Q20 in the original reads.
+The other 153 hypotheses on the six new targets have no qualifying full-query
+reference match or tested exact local read string. All tiles of all eight
+positive controls reproduce. These bounded negatives do not prove the
+sequences false; local coverage also does not phase an entire product.
+Four scans took 18.97–37.73 seconds each within fixed limits.
+
+The trnV-atpE interpretation is resolved: the effective primers map from
+trnV into atpB, including atpE, over 1,359–1,379 bp on the inspected plastomes;
+no alternative pair falls within the configured 400–1,000 bp range.
+Primer identity is corroborated by the primary literature. Correcting the
+intended assay and panel under #156 is a separate next task. Keep the current
+inclusive delivery and uncertainty labels. Then investigate the four earlier
+runtime flags and finish release review. Production code and panels did not
+change in this diagnostic. Evidence and documentation remain uncommitted;
+the branch is not merged or released.
+
+Preceding read follow-up (2026-10-09): [the findings](SEQUENCE_RETENTION_RESULTS.md#bounded-read-follow-up-2026-10-09)
+resolve the scoped Gryllus linkage and Drosophila recovery checks. Among 32
+Gryllus ITS gains, 11 share a complete nearby Q20 flanked span observed on
+one saved read; four more share the complete variable core with incomplete
+outer flank. The remaining 17 hypotheses share five nearby combinations
+unobserved in the selected 25-read ledger, not proven absent from the sample. All full products remain
+unphased. For all 26 Drosophila 12S hypotheses, including historical
+475/487/499 bp sequences, none of 117 tested longer local strings occurs
+exactly in the original million-read prefix, even without quality filtering;
+all 16 CO1 controls reproduce. A separate recount finds every candidate
+19-mer in that same prefix at least twice. Thus observed short graph pieces
+do not establish their longer combinations. Independent reviews pass.
+No concrete production defect was demonstrated; no production code changed.
+Keep inclusive uncertainty labels and proceed to remaining runtime and release
+validation work. Full repeat reconstruction remains separate. New evidence
+and documentation are currently uncommitted.
 
 Post-comparison update (2026-10-02): an independent audit of the exploratory
 local BLAST check of all 200 gained uncertain identities passes. None has a
@@ -16,6 +102,77 @@ catalog or 61 relevant panel references. This limited absence of qualifying
 reference support is not a biological rejection or read-support assessment.
 See [the results](SEQUENCE_RETENTION_RESULTS.md) and the
 [BLAST review](../benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/README.md).
+
+Resumption update (2026-10-09): the remaining question is the biological
+support of the additional hypotheses. The loss/recovery history is confirmed;
+the available logs do not substantiate a later analysis stopped for excessive
+computation. Slurm accounting confirms the corrected 60-invocation comparison
+(`28037442`) completed in 1:03:27. The preceding comparison (`28034535`) was
+cancelled after 35:10 because it displaced an old plant identity. The earlier
+ITS recruitment and ordered-history jobs completed in 3:56 and 2:56,
+respectively. These are whole-job elapsed times, separate from the measured
+1.8% assembly overhead. Do not infer that an unrecorded expensive attempt
+could not have occurred.
+
+A new [saved-sequence triage](../benchmarks/benchmark_results/v3.2-gain-triage-20261009/report.json)
+binds all 200 gains to their saved FASTA hashes and compares sequences within
+each sample/target without assembly or read scans. Every gain has another gain
+with identical sequence outside one window of at most 40 bases; 143 have such
+a neighbor within five bases. All 32 Gryllus ITS gains meet the latter bound.
+These are pairwise neighborhoods, not 200 independent variant sites or a
+shared 40-base interval across all products. Exact canonical 19-mer sets form
+196 groups; only four Yp2 pairs share a set, and all 200 sets differ at k=31
+and k=51. Thus identical short-sequence content alone does not explain most
+of the extra output. This describes sequence relationships, not biological
+correctness, target identity, or independent loci.
+
+The [target summary](../benchmarks/benchmark_results/v3.2-gain-triage-20261009/target_summary.tsv)
+and [nearest variant windows](../benchmarks/benchmark_results/v3.2-gain-triage-20261009/nearest_windows.tsv)
+provide a bounded starting point for read-support work. First inspect flank
+uniqueness and alternate indel placements, select a few informative contrasts
+(Gryllus ITS is a compact first case), and compare their quality-aware local
+support in the existing fixed read prefixes with positive controls. Retain
+ambiguous placements and distinguish local support from full-product linkage.
+Some windows reach sequence ends and lack two complete flanks. This initial
+triage made no read-support or production change; unsupported does not mean
+proven spurious. The subsequent bounded pilot is recorded below.
+Seven focused diagnostic controls pass. A separate calculation reproduces
+the 200 windows, the 40-base maximum, and the 143 five-base neighborhoods;
+all window substitutions reconstruct their paired sequences. Source and
+result checksums were verified. The new files remain uncommitted.
+
+### Bounded Gryllus ITS gain pilot (2026-10-09)
+
+The user authorized the next read-support investigation. The
+[pilot summary](../benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/summary.json)
+reports one exact/Q20 scan of the original first million Gryllus R1 reads,
+with matching input SHA-256. The 32 gained ITS hypotheses' nearest-neighbor
+contrasts reduce to eight literal windows with complete 21-base flanks;
+two unchanged historical CO1 controls accompany them. All 32 gained full
+sequences and five historical control sequences remain in the finite
+comparison context, with every original window membership preserved.
+
+All eight ITS strings are observed, with 11, 8, 2, 3, 4, 4, 3, and 5 Q20
+exact matching records respectively. Their union contains 25 distinct read
+IDs; overlapping-window counts cannot be summed as independent observations.
+The CO1 controls reproduce 27 records for the retained local structure and
+zero for the longer alternative. Each ITS string occurs in 10–12 frozen
+candidate templates, so none uniquely supports a full candidate. Two reads
+contain strings from both surveyed neighborhoods, providing limited local
+co-occurrence. The full variable extent across all 32 gains requires
+424–426 bases including flanks, longer than these 150-base reads. These
+observations do not establish biological polymorphism, target specificity,
+independent molecules, full-product phase, or correct repeat structure.
+
+Execution completed in 28.66 seconds with 16,896 KiB peak RSS inside the
+existing one-CPU Slurm allocation, below the fixed 300-second/2-GiB address
+space limits. Input/source/output receipts and complete matching-read evidence
+are saved under the pilot's `run-v1/`. Independent review reproduces all
+event matches, quality tests, coordinates, template placements, and counts
+from the retained ledger without repeating the FASTQ scan. No production
+code or admission policy changed. The next diagnostic question concerns
+which combinations are linked by observed reads and which remain unresolved;
+the tested local strings cannot all be dismissed as absent from the reads.
 
 ## Saved state
 
@@ -54,12 +211,12 @@ See [the results](SEQUENCE_RETENTION_RESULTS.md) and the
   records the archive identity and independent member verification.
 - [Drosophila retention diagnosis](DROS12S_RETENTION_RESULTS.md) is complete
   and independently reviewed: 26 unique completed 12S paths, three retained
-  and 23 marker-cap omissions. Exact 499/487 bp historical paths occur at
+  and 23 marker-cap omissions in the fixed inclusive baseline. Exact 499/487 bp historical paths occur at
   ordinals 13/19 and exceed the remaining 287 slots in the fixed 1,561-marker
-  run share. Normal output remains nine standard plus four uncertain; neither
-  missing sequence is emitted in production. Review the bounded retention
-  policy next, alongside the resource regressions; do not infer validated
-  repeat structure or silently increase caps from this diagnostic.
+  run share. At that checkpoint normal output was nine standard plus four
+  uncertain, with neither missing sequence emitted. The subsequent bounded
+  retention implementation above recovers both on the experiment branch;
+  the new read follow-up keeps their biological structure unresolved.
 - Integration is complete: `dev` fast-forwarded from `956e771` to `ed04bde`.
   `baseline/pre-inclusive-dev-20260929` preserves the former dev commit;
   `experiment/uncertain-products` preserves the evaluated checkpoint. The
@@ -287,12 +444,16 @@ Preserve old evidence and keep production assembly/repeat gates unchanged.
    The [completed read-history prototype](READ_HISTORY_RESULTS.md) remains a
    diagnostic; production integration under #145/#116 is a separate future
    evidence/reconstruction task, not required for inclusive delivery.
-3. The next production decision concerns bounded retention: completed useful
-   uncertain sequences can be lost because repeated marker provenance consumes
-   a fixed per-target share. Assess compact provenance or another explicit
-   bounded policy before changing caps. The observed 12S omission is not a
-   search failure or biological validation result. Any new implementation
-   needs its own controls and comparison.
+3. Bounded retention and the scoped Gryllus/Drosophila read follow-up are
+   complete; do not repeat these checks without a concrete remaining question.
+   Read [the final findings](SEQUENCE_RETENTION_RESULTS.md#bounded-read-follow-up-2026-10-09)
+   and the linked independent reviews. Some nearby Gryllus combinations occur
+   on single reads. Drosophila candidates contain observed 19-mers but lack
+   the tested longer exact strings. Full-product correctness remains open,
+   and no demonstrated production defect calls for a targeted fix. Preserve
+   inclusive, labelled delivery. Integration into `dev` remains a separate
+   decision; the next development work is the outstanding runtime and
+   validation review below.
 4. Investigate the four current runtime flags. Preserve the original three
    pairs and distinguish CPU, filesystem/publication and other waiting costs.
    Compare suitably frozen versions to isolate causes; this release-baseline

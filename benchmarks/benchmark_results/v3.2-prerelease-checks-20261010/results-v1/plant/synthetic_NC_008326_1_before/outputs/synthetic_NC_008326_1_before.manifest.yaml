@@ -1,0 +1,8 @@
+schema_version: 2
+producer: sharkmer
+sample: synthetic_NC_008326_1_before
+run_id: 18dd7d9a931e3741-28dc4-20da9e9da55a6019
+status: complete
+files:
+- path: synthetic_NC_008326_1_before.stats.yaml
+  sha256: 430b6c4f39ef8b66f6189333444aac812c2af5bb050120b2b4d64fd1bc274dbc

@@ -24,7 +24,7 @@ ahashmap = []
 [dependencies]
 clap = { version = "4.2.7", features = ["derive"]}
 clap_complete = { version = "4" }
-rand = { version = "0.8.5"}
+rand = { version = "0.8.6"}
 rayon = { version = "1.7.0"}
 petgraph = { version = "0.6.4"}
 bio = { version = "1.4.0"}

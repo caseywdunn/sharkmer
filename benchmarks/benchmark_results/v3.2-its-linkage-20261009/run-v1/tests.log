@@ -1,0 +1,16 @@
+test_competing_offsets_are_preserved (test_linkage.LinkageControls) ... ok
+test_indel_literal_strings_do_not_get_forced_equal (test_linkage.LinkageControls) ... ok
+test_intervening_mismatch_is_retained_and_not_linked (test_linkage.LinkageControls) ... ok
+test_low_quality_between_high_quality_windows_prevents_link (test_linkage.LinkageControls) ... ok
+test_novel_intervening_block_is_not_forced_into_candidate (test_linkage.LinkageControls) ... ok
+test_opposite_strand_links_with_correct_original_coordinates (test_linkage.LinkageControls) ... ok
+test_quality_on_reverse_strand_is_reversed_together_with_bases (test_linkage.LinkageControls) ... ok
+test_repeated_anchor_combinations_are_preserved (test_linkage.LinkageControls) ... ok
+test_saved_outputs_cannot_be_overwritten (test_linkage.LinkageControls) ... ok
+test_separate_local_reads_do_not_link (test_linkage.LinkageControls) ... ok
+test_variable_core_with_partial_flanks_is_separate_from_full_span (test_linkage.LinkageControls) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 0.002s
+
+OK

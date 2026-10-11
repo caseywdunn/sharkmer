@@ -1,0 +1,8 @@
+schema_version: 2
+producer: sharkmer
+sample: fixture_k19
+run_id: 18dd7e2234f50e73-29e00-430692168eefb8b4
+status: complete
+files:
+- path: fixture_k19.stats.yaml
+  sha256: ffae73a72e0bb7cb4fbc680652ddb5ae594c651c8a250cd4510977207fbf847f

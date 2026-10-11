@@ -1,0 +1,52 @@
+{
+  "build_environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_ENCODED_RUSTFLAGS": null,
+    "CARGO_HOME": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/cargo",
+    "CARGO_TARGET_DIR": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target",
+    "PYTHONPATH": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps",
+    "RUSTC_WRAPPER": null,
+    "RUSTFLAGS": null,
+    "RUSTUP_HOME": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup",
+    "RUST_TEST_THREADS": "1"
+  },
+  "cpus": [
+    25,
+    40
+  ],
+  "machine": {
+    "machine": "x86_64",
+    "node": "c1102u05n01.mghpcc.ycrc.yale.edu",
+    "processor": "x86_64",
+    "release": "5.14.0-570.140.1.el9_6.x86_64",
+    "system": "Linux",
+    "version": "#1 SMP PREEMPT_DYNAMIC Mon Sep 7 09:47:52 EDT 2026"
+  },
+  "plan": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/plan-v2.json",
+    "sha256": "bda19fa8e6164ed689605713454663a18caa0fdb2f896770aafcc109c4dbf0c0",
+    "size_bytes": 65308
+  },
+  "python": "3.14.3 | packaged by conda-forge | (main, Feb  9 2026, 21:56:02) [GCC 14.3.0]",
+  "slurm_job_id": "29147703",
+  "started": 1791726311.5220044,
+  "status": "failed",
+  "tool_versions": {
+    "blastn": "blastn: 2.17.0+\n Package: blast 2.17.0, build Aug 11 2025 09:46:06",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "makeblastdb": "makeblastdb: 2.17.0+\n Package: blast 2.17.0, build Aug 11 2025 09:46:06",
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)"
+  },
+  "topology": [
+    {
+      "core": 10,
+      "cpu": 25,
+      "socket": 1
+    },
+    {
+      "core": 25,
+      "cpu": 40,
+      "socket": 0
+    }
+  ]
+}

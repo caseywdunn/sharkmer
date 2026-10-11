@@ -1,0 +1,16 @@
+{"completed": 1, "id": "01_block1_nfs_release", "status": "pass"}
+{"completed": 2, "id": "02_block1_nfs_retention", "status": "pass"}
+{"completed": 3, "id": "03_block1_local_retention", "status": "pass"}
+{"completed": 4, "id": "04_block1_local_release", "status": "pass"}
+{"completed": 5, "id": "05_block2_local_release", "status": "pass"}
+{"completed": 6, "id": "06_block2_local_retention", "status": "pass"}
+{"completed": 7, "id": "07_block2_nfs_retention", "status": "pass"}
+{"completed": 8, "id": "08_block2_nfs_release", "status": "pass"}
+{"completed": 9, "id": "09_block3_nfs_retention", "status": "pass"}
+{"completed": 10, "id": "10_block3_nfs_release", "status": "pass"}
+{"completed": 11, "id": "11_block3_local_release", "status": "pass"}
+{"completed": 12, "id": "12_block3_local_retention", "status": "pass"}
+{"completed": 13, "id": "13_traced_nfs_release", "status": "pass"}
+{"completed": 14, "id": "14_traced_local_retention", "status": "pass"}
+{"completed": 15, "id": "15_traced_nfs_retention", "status": "pass"}
+{"completed": 16, "id": "16_traced_local_release", "status": "pass"}

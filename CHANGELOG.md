@@ -7,13 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-Development target: **3.2.0**. This is not a release. The uncertainty-output
-addition defaults to inclusive delivery and is integrated into `dev` after
-assessment on `experiment/uncertain-products`. All 60 fresh release-comparison
-invocations pass: 64 standard and 62 uncertain records, including five of
-seven formerly lost high-copy identities. Both remaining identities are
-generated but discarded by retention. Runtime follow-ups remain; this is
-not release approval. See `dev_docs/INCLUSIVE_RELEASE_RESULTS.md`.
+Development target: **3.2.0**. This is not a release. Inclusive uncertainty
+output is integrated into `dev`; the subsequent sequence-retention candidate
+is on `experiment/sequence-first-retention`. Under the frozen historical
+panels, it retains all 86 scoped v3.1 sequences and emits 240 additional
+uncertain hypotheses (64 standard + 262 uncertain total). Sequence availability
+is separate from biological validation. The plant panel correction below
+changes one assay and is evaluated separately. Collaborator performance
+assessment and explicit user release approval remain pending. See
+`dev_docs/REVIEW_v3.2.md` and `dev_docs/SEQUENCE_RETENTION_RESULTS.md`.
 Incremental k-mer counting remains supported. Faster bounded-memory counting
 and new nuclear/metagenomic inference policies belong to later releases.
 
@@ -35,9 +37,10 @@ and new nuclear/metagenomic inference policies belong to later releases.
   known annotation-conflict exclusions, and anti-promotion bootstrap guards
   (#129). The complete audit preserves all 159 historical references separately;
   subsequent annotation-reviewed public replacements expand active panels to
-  156 independently sourced regions, covering 58 of 61 quarantined entries
-  (including the already replaced documentation example). Three remain
-  unresolved; related taxa and partial loci are not asserted sample truth.
+  158 independently sourced regions, covering 60 of 61 quarantined entries
+  (including the already replaced documentation example and the versioned
+  plant-assay correction). One remains unresolved; related taxa and partial
+  loci are not asserted sample truth.
 - Current-run output manifests with run identity, completion state, and
   SHA-256 receipts. FASTA/stats publication is staged and coordinated by a
   per-sample lease; interrupted runs cannot be validated as complete (#134).
@@ -46,6 +49,15 @@ and new nuclear/metagenomic inference policies belong to later releases.
 
 ### Fixed
 
+- Update locked `rand` to 0.8.6 and `rustls-webpki` to 0.103.13 for the four
+  reviewed dependency alerts; require at least rand 0.8.6 in the manifest.
+- Correct the `angiospermae` `trnV-atpE` reverse primer from atpB S1022 to
+  published atpE/trnV_6R, with exact independent public-region references
+  (#156). Panel **2.0.0** retains the target name but changes its sequence
+  boundaries incompatibly with panel 1.x. This extended marker includes
+  the complete atpE gene and ends at the overlapping atpE/atpB boundary;
+  it is not a pure intergenic spacer. Other primers and assay limits are
+  unchanged. This development correction is not a release.
 - Read every member of concatenated gzip inputs during ingestion, caching,
   and read-threading replay (#130).
 - Retry lower coverage thresholds until a valid in-range amplicon is found,

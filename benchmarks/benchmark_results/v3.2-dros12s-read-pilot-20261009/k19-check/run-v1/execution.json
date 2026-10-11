@@ -1,0 +1,90 @@
+{
+  "address_space_limit_bytes": 2147483648,
+  "command": [
+    "/usr/bin/timeout",
+    "--kill-after=5s",
+    "600s",
+    "/usr/bin/time",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run-v1/time.json",
+    "-f",
+    "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+    "/usr/bin/prlimit",
+    "--as=2147483648",
+    "--",
+    "/usr/bin/python3",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/count_k19.py",
+    "--fastq",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/reads/SRR31887760.first1M_R1.retry1.fastq",
+    "--output",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run-v1/results"
+  ],
+  "cpu_affinity": [
+    10
+  ],
+  "observer_elapsed_seconds": 60.64904123987071,
+  "outputs": {
+    "results/per_candidate.tsv": {
+      "bytes": 3434,
+      "sha256": "9756678994bd8dbfd9873864d49158aeee1deea3c21de128c4fd91f38da79ef7"
+    },
+    "results/raw_counts.tsv": {
+      "bytes": 37451,
+      "sha256": "75eebf83d7c639b0ea97fb4034c4646f3322839df9d82255346cd964687a7823"
+    },
+    "results/report.json": {
+      "bytes": 13463,
+      "sha256": "63e8e6c0df1c61dc70915308cd6718bff8fc378a2f46aa055c350855fcbda990"
+    },
+    "stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stdout.log": {
+      "bytes": 132,
+      "sha256": "673c8bef1d3f52181a95e64e9ddcaa50591df22e000c14d48113a473bd7412ac"
+    },
+    "tests.log": {
+      "bytes": 460,
+      "sha256": "71efaa4a09c2202772678fe6715d5ab1f87c0a3e3c5781fe06856b9f47364aa4"
+    },
+    "time.json": {
+      "bytes": 100,
+      "sha256": "3c40da99e2d1ae630a572d990261c7e35e7ab33fb9ac53d41783a74f44a02703"
+    }
+  },
+  "returncode": 0,
+  "slurm_job_id": "28875555",
+  "source_hashes_after": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/expected_prefix.json": "e51485a70b451ab04ea46fe76bd0084d1e2cc0a917098b093cacedf539082b90",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/count_k19.py": "14c0165fe6cc0b40a5e90562c37dea4e4164a6926661aedae6d2bd70ce2918cb",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run_check.py": "c18fc61ed833fdc64cbc2273345210aaf4630b3974dea894fad44ac992449633",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/test_count_k19.py": "6781abb7dc3c7764d10a36cc1af18ce53dd61a012b39ec3a5c1128d6d77cbf14",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/manifest.json": "b95c3ba4e6503ce991c40f94b4e191e7da2b8c859a41fddffe722bbcc96b53e7",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/run-v1/execution.json": "9fbac77ec32e78b3c9d1539d06424fcf74a109858febebb8a5512cb75274c28e"
+  },
+  "source_hashes_before": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/expected_prefix.json": "e51485a70b451ab04ea46fe76bd0084d1e2cc0a917098b093cacedf539082b90",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/count_k19.py": "14c0165fe6cc0b40a5e90562c37dea4e4164a6926661aedae6d2bd70ce2918cb",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run_check.py": "c18fc61ed833fdc64cbc2273345210aaf4630b3974dea894fad44ac992449633",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/test_count_k19.py": "6781abb7dc3c7764d10a36cc1af18ce53dd61a012b39ec3a5c1128d6d77cbf14",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/manifest.json": "b95c3ba4e6503ce991c40f94b4e191e7da2b8c859a41fddffe722bbcc96b53e7",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/run-v1/execution.json": "9fbac77ec32e78b3c9d1539d06424fcf74a109858febebb8a5512cb75274c28e"
+  },
+  "sources_unchanged": true,
+  "started_utc": "2026-10-09T23:54:29.347467+00:00",
+  "status": "pass",
+  "test_command": [
+    "/usr/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check",
+    "-p",
+    "test_count_k19.py",
+    "-v"
+  ],
+  "test_exit_code": 0,
+  "time_limit_seconds": 600
+}

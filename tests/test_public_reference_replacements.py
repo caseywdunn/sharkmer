@@ -51,8 +51,48 @@ class PublicReplacementTests(unittest.TestCase):
         self.assertEqual(len(gryllus["sequence"]), 1531)
         self.assertEqual(len(heliconius["sequence"]), 939)
 
-    def test_unresolved_gene_conflicts_remain_unfilled(self):
-        self.assertEqual(panel_references("angiospermae", "trnV-atpE"), [])
+    def test_corrected_plant_assay_has_in_range_exact_public_references(self):
+        panel = yaml.safe_load((ROOT / "panels/angiospermae.yaml").read_text())
+        assay = next(primer for primer in panel["primers"] if primer["gene"] == "trnV-atpE")
+        self.assertEqual(panel["panel_version"], "2.0.0")
+        self.assertEqual(assay["forward_seq"], "GTGTAAACGAGTTGCTCTACCA")
+        self.assertEqual(assay["reverse_seq"], "GGAGAGCAATTTGAAGAAATG")
+        self.assertEqual((assay["min_length"], assay["max_length"], assay["trim"], assay["mismatches"]), (400, 1000, 15, 2))
+        references = panel_references("angiospermae", "trnV-atpE")
+        expected = {
+            "NC_008326.1": (55525, 56434, "Liriodendron tulipifera"),
+            "NC_056221.1": (54176, 55105, "Acer opalus"),
+        }
+        self.assertEqual({reference["accession"] for reference in references}, set(expected))
+        catalog, _receipt = reference_provenance.load_catalog()
+        for reference in references:
+            with self.subTest(accession=reference["accession"]):
+                start, end, taxon = expected[reference["accession"]]
+                source = catalog["records"][reference["accession"]]["sequence"]
+                self.assertEqual(reference["sequence"], source[start:end])
+                self.assertEqual(reference["taxon"], taxon)
+                self.assertEqual((reference["provenance"]["start"], reference["provenance"]["end"], reference["provenance"]["strand"]), (start, end, "+"))
+                self.assertLessEqual(assay["min_length"], len(reference["sequence"]))
+                self.assertLessEqual(len(reference["sequence"]), assay["max_length"])
+                forward = assay["forward_seq"][-assay["trim"]:]
+                reverse_binding = reference_provenance.reverse_complement(assay["reverse_seq"][-assay["trim"]:])
+                self.assertLessEqual(sum(a != b for a, b in zip(reference["sequence"][:len(forward)], forward)), assay["mismatches"])
+                self.assertLessEqual(sum(a != b for a, b in zip(reference["sequence"][-len(reverse_binding):], reverse_binding)), assay["mismatches"])
+
+    def test_legacy_plant_reverse_endpoint_is_outside_current_length_bounds(self):
+        # Independently annotated source coordinates from the issue #156 review:
+        # S1022 binds internally in atpB; it is not the corrected atpE-start primer.
+        panel = yaml.safe_load((ROOT / "panels/angiospermae.yaml").read_text())
+        assay = next(primer for primer in panel["primers"] if primer["gene"] == "trnV-atpE")
+        old_binding = reference_provenance.reverse_complement("CGACATTTGCACATTTAGATGCTAC"[-15:])
+        catalog, _receipt = reference_provenance.load_catalog()
+        for accession, forward_start, old_end in (("NC_008326.1", 55525, 56884), ("NC_056221.1", 54176, 55555)):
+            with self.subTest(accession=accession):
+                source = catalog["records"][accession]["sequence"]
+                self.assertLessEqual(sum(a != b for a, b in zip(source[old_end - 15:old_end], old_binding)), assay["mismatches"])
+                self.assertGreater(old_end - forward_start, assay["max_length"])
+
+    def test_unresolved_cnidarian_gene_conflicts_remain_unfilled(self):
         for gene in ("ITS_1", "ITS_2"):
             self.assertNotIn("Agalma elegans", {reference["taxon"] for reference in panel_references("cnidaria", gene)})
 

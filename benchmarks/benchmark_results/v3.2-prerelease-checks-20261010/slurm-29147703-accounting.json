@@ -1,0 +1,11 @@
+{
+  "command": [
+    "sacct",
+    "-j",
+    "29147703",
+    "--format=JobID,State,ExitCode,Elapsed,AllocCPUS,MaxRSS",
+    "-P"
+  ],
+  "output": "JobID|State|ExitCode|Elapsed|AllocCPUS|MaxRSS\n29147703|COMPLETED|0:0|00:10:13|2|\n29147703.batch|COMPLETED|0:0|00:10:13|2|5483320K\n29147703.extern|COMPLETED|0:0|00:10:13|2|\n",
+  "exit_code": 0
+}

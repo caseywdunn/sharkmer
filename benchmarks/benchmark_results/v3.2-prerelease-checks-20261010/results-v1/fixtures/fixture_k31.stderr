@@ -1,0 +1,8 @@
+  - cnidaria_16S (no products, no start-to-end connectivity established at this threshold)
+  - cnidaria_CO1 (no products, reverse primer not found)
+  + cnidaria_18S (1 product: 1 standard, 0 uncertain; 1783 bp)
+  - cnidaria_28S_1 (no products, no start-to-end connectivity established at this threshold)
+  - cnidaria_ITS_1 (no products, no start-to-end connectivity established at this threshold)
+  - cnidaria_ITS_2 (no products, no start-to-end connectivity established at this threshold)
+  + cnidaria_28S_2 (1 product: 1 standard, 0 uncertain; 430 bp)
+sharkmer complete: 100,000 reads, 2/7 targets with output (cnidaria_18S, cnidaria_28S_2), 2 records (2 standard, 0 uncertain), allocator peak 544.1 MB, 5.0s

@@ -1,0 +1,12 @@
+gate	status	wall_seconds	user_seconds	system_seconds	peak_rss_mib	timeout_seconds	receipt
+build_default	pass	10.44	0.31	0.26	62.625	1200	/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/build_default/receipt.json
+plant_eight	pass	361.39	339.62	11.38	4357.12890625	3600	/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/plant_eight/receipt.json
+test_default	pass	70.21	60.66	3.02	617.58203125	1200	/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_default/receipt.json
+test_fxhash	pass	88.72	112.8	3.12	617.04296875	1200	/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_fxhash/receipt.json
+clippy_default	pass	42.23	17.97	1.74	471.16015625	1200	/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/receipt.json
+clippy_fxhash	pass	5.72	5.8	0.63	426.9921875	1200	/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_fxhash/receipt.json
+fmt	pass	0.29	0.21	0.03	50.625	120	/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fmt/receipt.json
+python_all	pass	10.13	6.93	0.34	71.25	600	/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/python_all/receipt.json
+references	pass	1.22	0.97	0.06	33.84375	600	/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/references/receipt.json
+panels	pass	2.34	1.05	0.12	32.25	600	/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/panels/receipt.json
+fixtures	pass	9.05	7.46	0.4	550.6640625	900	/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fixtures/receipt.json

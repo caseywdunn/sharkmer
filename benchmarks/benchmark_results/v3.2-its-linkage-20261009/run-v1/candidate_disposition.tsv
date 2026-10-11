@@ -1,0 +1,34 @@
+candidate_id	role	length	A	C	B	A_C_reads	C_B_reads	A_C_B_reads	A_C_B_variable_core_reads	disposition	full_candidate_phase
+q136	gained_uncertain	979	TTCGCCC	TCTGT	T		671970,692060			variable_core_unobserved_in_saved_ledger	unresolved
+q137	gained_uncertain	978	CTCGCCC	TCTGT	T		671970,692060			variable_core_unobserved_in_saved_ledger	unresolved
+q138	gained_uncertain	978	CTCGCCC	ACGGG	T	273451,427221	295300,697174		273451,427221	variable_core_observed_with_partial_flanks	unresolved
+q139	gained_uncertain	978	TTCGCC	TCTGT	T	32796,671970	671970,692060	671970	220238,671970,692060	full_flanked_local_A_C_B_string_observed	unresolved
+q140	gained_uncertain	978	TTCGCCC	TCTGT	C		32796			variable_core_unobserved_in_saved_ledger	unresolved
+q141	gained_uncertain	978	CTCGCCC	TCTGT	T		671970,692060			variable_core_unobserved_in_saved_ledger	unresolved
+q142	gained_uncertain	977	TTCGCC	ACGGG	T		295300,697174			variable_core_unobserved_in_saved_ledger	unresolved
+q143	gained_uncertain	978	CTCGCCC	TCTGT	T		671970,692060			variable_core_unobserved_in_saved_ledger	unresolved
+q144	gained_uncertain	979	CTCGCCC	TCTGT	C		32796			variable_core_unobserved_in_saved_ledger	unresolved
+q145	gained_uncertain	979	CTCGCCC	TCTGT	T		671970,692060			variable_core_unobserved_in_saved_ledger	unresolved
+q146	gained_uncertain	978	CTCGCCC	ACGGG	T	273451,427221	295300,697174		273451,427221	variable_core_observed_with_partial_flanks	unresolved
+q147	gained_uncertain	977	TTCGCC	ACGGG	T		295300,697174			variable_core_unobserved_in_saved_ledger	unresolved
+q148	gained_uncertain	977	TTCGCC	TCTGT	C	32796,671970	32796	32796	32796	full_flanked_local_A_C_B_string_observed	unresolved
+q149	gained_uncertain	978	TTCGCC	ACGGG	T		295300,697174			variable_core_unobserved_in_saved_ledger	unresolved
+q150	gained_uncertain	977	TTCGCC	ACGGG	T		295300,697174			variable_core_unobserved_in_saved_ledger	unresolved
+q151	gained_uncertain	978	CTCGCCC	ACGGG	T	273451,427221	295300,697174		273451,427221	variable_core_observed_with_partial_flanks	unresolved
+q152	gained_uncertain	977	TTCGCC	TCTGT	T	32796,671970	671970,692060	671970	220238,671970,692060	full_flanked_local_A_C_B_string_observed	unresolved
+q153	gained_uncertain	978	TTCGCCC	TCTGT	T		671970,692060			variable_core_unobserved_in_saved_ledger	unresolved
+q154	gained_uncertain	977	TTCGCC	TCTGT	C	32796,671970	32796	32796	32796	full_flanked_local_A_C_B_string_observed	unresolved
+q155	gained_uncertain	978	TTCGCCC	ACGGG	T	295300	295300,697174	295300	295300,697174	full_flanked_local_A_C_B_string_observed	unresolved
+q156	gained_uncertain	978	TTCGCCC	ACGGG	T	295300	295300,697174	295300	295300,697174	full_flanked_local_A_C_B_string_observed	unresolved
+q157	gained_uncertain	978	TTCGCCC	TCTGT	C		32796			variable_core_unobserved_in_saved_ledger	unresolved
+q158	gained_uncertain	979	TTCGCCC	ACGGG	T	295300	295300,697174	295300	295300,697174	full_flanked_local_A_C_B_string_observed	unresolved
+q159	gained_uncertain	977	TTCGCC	TCTGT	C	32796,671970	32796	32796	32796	full_flanked_local_A_C_B_string_observed	unresolved
+q160	gained_uncertain	977	TTCGCC	TCTGT	T	32796,671970	671970,692060	671970	220238,671970,692060	full_flanked_local_A_C_B_string_observed	unresolved
+q161	gained_uncertain	979	CTCGCCC	ACGGG	T	273451,427221	295300,697174		273451,427221	variable_core_observed_with_partial_flanks	unresolved
+q162	gained_uncertain	978	TTCGCCC	TCTGT	T		671970,692060			variable_core_unobserved_in_saved_ledger	unresolved
+q163	gained_uncertain	978	TTCGCC	TCTGT	C	32796,671970	32796	32796	32796	full_flanked_local_A_C_B_string_observed	unresolved
+q164	gained_uncertain	977	TTCGCC	TCTGT	T	32796,671970	671970,692060	671970	220238,671970,692060	full_flanked_local_A_C_B_string_observed	unresolved
+q165	gained_uncertain	978	CTCGCCC	TCTGT	C		32796			variable_core_unobserved_in_saved_ledger	unresolved
+q166	gained_uncertain	978	CTCGCCC	TCTGT	C		32796			variable_core_unobserved_in_saved_ledger	unresolved
+q167	gained_uncertain	979	TTCGCCC	TCTGT	C		32796			variable_core_unobserved_in_saved_ledger	unresolved
+SRR27962769_23163ca76f97f5d1	historical_ITS	978	TTCGCCC	ACGGG	T	295300	295300,697174	295300	295300,697174	full_flanked_local_A_C_B_string_observed	unresolved

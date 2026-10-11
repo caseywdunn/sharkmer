@@ -1,0 +1,10 @@
+   Compiling rand v0.8.6
+   Compiling rand_distr v0.4.3
+   Compiling nalgebra v0.29.0
+   Compiling rustls-webpki v0.103.13
+   Compiling rustls v0.23.37
+   Compiling statrs v0.16.1
+   Compiling bio v1.6.0
+   Compiling ureq v2.12.1
+   Compiling sharkmer v3.2.0-dev (/nfs/roberts/project/pi_cwd7/cwd7/sharkmer)
+    Finished `release` profile [optimized] target(s) in 2m 29s

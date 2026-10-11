@@ -1,0 +1,23 @@
+{
+  "command": [
+    "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010",
+    "-p",
+    "test_assessment.py",
+    "-v"
+  ],
+  "exit_code": 0,
+  "hashes": {
+    "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/protocol-v3.json": "ed1692acc8631ee204dc8ccc5c255b8fa4d534e2bf96692a45c3cd7840a67265",
+    "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/run_comparison.py": "e27eb6161061ee059a0feff8b3aa572b1f58188177c3dd77555f42bd7703ef51",
+    "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/runner-preflight-v1/tests.log": "b6aa259128e54209e800069c39c1aea1491e5dbbed53f1f34a1e63c79506a26f",
+    "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/test_assessment.py": "cb67b96e98852d72b3d69621795f26b9ddbc5462c7b89bff2963e48b4249d63a"
+  },
+  "scope": "Assessment controls only; biological runs and partial-reference assessments remain separate.",
+  "status": "pass",
+  "test_methods": 10
+}

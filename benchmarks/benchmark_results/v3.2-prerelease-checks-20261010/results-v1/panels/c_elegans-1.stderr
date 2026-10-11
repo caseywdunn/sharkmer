@@ -1,0 +1,34 @@
+sharkmer 3.2.0-dev (dry run)
+
+Input:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+
+Configuration:
+  Sample:         schema_probe
+  Output dir:     /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/c_elegans-1-dry-output/
+  Kmer length:    19
+  Chunks:         0
+  Threads:        2
+  Min kmer count: 2
+  PCR output:     standard and labelled uncertain products
+
+Output files:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/c_elegans-1-dry-output/schema_probe.stats.yaml
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/c_elegans-1-dry-output/schema_probe_c_elegans_16S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/c_elegans-1-dry-output/schema_probe_c_elegans_CO1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/c_elegans-1-dry-output/schema_probe_c_elegans_18S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/c_elegans-1-dry-output/schema_probe_c_elegans_28S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/c_elegans-1-dry-output/schema_probe_c_elegans_ITS_1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/c_elegans-1-dry-output/schema_probe_c_elegans_ITS_2.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/c_elegans-1-dry-output/schema_probe_c_elegans_EF1A.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/c_elegans-1-dry-output/schema_probe_c_elegans_H3.fasta
+
+PCR primers (8 genes):
+  c_elegans_16S (fwd: AAGATAAG...AATT, rev: GAATTAAA...TCAC, len: 200-350)
+  c_elegans_CO1 (fwd: TAATCATA...ATAT, rev: GGATGACC...CAAA, len: 550-800)
+  c_elegans_18S (fwd: TACCTGAT...CAGC, rev: TGATCCAG...CTAC, len: 1500-1900)
+  c_elegans_28S (fwd: CCTTAGTA...GAGT, rev: TCTCAAAT...TTCA, len: 2700-3500)
+  c_elegans_ITS_1 (fwd: TACACACC...ATCC, rev: ACTCGCCG...AAGG, len: 1000-1500)
+  c_elegans_ITS_2 (fwd: GTAGGTGA...ATCA, rev: ACTCGCCG...AAGG, len: 900-1300)
+  c_elegans_EF1A (fwd: GGACGTGT...GAAT, rev: TGACGGAG...GACG, len: 100-250)
+  c_elegans_H3 (fwd: ATGGCTCG...CCGC, rev: ATGTCCTT...TGAC, len: 350-550)

@@ -4,6 +4,13 @@ Date: 2026-09-13. Follow-up to the [initial provenance audit](REFERENCE_PROVENAN
 under [#129](https://github.com/caseywdunn/sharkmer/issues/129) and
 [#153](https://github.com/caseywdunn/sharkmer/issues/153). **Not a release.**
 
+Current development update (2026-10-11): the reviewed plant assay correction
+adds two exact public-region references, bringing active references to **158**
+and covering **60 of the 61** quarantined legacy entries. The remaining gap is
+Agalma ITS. The September totals below are the preserved earlier checkpoint;
+the correction and its evaluation are recorded in the
+[current pre-release review](REVIEW_v3.2.md#current-assessment-2026-10-11).
+
 ## What the 61 entries mean
 
 The 61 were **not all proven Sharkmer products**: 59 lacked an exact extraction
@@ -83,6 +90,57 @@ invent an atpE reference. Full-primer mapping alone does not establish
 uncallability under Sharkmer's trimmed/mismatch-tolerant search. Primers and
 bounds remain unchanged.
 Follow-up: [#156](https://github.com/caseywdunn/sharkmer/issues/156).
+
+**Follow-up, 2026-10-10:** the
+[annotation review](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/annotation_review.json)
+now also exhaustively checks the effective final 15 primer bases used at k=19,
+allowing up to two substitutions per primer, in both orientations of circular NC_008326.1,
+MN990625.1, and NC_056221.1. Each has exactly one oriented effective pair:
+1,359 bp in the two Liriodendron records and 1,379 bp in the Acer opalus proxy.
+No alternative pair lies within 400–1,000 bp. GenBank features place the
+forward endpoint in trnV-UAC and the reverse endpoint in atpB, with atpE
+inside the interval. The exact reverse oligo, `CGACATTTGCACATTTAGATGCTAC`, is
+listed as atpB primer S1022 in
+[Tank and Donoghue (2010), Appendix 2, p. 441](https://donoghuelab.yale.edu/sites/default/files/190_tank_systbot10.pdf).
+Their separate atpE/trnV assay uses different reverse primers.
+
+This resolves the interpretation of the configured assay on these references,
+including the earlier trim/mismatch uncertainty. It does not establish every
+sample's structure; Acer opalus is a proxy for the benchmark A. monspessulanum.
+None of the 41 current Liriodendron hypotheses corroborates the mapped locus.
+The intended assay, name, length range, and replacement references must be
+corrected together under #156 and evaluated in the affected plant cases.
+This diagnostic leaves production primers, bounds, and the reference catalog
+unchanged. See the [complete target assessment](SEQUENCE_RETENTION_RESULTS.md#complete-target-comparison-and-six-new-targets-2026-10-10).
+
+**Authorized correction, 2026-10-11:** panel 2.0.0 replaces S1022 with the
+published atpE/trnV_6R reverse oligo `GGAGAGCAATTTGAAGAAATG`, preserving the
+forward primer, target name, 400–1,000 bp bounds, trim15 and up to two
+substitutions per primer. The effective intervals are 909 bp in
+NC_008326.1 (`[55525,56434)`) and 929 bp in NC_056221.1 (`[54176,55105)`),
+both on the forward strand. All coordinates are zero-based, half-open.
+The independently deposited Liriodendron MN990625.1 record also supports the
+mapped corrected interval. The marker contains atpE and ends at its overlapping
+boundary with atpB; the reverse primer is not wholly inside atpE. Public
+reference labels preserve Liriodendron tulipifera and the Acer opalus proxy.
+
+The [independent proposal review](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_proposal_v2_review.json)
+checks exhaustive full/effective primer mapping, annotated endpoints, literal
+source extraction and synthetic input construction. The existing pinned
+source catalog supplies both new references and is unchanged. Panel 2.0.0
+explicitly marks the assay's sequence-boundary incompatibility with panel 1.x;
+the other nine primer definitions and all validation samples are unchanged.
+All eight bounded before/after invocations pass. Both synthetic references
+reconstruct exactly as standard products with the corrected assay. The real
+Liriodendron target changes from 41 uncertain hypotheses to one standard
+909 bp exact reference match; Acer changes from no output to one standard
+929 bp exact proxy-reference match. All nine other targets preserve sequences,
+class, multiplicity and diagnostics, and all five aggregate counts agree.
+The [complete assessment](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/assessment-v1/report.json)
+also verifies that both old-assay inventories reproduce the saved matrix and
+reuses the exact prior queries for partial-reference assessment of the old 41
+hypotheses. These results concern the corrected assay; they do not establish
+whole-product phase in either real sample or prove the old hypotheses false.
 
 **Agalma ITS:** AY937313.1 is annotated 18S, not ITS. The bounded targeted
 public-record searches found no independently annotated Agalma ITS replacement.

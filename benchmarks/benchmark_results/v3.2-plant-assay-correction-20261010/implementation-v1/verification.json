@@ -1,0 +1,37 @@
+{
+  "command": [
+    "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests",
+    "-p",
+    "test_public_reference_replacements.py",
+    "-v"
+  ],
+  "elapsed_seconds": 1.3096447908319533,
+  "exit_code": 0,
+  "overwrite_refusal_controls": [
+    {
+      "existing_output_unchanged": true,
+      "exit_code": 2,
+      "script": "prepare_assay.py"
+    },
+    {
+      "existing_output_unchanged": true,
+      "exit_code": 1,
+      "script": "amend_citation.py"
+    }
+  ],
+  "production_panel_equals_reviewed_proposal_v2": true,
+  "scope": "Focused panel/reference regression checks; full CLI reconstruction and real plant evaluation have separate execution receipts.",
+  "source_hashes": {
+    "CHANGELOG.md": "3bc2e5b73f4d87aff5869a1e52eb33d3379a882ef282b143be7f78ea59a7b6be",
+    "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/verify_implementation.py": "cb8c8ed2399fc9005f0306e0e7312b781d5f62ebf54f37f25f4d8ba1d9382b7a",
+    "panels/angiospermae.yaml": "99d1c629953a0d0a9e70f4c0414047c7d7b9e0a69d07d88bedff1c47b107b14e",
+    "tests/test_public_reference_replacements.py": "df14684e6b94ef0cc3d21c2ef85f16f8451ef943510f83f9998390fe17613259"
+  },
+  "status": "pass",
+  "tests_log_sha256": "1c2418a2a42a21f464a5e6a3500374c7a0540679c93473b5a75edfe5bc3eec53"
+}

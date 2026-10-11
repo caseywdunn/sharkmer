@@ -1,0 +1,72 @@
+{
+  "command": [
+    "cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "-j",
+    "2"
+  ],
+  "files": [
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/build_default/constraints.json",
+      "sha256": "56efb96bda7efa5d41060fc61798c80c08feb6d401246d84ed4f3627706b23aa",
+      "size_bytes": 600
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/build_default/stderr.log",
+      "sha256": "980e002d99dba6345b47b629b3fd565ee025232b4cf66a643b044f36fbe411c2",
+      "size_bytes": 63
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/build_default/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/build_default/time.json",
+      "sha256": "24fae449b6ee55103c70dc09bfd76773a7dcaf92b347aa748982a20b786da45e",
+      "size_bytes": 99
+    }
+  ],
+  "launch_command": [
+    "/usr/bin/prlimit",
+    "--as=12884901888",
+    "--",
+    "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+    "--receipt",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/build_default/constraints.json",
+    "--expected-cpus",
+    "25,40",
+    "--expected-as",
+    "12884901888",
+    "--",
+    "/usr/bin/time",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/build_default/time.json",
+    "-f",
+    "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+    "--",
+    "cargo",
+    "build",
+    "--release",
+    "--locked",
+    "--offline",
+    "-j",
+    "2"
+  ],
+  "metrics": {
+    "exit_code": 0,
+    "max_rss_kib": 64128,
+    "system_seconds": 0.26,
+    "user_seconds": 0.31,
+    "wall_seconds": 10.44
+  },
+  "name": "build_default",
+  "observer_wall_seconds": 10.713200870901346,
+  "returncode": 0,
+  "status": "pass",
+  "timeout_seconds": 1200
+}

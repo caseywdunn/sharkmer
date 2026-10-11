@@ -2,7 +2,176 @@
 
 Prepared 2026-09-09. **Development work only: awaiting user review, not release approval.**
 
-**Active assessment (2026-09-30):** development integration and all 60 fresh
+## Current assessment (2026-10-11)
+
+The user authorized the plant assay correction, runtime investigation and
+remaining local validation, and explicitly reserved release until collaborators
+have assessed performance. The candidate was prepared on
+`experiment/sequence-first-retention`; the user subsequently authorized committing
+the reviewed work and integrating it into **`dev`** for collaborator assessment.
+Record the exact `dev` commit with evaluation results. No merge to `master`,
+tag, GitHub release or package publication is authorized.
+Earlier dated checkpoints below describe their own source versions and scopes.
+
+The [complete historical-panel comparison](SEQUENCE_RETENTION_RESULTS.md#complete-target-comparison-and-six-new-targets-2026-10-10)
+contains all 118 sample–target combinations: 86 historical identities retained,
+zero lost, 240 new, with 64 standard and 262 uncertain records. Representation
+rises 68 → 74 targets. The subsequent plant correction changes the assay itself,
+so its results must be reported separately from unchanged-assay retention.
+
+### Plant assay and dependency corrections
+
+Angiospermae panel **2.0.0** retains the `trnV-atpE` name and 400–1,000 bp
+bounds but replaces the incorrectly assigned atpB S1022 reverse primer with
+published atpE/trnV_6R, `GGAGAGCAATTTGAAGAAATG`. The extended marker includes
+atpE and ends at the overlapping atpE/atpB boundary; it is not a pure spacer.
+Independent mapping predicts effective 909 bp Liriodendron and 929 bp Acer
+intervals, versus the old 1,359/1,379 bp intervals. The other nine assays are
+unchanged. Two exact public-region references bring the audited catalog's
+active panel regions to 158; the Acer opalus reference remains an explicit
+proxy for the benchmark A. monspessulanum. The changed primer/coordinates are
+an intentional compatibility change from panel 1.x. See the
+[reviewed proposal](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_proposal_v2_review.json).
+
+The lockfile updates only `rand` 0.8.5 → 0.8.6 and `rustls-webpki`
+0.103.10 → 0.103.13; the direct rand minimum is also 0.8.6. These versions
+cover the four previously recorded advisory targets. The
+[independent dependency review](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/dependency/independent_review.json)
+checks the exact diff and saved GitHub advisories. Default-branch alert closure
+is separate from local remediation; this is not a comprehensive security audit.
+
+All eight [before/after plant checks](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/summary.json)
+pass using the same final binary and reviewed panel snapshots:
+
+| Input | Old trnV-atpE output | Corrected output | Full-panel total, before → after |
+| --- | --- | --- | ---: |
+| Liriodendron, SRR25378184 | 41 uncertain hypotheses | One standard 909 bp sequence, exact NC_008326.1 region | 97 → 57 |
+| Acer, ERR14009273 | No product | One standard 929 bp sequence, exact Acer opalus proxy region | 7 → 8 |
+| Synthetic NC_008326.1 source reads | No product | Exact 909 bp standard sequence | 0 → 1 |
+| Synthetic NC_056221.1 source reads | No product | Exact 929 bp standard sequence | 0 → 1 |
+
+All five ingestion/k-mer counts agree within each before/after pair. The
+other nine targets preserve exact sequences, multiplicity, status, and
+normalized outcome/search diagnostics in all four comparisons. Liriodendron's
+full panel changes 6 standard + 91 uncertain → 7 + 50; Acer changes 6 + 1 →
+7 + 1. These are changed-assay results, not a sequence-retention filter or
+a claim that the old 41 hypotheses were proven biologically false. Exact
+public sequence support also does not phase a full product in the sequenced
+sample. The Liriodendron input preserves its original ordered 656,431 R1 +
+343,569 R2 prefix; no paired-fragment inference is made.
+
+The [complete plant assessment](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/assessment-v1/report.json)
+verifies both old-assay inventories against the saved 118-row matrix and
+retains partial-reference evidence for all 41 replaced hypotheses. A
+[separate independent assessment review](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_assessment_review.json)
+verifies the reference joins and combined inventory. The
+[derived combined inventory](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/assessment-v1/derived_combined_inventory.json)
+uses eight saved samples plus these two fresh corrected-assay plant runs:
+**287 records = 66 standard + 221 uncertain; 86 release identities retained,
+zero lost, 201 new; 75/118 targets represented.** This is not a fresh ten-sample
+final-build benchmark. The reduced total reflects the changed plant assay.
+
+The single real before/after runs took Liriodendron 109.53/107.69 seconds
+and Acer 48.08/71.26 seconds, at one CPU. They test functionality with a
+changed assay, not controlled performance equivalence. In particular, the
+longer Acer after-run belongs in collaborator review rather than being
+silently excluded or called an established regression from one pair.
+
+### Final local validation
+
+Slurm job **29147703** completed successfully in 10m13s on two physical
+CPUs with a 16 GiB allocation. All **11 gates** in the
+[final result](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/result.json)
+pass; 75 source/config/fixture files and 178 tool/helper bindings are
+unchanged before/after execution. The
+[independent terminal review](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/independent_results_review.json)
+passes all 492 receipt checks, including raw test and plant outputs.
+The frozen default-feature executable is
+[saved here](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer),
+SHA-256 `3a6505da2750982c333b077a065ad9e0cd0e6607c6963fa7140a0b44da71a899`.
+
+| Gate | Result |
+| --- | --- |
+| Rust tests, each of two hash backends | 251 unit + 29 integration passed; none ignored |
+| Clippy, both backends; formatting | Passed |
+| Python tests, with BLAST on PATH | 200 passed, no skips; real BLAST integration ran |
+| Exact public-reference provenance | 158/158 verified across ten panel files |
+| Explicit JSON Schema validation | Nine built-ins + reference example passed |
+| Embedded panel/export and loader checks | Nine exports match source; 19 dry runs passed |
+| Fixture CLI oracles | k19 exact count; k31 exact standard sequence hashes passed |
+| Plant correction | All eight bounded invocations and four comparisons passed |
+
+The largest measured process RSS was 4,461,700 KiB during the plant checks.
+No assembly, admission, retention, publication or inclusive-output code was
+changed. The dependency updates and versioned panel correction are the
+production changes in this follow-up.
+
+### Candidate for collaborator assessment
+
+The [tested source snapshot](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz)
+contains the source and fixture inputs needed to build and test this development
+candidate, with an internal file manifest. Its
+[archive receipt](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2-receipt.json)
+binds every member to the tested source, base commit, final plan and binary.
+Its three supplemental benchmark/environment helpers match the base commit;
+they were outside the 75-file pre/post validation inventory. This corrected
+v2 archive supersedes the preserved first archive, which omitted those helpers.
+The [production patch](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate.patch)
+shows changes relative to `1ea21c9`. Extract into a fresh directory and use
+`cargo build --release --locked`; validation used Rust/Cargo 1.98.1 with the
+default hash backend. This is a local review snapshot, not a published release.
+The authorized Git handoff uses `dev`; the archive and its receipts preserve
+the exact source tested before integration. Subsequent handoff documentation
+updates do not change that tested source.
+
+### Runtime investigation completed; performance acceptance remains open
+
+The [saved-evidence investigation](../benchmarks/benchmark_results/v3.2-runtime-review-20261010/SAVED_FINDINGS.md)
+authenticates all 48 relevant invocations across the release → inclusive and
+inclusive → retention comparisons. The original four wall flags remain recorded:
+Human +2.74 s, Liriodendron +4.17 s, Rhopilema +2.66 s and Heliconius +2.48 s.
+The later retention change adds median CPU time of 1.95, 1.11 and 0.87 s in
+the three longer workloads, respectively. These are measured costs, without
+function-level causal attribution. All sequences in these four cells are
+retained; more output alone cannot explain the unchanged-output Rhopilema case.
+
+The same inclusive binary's Human wall median varied 4.29 → 0.66 s between
+historical environments while CPU was 0.71 → 0.70 s. A
+[new bounded Human diagnostic](../benchmarks/benchmark_results/v3.2-runtime-review-20261010/HUMAN_FINDINGS.md)
+uses 12 untraced measurements plus four separate traces. Release → frozen
+retention wall medians are 0.71 → 1.14 s with NFS output and 0.47 → 0.51 s
+with node-local output. All 16 runs preserve five exact products and nine
+target outcomes. Traces show delays in NFS opens, renames and removals;
+fsync is not the dominant measured call. Synchronization and transaction
+semantics remain unchanged.
+
+This supports current filesystem sensitivity, not a proven explanation of
+the historical delay. Three repeats on one host do not establish equivalence
+or acceptable performance. The diagnostic uses frozen pre-correction binaries;
+collaborators should assess the final candidate on their intended storage and
+hardware, reporting absolute times, CPU, RSS, sequences/statuses, and exact
+input/panel/build identities. Keep traced timings separate and state cache
+conditions. The [independent outcome review](../benchmarks/benchmark_results/v3.2-runtime-review-20261010/independent_human_results_review.json)
+passes; it does not close performance acceptance.
+
+### Remaining acceptance boundaries
+
+- Collaborator assessment of final-build performance and explicit user release
+  authorization remain required.
+- Independent held-out biological inputs/truth have not been registered. The
+  118-target matrix and plant replays are calibration/regression evidence.
+- Wider biological calibration of all nine panels remains outstanding. The
+  default all-panel script expands to 100 sample/depth invocations, plus the
+  reference example; schema/loader checks are a separate, smaller gate.
+  Register and bound any wider run before executing it.
+- Final macOS CI has not run locally. Slurm memory limits also do not establish
+  performance on a physical 16 GB laptop; that remains a hardware claim to test,
+  not a new implied release requirement.
+- The independently annotated Agalma ITS source remains missing under #129.
+
+## Earlier assessment checkpoints
+
+**Assessment (2026-09-30):** development integration and all 60 fresh
 [inclusive release comparison](INCLUSIVE_RELEASE_RESULTS.md) invocations pass.
 `dev` now contains `ed04bde`; `baseline/pre-inclusive-dev-20260929` preserves
 `956e771`. Default output contains 64 standard and 62 uncertain records;
@@ -242,6 +411,11 @@ commands. This is calibration/regression evidence only, not held-out validation.
   keys. Allocator peak, process RSS, and final disk size are different metrics.
 
 ## Remaining release gates
+
+This original gate inventory is retained for provenance. The current
+assessment above records completed recovery, runtime investigation, dependency
+patches and local checks; collaborator performance acceptance, held-out/wider
+biological evaluation and explicit release authorization remain separate.
 
 1. **User review and release authorization.** Do not merge to `master`, tag,
    create a GitHub release, or publish the Bioconda recipe in this task.

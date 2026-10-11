@@ -1,0 +1,111 @@
+{
+  "candidate_rows_checked": 154,
+  "exact_full_annotated_target_candidates": [
+    "915b01f36648fff32748111033cd6a9e987fa2f64cc6a362bf6f75798452a7de"
+  ],
+  "output_hashes": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/assay-v1/mapping.json": "86039a815b633f92fa25625362cad7426f95eb0c19cf82e45905f410283ae8b5",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/assessment-v2/per_candidate.tsv": "c924e6b2341d7a17876648d5f892f2d5aebc6309136d956f8cc270d6005c38ef",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/assessment-v2/reference_overlay.json": "0813409c1c3a34f9f845d3036f18cf35e4d10258119a998d1a322a70f3c0619d",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/assessment-v2/report.json": "b45609ca830b99c7eca49d84a32feaf6a571b9ecd154c2474e2eddb25f2f0008"
+  },
+  "public_source_assay_pair_checks": [
+    {
+      "accession": "NC_008326.1",
+      "assay": "full_primer_pairs",
+      "independent_unseeded_pairs": [
+        [
+          "+",
+          55518,
+          56869,
+          1376,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "accession": "NC_008326.1",
+      "assay": "effective_primer_pairs",
+      "independent_unseeded_pairs": [
+        [
+          "+",
+          55525,
+          56869,
+          1359,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "accession": "NC_056221.1",
+      "assay": "full_primer_pairs",
+      "independent_unseeded_pairs": [
+        [
+          "+",
+          54169,
+          55540,
+          1396,
+          2,
+          1
+        ]
+      ]
+    },
+    {
+      "accession": "NC_056221.1",
+      "assay": "effective_primer_pairs",
+      "independent_unseeded_pairs": [
+        [
+          "+",
+          54176,
+          55540,
+          1379,
+          2,
+          1
+        ]
+      ]
+    },
+    {
+      "accession": "MN990625.1",
+      "assay": "full_primer_pairs",
+      "independent_unseeded_pairs": [
+        [
+          "+",
+          55597,
+          56948,
+          1376,
+          2,
+          0
+        ]
+      ]
+    },
+    {
+      "accession": "MN990625.1",
+      "assay": "effective_primer_pairs",
+      "independent_unseeded_pairs": [
+        [
+          "+",
+          55604,
+          56948,
+          1359,
+          2,
+          0
+        ]
+      ]
+    }
+  ],
+  "randomized_optimized_vs_brute_mapping_controls": 60,
+  "sources_verified": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/per_sequence.json": "48c58d94713a33539617489c550510e8e23c14a08784d1557e87682c5a6b75d4",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/review.json": "b8dd5f6b778c765f75d2f700a3c8b732aaad9f322980bc40ab2b876581723782",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/summary.json": "7fe38eb1fa06a46f0d0430f566a3565604617093abb4705ddd98180c29c1ad30",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/novel_target_inventory.json": "969e33eb3671156d1d79b4329480c4ac21c9c7e826ed9e2ec405bc7cd278cb0d",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/assay-v1/mapping.json": "86039a815b633f92fa25625362cad7426f95eb0c19cf82e45905f410283ae8b5",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/assess_references.py": "c28b42b9081e2e479c6ebdd1fcb840755a97049b5f5feaa9d6a3f368fbeea934",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/execution.json": "d467b2ccf1ebd5d988fd6571b5b617299a13d1af764b2918d03b81b85a080b37",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/map_assay.py": "938717313cb778d0cab196cf58b149d26a6140cde342223fd3d2266b234d2905"
+  },
+  "status": "pass",
+  "verifier_sha256": "ff87215fb49267a1da4b6b1728b69b07f2218ad8d5427038462a7f9934020a69"
+}

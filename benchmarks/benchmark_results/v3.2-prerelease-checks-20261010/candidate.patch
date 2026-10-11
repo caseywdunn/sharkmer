@@ -1,0 +1,231 @@
+diff --git a/CHANGELOG.md b/CHANGELOG.md
+index b0a9c07..f6160bb 100644
+--- a/CHANGELOG.md
++++ b/CHANGELOG.md
+@@ -7,13 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
+ 
+ ## [Unreleased]
+ 
+-Development target: **3.2.0**. This is not a release. The uncertainty-output
+-addition defaults to inclusive delivery and is integrated into `dev` after
+-assessment on `experiment/uncertain-products`. All 60 fresh release-comparison
+-invocations pass: 64 standard and 62 uncertain records, including five of
+-seven formerly lost high-copy identities. Both remaining identities are
+-generated but discarded by retention. Runtime follow-ups remain; this is
+-not release approval. See `dev_docs/INCLUSIVE_RELEASE_RESULTS.md`.
++Development target: **3.2.0**. This is not a release. Inclusive uncertainty
++output is integrated into `dev`; the subsequent sequence-retention candidate
++is on `experiment/sequence-first-retention`. Under the frozen historical
++panels, it retains all 86 scoped v3.1 sequences and emits 240 additional
++uncertain hypotheses (64 standard + 262 uncertain total). Sequence availability
++is separate from biological validation. The plant panel correction below
++changes one assay and is evaluated separately. Collaborator performance
++assessment and explicit user release approval remain pending. See
++`dev_docs/REVIEW_v3.2.md` and `dev_docs/SEQUENCE_RETENTION_RESULTS.md`.
+ Incremental k-mer counting remains supported. Faster bounded-memory counting
+ and new nuclear/metagenomic inference policies belong to later releases.
+ 
+@@ -35,9 +37,10 @@ and new nuclear/metagenomic inference policies belong to later releases.
+   known annotation-conflict exclusions, and anti-promotion bootstrap guards
+   (#129). The complete audit preserves all 159 historical references separately;
+   subsequent annotation-reviewed public replacements expand active panels to
+-  156 independently sourced regions, covering 58 of 61 quarantined entries
+-  (including the already replaced documentation example). Three remain
+-  unresolved; related taxa and partial loci are not asserted sample truth.
++  158 independently sourced regions, covering 60 of 61 quarantined entries
++  (including the already replaced documentation example and the versioned
++  plant-assay correction). One remains unresolved; related taxa and partial
++  loci are not asserted sample truth.
+ - Current-run output manifests with run identity, completion state, and
+   SHA-256 receipts. FASTA/stats publication is staged and coordinated by a
+   per-sample lease; interrupted runs cannot be validated as complete (#134).
+@@ -46,6 +49,15 @@ and new nuclear/metagenomic inference policies belong to later releases.
+ 
+ ### Fixed
+ 
++- Update locked `rand` to 0.8.6 and `rustls-webpki` to 0.103.13 for the four
++  reviewed dependency alerts; require at least rand 0.8.6 in the manifest.
++- Correct the `angiospermae` `trnV-atpE` reverse primer from atpB S1022 to
++  published atpE/trnV_6R, with exact independent public-region references
++  (#156). Panel **2.0.0** retains the target name but changes its sequence
++  boundaries incompatibly with panel 1.x. This extended marker includes
++  the complete atpE gene and ends at the overlapping atpE/atpB boundary;
++  it is not a pure intergenic spacer. Other primers and assay limits are
++  unchanged. This development correction is not a release.
+ - Read every member of concatenated gzip inputs during ingestion, caching,
+   and read-threading replay (#130).
+ - Retry lower coverage thresholds until a valid in-range amplicon is found,
+diff --git a/Cargo.lock b/Cargo.lock
+index dd7f806..13e292f 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -1190,9 +1190,9 @@ checksum = "f8dcc9c7d52a811697d2151c701e0d08956f92b0e24136cf4cf27b57a6a0d9bf"
+ 
+ [[package]]
+ name = "rand"
+-version = "0.8.5"
++version = "0.8.6"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "34af8d1a0e25924bc5b7c43c079c942339d8f0a8b57c39049bef581b46327404"
++checksum = "5ca0ecfa931c29007047d1bc58e623ab12e5590e8c7cc53200d5202b69266d8a"
+ dependencies = [
+  "libc",
+  "rand_chacha",
+@@ -1362,9 +1362,9 @@ dependencies = [
+ 
+ [[package]]
+ name = "rustls-webpki"
+-version = "0.103.10"
++version = "0.103.13"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "df33b2b81ac578cabaf06b89b0631153a3f416b0a886e8a7a1707fb51abbd1ef"
++checksum = "61c429a8649f110dddef65e2a5ad240f747e85f7758a6bccc7e5777bd33f756e"
+ dependencies = [
+  "ring",
+  "rustls-pki-types",
+diff --git a/Cargo.toml b/Cargo.toml
+index 5e36e19..6b1473f 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -24,7 +24,7 @@ ahashmap = []
+ [dependencies]
+ clap = { version = "4.2.7", features = ["derive"]}
+ clap_complete = { version = "4" }
+-rand = { version = "0.8.5"}
++rand = { version = "0.8.6"}
+ rayon = { version = "1.7.0"}
+ petgraph = { version = "0.6.4"}
+ bio = { version = "1.4.0"}
+diff --git a/panels/angiospermae.yaml b/panels/angiospermae.yaml
+index b580997..4ef031c 100644
+--- a/panels/angiospermae.yaml
++++ b/panels/angiospermae.yaml
+@@ -1,6 +1,6 @@
+ name: angiospermae
+ schema_version: "2"
+-panel_version: 1.0.2
++panel_version: 2.0.0
+ description: "Universal plant primers for chloroplast and ITS products"
+ clade: "Magnoliopsida"
+ taxon_id: 3398
+@@ -10,6 +10,10 @@ maintainers:
+   orcid: "https://orcid.org/0000-0002-8451-103X"
+ 
+ changelog:
++- panel_version: 2.0.0
++  date: 2026-10-10
++  sharkmer_version: "3.2.0-dev"
++  changes: "Replace trnV-atpE reverse primer S1022 with published atpE/trnV_6R and add exact public references. Target name is retained, but its sequence boundaries change incompatibly with panel 1.x. The extended marker includes the complete atpE gene and ends at the overlapping atpE/atpB boundary. Other primers and assay bounds are unchanged."
+ - panel_version: 1.0.2
+   date: 2026-09-13
+   sharkmer_version: "3.2.0-dev"
+@@ -63,14 +67,14 @@ primers:
+ - gene: "trnV-atpE"
+   compartment: "plastid:chloroplast"
+   forward_seq: "GTGTAAACGAGTTGCTCTACCA"
+-  reverse_seq: "CGACATTTGCACATTTAGATGCTAC"
++  reverse_seq: "GGAGAGCAATTTGAAGAAATG"
+   min_length: 400
+   max_length: 1000
+   min_count: 2
+   mismatches: 2
+   trim: 15
+-  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.0503123102"
+-  notes: "trnV5f; S1022"
++  citation: "Kress et al 2005 (legacy locus citation). https://doi.org/10.1073/pnas.0503123102; Tank and Donoghue 2010 Appendix 2 (atpE/trnV_6R, attributed to Bremer et al 2002). https://donoghuelab.yale.edu/sites/default/files/190_tank_systbot10.pdf"
++  notes: "Legacy trnV5f forward; atpE/trnV_6R reverse. Extended trnV-to-atpE marker includes trnM and complete atpE; reverse 3-prime end overlaps the atpE start and its 5-prime portion lies in overlapping atpB. Panel 2.0.0 changes this assay boundary; 400-1000 bp bounds, trim 15 and two mismatches per primer remain unchanged."
+ 
+ - gene: "trnC-ycf6"
+   compartment: "plastid:chloroplast"
+@@ -168,6 +172,36 @@ validation:
+     max_reads: [1000000]
+ 
+ references:
++- gene: trnV-atpE
++  sequences:
++  - accession: NC_008326.1
++    taxon: Liriodendron tulipifera
++    sequence: CGAGGTGCTCTACCTAACTGAGCTATAGCCCTTGTCATAGACATCTTAACATCTAGATAATTTCTTGTCAAGATAGATATTCCATAATCCCACATGATAGCTCCGTTTCCTGCCAAGGATTAGTATTGCTTAGAAGTCATATTCCATCTATAATTCCCGATGTGATGGGTCCCATTTTTTTTTTCTTTGTGATGATAAATAACCTACTTAACCCAGTGGTTAGAGTATTGCTTTCATACGGCGGGAGTCATTGGTTCAAATCCAATAGTAGGTAGAACTTATTAGATACCATTGACTCCGGTATCTAATAAGTTTTTCTACCCACCCTTTTTTCTTTTTTTTATTTATTTTGTATCTTTTCCCTATTATCCTCCTACTACTCATATTTGTTTTTTTTGTTCGTTGCATCAGATTCCAATTGATTGCATCCAATTGGAGGAATCCAAATATGGTGTATAAACAGAACTTATTTTGATTATTCTGATGCAACGACTAGTACGAAATAACATTGATAGCCTCTACTCGTGTCCTAGCTCGTCTGAGAGCTAGATTCGCCTCAATTGCTTGTCTCTTGCCTTCAGCTCTACTCAAGTTAGCTTCAGCTATTTCAAGAGTTCGCTGAGCTTCTTGTGGATCAATGTCACTACCCTTCTCCGCATCATTTACTAAAATGGTGATCTCATTATTACCTATTCTAGCGAAACCACCCATCAGAGCCATCGTTAACCATTGGTCGTTGAGGCGTACTCTCAAAATACCTATATCTACGGCTGTGGCAATAGGGGCGTGATTTGGTAATACGCCAATTTGGCCACTATTAGTAGATAAAATAATTTCTTTCACTTCTGAATCCCAAATAATTCGATTAGGGGTCAGTACACAAAGATTTAAAGTCATTTCTTCAATTTG
++    provenance:
++      schema_version: 1
++      kind: public_record_region
++      accession_version: NC_008326.1
++      start: 55525
++      end: 56434
++      strand: +
++      wraps_origin: false
++      source_length: 159886
++      source_sequence_sha256: b667e2bc25deb94e0c19a8dbd09e103bd0504e16083e7c284de22b00e64bb3c8
++      sequence_sha256: 8150cf0b4ec2c207ea6f7a45c85ffed36be9c74a12bdf4e3188bec739f1f5379
++  - accession: NC_056221.1
++    taxon: Acer opalus
++    sequence: CGAGGTGCTCTACCTAACTGAGCTATAGCCCTTGTGCTTGTGATACATATTTTATCATATTATGTAGATAATTTCTTGTCAAGATGAATATTCCATGATCCAACATCGTATCTCTTTGATCTTTTTGATTGGTATTGCTTCGAAGTCTTATTGCATTTATAATCCATCAATGGGAGGGGTCCTTTTTTTTTCTCCTTATAATGATAAATGACCTACTTAACTCAGTGGTTAGAGTATTGCTTTCATACGGCGGGAGTCATTGGTTCAAATCCAATAGTAGGTAGAACTTATTAGATACCATGGTCAATGGTATCTAATAAGTTTTTCTACTTACTGATTTTGTATCTTTTCTATCCTATTCGATTTGATTTTCGAATTGAAACTAAAACTTTTTTCCTTACATCAGAATCCGATTCCACTTGATTGTATTTGATTGGATTCAATCGGAAGAATCCATATGTGTATAAACAAAAATTCTTTGGATTAGGATTATTCGATTCGGGCGCACCGACTAGTTACGAAATCACATTGAGAACCTCTACTCGTGTCCTAGCTCGTCTGAGAGCTAGATTTGCCTCAATTGTTTGTCTCTTACTTTCAGCTTTCCTCAAGCCGGCTTCCGCTATTTCAAGAGTTTGCTGAGCTTCTTGGGGATCAATGTCACTACTCTTCTCCGCATCATTTACTAAAACGGTGATCTCATTATTACCTATTCTAGCAAAACCGCCCATCAGAGCCATCGTTAACCATTGGTCATTAAAGCGTATTCTCAAAATACCTATATCTACAGCTGTGGCAATAGGCGCGTGATTTGGTAATACGCCAATTTGTCCACTATTAGTAGATAAAATGATTTCTTTCACTTCTGAATCCCAAACAATTCGATTAGGGGTCAGTACACAAAGATTTAAGGTCATTTCTTCAAATTG
++    provenance:
++      schema_version: 1
++      kind: public_record_region
++      accession_version: NC_056221.1
++      start: 54176
++      end: 55105
++      strand: +
++      wraps_origin: false
++      source_length: 156145
++      source_sequence_sha256: e5b03a378060cff04b2241517f14d02bb08991fb68c560fd0bc29731b00fcdf9
++      sequence_sha256: 60a67ee9a9fac06519b8aff377abc4f2ab9e252b12121adf28ff37421e9dfc9a
+ - gene: psbA-trnH
+   sequences:
+   - taxon: Acer opalus
+diff --git a/tests/test_public_reference_replacements.py b/tests/test_public_reference_replacements.py
+index 2e53dd3..2302ff5 100644
+--- a/tests/test_public_reference_replacements.py
++++ b/tests/test_public_reference_replacements.py
+@@ -51,8 +51,48 @@ class PublicReplacementTests(unittest.TestCase):
+         self.assertEqual(len(gryllus["sequence"]), 1531)
+         self.assertEqual(len(heliconius["sequence"]), 939)
+ 
+-    def test_unresolved_gene_conflicts_remain_unfilled(self):
+-        self.assertEqual(panel_references("angiospermae", "trnV-atpE"), [])
++    def test_corrected_plant_assay_has_in_range_exact_public_references(self):
++        panel = yaml.safe_load((ROOT / "panels/angiospermae.yaml").read_text())
++        assay = next(primer for primer in panel["primers"] if primer["gene"] == "trnV-atpE")
++        self.assertEqual(panel["panel_version"], "2.0.0")
++        self.assertEqual(assay["forward_seq"], "GTGTAAACGAGTTGCTCTACCA")
++        self.assertEqual(assay["reverse_seq"], "GGAGAGCAATTTGAAGAAATG")
++        self.assertEqual((assay["min_length"], assay["max_length"], assay["trim"], assay["mismatches"]), (400, 1000, 15, 2))
++        references = panel_references("angiospermae", "trnV-atpE")
++        expected = {
++            "NC_008326.1": (55525, 56434, "Liriodendron tulipifera"),
++            "NC_056221.1": (54176, 55105, "Acer opalus"),
++        }
++        self.assertEqual({reference["accession"] for reference in references}, set(expected))
++        catalog, _receipt = reference_provenance.load_catalog()
++        for reference in references:
++            with self.subTest(accession=reference["accession"]):
++                start, end, taxon = expected[reference["accession"]]
++                source = catalog["records"][reference["accession"]]["sequence"]
++                self.assertEqual(reference["sequence"], source[start:end])
++                self.assertEqual(reference["taxon"], taxon)
++                self.assertEqual((reference["provenance"]["start"], reference["provenance"]["end"], reference["provenance"]["strand"]), (start, end, "+"))
++                self.assertLessEqual(assay["min_length"], len(reference["sequence"]))
++                self.assertLessEqual(len(reference["sequence"]), assay["max_length"])
++                forward = assay["forward_seq"][-assay["trim"]:]
++                reverse_binding = reference_provenance.reverse_complement(assay["reverse_seq"][-assay["trim"]:])
++                self.assertLessEqual(sum(a != b for a, b in zip(reference["sequence"][:len(forward)], forward)), assay["mismatches"])
++                self.assertLessEqual(sum(a != b for a, b in zip(reference["sequence"][-len(reverse_binding):], reverse_binding)), assay["mismatches"])
++
++    def test_legacy_plant_reverse_endpoint_is_outside_current_length_bounds(self):
++        # Independently annotated source coordinates from the issue #156 review:
++        # S1022 binds internally in atpB; it is not the corrected atpE-start primer.
++        panel = yaml.safe_load((ROOT / "panels/angiospermae.yaml").read_text())
++        assay = next(primer for primer in panel["primers"] if primer["gene"] == "trnV-atpE")
++        old_binding = reference_provenance.reverse_complement("CGACATTTGCACATTTAGATGCTAC"[-15:])
++        catalog, _receipt = reference_provenance.load_catalog()
++        for accession, forward_start, old_end in (("NC_008326.1", 55525, 56884), ("NC_056221.1", 54176, 55555)):
++            with self.subTest(accession=accession):
++                source = catalog["records"][accession]["sequence"]
++                self.assertLessEqual(sum(a != b for a, b in zip(source[old_end - 15:old_end], old_binding)), assay["mismatches"])
++                self.assertGreater(old_end - forward_start, assay["max_length"])
++
++    def test_unresolved_cnidarian_gene_conflicts_remain_unfilled(self):
+         for gene in ("ITS_1", "ITS_2"):
+             self.assertNotIn("Agalma elegans", {reference["taxon"] for reference in panel_references("cnidaria", gene)})
+ 

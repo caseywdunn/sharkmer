@@ -1,0 +1,8 @@
+{
+  "checksums_manifest_sha256": "07eefa8b3199e210012a3a3c6fffc7bf2c1c0d8cd9e0837883ef547b5775b734",
+  "contrasts_reconciled": 152,
+  "event_export_rows_reconciled": 833,
+  "review": "Direct independent exact-string extraction for every contrast endpoint, exported complete event counts and all six target rollups agrees with frozen raw results and manifests; missing flanks retain null counts.",
+  "status": "pass",
+  "target_rollups_reconciled": 6
+}

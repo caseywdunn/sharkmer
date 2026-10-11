@@ -1,6 +1,6 @@
 # Development plan: scalable, reliable sPCR
 
-**Updated 2026-10-01 on `experiment/sequence-first-retention`; see [HANDOFF.md](HANDOFF.md).** It records the
+**Updated 2026-10-11; authorized collaborator review target: `dev`. See [HANDOFF.md](HANDOFF.md).** It records the
 latest reviewed evidence commit, saved artifacts, known limitations, and next
 unimplemented integration step. Release remains on hold; dated checkpoints below
 must not be mistaken for the latest code or validation totals.
@@ -9,10 +9,29 @@ Status: default inclusive delivery is integrated on `dev`. A separate
 [sequence-first retention candidate](SEQUENCE_RETENTION_RESULTS.md) passes a
 new 60-run comparison, preserves old output, and makes all 71 released
 high-copy identities available (64 standard, seven uncertain). It adds 200
-bounded uncertain identities across the ten samples and is not merged into
-`dev`. Four earlier v3.1-to-inclusive runtime flags still require
-investigation. Release remains on hold for these follow-ups and
-biological validation. See [BENCHMARK_v3.2_vs_v3.1.md](BENCHMARK_v3.2_vs_v3.1.md)
+bounded uncertain identities across the ten samples. The user has now authorized
+committing the reviewed candidate and integrating it into `dev`. The bounded
+read follow-up finds local linkage for some Gryllus
+hypotheses and observed 19-mers, but no tested longer exact windows, for all
+26 Drosophila 12S hypotheses. Whole-product validity remains unresolved;
+no specific production defect was demonstrated.
+The [complete 118-target comparison](SEQUENCE_RETENTION_RESULTS.md#complete-target-comparison-and-six-new-targets-2026-10-10)
+now confirms 86 retained v3.1.0 sequences, zero lost, and 240 new; sample–target
+representation rises 68 → 74. All 154 hypotheses on the six new targets were
+assessed: Liriodendron atpB-rbcL has an exact full match in two annotated public
+plastomes and complete local read-tile support; the other 153 remain
+uncorroborated under the bounded assays. The subsequent plant panel 2.0.0
+correction passes all eight before/after runs: Liriodendron trnV-atpE changes
+41 uncertain → one exact-reference standard product; Acer gains one standard
+product. The other nine targets are unchanged. Combining these two runs with
+eight saved samples gives 287 records, 86 retained/zero lost/201 new and
+75/118 represented targets; this is a derived inventory, not a fresh
+ten-sample final-build benchmark.
+All four earlier runtime flags have been investigated, and all 11 final
+local validation gates pass after minimal rand/webpki dependency updates.
+Release remains on hold for collaborator performance assessment, biological
+validation and explicit user authorization.
+See [BENCHMARK_v3.2_vs_v3.1.md](BENCHMARK_v3.2_vs_v3.1.md)
 and the remaining validation/security gates in [REVIEW_v3.2.md](REVIEW_v3.2.md).
 An exploratory local reference check of the 200 new uncertain identities
 found no qualifying full-query 90% coverage/90% identity HSP in the pinned
@@ -113,7 +132,9 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
   - [x] Audit all 159 built-in/example reference entries against 109 independently acquired public records: 100 exact source regions, 59 source mismatches. Further quarantine two source-exact Xenia 16S/mutS annotation conflicts, retaining 98 old regions plus one independent replacement example (99 active). Preserve all old sequences as regression-only history; pin versions, coordinates/strand, hashes, and source organisms. Add fail-closed offline verification, known annotation-conflict exclusions, CI, and anti-promotion bootstrap guards. See [the full reference contract and audit](REFERENCE_PROVENANCE.md).
   - [x] Separate variation-aware gene support from exact reference provenance, sequence relationship, sample haplotype truth, and unevaluated read support. SNPs/indels and compatible split alignments need not fail support; no new results claim `confirmed_product`. Preserve reference exclusions and catalog receipts in results/reports. This changes evaluation, not assembly gates or k=19.
   - [x] Acquire annotation-reviewed public alternatives for 58 of the 61 quarantined entries (57 newly covered legacy IDs plus the already replaced Hydra example). Shared H3 evidence is one genomic locus, not two sample alleles. Expand Gryllus CO1 and add Heliconius ND1; 156 active references pass exact-source audit against 121 pinned records. Preserve proxy taxa, partial/predicted scope, and public feature receipts. See [replacement findings](PUBLIC_REFERENCE_REPLACEMENTS.md).
-  - [ ] Resolve two plant trnV-atpE assay-label/length conflicts under [#156](https://github.com/caseywdunn/sharkmer/issues/156) and the missing independently annotated Agalma ITS source under #129. Do not reintroduce assembled products or misannotated sources to fill these gaps; primers remain unchanged pending separate review.
+  - [x] Resolve the scientific interpretation of the plant trnV-atpE conflict: effective 15-base primers, allowing up to two substitutions per primer, map uniquely across trnV → atpB, spanning atpE, over 1,359–1,379 bp in three inspected plastomes; no pair fits 400–1,000 bp. Primary literature identifies the reverse oligo as atpB S1022. See [updated annotation findings](PUBLIC_REFERENCE_REPLACEMENTS.md#remaining-gaps).
+  - [x] Correct and evaluate the intended plant assay definition under [#156](https://github.com/caseywdunn/sharkmer/issues/156): panel 2.0.0 uses published atpE/trnV_6R, with exact 909/929 bp public references. All eight real/synthetic before/after runs pass; all nine control targets and five aggregate counts are unchanged. The catalog now has 158 audited active references and covers 60/61 quarantined entries. See [current review](REVIEW_v3.2.md#plant-assay-and-dependency-corrections).
+  - [ ] Obtain an independently annotated Agalma ITS source under #129. Do not reintroduce assembled products or misannotated sources to fill the remaining gap.
   - [ ] Review gene annotations separately from public sequence origin; add independent same-sample truth and read-backed assessment of divergent/repeat regions. Cross-individual differences alone are not wrong products. Register held-out data before assembly tuning; provenance cleanup does not close #129/#153 or authorize release.
 - [x] [#130](https://github.com/caseywdunn/sharkmer/issues/130) — Read every member of concatenated gzip FASTQ inputs. Terra implementation, Sol review; eight regressions cover ingestion, paired reads, limits, replay, and corrupt-member cache publication.
 - [x] [#131](https://github.com/caseywdunn/sharkmer/issues/131) — Continue coverage thresholds until a valid amplicon is recovered. Sol implementation, Terra review; full per-threshold evaluation, authoritative length checks, explicit search limits, and an absolute primer-count floor preserve shared primer backbones without overriding the configured coverage ratio. Independent CLI mixture probe recovers the exact 180 bp target; existing high-copy oracle is unchanged.
@@ -142,7 +163,12 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
   - [x] User-approved development integration: fast-forward `dev` to inclusive checkpoint `ed04bde`; preserve `956e771` as `baseline/pre-inclusive-dev-20260929`. The earlier hold on the dev branch is superseded; release remains unauthorized.
   - [x] Complete the [fresh inclusive release comparison](INCLUSIVE_RELEASE_RESULTS.md): all 60 original ten-sample/five-panel invocations pass with exact historical inputs and panels. Independent review verifies 126 delivered records (64 standard, 62 uncertain), 69/71 released high-copy identities available and 54 new uncertain identities. The [scratch observer](DROS12S_RETENTION_RESULTS.md) finds exact Drosophila 12S 487/499 bp completions discarded by retention. Source/attempt lineage and reviews are preserved; production search and retention remain unchanged.
   - [x] Implement and assess [bounded sequence-first retention](SEQUENCE_RETENTION_RESULTS.md) on its own branch. A first candidate was rejected for losing an old plant identity; the corrected two-allowance design preserves all old output and adds 200 labelled uncertain identities in 60 passing paired runs. The Drosophila 12S 487/499 bp and 12 deferred Gryllus Yp2 identities reappear exactly. No per-sample wall or RSS priority flag is triggered by this change. Integration and release remain separate decisions; sequence availability is not biological validation.
-  - [ ] Investigate the four earlier v3.1-to-inclusive runtime increases exceeding 5% (Human, Liriodendron, Rhopilema, Heliconius). Do not attribute that whole-release timing difference specifically to uncertain output.
+  - [x] Complete the [bounded read follow-up](SEQUENCE_RETENTION_RESULTS.md#bounded-read-follow-up-2026-10-09): 11/32 Gryllus gains have a complete nearby Q20 flanked span observed on one saved read, four more have the variable core with incomplete outer flank, and 17 remain unobserved in that selected ledger. All full products remain unphased. All 117 tested local strings across 26 Drosophila 12S hypotheses have zero exact matches with or without quality filtering, while 16 CO1 controls reproduce. Every canonical 19-mer of each Drosophila hypothesis occurs in the same prefix at least twice. Source/control and independent evidence reviews pass; no concrete production failure warrants a fix. Preserve inclusive uncertain delivery; this completes the scoped diagnostic, not #148/#153/#129 or release validation.
+  - [x] Complete recommendations 1–3: freeze production/source limits, build the complete 118-row release/current matrix with exact identities and available evidence, and assess all 154 hypotheses on six newly represented targets. All 86 historical sequences are available; 240 are new. Liriodendron atpB-rbcL has full annotated-reference and local read support; 153 others remain uncorroborated under the fixed assays. Actual per-target failures/limits and unassessed evidence remain explicit. Resolve the trnV-atpE annotation/length interpretation without changing production. Independent matrix, read, and reference reviews pass; [results](SEQUENCE_RETENTION_RESULTS.md#complete-target-comparison-and-six-new-targets-2026-10-10).
+  - [x] Investigate the four earlier v3.1-to-inclusive runtime flags: independently reconcile 48 saved invocations, CPU/stage/payload measures and exact identities. A bounded Human experiment (12 normal measurements plus four separate traces) reproduces NFS output sensitivity: release-to-retention median +0.43 s on NFS versus +0.04 s locally, with all products unchanged; output metadata calls, not fsync, dominate the measured traced costs. This does not establish the historical cause or close the larger flags. See [current review](REVIEW_v3.2.md#runtime-investigation-completed-performance-acceptance-remains-open).
+  - [x] Apply the minimum rand/webpki patches and complete final local validation: all 11 gates pass on the final frozen binary, including 280 Rust tests per backend, 200 Python tests without skips, Clippy/formatting, 158 references, ten schemas, nine exports, 19 loader checks, fixture oracles and eight plant runs. Independent source/result review passes. Preserve the [tested source snapshot](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz) for collaborator assessment. Local remediation does not close default-branch GitHub alerts before integration.
+  - [ ] Collaborators assess final-build performance on their intended hardware/storage, including the four historical flags; user explicitly reserves release until after this review. Keep absolute times, CPU/RSS, input/panel/build identities, output sequences/statuses, and cache conditions together. No release is authorized.
+  - Authorized Git handoff (2026-10-11): the reviewed source, documentation and evidence target `dev` for collaborator assessment. Provide the exact SHA as well as the branch, verify the remote commit, and use normal CI for the committed candidate. This integration does not authorize release.
   - [ ] Separate future reconstruction task: integrate bounded quality-preserving replay and positioned histories under #145/#116 behind an experimental opt-in path, with feature-off compatibility against its frozen baseline. Separately specify ambiguity-preserving variant-aware mapping before reconstructing observed alternatives; do not repair missing edges or relax repeat gates from marginal coverage. Any admission change still needs cause-specific positive evidence, repeat/mixture controls, and fresh released-v3.1.0 high-copy comparison.
 - [x] [#154](https://github.com/caseywdunn/sharkmer/issues/154) — Keep repeat-rejected candidates from exhausting the valid-product path budget, with bounded search and a clean-route regression.
   - [x] Sol implementation and independent Astra review: reject complete repeat-tainted candidates before quota accounting; 32 higher-ranked rejected routes no longer hide a clean route. Both hash backends pass 216 unit and 22 integration tests plus Clippy; existing repeat controls remain conservative.

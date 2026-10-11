@@ -1,0 +1,13 @@
+{
+  "python": "3.14.3 | packaged by conda-forge | (main, Feb  9 2026, 21:56:02) [GCC 14.3.0]",
+  "executable": "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+  "packages": {
+    "jsonschema": "4.26.0",
+    "jsonschema-specifications": "2025.9.1",
+    "attrs": "26.1.0",
+    "referencing": "0.37.0",
+    "rpds-py": "2026.9.1",
+    "PyYAML": "6.0.3"
+  },
+  "purpose": "Explicit schema validation of every built-in and example panel; installed in workspace temporary dependency directory."
+}

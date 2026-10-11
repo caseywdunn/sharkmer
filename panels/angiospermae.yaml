@@ -1,6 +1,6 @@
 name: angiospermae
 schema_version: "2"
-panel_version: 1.0.2
+panel_version: 2.0.0
 description: "Universal plant primers for chloroplast and ITS products"
 clade: "Magnoliopsida"
 taxon_id: 3398
@@ -10,6 +10,10 @@ maintainers:
   orcid: "https://orcid.org/0000-0002-8451-103X"
 
 changelog:
+- panel_version: 2.0.0
+  date: 2026-10-10
+  sharkmer_version: "3.2.0-dev"
+  changes: "Replace trnV-atpE reverse primer S1022 with published atpE/trnV_6R and add exact public references. Target name is retained, but its sequence boundaries change incompatibly with panel 1.x. The extended marker includes the complete atpE gene and ends at the overlapping atpE/atpB boundary. Other primers and assay bounds are unchanged."
 - panel_version: 1.0.2
   date: 2026-09-13
   sharkmer_version: "3.2.0-dev"
@@ -63,14 +67,14 @@ primers:
 - gene: "trnV-atpE"
   compartment: "plastid:chloroplast"
   forward_seq: "GTGTAAACGAGTTGCTCTACCA"
-  reverse_seq: "CGACATTTGCACATTTAGATGCTAC"
+  reverse_seq: "GGAGAGCAATTTGAAGAAATG"
   min_length: 400
   max_length: 1000
   min_count: 2
   mismatches: 2
   trim: 15
-  citation: "Kress et al 2005. https://doi.org/10.1073/pnas.0503123102"
-  notes: "trnV5f; S1022"
+  citation: "Kress et al 2005 (legacy locus citation). https://doi.org/10.1073/pnas.0503123102; Tank and Donoghue 2010 Appendix 2 (atpE/trnV_6R, attributed to Bremer et al 2002). https://donoghuelab.yale.edu/sites/default/files/190_tank_systbot10.pdf"
+  notes: "Legacy trnV5f forward; atpE/trnV_6R reverse. Extended trnV-to-atpE marker includes trnM and complete atpE; reverse 3-prime end overlaps the atpE start and its 5-prime portion lies in overlapping atpB. Panel 2.0.0 changes this assay boundary; 400-1000 bp bounds, trim 15 and two mismatches per primer remain unchanged."
 
 - gene: "trnC-ycf6"
   compartment: "plastid:chloroplast"
@@ -168,6 +172,36 @@ validation:
     max_reads: [1000000]
 
 references:
+- gene: trnV-atpE
+  sequences:
+  - accession: NC_008326.1
+    taxon: Liriodendron tulipifera
+    sequence: CGAGGTGCTCTACCTAACTGAGCTATAGCCCTTGTCATAGACATCTTAACATCTAGATAATTTCTTGTCAAGATAGATATTCCATAATCCCACATGATAGCTCCGTTTCCTGCCAAGGATTAGTATTGCTTAGAAGTCATATTCCATCTATAATTCCCGATGTGATGGGTCCCATTTTTTTTTTCTTTGTGATGATAAATAACCTACTTAACCCAGTGGTTAGAGTATTGCTTTCATACGGCGGGAGTCATTGGTTCAAATCCAATAGTAGGTAGAACTTATTAGATACCATTGACTCCGGTATCTAATAAGTTTTTCTACCCACCCTTTTTTCTTTTTTTTATTTATTTTGTATCTTTTCCCTATTATCCTCCTACTACTCATATTTGTTTTTTTTGTTCGTTGCATCAGATTCCAATTGATTGCATCCAATTGGAGGAATCCAAATATGGTGTATAAACAGAACTTATTTTGATTATTCTGATGCAACGACTAGTACGAAATAACATTGATAGCCTCTACTCGTGTCCTAGCTCGTCTGAGAGCTAGATTCGCCTCAATTGCTTGTCTCTTGCCTTCAGCTCTACTCAAGTTAGCTTCAGCTATTTCAAGAGTTCGCTGAGCTTCTTGTGGATCAATGTCACTACCCTTCTCCGCATCATTTACTAAAATGGTGATCTCATTATTACCTATTCTAGCGAAACCACCCATCAGAGCCATCGTTAACCATTGGTCGTTGAGGCGTACTCTCAAAATACCTATATCTACGGCTGTGGCAATAGGGGCGTGATTTGGTAATACGCCAATTTGGCCACTATTAGTAGATAAAATAATTTCTTTCACTTCTGAATCCCAAATAATTCGATTAGGGGTCAGTACACAAAGATTTAAAGTCATTTCTTCAATTTG
+    provenance:
+      schema_version: 1
+      kind: public_record_region
+      accession_version: NC_008326.1
+      start: 55525
+      end: 56434
+      strand: +
+      wraps_origin: false
+      source_length: 159886
+      source_sequence_sha256: b667e2bc25deb94e0c19a8dbd09e103bd0504e16083e7c284de22b00e64bb3c8
+      sequence_sha256: 8150cf0b4ec2c207ea6f7a45c85ffed36be9c74a12bdf4e3188bec739f1f5379
+  - accession: NC_056221.1
+    taxon: Acer opalus
+    sequence: CGAGGTGCTCTACCTAACTGAGCTATAGCCCTTGTGCTTGTGATACATATTTTATCATATTATGTAGATAATTTCTTGTCAAGATGAATATTCCATGATCCAACATCGTATCTCTTTGATCTTTTTGATTGGTATTGCTTCGAAGTCTTATTGCATTTATAATCCATCAATGGGAGGGGTCCTTTTTTTTTCTCCTTATAATGATAAATGACCTACTTAACTCAGTGGTTAGAGTATTGCTTTCATACGGCGGGAGTCATTGGTTCAAATCCAATAGTAGGTAGAACTTATTAGATACCATGGTCAATGGTATCTAATAAGTTTTTCTACTTACTGATTTTGTATCTTTTCTATCCTATTCGATTTGATTTTCGAATTGAAACTAAAACTTTTTTCCTTACATCAGAATCCGATTCCACTTGATTGTATTTGATTGGATTCAATCGGAAGAATCCATATGTGTATAAACAAAAATTCTTTGGATTAGGATTATTCGATTCGGGCGCACCGACTAGTTACGAAATCACATTGAGAACCTCTACTCGTGTCCTAGCTCGTCTGAGAGCTAGATTTGCCTCAATTGTTTGTCTCTTACTTTCAGCTTTCCTCAAGCCGGCTTCCGCTATTTCAAGAGTTTGCTGAGCTTCTTGGGGATCAATGTCACTACTCTTCTCCGCATCATTTACTAAAACGGTGATCTCATTATTACCTATTCTAGCAAAACCGCCCATCAGAGCCATCGTTAACCATTGGTCATTAAAGCGTATTCTCAAAATACCTATATCTACAGCTGTGGCAATAGGCGCGTGATTTGGTAATACGCCAATTTGTCCACTATTAGTAGATAAAATGATTTCTTTCACTTCTGAATCCCAAACAATTCGATTAGGGGTCAGTACACAAAGATTTAAGGTCATTTCTTCAAATTG
+    provenance:
+      schema_version: 1
+      kind: public_record_region
+      accession_version: NC_056221.1
+      start: 54176
+      end: 55105
+      strand: +
+      wraps_origin: false
+      source_length: 156145
+      source_sequence_sha256: e5b03a378060cff04b2241517f14d02bb08991fb68c560fd0bc29731b00fcdf9
+      sequence_sha256: 60a67ee9a9fac06519b8aff377abc4f2ab9e252b12121adf28ff37421e9dfc9a
 - gene: psbA-trnH
   sequences:
   - taxon: Acer opalus

@@ -1,0 +1,47 @@
+{
+  "review": "Source diff has only equal-length literal seed trie factoring. Every scientific manifest field equals v1; each exact seed matches the factored expression. Independent brute and original-scanner comparisons passed in exact_independent_controls_v2.json.",
+  "samples": [
+    {
+      "accession": "ERR14009273",
+      "changed_fields": [
+        "source_files"
+      ],
+      "every_seed_literal_match_verified": true,
+      "seed_count": 196,
+      "v1_sha256": "39a3205b1147f280de6f0278c287110e62ead3b42cd8f3d770f88569977cb235",
+      "v2_sha256": "889d4ae65bf7864260d9058e1d02bb89b89008532f1ef8e2ad15c599f5ba4c8d"
+    },
+    {
+      "accession": "SRR1057608",
+      "changed_fields": [
+        "source_files"
+      ],
+      "every_seed_literal_match_verified": true,
+      "seed_count": 144,
+      "v1_sha256": "a149d8faef3e609c06abe8dcef9af44126bd7a1b9dc6fb0a224abf97d464e68f",
+      "v2_sha256": "bcb14839c966e8eb7d66b449118e5a4aff64358b61e5dcacbd66697a54e743a3"
+    },
+    {
+      "accession": "SRR25378184",
+      "changed_fields": [
+        "source_files"
+      ],
+      "every_seed_literal_match_verified": true,
+      "seed_count": 586,
+      "v1_sha256": "859c065ce30dfe83f3c7fd1aa61a118b675e70b3efbb6cefaf6832f4814a4095",
+      "v2_sha256": "a6b5047fe58f644850936802e0129d3a18b679c592f579a439efe713fa72a3b1"
+    },
+    {
+      "accession": "SRR27962769",
+      "changed_fields": [
+        "source_files"
+      ],
+      "every_seed_literal_match_verified": true,
+      "seed_count": 178,
+      "v1_sha256": "e3604bc32829bbc0fd9a23c423651f3c799e14136917768c06495221db57a03a",
+      "v2_sha256": "f4b4653d16d83fb10772a784024a75b652834144e2a152d617881b95d65d44f5"
+    }
+  ],
+  "scanner_v2_sha256": "7c842a406f0f2d90facd85e788ac565a9235315d41c14505968a36cd76a8347c",
+  "status": "pass"
+}

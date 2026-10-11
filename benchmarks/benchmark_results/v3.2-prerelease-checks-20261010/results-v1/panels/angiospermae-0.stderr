@@ -1,0 +1,38 @@
+sharkmer 3.2.0-dev (dry run)
+
+Input:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+
+Configuration:
+  Sample:         schema_probe
+  Output dir:     /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-0-dry-output/
+  Kmer length:    19
+  Chunks:         0
+  Threads:        2
+  Min kmer count: 2
+  PCR output:     standard and labelled uncertain products
+
+Output files:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-0-dry-output/schema_probe.stats.yaml
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-0-dry-output/schema_probe_angiospermae_psbA-trnH.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-0-dry-output/schema_probe_angiospermae_rpl36-infA-rps8.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-0-dry-output/schema_probe_angiospermae_trnK-rps16.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-0-dry-output/schema_probe_angiospermae_trnV-atpE.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-0-dry-output/schema_probe_angiospermae_trnC-ycf6.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-0-dry-output/schema_probe_angiospermae_ycf6-psbM.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-0-dry-output/schema_probe_angiospermae_psbM-trnD.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-0-dry-output/schema_probe_angiospermae_atpB-rbcL.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-0-dry-output/schema_probe_angiospermae_trnL-F.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-0-dry-output/schema_probe_angiospermae_ITS.fasta
+
+PCR primers (10 genes):
+  angiospermae_psbA-trnH (fwd: GTTATGCA...GCTC, rev: CGCGCATG...ATCC, len: 100-700)
+  angiospermae_rpl36-infA-rps8 (fwd: CACAAATT...GAAG, rev: TAATGACA...CGAC, len: 400-600)
+  angiospermae_trnK-rps16 (fwd: TACTCTAC...CAAC, rev: AAAGGKGC...GAAC, len: 500-900)
+  angiospermae_trnV-atpE (fwd: GTGTAAAC...ACCA, rev: GGAGAGCA...AATG, len: 400-1000)
+  angiospermae_trnC-ycf6 (fwd: CCAGTTCA...TGTC, rev: CCCAAGCA...ATCC, len: 100-1200)
+  angiospermae_ycf6-psbM (fwd: GGATATAG...TGGG, rev: TTCTTGCA...CTGC, len: 300-1600)
+  angiospermae_psbM-trnD (fwd: GCGGTAGG...ATAG, rev: GGGATTGT...TGGT, len: 500-1400)
+  angiospermae_atpB-rbcL (fwd: AGAAGTAG...CATA, rev: GAATCCAA...CTCT, len: 500-1000)
+  angiospermae_trnL-F (fwd: GGTTCAAG...TCCC, rev: ATTTGAAC...CGAG, len: 200-600)
+  angiospermae_ITS (fwd: CCTTATCA...GGAG, rev: TCCTCCGC...ATGC, len: 400-900)

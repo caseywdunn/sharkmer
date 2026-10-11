@@ -1,0 +1,60 @@
+sharkmer 3.2.0-dev (dry run)
+
+Input:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+
+Configuration:
+  Sample:         schema_probe
+  Output dir:     /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/
+  Kmer length:    19
+  Chunks:         0
+  Threads:        2
+  Min kmer count: 2
+  PCR output:     standard and labelled uncertain products
+
+Output files:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe.stats.yaml
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_12S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_16S_1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_CO1_1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_CO2_1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_CytB.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_ND1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_ND4.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_ND5.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_16S_2.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_CO1_2.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_CO2_2.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_NADH.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_Fz4.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_Gpdh.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_Pgi.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_Yp2.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_18S_1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_28S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_18S_2.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_ITS_1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output/schema_probe_insecta_ITS_2.fasta
+
+PCR primers (21 genes):
+  insecta_12S (fwd: ACTWTGTT...TDTY, rev: AGGATTAG...TDBT, len: 300-500)
+  insecta_16S_1 (fwd: TARTYCAA...GGTC, rev: CYGTRCDA...CATA, len: 300-500)
+  insecta_CO1_1 (fwd: HCCHGAYA...TYCC, rev: TATDGTRA...CNGC, len: 300-500)
+  insecta_CO2_1 (fwd: GGNCRHCA...YTGA, rev: RATYTCDG...GNCC, len: 200-400)
+  insecta_CytB (fwd: NCAAATRT...GRGG, rev: YCAYTCDG...TRTG, len: 300-500)
+  insecta_ND1 (fwd: ATHARYTT...NCGR, rev: NTTYGAYT...ARGG, len: 150-300)
+  insecta_ND4 (fwd: HGGDGCYT...GDGC, rev: RGGNTAYC...ARCG, len: 150-300)
+  insecta_ND5 (fwd: RTCYYTNG...AHCC, rev: NGCHAAYT...WTGA, len: 200-400)
+  insecta_16S_2 (fwd: CCGGTTTG...ACGT, rev: CGCCTGTT...ACAT, len: 400-600)
+  insecta_CO1_2 (fwd: CAACATTT...TTGG, rev: TYCATTGC...TTAG, len: 700-950)
+  insecta_CO2_2 (fwd: ATGGCAGA...ATGG, rev: GTTTAAGA...CTTG, len: 600-850)
+  insecta_NADH (fwd: AGCTATTG...CCCC, rev: GAAGTTTG...CTCC, len: 400-600)
+  insecta_Fz4 (fwd: GCGTCTTT...CTAT, rev: GCTTGTAC...TATT, len: 800-1100)
+  insecta_Gpdh (fwd: CCCGACCT...ATGC, rev: ACATATGC...TGCA, len: 900-1200)
+  insecta_Pgi (fwd: GCCATGTT...AYAT, rev: TAACGACC...CCCA, len: 500-800)
+  insecta_Yp2 (fwd: CAGCAGCG...AGCC, rev: CCGAAGGG...TCAC, len: 600-900)
+  insecta_18S_1 (fwd: CTGGTGCC...GYAA, rev: TCCGTCAA...AGTT, len: 600-900)
+  insecta_28S (fwd: GGGAAAGA...TGAG, rev: GCTTGGCB...GTTA, len: 600-900)
+  insecta_18S_2 (fwd: AACCTGGT...CAGT, rev: TGATCCTT...CTAC, len: 1600-2000)
+  insecta_ITS_1 (fwd: TACACACC...ACTA, rev: ACTCGCCG...RRGG, len: 600-1000)
+  insecta_ITS_2 (fwd: GTAGGTGA...ATCA, rev: ACTCGCCG...RRGG, len: 600-1000)

@@ -1,0 +1,270 @@
+{
+  "groups": [
+    {
+      "cpu_seconds": {
+        "max": 0.63,
+        "median": 0.62,
+        "min": 0.62,
+        "values": [
+          0.63,
+          0.62,
+          0.62
+        ]
+      },
+      "location": "nfs",
+      "max_rss_kib": {
+        "max": 22204,
+        "median": 22108,
+        "min": 22096,
+        "values": [
+          22108,
+          22096,
+          22204
+        ]
+      },
+      "n": 3,
+      "role": "release",
+      "system_seconds": {
+        "max": 0.02,
+        "median": 0.02,
+        "min": 0.01,
+        "values": [
+          0.02,
+          0.02,
+          0.01
+        ]
+      },
+      "user_seconds": {
+        "max": 0.61,
+        "median": 0.61,
+        "min": 0.6,
+        "values": [
+          0.61,
+          0.6,
+          0.61
+        ]
+      },
+      "wall_seconds": {
+        "max": 1.06,
+        "median": 0.71,
+        "min": 0.52,
+        "values": [
+          0.52,
+          1.06,
+          0.71
+        ]
+      }
+    },
+    {
+      "cpu_seconds": {
+        "max": 0.6900000000000001,
+        "median": 0.6900000000000001,
+        "min": 0.6900000000000001,
+        "values": [
+          0.6900000000000001,
+          0.6900000000000001,
+          0.6900000000000001
+        ]
+      },
+      "location": "nfs",
+      "max_rss_kib": {
+        "max": 22488,
+        "median": 22476,
+        "min": 22428,
+        "values": [
+          22476,
+          22428,
+          22488
+        ]
+      },
+      "n": 3,
+      "role": "retention",
+      "system_seconds": {
+        "max": 0.02,
+        "median": 0.02,
+        "min": 0.02,
+        "values": [
+          0.02,
+          0.02,
+          0.02
+        ]
+      },
+      "user_seconds": {
+        "max": 0.67,
+        "median": 0.67,
+        "min": 0.67,
+        "values": [
+          0.67,
+          0.67,
+          0.67
+        ]
+      },
+      "wall_seconds": {
+        "max": 1.9,
+        "median": 1.14,
+        "min": 0.95,
+        "values": [
+          0.95,
+          1.14,
+          1.9
+        ]
+      }
+    },
+    {
+      "cpu_seconds": {
+        "max": 0.63,
+        "median": 0.62,
+        "min": 0.62,
+        "values": [
+          0.62,
+          0.62,
+          0.63
+        ]
+      },
+      "location": "local",
+      "max_rss_kib": {
+        "max": 22104,
+        "median": 21996,
+        "min": 21460,
+        "values": [
+          21460,
+          21996,
+          22104
+        ]
+      },
+      "n": 3,
+      "role": "release",
+      "system_seconds": {
+        "max": 0.02,
+        "median": 0.01,
+        "min": 0.01,
+        "values": [
+          0.01,
+          0.01,
+          0.02
+        ]
+      },
+      "user_seconds": {
+        "max": 0.61,
+        "median": 0.61,
+        "min": 0.61,
+        "values": [
+          0.61,
+          0.61,
+          0.61
+        ]
+      },
+      "wall_seconds": {
+        "max": 0.48,
+        "median": 0.47,
+        "min": 0.47,
+        "values": [
+          0.48,
+          0.47,
+          0.47
+        ]
+      }
+    },
+    {
+      "cpu_seconds": {
+        "max": 0.67,
+        "median": 0.67,
+        "min": 0.66,
+        "values": [
+          0.67,
+          0.66,
+          0.67
+        ]
+      },
+      "location": "local",
+      "max_rss_kib": {
+        "max": 22488,
+        "median": 22484,
+        "min": 22128,
+        "values": [
+          22488,
+          22128,
+          22484
+        ]
+      },
+      "n": 3,
+      "role": "retention",
+      "system_seconds": {
+        "max": 0.02,
+        "median": 0.02,
+        "min": 0.01,
+        "values": [
+          0.02,
+          0.01,
+          0.02
+        ]
+      },
+      "user_seconds": {
+        "max": 0.65,
+        "median": 0.65,
+        "min": 0.65,
+        "values": [
+          0.65,
+          0.65,
+          0.65
+        ]
+      },
+      "wall_seconds": {
+        "max": 0.51,
+        "median": 0.51,
+        "min": 0.5,
+        "values": [
+          0.51,
+          0.51,
+          0.5
+        ]
+      }
+    }
+  ],
+  "paired_contrasts": [
+    {
+      "block": 1,
+      "cpu_delta_seconds": 0.06000000000000005,
+      "location": "nfs",
+      "wall_delta_seconds": 0.42999999999999994,
+      "wall_percent": 82.6923076923077
+    },
+    {
+      "block": 2,
+      "cpu_delta_seconds": 0.07000000000000006,
+      "location": "nfs",
+      "wall_delta_seconds": 0.07999999999999985,
+      "wall_percent": 7.547169811320731
+    },
+    {
+      "block": 3,
+      "cpu_delta_seconds": 0.07000000000000006,
+      "location": "nfs",
+      "wall_delta_seconds": 1.19,
+      "wall_percent": 167.6056338028169
+    },
+    {
+      "block": 1,
+      "cpu_delta_seconds": 0.050000000000000044,
+      "location": "local",
+      "wall_delta_seconds": 0.030000000000000027,
+      "wall_percent": 6.25
+    },
+    {
+      "block": 2,
+      "cpu_delta_seconds": 0.040000000000000036,
+      "location": "local",
+      "wall_delta_seconds": 0.040000000000000036,
+      "wall_percent": 8.510638297872353
+    },
+    {
+      "block": 3,
+      "cpu_delta_seconds": 0.040000000000000036,
+      "location": "local",
+      "wall_delta_seconds": 0.030000000000000027,
+      "wall_percent": 6.382978723404253
+    }
+  ],
+  "scope": "Human, warm input, frozen released/retention binaries, one node. Not release acceptance, not an assembly or retention ablation, not historical causation.",
+  "traced_runs_excluded": 4
+}
