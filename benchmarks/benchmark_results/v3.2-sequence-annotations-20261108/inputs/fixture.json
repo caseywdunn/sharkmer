@@ -1,0 +1,12 @@
+{
+  "clean_sequence": "GATGCGTAAACGCGCGGCTTGGACTGGTTACGTTACGCGATGAAGTCACTTCTGCGCCAGACTTGACTGATCTTTCATTCCCCTGGGCAACGACTTATAGGTGAGTCGGCAGTATACAAGTCATATTTCTACATGATGCGGATTGTCAAGCCGCTTGTAC",
+  "generator": "u64 wrapping LCG state=state*6364136223846793005+1; base=ACGT[(state>>32)&3]",
+  "input_sha256": "cdfdf7956ff66df585b7cbe7bb5273aa3e97cb2e9f70590e2613fcbb191e953a",
+  "origin": "tests/uncertain_products.rs Fixture::new()",
+  "primers": [
+    "name=repeat,forward=TACTAGGGGTAGCTC,reverse=ACCTGGAGAAAATTT,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+    "name=clean,forward=GATGCGTAAACGCGC,reverse=GTACAAGCGGCTTGA,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0"
+  ],
+  "reads": 8,
+  "repeat_sequence": "TACTAGGGGTAGCTCCACGCTACCTCACAGGGATACTCGTAACATCGCCTACTACAAGCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACGAGTGGCTCAGCCCCCCCACCTCTATAATAGACGTGTGCACTGGAAATTTTCTCCAGGT"
+}

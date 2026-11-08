@@ -21,14 +21,13 @@ and new nuclear/metagenomic inference policies belong to later releases.
 
 ### Added
 
-- Document semantic conventions for sequence annotations: concise headers,
-  related field names, readable warning reasons, and explicit omission rules
-  (#159). This records the intended design; emitted headers are unchanged.
 - Default inclusion of bounded repeat-uncertain hypotheses in each target's
-  normal FASTA, with explicit `assembly_status` headers on every record and
-  `--no-emit-uncertain` for standard-only output. Stats describe total output
+  normal FASTA, with `assembly_status=warning` and readable
+  `assembly_status_causes` on warning-bearing records; records without warnings
+  omit status. `--no-emit-uncertain` requests records without warnings.
+  Stats describe total output
   and separate standard/uncertain counts; uncertain-only targets report that
-  status. Schema-2 manifests distinguish the new combined format. Standard
+  status. Schema-3 manifests distinguish the new combined format. Standard
   assembly gates, validation and reference-bootstrap selection remain
   unchanged; previous owned split outputs migrate safely (#157).
 - Per-product validation with collinear alignment coverage, explicit
@@ -87,6 +86,13 @@ and new nuclear/metagenomic inference policies belong to later releases.
 
 ### Changed
 
+- Clarify sequence annotations before the v3.2 release (#159). Warning causes
+  identify unresolved homopolymer length, unresolved repeat structure, or a
+  suspected high-coverage repeat. Omit unevaluated read-support fields and keep
+  detailed diagnostic provenance and target-wide limits in stats. Preserve
+  released ordinary-header fields, sequence identifiers, and delivered sequences.
+  Readers retain older output contracts; removal or renaming of released
+  fields is deferred to v4.0.
 - Reference evaluation separates variant-tolerant gene support, sequence
   relationship, unestablished haplotype truth, and unevaluated read support.
   New outputs use `gene_supported_*`, not `confirmed_product`; compatible

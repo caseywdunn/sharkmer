@@ -16,6 +16,12 @@ CAUSE_IDENTITIES = {
     "pre_prune_cyclic_scc_node": "oriented_node_sequence",
     "retained_collision_edge": "oriented_edge_sequence",
 }
+WARNING_CAUSES = {
+    "pre_prune_omitted_self_loop_node": "homopolymer_length_unresolved",
+    "pre_prune_cyclic_scc_node": "repeat_structure_unresolved",
+    "retained_collision_edge": "high_coverage_repeat_suspected",
+}
+OUTPUT_LAYOUTS = {2: "combined_classified", 3: "combined_warnings"}
 
 
 def _require(condition, message):
@@ -31,9 +37,51 @@ def _digest(sequence):
     return hashlib.sha256(sequence.encode("ascii")).hexdigest()
 
 
+def _header_fields(header):
+    """Read named annotations without allowing later fields to erase warnings."""
+    parts = header.split(maxsplit=1)
+    _require(parts, "missing FASTA identifier")
+    identifier_key = shlex.split(parts[0])[0].split("=", 1)[0]
+    _require(identifier_key not in {
+        "assembly_status", "assembly_status_causes", "uncertainty", "repeat_length", "causes"
+    }, "assembly annotation occupies the FASTA identifier")
+    # FASTA identifiers may contain '='; only the description contains fields.
+    description = parts[1] if len(parts) == 2 else ""
+    fields = {}
+    for token in shlex.split(description):
+        _require(token not in {"assembly_status", "assembly_status_causes"},
+                 "malformed assembly annotation")
+        if "=" not in token:
+            continue
+        key, value = token.split("=", 1)
+        _require(key and key not in fields, "duplicate header field")
+        fields[key] = value
+    return fields
+
+
+def _validate_warning_causes(fields):
+    causes = fields.get("assembly_status_causes", "").split(",")
+    _require(causes and all(cause in WARNING_CAUSES.values() for cause in causes)
+             and causes == sorted(set(causes)), "invalid assembly warning causes")
+
+
 def uncertain_header(header):
-    # Inspect every token: a duplicate later field cannot erase this label.
-    return "assembly_status=uncertain" in shlex.split(header)
+    """Exclude both warning formats, including standalone or renamed FASTAs."""
+    fields = _header_fields(header)
+    status = fields.get("assembly_status")
+    _require(status in {None, "standard", "uncertain", "warning"},
+             "unsupported assembly_status")
+    if status == "warning":
+        _validate_warning_causes(fields)
+        _require(not any(key in fields for key in ("uncertainty", "repeat_length", "causes")),
+                 "warning mixes legacy and current annotations")
+    else:
+        _require("assembly_status_causes" not in fields,
+                 "assembly warning causes require assembly_status=warning")
+    if status in {None, "standard"}:
+        _require(not any(key in fields for key in ("uncertainty", "repeat_length", "causes")),
+                 "repeat uncertainty metadata lacks an uncertainty status")
+    return status in {"uncertain", "warning"}
 
 
 def combined_output(stats):
@@ -47,25 +95,34 @@ def combined_output(stats):
                          for entry in entries),
                  "classified counts lack an output schema")
         return False
-    _require(type(stats.get(fields[0])) is int and stats[fields[0]] == 2
-             and stats.get(fields[1]) == "combined_classified", "unsupported product output schema")
+    version = stats.get(fields[0])
+    _require(type(version) is int and version in OUTPUT_LAYOUTS
+             and stats.get(fields[1]) == OUTPUT_LAYOUTS[version],
+             "unsupported product output schema")
     genes = [entry.get("gene_name") for entry in entries]
     _require(all(isinstance(gene, str) and gene for gene in genes)
              and len(genes) == len(set(genes)), "missing or duplicate classified target names")
     return True
 
 
-def assembly_status(header):
-    """Require exactly one recognized class, including when tokens are quoted."""
-    labels = [token.split("=", 1)[1] for token in shlex.split(header)
-              if token.startswith("assembly_status=")]
-    _require(len(labels) == 1 and labels[0] in {"standard", "uncertain"},
+def assembly_status(header, schema_version=2):
+    """Return the internal partition using the declared output version's rules."""
+    fields = _header_fields(header)
+    status = fields.get("assembly_status")
+    is_uncertain = uncertain_header(header)
+    if schema_version == 3:
+        _require(status in {None, "warning"}, "invalid schema-3 assembly_status")
+        _require("read_support" not in fields,
+                 "read-support assessment is not implemented in schema 3")
+        return "uncertain" if is_uncertain else "standard"
+    _require(schema_version == 2 and status in {"standard", "uncertain"},
              "record must have exactly one recognized assembly_status")
-    return labels[0]
+    return status
 
 
-def validate_combined_metadata(entry, sample_prefix):
-    """Validate inclusive counts and the single shared output file for schema 2."""
+def validate_combined_metadata(entry, sample_prefix, schema_version=2):
+    """Validate inclusive counts and the shared output for the declared schema."""
+    _require(schema_version in OUTPUT_LAYOUTS, "unsupported product output schema")
     for key in ("n_products", "n_standard_products", "n_uncertain_products"):
         _require(_count(entry.get(key)), f"invalid {key}")
     total, standard, count = (entry[key] for key in
@@ -84,7 +141,9 @@ def validate_combined_metadata(entry, sample_prefix):
                  "uncertain-only target lacks standard failure reason")
     filename = f"{sample_prefix}_{gene}.fasta" if total else None
     _require(entry.get("output_file") == filename, "combined output path does not match sample/gene/count")
-    uncertain_file = validate_metadata(entry, sample_prefix, combined=True)
+    uncertain_file = validate_metadata(
+        entry, sample_prefix, combined=True, schema_version=schema_version
+    )
     value = entry.get("uncertain_products")
     _require(count == (value["n_products"] if value is not None else 0),
              "uncertain count disagrees with assessment")
@@ -94,15 +153,22 @@ def validate_combined_metadata(entry, sample_prefix):
     return filename
 
 
-def validate_metadata(entry, sample_prefix, combined=False):
+def validate_metadata(entry, sample_prefix, combined=False, schema_version=None):
     """Return the declared uncertain filename, or None for absent/empty output."""
     if "uncertain_products" not in entry:
         return None
     value = entry["uncertain_products"]
     _require(isinstance(value, dict), "assessment must be a mapping")
-    _require(type(value.get("schema_version")) is int and value["schema_version"] in (1, 2),
+    _require(type(value.get("schema_version")) is int and value["schema_version"] in (1, 2, 3),
              "unsupported schema")
-    sequence_first = value["schema_version"] == 2
+    output_version = schema_version if schema_version is not None else (2 if combined else 1)
+    _require(type(output_version) is int
+             and output_version in ((2, 3) if combined else (1,)),
+             "unsupported product output schema")
+    warnings = value["schema_version"] == 3
+    _require(warnings == (output_version == 3) and (not warnings or combined),
+             "assessment schema disagrees with output schema")
+    sequence_first = value["schema_version"] >= 2
     if sequence_first:
         _require(value.get("marker_span_scope")
                  == "marker_covered_positions_only_for_complete_detail_sources",
@@ -226,20 +292,31 @@ def validate_metadata(entry, sample_prefix, combined=False):
             key, field_value = token.split("=", 1)
             _require(key and key not in fields, "duplicate header field")
             fields[key] = field_value
-        expected_fields = {
-            "assembly_status": "uncertain", "uncertainty": "repeat_structure",
-            "repeat_length": "unresolved", "read_support": "not_evaluated",
-            "hypothesis_length": str(length), "sequence_sha256": _digest(sequence),
-            "causes": ",".join(sorted(causes)),
-            "thresholds": ",".join(str(threshold) for threshold in sorted(thresholds)),
-            "source_path_records": str(len(sources)), "enumeration": "bounded",
-            "limit_scope": "gene", "search_limits_reached": str(value["search_limits_reached"]).lower(),
-            "retention_truncated": str(value["retention_truncated"]).lower(),
-        }
-        if sequence_first:
-            expected_fields["marker_detail"] = "summary_only" if product_summary else "complete"
-        _require(all(fields.get(key) == expected for key, expected in expected_fields.items()),
-                 "header disagrees with assessment")
+        if warnings:
+            warning_causes = sorted(WARNING_CAUSES[cause] for cause in causes)
+            _require(product.get("assembly_status_causes") == warning_causes,
+                     "assembly warning causes disagree with source evidence")
+            expected_fields = {
+                "sample": sample_prefix, "gene": gene, "product": str(index),
+                "length": str(length), "assembly_status": "warning",
+                "assembly_status_causes": ",".join(warning_causes),
+            }
+            _require(fields == expected_fields, "header disagrees with warning assessment")
+        else:
+            expected_fields = {
+                "assembly_status": "uncertain", "uncertainty": "repeat_structure",
+                "repeat_length": "unresolved", "read_support": "not_evaluated",
+                "hypothesis_length": str(length), "sequence_sha256": _digest(sequence),
+                "causes": ",".join(sorted(causes)),
+                "thresholds": ",".join(str(threshold) for threshold in sorted(thresholds)),
+                "source_path_records": str(len(sources)), "enumeration": "bounded",
+                "limit_scope": "gene", "search_limits_reached": str(value["search_limits_reached"]).lower(),
+                "retention_truncated": str(value["retention_truncated"]).lower(),
+            }
+            if sequence_first:
+                expected_fields["marker_detail"] = "summary_only" if product_summary else "complete"
+            _require(all(fields.get(key) == expected for key, expected in expected_fields.items()),
+                     "header disagrees with assessment")
     if sequence_first:
         _require(not summary_sources or value["marker_detail_truncated"],
                  "summary-only sources lack aggregate detail flag")
@@ -248,7 +325,7 @@ def validate_metadata(entry, sample_prefix, combined=False):
     return filename
 
 
-def validate_fasta(entry, output_dir, combined=False):
+def validate_fasta(entry, output_dir, combined=False, schema_version=2):
     """Bind uncertain records to metadata and validate the whole combined-file partition."""
     value = entry.get("uncertain_products")
     filename = entry.get("output_file") if combined else (value or {}).get("output_file")
@@ -274,7 +351,7 @@ def validate_fasta(entry, output_dir, combined=False):
         _require(len(observed) == entry["n_products"]
                  and [len(sequence) for _, sequence in observed] == entry.get("product_lengths", []),
                  "combined FASTA count or lengths disagree with stats")
-        _require([assembly_status(header) for header, _ in observed]
+        _require([assembly_status(header, schema_version) for header, _ in observed]
                  == ["standard"] * count + ["uncertain"] * entry["n_uncertain_products"],
                  "combined FASTA classification or order disagrees with stats")
         ids = [shlex.split(header)[0] for header, _ in observed]

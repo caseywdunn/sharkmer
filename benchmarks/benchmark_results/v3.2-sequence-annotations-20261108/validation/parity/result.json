@@ -1,0 +1,283 @@
+{
+  "bindings": {
+    "baseline": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+      "sha256": "3a6505da2750982c333b077a065ad9e0cd0e6607c6963fa7140a0b44da71a899"
+    },
+    "candidate": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/sharkmer",
+      "sha256": "7ef94fedafec49300146c0acf52086915fa78a82a8786dc11413e399a339dd9a"
+    },
+    "fixture": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/inputs/fixture.json",
+      "sha256": "10c9c468a727364c529ad381e54ed992cdf2e9570bacf2882b3a0d91f58a326a"
+    },
+    "harness": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/parity.py",
+      "sha256": "d67b08894f56e03ecae0aa4f284f744d80add83d8130c03c0dbc9c5ea6da3900"
+    },
+    "input": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/inputs/reads.fastq",
+      "sha256": "cdfdf7956ff66df585b7cbe7bb5273aa3e97cb2e9f70590e2613fcbb191e953a"
+    }
+  },
+  "bindings_unchanged": true,
+  "invocations": [
+    {
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "19",
+        "--threads",
+        "1",
+        "--chunks",
+        "0",
+        "-s",
+        "annotation_parity",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/parity/inclusive/baseline",
+        "--pcr-primers",
+        "name=repeat,forward=TACTAGGGGTAGCTC,reverse=ACCTGGAGAAAATTT,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--pcr-primers",
+        "name=clean,forward=GATGCGTAAACGCGC,reverse=GTACAAGCGGCTTGA,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/inputs/reads.fastq"
+      ],
+      "label": "baseline",
+      "mode": "inclusive",
+      "returncode": 0,
+      "started_utc": "2026-11-08T18:53:23.842164+00:00",
+      "timed_out": false,
+      "timeout_seconds": 60,
+      "wall_seconds": 0.06781591940671206
+    },
+    {
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/sharkmer",
+        "-k",
+        "19",
+        "--threads",
+        "1",
+        "--chunks",
+        "0",
+        "-s",
+        "annotation_parity",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/parity/inclusive/candidate",
+        "--pcr-primers",
+        "name=repeat,forward=TACTAGGGGTAGCTC,reverse=ACCTGGAGAAAATTT,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--pcr-primers",
+        "name=clean,forward=GATGCGTAAACGCGC,reverse=GTACAAGCGGCTTGA,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/inputs/reads.fastq"
+      ],
+      "label": "candidate",
+      "mode": "inclusive",
+      "returncode": 0,
+      "started_utc": "2026-11-08T18:53:23.927173+00:00",
+      "timed_out": false,
+      "timeout_seconds": 60,
+      "wall_seconds": 0.06626813299953938
+    },
+    {
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "19",
+        "--threads",
+        "1",
+        "--chunks",
+        "0",
+        "-s",
+        "annotation_parity",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/parity/standard_only/baseline",
+        "--pcr-primers",
+        "name=repeat,forward=TACTAGGGGTAGCTC,reverse=ACCTGGAGAAAATTT,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--pcr-primers",
+        "name=clean,forward=GATGCGTAAACGCGC,reverse=GTACAAGCGGCTTGA,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--no-emit-uncertain",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/inputs/reads.fastq"
+      ],
+      "label": "baseline",
+      "mode": "standard_only",
+      "returncode": 0,
+      "started_utc": "2026-11-08T18:53:24.014332+00:00",
+      "timed_out": false,
+      "timeout_seconds": 60,
+      "wall_seconds": 0.06642928253859282
+    },
+    {
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/sharkmer",
+        "-k",
+        "19",
+        "--threads",
+        "1",
+        "--chunks",
+        "0",
+        "-s",
+        "annotation_parity",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/parity/standard_only/candidate",
+        "--pcr-primers",
+        "name=repeat,forward=TACTAGGGGTAGCTC,reverse=ACCTGGAGAAAATTT,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--pcr-primers",
+        "name=clean,forward=GATGCGTAAACGCGC,reverse=GTACAAGCGGCTTGA,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--no-emit-uncertain",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/inputs/reads.fastq"
+      ],
+      "label": "candidate",
+      "mode": "standard_only",
+      "returncode": 0,
+      "started_utc": "2026-11-08T18:53:24.090330+00:00",
+      "timed_out": false,
+      "timeout_seconds": 60,
+      "wall_seconds": 0.06667317356914282
+    },
+    {
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "19",
+        "--threads",
+        "1",
+        "--chunks",
+        "0",
+        "-s",
+        "annotation_parity",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/parity/inclusive_diagnostics/baseline",
+        "--pcr-primers",
+        "name=repeat,forward=TACTAGGGGTAGCTC,reverse=ACCTGGAGAAAATTT,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--pcr-primers",
+        "name=clean,forward=GATGCGTAAACGCGC,reverse=GTACAAGCGGCTTGA,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--diagnose-withheld-paths",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/inputs/reads.fastq"
+      ],
+      "label": "baseline",
+      "mode": "inclusive_diagnostics",
+      "returncode": 0,
+      "started_utc": "2026-11-08T18:53:24.170952+00:00",
+      "timed_out": false,
+      "timeout_seconds": 60,
+      "wall_seconds": 0.06617825943976641
+    },
+    {
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/sharkmer",
+        "-k",
+        "19",
+        "--threads",
+        "1",
+        "--chunks",
+        "0",
+        "-s",
+        "annotation_parity",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/parity/inclusive_diagnostics/candidate",
+        "--pcr-primers",
+        "name=repeat,forward=TACTAGGGGTAGCTC,reverse=ACCTGGAGAAAATTT,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--pcr-primers",
+        "name=clean,forward=GATGCGTAAACGCGC,reverse=GTACAAGCGGCTTGA,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--diagnose-withheld-paths",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/inputs/reads.fastq"
+      ],
+      "label": "candidate",
+      "mode": "inclusive_diagnostics",
+      "returncode": 0,
+      "started_utc": "2026-11-08T18:53:24.257474+00:00",
+      "timed_out": false,
+      "timeout_seconds": 60,
+      "wall_seconds": 0.06684824265539646
+    },
+    {
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "19",
+        "--threads",
+        "1",
+        "--chunks",
+        "0",
+        "-s",
+        "annotation_parity",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/parity/standard_only_diagnostics/baseline",
+        "--pcr-primers",
+        "name=repeat,forward=TACTAGGGGTAGCTC,reverse=ACCTGGAGAAAATTT,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--pcr-primers",
+        "name=clean,forward=GATGCGTAAACGCGC,reverse=GTACAAGCGGCTTGA,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--no-emit-uncertain",
+        "--diagnose-withheld-paths",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/inputs/reads.fastq"
+      ],
+      "label": "baseline",
+      "mode": "standard_only_diagnostics",
+      "returncode": 0,
+      "started_utc": "2026-11-08T18:53:24.349778+00:00",
+      "timed_out": false,
+      "timeout_seconds": 60,
+      "wall_seconds": 0.06698305904865265
+    },
+    {
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/sharkmer",
+        "-k",
+        "19",
+        "--threads",
+        "1",
+        "--chunks",
+        "0",
+        "-s",
+        "annotation_parity",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/parity/standard_only_diagnostics/candidate",
+        "--pcr-primers",
+        "name=repeat,forward=TACTAGGGGTAGCTC,reverse=ACCTGGAGAAAATTT,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--pcr-primers",
+        "name=clean,forward=GATGCGTAAACGCGC,reverse=GTACAAGCGGCTTGA,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+        "--no-emit-uncertain",
+        "--diagnose-withheld-paths",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/inputs/reads.fastq"
+      ],
+      "label": "candidate",
+      "mode": "standard_only_diagnostics",
+      "returncode": 0,
+      "started_utc": "2026-11-08T18:53:24.429710+00:00",
+      "timed_out": false,
+      "timeout_seconds": 60,
+      "wall_seconds": 0.06705920118838549
+    }
+  ],
+  "modes": {
+    "inclusive": {
+      "full_structured_evidence_equal": true,
+      "passed": true,
+      "records": 2,
+      "standard": 1,
+      "warning": 1
+    },
+    "inclusive_diagnostics": {
+      "full_structured_evidence_equal": true,
+      "passed": true,
+      "records": 2,
+      "standard": 1,
+      "warning": 1
+    },
+    "standard_only": {
+      "full_structured_evidence_equal": true,
+      "passed": true,
+      "records": 1,
+      "standard": 1,
+      "warning": 0
+    },
+    "standard_only_diagnostics": {
+      "full_structured_evidence_equal": true,
+      "passed": true,
+      "records": 1,
+      "standard": 1,
+      "warning": 0
+    }
+  },
+  "passed": true,
+  "purpose": "annotation compatibility, not biological/performance validation"
+}

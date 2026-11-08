@@ -1,0 +1,198 @@
+sharkmer_version: 3.2.0-dev
+command: /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/sharkmer -k 19 --threads 1 --chunks 0 -s annotation_parity -o /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/parity/standard_only_diagnostics/candidate --pcr-primers name=repeat,forward=TACTAGGGGTAGCTC,reverse=ACCTGGAGAAAATTT,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0 --pcr-primers name=clean,forward=GATGCGTAAACGCGC,reverse=GTACAAGCGGCTTGA,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0 --no-emit-uncertain --diagnose-withheld-paths /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/inputs/reads.fastq
+sample: annotation_parity
+run_id: 18e626a7f95cbfc7-ff474-103d4e24d77ea9a5
+output_manifest: annotation_parity.manifest.yaml
+run_status: complete
+product_output_schema_version: 3
+product_output_layout: combined_warnings
+input_source:
+  kind: local_files
+  inputs:
+  - /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/inputs/reads.fastq
+  paired: false
+  max_reads: 0
+kmer_length: 19
+chunks: 0
+n_reads_read: 8
+n_bases_read: 1280
+n_subreads_ingested: 8
+n_bases_ingested: 1280
+n_kmers: 1136
+count_table_capacity: 448
+peak_memory_bytes: 94978
+stage_timings:
+  read_ingest_s: 0.00019102
+  count_finalize_s: 0.000010577
+  read_threading_input_s: null
+  pcr_s: 0.003362978
+  pipeline_total_s: 0.019642555
+pcr_results:
+- gene_name: repeat
+  status: fail
+  n_products: 0
+  n_standard_products: 0
+  n_uncertain_products: 0
+  failure_reason: repeat length unresolved for all complete candidate paths
+  threshold_diagnostics:
+  - threshold: 2
+    connectivity_found: true
+    node_budget_reached: false
+    scc_evaluated: true
+    path_search_evaluated: true
+    omitted_self_loop_nodes: 1
+    pre_prune_scc_nodes: 0
+    retained_collision_edges: 0
+    dfs_limit_reached: false
+    path_quota_reached: false
+    end_below_min_length: false
+    max_length_reached: false
+    completed_candidate_paths: 1
+    eligible_candidate_paths: 0
+    withheld_candidate_paths: 1
+    withheld_by_self_loop_node_paths: 1
+    withheld_by_scc_node_paths: 0
+    withheld_by_collision_edge_paths: 0
+    repeat_tainted_out_of_range_paths: 0
+    generated_products: 0
+    failure_reason: repeat length unresolved for all complete candidate paths
+    withheld_path_diagnostics:
+      schema_version: 1
+      coordinate_system: zero_based_half_open
+      purpose: diagnostic_only_unsupported_candidate_hypotheses
+      marker_span_scope: marker_covered_positions_not_complete_ambiguity_or_bridge_ready_intervals
+      read_support_evaluation: not_evaluated
+      limits:
+        threshold:
+          paths: 32
+          sequence_bases: 524288
+          marker_occurrences: 4096
+        gene:
+          paths: 64
+          sequence_bases: 1048576
+          marker_occurrences: 8192
+        run:
+          paths: 256
+          sequence_bases: 4194304
+          marker_occurrences: 32768
+        allocated_run_share_for_gene:
+          paths: 64
+          sequence_bases: 1048576
+          marker_occurrences: 8192
+        unused_share_is_not_redistributed: true
+      gene_usage_before_threshold:
+        paths: 0
+        sequence_bases: 0
+        marker_occurrences: 0
+      gene_usage_after_threshold:
+        paths: 1
+        sequence_bases: 137
+        marker_occurrences: 1
+      observed_withheld_paths: 1
+      retained_paths: 1
+      observed_not_retained_paths: 0
+      retained_sequence_bases: 137
+      retained_marker_occurrences: 1
+      dropped_oversize_sequence: 0
+      dropped_oversize_marker_set: 0
+      dropped_path_cap: 0
+      dropped_sequence_base_cap: 0
+      dropped_marker_cap: 0
+      node_visit_limit: 2
+      node_visit_skips: 0
+      retention_truncated: false
+      paths:
+      - oriented_sequence: TACTAGGGGTAGCTCCACGCTACCTCACAGGGATACTCGTAACATCGCCTACTACAAGCAAAAAAAAAAAAAAAAAACGAGTGGCTCAGCCCCCCCACCTCTATAATAGACGTGTGCACTGGAAATTTTCTCCAGGT
+        sequence_sha256: c55fbc5816de152aca0a9aa75a47f0fd925f5e7a72226415894ff36dc9476240
+        sequence_length: 137
+        node_visit_limit: 2
+        max_observed_node_visits: 1
+        omitted_self_loop_marker_occurrences: 1
+        cyclic_scc_marker_occurrences: 0
+        retained_collision_marker_occurrences: 0
+        marker_occurrences:
+        - cause: pre_prune_omitted_self_loop_node
+          identity_kind: oriented_node_sequence
+          identity_sequence: AAAAAAAAAAAAAAAAAA
+          identity_sha256: d273c6b6de3f5260e123348e0feb270126fa06e164bb82818df7c71b30ab0ef5
+          start: 59
+          end: 77
+        marker_covered_runs:
+        - start: 59
+          end: 77
+- gene_name: clean
+  status: success
+  n_products: 1
+  n_standard_products: 1
+  n_uncertain_products: 0
+  product_lengths:
+  - 160
+  output_file: annotation_parity_clean.fasta
+  threshold_diagnostics:
+  - threshold: 2
+    connectivity_found: true
+    node_budget_reached: false
+    scc_evaluated: true
+    path_search_evaluated: true
+    omitted_self_loop_nodes: 0
+    pre_prune_scc_nodes: 0
+    retained_collision_edges: 0
+    dfs_limit_reached: false
+    path_quota_reached: false
+    end_below_min_length: false
+    max_length_reached: false
+    completed_candidate_paths: 1
+    eligible_candidate_paths: 1
+    withheld_candidate_paths: 0
+    withheld_by_self_loop_node_paths: 0
+    withheld_by_scc_node_paths: 0
+    withheld_by_collision_edge_paths: 0
+    repeat_tainted_out_of_range_paths: 0
+    generated_products: 1
+    failure_reason: null
+    withheld_path_diagnostics:
+      schema_version: 1
+      coordinate_system: zero_based_half_open
+      purpose: diagnostic_only_unsupported_candidate_hypotheses
+      marker_span_scope: marker_covered_positions_not_complete_ambiguity_or_bridge_ready_intervals
+      read_support_evaluation: not_evaluated
+      limits:
+        threshold:
+          paths: 32
+          sequence_bases: 524288
+          marker_occurrences: 4096
+        gene:
+          paths: 64
+          sequence_bases: 1048576
+          marker_occurrences: 8192
+        run:
+          paths: 256
+          sequence_bases: 4194304
+          marker_occurrences: 32768
+        allocated_run_share_for_gene:
+          paths: 64
+          sequence_bases: 1048576
+          marker_occurrences: 8192
+        unused_share_is_not_redistributed: true
+      gene_usage_before_threshold:
+        paths: 0
+        sequence_bases: 0
+        marker_occurrences: 0
+      gene_usage_after_threshold:
+        paths: 0
+        sequence_bases: 0
+        marker_occurrences: 0
+      observed_withheld_paths: 0
+      retained_paths: 0
+      observed_not_retained_paths: 0
+      retained_sequence_bases: 0
+      retained_marker_occurrences: 0
+      dropped_oversize_sequence: 0
+      dropped_oversize_marker_set: 0
+      dropped_path_cap: 0
+      dropped_sequence_base_cap: 0
+      dropped_marker_cap: 0
+      node_visit_limit: 2
+      node_visit_skips: 0
+      retention_truncated: false
+      paths: []

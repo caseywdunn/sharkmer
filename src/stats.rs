@@ -191,16 +191,7 @@ pub(crate) fn run_pcr(
         let output_file = if n_products > 0 {
             output_transaction.stage_file(&fasta_basename, |file| {
                 for record in &records {
-                    let description = match record.desc() {
-                        Some(description) => format!("{description} assembly_status=standard"),
-                        None => "assembly_status=standard".to_string(),
-                    };
-                    let classified = bio::io::fasta::Record::with_attrs(
-                        record.id(),
-                        Some(&description),
-                        record.seq(),
-                    );
-                    write_fasta_record(file, &classified)
+                    write_fasta_record(file, record)
                         .context("Failed to write standard FASTA record")?;
                 }
                 if let Some(uncertain) = &uncertain_products {
@@ -262,7 +253,7 @@ pub(crate) fn run_pcr(
                 .map(|l| l.to_string())
                 .collect();
             warn!(
-                "  {} {} ({} product{}: {} standard, {} uncertain; {} bp)",
+                "  {} {} ({} record{}: {} without assembly warnings, {} with assembly warnings; {} bp)",
                 if result.n_standard_products > 0 {
                     sym_pass
                 } else {
@@ -277,7 +268,7 @@ pub(crate) fn run_pcr(
             );
             if result.n_uncertain_products > 0 {
                 warn!(
-                    "    Uncertain records have unresolved repeat structure and unevaluated read support."
+                    "    Assembly warnings flag unresolved or suspected repeats; see assembly_status_causes in FASTA headers."
                 );
             }
             if let Some(reason) = &result.failure_reason {
@@ -291,6 +282,23 @@ pub(crate) fn run_pcr(
                 );
             } else {
                 warn!("  {} {} (no products)", sym_fail, result.gene_name);
+            }
+        }
+        if let Some(uncertain) = &result.uncertain_products {
+            if uncertain.assessment.search_limits_reached {
+                warn!(
+                    "    Target search limits reached; additional sequences may remain unexplored."
+                );
+            }
+            if uncertain.assessment.retention_truncated {
+                warn!(
+                    "    Target retention limits reached; additional sequence hypotheses may have been omitted."
+                );
+            }
+            if uncertain.assessment.marker_detail_truncated {
+                warn!(
+                    "    Target diagnostic detail limits reached; some records retain summary evidence only."
+                );
             }
         }
     }
@@ -352,7 +360,7 @@ pub(crate) fn print_summary(run_stats: &RunStats, elapsed: std::time::Duration) 
             .map(|result| result.n_uncertain_products)
             .sum();
         warn!(
-            "sharkmer complete: {} reads, {}/{} targets with output{}, {} records ({} standard, {} uncertain), allocator peak {}, {}",
+            "sharkmer complete: {} reads, {}/{} targets with output{}, {} records ({} without assembly warnings, {} with assembly warnings), allocator peak {}, {}",
             reads_str,
             n_with_output,
             n_total,

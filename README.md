@@ -121,32 +121,45 @@ The `--max-reads 1000000` argument indicates that the first million reads (indiv
 
 This analysis will generate one fasta file for each primer pair, named `{sample}_{gene}.fasta` (e.g., `Stenogorgia_casta_18S.fasta`). If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found. A YAML stats file (`{sample}.stats.yaml`) is also produced with run statistics, per-gene PCR results, and bounded diagnostics for each attempted coverage threshold. Threshold diagnostics record connectivity and search-limit observations, repeat-marker cause counts, and eligible or withheld complete candidate counts without serializing graph identifiers. A reached search quota records why enumeration stopped; it does not prove that another valid path exists beyond the quota.
 
-By default, each target's FASTA contains both standard products and a bounded
-selection of completed hypotheses with unresolved repeat structure. Every
-header has `assembly_status=standard` or `assembly_status=uncertain`.
-Uncertain records also carry `repeat_length=unresolved` and
-`read_support=not_evaluated`; their sequence length is a hypothesis, and the
-biological repeat length may differ. `marker_detail=complete` means the
-structured assessment includes per-marker identities and positions;
-`marker_detail=summary_only` means the path used the extra sequence allowance,
-so detailed marker identities and positions were omitted while the sequence,
-hash, repeat-cause counts, and source threshold were retained.
-Use `--no-emit-uncertain` to request only
-standard products, or filter an existing FASTA with:
+By default, each target's FASTA includes a bounded selection of sequences
+with assembly warnings alongside sequences without warnings. A record with
+a warning has `assembly_status=warning` and `assembly_status_causes` naming
+one or more reasons. A record without a warning omits these fields. No
+warning means that the checks performed did not flag the sequence; it does
+not establish biological correctness.
+
+| Warning cause | Meaning |
+| --- | --- |
+| `homopolymer_length_unresolved` | The length of a run of one repeated base is unresolved. |
+| `repeat_structure_unresolved` | Repeated sequence leaves the assembly structure unresolved. |
+| `high_coverage_repeat_suspected` | Unusually high k-mer coverage at a connection suggests a repeat. |
+
+Multiple causes are comma-separated. These warnings describe unresolved or
+suspected repeats, not proof that a sequence is wrong. The `length` field
+always describes the emitted sequence; biological repeat length may differ.
+No `read_support` field is emitted because this output feature does not
+perform a per-sequence read-support assessment. Optional `--read-threading`
+does not establish the complete sequence or its repeat count.
+
+Use `--no-emit-uncertain` to request only records without assembly warnings,
+or filter a FASTA produced by this version while retaining wrapped sequences:
 
 ```sh
-awk '/^>/ {keep = / assembly_status=standard( |$)/} keep' sample_gene.fasta > sample_gene.standard.fasta
+awk '/^>/ {keep = !/ assembly_status=warning( |$)/} keep' sample_gene.fasta > sample_gene.no_warnings.fasta
 ```
 
 Stats count all delivered records in `n_products` and report separate
-`n_standard_products` and `n_uncertain_products` counts. A target with only
-uncertain hypotheses has status `uncertain` and a normal output FASTA.
-The `uncertain_products` field records source paths, thresholds, and
-search/retention limits. Marker positions are present for complete-detail
-sources; summary-only sources report cause counts and omitted detail instead.
-An empty collection does
-not establish absence; bounded search does not enumerate every repeat
-alternative. See [inclusive output](dev_docs/INCLUSIVE_OUTPUT.md) and the
+`n_standard_products` (without warnings) and `n_uncertain_products` (with
+warnings) counts. These stats names are retained for compatibility. A target
+with only warning-bearing hypotheses has status `uncertain` and a normal
+output FASTA. The `uncertain_products` field preserves sequence hashes,
+warning causes, source paths, thresholds, and search/retention limits.
+Its `marker_detail=complete` sources retain diagnostic identities and positions;
+`summary_only` sources retain cause counts while reporting omitted detail.
+Search and retention limits are reported for each target in stats and terminal
+summaries. An empty collection does not establish absence; bounded search
+does not enumerate every repeat alternative. See
+[sequence annotation meanings](dev_docs/SEQUENCE_ANNOTATIONS.md) and the
 [sequence retention assessment](dev_docs/SEQUENCE_RETENTION_RESULTS.md).
 
 For developer investigation, the hidden opt-in `--diagnose-withheld-paths` flag
@@ -279,10 +292,10 @@ Keep in mind that a reported product requires an assembled kmer path meeting the
 
 ### Repeat-length uncertainty
 
-The unreleased v3.2 development version labels bounded candidate sequences
-that cross unresolved homopolymer or tandem-repeat regions as uncertain.
-They are included in the normal FASTA by default, with explicit uncertainty
-headers, and remain excluded from standard admission and validation.
+The unreleased v3.2 development version attaches assembly warnings to bounded
+candidate sequences that cross unresolved homopolymer or tandem-repeat regions.
+They are included in the normal FASTA by default and remain excluded from
+standard admission and validation.
 A shortened repeat-containing hypothesis is not a resolved complete amplicon.
 Per-gene stats retain the reason standard admission failed, including
 `repeat length unresolved`. Omitted self-loops and nodes in cyclic graph

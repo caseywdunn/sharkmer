@@ -1,9 +1,9 @@
 # Inclusive sequence delivery
 
-The [sequence annotation conventions](SEQUENCE_ANNOTATIONS.md) specify the
-agreed next revision of header names, values, and omission rules. That
-revision is not yet implemented; the standard/uncertain fields below describe
-the existing output contract.
+The [sequence annotation conventions](SEQUENCE_ANNOTATIONS.md) define the
+current schema-3 header names, values, and omission rules. The focused v3.2
+revision preserves assembly, retention, and released ordinary-header fields;
+breaking interface cleanup is deferred to v4.0 under #159.
 
 User-approved direction, 2026-09-29: default behavior should deliver standard
 products and bounded repeat-uncertain hypotheses together in the normal
@@ -15,30 +15,38 @@ and evidence bundle remain historical checkpoints.
 ## Output contract
 
 For every target with at least one emitted sequence, write one
-`{sample}_{gene}.fasta`. Standard records come first in their existing order,
-followed by deterministically ordered uncertain hypotheses. Every header has
-exactly one explicit `assembly_status=standard` or `assembly_status=uncertain`
-field. Standard means the existing assembly gates accepted that sequence;
-it does not mean independent biological validation.
+`{sample}_{gene}.fasta`. Records without assembly warnings come first in their
+existing order, followed by deterministically ordered warning-bearing
+hypotheses. The former omit `assembly_status`; the latter have exactly one
+`assembly_status=warning` and a nonempty `assembly_status_causes` list.
+No warning means no warning was reported by the checks performed; it does
+not mean independent biological validation.
 
-Uncertain records retain the detailed repeat-structure labels, sequence hash,
-thresholds, source-path count, and search/retention flags. Their repeat length
-remains unresolved and read support remains unevaluated by this output feature.
-They use identifiers ending in `.uncertain`, distinct from ordinary identifiers
-ending in a numeric product index. There is no separate uncertainty FASTA.
+Warning headers also carry `sample`, `gene`, `product`, and `length`, using
+the existing ordinary-header field names. Causes are a sorted unique list of
+`homopolymer_length_unresolved`, `repeat_structure_unresolved`, and/or
+`high_coverage_repeat_suspected`. Detailed markers, hashes, source thresholds,
+path counts, and search/retention observations remain in stats. No read-support
+assessment is performed by this feature, so no `read_support` field is emitted.
+Identifiers retain the `.uncertain` suffix for compatibility and remain
+distinct from ordinary identifiers ending in a numeric product index.
+There is no separate uncertainty FASTA.
 
-Emission is enabled by default. `--no-emit-uncertain` requests standard records
-only. The existing `--emit-uncertain` spelling remains accepted as an explicit
+Emission is enabled by default. `--no-emit-uncertain` requests records without
+assembly warnings only. The existing `--emit-uncertain` spelling remains accepted as an explicit
 request for inclusive output; specifying both flags is an error.
 
-To select standard records with a shell command while preserving complete
-FASTA records, including wrapped sequences:
+To select records without warnings in schema-3 output while preserving
+complete FASTA records, including wrapped sequences:
 
 ```sh
-awk '/^>/ {keep = / assembly_status=standard( |$)/} keep' sample_gene.fasta > sample_gene.standard.fasta
+awk '/^>/ {keep = !/ assembly_status=warning( |$)/} keep' sample_gene.fasta > sample_gene.no_warnings.fasta
 ```
 
-Replace `standard` with `uncertain` to select the other class. Output files
+Remove `!` to select records with warnings. For historical schema-2 output,
+select `assembly_status=standard` or `assembly_status=uncertain` explicitly;
+the old contract requires those fields. These shell filters select annotations,
+not biologically validated sequences. Output files
 remain owned, checksummed members of the sample's publication transaction.
 Reruns remove only verified, unchanged files from a previous owned generation,
 including the earlier separate uncertainty files; modified or foreign files
@@ -46,36 +54,56 @@ remain protected.
 
 ## Counts, statuses, and consumers
 
-Output manifests use schema version 2. Stats identify
-`product_output_schema_version: 2` and
-`product_output_layout: combined_classified`. Within each target:
+Output manifests use schema version 3. Stats identify
+`product_output_schema_version: 3` and
+`product_output_layout: combined_warnings`. Within each target, existing stats
+names and status values remain for compatibility:
 
 - `n_products` and `product_lengths` describe all delivered FASTA records.
-- `n_standard_products` and `n_uncertain_products` partition that total.
+- `n_standard_products` and `n_uncertain_products` partition that total into
+  records without and with assembly warnings, respectively.
 - `status: success` means at least one standard record was emitted.
 - `status: uncertain` means only uncertain hypotheses were emitted; the
   ordinary assembly failure reason remains available.
 - `status: fail` means no sequence was emitted and no target FASTA is created.
 
-The optional `uncertain_products` assessment retains its own count, lengths,
-source metadata, and limits. Its `output_file` points to the shared target
-FASTA when uncertain records exist. The file has one transaction receipt.
-Terminal summaries describe actual inclusive output and distinguish classes.
+The optional `uncertain_products` assessment uses schema 3 and retains its own
+count, lengths, source metadata, and limits. Each record's structured
+`assembly_status_causes` must agree with its internal source evidence and FASTA
+description. Its `output_file` points to the shared target FASTA when warning
+records exist. The file has one transaction receipt. Terminal summaries
+distinguish records with and without warnings and report target-wide search,
+retention, and diagnostic-detail truncation.
 
 Updated validation first verifies the complete mixed FASTA against stats,
-class labels, uncertainty metadata, and the transaction manifest. Standard
+warning annotations, uncertainty evidence, and the transaction manifest. Standard
 validation and reference bootstrap then use only the standard subset.
 They do not count uncertain-only targets as standard recovery. Previous
-schema-1 separate-file output and legacy files remain readable. Earlier
-current-run consumers that only support manifest schema 1 reject the new
-schema instead of silently counting all hypotheses as standard products.
+schema-1 separate-file output, schema-2 combined output, and legacy files
+remain readable according to their own contracts. Missing status in schema 2
+is invalid. Older current-run consumers reject unsupported schema 3 rather
+than silently counting all hypotheses as standard products. Standalone and
+renamed FASTA readers exclude both legacy uncertain labels and new warnings
+from standard/reference-bootstrap products; malformed labels fail closed.
 
 ## Assembly and verification scope
 
-This changes default delivery and output accounting. It does not change graph
+The schema-3 revision changes annotations and format dispatch. It does not change graph
 construction, search order, thresholds, repeat admission, accepted-path quota,
 or existing retention limits. Inclusive output remains bounded and is not an
 exhaustive enumeration of possible repeat structures.
+
+The [schema-3 verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
+passes exact before/after agreement of sequence bytes, IDs, order, counts,
+warning membership, and source evidence on the bounded repeat/clean fixture,
+plus schema migration and consumer checks. The v3.2 subset of
+[#159](https://github.com/caseywdunn/sharkmer/issues/159) is implemented;
+the issue remains open for the v4.0 cleanup of released interface fields.
+
+### Historical schema-2 verification protocol (2026-09-29)
+
+The following preserves the original inclusive-interface test scope; it is
+not a new acceptance requirement or a claim about schema-3 results.
 
 The previous evaluation emitted 26 standard and 34 uncertain records across
 three selected insect samples. Those are the fixed identity expectations for

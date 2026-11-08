@@ -550,7 +550,9 @@ def _validate_stats_manifest(
     output_files = []
     for entry in pcr_results:
         if combined:
-            filename = uncertain.validate_combined_metadata(entry, sample_prefix)
+            filename = uncertain.validate_combined_metadata(
+                entry, sample_prefix, stats["product_output_schema_version"]
+            )
             if filename:
                 output_files.append(filename)
             continue
@@ -584,7 +586,7 @@ def _validate_output_manifest(stats: dict, sample_prefix: str, output_dir: Path)
     manifest = _parse_stats_yaml(manifest_path)
     if (
         type(manifest.get("schema_version")) is not int
-        or manifest["schema_version"] != (2 if combined else 1)
+        or manifest["schema_version"] != (stats["product_output_schema_version"] if combined else 1)
         or manifest.get("producer") != "sharkmer"
         or manifest.get("sample") != sample_prefix
     ):
@@ -602,7 +604,9 @@ def _validate_output_manifest(stats: dict, sample_prefix: str, output_dir: Path)
     expected_files = {f"{sample_prefix}.stats.yaml"}
     for entry in stats.get("pcr_results", []):
         if combined:
-            output_file = uncertain.validate_combined_metadata(entry, sample_prefix)
+            output_file = uncertain.validate_combined_metadata(
+                entry, sample_prefix, stats["product_output_schema_version"]
+            )
             if output_file is not None:
                 if output_file in expected_files:
                     raise ValueError("Stats has duplicate combined output paths")
@@ -658,7 +662,12 @@ def _validate_output_manifest(stats: dict, sample_prefix: str, output_dir: Path)
     if observed_files != expected_files:
         raise ValueError("Output manifest receipt set disagrees with current-run stats")
     for entry in stats.get("pcr_results", []):
-        uncertain.validate_fasta(entry, output_dir, combined=combined)
+        uncertain.validate_fasta(
+            entry,
+            output_dir,
+            combined=combined,
+            schema_version=stats.get("product_output_schema_version", 1),
+        )
     return manifest
 
 

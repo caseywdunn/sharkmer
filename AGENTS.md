@@ -25,7 +25,7 @@ Follow [semantic conventions for sequence annotations](dev_docs/SEQUENCE_ANNOTAT
 when designing or changing FASTA annotations and their associated evidence.
 It is the canonical home for field meanings, shared prefixes, readable
 values, and omission rules. It distinguishes agreed design from current
-output; do not assume the planned warning fields are already implemented.
+output and scopes breaking changes to released fields for v4.0.
 
 ## Commits
 
