@@ -89,6 +89,18 @@ A branch is considered passing when:
 These steps assume all work is complete on `dev`, quality gates pass, and
 regression benchmarks have been run.
 
+**v3.2 scope exception approved by the user, 2026-11-08:** follow the
+[current release gates](dev_docs/PLAN.md#release-gate) in place of the full
+benchmark and biological sample campaigns in steps 1–3. Use the retained
+release-baseline evidence and the focused final-build check of saved sequences,
+warning classifications, and the four flagged performance comparisons; keep
+the intentional plant-assay change separate. The new held-out dataset and
+full nine-panel biological evaluation are deferred, not passed. Quality gates,
+reference-provenance checks, and schema/export/loader checks for all built-in
+panels and the reference example remain required. Retain the deferred biological
+work before further assembly tuning or broad accuracy claims. The general
+procedure below continues to apply to other releases.
+
 ### 1. Run and commit benchmarks
 
 Before preparing the release, run the full regression benchmark suite on `dev`

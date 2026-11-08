@@ -2,10 +2,12 @@
 
 Updated 2026-11-08. **The user and coding agent assess release readiness here;
 no external collaborator review is required.** This user decision supersedes
-the October collaborator-performance prerequisite. The user retains the final
-release decision; performance acceptance and biological gates are not marked
-passed or waived by this ownership change. [PLAN.md](PLAN.md#release-gate)
-holds the current criteria.
+the October collaborator-performance prerequisite. The user subsequently
+approved deferring the new held-out dataset and full nine-panel biological
+campaign from v3.2, keeping them before further assembly tuning or broad
+accuracy claims. They are deferred, not passed. The approved focused final-build
+check is in progress; results and performance acceptance remain pending.
+[PLAN.md](PLAN.md#release-gate) holds the current criteria.
 
 The reviewed candidate and warning-header revision are integrated into **`dev`**
 at `7dd8e7f`. Record `git rev-parse HEAD` with any further evaluation results.
@@ -44,14 +46,18 @@ confirms results and unchanged source bindings.
 
 Start with [the current decision ownership](REVIEW_v3.2.md#decision-ownership-2026-11-08)
 and [remaining acceptance boundaries](REVIEW_v3.2.md#remaining-acceptance-boundaries).
-The user and coding agent must record acceptance of the known performance costs
-or identify bounded measurements/corrections still needed. Held-out registration
+The current task binds the final executable to the saved sequence inventory
+and warning classifications and repeats the four flagged performance comparisons
+under matched conditions. Keep the intentional plant-assay change separate.
+Record unexpected changes and acceptance of measured costs before the release
+decision. Held-out registration
 means fixing independent biological inputs/truth unused in development; all-panel
 validation means evaluating actual products and negative controls across nine
-panels, beyond schema/loader checks. Those biological gates and an independent
-Agalma ITS reference remain outstanding. The [October source archive](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz)
-preserves its earlier tested state. The ownership change and integration into
-`dev` do not authorize a merge to `master`, release tag or package publication.
+panels, beyond schema/loader checks. Those two campaigns are deferred from
+v3.2; the work and the independent Agalma ITS reference remain outstanding
+under #129. The [October source archive](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz)
+preserves its earlier tested state. No final-check result or unconditional
+release acceptance is implied by the deferral.
 
 ## Earlier checkpoints
 
@@ -395,8 +401,9 @@ Read these in order as needed; older reports preserve historical checkpoints:
    implemented opt-in output, compiled checks, nine-run standard parity,
    separately reported hypotheses, and exact historical-identity assessment.
    Consult the bundle's final results review and archive verification receipts.
-6. [Pre-release review](REVIEW_v3.2.md): remaining all-panel, held-out, dependency,
-   and release gates; implementation/test totals in older sections are historical.
+6. [Pre-release review](REVIEW_v3.2.md): current focused check, deferred biological
+   studies, and release decisions; implementation/test totals in older sections
+   are historical.
 
 The [new recruitment bundle](../benchmarks/benchmark_results/v3.2-its-recruitment-20260925/README.md)
 contains the frozen protocol/input/source plan, source snapshots, complete
@@ -434,6 +441,11 @@ scientific producer versions. Extract into a fresh directory, verify
 documentation snapshots describe their pinned commit, not later handoff edits.
 
 ## Resume from here
+
+This earlier resume checklist is preserved for provenance. Use the current
+task at the top of this file and [PLAN.md](PLAN.md#release-gate); the
+2026-11-08 user-approved biological-study deferral supersedes the older
+requirements below to complete those studies before v3.2.
 
 The user selected default combined delivery, then authorized integration and
 the [release comparison](INCLUSIVE_RELEASE_RESULTS.md). Integration, the

@@ -14,8 +14,11 @@ uncertain hypotheses (64 standard + 262 uncertain total). Sequence availability
 is separate from biological validation. The plant panel correction below
 changes one assay and is evaluated separately. Performance acceptance and
 release approval are decisions made here by the user with agent analysis;
-external collaborator review is not required (#153). The outstanding biological
-checks remain explicit in the release plan. See
+external collaborator review is not required (#153). The user approved deferring
+the new held-out dataset and full nine-panel biological campaign from v3.2;
+they remain unfinished work before further assembly tuning or broad accuracy
+claims (#129). A focused final-build sequence/performance check is in progress,
+with results and acceptance pending. See
 `dev_docs/REVIEW_v3.2.md` and `dev_docs/SEQUENCE_RETENTION_RESULTS.md`.
 Incremental k-mer counting remains supported. Faster bounded-memory counting
 and new nuclear/metagenomic inference policies belong to later releases.

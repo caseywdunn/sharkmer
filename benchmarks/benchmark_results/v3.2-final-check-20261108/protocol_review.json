@@ -1,0 +1,112 @@
+{
+  "candidate_source_hashes": 54,
+  "checks": [
+    "Independent oracle reconstruction from 22 saved baseline/candidate receipt rows agrees on sequence literals and SHA/lengths, ordering, identifiers, normalized classes, ordinary-header fields, per-target outcomes and five aggregate counts.",
+    "86 released and 326 historical-panel candidate identities agree with tracked complete inventories; corrected plant records plus eight unchanged samples agree with the 287-record current-panel inventory.",
+    "All five historical panel byte identities match the original frozen panel inventory; corrected plant bytes match reviewed proposal checksums and current production panel.",
+    "Both executable hashes match fixed trusted artifacts; the pristine v3.1 source snapshot and complete default-feature build agree. All 54 validated candidate source bindings match current files.",
+    "Final protocol source/tool/helper/README/batch/input-inventory bindings all match current bytes; retained runner controls bind those exact implementation files.",
+    "Schedule has three alternating pairs per flagged sample, then six historical candidate replays and two separate corrected-plant replays, with no corrected-assay timing mixed into v3.1 performance cells.",
+    "Runner checks complete FASTQ byte hashes/record/base counts before execution and input SHA/size before and after every invocation. Content scans and verification are outside GNU timing.",
+    "Two distinct physical cores, same NFS mount, actual inherited child affinity and 40 GiB virtual-address limits, 900-second timeout, 6900-second start budget and 2h15m Slurm allocation are consistent.",
+    "Fresh output directories, fail-closed schema-3 manifest/evidence validation, full saved output oracles, repeated stability, failure receipts and unchanged final source/protocol bindings are enforced.",
+    "Resource reporting retains raw wall/user/system/RSS, paired differences, medians and ranges. Greater-than-5-percent wall and greater-than-2-percent RSS remain review triggers, not automatic acceptance thresholds.",
+    "All ten saved legacy outputs pass an independent raw YAML/FASTA/ordinary-field replay without importing the execution harness or production validators.",
+    "Retained execution-harness controls replay ten legacy outputs, reject three incomplete/changed/unstable controls, and check resource-flag calculation; reviewer input_preflight and input_before/input_after fields align with the frozen runner."
+  ],
+  "control_receipt": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/controls.json",
+    "sha256": "1633e066bad7a07eeadcf62573ae1a2b404117d6142c6a8f7d111f0dd25b4732",
+    "size_bytes": 2079
+  },
+  "independent_legacy_replays": [
+    "SRR9278435",
+    "SRR25099394",
+    "SRR8617500",
+    "SRR17535371",
+    "SRR22396603",
+    "SRR25378184",
+    "ERR14009273",
+    "SRR31887760",
+    "SRR1057608",
+    "SRR27962769"
+  ],
+  "input_inventory": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/inputs/input_inventory.json",
+    "sha256": "b33d5d39d2fa0a8ca88a5f47a0618345e299ac00d4a954a71d9c5435cc93804d",
+    "size_bytes": 347307
+  },
+  "limitations": [
+    "No Sharkmer invocation or large FASTQ content hash was executed during this review; the dedicated compute job performs those checks before its timed runs.",
+    "This review approves the frozen protocol for execution, not release readiness or performance acceptance. Results and any flagged cost require subsequent independent artifact review and explicit disposition.",
+    "The candidate executable is the tested 3.2.0-dev artifact; any later release-version metadata build must be bound and verified separately.",
+    "Three matched pairs on one node/NFS configuration provide descriptive regression evidence, not statistical equivalence, all-platform performance, or biological precision/recall.",
+    "Held-out biological collection and full all-panel biological evaluation remain deferred, not completed."
+  ],
+  "oracle_source_receipts": 31,
+  "protocol": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/protocol-v1.json",
+    "sha256": "038fcbf2ee4ef63dd01700e200facb055c27f243174abdd6f46da468d9457cc3",
+    "size_bytes": 372870
+  },
+  "resolved_findings": [
+    "Include product_lengths in captured target summaries.",
+    "Bind panels to their prior frozen/reviewed provenance rather than only hashing present files.",
+    "Align independent reviewer with one-time prefix preflight and per-invocation input hashes.",
+    "Bind oracle preparer, result reviewer, controls, interpreter/PyYAML and measuring tools."
+  ],
+  "reviewed_at": "2026-11-08T22:40:49.409313+00:00",
+  "reviewed_files": [
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/run_check.py",
+      "sha256": "3affc7ee5bae65c2dd28fb383540641c2d1ecea6a00764e7c8e7277240e2123f",
+      "size_bytes": 21976
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/prepare_protocol.py",
+      "sha256": "5e3e83fab45b9b9c00b8eaa5c16c69758b8b5dc34aa683c9e9617169a4b37e4d",
+      "size_bytes": 7307
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/prepare_inputs.py",
+      "sha256": "77834cd55bf821639f98bab2aa3acc5eb9af18e92a6d14b650937e2503de58e2",
+      "size_bytes": 10847
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/review_results.py",
+      "sha256": "d2aaeae568794d2c69555bc929a0cb93390619020b3806e93ac265217878d7cb",
+      "size_bytes": 22598
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/check_controls.py",
+      "sha256": "72e84e007a28300b95c141dc00470b9d0ab9f789c50c71176c9708a38023f32c",
+      "size_bytes": 3791
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/README.md",
+      "sha256": "fdeae940461918e6423a993d25533705bbdd509d03afa1f57b61e6c0379df417",
+      "size_bytes": 5597
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/batch.sh",
+      "sha256": "3bf68e4198814d21c7ee3fe4eddd26319ce5f7351a170d3b73c94748034b5826",
+      "size_bytes": 645
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/inputs/input_inventory.json",
+      "sha256": "b33d5d39d2fa0a8ca88a5f47a0618345e299ac00d4a954a71d9c5435cc93804d",
+      "size_bytes": 347307
+    }
+  ],
+  "reviewed_scope": {
+    "additional_historical_replays": 6,
+    "corrected_plant_replays": 2,
+    "current_assay_cases": 12,
+    "historical_samples": 10,
+    "invocations": 32,
+    "paired_performance": 24
+  },
+  "reviewer": "independent scope_deferral agent",
+  "source_binding_checks": 141,
+  "status": "pass"
+}
