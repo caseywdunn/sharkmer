@@ -147,6 +147,7 @@ is complete. No release is authorized.
 5. Verify identical sequence delivery, warning membership, identifiers, and evidence associations.
 
 **v3.2 implementation gate (agent-checkable): met 2026-11-08.**
+[Implementation PR #161](https://github.com/caseywdunn/sharkmer/pull/161).
 [Frozen-source verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
 passes all eight gates: 283 Rust tests per backend, 213 Python tests with no
 skips, both Clippy checks, formatting, 158 audited references, and four
