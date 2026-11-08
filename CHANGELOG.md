@@ -21,6 +21,9 @@ and new nuclear/metagenomic inference policies belong to later releases.
 
 ### Added
 
+- Document semantic conventions for sequence annotations: concise headers,
+  related field names, readable warning reasons, and explicit omission rules
+  (#159). This records the intended design; emitted headers are unchanged.
 - Default inclusion of bounded repeat-uncertain hypotheses in each target's
   normal FASTA, with explicit `assembly_status` headers on every record and
   `--no-emit-uncertain` for standard-only output. Stats describe total output
