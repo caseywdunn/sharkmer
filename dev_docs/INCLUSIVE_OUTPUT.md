@@ -1,5 +1,10 @@
 # Inclusive sequence delivery
 
+The [sequence annotation conventions](SEQUENCE_ANNOTATIONS.md) specify the
+agreed next revision of header names, values, and omission rules. That
+revision is not yet implemented; the standard/uncertain fields below describe
+the existing output contract.
+
 User-approved direction, 2026-09-29: default behavior should deliver standard
 products and bounded repeat-uncertain hypotheses together in the normal
 per-target FASTA. [AGENTS.md](../AGENTS.md) records this product preference.

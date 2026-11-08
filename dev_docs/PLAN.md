@@ -1,5 +1,10 @@
 # Development plan: scalable, reliable sPCR
 
+**Documentation update 2026-11-08:** agreed sequence-annotation conventions
+and the pending implementation are tracked in [#159](https://github.com/caseywdunn/sharkmer/issues/159)
+and [the implementation plan below](#sequence-annotation-revision-159).
+Runtime behavior and the reviewed candidate remain unchanged by this update.
+
 **Updated 2026-10-11; authorized collaborator review target: `dev`. See [HANDOFF.md](HANDOFF.md).** It records the
 latest reviewed evidence commit, saved artifacts, known limitations, and next
 unimplemented integration step. Release remains on hold; dated checkpoints below
@@ -124,6 +129,28 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
    Fingerprint tested binaries and record actual parameters.
 
 ## v3.2 — Correctness and reliable evaluation
+
+### Sequence annotation revision (#159)
+
+The [semantic conventions](SEQUENCE_ANNOTATIONS.md) record the agreed warning
+and omission behavior, plus proposed cleanup of other fields. Implementation
+is open under [#159](https://github.com/caseywdunn/sharkmer/issues/159); the
+documentation change does not complete that issue or authorize release.
+
+1. Finalize the remaining cause vocabulary and field proposals in the specification.
+2. Version the new output contract while preserving interpretation of older outputs.
+3. Update writers, stats/manifests, validators, and reference-bootstrap consumers together.
+4. Align CLI explanations and user documentation; preserve the existing opt-out spelling.
+5. Verify identical sequence delivery, warning membership, identifiers, and evidence associations.
+
+**Implementation gate (agent-checkable): not met.** The issue's regression
+criteria must pass, including mixed/warning-only/empty/opt-out output, legacy
+format handling, exclusion of warnings from standard validation/bootstrap,
+and publication checks. Assembly, search, and retention policies are outside
+this change. The cause names and additional field renames remain proposals
+until explicitly settled in the specification.
+
+### Existing correctness and evaluation work
 
 - [ ] [#129](https://github.com/caseywdunn/sharkmer/issues/129) — Make sPCR validation and benchmark provenance trustworthy.
   - [x] Implement per-product validation, executable/input provenance, current-run manifests, benchmark metrics, and offline regression checks; independent Astra review approved on 2026-09-08.
