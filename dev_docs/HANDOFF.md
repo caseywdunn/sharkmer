@@ -1,12 +1,21 @@
 # Pause/resume handoff
 
-Updated 2026-10-11. **The authorized plant correction, runtime investigation
-and local validation are complete. No release was initiated.** The user will
-have collaborators assess performance before release. The user has authorized
-committing the reviewed candidate and integrating it into **`dev`**. Collaborators
-should use `dev` and record `git rev-parse HEAD` with their results. The tested
-source originated on `experiment/sequence-first-retention`, base `1ea21c9`;
-the earlier freezes and completion receipts describe that pre-integration state.
+Updated 2026-11-08. **The user and coding agent assess release readiness here;
+no external collaborator review is required.** This user decision supersedes
+the October collaborator-performance prerequisite. The user retains the final
+release decision; performance acceptance and biological gates are not marked
+passed or waived by this ownership change. [PLAN.md](PLAN.md#release-gate)
+holds the current criteria.
+
+The reviewed candidate and warning-header revision are integrated into **`dev`**
+at `7dd8e7f`. Record `git rev-parse HEAD` with any further evaluation results.
+The [annotation verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
+passes 283 Rust tests per backend, 213 Python tests, formatting/Clippy,
+158 references, and four baseline/candidate mode comparisons. All five
+[merged-commit CI checks](https://github.com/caseywdunn/sharkmer/actions/runs/42512601101)
+pass. No release was initiated. The October tested source originated on
+`experiment/sequence-first-retention`, base `1ea21c9`; its earlier freezes and
+completion receipts describe that pre-integration state.
 
 Plant panel 2.0.0 uses published 6R and two exact public references. In the
 eight reviewed before/after runs, Liriodendron trnV-atpE changes from 41
@@ -27,19 +36,22 @@ The four-flag runtime investigation and bounded Human output-location check
 are complete and independently reviewed. The Human diagnostic shows a
 release-to-retention wall increase of 0.43 s with NFS output and 0.04 s locally;
 historical causality and final-build performance acceptance remain open.
-Minimum rand/webpki security patches are applied. All 11 final local gates
+Minimum rand/webpki security patches are applied. All 11 October local gates
 pass: 280 Rust tests per backend, 200 Python tests with no skips, 158 public
 references, panel/schema/fixture checks and all eight plant runs. The
 [independent terminal review](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/independent_results_review.json)
 confirms results and unchanged source bindings.
 
-Start with [the current review](REVIEW_v3.2.md#current-assessment-2026-10-11)
-and its [tested source archive](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz)
-for collaborators. Performance acceptance, wider/held-out biological
-validation and an independent Agalma ITS reference remain outstanding;
-the review distinguishes these scopes. The authorized integration into `dev`
-does not authorize a merge to `master`, release tag or package publication.
-No release is authorized.
+Start with [the current decision ownership](REVIEW_v3.2.md#decision-ownership-2026-11-08)
+and [remaining acceptance boundaries](REVIEW_v3.2.md#remaining-acceptance-boundaries).
+The user and coding agent must record acceptance of the known performance costs
+or identify bounded measurements/corrections still needed. Held-out registration
+means fixing independent biological inputs/truth unused in development; all-panel
+validation means evaluating actual products and negative controls across nine
+panels, beyond schema/loader checks. Those biological gates and an independent
+Agalma ITS reference remain outstanding. The [October source archive](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz)
+preserves its earlier tested state. The ownership change and integration into
+`dev` do not authorize a merge to `master`, release tag or package publication.
 
 ## Earlier checkpoints
 

@@ -8,13 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 Development target: **3.2.0**. This is not a release. Inclusive uncertainty
-output is integrated into `dev`; the subsequent sequence-retention candidate
-is on `experiment/sequence-first-retention`. Under the frozen historical
-panels, it retains all 86 scoped v3.1 sequences and emits 240 additional
+output and sequence-first retention are integrated into `dev`. Under the frozen
+historical panels, it retains all 86 scoped v3.1 sequences and emits 240 additional
 uncertain hypotheses (64 standard + 262 uncertain total). Sequence availability
 is separate from biological validation. The plant panel correction below
-changes one assay and is evaluated separately. Collaborator performance
-assessment and explicit user release approval remain pending. See
+changes one assay and is evaluated separately. Performance acceptance and
+release approval are decisions made here by the user with agent analysis;
+external collaborator review is not required (#153). The outstanding biological
+checks remain explicit in the release plan. See
 `dev_docs/REVIEW_v3.2.md` and `dev_docs/SEQUENCE_RETENTION_RESULTS.md`.
 Incremental k-mer counting remains supported. Faster bounded-memory counting
 and new nuclear/metagenomic inference policies belong to later releases.

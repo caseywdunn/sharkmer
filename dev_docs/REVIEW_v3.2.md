@@ -2,13 +2,29 @@
 
 Prepared 2026-09-09. **Development work only: awaiting user review, not release approval.**
 
+## Decision ownership (2026-11-08)
+
+The user has replaced the collaborator-review prerequisite with assessment by
+the user and coding agent in this session. No external collaborator sign-off
+is required. The user makes the final release decision after the evidence and
+remaining limitations are recorded against the [release gates](PLAN.md#release-gate).
+This changes who makes the decision; it does not mark performance accepted,
+complete biological validation, or waive an unmet gate.
+
+The warning-header revision is merged into `dev` at `7dd8e7f` via
+[#161](https://github.com/caseywdunn/sharkmer/pull/161). Its
+[verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
+passes all eight local gates, and [CI on the merged commit](https://github.com/caseywdunn/sharkmer/actions/runs/42512601101)
+passes Linux/macOS tests, formatting, Clippy, and Python/reference checks.
+The October evidence below retains its original source and assay scope.
+
 ## Current assessment (2026-10-11)
 
 The user authorized the plant assay correction, runtime investigation and
-remaining local validation, and explicitly reserved release until collaborators
-have assessed performance. The candidate was prepared on
+remaining local validation. The October requirement for collaborator performance
+assessment is superseded by the November decision above. The candidate was prepared on
 `experiment/sequence-first-retention`; the user subsequently authorized committing
-the reviewed work and integrating it into **`dev`** for collaborator assessment.
+the reviewed work and integrating it into **`dev`** for release assessment.
 Record the exact `dev` commit with evaluation results. No merge to `master`,
 tag, GitHub release or package publication is authorized.
 Earlier dated checkpoints below describe their own source versions and scopes.
@@ -74,7 +90,7 @@ final-build benchmark. The reduced total reflects the changed plant assay.
 The single real before/after runs took Liriodendron 109.53/107.69 seconds
 and Acer 48.08/71.26 seconds, at one CPU. They test functionality with a
 changed assay, not controlled performance equivalence. In particular, the
-longer Acer after-run belongs in collaborator review rather than being
+longer Acer after-run belongs in performance acceptance rather than being
 silently excluded or called an established regression from one pair.
 
 ### Final local validation
@@ -106,7 +122,7 @@ No assembly, admission, retention, publication or inclusive-output code was
 changed. The dependency updates and versioned panel correction are the
 production changes in this follow-up.
 
-### Candidate for collaborator assessment
+### Preserved candidate for assessment
 
 The [tested source snapshot](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz)
 contains the source and fixture inputs needed to build and test this development
@@ -148,7 +164,7 @@ semantics remain unchanged.
 This supports current filesystem sensitivity, not a proven explanation of
 the historical delay. Three repeats on one host do not establish equivalence
 or acceptable performance. The diagnostic uses frozen pre-correction binaries;
-collaborators should assess the final candidate on their intended storage and
+the user and coding agent assess the final candidate on the intended storage and
 hardware, reporting absolute times, CPU, RSS, sequences/statuses, and exact
 input/panel/build identities. Keep traced timings separate and state cache
 conditions. The [independent outcome review](../benchmarks/benchmark_results/v3.2-runtime-review-20261010/independent_human_results_review.json)
@@ -156,15 +172,24 @@ passes; it does not close performance acceptance.
 
 ### Remaining acceptance boundaries
 
-- Collaborator assessment of final-build performance and explicit user release
-  authorization remain required.
-- Independent held-out biological inputs/truth have not been registered. The
-  118-target matrix and plant replays are calibration/regression evidence.
-- Wider biological calibration of all nine panels remains outstanding. The
+- **Performance acceptance: not met.** The user and coding agent assess the
+  recorded runtime/RSS findings and final-build evidence, then record which
+  costs are accepted and which need further measurement or correction. This
+  decision requires no collaborator review. Final user release authorization
+  remains separate and has not been given.
+- **Held-out registration: not met.** Register biological inputs and independent
+  truth that were not used to develop or tune the assembly rules, with fixed
+  checksums, subsets, callable targets, and tolerances. "Independent" describes
+  the evidence, not a requirement for an external reviewer. The 118-target
+  matrix and plant replays remain calibration/regression evidence.
+- **All-panel biological validation: not met.** Evaluate actual emitted products
+  and negative controls across all nine panels, including gene identity and
+  whole-product alignment coverage. Loading panels and validating their schemas
+  do not test those biological outcomes. The
   default all-panel script expands to 100 sample/depth invocations, plus the
   reference example; schema/loader checks are a separate, smaller gate.
   Register and bound any wider run before executing it.
-- Final macOS CI has not run locally. Slurm memory limits also do not establish
+- Linux and macOS CI pass on the merged November candidate. Slurm memory limits do not establish
   performance on a physical 16 GB laptop; that remains a hardware claim to test,
   not a new implied release requirement.
 - The independently annotated Agalma ITS source remains missing under #129.
@@ -414,8 +439,10 @@ commands. This is calibration/regression evidence only, not held-out validation.
 
 This original gate inventory is retained for provenance. The current
 assessment above records completed recovery, runtime investigation, dependency
-patches and local checks; collaborator performance acceptance, held-out/wider
-biological evaluation and explicit release authorization remain separate.
+patches and local checks. The user and coding agent own the current acceptance
+decisions; held-out/wider biological evaluation and explicit release
+authorization remain separate. This historical inventory does not reinstate
+the superseded collaborator-review prerequisite.
 
 1. **User review and release authorization.** Do not merge to `master`, tag,
    create a GitHub release, or publish the Bioconda recipe in this task.
