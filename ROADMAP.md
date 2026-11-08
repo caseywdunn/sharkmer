@@ -33,6 +33,11 @@ benchmark provenance before using them to select new algorithms.
 
 ## v4.0 — Scalable exact counting
 
+Use this major-version boundary for the deferred sequence-annotation cleanup
+in [#159](https://github.com/caseywdunn/sharkmer/issues/159): changes to released
+header fields need a migration guide and compatibility tests. The focused
+warning annotations are part of v3.2.
+
 Build a one-pass-over-original-input, allocation-light, parallel exact counter.
 Benchmark compact tables while preserving abundance. Add external counting,
 bounded-memory final random lookup, and streaming replay/spooling so deeper

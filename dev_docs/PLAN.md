@@ -1,9 +1,9 @@
 # Development plan: scalable, reliable sPCR
 
-**Documentation update 2026-11-08:** agreed sequence-annotation conventions
-and the pending implementation are tracked in [#159](https://github.com/caseywdunn/sharkmer/issues/159)
+**Annotation update 2026-11-08:** the focused v3.2 sequence-annotation revision
+and deferred v4.0 interface cleanup are tracked in [#159](https://github.com/caseywdunn/sharkmer/issues/159)
 and [the implementation plan below](#sequence-annotation-revision-159).
-Runtime behavior and the reviewed candidate remain unchanged by this update.
+Assembly, search, retention, and sequence delivery are unchanged by this revision.
 
 **Updated 2026-10-11; authorized collaborator review target: `dev`. See [HANDOFF.md](HANDOFF.md).** It records the
 latest reviewed evidence commit, saved artifacts, known limitations, and next
@@ -132,23 +132,32 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
 
 ### Sequence annotation revision (#159)
 
-The [semantic conventions](SEQUENCE_ANNOTATIONS.md) record the agreed warning
-and omission behavior, plus proposed cleanup of other fields. Implementation
-is open under [#159](https://github.com/caseywdunn/sharkmer/issues/159); the
-documentation change does not complete that issue or authorize release.
+The [semantic conventions](SEQUENCE_ANNOTATIONS.md) define warning-only
+status, readable causes, and explicit omission rules. v3.2 preserves all
+released ordinary-header fields and sequence identifiers. The agreed causes
+are `homopolymer_length_unresolved`, `repeat_structure_unresolved`, and
+`high_coverage_repeat_suspected`. [#159](https://github.com/caseywdunn/sharkmer/issues/159)
+remains open for the v4.0 breaking interface cleanup even after this subset
+is complete. No release is authorized.
 
-1. Finalize the remaining cause vocabulary and field proposals in the specification.
+1. Apply the agreed cause vocabulary to the unreleased warning annotations.
 2. Version the new output contract while preserving interpretation of older outputs.
 3. Update writers, stats/manifests, validators, and reference-bootstrap consumers together.
 4. Align CLI explanations and user documentation; preserve the existing opt-out spelling.
 5. Verify identical sequence delivery, warning membership, identifiers, and evidence associations.
 
-**Implementation gate (agent-checkable): not met.** The issue's regression
-criteria must pass, including mixed/warning-only/empty/opt-out output, legacy
-format handling, exclusion of warnings from standard validation/bootstrap,
-and publication checks. Assembly, search, and retention policies are outside
-this change. The cause names and additional field renames remain proposals
-until explicitly settled in the specification.
+**v3.2 implementation gate (agent-checkable): met 2026-11-08.**
+[Frozen-source verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
+passes all eight gates: 283 Rust tests per backend, 213 Python tests with no
+skips, both Clippy checks, formatting, 158 audited references, and four
+baseline/candidate mode pairs. Regression coverage includes mixed/warning-only/
+empty/opt-out output, legacy format handling, exclusion of warnings from
+standard validation/bootstrap, and publication checks. The eight synthetic
+invocations preserve sequences, IDs, ordering, counts, warning membership,
+released ordinary-header fields, and detailed source evidence. This is
+interface verification, not new biological validation or a performance study.
+Renaming `gene`, `product`, or `length`, moving `score`, and changing released
+stats or identifiers are deferred to v4.0; #159 remains open for that work.
 
 ### Existing correctness and evaluation work
 
@@ -276,6 +285,14 @@ not a portable performance target or a measured improvement.
 
 ## v4.0 — Scalable exact counting and replay
 
+- [ ] [#159](https://github.com/caseywdunn/sharkmer/issues/159) — Complete the
+  [deferred sequence-annotation interface cleanup](SEQUENCE_ANNOTATIONS.md#v40-interface-cleanup-deferred).
+  Finalize replacements for released header fields (`gene`, `product`, `length`,
+  and `score`) and any stats/identifier changes at this major-version boundary.
+  Preserve measurements and provenance, document migration, and test old/new
+  consumers. **Compatibility gate (agent-checkable): not met.** The v3.2 warning
+  revision does not implement or waive this work; default read-support
+  assessment and new biological claims remain separate inference scope.
 - [ ] [#139](https://github.com/caseywdunn/sharkmer/issues/139) — Define exact count-store, replay-source, and assembly evidence interfaces.
 - [ ] [#140](https://github.com/caseywdunn/sharkmer/issues/140) — Remove redundant table consolidation and per-read allocations from sPCR counting.
 - [ ] [#141](https://github.com/caseywdunn/sharkmer/issues/141) — Parallelize ingestion with bounded queues and measured shard ownership.

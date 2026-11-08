@@ -1,18 +1,21 @@
 # Semantic conventions for sequence annotations
 
-**Status: agreed design, 2026-11-08; output changes are not yet implemented.**
+**Status: v3.2 implementation verified, 2026-11-08; v4.0 cleanup remains open.**
 This is the canonical design guide for sequence annotations in FASTA headers
 and their associated structured evidence. Apply it when adding or revising
 annotations. The [README](../README.md) describes implemented behavior;
 [inclusive output](INCLUSIVE_OUTPUT.md) records the existing output contract.
 
-Current output still uses `assembly_status=standard|uncertain`, `causes`,
-and `read_support=not_evaluated` on uncertain records. The convention below
-specifies their intended replacement. It does not change which sequences
-are assembled or delivered, and does not authorize a release.
+The v3.2 revision applies these conventions to the unreleased warning
+annotations. Released ordinary-record fields and all sequence identifiers
+remain unchanged. Breaking cleanup of released fields is explicitly scoped
+to v4.0 below. These changes do not alter assembly, sequence delivery, or
+release authorization.
 
 Implementation is tracked in [#159](https://github.com/caseywdunn/sharkmer/issues/159)
 and [PLAN.md](PLAN.md#sequence-annotation-revision-159).
+The [verification evidence](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
+records exact compatibility on the bounded fixture and passing local checks.
 
 ## Principles
 
@@ -58,6 +61,11 @@ this convention. They must not be inferred from arbitrary or older FASTA.
 | `assembly_status_causes` | A nonempty comma-separated list of documented reasons for the assembly warning. | Required whenever `assembly_status=warning`; absent otherwise. | No warning reasons are reported. It must not be missing from a warning-bearing record. |
 | `read_support` | `evaluated`: a defined read-support assessment was performed for this particular sequence. It says nothing about whether support was found. | Only after that assessment has actually been performed and its method and results recorded. | No read-support assessment is reported. |
 
+`read_support=evaluated` is reserved for a future assessment feature. Schema 3
+does not emit or accept a read-support header field, since that assessment is
+not implemented. Introducing it requires a defined assessment and compatible
+format handling, not simply enabling the existing threading option.
+
 Keep related fields adjacent for readability, but parsers must use their
 names rather than their positions. Reason lists have deterministic ordering
 and no duplicate values. A warning can have more than one reason.
@@ -74,55 +82,85 @@ record. A future assessment needs a defined scope and results for the actual
 emitted sequence. Related fields should use the `read_support_` prefix if
 they are needed in the header; detailed methods and results belong in stats.
 
-Illustrative header descriptions under the new convention (other metadata
-omitted here for clarity; the example reason remains provisional):
+Illustrative headers (ordinary measurements omitted here for clarity):
 
 ```text
->sample_gene_0
->sample_gene_1 assembly_status=warning assembly_status_causes=cycle_encountered
+>sample_gene_0 sample=sample gene=gene product=0 length=160
+>sample_gene_0.uncertain sample=sample gene=gene product=0 length=137 assembly_status=warning assembly_status_causes=repeat_structure_unresolved
 ```
 
-## Cause vocabulary still to finalize
+## Warning causes
 
-The current labels expose implementation details. The following alternatives
-were discussed; they are proposals, not a finalized enumeration:
+These stable, user-facing cause names summarize the exact internal evidence
+retained in stats. They are conservative warnings, not proof of an incorrect
+sequence or a biologically confirmed repeat.
 
-| Current internal cause | Proposed wording | Naming question to resolve |
+| Internal evidence cause | FASTA and structured cause | Meaning |
 | --- | --- | --- |
-| `pre_prune_omitted_self_loop_node` | `repeat_count_unresolved` or `homopolymer_length_unresolved` | The second identifies the homopolymer case more precisely; the first also overlaps the concern behind other repeat warnings. |
-| `pre_prune_cyclic_scc_node` | `cycle_encountered` | Still requires graph knowledge. Explain the unresolved repeat structure; the emitted path need not itself complete a cycle. |
-| `retained_collision_edge` | `high_coverage_repeat_suspected` | Communicate a suspected repeat from an unusually high-coverage connection into existing graph sequence, without asserting a proven repeat. |
+| `pre_prune_omitted_self_loop_node` | `homopolymer_length_unresolved` | The path encounters a run of one repeated base whose biological length is unresolved. |
+| `pre_prune_cyclic_scc_node` | `repeat_structure_unresolved` | The path intersects a cyclic graph region, leaving repeat structure unresolved; the emitted path need not itself complete a loop. |
+| `retained_collision_edge` | `high_coverage_repeat_suspected` | An unusually high-coverage connection into existing graph sequence suggests a repeat, without proving one. |
 
 Choose final codes by their meaning to a biologist, and preserve the exact
 internal trigger separately in the evidence. A simpler name must not make
 a stronger biological claim. Do not invent a warning category for an
 assessment that the software does not perform.
 
-## Other annotations to review
+## v3.2 scope and compatibility
 
-The header audit identified the following recommended changes. These remain
-proposals to settle before implementation, rather than additions to the
-agreed field contract above. Ordinary and warning-bearing records should
-share the same basic identity and length fields.
+Product output schema 3 uses `product_output_layout: combined_warnings`,
+manifest schema 3, and warning-assessment schema 3. Warning records contain
+exactly `sample`, `gene`, `product`, `length`, `assembly_status`, and
+`assembly_status_causes`. Identity and length fields use the released ordinary
+header names; `length` is emitted bases, and `product` is an ordinal within
+its record class. Identifiers remain unique, including the `.uncertain` suffix.
+
+Ordinary headers preserve `sample`, `gene`, `product`, `length`, `score`, and
+all `kmer_count_*` fields. Only the unreleased `assembly_status=standard`
+annotation is removed. K-mer counts are not independent read depth; `score`
+remains an assembly ranking heuristic, not a confidence probability.
+
+The new warning header replaces `hypothesis_length` with the existing `length`
+field. Redundant `uncertainty` and `repeat_length` annotations are expressed by
+the causes. The sequence hash, source thresholds/path counts, marker detail,
+and target-wide search/retention limits remain in structured evidence rather
+than FASTA descriptions. `assembly_status_causes` is also a structured list
+on each warning record and must agree with its internal source evidence.
+The existing stats names `n_standard_products`, `n_uncertain_products`, and
+`uncertain_products` remain; they mean records without/with warnings and the
+latter's evidence. A target's `status: uncertain` still means warning-only
+output. Terminal summaries use warning terminology and report reached limits.
+
+Readers preserve legacy/schema-1 split-output and schema-2 combined-output
+contracts. Schema 2 requires explicit standard/uncertain labels; absence there
+is invalid. Absence in schema 3 means no warning reported. Standalone readers
+recognize both old uncertain labels and new warnings and exclude them from
+standard validation/bootstrap. Malformed or unsupported labels fail closed.
+Run metadata, receipts, and evidence bind the format to the particular output;
+do not interpret arbitrary unlabeled FASTA as biologically validated.
+
+## v4.0 interface cleanup (deferred)
+
+The remaining recommendations change fields already released in v3.1 and
+could break scripts. They belong at the v4.0 major-version boundary, with an
+explicit migration guide and preserved reading of historical outputs.
+Exact replacement names remain proposals for that work.
 
 | Current annotation | Recommended treatment |
 | --- | --- |
-| `length` and `hypothesis_length` | Use `sequence_length` for the number of bases actually emitted. This is not a claim about biological repeat length. |
+| `length` | Consider `sequence_length` for the number of bases actually emitted. This is not a claim about biological repeat length. |
 | `gene` | Prefer `target`, since assays can target spacers or span several genes. This proposal concerns output annotations, not panel definitions. |
 | `product` | If the numeric index is retained, call it `sequence_index`. It does not count biological loci or haplotypes. |
 | `score` | Preserve in detailed stats as `assembly_rank_score`, an internal ranking heuristic without a calibrated confidence interpretation. |
-| `kmer_count_mean`, `kmer_count_median`, `kmer_count_min`, `kmer_count_max` | Keep these measurements and their shared prefix. Define them as k-mer counts, not independent read depth. Do not invent values for records where these measurements were not made. |
-| `uncertainty=repeat_structure`, `repeat_length=unresolved` | Consolidate into warning reasons once the final vocabulary fully expresses their meaning. |
-| `marker_detail`, `thresholds`, `source_path_records` | Keep in associated diagnostic evidence rather than FASTA headers. Preserve exactly what was retained and what was omitted. |
-| `enumeration`, `limit_scope`, `search_limits_reached`, `retention_truncated` | Keep target-wide search and retention information in target stats and summaries, without presenting it as a property of each sequence. |
-| `sequence_sha256` | The name is already clear. Prefer structured provenance as its home, retaining an unambiguous link between each emitted record and its evidence. |
+| Existing stats names and record identifiers | Review separately if user-facing names should align with warnings. Any change needs explicit compatibility treatment. |
 
-Moving a field out of a header must preserve its value in associated evidence.
+Moving a released field out of a header must preserve its value in associated evidence.
 Some ordinary-record measurements currently exist only in the header; provide
 a structured home before removing them. Keep identifiers stable through this
 migration, including existing `.uncertain` suffixes; changing identifiers is a
-separate compatibility decision. Update user-facing summaries to explain
-warnings, and preserve the existing opt-out spelling for compatibility.
+separate compatibility decision. Preserve the existing opt-out spelling for
+compatibility. A default read-support assessment is separate future inference
+work, not implied by a metadata cleanup.
 
 ## Maintaining the contract
 
@@ -137,8 +175,8 @@ Existing schema-2 output requires explicit standard/uncertain labels; a
 missing label in that format must not silently acquire the new meaning.
 Preserve the interpretation of saved historical outputs and evidence.
 
-When implementation is complete, update the user-facing README and CLI help
-to describe the emitted fields in plain language, and update this document's
-status. Header simplification must preserve sequence delivery, warning
+Keep the user-facing README and CLI help synchronized with the emitted fields
+and update this document's status as verification completes. Header
+simplification must preserve sequence delivery, warning
 provenance, and the distinction between an emitted hypothesis and a
 biologically validated sequence.

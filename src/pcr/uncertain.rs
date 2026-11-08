@@ -37,6 +37,7 @@ pub(crate) struct UncertainProductSource {
 pub(crate) struct UncertainProduct {
     pub(crate) id: String,
     pub(crate) description: String,
+    pub(crate) assembly_status_causes: Vec<String>,
     pub(crate) oriented_sequence: String,
     pub(crate) sequence_sha256: String,
     /// Length of the emitted hypothesis, not an established biological length.
@@ -128,7 +129,7 @@ pub(crate) struct UncertainProducts {
 impl UncertainProducts {
     pub(super) fn empty(limits: WithheldDiagnosticLimits) -> Self {
         Self {
-            schema_version: 2,
+            schema_version: 3,
             purpose: "uncertain_repeat_structure_graph_path_hypotheses".to_string(),
             coordinate_system: "zero_based_half_open_in_emitted_oriented_sequence".to_string(),
             marker_span_scope: "marker_covered_positions_only_for_complete_detail_sources"
@@ -236,6 +237,7 @@ pub(super) fn collect(
                     let product = UncertainProduct {
                         id: String::new(),
                         description: String::new(),
+                        assembly_status_causes: Vec::new(),
                         oriented_sequence: sequence.clone(),
                         sequence_sha256: path.sequence_sha256.clone(),
                         sequence_length: path.sequence_length,
@@ -251,46 +253,26 @@ pub(super) fn collect(
         // Standard IDs always end in an integer. A terminal status suffix
         // avoids collisions even when a different gene ends in `.uncertain`.
         product.id = format!("{}_{}_{}.uncertain", sample_name, gene_name, index);
-        let thresholds = product
-            .sources
-            .iter()
-            .map(|source| source.threshold)
-            .collect::<BTreeSet<_>>();
-        let thresholds = thresholds
-            .into_iter()
-            .map(|value| value.to_string())
-            .collect::<Vec<_>>()
-            .join(",");
         let mut causes = BTreeSet::new();
-        let mut marker_detail = MarkerDetail::Complete;
         for source in &product.sources {
-            if source.marker_detail == MarkerDetail::SummaryOnly {
-                marker_detail = MarkerDetail::SummaryOnly;
-            }
             if source.omitted_self_loop_marker_occurrences > 0 {
-                causes.insert("pre_prune_omitted_self_loop_node");
+                causes.insert("homopolymer_length_unresolved");
             }
             if source.cyclic_scc_marker_occurrences > 0 {
-                causes.insert("pre_prune_cyclic_scc_node");
+                causes.insert("repeat_structure_unresolved");
             }
             if source.retained_collision_marker_occurrences > 0 {
-                causes.insert("retained_collision_edge");
+                causes.insert("high_coverage_repeat_suspected");
             }
         }
+        product.assembly_status_causes = causes.into_iter().map(str::to_owned).collect();
         product.description = format!(
-            "assembly_status=uncertain uncertainty=repeat_structure repeat_length=unresolved read_support=not_evaluated marker_detail={} hypothesis_length={} sequence_sha256={} causes={} thresholds={} source_path_records={} enumeration=bounded limit_scope=gene search_limits_reached={} retention_truncated={}",
-            if marker_detail == MarkerDetail::Complete {
-                "complete"
-            } else {
-                "summary_only"
-            },
+            "sample={} gene={} product={} length={} assembly_status=warning assembly_status_causes={}",
+            sample_name,
+            gene_name,
+            index,
             product.sequence_length,
-            product.sequence_sha256,
-            causes.into_iter().collect::<Vec<_>>().join(","),
-            thresholds,
-            product.sources.len(),
-            output.search_limits_reached,
-            output.retention_truncated,
+            product.assembly_status_causes.join(","),
         );
         output.products.push(product);
     }
@@ -384,7 +366,15 @@ mod tests {
         assert_eq!(output.retained_path_records, 3);
         assert_eq!(output.exact_duplicate_path_records, 1);
         assert_eq!(output.products[0].sources.len(), 2);
-        assert!(output.products[0].description.contains("thresholds=4,8"));
+        assert_eq!(
+            output.products[0]
+                .sources
+                .iter()
+                .map(|source| source.threshold)
+                .collect::<Vec<_>>(),
+            vec![8, 4]
+        );
+        assert!(!output.products[0].description.contains("thresholds="));
         assert!(
             diagnostics
                 .iter()
@@ -423,9 +413,13 @@ mod tests {
                     marker.identity_sequence
                 );
             }
-            assert!(product.description.contains("assembly_status=uncertain"));
-            assert!(product.description.contains("repeat_length=unresolved"));
-            assert!(product.description.contains("read_support=not_evaluated"));
+            assert!(product.description.contains("assembly_status=warning"));
+            assert!(
+                product
+                    .description
+                    .contains("assembly_status_causes=repeat_structure_unresolved")
+            );
+            assert!(!product.description.contains("read_support="));
         }
     }
 
@@ -468,7 +462,7 @@ mod tests {
     }
 
     #[test]
-    fn summary_provenance_preserves_sequence_and_labels_header() {
+    fn summary_provenance_preserves_sequence_without_exposing_internal_detail_in_header() {
         let mut summary_path = path("ACGTA");
         summary_path.marker_occurrences.clear();
         summary_path.marker_covered_runs.clear();
@@ -478,7 +472,7 @@ mod tests {
         retention.omitted_detailed_marker_occurrences = 1;
         retention.marker_detail_truncated = true;
         let output = collect_test(&mut [diagnostic], &[], false);
-        assert_eq!(output.schema_version, 2);
+        assert_eq!(output.schema_version, 3);
         assert_eq!(output.unique_products, 1);
         assert!(output.marker_detail_truncated);
         assert_eq!(output.products[0].oriented_sequence, "ACGTA");
@@ -486,17 +480,47 @@ mod tests {
             output.products[0].sources[0].marker_detail,
             MarkerDetail::SummaryOnly
         );
+        assert!(!output.products[0].description.contains("marker_detail="));
         assert!(
             output.products[0]
                 .description
-                .contains("marker_detail=summary_only")
-        );
-        assert!(
-            output.products[0]
-                .description
-                .contains("assembly_status=uncertain")
+                .contains("assembly_status=warning")
         );
         assert!(!output.retention_truncated);
+    }
+
+    #[test]
+    fn warning_causes_merge_across_sources_with_stable_readable_names() {
+        let mut first = path("ACGTA");
+        first.omitted_self_loop_marker_occurrences = 1;
+        first.retained_collision_marker_occurrences = 1;
+        first.marker_occurrences.clear();
+        first.marker_covered_runs.clear();
+        let mut diagnostics = vec![threshold(8, vec![first]), threshold(4, vec![path("ACGTA")])];
+        let output = collect_test(&mut diagnostics, &[], false);
+        assert_eq!(output.products.len(), 1);
+        let product = &output.products[0];
+        assert_eq!(product.id, "sample_gene_0.uncertain");
+        assert_eq!(product.oriented_sequence, "ACGTA");
+        assert_eq!(product.sources.len(), 2);
+        assert_eq!(product.sources[0].omitted_self_loop_marker_occurrences, 1);
+        assert_eq!(product.sources[0].retained_collision_marker_occurrences, 1);
+        assert_eq!(
+            product.sources[1].marker_occurrences,
+            path("ACGTA").marker_occurrences
+        );
+        assert_eq!(
+            product.assembly_status_causes,
+            vec![
+                "high_coverage_repeat_suspected",
+                "homopolymer_length_unresolved",
+                "repeat_structure_unresolved",
+            ]
+        );
+        assert_eq!(
+            product.description,
+            "sample=sample gene=gene product=0 length=5 assembly_status=warning assembly_status_causes=high_coverage_repeat_suspected,homopolymer_length_unresolved,repeat_structure_unresolved"
+        );
     }
 
     #[test]

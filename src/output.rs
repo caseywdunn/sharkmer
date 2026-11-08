@@ -6,7 +6,7 @@ use std::fs::{self, File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::{Component, Path, PathBuf};
 
-const MANIFEST_SCHEMA_VERSION: u32 = 2;
+const MANIFEST_SCHEMA_VERSION: u32 = 3;
 const MANIFEST_PRODUCER: &str = "sharkmer";
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -278,7 +278,7 @@ fn read_previous_manifest(path: &Path, sample: &str) -> Result<Option<OutputMani
     let manifest: OutputManifest = serde_yaml_ng::from_reader(file)
         .with_context(|| format!("Failed to parse output manifest {}", path.display()))?;
     ensure!(
-        matches!(manifest.schema_version, 1 | MANIFEST_SCHEMA_VERSION)
+        matches!(manifest.schema_version, 1 | 2 | MANIFEST_SCHEMA_VERSION)
             && manifest.producer == MANIFEST_PRODUCER
             && manifest.sample == sample,
         "Refusing foreign or unsupported output manifest {}",
@@ -667,11 +667,44 @@ mod tests {
                 next.commit().unwrap();
                 assert!(!sidecar.exists());
                 let current = read_manifest(directory.path(), "sample");
-                assert_eq!(current.schema_version, 2);
+                assert_eq!(current.schema_version, 3);
                 assert_eq!(current.files.len(), 2);
             }
             assert_eq!(fs::read_to_string(unowned).unwrap(), "user file");
         }
+    }
+
+    #[test]
+    fn schema_two_combined_outputs_migrate_without_touching_unowned_files() {
+        let directory = tempfile::tempdir().unwrap();
+        let old_header = ">sample_gene_0 assembly_status=standard\nACGT\n";
+        let mut first = OutputTransaction::begin(directory.path(), "sample").unwrap();
+        stage_text(&mut first, "sample_gene.fasta", old_header);
+        stage_text(&mut first, "sample.stats.yaml", "old stats");
+        first.commit().unwrap();
+
+        let manifest_path = directory.path().join("sample.manifest.yaml");
+        let mut previous = read_manifest(directory.path(), "sample");
+        previous.schema_version = 2;
+        write_manifest_atomic(directory.path(), &manifest_path, &previous).unwrap();
+        let user_file = directory.path().join("user.fasta");
+        fs::write(&user_file, old_header).unwrap();
+
+        let mut next = OutputTransaction::begin(directory.path(), "sample").unwrap();
+        let new_header = ">sample_gene_0\nACGT\n";
+        stage_text(&mut next, "sample_gene.fasta", new_header);
+        stage_text(&mut next, "sample.stats.yaml", "new stats");
+        next.commit().unwrap();
+
+        let current = read_manifest(directory.path(), "sample");
+        assert_eq!(current.schema_version, 3);
+        assert_ne!(current.run_id, previous.run_id);
+        assert_eq!(current.files.len(), 2);
+        assert_eq!(
+            fs::read_to_string(directory.path().join("sample_gene.fasta")).unwrap(),
+            new_header
+        );
+        assert_eq!(fs::read_to_string(user_file).unwrap(), old_header);
     }
 
     #[test]

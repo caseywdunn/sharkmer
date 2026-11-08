@@ -308,7 +308,7 @@ pub(crate) struct Args {
     )]
     pub(crate) diagnose_withheld_paths: bool,
 
-    /// Include bounded repeat-uncertain hypotheses (already enabled by default)
+    /// Include bounded sequences with assembly warnings (already enabled by default)
     #[arg(
         long,
         help_heading = "PCR",
@@ -317,7 +317,7 @@ pub(crate) struct Args {
     )]
     pub(crate) emit_uncertain: bool,
 
-    /// Emit only standard products, excluding repeat-uncertain hypotheses
+    /// Exclude sequences with assembly warnings from FASTA output
     #[arg(long, help_heading = "PCR", conflicts_with = "emit_uncertain")]
     pub(crate) no_emit_uncertain: bool,
 
@@ -817,9 +817,9 @@ pub(crate) fn handle_dry_run(
     eprintln!(
         "  PCR output:     {}",
         if args.no_emit_uncertain {
-            "standard products only"
+            "records without assembly warnings only"
         } else {
-            "standard and labelled uncertain products"
+            "records with and without assembly warnings"
         }
     );
     if let Some(max) = args.max_reads {

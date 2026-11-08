@@ -1,0 +1,25 @@
+{
+  "command": [
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+    "-k",
+    "19",
+    "--threads",
+    "1",
+    "--chunks",
+    "0",
+    "-s",
+    "annotation_parity",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/annotation-conventions-20261108/run-v3/parity/inclusive/baseline",
+    "--pcr-primers",
+    "name=repeat,forward=TACTAGGGGTAGCTC,reverse=ACCTGGAGAAAATTT,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+    "--pcr-primers",
+    "name=clean,forward=GATGCGTAAACGCGC,reverse=GTACAAGCGGCTTGA,trim=15,mismatches=0,min-length=100,max-length=220,dedup-edit-threshold=0",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/inputs/reads.fastq"
+  ],
+  "returncode": 0,
+  "started_utc": "2026-11-08T18:53:23.842164+00:00",
+  "timed_out": false,
+  "timeout_seconds": 60,
+  "wall_seconds": 0.06781591940671206
+}

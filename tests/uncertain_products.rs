@@ -138,11 +138,11 @@ fn sha256(contents: &[u8]) -> String {
 
 fn assert_manifest(directory: &Path, stats: &Value, expected_files: &[String]) {
     let manifest = read_yaml(&directory.join(format!("{SAMPLE}.manifest.yaml")));
-    assert_eq!(manifest["schema_version"].as_u64(), Some(2));
-    assert_eq!(stats["product_output_schema_version"].as_u64(), Some(2));
+    assert_eq!(manifest["schema_version"].as_u64(), Some(3));
+    assert_eq!(stats["product_output_schema_version"].as_u64(), Some(3));
     assert_eq!(
         stats["product_output_layout"].as_str(),
-        Some("combined_classified")
+        Some("combined_warnings")
     );
     assert_eq!(manifest["status"].as_str(), Some("complete"));
     assert_eq!(stats["run_status"].as_str(), Some("complete"));
@@ -180,6 +180,7 @@ fn assert_uncertain_agreement(directory: &Path, stats: &Value) {
     assert_eq!(repeat["n_standard_products"].as_u64(), Some(0));
     assert!(repeat["failure_reason"].as_str().is_some());
     let uncertainty = &repeat["uncertain_products"];
+    assert_eq!(uncertainty["schema_version"].as_u64(), Some(3));
     assert_eq!(
         uncertainty["read_support_evaluation"].as_str(),
         Some("not_evaluated")
@@ -219,16 +220,21 @@ fn assert_uncertain_agreement(directory: &Path, stats: &Value) {
         assert!(record.id().ends_with(".uncertain"));
         assert_eq!(record.desc(), product["description"].as_str());
         let description = record.desc().unwrap();
-        for label in [
-            "assembly_status=uncertain",
-            "uncertainty=repeat_structure",
-            "repeat_length=unresolved",
-            "read_support=not_evaluated",
-            "enumeration=bounded",
-            "limit_scope=gene",
-        ] {
-            assert!(description.split_whitespace().any(|field| field == label));
-        }
+        let causes: Vec<_> = product["assembly_status_causes"]
+            .as_sequence()
+            .unwrap()
+            .iter()
+            .map(|cause| cause.as_str().unwrap())
+            .collect();
+        assert!(!causes.is_empty());
+        assert_eq!(
+            description,
+            format!(
+                "sample={SAMPLE} gene=repeat product={index} length={} assembly_status=warning assembly_status_causes={}",
+                record.seq().len(),
+                causes.join(",")
+            )
+        );
         assert_eq!(
             record.seq(),
             product["oriented_sequence"].as_str().unwrap().as_bytes()
@@ -249,7 +255,26 @@ fn assert_uncertain_agreement(directory: &Path, stats: &Value) {
         let sources = product["sources"].as_sequence().unwrap();
         assert!(!sources.is_empty());
         source_count += sources.len() as u64;
+        let mut expected_causes = BTreeSet::new();
         for source in sources {
+            for (count, cause) in [
+                (
+                    "omitted_self_loop_marker_occurrences",
+                    "homopolymer_length_unresolved",
+                ),
+                (
+                    "cyclic_scc_marker_occurrences",
+                    "repeat_structure_unresolved",
+                ),
+                (
+                    "retained_collision_marker_occurrences",
+                    "high_coverage_repeat_suspected",
+                ),
+            ] {
+                if source[count].as_u64().unwrap() > 0 {
+                    expected_causes.insert(cause);
+                }
+            }
             assert!(source["threshold"].as_u64().unwrap() > 0);
             let markers = source["marker_occurrences"].as_sequence().unwrap();
             assert!(!markers.is_empty());
@@ -264,6 +289,7 @@ fn assert_uncertain_agreement(directory: &Path, stats: &Value) {
                 );
             }
         }
+        assert_eq!(causes, expected_causes.into_iter().collect::<Vec<_>>());
     }
     let retained = uncertainty["retained_path_records"].as_u64().unwrap();
     let excluded = uncertainty["excluded_standard_equivalent_path_records"]
@@ -318,12 +344,9 @@ fn uncertain_cli_preserves_standard_outputs_and_agrees_with_stats_and_manifest()
         .unwrap();
     assert_eq!(clean_records.len(), 1);
     assert_eq!(clean_records[0].seq(), fixture.clean_target.as_bytes());
-    assert!(
-        clean_records[0]
-            .desc()
-            .unwrap()
-            .split_whitespace()
-            .any(|field| field == "assembly_status=standard")
+    assert_eq!(
+        clean_records[0].desc().unwrap(),
+        "sample=uncertain_test gene=clean product=0 length=160 kmer_count_mean=4.00 kmer_count_median=4 kmer_count_min=4 kmer_count_max=4 score=4.00"
     );
     for (directory, stats, emit, hidden) in [
         (off.path(), &default_stats, false, false),
@@ -472,18 +495,18 @@ fn mixed_target_emits_standard_then_uncertain_and_opt_out_preserves_standard() {
     assert_eq!(records.len(), 1 + uncertain as usize);
     assert_eq!(records[0].seq(), mixed.as_bytes());
     assert!(
-        records[0]
+        !records[0]
             .desc()
             .unwrap()
             .split_whitespace()
-            .any(|field| field == "assembly_status=standard")
+            .any(|field| field.starts_with("assembly_status="))
     );
     assert!(records[1..].iter().all(|record| {
         record
             .desc()
             .unwrap()
             .split_whitespace()
-            .any(|field| field == "assembly_status=uncertain")
+            .any(|field| field == "assembly_status=warning")
     }));
     let lengths = result["product_lengths"].as_sequence().unwrap();
     assert_eq!(lengths.len(), records.len());
@@ -527,7 +550,10 @@ fn inclusive_console_reports_uncertain_only_output_and_zero_targets_remain_expli
         String::from_utf8_lossy(&output.stderr)
     );
     let stderr = String::from_utf8_lossy(&output.stderr);
-    assert!(stderr.contains("0 standard,") && stderr.contains("uncertain"));
+    assert!(
+        stderr.contains("0 without assembly warnings,")
+            && stderr.contains("with assembly warnings")
+    );
     assert!(stderr.contains("targets with output"));
     assert!(!stderr.contains("repeat (no products"));
     let stats = read_yaml(&directory.path().join(format!("{SAMPLE}.stats.yaml")));
@@ -542,6 +568,48 @@ fn inclusive_console_reports_uncertain_only_output_and_zero_targets_remain_expli
         !directory
             .path()
             .join(format!("{SAMPLE}_missing.fasta"))
+            .exists()
+    );
+}
+
+#[test]
+fn target_search_limits_are_reported_even_without_emitted_records() {
+    let fixture = Fixture::new();
+    let directory = tempfile::tempdir().unwrap();
+    let mut command = Command::new(env!("CARGO_BIN_EXE_sharkmer"));
+    command.args([
+        "-k",
+        "19",
+        "--threads",
+        "1",
+        "--max-dfs-states",
+        "1",
+        "-s",
+        SAMPLE,
+        "-o",
+    ]);
+    command.arg(directory.path());
+    for specification in &fixture.primers {
+        command.args(["--pcr-primers", specification]);
+    }
+    let output = command.arg(&fixture.input).output().unwrap();
+    assert!(
+        output.status.success(),
+        "{}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    let stats = read_yaml(&directory.path().join(format!("{SAMPLE}.stats.yaml")));
+    let result = gene(&stats, "repeat");
+    assert_eq!(result["n_products"].as_u64(), Some(0));
+    assert_eq!(
+        result["uncertain_products"]["search_limits_reached"].as_bool(),
+        Some(true)
+    );
+    assert!(String::from_utf8_lossy(&output.stderr).contains("Target search limits reached"));
+    assert!(
+        !directory
+            .path()
+            .join(format!("{SAMPLE}_repeat.fasta"))
             .exists()
     );
 }
