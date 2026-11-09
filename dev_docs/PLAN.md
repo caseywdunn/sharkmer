@@ -1,5 +1,11 @@
 # Development plan: scalable, reliable sPCR
 
+**Maintenance release 3.2.1 (2026-11-09):** the user authorized the narrow
+Rustls dependency patch in [#167](https://github.com/caseywdunn/sharkmer/issues/167).
+Follow its [scope and release gates](RELEASE_v3.2.1.md). The v3.2 evidence and
+biological-validation deferrals below carry forward; assembly and annotation
+behavior are unchanged.
+
 **Annotation update 2026-11-08:** the focused v3.2 sequence-annotation revision
 and deferred v4.0 interface cleanup are tracked in [#159](https://github.com/caseywdunn/sharkmer/issues/159)
 and [the implementation plan below](#sequence-annotation-revision-159).

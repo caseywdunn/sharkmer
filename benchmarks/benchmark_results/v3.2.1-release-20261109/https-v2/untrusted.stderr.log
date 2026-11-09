@@ -1,0 +1,14 @@
+info Downloading primer panel from https://127.0.0.1:44851/panel.yaml
+debug connecting to 127.0.0.1:44851 at 127.0.0.1:44851
+debug No cached session for IpAddress(V4(Ipv4Addr([127, 0, 0, 1])))
+debug Not resuming any session
+debug Using ciphersuite TLS13_AES_256_GCM_SHA384
+debug Not resuming
+debug TLS1.3 encrypted extensions: ServerExtensions { unknown_extensions: {10}, .. }
+debug ALPN protocol is None
+Error: Failed to load panel: https://127.0.0.1:44851/panel.yaml
+
+Caused by:
+    0: Failed to download panel from URL: https://127.0.0.1:44851/panel.yaml (network error, timeout, or HTTP failure)
+    1: https://127.0.0.1:44851/panel.yaml: Connection Failed: tls connection init failed: invalid peer certificate: UnknownIssuer
+    2: invalid peer certificate: UnknownIssuer

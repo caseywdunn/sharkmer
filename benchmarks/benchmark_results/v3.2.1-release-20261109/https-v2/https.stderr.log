@@ -1,0 +1,47 @@
+info Downloading primer panel from https://raw.githubusercontent.com/caseywdunn/sharkmer/e914ea728fc5ffc253273560e3de2cfc9395893b/tests/fixtures/test_panel.yaml
+debug connecting to raw.githubusercontent.com:443 at 185.199.108.133:443
+debug No cached session for DnsName("raw.githubusercontent.com")
+debug Not resuming any session
+debug Using ciphersuite TLS13_AES_128_GCM_SHA256
+debug Not resuming
+debug TLS1.3 encrypted extensions: ServerExtensions { server_name_ack: (), unknown_extensions: {}, .. }
+debug ALPN protocol is None
+debug created stream: Stream(RustlsStream)
+debug sending request GET https://raw.githubusercontent.com/caseywdunn/sharkmer/e914ea728fc5ffc253273560e3de2cfc9395893b/tests/fixtures/test_panel.yaml
+debug writing prelude: GET /caseywdunn/sharkmer/e914ea728fc5ffc253273560e3de2cfc9395893b/tests/fixtures/test_panel.yaml HTTP/1.1
+Host: raw.githubusercontent.com
+User-Agent: ureq/2.12.1
+Accept: */*
+accept-encoding: gzip
+debug Streaming body until content-length: 230
+debug adding stream to pool: https|raw.githubusercontent.com|443 -> Stream(RustlsStream)
+debug response 200 to GET https://raw.githubusercontent.com/caseywdunn/sharkmer/e914ea728fc5ffc253273560e3de2cfc9395893b/tests/fixtures/test_panel.yaml
+Panel 'test_panel' from https://raw.githubusercontent.com/caseywdunn/sharkmer/e914ea728fc5ffc253273560e3de2cfc9395893b/tests/fixtures/test_panel.yaml has no `panel_version` field. Versioning is recommended for reproducibility; see PCR.md.
+debug dropping stream: Stream(RustlsStream)
+info sharkmer 3.2.1
+debug Args { input: Some(["/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/https-v2/four-reads.fastq"]), ena: None, sample: Some("https_probe"), outdir: "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/https-v2/https", pcr_panel: [], pcr_panel_file: ["https://raw.githubusercontent.com/caseywdunn/sharkmer/e914ea728fc5ffc253273560e3de2cfc9395893b/tests/fixtures/test_panel.yaml"], pcr_primers: [], list_panels: false, export_panel: None, help_pcr: false, k: 19, chunks: 0, histo_max: 10000, threads: 1, max_reads: Some(3), min_kmer_count: 2, validate_every: 0, verbose: 2, quiet: false, color: Never, cite: false, completions: None, dump_graph: false, validate_panels: false, dry_run: false, node_budget_global: None, max_dfs_states: 100000, max_paths_per_pair: 20, max_node_visits: 2, max_primer_kmers: 40, high_coverage_ratio: 10.0, tip_coverage_fraction: 0.1, read_threading: false, diagnose_withheld_paths: false, emit_uncertain: false, no_emit_uncertain: false, paired: false, cache_dir: Some("/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/https-v2/read-cache"), no_cache: false, clear_cache: false }
+info Ingesting reads...
+info Read 3 reads, 300 B bases
+info Ingested 3 subreads, 300 B bases, 246 kmers
+Only 3 FASTQ records read. sPCR typically needs many more reads to produce results.
+info Time to ingest reads: 0.0s
+info Merging kmer counts...
+info Kmer counts merged, time: 0.0s
+info 82 unique kmers with a total count of 246 were found
+info Per-gene/threshold node budget: 100000 (auto, based on 300 bp ingested; ~0M reads at 150bp). Pin with --node-budget-global.
+info Running in silico PCR...
+info Filtering kmers with count < 2 before PCR
+info [test_panel_18S] Running PCR
+info [test_panel_18S] Preprocessing primers
+info [test_panel_18S] Trimming the primer to ATGCTTGTCTCAAAG so that it is within the trim length of 15.
+debug   There are 991 variants of the primer across 3 mismatch levels
+info [test_panel_18S] Trimming the primer to GTTATTTTTCGTCAC so that it is within the trim length of 15.
+debug   There are 991 variants of the primer across 3 mismatch levels
+info [test_panel_18S] Searching kmers that contain the forward primer variants
+info [test_panel_18S] Searching kmers that contain the reverse primer variants
+info [test_panel_18S] Binding sites were not found for the forward and reverse primers. Abandoning PCR.
+info [test_panel_18S] Suggested actions: optimize primer sequence, or increase the number of reads.
+  - test_panel_18S (no products, forward and reverse primers not found)
+info Done running in silico PCR
+info Writing stats to file...
+sharkmer complete: 3 reads, 0/1 targets with output, 0 records (0 without assembly warnings, 0 with assembly warnings), allocator peak 341.8 KB, 0.2s
