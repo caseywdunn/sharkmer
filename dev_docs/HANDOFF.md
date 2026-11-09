@@ -1,15 +1,26 @@
 # Pause/resume handoff
 
-Updated 2026-11-09. **The user and coding agent assess release readiness here;
-no external collaborator review is required.** This user decision supersedes
-the October collaborator-performance prerequisite. The user subsequently
-approved deferring the new held-out dataset and full nine-panel biological
-campaign from v3.2, keeping them before further assembly tuning or broad
-accuracy claims. They are deferred, not passed. The approved focused final-build
-check is complete and independently verified; the scoped technical assessment
-supports release. The user explicitly authorized the release ritual on
-2026-11-08. Final packaging checks and publication are in progress.
-[PLAN.md](PLAN.md#release-gate) holds the current criteria.
+Updated 2026-11-09. **[v3.2.0 is released](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.0);
+active development is 4.0.0-dev.** The release commit is
+`e914ea728fc5ffc253273560e3de2cfc9395893b`, merged through
+[#166](https://github.com/caseywdunn/sharkmer/pull/166) after release preparation
+in [#165](https://github.com/caseywdunn/sharkmer/pull/165).
+[Tag CI passes](https://github.com/caseywdunn/sharkmer/actions/runs/42625940326), and `v3` was fast-forwarded to the release.
+The local Linux Bioconda build and all four smoke tests pass in job 32662859;
+[Bioconda PR #71407](https://github.com/bioconda/bioconda-recipes/pull/71407) is submitted, with upstream builds/review pending;
+[publication receipts](../benchmarks/benchmark_results/v3.2-release-20261109/PUBLICATION.md) track that follow-up.
+[PLAN.md](PLAN.md) now tracks unfinished v4.0 and later work; the
+[v3.2 release gates](https://github.com/caseywdunn/sharkmer/blob/v3.2.0/dev_docs/PLAN.md#release-gate) are archived at the release tag.
+
+The user and coding agent made the release assessment; no external collaborator
+review was required. The new held-out dataset and full nine-panel biological
+campaign were explicitly deferred from v3.2, not passed. They remain required
+before further assembly tuning or broad accuracy claims. Rustls alert #11,
+GHSA-2mjx-qc3c-rqvc, surfaced after publication and applies to the enabled TLS
+1.3 path. It concerns malformed-handshake handling; transcript authentication
+remains intact. [#167](https://github.com/caseywdunn/sharkmer/issues/167) tracks
+prompt v3.2.1 maintenance. Preconditions for the other three reviewed advisories
+are absent; that does not exempt alert #11.
 
 The [2026-11-09 release-check bundle](../benchmarks/benchmark_results/v3.2-release-20261109/README.md)
 records passing unchanged-development and stable-version checks. Stable job
@@ -18,8 +29,9 @@ tests without skips, 158 references, panel/export/loader checks, and fixture
 oracles. Job 32657614 stopped only at a Clippy suggestion enabled by the corrected
 Rust minimum; the stable rerun uses an equivalent combined `if` condition.
 All three logs and source/tool receipts are retained. This is engineering
-verification, not a rerun of the broader biological comparison. Packaging,
-release-commit/tag CI, and publication remain pending.
+verification, not a rerun of the broader biological comparison. The release
+and tag CI are complete. The local Bioconda package passes its build and smoke
+tests; upstream delivery remains pending.
 
 The reviewed candidate and warning-header revision are integrated into **`dev`**
 at `7dd8e7f`; the final-check evidence is merged at `95f5390`. Record
@@ -28,8 +40,8 @@ The [annotation verification](../benchmarks/benchmark_results/v3.2-sequence-anno
 passes 283 Rust tests per backend, 213 Python tests, formatting/Clippy,
 158 references, and four baseline/candidate mode comparisons. All five
 [merged-commit CI checks](https://github.com/caseywdunn/sharkmer/actions/runs/42512601101)
-pass. Release preparation is now authorized and in progress. The October
-tested source originated on
+pass. Those development commits are included in the published release. The
+October tested source originated on
 `experiment/sequence-first-retention`, base `1ea21c9`; its earlier freezes and
 completion receipts describe that pre-integration state.
 
@@ -67,9 +79,9 @@ confirms results and unchanged source bindings.
 Start with [the current decision ownership](REVIEW_v3.2.md#decision-ownership-2026-11-08)
 and [remaining acceptance boundaries](REVIEW_v3.2.md#remaining-acceptance-boundaries).
 The focused check is complete; no unexpected sequence changes occurred, and
-the independent review supports accepting the measured costs. The user has
-authorized normal release preparation and publication; complete and record the
-final packaging checks before publishing.
+the independent review supported accepting the measured costs for the published
+release. The local Bioconda build/test is complete; record the remaining
+upstream recipe review and channel build outcome in the publication receipts.
 Held-out registration
 means fixing independent biological inputs/truth unused in development; all-panel
 validation means evaluating actual products and negative controls across nine
@@ -463,7 +475,7 @@ documentation snapshots describe their pinned commit, not later handoff edits.
 ## Resume from here
 
 This earlier resume checklist is preserved for provenance. Use the current
-task at the top of this file and [PLAN.md](PLAN.md#release-gate); the
+task at the top of this file and [archived v3.2 gates](https://github.com/caseywdunn/sharkmer/blob/v3.2.0/dev_docs/PLAN.md#release-gate); the
 2026-11-08 user-approved biological-study deferral supersedes the older
 requirements below to complete those studies before v3.2.
 
