@@ -6,7 +6,7 @@ package:
 
 source:
   url: https://github.com/caseywdunn/sharkmer/archive/refs/tags/v{{ version }}.tar.gz
-  sha256: PLACEHOLDER
+  sha256: e8031a7b346303f05e553886d473781b01a1a9c0dda0752d5b4573af6ad6061c
 
 build:
   number: 0

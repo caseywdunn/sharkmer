@@ -1,0 +1,33 @@
+{
+  "version": "3.2.0",
+  "released_commit": "e914ea728fc5ffc253273560e3de2cfc9395893b",
+  "source_url": "https://github.com/caseywdunn/sharkmer/archive/refs/tags/v3.2.0.tar.gz",
+  "source_sha256": "858dac22ea1d05a98a4917706de95e1012385e3d10078f42f7f1f98b0d883e0b",
+  "recipe_sha256": "1f339e7fc154b2a1ed2a548561dcb411568d5746c1e739656245c073bf3bb97e",
+  "build_script_sha256": "6a149ae0ca54190b8b2070ec30c8d0bf63d618e1414b60282d7412e3ce81332d",
+  "job_id": "32662859",
+  "state": "COMPLETED",
+  "exit_code": "0:0",
+  "elapsed": "00:12:47",
+  "allocated_cpus": 2,
+  "max_rss_kib": 8013864,
+  "platform": "linux-64",
+  "conda_build_version": "26.9.1",
+  "rust_compiler": "1.99.1",
+  "environment_file": "build-environment.explicit.txt",
+  "environment_sha256": "98857cbd94657c3d04c8b562fd075a29896ee8b952be7baf2bd42704f0f8a23d",
+  "package": "packages/linux-64/sharkmer-3.2.0-h9bf148f_0.conda",
+  "package_sha256": "66c1ec7e4621dca04d0fc855e9c18c880cd8653ebb4a1d6f174d664faa3f6d0c",
+  "package_bytes": 2136614,
+  "log": "logs/build-32662859.out",
+  "log_sha256": "51713d0c95d7ff30306a91c69370e4517ed62adf95e99007248673eb835d939d",
+  "tests_passed": [
+    "sharkmer --help",
+    "sharkmer --version",
+    "sharkmer --list-panels",
+    "sharkmer --cite"
+  ],
+  "scope": "Local Linux conda build and recipe smoke tests of the published archive; upstream builds and other platforms remain pending.",
+  "auto_upload": false,
+  "generated_at": "2026-11-09T14:04:29.262519+00:00"
+}

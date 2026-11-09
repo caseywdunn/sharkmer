@@ -1,19 +1,21 @@
 # Semantic conventions for sequence annotations
 
-**Status: v3.2 implementation verified, 2026-11-08; v4.0 cleanup remains open.**
+**Status: implemented in v3.2.0, released 2026-11-09; v4.0 cleanup remains open.**
 This is the canonical design guide for sequence annotations in FASTA headers
 and their associated structured evidence. Apply it when adding or revising
 annotations. The [README](../README.md) describes implemented behavior;
 [inclusive output](INCLUSIVE_OUTPUT.md) records the existing output contract.
 
-The v3.2 revision applies these conventions to the unreleased warning
-annotations. Released ordinary-record fields and all sequence identifiers
-remain unchanged. Breaking cleanup of released fields is explicitly scoped
-to v4.0 below. These changes do not alter assembly, sequence delivery, or
-release authorization.
+The v3.2 revision applied these conventions to the new warning annotations
+before they were released. Previously released ordinary-record fields and all
+sequence identifiers remain unchanged. Breaking cleanup of released fields is
+explicitly scoped to v4.0 below. The annotation revision did not alter assembly or sequence
+delivery.
 
 Implementation is tracked in [#159](https://github.com/caseywdunn/sharkmer/issues/159)
-and [PLAN.md](PLAN.md#sequence-annotation-revision-159).
+and the [archived v3.2 implementation plan](https://github.com/caseywdunn/sharkmer/blob/v3.2.0/dev_docs/PLAN.md#sequence-annotation-revision-159).
+[The active plan](PLAN.md#v40--scalable-exact-counting-and-replay) tracks the
+remaining interface cleanup.
 The [verification evidence](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
 records exact compatibility on the bounded fixture and passing local checks.
 

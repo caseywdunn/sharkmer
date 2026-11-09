@@ -1,0 +1,14 @@
+{
+  "package": "packages/linux-64/sharkmer-3.2.1-h9bf148f_0.conda",
+  "package_sha256": "321586cb9823c3eefdf4017a3b38cfdd92009e1bf07f799fe787087b46b1ceeb",
+  "binary_sha256": "aef8d946d2e4efd3a093fa69fa051e7e277fac04c5dc1f472ffb304647222905",
+  "command": [
+    "package-extracted/bin/sharkmer",
+    "--version"
+  ],
+  "stdout": "sharkmer 3.2.1 (https://github.com/caseywdunn/sharkmer)\n",
+  "stderr": "",
+  "exit_code": 0,
+  "expected_stdout": "sharkmer 3.2.1 (https://github.com/caseywdunn/sharkmer)",
+  "passed": true
+}

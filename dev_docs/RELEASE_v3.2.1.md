@@ -1,17 +1,22 @@
 # v3.2.1 security maintenance release
 
-Updated 2026-11-09. **Release authorization, engineering checks, and HTTPS
-compatibility are met; package verification and publication are pending.** The user explicitly requested that the maintenance release
-proceed now. No further release confirmation is required. Track the work in
-[#167](https://github.com/caseywdunn/sharkmer/issues/167).
+Updated 2026-11-09. **[v3.2.1 is released](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1)** at
+`ca7fc4c9d35ae57c767186c475b029358af8c165` via
+[PR #169](https://github.com/caseywdunn/sharkmer/pull/169).
+[Tag CI passes](https://github.com/caseywdunn/sharkmer/actions/runs/42652146001); `v3` has advanced. The user explicitly authorized
+this maintenance release under [#167](https://github.com/caseywdunn/sharkmer/issues/167).
+Postmerge 4.0.0-dev release checks and local package validation pass; the
+upstream recipe update is submitted, with channel delivery pending in the [publication receipts](../benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md).
 
 ## Scope
 
-Update locked Rustls 0.23.37 → 0.23.46 and its required rustls-webpki dependency
+Updated locked Rustls 0.23.37 → 0.23.46 and its required rustls-webpki dependency
 0.103.13 → 0.103.14, together with v3.2.1 release metadata. The inspected lockfile
 diff changes only those two dependency versions and checksums. This patch makes
-no assembly-policy, sequence-annotation, CLI, or output-format change. Keep the
-published v3.2.0 tag immutable and carry the maintenance fix into development.
+no assembly-policy, sequence-annotation, CLI, or output-format change. The
+published v3.2.0 tag remains unchanged; the maintenance fix is retained in the 4.0.0-dev
+integration checkout, whose postmerge checks pass all eight groups in job
+32677833.
 
 The update addresses four version-applicable Rustls advisories:
 
@@ -37,13 +42,16 @@ narrow dependency update.
 | Final source and dependency review | **Met for the tested candidate, 2026-11-09** | [Source receipts](../benchmarks/benchmark_results/v3.2.1-release-20261109/README.md) confirm exactly two dependency updates plus root version metadata; no production-source, panel, schema, test, or check-script changes from v3.2.0. Preserve this scope through the release commit. |
 | Full engineering release check | **Met, 2026-11-09** | [Job 32671325](../benchmarks/benchmark_results/v3.2.1-release-20261109/README.md) passes all eight groups: 283 Rust tests per backend, 213 Python tests without skips, formatting/Clippy, 158 references, ten schemas, nine exports, 19 loader dry runs, and fixture sequence oracles. |
 | HTTPS download compatibility | **Met, 2026-11-09** | [Job 32674065](../benchmarks/benchmark_results/v3.2.1-release-20261109/https-v2/README.md) passes with the engineering-tested binary: pinned HTTPS panel over TLS 1.3, matching three-read local control, and untrusted-certificate rejection before any HTTP request. The earlier harness version assertion failed before network activity and is retained separately. |
-| Local package build and smoke tests | Pending | Build the v3.2.1 recipe and test the installed `--help`, `--version`, `--list-panels`, and `--cite` commands. Bind the tested source archive, recipe, environment, package, and logs. |
-| Publication and upstream delivery | Pending | Record the release commit, merge, tag and tag CI, GitHub release, maintenance/development integration, final source-archive checksum, and upstream Bioconda recipe status. |
+| Local package build and smoke tests | **Met, 2026-11-09** | [Job 32677573](../benchmarks/benchmark_results/v3.2.1-release-20261109/packaging/README.md) builds the published archive with Rust 1.99.1 and passes all four smoke tests. Independent package extraction verifies the exact 3.2.1 banner and package/binary hashes. |
+| Source publication | **Met, 2026-11-09** | [v3.2.1](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1) published at `ca7fc4c9d35ae57c767186c475b029358af8c165`; [tag CI](https://github.com/caseywdunn/sharkmer/actions/runs/42652146001) passes and `v3` has advanced. |
+| Development integration and upstream package delivery | In progress | The restored 4.0.0-dev checkout passes all eight release checks in job 32677833. Local package validation also passes. Final integration verification and upstream delivery remain to be recorded in the [publication receipts](../benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md). |
 
 The [exact-version advisory audit](../benchmarks/benchmark_results/v3.2.1-release-20261109/advisory-audit/advisory-audit.json)
 finds no matching reviewed or unreviewed GitHub advisory for either selected
 dependency version at the recorded query time. Its raw responses are retained;
 this is a dated database check, not a guarantee against unknown vulnerabilities.
+The [post-publication repository receipt](../benchmarks/benchmark_results/v3.2.1-release-20261109/publication-security/security-status.json)
+reports zero open Dependabot alerts and explicitly fixed alerts #8–#11.
 
 The full engineering check and bounded HTTPS check are the verification scope
 for this dependency patch. The user-accepted v3.2 biological scope and its

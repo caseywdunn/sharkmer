@@ -1,14 +1,19 @@
-# v3.2 pre-release review
+# v3.2 release review
 
-Prepared 2026-09-09; status updated 2026-11-09. **Release authorized by the user;
-final packaging checks and publication are in progress.**
+Prepared 2026-09-09; status updated 2026-11-09. This review preserves the
+v3.2.0 biological and engineering evidence. **[v3.2.1](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1) now includes
+the Rustls security maintenance fix**, with [tag CI passing](https://github.com/caseywdunn/sharkmer/actions/runs/42652146001).
+See the [focused release checklist](RELEASE_v3.2.1.md) and
+[publication receipts](../benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md) for current package-delivery status.
+The held-out and full nine-panel biological studies remain explicitly deferred;
+publication and dependency maintenance do not complete them.
 
 ## Decision ownership (2026-11-08)
 
 The user has replaced the collaborator-review prerequisite with assessment by
 the user and coding agent in this session. No external collaborator sign-off
 is required. The user makes the final release decision after the evidence and
-remaining limitations are recorded against the [release gates](PLAN.md#release-gate).
+remaining limitations are recorded against the [archived release gates](https://github.com/caseywdunn/sharkmer/blob/v3.2.0/dev_docs/PLAN.md#release-gate).
 The user subsequently approved deferring the new held-out dataset and full
 nine-panel biological campaign from v3.2, while retaining both before further
 assembly tuning or broad accuracy claims. This is a scope deferral, not
@@ -20,9 +25,13 @@ corrected-panel inventories, 444 raw artifacts, and 141 unchanged source/tool
 bindings. The three longer runtime comparisons increase 0.21–1.45%; Human
 increases 0.04 s, and median RSS changes in all four stay below 0.15%.
 The technical assessment accepts these scoped costs and supports release.
-The user explicitly authorized the release ritual on 2026-11-08. Final packaging
-checks and publication remain to be completed and recorded; no further release
-confirmation is required.
+The user explicitly authorized the release ritual on 2026-11-08; v3.2.0 was
+published on 2026-11-09. Its local Linux Bioconda build/test passes. Rustls
+alert #11, GHSA-2mjx-qc3c-rqvc, surfaced afterward and applied to its enabled TLS
+1.3 path. The subsequently published v3.2.1 updates Rustls and webpki to address
+all four version-applicable advisories under
+[#167](https://github.com/caseywdunn/sharkmer/issues/167). The maintenance patch
+does not change the biological evidence or interface reviewed here.
 
 The warning-header revision is merged into `dev` at `7dd8e7f` via
 [#161](https://github.com/caseywdunn/sharkmer/pull/161). Its
@@ -47,7 +56,8 @@ bundle records production and tooling hashes after the final run. The stable
 binary is `cf4d8f4edf28fddd06e064d6c8d77a8450189a2710c159e584d0a34ebe59652d`.
 Only package metadata and the equivalent guard spelling change from the
 accepted production candidate. This does not rerun or expand the biological
-comparison. Packaging, release-commit/tag CI, and publication remain pending.
+comparison. The source release, tag CI, and local Bioconda build/test are complete;
+upstream recipe delivery remains pending.
 
 ## Current assessment (2026-10-11)
 
@@ -212,8 +222,8 @@ passes; it does not close performance acceptance.
   [results and disposition](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
   preserve every pair and the separate corrected-plant checks. These results
   do not prove statistical equivalence or explain the older timing flags.
-  The user authorized the release ritual on 2026-11-08; final packaging checks
-  and publication remain pending.
+  The user authorized the release ritual on 2026-11-08; publication and tag CI
+  completed on 2026-11-09. Local Bioconda build/test passes; upstream delivery remains pending.
 - **Held-out registration: deferred from v3.2 by the user, 2026-11-08.**
   The work is not completed. Register biological inputs and independent
   truth that were not used to develop or tune the assembly rules, with fixed
@@ -489,8 +499,8 @@ publication hold. The user authorized the release ritual on 2026-11-08.
 
 1. **User review and release authorization (historical hold, now superseded).**
    Publication was not authorized at this checkpoint. The explicit 2026-11-08
-   release instruction satisfies this decision gate; final packaging checks
-   remain required.
+   release instruction satisfied this decision gate, and v3.2.0 was published
+   on 2026-11-09. Local Bioconda validation passes; upstream delivery remains pending.
 2. **Independent held-out registration (#129).** No held-out biological inputs
    or truth have been supplied. Freeze accessions, checksums, subsets, callable
    targets, truth, and tolerances before further assembly-policy tuning. Existing

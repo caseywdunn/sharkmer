@@ -1,0 +1,786 @@
+Running "module reset". Resetting modules to system default. The following $MODULEPATH directories have been removed: None
+2026-11-09T11:19:00-05:00
+conda-build 26.9.1
+cc78d3e802e6ebbcb2a6dced03b2e9926b890556234c8868520f2f837a76ac31  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/recipes/sharkmer/meta.yaml
+6a149ae0ca54190b8b2070ec30c8d0bf63d618e1414b60282d7412e3ce81332d  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/recipes/sharkmer/build.sh
+Adding in variants from internal_defaults
+WARNING: Number of parsed outputs does not match detected raw metadata blocks. Identified output block may be wrong! If you are using Jinja conditionals to include or exclude outputs, consider using `skip: true  # [condition]` instead.
+Attempting to finalize metadata for sharkmer
+Reloading output folder: ...working... done
+Getting pinned dependencies: ...working... done
+Reloading output folder: ...working... done
+Getting pinned dependencies: ...working... done
+BUILD START: ['sharkmer-3.2.1-h9bf148f_0.conda']
+Reloading output folder: ...working... done
+Solving environment (_h_env): ...working... done
+
+## Package Plan ##
+
+  environment location: /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_place
+
+
+The following NEW packages will be INSTALLED:
+
+    _openmp_mutex: 4.5-20_gnu        conda-forge
+    libgcc:        16.2.0-ha9f2e26_7 conda-forge
+    libgomp:       16.2.0-he0feb66_7 conda-forge
+
+Preparing transaction: ...working... done
+Verifying transaction: ...working... done
+Executing transaction: ...working... done
+Reloading output folder: ...working... done
+Solving environment (_build_env): ...working... done
+Reloading output folder: ...working... done
+Solving environment (_test_env): ...working... done
+
+## Package Plan ##
+
+  environment location: /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_build_env
+
+
+The following NEW packages will be INSTALLED:
+
+    _openmp_mutex:                     4.5-20_gnu                  conda-forge
+    binutils_impl_linux-64:            2.46.1-default_hfdba357_103 conda-forge
+    binutils_linux-64:                 2.46.1-default_h4852527_103 conda-forge
+    gcc_impl_linux-64:                 16.2.0-h9891192_7           conda-forge
+    gcc_linux-64:                      16.2.0-h0ab548f_2           conda-forge
+    kernel-headers_linux-64:           5.14.0-he073ed8_3           conda-forge
+    ld_impl_linux-64:                  2.46.1-default_hbd61a6d_103 conda-forge
+    libgcc:                            16.2.0-ha9f2e26_7           conda-forge
+    libgcc-devel_linux-64:             16.2.0-he3ce08f_107         conda-forge
+    libgomp:                           16.2.0-he0feb66_7           conda-forge
+    libsanitizer:                      16.2.0-h3048135_7           conda-forge
+    libstdcxx:                         16.2.0-h934c35e_7           conda-forge
+    libstdcxx-devel_linux-64:          16.2.0-h86e191b_107         conda-forge
+    libzlib:                           1.3.2-h25fd6f3_3            conda-forge
+    rust:                              1.99.1-h5387ef0_0           conda-forge
+    rust-std-x86_64-unknown-linux-gnu: 1.99.1-h480d76f_0           conda-forge
+    rust_linux-64:                     1.99.1-h6463082_0           conda-forge
+    sysroot_linux-64:                  2.34-h087de78_3             conda-forge
+    tzdata:                            2026e-h5d301ff_0            conda-forge
+    zstd:                              1.5.7-hb78ec9c_7            conda-forge
+
+Preparing transaction: ...working... done
+Verifying transaction: ...working... done
+Executing transaction: ...working... done
+Source cache directory is: /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/src_cache
+Downloading source to cache: v3.2.1_e8031a7b34.tar.gz
+Downloading https://github.com/caseywdunn/sharkmer/archive/refs/tags/v3.2.1.tar.gz
+Success
+  Installing sharkmer v3.2.1 (/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/work)
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded fixedbitset v0.4.2
+  Downloaded form_urlencoded v1.2.2
+  Downloaded fxhash v0.2.1
+  Downloaded generic-array v0.14.7
+  Downloaded adler2 v2.0.1
+  Downloaded fs2 v0.4.3
+  Downloaded flate2 v1.1.9
+  Downloaded is_terminal_polyfill v1.70.2
+  Downloaded thiserror v1.0.69
+  Downloaded itertools v0.11.0
+  Downloaded lazy_static v1.5.0
+  Downloaded icu_collections v2.1.1
+  Downloaded indexmap v2.13.0
+  Downloaded getrandom v0.2.17
+  Downloaded indicatif v0.17.11
+  Downloaded itoa v1.0.18
+  Downloaded unicode-ident v1.0.24
+  Downloaded untrusted v0.9.0
+  Downloaded itertools-num v0.1.3
+  Downloaded idna v1.1.0
+  Downloaded idna_adapter v1.2.1
+  Downloaded unsafe-libyaml v0.2.11
+  Downloaded heck v0.5.0
+  Downloaded rawpointer v0.2.1
+  Downloaded libm v0.2.16
+  Downloaded shlex v1.3.0
+  Downloaded simd-adler32 v0.3.8
+  Downloaded strum v0.25.0
+  Downloaded litemap v0.8.1
+  Downloaded strsim v0.11.1
+  Downloaded getrandom v0.3.4
+  Downloaded newtype_derive v0.1.6
+  Downloaded rustc_version v0.1.7
+  Downloaded strum_macros v0.26.4
+  Downloaded number_prefix v0.4.0
+  Downloaded stable_deref_trait v1.2.1
+  Downloaded subtle v2.6.1
+  Downloaded nalgebra-macros v0.1.0
+  Downloaded multimap v0.9.1
+  Downloaded percent-encoding v2.3.2
+  Downloaded rand_chacha v0.3.1
+  Downloaded heck v0.4.1
+  Downloaded potential_utf v0.1.4
+  Downloaded paste v1.0.15
+  Downloaded rand_core v0.6.4
+  Downloaded option-ext v0.2.0
+  Downloaded semver v0.1.20
+  Downloaded icu_properties v2.1.2
+  Downloaded jiff v0.2.23
+  Downloaded rustversion v1.0.22
+  Downloaded strum_macros v0.25.3
+  Downloaded num-rational v0.4.2
+  Downloaded peak_alloc v0.3.0
+  Downloaded sha2 v0.10.9
+  Downloaded ordered-float v3.9.2
+  Downloaded num-integer v0.1.46
+  Downloaded ppv-lite86 v0.2.21
+  Downloaded synstructure v0.13.2
+  Downloaded thiserror-impl v1.0.69
+  Downloaded once_cell v1.21.4
+  Downloaded rustls-pki-types v1.14.0
+  Downloaded num-complex v0.4.6
+  Downloaded unicode-width v0.2.2
+  Downloaded tempfile v3.27.0
+  Downloaded smallvec v1.15.1
+  Downloaded serde_derive v1.0.228
+  Downloaded ahash v0.8.12
+  Downloaded ryu v1.0.23
+  Downloaded getrandom v0.4.2
+  Downloaded log v0.4.29
+  Downloaded matrixmultiply v0.3.10
+  Downloaded rand_distr v0.4.3
+  Downloaded serde_core v1.0.228
+  Downloaded anstyle-parse v1.0.0
+  Downloaded quote v1.0.45
+  Downloaded serde_yaml_ng v0.10.0
+  Downloaded anstyle-parse v0.2.7
+  Downloaded simba v0.6.0
+  Downloaded num-traits v0.2.19
+  Downloaded anstyle v1.0.14
+  Downloaded icu_locale_core v2.1.1
+  Downloaded icu_normalizer v2.1.1
+  Downloaded miniz_oxide v0.8.9
+  Downloaded proc-macro2 v1.0.106
+  Downloaded safe_arch v0.7.4
+  Downloaded icu_provider v2.1.1
+  Downloaded icu_normalizer_data v2.1.1
+  Downloaded crc32fast v1.5.0
+  Downloaded triple_accel v0.4.0
+  Downloaded rustls-webpki v0.103.14
+  Downloaded rayon-core v1.13.0
+  Downloaded memchr v2.8.0
+  Downloaded rand v0.8.6
+  Downloaded serde v1.0.228
+  Downloaded statrs v0.16.1
+  Downloaded hashbrown v0.16.1
+  Downloaded icu_properties_data v2.1.2
+  Downloaded wide v0.7.33
+  Downloaded approx v0.5.1
+  Downloaded rayon v1.11.0
+  Downloaded regex v1.12.3
+  Downloaded portable-atomic v1.13.1
+  Downloaded syn v1.0.109
+  Downloaded crypto-common v0.1.7
+  Downloaded enum-map v2.7.3
+  Downloaded ndarray v0.15.6
+  Downloaded syn v2.0.117
+  Downloaded nalgebra v0.29.0
+  Downloaded bio v1.6.0
+  Downloaded regex-syntax v0.8.10
+  Downloaded zerovec-derive v0.11.2
+  Downloaded rustls v0.23.46
+  Downloaded clap_lex v1.1.0
+  Downloaded find-msvc-tools v0.1.9
+  Downloaded rustix v1.1.4
+  Downloaded bytemuck v1.25.0
+  Downloaded bv v0.11.1
+  Downloaded console v0.15.11
+  Downloaded ureq v2.12.1
+  Downloaded regex-automata v0.4.14
+  Downloaded libc v0.2.183
+  Downloaded petgraph v0.6.5
+  Downloaded anstyle-query v1.1.5
+  Downloaded yoke-derive v0.8.1
+  Downloaded zerofrom v0.1.6
+  Downloaded csv-core v0.1.13
+  Downloaded env_filter v1.0.0
+  Downloaded ring v0.17.14
+  Downloaded dirs-sys v0.5.0
+  Downloaded webpki-roots v0.26.11
+  Downloaded colorchoice v1.0.5
+  Downloaded cpufeatures v0.2.17
+  Downloaded dirs v6.0.0
+  Downloaded zerofrom-derive v0.1.6
+  Downloaded enum-map-derive v0.17.0
+  Downloaded utf8_iter v1.0.4
+  Downloaded cfg-if v1.0.4
+  Downloaded fastrand v2.3.0
+  Downloaded feature-probe v0.1.1
+  Downloaded derive-new v0.6.0
+  Downloaded vec_map v0.8.2
+  Downloaded block-buffer v0.10.4
+  Downloaded errno v0.3.14
+  Downloaded editdistancek v1.0.2
+  Downloaded bit-set v0.5.3
+  Downloaded version_check v0.9.5
+  Downloaded bytecount v0.6.9
+  Downloaded clap_derive v4.6.0
+  Downloaded custom_derive v0.1.7
+  Downloaded linux-raw-sys v0.12.1
+  Downloaded writeable v0.6.2
+  Downloaded bio-types v1.0.4
+  Downloaded equivalent v1.0.2
+  Downloaded digest v0.10.7
+  Downloaded tinystr v0.8.2
+  Downloaded autocfg v1.5.0
+  Downloaded byteorder v1.5.0
+  Downloaded either v1.15.0
+  Downloaded utf8parse v0.2.2
+  Downloaded bit-vec v0.6.3
+  Downloaded yoke v0.8.1
+  Downloaded anstream v0.6.21
+  Downloaded anyhow v1.0.102
+  Downloaded zeroize v1.8.2
+  Downloaded anstream v1.0.0
+  Downloaded crossbeam-deque v0.8.6
+  Downloaded displaydoc v0.2.5
+  Downloaded env_logger v0.11.9
+  Downloaded bitflags v2.11.0
+  Downloaded crossbeam-epoch v0.9.18
+  Downloaded clap v4.6.0
+  Downloaded clap_complete v4.6.0
+  Downloaded zerotrie v0.2.3
+  Downloaded zerovec v0.11.5
+  Downloaded base64 v0.22.1
+  Downloaded typenum v1.19.0
+  Downloaded crossbeam-utils v0.8.21
+  Downloaded url v2.5.8
+  Downloaded cc v1.2.57
+  Downloaded clap_builder v4.6.0
+  Downloaded aho-corasick v1.1.4
+  Downloaded webpki-roots v1.0.6
+  Downloaded zerocopy v0.8.47
+  Downloaded csv v1.4.0
+   Compiling proc-macro2 v1.0.106
+   Compiling quote v1.0.45
+   Compiling unicode-ident v1.0.24
+   Compiling libc v0.2.183
+   Compiling syn v2.0.117
+   Compiling cfg-if v1.0.4
+   Compiling autocfg v1.5.0
+   Compiling libm v0.2.16
+   Compiling num-traits v0.2.19
+   Compiling stable_deref_trait v1.2.1
+   Compiling synstructure v0.13.2
+   Compiling zerovec-derive v0.11.2
+   Compiling zerofrom-derive v0.1.6
+   Compiling yoke-derive v0.8.1
+   Compiling zerofrom v0.1.6
+   Compiling yoke v0.8.1
+   Compiling zerovec v0.11.5
+   Compiling displaydoc v0.2.5
+   Compiling getrandom v0.2.17
+   Compiling zerocopy v0.8.47
+   Compiling typenum v1.19.0
+   Compiling version_check v0.9.5
+   Compiling memchr v2.8.0
+   Compiling serde_core v1.0.228
+   Compiling tinystr v0.8.2
+   Compiling shlex v1.3.0
+   Compiling utf8parse v0.2.2
+   Compiling litemap v0.8.1
+   Compiling find-msvc-tools v0.1.9
+   Compiling writeable v0.6.2
+   Compiling icu_locale_core v2.1.1
+   Compiling cc v1.2.57
+   Compiling zerotrie v0.2.3
+   Compiling potential_utf v0.1.4
+   Compiling serde v1.0.228
+   Compiling icu_normalizer_data v2.1.1
+   Compiling icu_properties_data v2.1.2
+   Compiling icu_collections v2.1.1
+   Compiling icu_provider v2.1.1
+   Compiling ring v0.17.14
+   Compiling ppv-lite86 v0.2.21
+   Compiling aho-corasick v1.1.4
+   Compiling generic-array v0.14.7
+   Compiling rand_core v0.6.4
+   Compiling serde_derive v1.0.228
+   Compiling matrixmultiply v0.3.10
+   Compiling syn v1.0.109
+   Compiling anstyle v1.0.14
+   Compiling bytemuck v1.25.0
+   Compiling rustversion v1.0.22
+   Compiling heck v0.5.0
+   Compiling anstyle-query v1.1.5
+   Compiling paste v1.0.15
+   Compiling crossbeam-utils v0.8.21
+   Compiling regex-syntax v0.8.10
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling colorchoice v1.0.5
+   Compiling zeroize v1.8.2
+   Compiling once_cell v1.21.4
+   Compiling rustls-pki-types v1.14.0
+   Compiling regex-automata v0.4.14
+   Compiling safe_arch v0.7.4
+   Compiling rand_chacha v0.3.1
+   Compiling num-integer v0.1.46
+   Compiling num-complex v0.4.6
+   Compiling semver v0.1.20
+   Compiling smallvec v1.15.1
+   Compiling rawpointer v0.2.1
+   Compiling icu_normalizer v2.1.1
+   Compiling rustc_version v0.1.7
+   Compiling icu_properties v2.1.2
+   Compiling rand v0.8.6
+   Compiling wide v0.7.33
+   Compiling regex v1.12.3
+   Compiling anstyle-parse v1.0.0
+   Compiling approx v0.5.1
+   Compiling thiserror v1.0.69
+   Compiling crc32fast v1.5.0
+   Compiling log v0.4.29
+   Compiling hashbrown v0.16.1
+   Compiling untrusted v0.9.0
+   Compiling equivalent v1.0.2
+   Compiling feature-probe v0.1.1
+   Compiling bv v0.11.1
+   Compiling indexmap v2.13.0
+   Compiling simba v0.6.0
+   Compiling anstream v1.0.0
+   Compiling crossbeam-epoch v0.9.18
+   Compiling nalgebra-macros v0.1.0
+   Compiling rand_distr v0.4.3
+   Compiling idna_adapter v1.2.1
+   Compiling newtype_derive v0.1.6
+   Compiling num-rational v0.4.2
+   Compiling thiserror-impl v1.0.69
+   Compiling rustls v0.23.46
+   Compiling itoa v1.0.18
+   Compiling anyhow v1.0.102
+   Compiling rustix v1.1.4
+   Compiling strsim v0.11.1
+   Compiling percent-encoding v2.3.2
+   Compiling simd-adler32 v0.3.8
+   Compiling lazy_static v1.5.0
+   Compiling ryu v1.0.23
+   Compiling rayon-core v1.13.0
+   Compiling portable-atomic v1.13.1
+   Compiling clap_lex v1.1.0
+   Compiling getrandom v0.3.4
+   Compiling getrandom v0.4.2
+   Compiling either v1.15.0
+   Compiling adler2 v2.0.1
+   Compiling utf8_iter v1.0.4
+   Compiling miniz_oxide v0.8.9
+   Compiling idna v1.1.0
+   Compiling clap_builder v4.6.0
+   Compiling form_urlencoded v1.2.2
+   Compiling nalgebra v0.29.0
+   Compiling crossbeam-deque v0.8.6
+   Compiling rustls-webpki v0.103.14
+   Compiling strum_macros v0.26.4
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling webpki-roots v1.0.6
+   Compiling clap_derive v4.6.0
+   Compiling anstyle-parse v0.2.7
+   Compiling csv-core v0.1.13
+   Compiling ahash v0.8.12
+   Compiling derive-new v0.6.0
+   Compiling enum-map-derive v0.17.0
+   Compiling heck v0.4.1
+   Compiling fixedbitset v0.4.2
+   Compiling linux-raw-sys v0.12.1
+   Compiling bit-vec v0.6.3
+   Compiling byteorder v1.5.0
+   Compiling option-ext v0.2.0
+   Compiling subtle v2.6.1
+   Compiling bitflags v2.11.0
+   Compiling unicode-width v0.2.2
+   Compiling console v0.15.11
+   Compiling dirs-sys v0.5.0
+   Compiling fxhash v0.2.1
+   Compiling bit-set v0.5.3
+   Compiling petgraph v0.6.5
+   Compiling enum-map v2.7.3
+   Compiling strum_macros v0.25.3
+   Compiling bio-types v1.0.4
+   Compiling clap v4.6.0
+   Compiling csv v1.4.0
+   Compiling anstream v0.6.21
+   Compiling webpki-roots v0.26.11
+   Compiling digest v0.10.7
+   Compiling flate2 v1.1.9
+   Compiling statrs v0.16.1
+   Compiling url v2.5.8
+   Compiling itertools v0.11.0
+   Compiling env_filter v1.0.0
+   Compiling ndarray v0.15.6
+   Compiling multimap v0.9.1
+   Compiling vec_map v0.8.2
+   Compiling itertools-num v0.1.3
+   Compiling ordered-float v3.9.2
+   Compiling number_prefix v0.4.0
+   Compiling triple_accel v0.4.0
+   Compiling jiff v0.2.23
+   Compiling unsafe-libyaml v0.2.11
+   Compiling fastrand v2.3.0
+   Compiling bytecount v0.6.9
+   Compiling custom_derive v0.1.7
+   Compiling strum v0.25.0
+   Compiling editdistancek v1.0.2
+   Compiling base64 v0.22.1
+   Compiling cpufeatures v0.2.17
+   Compiling ureq v2.12.1
+   Compiling sha2 v0.10.9
+   Compiling bio v1.6.0
+   Compiling tempfile v3.27.0
+   Compiling serde_yaml_ng v0.10.0
+   Compiling env_logger v0.11.9
+   Compiling indicatif v0.17.11
+   Compiling rayon v1.11.0
+   Compiling clap_complete v4.6.0
+   Compiling dirs v6.0.0
+   Compiling fs2 v0.4.3
+   Compiling peak_alloc v0.3.0
+   Compiling sharkmer v3.2.1 (/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/work)
+    Finished `release` profile [optimized] target(s) in 2m 26s
+  Installing /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_place/bin/sharkmer
+   Installed package `sharkmer v3.2.1 (/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/work)` (executable `sharkmer`)
+Extracting download
+
+Rendered as:
+```yaml
+package:
+  name: sharkmer
+  version: 3.2.1
+source:
+  url: https://github.com/caseywdunn/sharkmer/archive/refs/tags/v3.2.1.tar.gz
+  sha256: e8031a7b346303f05e553886d473781b01a1a9c0dda0752d5b4573af6ad6061c
+build:
+  number: '0'
+  run_exports:
+    - sharkmer >=3.2.1,<4.0a0
+requirements:
+  build:
+    - _openmp_mutex 4.5 20_gnu
+    - binutils_impl_linux-64 2.46.1 default_hfdba357_103
+    - binutils_linux-64 2.46.1 default_h4852527_103
+    - gcc_impl_linux-64 16.2.0 h9891192_7
+    - gcc_linux-64 16.2.0 h0ab548f_2
+    - kernel-headers_linux-64 5.14.0 he073ed8_3
+    - ld_impl_linux-64 2.46.1 default_hbd61a6d_103
+    - libgcc 16.2.0 ha9f2e26_7
+    - libgcc-devel_linux-64 16.2.0 he3ce08f_107
+    - libgomp 16.2.0 he0feb66_7
+    - libsanitizer 16.2.0 h3048135_7
+    - libstdcxx 16.2.0 h934c35e_7
+    - libstdcxx-devel_linux-64 16.2.0 h86e191b_107
+    - libzlib 1.3.2 h25fd6f3_3
+    - rust 1.99.1 h5387ef0_0
+    - rust-std-x86_64-unknown-linux-gnu 1.99.1 h480d76f_0
+    - rust_linux-64 1.99.1 h6463082_0
+    - sysroot_linux-64 2.34 h087de78_3
+    - tzdata 2026e h5d301ff_0
+    - zstd 1.5.7 hb78ec9c_7
+  host:
+    - _openmp_mutex 4.5 20_gnu
+    - libgcc 16.2.0 ha9f2e26_7
+    - libgomp 16.2.0 he0feb66_7
+  run:
+    - libgcc >=16
+  run_constrained:
+    - __glibc >=2.17
+test:
+  commands:
+    - sharkmer --help
+    - sharkmer --version
+    - sharkmer --list-panels
+    - sharkmer --cite
+about:
+  home: https://github.com/caseywdunn/sharkmer
+  summary: Kmer counter and seeded de Bruijn graph assembler for in silico PCR and
+    genome size estimation
+  license: MIT
+  license_file: LICENSE
+extra:
+  additional-platforms:
+    - linux-aarch64
+    - osx-arm64
+  recipe-maintainers:
+    - caseywdunn
+  skip-lints:
+    - compiler_needs_stdlib_c
+  final: true
+  copy_test_source_files: true
+```
+
+source tree in: /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/work
+export PREFIX=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_place
+export BUILD_PREFIX=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_build_env
+export SRC_DIR=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/work
+INFO: activate-binutils_linux-64.sh made the following environmental changes:
++ADDR2LINE=x86_64-conda-linux-gnu-addr2line
++AR=x86_64-conda-linux-gnu-ar
++AS=x86_64-conda-linux-gnu-as
++CXXFILT=x86_64-conda-linux-gnu-c++filt
++ELFEDIT=x86_64-conda-linux-gnu-elfedit
++GPROF=x86_64-conda-linux-gnu-gprof
++LD=x86_64-conda-linux-gnu-ld
++NM=x86_64-conda-linux-gnu-nm
++OBJCOPY=x86_64-conda-linux-gnu-objcopy
++OBJDUMP=x86_64-conda-linux-gnu-objdump
++RANLIB=x86_64-conda-linux-gnu-ranlib
++READELF=x86_64-conda-linux-gnu-readelf
++SIZE=x86_64-conda-linux-gnu-size
++STRINGS=x86_64-conda-linux-gnu-strings
++STRIP=x86_64-conda-linux-gnu-strip
+INFO: activate-gcc_linux-64.sh made the following environmental changes:
++BUILD=x86_64-conda-linux-gnu
++CC=x86_64-conda-linux-gnu-cc
++CC_FOR_BUILD=x86_64-conda-linux-gnu-cc
++CFLAGS=-march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-strong -fno-plt -O2 -ffunction-sections -pipe -fno-merge-constants -isystem $PREFIX/include -fdebug-prefix-map=$SRC_DIR=/usr/local/src/conda/sharkmer-3.2.1 -fdebug-prefix-map=$PREFIX=/usr/local/src/conda-prefix
++CMAKE_ARGS=-DCMAKE_AR=$BUILD_PREFIX/bin/x86_64-conda-linux-gnu-ar -DCMAKE_CXX_COMPILER_AR=$BUILD_PREFIX/bin/x86_64-conda-linux-gnu-gcc-ar -DCMAKE_C_COMPILER_AR=$BUILD_PREFIX/bin/x86_64-conda-linux-gnu-gcc-ar -DCMAKE_RANLIB=$BUILD_PREFIX/bin/x86_64-conda-linux-gnu-ranlib -DCMAKE_CXX_COMPILER_RANLIB=$BUILD_PREFIX/bin/x86_64-conda-linux-gnu-gcc-ranlib -DCMAKE_C_COMPILER_RANLIB=$BUILD_PREFIX/bin/x86_64-conda-linux-gnu-gcc-ranlib -DCMAKE_LINKER=$BUILD_PREFIX/bin/x86_64-conda-linux-gnu-ld -DCMAKE_STRIP=$BUILD_PREFIX/bin/x86_64-conda-linux-gnu-strip -DCMAKE_BUILD_TYPE=Release -DCMAKE_FIND_ROOT_PATH_MODE_PROGRAM=NEVER -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY -DCMAKE_FIND_ROOT_PATH=$PREFIX;$BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot -DCMAKE_INSTALL_PREFIX=$PREFIX -DCMAKE_INSTALL_LIBDIR=lib -DCMAKE_PROGRAM_PATH=$BUILD_PREFIX/bin;$PREFIX/bin
++CMAKE_PREFIX_PATH=$PREFIX:$BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot/usr
++CONDA_BUILD_CROSS_COMPILATION=
++CONDA_BUILD_SYSROOT=$BUILD_PREFIX/x86_64-conda-linux-gnu/sysroot
++CONDA_TOOLCHAIN_BUILD=x86_64-conda-linux-gnu
++CONDA_TOOLCHAIN_HOST=x86_64-conda-linux-gnu
++CPP=x86_64-conda-linux-gnu-cpp
++CPPFLAGS=-DNDEBUG -D_FORTIFY_SOURCE=2 -O2 -isystem $PREFIX/include
++CPP_FOR_BUILD=x86_64-conda-linux-gnu-cpp
++DEBUG_CFLAGS=-march=nocona -mtune=haswell -ftree-vectorize -fPIC -fstack-protector-all -fno-plt -Og -g -Wall -Wextra -fvar-tracking-assignments -ffunction-sections -pipe -fno-merge-constants -isystem $PREFIX/include -fdebug-prefix-map=$SRC_DIR=/usr/local/src/conda/sharkmer-3.2.1 -fdebug-prefix-map=$PREFIX=/usr/local/src/conda-prefix
++DEBUG_CPPFLAGS=-D_DEBUG -D_FORTIFY_SOURCE=2 -Og -isystem $PREFIX/include
++GCC=x86_64-conda-linux-gnu-gcc
++GCC_AR=x86_64-conda-linux-gnu-gcc-ar
++GCC_NM=x86_64-conda-linux-gnu-gcc-nm
++GCC_RANLIB=x86_64-conda-linux-gnu-gcc-ranlib
++HOST=x86_64-conda-linux-gnu
++LDFLAGS=-Wl,-O2 -Wl,--sort-common -Wl,--as-needed -Wl,-z,relro -Wl,-z,now -Wl,--disable-new-dtags -Wl,--gc-sections -Wl,--allow-shlib-undefined -Wl,-rpath,$PREFIX/lib -Wl,-rpath-link,$PREFIX/lib -L$PREFIX/lib
++LDFLAGS_LD=-O2 --sort-common --as-needed -z relro -z now --disable-new-dtags --gc-sections --allow-shlib-undefined -rpath $PREFIX/lib -rpath-link $PREFIX/lib -L$PREFIX/lib
++MESON_ARGS=-Dbuildtype=release --prefix=$PREFIX -Dlibdir=lib
++build_alias=x86_64-conda-linux-gnu
++host_alias=x86_64-conda-linux-gnu
+-BUILD=x86_64-conda_cos6-linux-gnu
+
+Resource usage statistics from building sharkmer:
+   Process count: 8
+   CPU time: Sys=0:00:04.1, User=0:01:32.2
+   Memory: 869.3M
+   Disk usage: 712.8K
+   Time elapsed: 0:02:29.0
+
+
+Packaging sharkmer
+Packaging sharkmer-3.2.1-h9bf148f_0
+number of files: 4
+WARNING :: get_rpaths_raw()=[] and patchelf=['/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_place/lib', '/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_build_env/lib'] disagree for /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_place/bin/sharkmer :: 
+Warning: rpath /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_build_env/lib is outside prefix /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_place (removing it)
+   INFO: sysroot: '/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_build_env/x86_64-conda-linux-gnu/sysroot/' files: '['usr/share/locale/zh_TW/LC_MESSAGES/libc.mo', 'usr/share/locale/zh_CN/LC_MESSAGES/libc.mo', 'usr/share/locale/vi/LC_MESSAGES/libc.mo', 'usr/share/locale/uk/LC_MESSAGES/libc.mo']'
+   INFO (sharkmer,bin/sharkmer): Needed DSO lib/libgcc_s.so.1 found in conda-forge/linux-64::libgcc==16.2.0=ha9f2e26_7
+   INFO (sharkmer,bin/sharkmer): Needed DSO x86_64-conda-linux-gnu/sysroot/lib64/libm.so.6 found in CDT/compiler package conda-forge/noarch::sysroot_linux-64==2.34=h087de78_3
+   INFO (sharkmer,bin/sharkmer): Needed DSO x86_64-conda-linux-gnu/sysroot/lib64/libc.so.6 found in CDT/compiler package conda-forge/noarch::sysroot_linux-64==2.34=h087de78_3
+   INFO (sharkmer,bin/sharkmer): Needed DSO x86_64-conda-linux-gnu/sysroot/lib64/ld-linux-x86-64.so.2 found in CDT/compiler package conda-forge/noarch::sysroot_linux-64==2.34=h087de78_3
+Fixing permissions
+Packaged license file/s.
+INFO :: Time taken to mark (prefix)
+        0 replacements in 0 files was 0.12 seconds
+TEST START: /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/packages/linux-64/sharkmer-3.2.1-h9bf148f_0.conda
+Adding in variants from /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/tmp/tmpnrgn0_5j/info/recipe/conda_build_config.yaml
+Adding in variants from config.variant
+Renaming /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_build_env prefix directory '/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_build_env' to '/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/build_prefix_moved_sharkmer-3.2.1-h9bf148f_0_linux-64'
+shutil.move(/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_build_env prefix)=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_build_env, dest=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/build_prefix_moved_sharkmer-3.2.1-h9bf148f_0_linux-64)
+Renaming work directory '/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/work' to '/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/work_moved_sharkmer-3.2.1-h9bf148f_0_linux-64'
+shutil.move(work)=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/work, dest=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/work_moved_sharkmer-3.2.1-h9bf148f_0_linux-64)
+Reloading output folder: ...working... done
+Solving environment (_test_env): ...working... done
+
+## Package Plan ##
+
+  environment location: /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_test_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_
+
+
+The following NEW packages will be INSTALLED:
+
+    _openmp_mutex: 4.5-20_gnu        conda-forge                                                                                    
+    libgcc:        16.2.0-ha9f2e26_7 conda-forge                                                                                    
+    libgomp:       16.2.0-he0feb66_7 conda-forge                                                                                    
+    sharkmer:      3.2.1-h9bf148f_0  file:///nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/packages
+
+Preparing transaction: ...working... done
+Verifying transaction: ...working... done
+Executing transaction: ...working... done
++ sharkmer --help
++ sharkmer --version
++ sharkmer --list-panels
++ sharkmer --cite
++ exit 0
+export PREFIX=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/_test_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_
+export SRC_DIR=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/test_tmp
+In silico PCR (sPCR) and incremental kmer counting from whole-genome shotgun reads
+
+Usage: sharkmer [OPTIONS] [INPUT]...
+
+Options:
+  -h, --help     Print help
+  -V, --version  Print version
+
+Input:
+  [INPUT]...       FASTQ input files (.fastq or .fastq.gz). Reads from stdin if omitted
+      --ena <ENA>  Stream reads directly from ENA by accession (e.g. SRR5324768)
+
+Output:
+  -s, --sample <SAMPLE>  Sample name (output file prefix; required unless --ena derives it)
+  -o, --outdir <OUTDIR>  Output directory [default: ./]
+
+PCR:
+      --pcr-panel <PCR_PANEL>            Use a preconfigured primer panel (repeatable)
+      --pcr-panel-file <PCR_PANEL_FILE>  Load a primer panel from a YAML file or URL (repeatable)
+      --pcr-primers <PCR_PRIMERS>        Specify a primer pair inline (repeatable, see --help-pcr)
+      --no-emit-uncertain                Exclude sequences with assembly warnings from FASTA output
+
+PCR info:
+      --list-panels                  List available primer panels and exit
+      --export-panel <EXPORT_PANEL>  Export a built-in panel as YAML to stdout and exit
+      --help-pcr                     Show detailed help for --pcr-primers format
+      --dump-graph                   Write assembly graphs as annotated DOT (Graphviz) files
+      --validate-panels              Validate primer panels/primers and exit
+
+Kmer:
+  -k <K>  Kmer length [default: 19]
+
+Incremental counting:
+      --chunks <CHUNKS>        Number of incremental chunks (0 = skip histograms) [default: 0]
+      --histo-max <HISTO_MAX>  Maximum histogram count value [default: 10000]
+
+General:
+  -t, --threads <THREADS>
+          Number of threads [default: 1]
+  -m, --max-reads <MAX_READS>
+          Maximum number of reads to process (default: all)
+      --min-kmer-count <MIN_KMER_COUNT>
+          Minimum kmer count for sPCR (filters low-count kmers before PCR) [default: 2]
+      --validate-every <VALIDATE_EVERY>
+          Validate FASTQ format every N records (0 = first record only) [default: 0]
+  -v, --verbose...
+          Increase verbosity (-v info, -vv debug, -vvv trace)
+  -q, --quiet
+          Suppress all output except errors
+      --color <COLOR>
+          Color output [default: auto] [possible values: auto, always, never]
+      --cite
+          Print citation information and exit
+      --completions <SHELL>
+          Print shell tab-completion script and exit [possible values: bash, elvish, fish, powershell, zsh]
+      --dry-run
+          Validate inputs and print what would happen, then exit
+
+Cache:
+      --cache-dir <CACHE_DIR>  Override cache directory for remote reads
+      --no-cache               Disable read caching (stream directly, do not read from or write to cache)
+      --clear-cache            Delete the read cache directory and exit
+
+Example:
+  Extract cnidarian genes from ENA reads (downloads automatically):
+  sharkmer --ena SRR23143286 --pcr-panel cnidaria -m 1000000 -o output
+
+Output files:
+  {outdir}/{sample}.stats.yaml             Run statistics (always produced)
+
+  PCR:
+  {outdir}/{sample}_{gene}.fasta           sPCR products per gene
+
+  Incremental counting (--chunks > 0):
+  {outdir}/{sample}.histo                  All incremental histograms
+  {outdir}/{sample}.final.histo            Final histogram
+sharkmer 3.2.1 (https://github.com/caseywdunn/sharkmer)
+Available PCR panels (use --export-panel <name> for details):
+
+  angiospermae     v2.0.0    Universal plant primers for chloroplast and ITS products (10 primers)
+  bacteria         v1.0.0    Bacterial 16S metabarcoding primers (6 primers)
+  c_elegans        v1.0.2    Development panel for Caenorhabditis elegans (N2 strain). Exact primers (no degeneracy) for mitochondrial, ribosomal, and single-copy nuclear genes. Designed for benchmarking sPCR recovery of nuclear SCGs. (8 primers)
+  cnidaria         v1.1.2    Universal and custom primers targeting mitochondrial and nuclear products. (7 primers)
+  human            v1.0.2    Human mitochondrial primers from Ramos et al. 2009. doi: 10.1002/elps.200800601 (9 primers)
+  hydrozoa         v1.0.9    Primers targeting mitochondrial and nuclear markers for Hydrozoa (Cnidaria: Hydrozoa), covering hydroids, siphonophores, leptothecates, and trachylines. (4 primers)
+  insecta          v1.0.2    Multiple primer sets, including universal and Drosophila specific, as well as for broad metazoan markers (21 primers)
+  metazoa          v1.0.0    Metazoa 18S metabarcoding primers (7 primers)
+  teleostei        v1.0.2    Universal fish primers for mitochondrial and nuclear products (5 primers)
+sharkmer 3.2.1
+
+If you use sharkmer in published work, please cite:
+
+For in silico PCR:
+
+  Dunn and Church (2026) Sharkmer: repurposing PCR primers for
+  targeted genome assembly using in silico PCR.
+  Bioinformatics, btag163.
+  doi: 10.1093/bioinformatics/btag163
+
+  @article{Dunn2026sharkmer,
+    author = {Dunn, Casey W and Church, Samuel H},
+    title = {Sharkmer: repurposing PCR primers for targeted genome
+             assembly using in silico PCR},
+    journal = {Bioinformatics},
+    pages = {btag163},
+    year = {2026},
+    month = {04},
+    issn = {1367-4811},
+    doi = {10.1093/bioinformatics/btag163}
+  }
+
+For incremental kmer counting:
+
+  Ahuja et al. (2024) Giants among Cnidaria: Large Nuclear Genomes and
+  Rearranged Mitochondrial Genomes in Siphonophores.
+  Genome Biology and Evolution, 16(3).
+  doi: 10.1093/gbe/evae048
+
+  @article{ahuja2024siphonophore,
+    title={Giants among Cnidaria: Large Nuclear Genomes and Rearranged
+           Mitochondrial Genomes in Siphonophores},
+    author={Ahuja, N. and Cao, X. and Schultz, D. T. and Picciani, N. and
+            Lord, A. and Shao, S. and Jia, K. and Burdick, D. R. and
+            Haddock, S. H. D. and Li, Y. and Dunn, C. W.},
+    journal={Genome Biology and Evolution},
+    volume={16},
+    number={3},
+    year={2024},
+    doi={10.1093/gbe/evae048}
+  }
+
+Resource usage statistics from testing sharkmer:
+   Process count: 2
+   CPU time: Sys=-, User=0:00:00.0
+   Memory: 16.0M
+   Disk usage: 2B
+   Time elapsed: 0:00:02.0
+
+
+TEST END: /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/packages/linux-64/sharkmer-3.2.1-h9bf148f_0.conda
+Renaming work directory '/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/work' to '/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/work_moved_sharkmer-3.2.1-h9bf148f_0_linux-64_main_build_loop'
+shutil.move(work)=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/work, dest=/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/conda-bld/sharkmer_1794241152653/work_moved_sharkmer-3.2.1-h9bf148f_0_linux-64_main_build_loop)
+# Automatic uploading is disabled
+# If you want to upload package(s) to anaconda.org later, type:
+
+
+# To have conda build upload to anaconda.org automatically, use
+# conda config --set anaconda_upload yes
+anaconda upload \
+    /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/packaging/packages/linux-64/sharkmer-3.2.1-h9bf148f_0.conda
+anaconda_upload is not set.  Not uploading wheels: []
+
+INFO :: The inputs making up the hashes for the built packages are as follows:
+{
+  "sharkmer-3.2.1-h9bf148f_0.conda": {
+    "recipe": {
+      "c_compiler": "gcc",
+      "target_platform": "linux-64"
+    }
+  }
+}
+
+
+####################################################################################
+Resource usage summary:
+
+Total time: 0:05:32.4
+CPU usage: sys=0:00:04.1, user=0:01:32.2
+Maximum memory usage observed: 869.3M
+Total disk usage observed (not including envs): 712.8K
+Installed package version verified: sharkmer 3.2.1
+2026-11-09T11:24:53-05:00
