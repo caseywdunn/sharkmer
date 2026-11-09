@@ -1,12 +1,12 @@
 # v3.2 release review
 
-Prepared 2026-09-09; status updated 2026-11-09. **[v3.2.0 is released](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.0)
-at `e914ea728fc5ffc253273560e3de2cfc9395893b`.** [Tag CI passes](https://github.com/caseywdunn/sharkmer/actions/runs/42625940326);
-the local Linux Bioconda build and all four smoke tests pass. The upstream
-[recipe PR #71407](https://github.com/bioconda/bioconda-recipes/pull/71407) is submitted; channel builds/review remain pending.
-[Publication receipts](../benchmarks/benchmark_results/v3.2-release-20261109/PUBLICATION.md) track the completed release and remaining
-package delivery. The held-out and full nine-panel biological studies remain
-explicitly deferred; publication does not complete them.
+Prepared 2026-09-09; status updated 2026-11-09. This review preserves the
+v3.2.0 biological and engineering evidence. **[v3.2.1](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1) now includes
+the Rustls security maintenance fix**, with [tag CI passing](https://github.com/caseywdunn/sharkmer/actions/runs/42652146001).
+See the [focused release checklist](RELEASE_v3.2.1.md) and
+[publication receipts](../benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md) for current package-delivery status.
+The held-out and full nine-panel biological studies remain explicitly deferred;
+publication and dependency maintenance do not complete them.
 
 ## Decision ownership (2026-11-08)
 
@@ -26,13 +26,12 @@ bindings. The three longer runtime comparisons increase 0.21–1.45%; Human
 increases 0.04 s, and median RSS changes in all four stay below 0.15%.
 The technical assessment accepts these scoped costs and supports release.
 The user explicitly authorized the release ritual on 2026-11-08; v3.2.0 was
-published on 2026-11-09. Local Linux Bioconda package validation passes; upstream
-recipe delivery remains pending. Rustls alert #11, GHSA-2mjx-qc3c-rqvc, surfaced
-after publication and applies to the enabled TLS 1.3 path. It concerns malformed
-handshake handling; transcript authentication remains intact. Issue
-[#167](https://github.com/caseywdunn/sharkmer/issues/167) tracks prompt v3.2.1
-maintenance. The other three reviewed advisories require configurations absent
-from the program; that assessment does not exempt alert #11.
+published on 2026-11-09. Its local Linux Bioconda build/test passes. Rustls
+alert #11, GHSA-2mjx-qc3c-rqvc, surfaced afterward and applied to its enabled TLS
+1.3 path. The subsequently published v3.2.1 updates Rustls and webpki to address
+all four version-applicable advisories under
+[#167](https://github.com/caseywdunn/sharkmer/issues/167). The maintenance patch
+does not change the biological evidence or interface reviewed here.
 
 The warning-header revision is merged into `dev` at `7dd8e7f` via
 [#161](https://github.com/caseywdunn/sharkmer/pull/161). Its

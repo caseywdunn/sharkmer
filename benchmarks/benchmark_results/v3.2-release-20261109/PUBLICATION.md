@@ -13,7 +13,7 @@ release commit.
 
 The final GitHub source archive used by the local Bioconda recipe has SHA-256
 `858dac22ea1d05a98a4917706de95e1012385e3d10078f42f7f1f98b0d883e0b`.
-The recipe remains at version 3.2.0. Active Cargo development has advanced to
+This records the v3.2.0 recipe as built. Active Cargo development advanced to
 4.0.0-dev, with an empty Unreleased changelog section and the unfinished v4+
 plan retained in [PLAN.md](../../../dev_docs/PLAN.md).
 
@@ -21,7 +21,7 @@ plan retained in [PLAN.md](../../../dev_docs/PLAN.md).
 | --- | --- |
 | Local Linux Bioconda package build and installed-command tests | **Passed**, job 32662859: 12 m 47 s, two CPUs, about 7.64 GiB peak RSS; Rust 1.99.1 and all four smoke tests. [Packaging receipts](packaging/README.md). |
 | Upstream Bioconda recipe pull request | [#71407](https://github.com/bioconda/bioconda-recipes/pull/71407) submitted; upstream CI/review and channel publication pending |
-| Rustls advisory [#167](https://github.com/caseywdunn/sharkmer/issues/167) | Prompt v3.2.1 maintenance follow-up: newly surfaced alert #11, GHSA-2mjx-qc3c-rqvc, applies to the enabled TLS 1.3 path. |
+| Rustls advisory [#167](https://github.com/caseywdunn/sharkmer/issues/167) | Resolved by published v3.2.1: Rustls 0.23.46 and webpki 0.103.14; v3.2.0 remains immutable. |
 | Independent held-out biological registration and full nine-panel campaign, [#129](https://github.com/caseywdunn/sharkmer/issues/129) | Explicitly deferred from v3.2, not completed; required before further assembly-policy tuning or broad accuracy claims |
 
 Local package validation and upstream submission are complete. Upstream
@@ -30,11 +30,16 @@ CI/review and channel availability remain pending. The release retains the scope
 
 The new Rustls alert #11 (GHSA-2mjx-qc3c-rqvc) surfaced after publication and
 applies to Sharkmer's enabled TLS 1.3 path. It concerns malformed-handshake
-handling; transcript authentication remains intact. Issue #167 tracks prompt
-v3.2.1 maintenance. The other three reviewed advisories require configurations
+handling; transcript authentication remains intact. The subsequent v3.2.1
+maintenance release addresses it under #167. The other three reviewed advisories require configurations
 absent from the current program; that assessment does not exempt alert #11.
 
 The returned `4.0.0-dev` checkout also passes all eight release-check groups
 in Slurm job 32665891. Its [log](postrelease/slurm-32665891.out) and
 [accounting](postrelease/sacct.psv) are retained separately. Final PR/ancestry
 verification is recorded on [release issue #164](https://github.com/caseywdunn/sharkmer/issues/164).
+
+The security follow-up is now resolved in [v3.2.1](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1), published at
+`ca7fc4c9d35ae57c767186c475b029358af8c165`. Current package and development
+integration status is tracked in the [v3.2.1 publication receipt](../v3.2.1-release-20261109/PUBLICATION.md).
+All v3.2.0 logs, package receipts, and checksums above retain their original scope.

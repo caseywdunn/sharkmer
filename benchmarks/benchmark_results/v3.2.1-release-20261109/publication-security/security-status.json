@@ -1,0 +1,76 @@
+{
+  "queried_at_utc": "2026-11-09 16:43:18 UTC",
+  "repository": "caseywdunn/sharkmer",
+  "open_alerts_endpoint": "https://api.github.com/repos/caseywdunn/sharkmer/dependabot/alerts?state=open&per_page=100",
+  "open_alerts": [],
+  "reviewed_alerts": [
+    {
+      "dependency": {
+        "manifest_path": "Cargo.lock",
+        "package": {
+          "ecosystem": "rust",
+          "name": "rustls"
+        }
+      },
+      "fixed_at": "2026-11-09T16:10:58Z",
+      "html_url": "https://github.com/caseywdunn/sharkmer/security/dependabot/8",
+      "number": 8,
+      "security_advisory": {
+        "ghsa_id": "GHSA-c8m5-c952-6cm4",
+        "severity": "medium"
+      },
+      "state": "fixed"
+    },
+    {
+      "dependency": {
+        "manifest_path": "Cargo.lock",
+        "package": {
+          "ecosystem": "rust",
+          "name": "rustls"
+        }
+      },
+      "fixed_at": "2026-11-09T16:10:58Z",
+      "html_url": "https://github.com/caseywdunn/sharkmer/security/dependabot/9",
+      "number": 9,
+      "security_advisory": {
+        "ghsa_id": "GHSA-w44r-93j7-qv28",
+        "severity": "low"
+      },
+      "state": "fixed"
+    },
+    {
+      "dependency": {
+        "manifest_path": "Cargo.lock",
+        "package": {
+          "ecosystem": "rust",
+          "name": "rustls"
+        }
+      },
+      "fixed_at": "2026-11-09T16:10:58Z",
+      "html_url": "https://github.com/caseywdunn/sharkmer/security/dependabot/10",
+      "number": 10,
+      "security_advisory": {
+        "ghsa_id": "GHSA-h2v8-394m-p7vv",
+        "severity": "low"
+      },
+      "state": "fixed"
+    },
+    {
+      "dependency": {
+        "manifest_path": "Cargo.lock",
+        "package": {
+          "ecosystem": "rust",
+          "name": "rustls"
+        }
+      },
+      "fixed_at": "2026-11-09T16:10:58Z",
+      "html_url": "https://github.com/caseywdunn/sharkmer/security/dependabot/11",
+      "number": 11,
+      "security_advisory": {
+        "ghsa_id": "GHSA-2mjx-qc3c-rqvc",
+        "severity": "medium"
+      },
+      "state": "fixed"
+    }
+  ]
+}

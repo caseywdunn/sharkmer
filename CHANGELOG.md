@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [3.2.1] - 2026-11-09
+
+### Security
+
+- Update locked Rustls from 0.23.37 to 0.23.46 and rustls-webpki from
+  0.103.13 to 0.103.14 to address four Rustls advisories (#167), including
+  malformed TLS 1.3 handshake handling on the HTTPS download path.
+  Assembly behavior, FASTA annotations, and output formats are unchanged.
+
 ## [3.2.0] - 2026-11-09
 
 Sharkmer 3.2 includes bounded repeat-uncertain hypotheses in the normal FASTA
@@ -391,7 +400,8 @@ details.
 - Bioconda recipe for binary distribution
 - sharkmer_viewer Python tool for histogram visualization
 
-[Unreleased]: https://github.com/caseywdunn/sharkmer/compare/v3.2.0...dev
+[Unreleased]: https://github.com/caseywdunn/sharkmer/compare/v3.2.1...dev
+[3.2.1]: https://github.com/caseywdunn/sharkmer/compare/v3.2.0...v3.2.1
 [3.2.0]: https://github.com/caseywdunn/sharkmer/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/caseywdunn/sharkmer/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/caseywdunn/sharkmer/compare/v2.0.0...v3.0.0

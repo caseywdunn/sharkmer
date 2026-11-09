@@ -1,6 +1,6 @@
 # Development plan: scalable, reliable sPCR
 
-**Active version: 4.0.0-dev. Released baseline: [v3.2.0](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.0) (2026-11-09).**
+**Active version: 4.0.0-dev. Released baseline: [v3.2.1](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1) (2026-11-09).**
 
 This plan tracks unfinished v4.0 and later work. The
 [v3.2 release plan and gate history](https://github.com/caseywdunn/sharkmer/blob/v3.2.0/dev_docs/PLAN.md),
@@ -29,15 +29,10 @@ review is required.
 
 ## Maintenance and distribution follow-up
 
-- [ ] Follow upstream v3.2.0 [Bioconda PR #71407](https://github.com/bioconda/bioconda-recipes/pull/71407) through build review and channel publication.
-  The local Linux package build and all four installed-command tests pass in
-  job 32662859; upstream delivery remains pending. Record completion in the [publication receipts](../benchmarks/benchmark_results/v3.2-release-20261109/PUBLICATION.md).
-- [ ] [#167](https://github.com/caseywdunn/sharkmer/issues/167) — Prompt v3.2.1
-  maintenance for Rustls alert #11, GHSA-2mjx-qc3c-rqvc, which surfaced after
-  publication and applies to the enabled TLS 1.3 path. It concerns malformed
-  handshake handling; transcript authentication remains intact. The other
-  three reviewed advisories require configurations absent from the program;
-  that assessment does not exempt alert #11.
+- [ ] Follow [Bioconda PR #71407](https://github.com/bioconda/bioconda-recipes/pull/71407)
+  through upstream review/builds and channel
+  publication. The local package build and all four smoke tests pass;
+  upstream delivery remains pending. Record completion in the [publication receipts](../benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md).
 
 ## Release strategy
 

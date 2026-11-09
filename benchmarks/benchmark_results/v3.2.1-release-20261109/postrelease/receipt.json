@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "version": "4.0.0-dev",
+  "released_base": "ca7fc4c9d35ae57c767186c475b029358af8c165",
+  "working_tree_merge_in_progress": true,
+  "production_source_changes_from_release": false,
+  "rustls": "0.23.46",
+  "rustls_webpki": "0.103.14",
+  "job_id": 32677833,
+  "state": "COMPLETED",
+  "exit_code": "0:0",
+  "elapsed": "00:01:54",
+  "cpus": 2,
+  "requested_memory_gib": 16,
+  "batch_max_rss_kib": 1473496,
+  "groups_passed": [
+    "metadata",
+    "fmt",
+    "clippy",
+    "rust",
+    "python",
+    "references",
+    "panels",
+    "fixtures"
+  ],
+  "binary_sha256": "2d2fd56904b77ebc7964848268345849d22c654f2f3f9ceae4f19ad6575fb7fc",
+  "raw_log_sha256": "4b63bf2c0a7ebc895b64314b17a59baa80649fab5c2627b1f24018b71b7cd134",
+  "bound_files": {
+    "Cargo.toml": "13989b94606affc77e54b8ee8d8576ba9c06adc91f56052af430abe6e36af5b4",
+    "Cargo.lock": "5f4c9df846e59447857db626fd20397cead7282cae4deee6e3a737b366c31741",
+    "scripts/release_check.py": "b80b4ada711e355fa141cf4c8291489276b146f4b12fcdc32e5998bd3f6c50fc"
+  },
+  "biological_comparison_rerun": false
+}

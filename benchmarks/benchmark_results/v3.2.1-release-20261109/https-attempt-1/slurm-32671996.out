@@ -1,0 +1,18 @@
+Running "module reset". Resetting modules to system default. The following $MODULEPATH directories have been removed: None
+2026-11-09T10:27:29-05:00
+e914ea728fc5ffc253273560e3de2cfc9395893b
+4f53434e73ecfa26bc1ee1f683a6bc4ba02aab712514e57f7269121535943102  Cargo.toml
+7766a1257186ab05696a7adaaeeb4509632ff7a883d86fc0a8763d026c8e6b83  Cargo.lock
+b80b4ada711e355fa141cf4c8291489276b146f4b12fcdc32e5998bd3f6c50fc  scripts/release_check.py
+rustc 1.98.1 (48a229cea 2026-09-01)
+Python 3.14.3
+Traceback (most recent call last):
+  File "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/https_check.py", line 216, in <module>
+    main()
+    ~~~~^^
+  File "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/https_check.py", line 104, in main
+    require(version.stdout.strip() == f"sharkmer {args.expected_version}", "Unexpected binary version")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/https_check.py", line 43, in require
+    raise ValueError(message)
+ValueError: Unexpected binary version

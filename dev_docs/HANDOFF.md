@@ -1,95 +1,31 @@
 # Pause/resume handoff
 
-Updated 2026-11-09. **[v3.2.0 is released](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.0);
+Updated 2026-11-09. **[v3.2.1 is released](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1);
 active development is 4.0.0-dev.** The release commit is
-`e914ea728fc5ffc253273560e3de2cfc9395893b`, merged through
-[#166](https://github.com/caseywdunn/sharkmer/pull/166) after release preparation
-in [#165](https://github.com/caseywdunn/sharkmer/pull/165).
-[Tag CI passes](https://github.com/caseywdunn/sharkmer/actions/runs/42625940326), and `v3` was fast-forwarded to the release.
-The local Linux Bioconda build and all four smoke tests pass in job 32662859;
-[Bioconda PR #71407](https://github.com/bioconda/bioconda-recipes/pull/71407) is submitted, with upstream builds/review pending;
-[publication receipts](../benchmarks/benchmark_results/v3.2-release-20261109/PUBLICATION.md) track that follow-up.
-[PLAN.md](PLAN.md) now tracks unfinished v4.0 and later work; the
-[v3.2 release gates](https://github.com/caseywdunn/sharkmer/blob/v3.2.0/dev_docs/PLAN.md#release-gate) are archived at the release tag.
+`ca7fc4c9d35ae57c767186c475b029358af8c165`, merged through
+[PR #169](https://github.com/caseywdunn/sharkmer/pull/169).
+[Tag CI passes](https://github.com/caseywdunn/sharkmer/actions/runs/42652146001), and `v3` has advanced to this release.
 
-The user and coding agent made the release assessment; no external collaborator
-review was required. The new held-out dataset and full nine-panel biological
-campaign were explicitly deferred from v3.2, not passed. They remain required
-before further assembly tuning or broad accuracy claims. Rustls alert #11,
-GHSA-2mjx-qc3c-rqvc, surfaced after publication and applies to the enabled TLS
-1.3 path. It concerns malformed-handshake handling; transcript authentication
-remains intact. [#167](https://github.com/caseywdunn/sharkmer/issues/167) tracks
-prompt v3.2.1 maintenance. Preconditions for the other three reviewed advisories
-are absent; that does not exempt alert #11.
+The security patch under [#167](https://github.com/caseywdunn/sharkmer/issues/167)
+updates Rustls to 0.23.46 and rustls-webpki to 0.103.14. The full engineering
+suite and bounded HTTPS/certificate checks pass; assembly, annotations, and
+output formats are unchanged. The patched dependencies are retained in the
+4.0.0-dev integration checkout, whose postmerge release checks pass all eight
+groups in job 32677833.
+[Release evidence](RELEASE_v3.2.1.md) preserves the exact scope and receipts.
+The post-publication API receipt records zero open Dependabot alerts, with
+alerts #8–#11 explicitly fixed.
 
-The [2026-11-09 release-check bundle](../benchmarks/benchmark_results/v3.2-release-20261109/README.md)
-records passing unchanged-development and stable-version checks. Stable job
-32659082 passes all eight groups with 283 Rust tests per backend, 213 Python
-tests without skips, 158 references, panel/export/loader checks, and fixture
-oracles. Job 32657614 stopped only at a Clippy suggestion enabled by the corrected
-Rust minimum; the stable rerun uses an equivalent combined `if` condition.
-All three logs and source/tool receipts are retained. This is engineering
-verification, not a rerun of the broader biological comparison. The release
-and tag CI are complete. The local Bioconda package passes its build and smoke
-tests; upstream delivery remains pending.
+The local v3.2.1 Bioconda build and all four smoke tests pass in job 32677573;
+independent extraction verifies the exact 3.2.1 version banner. [Bioconda PR #71407](https://github.com/bioconda/bioconda-recipes/pull/71407) now targets 3.2.1; upstream CI/review and channel availability remain pending. [Publication receipts](../benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md) track these steps and postrelease
+verification. [PLAN.md](PLAN.md) retains unfinished v4.0 and later tasks.
 
-The reviewed candidate and warning-header revision are integrated into **`dev`**
-at `7dd8e7f`; the final-check evidence is merged at `95f5390`. Record
-`git rev-parse HEAD` with any further evaluation results.
-The [annotation verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
-passes 283 Rust tests per backend, 213 Python tests, formatting/Clippy,
-158 references, and four baseline/candidate mode comparisons. All five
-[merged-commit CI checks](https://github.com/caseywdunn/sharkmer/actions/runs/42512601101)
-pass. Those development commits are included in the published release. The
-October tested source originated on
-`experiment/sequence-first-retention`, base `1ea21c9`; its earlier freezes and
-completion receipts describe that pre-integration state.
-
-Plant panel 2.0.0 uses published 6R and two exact public references. In the
-eight reviewed before/after runs, Liriodendron trnV-atpE changes from 41
-uncertain hypotheses to one exact-reference 909 bp standard product; Acer
-changes from no product to one 929 bp standard product matching the related
-Acer opalus reference. Both synthetic positives pass; all nine other targets
-retain their sequences, statuses and diagnostics. Assembly, admission,
-retention and inclusive output policy are unchanged.
-
-The October derived inventory combined those two corrected plant runs with
-eight saved samples. The November
-[final check](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
-now freshly reproduces both inventories with the exact tested candidate:
-326 records with historical panels and 287 (66 ordinary, 221 with warnings)
-with corrected panels. All 86 historical identities remain, with zero lost
-and 22 carrying warnings. Source, input, and output receipts are unchanged
-and independently verified across all 32 invocations.
-
-The four-flag runtime investigation and bounded Human output-location check
-are complete and independently reviewed. The Human diagnostic shows a
-release-to-retention wall increase of 0.43 s with NFS output and 0.04 s locally;
-historical causality remains unresolved. The new matched final check finds
-Human +0.04 s on NFS, Rhopilema +0.06 s, Liriodendron +0.43 s, and Heliconius
-+0.40 s. The three longer workloads increase 0.21–1.45%; all four median RSS
-changes are below 0.15%. These scoped costs are acceptable for release;
-there is no all-platform or statistical-equivalence claim.
-Minimum rand/webpki security patches are applied. All 11 October local gates
-pass: 280 Rust tests per backend, 200 Python tests with no skips, 158 public
-references, panel/schema/fixture checks and all eight plant runs. The
-[independent terminal review](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/independent_results_review.json)
-confirms results and unchanged source bindings.
-
-Start with [the current decision ownership](REVIEW_v3.2.md#decision-ownership-2026-11-08)
-and [remaining acceptance boundaries](REVIEW_v3.2.md#remaining-acceptance-boundaries).
-The focused check is complete; no unexpected sequence changes occurred, and
-the independent review supported accepting the measured costs for the published
-release. The local Bioconda build/test is complete; record the remaining
-upstream recipe review and channel build outcome in the publication receipts.
-Held-out registration
-means fixing independent biological inputs/truth unused in development; all-panel
-validation means evaluating actual products and negative controls across nine
-panels, beyond schema/loader checks. Those two campaigns are deferred from
-v3.2; the work and the independent Agalma ITS reference remain outstanding
-under #129. The [October source archive](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz)
-preserves its earlier tested state. Final-check results are now retained
-separately; no biological study is represented as completed by the deferral.
+The held-out dataset and full nine-panel biological campaign remain explicitly
+deferred under [#129](https://github.com/caseywdunn/sharkmer/issues/129), not passed.
+They are required before further assembly-policy tuning or broad accuracy
+claims. The maintenance patch does not repeat or expand the
+[v3.2 biological comparison](REVIEW_v3.2.md). No external collaborator review
+is required; the user and coding agent own the assessment.
 
 ## Earlier checkpoints
 
