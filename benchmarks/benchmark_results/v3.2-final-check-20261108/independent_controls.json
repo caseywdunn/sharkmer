@@ -1,0 +1,35 @@
+{
+  "status": "pass",
+  "reviewer": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/review_results.py",
+    "sha256": "d2aaeae568794d2c69555bc929a0cb93390619020b3806e93ac265217878d7cb",
+    "size_bytes": 22598
+  },
+  "checks": [
+    "raw_legacy_SRR9278435",
+    "raw_legacy_SRR25099394",
+    "raw_legacy_SRR8617500",
+    "raw_legacy_SRR17535371",
+    "raw_legacy_SRR22396603",
+    "raw_legacy_SRR25378184",
+    "raw_legacy_ERR14009273",
+    "raw_legacy_SRR31887760",
+    "raw_legacy_SRR1057608",
+    "raw_legacy_SRR27962769",
+    "raw_schema3_candidate",
+    "reject_record_sha",
+    "reject_record_id",
+    "reject_record_class",
+    "reject_record_order",
+    "reject_ordinary_field",
+    "reject_counts",
+    "reject_target_status",
+    "reject_target_lengths",
+    "reject_malformed_header",
+    "reject_malformed_header",
+    "reject_duplicate_yaml",
+    "independent_median"
+  ],
+  "count": 23,
+  "scope_note": "23 primitive raw-output/oracle checks passed before additive execution-file receipt comparison; final source syntax check passes; no benchmarks rerun."
+}

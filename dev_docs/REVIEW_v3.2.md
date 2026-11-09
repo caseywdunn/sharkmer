@@ -8,8 +8,18 @@ The user has replaced the collaborator-review prerequisite with assessment by
 the user and coding agent in this session. No external collaborator sign-off
 is required. The user makes the final release decision after the evidence and
 remaining limitations are recorded against the [release gates](PLAN.md#release-gate).
-This changes who makes the decision; it does not mark performance accepted,
-complete biological validation, or waive an unmet gate.
+The user subsequently approved deferring the new held-out dataset and full
+nine-panel biological campaign from v3.2, while retaining both before further
+assembly tuning or broad accuracy claims. This is a scope deferral, not
+completed biological validation. The approved
+[focused final-build check](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+now passes all 32 invocations. Independent review verifies all 86 historical
+identities, expected warnings, exact 326-record historical and 287-record
+corrected-panel inventories, 444 raw artifacts, and 141 unchanged source/tool
+bindings. The three longer runtime comparisons increase 0.21–1.45%; Human
+increases 0.04 s, and median RSS changes in all four stay below 0.15%.
+The technical assessment accepts these scoped costs and supports release.
+Final user authorization to publish remains separate.
 
 The warning-header revision is merged into `dev` at `7dd8e7f` via
 [#161](https://github.com/caseywdunn/sharkmer/pull/161). Its
@@ -172,23 +182,31 @@ passes; it does not close performance acceptance.
 
 ### Remaining acceptance boundaries
 
-- **Performance acceptance: not met.** The user and coding agent assess the
-  recorded runtime/RSS findings and final-build evidence, then record which
-  costs are accepted and which need further measurement or correction. This
-  decision requires no collaborator review. Final user release authorization
-  remains separate and has not been given.
-- **Held-out registration: not met.** Register biological inputs and independent
+- **Focused recovery/performance review: met 2026-11-08.** All 32 invocations
+  and independent result checks pass. The measured costs are acceptable for
+  the agreed scope: Human's percentage flag is a 40 ms median increase with
+  overlapping ranges; the longer workloads increase 0.21–1.45%, and all four
+  median RSS increases stay below 0.15%. The
+  [results and disposition](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+  preserve every pair and the separate corrected-plant checks. These results
+  do not prove statistical equivalence or explain the older timing flags.
+  Final user release authorization remains separate.
+- **Held-out registration: deferred from v3.2 by the user, 2026-11-08.**
+  The work is not completed. Register biological inputs and independent
   truth that were not used to develop or tune the assembly rules, with fixed
   checksums, subsets, callable targets, and tolerances. "Independent" describes
   the evidence, not a requirement for an external reviewer. The 118-target
-  matrix and plant replays remain calibration/regression evidence.
-- **All-panel biological validation: not met.** Evaluate actual emitted products
+  matrix and plant replays remain calibration/regression evidence. Retain this
+  requirement before further assembly tuning or broad accuracy claims.
+- **All-panel biological validation: deferred from v3.2 by the user, 2026-11-08.**
+  The work is not completed. Evaluate actual emitted products
   and negative controls across all nine panels, including gene identity and
   whole-product alignment coverage. Loading panels and validating their schemas
   do not test those biological outcomes. The
   default all-panel script expands to 100 sample/depth invocations, plus the
   reference example; schema/loader checks are a separate, smaller gate.
-  Register and bound any wider run before executing it.
+  Register and bound any wider run before executing it; retain this evaluation
+  before further assembly tuning or broad accuracy claims.
 - Linux and macOS CI pass on the merged November candidate. Slurm memory limits do not establish
   performance on a physical 16 GB laptop; that remains a hardware claim to test,
   not a new implied release requirement.
@@ -440,9 +458,10 @@ commands. This is calibration/regression evidence only, not held-out validation.
 This original gate inventory is retained for provenance. The current
 assessment above records completed recovery, runtime investigation, dependency
 patches and local checks. The user and coding agent own the current acceptance
-decisions; held-out/wider biological evaluation and explicit release
-authorization remain separate. This historical inventory does not reinstate
-the superseded collaborator-review prerequisite.
+decisions; the 2026-11-08 user-approved deferral removes held-out registration
+and the full all-panel biological campaign from v3.2 release prerequisites.
+They remain unfinished scientific work. This historical inventory does not
+reinstate those superseded prerequisites or collaborator review.
 
 1. **User review and release authorization.** Do not merge to `master`, tag,
    create a GitHub release, or publish the Bioconda recipe in this task.

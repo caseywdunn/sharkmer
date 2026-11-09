@@ -1,0 +1,70 @@
+{
+  "legacy_capture_replays": [
+    "SRR9278435",
+    "SRR25099394",
+    "SRR8617500",
+    "SRR17535371",
+    "SRR22396603",
+    "SRR25378184",
+    "ERR14009273",
+    "SRR31887760",
+    "SRR1057608",
+    "SRR27962769"
+  ],
+  "negative_controls": [
+    {
+      "case": "lost sequence",
+      "error": "Repeated output is unstable",
+      "rejected": true
+    },
+    {
+      "case": "unstable classes",
+      "error": "Repeated output is unstable",
+      "rejected": true
+    },
+    {
+      "case": "incomplete run",
+      "error": "Incomplete final comparison",
+      "rejected": true
+    }
+  ],
+  "resource_flag_control": "10% wall flagged, equal RSS unflagged",
+  "sources": [
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/run_check.py",
+      "sha256": "68ded3ac28494cd3f447319c3e4a4ce6e2c82326ce8b19c156f91649e8536783",
+      "size_bytes": 21876
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/prepare_protocol.py",
+      "sha256": "5e3e83fab45b9b9c00b8eaa5c16c69758b8b5dc34aa683c9e9617169a4b37e4d",
+      "size_bytes": 7307
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/check_controls.py",
+      "sha256": "72e84e007a28300b95c141dc00470b9d0ab9f789c50c71176c9708a38023f32c",
+      "size_bytes": 3791
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-final-check-20261108/inputs/input_inventory.json",
+      "sha256": "b33d5d39d2fa0a8ca88a5f47a0618345e299ac00d4a954a71d9c5435cc93804d",
+      "size_bytes": 347307
+    }
+  ],
+  "status": "pass",
+  "synthetic_summary_totals": {
+    "corrected_panel_inventory": {
+      "records": 287,
+      "standard": 66,
+      "warning": 221
+    },
+    "historical_panel_inventory": {
+      "records": 326,
+      "standard": 64,
+      "warning": 262
+    },
+    "released_identities": 86,
+    "retained_identities": 86,
+    "retained_with_warning": 22
+  }
+}
