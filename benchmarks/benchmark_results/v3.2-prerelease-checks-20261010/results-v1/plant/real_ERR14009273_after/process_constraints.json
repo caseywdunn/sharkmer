@@ -1,0 +1,36 @@
+{
+  "affinity": [
+    25
+  ],
+  "command": [
+    "/usr/bin/time",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_ERR14009273_after/time.json",
+    "-f",
+    "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+    "--",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+    "-k",
+    "19",
+    "-t",
+    "1",
+    "--chunks",
+    "0",
+    "--max-reads",
+    "1000000",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_ERR14009273_after/outputs/",
+    "-s",
+    "real_ERR14009273_after",
+    "--pcr-panel-file",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-after.yaml",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/ERR14009273.fastq"
+  ],
+  "pid": 168699,
+  "rlimit_as_soft_hard": [
+    12884901888,
+    12884901888
+  ],
+  "status": "pass",
+  "unix_time": 1791726614.8680449
+}

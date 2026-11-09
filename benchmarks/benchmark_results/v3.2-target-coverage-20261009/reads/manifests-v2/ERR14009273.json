@@ -1,0 +1,1593 @@
+{
+  "accession": "ERR14009273",
+  "candidates": [
+    {
+      "assembly_status": "standard",
+      "gene": "angiospermae_ITS",
+      "id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+      "role": "positive_control",
+      "sequence": "ATTTAGAGGAAGGAGAAGTCGTAACAAGGTTTCCGTAGGTGAACCTGCGGAAGGATCATTGTCGAAACCTGCCCAGCAGAACGACCCGCGAACCCGTTTTACCATCGGGGGGAGCAGCACGGGTGCGCAAGCCTCGTGGTACCCCCCCTTGCGGTCGGATCGATGGCACCCGCCCTCGCTCCCTCGGCACAACAACGAACCCCGGCGCGGACCGCGCCAAGGAAGCTTAACAAGAGAGCGTGCCCTTGTCGCCCCGGAAACGGTGCGCGTGCTCGTGGCATTGCCTTCTTTCATTATTTAAAACGACTCTCGGCAACGGATATCTCGGCTCTCGCATCGATGAAGAACGTAGCGAAATGCGATACTTGGTGTGAATTGCAGAATCCCGTGAACCATCGAGTCTTTGAACGCAAGTTGCGCCCCAAGCCGTTAGGCCGAGGGCACGCCTGCCTGGGTGTCACGCATCGTTGCCCCGCCCCAAAAACCCCTCTCCTCGAGAAAGAGACGAGGGGACTTGGCGGTGGGCGGATATTGGCCTCCCGTGTGCCGAACGGCCCGCGGTTGGCCTAAATACGAGTTGTCGTCGGCGATGGACGTCGTGACGTTCGGTGGTCAAATAAACCTCGAGCTCCCGTCACGCGTACGTCGTCGGCCTAATAAGGCTCACCGACCCTGAAGCGCTGTCAACAGCGCACGCATCGCGACCCCAGGTCAGGCGGGATTACCCGCTGAGTTTAAGCATATCAATAAGCG",
+      "sha256": "ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748"
+    },
+    {
+      "assembly_status": "standard",
+      "gene": "angiospermae_atpB-rbcL",
+      "id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+      "role": "positive_control",
+      "sequence": "GGATTTATTCTCATAATAATAATAAAGTGAAATATATCAAAAATTTTTTACAAAATTTATCAAATCCAAAAAGAAAATCTTCGATAGCAAGTTGATCGGTTAATTCAATAAGAAATGGCGGTTAGCACTCGATTTTGTTGATAGCGTCCAACCGAATGCAATTCAATTGTTTATTTATGGAATTTCAATGAAGAAATTTTAAAGTTCAAACAACCCATTTTCAAAATCTCAAGTGGATGAATAAAATCCTTGAGAAAGTATTTGATTTCTCTATCATTACCAGCCATATTATCTACGGAATTCGAACCTGAACTTTTTTTTTTTGATTCATTATTTCTTGTCCCTTATTTCTTATTCTTATTTTAGCATATCAATTTATGTCTAGTCTATTCTTTTTTTATACCCCCCTTTTTATTTTATGGATGAATTCCGCCTATTTTCTTTTCACATCTAGGATTTACATATACAACGTATATTCCTGTCAACGGTCAATTTCTTAATATTTAGATATTTTGATTGAAAAAAAAAGTAAGGGATTCAAAACTTTAAAAACAAGGATTGGGTTGCGCCAGACATATGAAAGAGTATACAATAATGATGTATTTGGTGAATCAAATACCACGGTCTACTAAAAAAAATAAGGAGACGTTCTGATTAGTTGATAATATTAAATGAAATTTTTGTGAAAGATTCCTGTGAAAGGGTTTCATTAACTCCTAATTTATGTCGAGTAGACCTTGTTGCTGCGAGAATTCTTAATTCATGAGTTGTAGGGAGGGACTTATGTCACCACAAACAGAGACTAAAGCAAG",
+      "sha256": "3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07"
+    },
+    {
+      "assembly_status": "standard",
+      "gene": "angiospermae_psbA-trnH",
+      "id": "ERR14009273|angiospermae_psbA-trnH|fba241e53d7da4115ea4edf34b24bd5404b57779c319c206675eb713be2cfd69",
+      "role": "placement_context",
+      "sequence": "ATGAACGTAATGCTCATAATTTCCCTCTAGACCTAGCTGCTATTGAAGCTCCTTCTACAAATGGATAAGATTTCGATCTTCGTGTATACGGGTTTTTGAAAATAACGGAGCAATGCCGATCCTCTTCCAATAAATCGGTATTGCTCCGTTATTTATTAGGTTTTTTTTCAATTTGTTATTTTTGTCCTTTTTTCACTTCAACAAAACACAAAGTTTTTTTATGCCTTTTTATTTAGTATCATATTATTACTACGTGCTAATAATTAAATTAGCCTTTAGTTATTATGACTTTACAGTTTATTATTTTGAGTCAATTTTCTATTTTCTATATAATATAAAAAAGTTTGGAAATTTATGCCTCTTGTCTCTTAATTTGTATCTTCATAATTAAGGTAAGATAAAAAAAAGATGATTAATGGTAGAAATTTCAATCTTTTTATCTTGTAATTTTGTAGCTAGTGGGGGCGGATGTAGCCAAGTGGATCAAGGCAGTGGATTGTGAATCCAC",
+      "sha256": "fba241e53d7da4115ea4edf34b24bd5404b57779c319c206675eb713be2cfd69"
+    },
+    {
+      "assembly_status": "standard",
+      "gene": "angiospermae_psbM-trnD",
+      "id": "ERR14009273|angiospermae_psbM-trnD|0256151a72c59f7b1883a5130b8b7b445e47ba1eda935f9e1fc8c6deea94de62",
+      "role": "placement_context",
+      "sequence": "AACTAGAATGAACAGTGCAGTAGCAATAAATGCGAGAATATTTACTTCCATAATCTCATCGTTTCGTTTTTTTTTTTACTTCGCAATAACTCGGGATTTAATCCCATAGAGATGATAAATCTTTCGTTTGTCAATTCAATGGGATCGATTAGATTTCAATGATATTGAATCGGATCAATATCATGAATAACAATATCTGAGCTATCAAGTCGATTCATCGTCGAGAATTGAATAGTATAACATAGGCGGATCTTTTATCCACATACTAATACAAACTTAGATTCCTGATTCACTCAAAAGAATTCCTTTCCTTTCTATTTTAAGACTTTATTTTGATTTATCATTCTTTTCCATTCTGTCTTTTCGATAACCTACCGCCCTTCTTGTACAATAATCTACCCGCTTTCCACTTCCATTGTTTCCAAACGGTTTACAAATAAACCCAAACAAACAGAAAATAGAAAAAAGGAAGGAGTTAAGTTCTAAACTCCTTTTTTTTAATGATCTAATTTTCTTGGAAAACAAAGAAAAAGAAGGATACCTCGGGGAATGAAACTATACCATTTGTACCCAGTTTAACAGAAAATGGAGAGAGATATTTATGTATTTTTTTATTGGATTTGGATCCGTCGGGACTGACGGGGCTCGAACCCGCAGCTTCCGCCTTGACAGGGCGGTGCTCTGACCAATTGAACTACA",
+      "sha256": "0256151a72c59f7b1883a5130b8b7b445e47ba1eda935f9e1fc8c6deea94de62"
+    },
+    {
+      "assembly_status": "standard",
+      "gene": "angiospermae_trnC-ycf6",
+      "id": "ERR14009273|angiospermae_trnC-ycf6|b97e0ced34ecc6014baf7e8cf4284965a525072dd4597b37204e2190580a16eb",
+      "role": "placement_context",
+      "sequence": "TCAAATCTGGGTGTCGCCTGATTAACAAAAGACAAGACTCAAAATCCCTTATTCTTTATTCCCCTTTGCTGTTATAACTCGCCGAATTTTTCCCAGCAAAACACGCGTAGTCTTGAGACTTTCTTGATTGGAAACAGCTGGGGGTTCCCTTCTTTAAATTAAAGTGCCGTAACTCGTTGTATTTAGGATTCAAGGAAAGATTATAGTAGTGGAAGGGCTATCATATCAAATAAAGAGTTACCGATTTTTTTCCATTACTAATGTCGTGTCTACTGGCCGGGTCTTGAATTAGATTGGATGGATAATTGGCTTTTTTCTTTTACTTAATGATAATGAAGGACAAGAAAAATAAAGAATAGGTATCAGTATTCCTACATATATATATTAGTAGCATTCCCTTTGATACTTCAAAAGAAAAGCGTAACTGCAGTTTAATTTTTCATATTTATTGGAGTCTTTGATCGAGGGTGTTGGGTCAGAATCCCCTTTTGACTCTGCACCAGTGATTCCACTATTATTAATAAACACTAATGGAATAATTCCTTCATATTCAGAGAGATAGGGGACATAATTCACATGGATATAGTAAGTCT",
+      "sha256": "b97e0ced34ecc6014baf7e8cf4284965a525072dd4597b37204e2190580a16eb"
+    },
+    {
+      "assembly_status": "uncertain",
+      "gene": "angiospermae_trnL-F",
+      "id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+      "role": "focused",
+      "sequence": "AGGTCCCCCTATCCCCATCCCCACTTCTCAAACCCTTCCCCATCCCTCCCCATTTCCCCATTTGACTAAAAATTACAAATTAAACTAAAAAAAAAAAAAATAAGAAAAAAAAAAAAAAGAAAATAAAAAAAAATAGAAAAAAAAAAAAAAGAAAATAAAAAAAAATAGAAAAAAAAAAAAAAGTTTAAAAAAAAAAAAAATAAGAAAAAAAAAAAAAAGTTTAAAAAAAAAAAAAATAGAGAAAAAAAAAAAAACAAAGGAAAAAAAAAAAAAAGAGAAGAAAAAAAAAAAAAGAAACAAAAAAAAAAAAAAGAAGGAAAAAAAAAAAAAAGAGAAGAAAAAAAAAAAAAGAAACAAAAAAAAAAAAAAGAAGGAAAAAAAAAAAAAGAATATTAAAAAAAAAAAAAATGGAAAAAAAAAAAAAGTAAAAAAAAAAAAAATAGAGAAAAAAAAAAAAACAAAGGAAAAAAAAAAAAAGAATATTAAAAAAAAAAAAAATGGAAAAAAAAAAAAAGTAAAAAAAAAAAAAGAAATTTTTAAAAAATTAACAACTTTCATCTAACTAATTACCTATAAAAAATTGACACGTGTCACCAATT",
+      "sha256": "a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e"
+    },
+    {
+      "assembly_status": "standard",
+      "gene": "angiospermae_ycf6-psbM",
+      "id": "ERR14009273|angiospermae_ycf6-psbM|76c47b56a55620125381c7eda339dea236734dc3f3e8337a969d1ffecc909bb7",
+      "role": "placement_context",
+      "sequence": "TAAGTCTCGCTTGGGCTGCGTTAATGGTAGTCTTTACATTTTCCCTTTCACTCGTAATATGGGGAAGGAGTGGACTCTAGAGATACTACGAATTGAGTTGGGGAATCAAATTGTATCACTTTTTTATAGATTTTTTATAGATCGTTTTGCAAAGCATAAATAATCTTTATTAATTATTTAATATATTGAATTCATTAATTTAATTCAATTTCGAATTAAAAAATTGAATTAATAAAAATATCTTCATTCCGAAATTGTATTGGCTTTTATTTCTGCTGTGCTTTATTGACGCGTTTGCTATCATGGCTGAAGGATTCAAAATCGATAGGATAACCCCTTTCTAATTTCGAAATCCGAAGAAGTTACCGTAGAACTCCTTGGATTATCTGTAAACCGCGCAATCAATTACTTCTTTGAAATGCTAAAAAAAAGATTACTTTCTAATTTTCTATAAATTAGAAAATAATAAGAGTTGCCTCGCGATTATTTCAGATTGATTGGAATCAACAAAAATCAAATAGATAAAGGAAACAAATAGATGAAGCAAAGAAATAGAATTGAGATACTATGTACATTCCATATATTTAATTGATATTAACCTTTATGAAGATCCATATACATATTGTAGATTGATCTAGATTCAGTTTGTATCTTTCTAGATTACAATAATAAAAATGGATAGTATGGTCGAACGATTCAAAAATGAATCGTTCGACCATACTATTACTATCGGATCTTAGAGGCTACTGCGGATTCTAGTCCGTTCATTGCATTTTGGAAATTGAATTTTTTTTTGAGTTCTTAAATCATTGATAAGAACTAAGAAATCAAGTGTAATTCAAATTAATCACTTTAATTACTTTGACTGACCGTTTTTACATATATTATAAGCAAAAAAGCAGTAGGAACTAGAATGAACAGTGCAGTAGCAATAAAT",
+      "sha256": "76c47b56a55620125381c7eda339dea236734dc3f3e8337a969d1ffecc909bb7"
+    }
+  ],
+  "control_policy": "Two predefined genes per sample; lexicographically first full hash among unchanged standard records",
+  "events": [
+    {
+      "id": "window_e5c0a8fcde166b84",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 229,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 168
+        }
+      ],
+      "sequence": "AAAAAAAAAAAAAAGTTTAAAAAAAAAAAAAATAAGAAAAAAAAAAAAAAGTTTAAAAAAA",
+      "sha256": "e5c0a8fcde166b846db01c11b6206fea9757665f43b47959885f6bb44453b355"
+    },
+    {
+      "id": "window_b5f47f698e4bb387",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 166,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 105
+        }
+      ],
+      "sequence": "AAAAAAAAAAAAAGAAAATAAAAAAAAATAGAAAAAAAAAAAAAAGAAAATAAAAAAAAAT",
+      "sha256": "b5f47f698e4bb387423239520a376fb22ee22519f315ca4ee34dcfd60e6b1079"
+    },
+    {
+      "id": "window_4de04e4251bc1add",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 418,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 357
+        }
+      ],
+      "sequence": "AAAAAAAAAAAAGAAGGAAAAAAAAAAAAAGAATATTAAAAAAAAAAAAAATGGAAAAAAA",
+      "sha256": "4de04e4251bc1add0f157422f92aff3fa58ea9facc8f650aa35d2c9309758206"
+    },
+    {
+      "id": "window_f0b635de67ae493e",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 250,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 189
+        }
+      ],
+      "sequence": "AAAAAAAAAAATAAGAAAAAAAAAAAAAAGTTTAAAAAAAAAAAAAATAGAGAAAAAAAAA",
+      "sha256": "f0b635de67ae493ec1da4cfb6fbd8f6b74aa6bc70a7fd682ed07d6ce38af4ce5"
+    },
+    {
+      "id": "window_4f31a7d4cc5bdc75",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 565,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 504
+        }
+      ],
+      "sequence": "AAAAAAAAAAGTAAAAAAAAAAAAAGAAATTTTTAAAAAATTAACAACTTTCATCTAACTA",
+      "sha256": "4f31a7d4cc5bdc75401008dd13306051d90abb748f8ce82015054a43cba1b0eb"
+    },
+    {
+      "id": "window_11fe3cf8c9b522bd",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 439,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 378
+        }
+      ],
+      "sequence": "AAAAAAAAAGAATATTAAAAAAAAAAAAAATGGAAAAAAAAAAAAAGTAAAAAAAAAAAAA",
+      "sha256": "11fe3cf8c9b522bd5acdd9a5ab86408c51fd4bb0df5a17401d30f3276b8a6cf9"
+    },
+    {
+      "id": "window_9f4cac22b03be83c",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 460,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 399
+        }
+      ],
+      "sequence": "AAAAAAAAATGGAAAAAAAAAAAAAGTAAAAAAAAAAAAAATAGAGAAAAAAAAAAAAACA",
+      "sha256": "9f4cac22b03be83cf8a5c7bd7453c969ebb60c59c98ff888ee6a4f502631883f"
+    },
+    {
+      "id": "window_522413f54c9d6963",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 271,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 210
+        }
+      ],
+      "sequence": "AAAAAAAAGTTTAAAAAAAAAAAAAATAGAGAAAAAAAAAAAAACAAAGGAAAAAAAAAAA",
+      "sha256": "522413f54c9d696353699b5d7d07b559f0dcd11aa707f354a23985fa33d851af"
+    },
+    {
+      "id": "window_8e32d774fa775210",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 691,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 630
+        }
+      ],
+      "sequence": "AAAAAAAATAAGGAGACGTTCTGATTAGTTGATAATATTAAATGAAATTTTTGTGAAAGAT",
+      "sha256": "8e32d774fa7752100ff02db75af6d9124353c7e8925e89a82806b896f835c0aa"
+    },
+    {
+      "id": "window_3f248f9bc3494145",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 187,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 126
+        }
+      ],
+      "sequence": "AAAAAAATAGAAAAAAAAAAAAAAGAAAATAAAAAAAAATAGAAAAAAAAAAAAAAGTTTA",
+      "sha256": "3f248f9bc34941453f444b179e043b663544c6b8a48de24243bdb9ea8e93ce09"
+    },
+    {
+      "id": "window_2497b12c97401175",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 599,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 538
+        }
+      ],
+      "sequence": "AAAAAATTAACAACTTTCATCTAACTAATTACCTATAAAAAATTGACACGTGTCACCAATT",
+      "sha256": "2497b12c9740117565d7d03a9d1cb0acc30ca4b8d75e03446ddbe814a1fb16f8"
+    },
+    {
+      "id": "window_cef81768967f480f",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 397,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 336
+        }
+      ],
+      "sequence": "AAAAAGAATAGACTAGACATAAATTGATATGCTAAAATAAGAATAAGAAATAAGGGACAAG",
+      "sha256": "cef81768967f480fd74a2470a30f79acd11dee4059cef174e989a9426511963a"
+    },
+    {
+      "id": "window_076215abbc08ee80",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 292,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 231
+        }
+      ],
+      "sequence": "AAAAATAGAGAAAAAAAAAAAAACAAAGGAAAAAAAAAAAAAAGAGAAGAAAAAAAAAAAA",
+      "sha256": "076215abbc08ee8091ae99f0e518a9aca10be0ae01b250c4246cacd95fb37008"
+    },
+    {
+      "id": "window_4f4ac9f923068546",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 586,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 525
+        }
+      ],
+      "sequence": "AAAAGAAATTTTTAAAAAATTAACAACTTTCATCTAACTAATTACCTATAAAAAATTGACA",
+      "sha256": "4f4ac9f92306854666c21cb78540019eb0ba4ea438676da2a799cdc2896ed719"
+    },
+    {
+      "id": "window_895225340fb5df38",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 481,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 420
+        }
+      ],
+      "sequence": "AAAAGTAAAAAAAAAAAAAATAGAGAAAAAAAAAAAAACAAAGGAAAAAAAAAAAAAGAAT",
+      "sha256": "895225340fb5df3837fcf749516b049ec59e450e3c05b77df5c6b10c72fdaee8"
+    },
+    {
+      "id": "window_625950616f5a11ea",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 418,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 357
+        }
+      ],
+      "sequence": "AAAATAAAAAGGGGGGTATAAAAAAAGAATAGACTAGACATAAATTGATATGCTAAAATAA",
+      "sha256": "625950616f5a11ea94836a00ac6793cd58b25d832511aa86c1db777c02b86f5b"
+    },
+    {
+      "id": "window_f9022af897291056",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 355,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 294
+        }
+      ],
+      "sequence": "AAACAAAAAAAAAAAAAAGAAGGAAAAAAAAAAAAAAGAGAAGAAAAAAAAAAAAAGAAAC",
+      "sha256": "f9022af897291056bce8c2babe42d7af91f3a6fc4c1892a77cfa967699c5d998"
+    },
+    {
+      "id": "window_c3ba418e82817b30",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 208,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 147
+        }
+      ],
+      "sequence": "AAAGAAAATAAAAAAAAATAGAAAAAAAAAAAAAAGTTTAAAAAAAAAAAAAATAAGAAAA",
+      "sha256": "c3ba418e82817b301ccc6fc2cfc431c87f61aee059ba15899b080835237f802e"
+    },
+    {
+      "id": "window_b43d94d045ae6721",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 586,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 525
+        }
+      ],
+      "sequence": "AAAGTAAGGGATTCAAAACTTTAAAAACAAGGATTGGGTTGCGCCAGACATATGAAAGAGT",
+      "sha256": "b43d94d045ae6721cdb68e288bc30b957e7f2d8e6af014f74d40b2ec2442e2b9"
+    },
+    {
+      "id": "window_086adebfef850b31",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 439,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 378
+        }
+      ],
+      "sequence": "AAATAGGCGGAATTCATCCATAAAATAAAAAGGGGGGTATAAAAAAAGAATAGACTAGACA",
+      "sha256": "086adebfef850b318e593f9619f04604f9ebad89fae2305bc983cb800929db9b"
+    },
+    {
+      "id": "window_6ba4f6f2c214d853",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 313,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 252
+        }
+      ],
+      "sequence": "AACAAAGGAAAAAAAAAAAAAAGAGAAGAAAAAAAAAAAAAGAAACAAAAAAAAAAAAAAG",
+      "sha256": "6ba4f6f2c214d85389f175b7e18e0124ca1c67bf170674c9985e7b002faffad2"
+    },
+    {
+      "id": "window_989bc3beed6774e6",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 565,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 504
+        }
+      ],
+      "sequence": "AACCCAATCCTTGTTTTTAAAGTTTTGAATCCCTTACTTTTTTTTTCAATCAAAATATCTA",
+      "sha256": "989bc3beed6774e651c83cfce0ffc8fe094d5cf7803c8ba95bb5e7b157cfd18b"
+    },
+    {
+      "id": "window_83985ad55c7643f5",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 544,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 483
+        }
+      ],
+      "sequence": "AACGGTCAATTTCTTAATATTTAGATATTTTGATTGAAAAAAAAAGTAAGGGATTCAAAAC",
+      "sha256": "83985ad55c7643f590dd710f3e98bd7e979dcd751c2270bb40171a9963ca9e53"
+    },
+    {
+      "id": "window_5c982c6fdff48533",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 292,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 231
+        }
+      ],
+      "sequence": "AAGAGAGCGTGCCCTTGTCGCCCCGGAAACGGTGCGCGTGCTCGTGGCATTGCCTTCTTTC",
+      "sha256": "5c982c6fdff4853383d162edec6e7f2fe5f8185362e88ca1d13e0527b452efef"
+    },
+    {
+      "id": "window_6b3507a26299a814",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 670,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 609
+        }
+      ],
+      "sequence": "AATCAAATACCACGGTCTACTAAAAAAAATAAGGAGACGTTCTGATTAGTTGATAATATTA",
+      "sha256": "6b3507a26299a8148e7afba2565034e6a3bcfcc1faeb0b0c70cacea0ebbf47d5"
+    },
+    {
+      "id": "window_fef3cc89bd8896fe",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 754,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 693
+        }
+      ],
+      "sequence": "AATTCTCGCAGCAACAAGGTCTACTCGACATAAATTAGGAGTTAATGAAACCCTTTCACAG",
+      "sha256": "fef3cc89bd8896fe1ccbc3e729e28bb8b43a1663a17d7aad5155885716012e99"
+    },
+    {
+      "id": "window_4844876a6c7202cc",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 376,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 315
+        }
+      ],
+      "sequence": "AATTGATATGCTAAAATAAGAATAAGAAATAAGGGACAAGAAATAATGAATCAAAAAAAAA",
+      "sha256": "4844876a6c7202cc75ebaa67a4ba7b50cf67be25eb2cfde76a661bbc82881c4c"
+    },
+    {
+      "id": "window_868cfc38d10fc4c9",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 649,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 588
+        }
+      ],
+      "sequence": "ACAATAATGATGTATTTGGTGAATCAAATACCACGGTCTACTAAAAAAAATAAGGAGACGT",
+      "sha256": "868cfc38d10fc4c91bf4dec72ef5baa88a18e9e56ffa65dc8080456528606c5d"
+    },
+    {
+      "id": "window_efec96fbc400e6ed",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 544,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 483
+        }
+      ],
+      "sequence": "ACCCCTCTCCTCGAGAAAGAGACGAGGGGACTTGGCGGTGGGCGGATATTGGCCTCCCGTG",
+      "sha256": "efec96fbc400e6ed7ea0ca1de74de5acc4a0531ecc8c31a25deed9e1d0c81f5c"
+    },
+    {
+      "id": "window_dfa6910906a0769c",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 124,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 63
+        }
+      ],
+      "sequence": "ACCCGTGCTGCTCCCCCCGATGGTAAAACGGGTTCGCGGGTCGTTCTGCTGGGCAGGTTTC",
+      "sha256": "dfa6910906a0769cbac71a54bfb598c47e9a7286fdab1114f6288d1eea4f9c9d"
+    },
+    {
+      "id": "window_632981ff2191f09d",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 271,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 210
+        }
+      ],
+      "sequence": "ACCGCGCCAAGGAAGCTTAACAAGAGAGCGTGCCCTTGTCGCCCCGGAAACGGTGCGCGTG",
+      "sha256": "632981ff2191f09d4b7a6a58900e98f9bc37345c064d1268ecbd218326c65ce2"
+    },
+    {
+      "id": "window_a55e80e3bfcf48ad",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 103,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 42
+        }
+      ],
+      "sequence": "ACCTGCGGAAGGATCATTGTCGAAACCTGCCCAGCAGAACGACCCGCGAACCCGTTTTACC",
+      "sha256": "a55e80e3bfcf48ad98b6de1df8541130c36eb173dc627c7abf9c02adf6440564"
+    },
+    {
+      "id": "window_f19937bff233036c",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 712,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 651
+        }
+      ],
+      "sequence": "ACCTGGGGTCGCGATGCGTGCGCTGTTGACAGCGCTTCAGGGTCGGTGAGCCTTATTAGGC",
+      "sha256": "f19937bff233036c22a4ba5ddbfd7a1146e15013db0cbe02aa5ccf910c22da41"
+    },
+    {
+      "id": "window_644f6a0eb57b6b84",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 649,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 588
+        }
+      ],
+      "sequence": "ACGACGTACGCGTGACGGGAGCTCGAGGTTTATTTGACCACCGAACGTCACGACGTCCATC",
+      "sha256": "644f6a0eb57b6b848b7398f7285f060adca1673e820203e91de38f5c67efcc20"
+    },
+    {
+      "id": "window_f2c688e2aaf3bc29",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 565,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 504
+        }
+      ],
+      "sequence": "ACGAGGGGACTTGGCGGTGGGCGGATATTGGCCTCCCGTGTGCCGAACGGCCCGCGGTTGG",
+      "sha256": "f2c688e2aaf3bc29984bb4c7b856fc3f6ff2a551364101a63acfd45a958fef99"
+    },
+    {
+      "id": "window_bc84780bb4e7eb38",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 355,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 294
+        }
+      ],
+      "sequence": "ACGGAATTCGAACCTGAACTTTTTTTTTTTGATTCATTATTTCTTGTCCCTTATTTCTTAT",
+      "sha256": "bc84780bb4e7eb38674fe5a54e639cdc18fddc86379d69105de10642e0abd17b"
+    },
+    {
+      "id": "window_47f08c970fedc1d3",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 376,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 315
+        }
+      ],
+      "sequence": "ACGGATATCTCGGCTCTCGCATCGATGAAGAACGTAGCGAAATGCGATACTTGGTGTGAAT",
+      "sha256": "47f08c970fedc1d344b7728a857e62403374e247b05d07a26d4972e995e03b31"
+    },
+    {
+      "id": "window_5bad5eb408b1b8b7",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 187,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 126
+        }
+      ],
+      "sequence": "ACTCGATTTTGTTGATAGCGTCCAACCGAATGCAATTCAATTGTTTATTTATGGAATTTCA",
+      "sha256": "5bad5eb408b1b8b78da6397f19e971c78bfba989cc270ec6045e71f418253f21"
+    },
+    {
+      "id": "window_1d159d0d6925f8dd",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 313,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 252
+        }
+      ],
+      "sequence": "AGAAAGTATTTGATTTCTCTATCATTACCAGCCATATTATCTACGGAATTCGAACCTGAAC",
+      "sha256": "1d159d0d6925f8dd47bf5cefd2698b218f12d0b782764de69d492aac6c42188c"
+    },
+    {
+      "id": "window_e31baa9d6b9a22a8",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 502,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 441
+        }
+      ],
+      "sequence": "AGAGAAAAAAAAAAAAACAAAGGAAAAAAAAAAAAAGAATATTAAAAAAAAAAAAAATGGA",
+      "sha256": "e31baa9d6b9a22a8af85528e22c333e895ee9d4ae043fb3660151885aea54bf0"
+    },
+    {
+      "id": "window_f4880f530aa05f49",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 334,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 273
+        }
+      ],
+      "sequence": "AGAGAAGAAAAAAAAAAAAAGAAACAAAAAAAAAAAAAAGAAGGAAAAAAAAAAAAAAGAG",
+      "sha256": "f4880f530aa05f490e8e020f99c4e832f01bf5b4d23bdd6d64ed142066abf9ce"
+    },
+    {
+      "id": "window_68a3f8cc7fd411c3",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 229,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 168
+        }
+      ],
+      "sequence": "AGATTTTGAAAATGGGTTGTTTGAACTTTAAAATTTCTTCATTGAAATTCCATAAATAAAC",
+      "sha256": "68a3f8cc7fd411c3f09b3ea433c63767e4ddb42f25b2fe9e5e33ef4e33fcc478"
+    },
+    {
+      "id": "window_e109f082b1106840",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 250,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 189
+        }
+      ],
+      "sequence": "AGGATTTTATTCATCCACTTGAGATTTTGAAAATGGGTTGTTTGAACTTTAAAATTTCTTC",
+      "sha256": "e109f082b11068408cb64e07f11372d7d69524fa865527526fe24068bddcecc9"
+    },
+    {
+      "id": "window_7c721ffd734ae4f7",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 61,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 0
+        }
+      ],
+      "sequence": "AGGTCCCCCTATCCCCATCCCCACTTCTCAAACCCTTCCCCATCCCTCCCCATTTCCCCAT",
+      "sha256": "7c721ffd734ae4f7d4e45d966d1765037a8e6c1cf04e2b1238502053a63336fb"
+    },
+    {
+      "id": "window_b52d035ad6b81216",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 292,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 231
+        }
+      ],
+      "sequence": "AGTGGATGAATAAAATCCTTGAGAAAGTATTTGATTTCTCTATCATTACCAGCCATATTAT",
+      "sha256": "b52d035ad6b812168286cd8842d9db8fbcabe41041b7a3fd3162e79fd7d706cc"
+    },
+    {
+      "id": "window_5ec66c14d0f01854",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 82,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 21
+        }
+      ],
+      "sequence": "ATAAAGTGAAATATATCAAAAATTTTTTACAAAATTTATCAAATCCAAAAAGAAAATCTTC",
+      "sha256": "5ec66c14d0f018545e15f646c8219d4c16f6ece49826382f323e9173db1a4ca9"
+    },
+    {
+      "id": "window_da60d5b84ca57589",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 334,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 273
+        }
+      ],
+      "sequence": "ATAATGAATCAAAAAAAAAAAGTTCAGGTTCGAATTCCGTAGATAATATGGCTGGTAATGA",
+      "sha256": "da60d5b84ca5758912b7f6e9d27065c251da84d2dcc26478d8469a8786c89568"
+    },
+    {
+      "id": "window_3e719192d4856d94",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 460,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 399
+        }
+      ],
+      "sequence": "ATACCCCCCTTTTTATTTTATGGATGAATTCCGCCTATTTTCTTTTCACATCTAGGATTTA",
+      "sha256": "3e719192d4856d94578a605552a9a06536a796e7b469e71e5621861ca649c170"
+    },
+    {
+      "id": "window_c26ce40f3af4fb51",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 124,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 63
+        }
+      ],
+      "sequence": "ATCCAAAAAGAAAATCTTCGATAGCAAGTTGATCGGTTAATTCAATAAGAAATGGCGGTTA",
+      "sha256": "c26ce40f3af4fb5104240837cba266fc7333b30ffe15ec8569880852edf41c44"
+    },
+    {
+      "id": "window_6a71c2e47c63e705",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 812,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 751
+        }
+      ],
+      "sequence": "ATTCTTAATTCATGAGTTGTAGGGAGGGACTTATGTCACCACAAACAGAGACTAAAGCAAG",
+      "sha256": "6a71c2e47c63e7053a6f11862cf224cd88016a40aa653b5266a79c3aee712b1d"
+    },
+    {
+      "id": "window_32afe347a5ef57df",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 61,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 0
+        }
+      ],
+      "sequence": "ATTTAGAGGAAGGAGAAGTCGTAACAAGGTTTCCGTAGGTGAACCTGCGGAAGGATCATTG",
+      "sha256": "32afe347a5ef57df8e9a3b1a3e67ac22835a4231f0908b51efb4937ab7ca73eb"
+    },
+    {
+      "id": "window_22dd4b44e4b797a2",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 124,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "-",
+          "role": "candidate_backbone_tile",
+          "start": 63
+        }
+      ],
+      "sequence": "ATTTTCTTTTTTTTTTTTTTCTTATTTTTTTTTTTTTTAGTTTAATTTGTAATTTTTAGTC",
+      "sha256": "22dd4b44e4b797a241ab2677f4b9175fde91a2f3cbb5e1982d09ccaf4b7b57f5"
+    },
+    {
+      "id": "window_294735810e0b6d08",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 103,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 42
+        }
+      ],
+      "sequence": "ATTTTTTACAAAATTTATCAAATCCAAAAAGAAAATCTTCGATAGCAAGTTGATCGGTTAA",
+      "sha256": "294735810e0b6d0887d177440b6a255327d2c68caf476851b0b113a96dc1135f"
+    },
+    {
+      "id": "window_ce3c4eabdfda4bf0",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 250,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 189
+        }
+      ],
+      "sequence": "CAACAACGAACCCCGGCGCGGACCGCGCCAAGGAAGCTTAACAAGAGAGCGTGCCCTTGTC",
+      "sha256": "ce3c4eabdfda4bf010399e883aec64b22580fe83fa955e3f9f0e1a7663a8ea1b"
+    },
+    {
+      "id": "window_9eb02d1a974de436",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 271,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 210
+        }
+      ],
+      "sequence": "CAACCCATTTTCAAAATCTCAAGTGGATGAATAAAATCCTTGAGAAAGTATTTGATTTCTC",
+      "sha256": "9eb02d1a974de4361ac5aeb33fed1d38c491411b9a7a5a578af238cfbe8cf71c"
+    },
+    {
+      "id": "window_a63d5500aa6fdd80",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 166,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 105
+        }
+      ],
+      "sequence": "CAATAAGAAATGGCGGTTAGCACTCGATTTTGTTGATAGCGTCCAACCGAATGCAATTCAA",
+      "sha256": "a63d5500aa6fdd807929704cfa34ac43ff1339ef414bb507e18988b37741bd6c"
+    },
+    {
+      "id": "window_a736edf1506e8459",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 523,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 462
+        }
+      ],
+      "sequence": "CACCGCCAAGTCCCCTCGTCTCTTTCTCGAGGAGAGGGGTTTTTGGGGCGGGGCAACGATG",
+      "sha256": "a736edf1506e8459e77d9666f244ef4bd4fcd4b193002de268c8f79c755fcc5a"
+    },
+    {
+      "id": "window_f54021e9732a6ad9",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 753,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 692
+        }
+      ],
+      "sequence": "CACGCATCGCGACCCCAGGTCAGGCGGGATTACCCGCTGAGTTTAAGCATATCAATAAGCG",
+      "sha256": "f54021e9732a6ad9857452c7a1a05eda39cf7fe0e54500d7a3c24e0cad95ab80"
+    },
+    {
+      "id": "window_bcef0b51a583d8c4",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 502,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 441
+        }
+      ],
+      "sequence": "CACGCCTGCCTGGGTGTCACGCATCGTTGCCCCGCCCCAAAAACCCCTCTCCTCGAGAAAG",
+      "sha256": "bcef0b51a583d8c443a9598b30fcec5946150ee54e9df6bdc7409ba4cc0ab29d"
+    },
+    {
+      "id": "window_5b5e82e96b0797c2",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 82,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 21
+        }
+      ],
+      "sequence": "CACTTCTCAAACCCTTCCCCATCCCTCCCCATTTCCCCATTTGACTAAAAATTACAAATTA",
+      "sha256": "5b5e82e96b0797c22c897fc7d23f984adb41819f4a96e7b24025c8c0991b4b01"
+    },
+    {
+      "id": "window_c294ee7bba6af1b2",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 439,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 378
+        }
+      ],
+      "sequence": "CAGAATCCCGTGAACCATCGAGTCTTTGAACGCAAGTTGCGCCCCAAGCCGTTAGGCCGAG",
+      "sha256": "c294ee7bba6af1b2a456c65de35737e05adbbe353641940585f260b0b3d68518"
+    },
+    {
+      "id": "window_ffd5f21f6b3a33ae",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 481,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 420
+        }
+      ],
+      "sequence": "CAGGAATATACGTTGTATATGTAAATCCTAGATGTGAAAAGAAAATAGGCGGAATTCATCC",
+      "sha256": "ffd5f21f6b3a33aecf62cee53dfd95ab3536c9a2200dee8afc5d97433148252d"
+    },
+    {
+      "id": "window_97adb375ccd79c6f",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 607,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 546
+        }
+      ],
+      "sequence": "CCAAATACATCATTATTGTATACTCTTTCATATGTCTGGCGCAACCCAATCCTTGTTTTTA",
+      "sha256": "97adb375ccd79c6f6728361a450d05017d29b9f21656d13fa04be1ffbb92f840"
+    },
+    {
+      "id": "window_7d2e3fce3027933b",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 208,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 147
+        }
+      ],
+      "sequence": "CCAACCGAATGCAATTCAATTGTTTATTTATGGAATTTCAATGAAGAAATTTTAAAGTTCA",
+      "sha256": "7d2e3fce3027933b2121d7b49917c1674aebfb3d9c4ba616be6359dbc5a0e36f"
+    },
+    {
+      "id": "window_c4688cf92b048709",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 166,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 105
+        }
+      ],
+      "sequence": "CCATCGATCCGACCGCAAGGGGGGGTACCACGAGGCTTGCGCACCCGTGCTGCTCCCCCCG",
+      "sha256": "c4688cf92b04870939e0ad06a43273ddf1f0488d5f53c8393bf41e40535f5002"
+    },
+    {
+      "id": "window_2946a08833e5c350",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 481,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 420
+        }
+      ],
+      "sequence": "CCCAAGCCGTTAGGCCGAGGGCACGCCTGCCTGGGTGTCACGCATCGTTGCCCCGCCCCAA",
+      "sha256": "2946a08833e5c3504f6ed2c29c6b38923cc376ae2a8b13957de2331e25a1c6ff"
+    },
+    {
+      "id": "window_20433e7ff05fa564",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 229,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 168
+        }
+      ],
+      "sequence": "CCCGCCCTCGCTCCCTCGGCACAACAACGAACCCCGGCGCGGACCGCGCCAAGGAAGCTTA",
+      "sha256": "20433e7ff05fa564e22408d1595b1ba05e548f8fbb1712c4a9ec3121d44b9b80"
+    },
+    {
+      "id": "window_9823c0bfc4fdd308",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 145,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 84
+        }
+      ],
+      "sequence": "CCCGCGAACCCGTTTTACCATCGGGGGGAGCAGCACGGGTGCGCAAGCCTCGTGGTACCCC",
+      "sha256": "9823c0bfc4fdd30830a75515f4eaa1be162a9345623b9647b94ba75778a65135"
+    },
+    {
+      "id": "window_b631b35bdbcfb9e6",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 313,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 252
+        }
+      ],
+      "sequence": "CCCGGAAACGGTGCGCGTGCTCGTGGCATTGCCTTCTTTCATTATTTAAAACGACTCTCGG",
+      "sha256": "b631b35bdbcfb9e65c47502ba67a2d62c00e30bc9636fb085aebc9b0e16b672a"
+    },
+    {
+      "id": "window_e07fdaf7c1599e45",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 691,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 630
+        }
+      ],
+      "sequence": "CCCGTCACGCGTACGTCGTCGGCCTAATAAGGCTCACCGACCCTGAAGCGCTGTCAACAGC",
+      "sha256": "e07fdaf7c1599e450301e913c33579998c09f65833cac690519c4a61af7de452"
+    },
+    {
+      "id": "window_6280dda57197a6af",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 775,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 714
+        }
+      ],
+      "sequence": "CCCTACAACTCATGAATTAAGAATTCTCGCAGCAACAAGGTCTACTCGACATAAATTAGGA",
+      "sha256": "6280dda57197a6aff5398c263202db01d6c806fb65987a51920bf9b91fca2e74"
+    },
+    {
+      "id": "window_f829ecb5dc688531",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 607,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 546
+        }
+      ],
+      "sequence": "CCGAACGGCCCGCGGTTGGCCTAAATACGAGTTGTCGTCGGCGATGGACGTCGTGACGTTC",
+      "sha256": "f829ecb5dc688531b8d153f142b167955b56ea6b9196a988d536e466f1f4f48e"
+    },
+    {
+      "id": "window_acf537ceb9a8783d",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 187,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 126
+        }
+      ],
+      "sequence": "CCGAGGGAGCGAGGGCGGGTGCCATCGATCCGACCGCAAGGGGGGGTACCACGAGGCTTGC",
+      "sha256": "acf537ceb9a8783da570cc479eea3774702296a3b61777b5317f7fda5a85322e"
+    },
+    {
+      "id": "window_ff7161de17c79c83",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 796,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 735
+        }
+      ],
+      "sequence": "CCTTGTTGCTGCGAGAATTCTTAATTCATGAGTTGTAGGGAGGGACTTATGTCACCACAAA",
+      "sha256": "ff7161de17c79c8327e6e67c905cf7d9200c7356e91748845e23f0d4d662cbfe"
+    },
+    {
+      "id": "window_c22326a68d9e12ba",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 586,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 525
+        }
+      ],
+      "sequence": "CGACGACAACTCGTATTTAGGCCAACCGCGGGCCGTTCGGCACACGGGAGGCCAATATCCG",
+      "sha256": "c22326a68d9e12baafd412bb7ec31dfa11fb062b9c72390cfe9be584510d9ead"
+    },
+    {
+      "id": "window_63a18ebb1e7124f0",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 334,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 273
+        }
+      ],
+      "sequence": "CGAGAGCCGAGATATCCGTTGCCGAGAGTCGTTTTAAATAATGAAAGAAGGCAATGCCACG",
+      "sha256": "63a18ebb1e7124f0ed60de7e43851d6e55c3a12092079549d2db99579b29b8ba"
+    },
+    {
+      "id": "window_8e12631969491933",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 145,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 84
+        }
+      ],
+      "sequence": "CTAAAAAAAAAAAAAATAAGAAAAAAAAAAAAAAGAAAATAAAAAAAAATAGAAAAAAAAA",
+      "sha256": "8e12631969491933ba6441cae94ace28954dd9ec055cdbfde47da9977fea0b87"
+    },
+    {
+      "id": "window_9161293f391d67e4",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 733,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 672
+        }
+      ],
+      "sequence": "CTCAGCGGGTAATCCCGCCTGACCTGGGGTCGCGATGCGTGCGCTGTTGACAGCGCTTCAG",
+      "sha256": "9161293f391d67e46a93b4858bce5fe7c527f84e6e877633fb0c4414d8fad361"
+    },
+    {
+      "id": "window_2b4f38f07f6f3fc2",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 628,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 567
+        }
+      ],
+      "sequence": "CTCGAGGTTTATTTGACCACCGAACGTCACGACGTCCATCGCCGACGACAACTCGTATTTA",
+      "sha256": "2b4f38f07f6f3fc2ae758e6d5b7f9e3379341d64fdefc34f98376ba13069e878"
+    },
+    {
+      "id": "window_a6372e57d107834f",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 208,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 147
+        }
+      ],
+      "sequence": "CTTGCGGTCGGATCGATGGCACCCGCCCTCGCTCCCTCGGCACAACAACGAACCCCGGCGC",
+      "sha256": "a6372e57d107834fb44e3a288612b793befe4196665734a7543f01126f071cec"
+    },
+    {
+      "id": "window_aaf8758d144de2b8",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 397,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 336
+        }
+      ],
+      "sequence": "GAAAAAAAAAAAAAGAAACAAAAAAAAAAAAAAGAAGGAAAAAAAAAAAAAGAATATTAAA",
+      "sha256": "aaf8758d144de2b86b522f511768fca8d11fb489c4b9d7e0366b0cb909ac4ba6"
+    },
+    {
+      "id": "window_d424ab4ce11b60c4",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 61,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 0
+        }
+      ],
+      "sequence": "GATAAATTTTGTAAAAAATTTTTGATATATTTCACTTTATTATTATTATGAGAATAAATCC",
+      "sha256": "d424ab4ce11b60c4f868761e3fa048b95c64b7df17e893b34ea59d821090b976"
+    },
+    {
+      "id": "window_31ef1ff85eabe3c1",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 397,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 336
+        }
+      ],
+      "sequence": "GATGGTTCACGGGATTCTGCAATTCACACCAAGTATCGCATTTCGCTACGTTCTTCATCGA",
+      "sha256": "31ef1ff85eabe3c10a5275d03445502a0947dfa17ea42e6d22e00f9fa667ae49"
+    },
+    {
+      "id": "window_21f59e1d51eae652",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 418,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 357
+        }
+      ],
+      "sequence": "GCAACTTGCGTTCAAAGACTCGATGGTTCACGGGATTCTGCAATTCACACCAAGTATCGCA",
+      "sha256": "21f59e1d51eae65241d587a21d38ec715fb669d7777828eb70aa203bb9026366"
+    },
+    {
+      "id": "window_1b6e6931a61b8e91",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 628,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 567
+        }
+      ],
+      "sequence": "GCCAGACATATGAAAGAGTATACAATAATGATGTATTTGGTGAATCAAATACCACGGTCTA",
+      "sha256": "1b6e6931a61b8e913dbccb51dc9f5dbfc50baebc8392f8e49c19ca93d6072739"
+    },
+    {
+      "id": "window_592c32409fe1c8ab",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 145,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 84
+        }
+      ],
+      "sequence": "GCTATCAACAAAATCGAGTGCTAACCGCCATTTCTTATTGAATTAACCGATCAACTTGCTA",
+      "sha256": "592c32409fe1c8ab1fc9531faa712d324015e84d1a660c569d5a340c9f798f8d"
+    },
+    {
+      "id": "window_b10b1596fea07a0c",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 376,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 315
+        }
+      ],
+      "sequence": "GGAAAAAAAAAAAAAAGAGAAGAAAAAAAAAAAAAGAAACAAAAAAAAAAAAAAGAAGGAA",
+      "sha256": "b10b1596fea07a0c0e5ef31fd42c1c85912b5f3ca9f56b457c22d3a47982c398"
+    },
+    {
+      "id": "window_87b96bca1eeda9df",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 523,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 462
+        }
+      ],
+      "sequence": "GGAAAAAAAAAAAAAGAATATTAAAAAAAAAAAAAATGGAAAAAAAAAAAAAGTAAAAAAA",
+      "sha256": "87b96bca1eeda9df29564517182aeeb809e2728d3a2e4fb327ccd41c0d37cce2"
+    },
+    {
+      "id": "window_dc67fa9511dee642",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 460,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 399
+        }
+      ],
+      "sequence": "GTCTTTGAACGCAAGTTGCGCCCCAAGCCGTTAGGCCGAGGGCACGCCTGCCTGGGTGTCA",
+      "sha256": "dc67fa9511dee6423ebf3e919ebc5206535034d78cb48a376b9f5587a255a206"
+    },
+    {
+      "id": "window_e8a26da78f79610d",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 82,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 21
+        }
+      ],
+      "sequence": "GTTCTGCTGGGCAGGTTTCGACAATGATCCTTCCGCAGGTTCACCTACGGAAACCTTGTTA",
+      "sha256": "e8a26da78f79610d4fcd59855b13e1f254ea36f7d701c41f2802b104211e1da6"
+    },
+    {
+      "id": "window_f3617432ea8e5848",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 544,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 483
+        }
+      ],
+      "sequence": "TAAAAAAAAAAAAAATGGAAAAAAAAAAAAAGTAAAAAAAAAAAAAGAAATTTTTAAAAAA",
+      "sha256": "f3617432ea8e58487812d0ae34a4f719fb016099994982f2f0b522b2c8511de3"
+    },
+    {
+      "id": "window_756ff431c6c053b8",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 712,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 651
+        }
+      ],
+      "sequence": "TAATGAAACCCTTTCACAGGAATCTTTCACAAAAATTTCATTTAATATTATCAACTAATCA",
+      "sha256": "756ff431c6c053b89002887771f1c7e6622ee4cc7e8046d6dc070c5ec73bf8f1"
+    },
+    {
+      "id": "window_5f8e87293b1bc4ed",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 733,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 672
+        }
+      ],
+      "sequence": "TACTCGACATAAATTAGGAGTTAATGAAACCCTTTCACAGGAATCTTTCACAAAAATTTCA",
+      "sha256": "5f8e87293b1bc4ed348e1133cabcbc28c7d4611d049f5a7b1d8d9551ed0dbd33"
+    },
+    {
+      "id": "window_94cca54d0ed07bcc",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 523,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 462
+        }
+      ],
+      "sequence": "TATACAACGTATATTCCTGTCAACGGTCAATTTCTTAATATTTAGATATTTTGATTGAAAA",
+      "sha256": "94cca54d0ed07bccfea29a04117de4fb46b98105d75635c83c287d32e6b297fe"
+    },
+    {
+      "id": "window_acabe3f856e83b2a",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "end": 502,
+          "gene": "angiospermae_atpB-rbcL",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 441
+        }
+      ],
+      "sequence": "TATTAAGAAATTGACCGTTGACAGGAATATACGTTGTATATGTAAATCCTAGATGTGAAAA",
+      "sha256": "acabe3f856e83b2a7554577853e4490e9f6c5b3d8c463b1c9d5183017eb70a04"
+    },
+    {
+      "id": "window_21dd43c30035283f",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 355,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "+",
+          "role": "positive_control_tile",
+          "start": 294
+        }
+      ],
+      "sequence": "TATTTAAAACGACTCTCGGCAACGGATATCTCGGCTCTCGCATCGATGAAGAACGTAGCGA",
+      "sha256": "21dd43c30035283f5366eb954ac938482c1fde3e44ec2bb6c54a8964ca3bd18a"
+    },
+    {
+      "id": "window_166d8da9ef6d7c0b",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e",
+          "end": 103,
+          "gene": "angiospermae_trnL-F",
+          "pattern_strand_in_candidate": "+",
+          "role": "candidate_backbone_tile",
+          "start": 42
+        }
+      ],
+      "sequence": "TCCCTCCCCATTTCCCCATTTGACTAAAAATTACAAATTAAACTAAAAAAAAAAAAAATAA",
+      "sha256": "166d8da9ef6d7c0b919ff6c198ddbc1051fbc4292c33be669eb5217236d7e585"
+    },
+    {
+      "id": "window_b36d723f4480c8dc",
+      "memberships": [
+        {
+          "candidate_id": "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "end": 670,
+          "gene": "angiospermae_ITS",
+          "pattern_strand_in_candidate": "-",
+          "role": "positive_control_tile",
+          "start": 609
+        }
+      ],
+      "sequence": "TCGGTGAGCCTTATTAGGCCGACGACGTACGCGTGACGGGAGCTCGAGGTTTATTTGACCA",
+      "sha256": "b36d723f4480c8dca672e304fd7170fe6ea518d8fc7b738d84d6979894890992"
+    }
+  ],
+  "expected_prefix": {
+    "bases": 99211896,
+    "records": 1000000,
+    "sha256": "9b0248592f5616f52f473c7080462390b578b614e8ef523c6491e36d442dafb1",
+    "size_bytes": 255801372
+  },
+  "fastq_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/ERR14009273.fastq",
+  "focus_targets": {
+    "angiospermae_trnL-F": 1
+  },
+  "focused_candidate_ids": [
+    "ERR14009273|angiospermae_trnL-F|a56eb70ca9ed4ab7690abcba8475c4634d2cb8b473e381678008d79ea555206e"
+  ],
+  "limits": [
+    "Local strings can be shared among hypotheses and other loci; whole-product linkage and biological validity are not established.",
+    "Candidate context covers only the current outputs for this sample, not an entire genome or reference universe.",
+    "A zero count is bounded non-observation; windows exceeding all read lengths and incomplete flanks are uncallable.",
+    "Shared read examples are capped separately from complete counts; no molecule or footprint independence inferred."
+  ],
+  "nearest_contrasts": [],
+  "positive_control_acceptance": "At least one Q20 exact 61-base tile observed for each control; exact counts not preregistered for these new tile schedules",
+  "positive_control_ids": [
+    "ERR14009273|angiospermae_ITS|ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+    "ERR14009273|angiospermae_atpB-rbcL|3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07"
+  ],
+  "protocol": {
+    "all_overlapping_occurrences": true,
+    "both_orientations": true,
+    "contrast_flank": 21,
+    "cpus": 1,
+    "exact_only": true,
+    "last_tile_end_aligned": true,
+    "maximum_address_space_bytes": 2147483648,
+    "maximum_seconds": 600,
+    "minimum_phred": 20,
+    "supplementary_quality_unfiltered_counts": true,
+    "tile_length": 61,
+    "tile_step": 21
+  },
+  "schema_version": 1,
+  "source_files": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/sequence_inventory.json": {
+      "bytes": 688838,
+      "sha256": "45443cd27646735ca62034835af6f9b1fff04c2e8fa957c77a2321ec6cac90d3"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/prepare_assays_v2.py": {
+      "bytes": 8741,
+      "sha256": "161422bf0d4e4456f6b0427d84b243d0949a44f60af5f687d327a170bf82f1dd"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/scan_exact_v2.py": {
+      "bytes": 11858,
+      "sha256": "7c842a406f0f2d90facd85e788ac565a9235315d41c14505968a36cd76a8347c"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/availability.json": {
+      "bytes": 25956,
+      "sha256": "ace7f5f07658447126c6a71329498c781f88147d1241e2769229c20b2f1a24d9"
+    }
+  },
+  "uncallable_endpoints": []
+}

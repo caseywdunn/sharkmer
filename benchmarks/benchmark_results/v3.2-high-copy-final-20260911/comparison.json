@@ -1,0 +1,2077 @@
+{
+  "baseline_role": "baseline",
+  "failures": [],
+  "generated_at": "2026-09-11T14:38:47.014861+00:00",
+  "invocations": 60,
+  "limitations": [
+    "Local uncompressed fixed-prefix calibration, not held-out truth; network/gzip/BLAST excluded.",
+    "Whole unchanged panels are timed; recovery is assessed by target metadata and per-product evidence, not raw total products.",
+    "Small number of paired measurements supports descriptive comparisons, not portable statistical guarantees.",
+    "40 GiB virtual-address limit is not an RSS cap or 16 GB laptop validation."
+  ],
+  "pair_comparisons": [
+    {
+      "baseline_ingested_kmers_s": 2619561.7419354836,
+      "baseline_input_mbp_s": 3.2003837419354837,
+      "baseline_peak_rss_bytes": 2287190016,
+      "baseline_wall_time_s": 31.0,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2623793.66720517,
+      "candidate_input_mbp_s": 3.2055539903069468,
+      "candidate_peak_rss_bytes": 2287329280,
+      "candidate_speedup_ratio": 1.001615508885299,
+      "candidate_wall_time_s": 30.95,
+      "cell": "angiospermae/ERR14009273/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2607784.649967887,
+      "baseline_input_mbp_s": 3.185995375722543,
+      "baseline_peak_rss_bytes": 2287149056,
+      "baseline_wall_time_s": 31.14,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2626339.3919793013,
+      "candidate_input_mbp_s": 3.2086641655886154,
+      "candidate_peak_rss_bytes": 2287308800,
+      "candidate_speedup_ratio": 1.0071151358344113,
+      "candidate_wall_time_s": 30.92,
+      "cell": "angiospermae/ERR14009273/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2622099.2573458184,
+      "baseline_input_mbp_s": 3.2034838876331935,
+      "baseline_peak_rss_bytes": 2287235072,
+      "baseline_wall_time_s": 30.97,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2613659.9291921468,
+      "candidate_input_mbp_s": 3.1931733504988733,
+      "candidate_peak_rss_bytes": 2287489024,
+      "candidate_speedup_ratio": 0.9967814612166076,
+      "candidate_wall_time_s": 31.07,
+      "cell": "angiospermae/ERR14009273/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2181180.380577428,
+      "baseline_input_mbp_s": 2.477034120734908,
+      "baseline_peak_rss_bytes": 4569026560,
+      "baseline_wall_time_s": 60.96,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2202497.200596323,
+      "candidate_input_mbp_s": 2.5012423389100547,
+      "candidate_peak_rss_bytes": 4569149440,
+      "candidate_speedup_ratio": 1.00977306609243,
+      "candidate_wall_time_s": 60.37,
+      "cell": "angiospermae/SRR25378184/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2179392.820849041,
+      "baseline_input_mbp_s": 2.4750040976889034,
+      "baseline_peak_rss_bytes": 4569026560,
+      "baseline_wall_time_s": 61.01,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2196675.301503387,
+      "candidate_input_mbp_s": 2.494630761605815,
+      "candidate_peak_rss_bytes": 4569165824,
+      "candidate_speedup_ratio": 1.0079299520898728,
+      "candidate_wall_time_s": 60.53,
+      "cell": "angiospermae/SRR25378184/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2181538.244462674,
+      "baseline_input_mbp_s": 2.4774405250205085,
+      "baseline_peak_rss_bytes": 4569104384,
+      "baseline_wall_time_s": 60.95,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2208716.877076412,
+      "candidate_input_mbp_s": 2.5083056478405314,
+      "candidate_peak_rss_bytes": 4569042944,
+      "candidate_speedup_ratio": 1.0124584717607974,
+      "candidate_wall_time_s": 60.2,
+      "cell": "angiospermae/SRR25378184/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2748224.9225046495,
+      "baseline_input_mbp_s": 3.1204794379003924,
+      "baseline_peak_rss_bytes": 4568997888,
+      "baseline_wall_time_s": 48.39,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2841594.1025641025,
+      "candidate_input_mbp_s": 3.2264957264957266,
+      "candidate_peak_rss_bytes": 4569055232,
+      "candidate_speedup_ratio": 1.033974358974359,
+      "candidate_wall_time_s": 46.8,
+      "cell": "cnidaria/SRR25099394/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2749929.776674938,
+      "baseline_input_mbp_s": 3.1224152191894126,
+      "baseline_peak_rss_bytes": 4568989696,
+      "baseline_wall_time_s": 48.36,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2827697.2995960023,
+      "candidate_input_mbp_s": 3.210716563895386,
+      "candidate_peak_rss_bytes": 4569088000,
+      "candidate_speedup_ratio": 1.0282798213906017,
+      "candidate_wall_time_s": 47.03,
+      "cell": "cnidaria/SRR25099394/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2734661.8136952496,
+      "baseline_input_mbp_s": 3.1050791692370963,
+      "baseline_peak_rss_bytes": 4568907776,
+      "baseline_wall_time_s": 48.63,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2825894.687632809,
+      "candidate_input_mbp_s": 3.2086697832554183,
+      "candidate_peak_rss_bytes": 4569116672,
+      "candidate_speedup_ratio": 1.033361665958351,
+      "candidate_wall_time_s": 47.06,
+      "cell": "cnidaria/SRR25099394/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2456346.919784106,
+      "baseline_input_mbp_s": 2.7917364600781687,
+      "baseline_peak_rss_bytes": 4568936448,
+      "baseline_wall_time_s": 53.73,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2523508.9866156788,
+      "candidate_input_mbp_s": 2.868068833652008,
+      "candidate_peak_rss_bytes": 4569153536,
+      "candidate_speedup_ratio": 1.0273422562141492,
+      "candidate_wall_time_s": 52.3,
+      "cell": "cnidaria/SRR8617500/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2456346.919784106,
+      "baseline_input_mbp_s": 2.7917364600781687,
+      "baseline_peak_rss_bytes": 4569092096,
+      "baseline_wall_time_s": 53.73,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2527374.9521256224,
+      "candidate_input_mbp_s": 2.872462657985446,
+      "candidate_peak_rss_bytes": 4569010176,
+      "candidate_speedup_ratio": 1.0289161240903868,
+      "candidate_wall_time_s": 52.22,
+      "cell": "cnidaria/SRR8617500/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2456346.919784106,
+      "baseline_input_mbp_s": 2.7917364600781687,
+      "baseline_peak_rss_bytes": 4569038848,
+      "baseline_wall_time_s": 53.73,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2520617.265087853,
+      "candidate_input_mbp_s": 2.8647822765469826,
+      "candidate_peak_rss_bytes": 4569083904,
+      "candidate_speedup_ratio": 1.026165011459129,
+      "candidate_wall_time_s": 52.36,
+      "cell": "cnidaria/SRR8617500/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2524987.8712397013,
+      "baseline_input_mbp_s": 2.8741138149070706,
+      "baseline_peak_rss_bytes": 4569038848,
+      "baseline_wall_time_s": 52.19,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2585932.4372056513,
+      "candidate_input_mbp_s": 2.9434850863422293,
+      "candidate_peak_rss_bytes": 4569038848,
+      "candidate_speedup_ratio": 1.0241365777080063,
+      "candidate_wall_time_s": 50.96,
+      "cell": "cnidaria/SRR9278435/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2513909.1377336895,
+      "baseline_input_mbp_s": 2.8615032430370086,
+      "baseline_peak_rss_bytes": 4568817664,
+      "baseline_wall_time_s": 52.42,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2598168.7105678236,
+      "candidate_input_mbp_s": 2.9574132492113567,
+      "candidate_peak_rss_bytes": 4569022464,
+      "candidate_speedup_ratio": 1.0335173501577288,
+      "candidate_wall_time_s": 50.72,
+      "cell": "cnidaria/SRR9278435/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2525955.8558558556,
+      "baseline_input_mbp_s": 2.875215641173088,
+      "baseline_peak_rss_bytes": 4569010176,
+      "baseline_wall_time_s": 52.17,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2585932.4372056513,
+      "candidate_input_mbp_s": 2.9434850863422293,
+      "candidate_peak_rss_bytes": 4569022464,
+      "candidate_speedup_ratio": 1.0237441130298273,
+      "candidate_wall_time_s": 50.96,
+      "cell": "cnidaria/SRR9278435/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 41380658.974358976,
+      "baseline_input_mbp_s": 46.39467948717948,
+      "baseline_peak_rss_bytes": 23453696,
+      "baseline_wall_time_s": 0.39,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 35863237.777777776,
+      "candidate_input_mbp_s": 40.20872222222222,
+      "candidate_peak_rss_bytes": 23580672,
+      "candidate_speedup_ratio": 0.8666666666666667,
+      "candidate_wall_time_s": 0.45,
+      "cell": "human/SRR17535371/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 41380658.974358976,
+      "baseline_input_mbp_s": 46.39467948717948,
+      "baseline_peak_rss_bytes": 23490560,
+      "baseline_wall_time_s": 0.39,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 36678311.36363637,
+      "candidate_input_mbp_s": 41.12255681818181,
+      "candidate_peak_rss_bytes": 23592960,
+      "candidate_speedup_ratio": 0.8863636363636364,
+      "candidate_wall_time_s": 0.44,
+      "cell": "human/SRR17535371/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 39362090.243902445,
+      "baseline_input_mbp_s": 44.131524390243904,
+      "baseline_peak_rss_bytes": 23494656,
+      "baseline_wall_time_s": 0.41,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 37531295.34883721,
+      "candidate_input_mbp_s": 42.07889534883721,
+      "candidate_peak_rss_bytes": 23547904,
+      "candidate_speedup_ratio": 0.9534883720930232,
+      "candidate_wall_time_s": 0.43,
+      "cell": "human/SRR17535371/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 1628935.4459031236,
+      "baseline_input_mbp_s": 2.036999275690358,
+      "baseline_peak_rss_bytes": 2287218688,
+      "baseline_wall_time_s": 44.18,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1641943.1439653207,
+      "candidate_input_mbp_s": 2.0532655258955055,
+      "candidate_peak_rss_bytes": 2287263744,
+      "candidate_speedup_ratio": 1.0079853981291353,
+      "candidate_wall_time_s": 43.83,
+      "cell": "insecta/SRR1057608/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1638578.5063752276,
+      "baseline_input_mbp_s": 2.049058014571949,
+      "baseline_peak_rss_bytes": 2287243264,
+      "baseline_wall_time_s": 43.92,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1641943.1439653207,
+      "candidate_input_mbp_s": 2.0532655258955055,
+      "candidate_peak_rss_bytes": 2287435776,
+      "candidate_speedup_ratio": 1.002053388090349,
+      "candidate_wall_time_s": 43.83,
+      "cell": "insecta/SRR1057608/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1637460.0227531285,
+      "baseline_input_mbp_s": 2.0476593401592718,
+      "baseline_peak_rss_bytes": 2287173632,
+      "baseline_wall_time_s": 43.95,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1645321.6278006402,
+      "candidate_input_mbp_s": 2.0574903520804755,
+      "candidate_peak_rss_bytes": 2287263744,
+      "candidate_speedup_ratio": 1.00480109739369,
+      "candidate_wall_time_s": 43.74,
+      "cell": "insecta/SRR1057608/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1342212.3957697782,
+      "baseline_input_mbp_s": 1.5253203172666259,
+      "baseline_peak_rss_bytes": 4568961024,
+      "baseline_wall_time_s": 98.34,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1374928.8229166667,
+      "candidate_input_mbp_s": 1.5625,
+      "candidate_peak_rss_bytes": 4569120768,
+      "candidate_speedup_ratio": 1.024375,
+      "candidate_wall_time_s": 96.0,
+      "cell": "insecta/SRR27962769/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1346869.051020408,
+      "baseline_input_mbp_s": 1.530612244897959,
+      "baseline_peak_rss_bytes": 4568936448,
+      "baseline_wall_time_s": 98.0,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1377943.0733897067,
+      "candidate_input_mbp_s": 1.5659254619480114,
+      "candidate_peak_rss_bytes": 4569018368,
+      "candidate_speedup_ratio": 1.0230713018060342,
+      "candidate_wall_time_s": 95.78999999999999,
+      "cell": "insecta/SRR27962769/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1343168.4847868118,
+      "baseline_input_mbp_s": 1.5264068383026355,
+      "baseline_peak_rss_bytes": 4568850432,
+      "baseline_wall_time_s": 98.27000000000001,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1376362.533889468,
+      "candidate_input_mbp_s": 1.5641293013555786,
+      "candidate_peak_rss_bytes": 4569063424,
+      "candidate_speedup_ratio": 1.024713242961418,
+      "candidate_wall_time_s": 95.9,
+      "cell": "insecta/SRR27962769/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1391064.6703573226,
+      "baseline_input_mbp_s": 1.6943465861432645,
+      "baseline_peak_rss_bytes": 2287296512,
+      "baseline_wall_time_s": 59.61,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1382022.75,
+      "candidate_input_mbp_s": 1.6833333333333333,
+      "candidate_peak_rss_bytes": 2287431680,
+      "candidate_speedup_ratio": 0.9934999999999999,
+      "candidate_wall_time_s": 60.0,
+      "cell": "insecta/SRR31887760/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1388037.5795112152,
+      "baseline_input_mbp_s": 1.6906595246066287,
+      "baseline_peak_rss_bytes": 2287202304,
+      "baseline_wall_time_s": 59.74,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1394573.915237134,
+      "candidate_input_mbp_s": 1.6986209216279853,
+      "candidate_peak_rss_bytes": 2287362048,
+      "candidate_speedup_ratio": 1.0047090480995629,
+      "candidate_wall_time_s": 59.46,
+      "cell": "insecta/SRR31887760/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 1387340.8900786347,
+      "baseline_input_mbp_s": 1.689810941944119,
+      "baseline_peak_rss_bytes": 2287165440,
+      "baseline_wall_time_s": 59.77,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1395512.7061595423,
+      "candidate_input_mbp_s": 1.6997643890945808,
+      "candidate_peak_rss_bytes": 2287271936,
+      "candidate_speedup_ratio": 1.0058902726354764,
+      "candidate_wall_time_s": 59.42,
+      "cell": "insecta/SRR31887760/1000000",
+      "classifications_identical": false,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": false
+    },
+    {
+      "baseline_ingested_kmers_s": 2884430.607375271,
+      "baseline_input_mbp_s": 3.2754880694143167,
+      "baseline_peak_rss_bytes": 4568875008,
+      "baseline_wall_time_s": 46.1,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2985456.9151324653,
+      "candidate_input_mbp_s": 3.3902110462505615,
+      "candidate_peak_rss_bytes": 4569153536,
+      "candidate_speedup_ratio": 1.0350246969016614,
+      "candidate_wall_time_s": 44.54,
+      "cell": "teleostei/SRR22396603/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2887562.4538545064,
+      "baseline_input_mbp_s": 3.2790445168295332,
+      "baseline_peak_rss_bytes": 4569133056,
+      "baseline_wall_time_s": 46.05,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2986798.090745732,
+      "candidate_input_mbp_s": 3.3917340521114103,
+      "candidate_peak_rss_bytes": 4568956928,
+      "candidate_speedup_ratio": 1.0343665768194068,
+      "candidate_wall_time_s": 44.52,
+      "cell": "teleostei/SRR22396603/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 2,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 2878187.251082251,
+      "baseline_input_mbp_s": 3.2683982683982684,
+      "baseline_peak_rss_bytes": 4568883200,
+      "baseline_wall_time_s": 46.2,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 2976768.547123349,
+      "candidate_input_mbp_s": 3.3803447503917616,
+      "candidate_peak_rss_bytes": 4568809472,
+      "candidate_speedup_ratio": 1.0342511752854264,
+      "candidate_wall_time_s": 44.67,
+      "cell": "teleostei/SRR22396603/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 3,
+      "products_identical": true
+    }
+  ],
+  "protocol": {
+    "baseline_role": "baseline",
+    "expected_commits": {
+      "baseline": "5a664680c91ad59f32b8c2a847b8fef37f34a0ae",
+      "candidate": "0c38d6a051082cc2a1eb961b4206837f82948fda"
+    },
+    "limitations": [
+      "Local uncompressed fixed-prefix calibration, not held-out truth; network/gzip/BLAST excluded.",
+      "Whole unchanged panels are timed; recovery is assessed by target metadata and per-product evidence, not raw total products.",
+      "Small number of paired measurements supports descriptive comparisons, not portable statistical guarantees.",
+      "40 GiB virtual-address limit is not an RSS cap or 16 GB laptop validation."
+    ],
+    "priority": "2026-09-11 user: protect abundant organelle/ribosomal recovery and runtime/RAM; metagenomic and single-copy nuclear optimization deferred",
+    "purpose": "High-copy-focused final comparison: unchanged non-metagenomic panels, released v3.1.0 vs combined154155",
+    "review_criteria": {
+      "deferred": "Metagenomic and single-copy nuclear diversity/recovery are not current release gates.",
+      "failures": "Any nonzero CLI exit, timeout, resource breach, count mismatch, invalid provenance/output or BLAST evaluation error invalidates that cell.",
+      "ram": "Report every increase; prioritize investigation of >2% per-cell paired median RSS increase.",
+      "recovery": "Flag every lost high-copy candidate; prioritize reference-supported and dominant products. Compare sequence membership independent of index, retain classification and median/minimum support. Do not require restoration of unsupported repeat-copy claims.",
+      "release": "Stop before release for user review, regardless of numeric thresholds.",
+      "runtime": "Report every increase; prioritize investigation of >5% per-cell paired median wall increase. Descriptive only; no automatic no-regression claim."
+    },
+    "samples": [
+      {
+        "depth": 1000000,
+        "input": "SRR9278435",
+        "pairs": 3,
+        "panel": "cnidaria",
+        "taxon": "Xenia sp."
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR25099394",
+        "pairs": 3,
+        "panel": "cnidaria",
+        "taxon": "Agalma elegans"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR8617500",
+        "pairs": 3,
+        "panel": "cnidaria",
+        "taxon": "Rhopilema esculentum"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR17535371",
+        "pairs": 3,
+        "panel": "human",
+        "taxon": "Homo sapiens"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR22396603",
+        "pairs": 3,
+        "panel": "teleostei",
+        "taxon": "Nomeus gronovii"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR25378184",
+        "pairs": 3,
+        "panel": "angiospermae",
+        "taxon": "Liriodendron tulipifera"
+      },
+      {
+        "depth": 1000000,
+        "input": "ERR14009273",
+        "pairs": 3,
+        "panel": "angiospermae",
+        "taxon": "Acer monspessulanum"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR31887760",
+        "pairs": 3,
+        "panel": "insecta",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR1057608",
+        "pairs": 3,
+        "panel": "insecta",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR27962769",
+        "pairs": 3,
+        "panel": "insecta",
+        "taxon": "Gryllus bimaculatus"
+      }
+    ],
+    "settings": {
+      "address_space_limit_bytes": 42949672960,
+      "chunks": 0,
+      "cpu_list": [
+        0,
+        1
+      ],
+      "input_format": "uncompressed_four_line_fastq",
+      "k": 19,
+      "paired": false,
+      "prewarm_each_invocation": true,
+      "read_threading": false,
+      "threads": 2,
+      "timeout_seconds": 1800
+    },
+    "target_metadata": {
+      "angiospermae": [
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "psbA-trnH",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "rpl36-infA-rps8",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "trnK-rps16",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "trnV-atpE",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "trnC-ycf6",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "ycf6-psbM",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "psbM-trnD",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "atpB-rbcL",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "plastid:chloroplast",
+          "copy_number": null,
+          "gene": "trnL-F",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        }
+      ],
+      "cnidaria": [
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "16S",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "18S",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "28S_1",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS_1",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS_2",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "28S_2",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        }
+      ],
+      "human": [
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-1404-3947",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-3734-6739",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-6511-9220",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-8910-10648",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-10360-12226",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-11977-13830",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-13477-15349",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-14898-151",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": null,
+          "gene": "mt-16488-1677",
+          "gene_type": null,
+          "scope": "high_copy_candidate"
+        }
+      ],
+      "insecta": [
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "12S",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "16S_1",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO1_1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO2_1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CytB",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "ND1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "ND4",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "ND5",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "16S_2",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO1_2",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO2_2",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "NADH",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Fz4",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Gpdh",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Pgi",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Yp2",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "18S_1",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "28S",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "18S_2",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS_1",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS_2",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        }
+      ],
+      "teleostei": [
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "18S",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "16S",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CytB",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "12S",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        }
+      ]
+    }
+  },
+  "references": {
+    "angiospermae": [
+      {
+        "accession": "NC_056221",
+        "gene": "psbA-trnH",
+        "length": 508,
+        "sha256": "fba241e53d7da4115ea4edf34b24bd5404b57779c319c206675eb713be2cfd69",
+        "taxon": "Acer monspessulanum"
+      },
+      {
+        "accession": "MN990625",
+        "gene": "psbA-trnH",
+        "length": 614,
+        "sha256": "1ee32d49c0243afcc0df8d5eb87432b4d9be6e599fd6a3167557a1ebfe3976b7",
+        "taxon": "Liriodendron tulipifera"
+      },
+      {
+        "accession": "OQ613386",
+        "gene": "psbA-trnH",
+        "length": 432,
+        "sha256": "ea3051b2fbfbaf9bb3629a6a9242576e9f8fc2cee42d04cba51f830633d5b7fa",
+        "taxon": "Opuntia comonduensis"
+      },
+      {
+        "accession": "NC_008326",
+        "gene": "rpl36-infA-rps8",
+        "length": 552,
+        "sha256": "9d24409abb93cd61eb5d04b5f191d5d3c8c1c96827b563dbec7135aca1e4bd1b",
+        "taxon": "Liriodendron tulipifera"
+      },
+      {
+        "accession": "NC_083948",
+        "gene": "rpl36-infA-rps8",
+        "length": 567,
+        "sha256": "4aea98575bc8fed5ea5f6b48e3e26b4b1a0940d80f600f6e222ae2e6660fd93e",
+        "taxon": "Opuntia comonduensis"
+      },
+      {
+        "accession": "NC_056221",
+        "gene": "trnV-atpE",
+        "length": 983,
+        "sha256": "dc25c187e7595ba487d919c27147899278a5d36dd0d77af6976dbd59fe5d1fde",
+        "taxon": "Acer monspessulanum"
+      },
+      {
+        "accession": "NC_008326",
+        "gene": "trnV-atpE",
+        "length": 545,
+        "sha256": "cd916348b5a66b9bce914c576cd7a9ad1fe2085be7e1372b78396c7a24c5cc10",
+        "taxon": "Liriodendron tulipifera"
+      },
+      {
+        "accession": "NC_056221",
+        "gene": "trnC-ycf6",
+        "length": 593,
+        "sha256": "b97e0ced34ecc6014baf7e8cf4284965a525072dd4597b37204e2190580a16eb",
+        "taxon": "Acer monspessulanum"
+      },
+      {
+        "accession": "NC_008326",
+        "gene": "trnC-ycf6",
+        "length": 1099,
+        "sha256": "02c8786902b1efe94015212a3fceeb59a4e69ed425fabb3d66d81fea1c2fb504",
+        "taxon": "Liriodendron tulipifera"
+      },
+      {
+        "accession": "NC_083948",
+        "gene": "trnC-ycf6",
+        "length": 643,
+        "sha256": "7eb3210a45fb26107c13bf85dceda5c2fae3a697fade8c08a955d4bd3b6ebb80",
+        "taxon": "Opuntia comonduensis"
+      },
+      {
+        "accession": "NC_056221",
+        "gene": "ycf6-psbM",
+        "length": 937,
+        "sha256": "76c47b56a55620125381c7eda339dea236734dc3f3e8337a969d1ffecc909bb7",
+        "taxon": "Acer monspessulanum"
+      },
+      {
+        "accession": "NC_008326",
+        "gene": "ycf6-psbM",
+        "length": 927,
+        "sha256": "318b25d2e6be72f22077182ca86a88eaf9877cc9b26831ec4597ce5ffdcd4cd3",
+        "taxon": "Liriodendron tulipifera"
+      },
+      {
+        "accession": "NC_008326",
+        "gene": "psbM-trnD",
+        "length": 1287,
+        "sha256": "e9898573db0183da6b7f80727476bb72246c560f5de373e9b2586cede1a37dfe",
+        "taxon": "Liriodendron tulipifera"
+      },
+      {
+        "accession": "NC_056221",
+        "gene": "atpB-rbcL",
+        "length": 812,
+        "sha256": "3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+        "taxon": "Acer monspessulanum"
+      },
+      {
+        "accession": "OR400606",
+        "gene": "atpB-rbcL",
+        "length": 821,
+        "sha256": "44134865445eaad9daaca4ee79d8156b6f1535feb451f8e6fc8d86e5efe62493",
+        "taxon": "Euphorbia nicaeensis subsp. nicaeensis"
+      },
+      {
+        "accession": "NC_049166",
+        "gene": "trnL-F",
+        "length": 468,
+        "sha256": "a55158b0b75f58d04b747f7aecf0ee47c47068a31891f9063f43023aa6b4bcef",
+        "taxon": "Acer monspessulanum"
+      },
+      {
+        "accession": "NC_008326",
+        "gene": "trnL-F",
+        "length": 434,
+        "sha256": "8b1eb5da66ff32aff98e9c036e6bd7c5b768604edc00ebfd3af6ddcda95cbdca",
+        "taxon": "Liriodendron tulipifera"
+      },
+      {
+        "accession": "NC_087798",
+        "gene": "trnL-F",
+        "length": 455,
+        "sha256": "04d6d2881c87db38e32e4f0f68de513fdad49c41ff8f734695ec6bf447ec8ced",
+        "taxon": "Opuntia comonduensis"
+      },
+      {
+        "accession": "MW070149",
+        "gene": "ITS",
+        "length": 753,
+        "sha256": "ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+        "taxon": "Acer monspessulanum"
+      },
+      {
+        "accession": "LN680643",
+        "gene": "ITS",
+        "length": 764,
+        "sha256": "6da8ee115912ada6c089a59bf87bce3f7e0487b9c6c6a9007c69c11bec5df3f3",
+        "taxon": "Euphorbia nicaeensis subsp. nicaeensis"
+      },
+      {
+        "accession": "MZ366774",
+        "gene": "ITS",
+        "length": 687,
+        "sha256": "f2ccba2c48f4e0419594a024506f88c5a5939c733b07850088148568aca4e159",
+        "taxon": "Opuntia comonduensis"
+      }
+    ],
+    "cnidaria": [
+      {
+        "accession": "OQ957203",
+        "gene": "16S",
+        "length": 542,
+        "sha256": "32a59cd26699712674486da0a95fdd06793959e37ed9c1431553018b1e61d53e",
+        "taxon": "Agalma elegans"
+      },
+      {
+        "accession": "OU744455.1",
+        "gene": "16S",
+        "length": 513,
+        "sha256": "89c96b6179cc73d67c52db89e858a4fc22aeaae661b02ed494752ffca612fc26",
+        "taxon": "Haliclystus octoradiatus"
+      },
+      {
+        "accession": "OR400211",
+        "gene": "16S",
+        "length": 563,
+        "sha256": "23a6b1ce0dedd3d6b7b38922b0102c2037d1d09dad34d3606409477b5ce25f55",
+        "taxon": "Morbakka sp. ZRC CNI 1418"
+      },
+      {
+        "accession": "NC_035741",
+        "gene": "16S",
+        "length": 563,
+        "sha256": "6f1226f0e97ba3c8f9a67970a5cb990d4e84e61ba7718edc8801eb20e7958cb0",
+        "taxon": "Rhopilema esculentum"
+      },
+      {
+        "accession": "XM_047005986",
+        "gene": "16S",
+        "length": 621,
+        "sha256": "98855f568dcf511aeb9eb65db128d00b1e22c309d7ebc78fc3acca46003bf8ea",
+        "taxon": "Xenia sp."
+      },
+      {
+        "accession": "OQ957203",
+        "gene": "CO1",
+        "length": 693,
+        "sha256": "76c378c31b6576b2a6aa25a4dd30a494ca5f39312fe51c890fe9437b8fdf3a3c",
+        "taxon": "Agalma elegans"
+      },
+      {
+        "accession": "OU744455",
+        "gene": "CO1",
+        "length": 693,
+        "sha256": "2a35c49a649156a65ed53031c26bd1e29ea1f6b493ef9aa2476da2df4c54b82e",
+        "taxon": "Haliclystus octoradiatus"
+      },
+      {
+        "accession": "OR400210",
+        "gene": "CO1",
+        "length": 693,
+        "sha256": "f4da5b47a8073bc36639066fb92fd9ceaf6f5704c6339d2041098d935fb1c8c8",
+        "taxon": "Morbakka sp. ZRC CNI 1418"
+      },
+      {
+        "accession": "NC_035741",
+        "gene": "CO1",
+        "length": 693,
+        "sha256": "2275a434340d838a3466af230b6cb98ff59cc523c6e010f707ffabb968257e47",
+        "taxon": "Rhopilema esculentum"
+      },
+      {
+        "accession": "HG999760",
+        "gene": "CO1",
+        "length": 693,
+        "sha256": "6924e9af1814333ce8dda8db18879fc8cbdbb044435cce557bf78e02530eef3f",
+        "taxon": "Xenia sp."
+      },
+      {
+        "accession": "AY937313",
+        "gene": "18S",
+        "length": 1785,
+        "sha256": "c23378920cd43acb881fb906b67930ab4868a2512cf259345a268225933d1cf1",
+        "taxon": "Agalma elegans"
+      },
+      {
+        "accession": "AF358102",
+        "gene": "18S",
+        "length": 1784,
+        "sha256": "9b8d6c7d0d63d204388b3257ad4670856cff64ab43409c62cfb62cfa9b1093b2",
+        "taxon": "Haliclystus octoradiatus"
+      },
+      {
+        "accession": "GQ849083",
+        "gene": "18S",
+        "length": 1792,
+        "sha256": "d8db9265b956c5d6e94f26717f98059e0a34114e41ad6ab15be09291f0951f61",
+        "taxon": "Morbakka sp. ZRC CNI 1418"
+      },
+      {
+        "accession": "XR_010517292",
+        "gene": "18S",
+        "length": 1796,
+        "sha256": "b816072915f8e9705cae7d551c061c4603f99a66b726783eaa3dac4d251fbdd9",
+        "taxon": "Rhopilema esculentum"
+      },
+      {
+        "accession": "XR_006952126",
+        "gene": "18S",
+        "length": 1807,
+        "sha256": "d8c9a0acd3ea1645f4b9a0bb396c0c6d8db47a1719fe125f80a077c5064930de",
+        "taxon": "Xenia sp."
+      },
+      {
+        "accession": "EU272542",
+        "gene": "28S_1",
+        "length": 3230,
+        "sha256": "ffca6496028c8889c1222437a876c794026bc9d1195f8b50a5fc3d7d12fb694d",
+        "taxon": "Agalma elegans"
+      },
+      {
+        "accession": "KU308592",
+        "gene": "28S_1",
+        "length": 3242,
+        "sha256": "f7e8be227d2d52dcdd0995dc58bf6da311dfdea666039dd2707f7f72a56a317e",
+        "taxon": "Haliclystus octoradiatus"
+      },
+      {
+        "accession": "GQ849060",
+        "gene": "28S_1",
+        "length": 3329,
+        "sha256": "60f689a257e2674cfa06330ace8bd91ce0a375e5281d15e4ec08bc8f7460ae86",
+        "taxon": "Morbakka sp. ZRC CNI 1418"
+      },
+      {
+        "accession": "XR_010517322",
+        "gene": "28S_1",
+        "length": 3258,
+        "sha256": "d7ca72ab7054616f1cbeddd2fc1e8032c6d8981342aec4924c1b9ef7b0edb6fe",
+        "taxon": "Rhopilema esculentum"
+      },
+      {
+        "accession": "XR_006952137",
+        "gene": "28S_1",
+        "length": 3234,
+        "sha256": "b319dd820ad90ca5d7b583b68326bd2aaa77cf17466cc95feae2237df577d427",
+        "taxon": "Xenia sp."
+      },
+      {
+        "accession": "EU272542",
+        "gene": "28S_2",
+        "length": 406,
+        "sha256": "babe089737f24c79cd7bc0a3d67bf75d8642c8d4f6ad003c66eeea3c1053a3cb",
+        "taxon": "Agalma elegans"
+      },
+      {
+        "accession": "KU308592",
+        "gene": "28S_2",
+        "length": 420,
+        "sha256": "83790678134fc652394bb25ba89ab5affb3b1e177f6e1940131894a814b91902",
+        "taxon": "Haliclystus octoradiatus"
+      },
+      {
+        "accession": "GQ849060",
+        "gene": "28S_2",
+        "length": 438,
+        "sha256": "4b81074496e37666c2f6c11fe0e1e816b4d2ccb12c8cd6a71b8dd4b834d724c0",
+        "taxon": "Morbakka sp. ZRC CNI 1418"
+      },
+      {
+        "accession": "XR_010517322",
+        "gene": "28S_2",
+        "length": 426,
+        "sha256": "9fc8e32ed482e29fa12cef7559a8f9f1e1b7396ea76f06ba0c850ad4bb80abae",
+        "taxon": "Rhopilema esculentum"
+      },
+      {
+        "accession": "XR_006952139",
+        "gene": "28S_2",
+        "length": 414,
+        "sha256": "0fcfeb7036e7bb899ccf20ff2e308bc72df4ab9a3f6512669af597af9e932caa",
+        "taxon": "Xenia sp."
+      },
+      {
+        "accession": "AY937313",
+        "gene": "ITS_1",
+        "length": 817,
+        "sha256": "7c6643ab6df00024bbd34c338614fd7ea3d5bf2285bc5c01a2c4af00fccd1d49",
+        "taxon": "Agalma elegans"
+      },
+      {
+        "accession": "HM022146",
+        "gene": "ITS_1",
+        "length": 872,
+        "sha256": "14e97db784a8041f8040e71efa6b90672ec4d5a82e5defb6c8ba3ffd473f07d0",
+        "taxon": "Haliclystus octoradiatus"
+      },
+      {
+        "accession": "KC864852",
+        "gene": "ITS_1",
+        "length": 899,
+        "sha256": "c7f0d534b0b7dcabd4e2fa69f3a92d7dc74c98120a0438e3a88ea32f3beba390",
+        "taxon": "Xenia sp."
+      },
+      {
+        "accession": "HM022147",
+        "gene": "ITS_2",
+        "length": 726,
+        "sha256": "38cec8e93bacfb41215edd0552825f6ce3d2b43e3e5ab10e06812755751ecb71",
+        "taxon": "Haliclystus octoradiatus"
+      },
+      {
+        "accession": "KR338966",
+        "gene": "ITS_2",
+        "length": 929,
+        "sha256": "833f238101d8c9f5aa38cd2804e5c1c240864e42c42f616999f6f1c3ddb7dcb5",
+        "taxon": "Rhopilema esculentum"
+      },
+      {
+        "accession": "KY442629",
+        "gene": "ITS_2",
+        "length": 748,
+        "sha256": "eb9cafa8fdc271fcddbc5c28c8f5beda9f97687842924f3b715f765e8b9c9277",
+        "taxon": "Xenia sp."
+      }
+    ],
+    "human": [
+      {
+        "accession": "NC_012920.1",
+        "gene": "mt-1404-3947",
+        "length": 2522,
+        "sha256": "f681d3a136acd04b2521f09820d1ce1395f56eaaf70675eac70d26e4f05ba2aa",
+        "taxon": "Homo sapiens"
+      },
+      {
+        "accession": "NC_012920.1",
+        "gene": "mt-3734-6739",
+        "length": 2983,
+        "sha256": "6e850e43e267ba991974fd7eb4c5e146734177bf2909271d1a72d4dcab177e42",
+        "taxon": "Homo sapiens"
+      },
+      {
+        "accession": "NC_012920.1",
+        "gene": "mt-6511-9220",
+        "length": 2687,
+        "sha256": "ae3c691ad561768ba718fab2af8b93bc54af18a1c939a38a357fce2e7118d6e4",
+        "taxon": "Homo sapiens"
+      },
+      {
+        "accession": "NC_012920.1",
+        "gene": "mt-8910-10648",
+        "length": 1717,
+        "sha256": "42d04ad8b92d9ffe6265618f4a69802415fc0a997e313a47f855e1cdc70bae45",
+        "taxon": "Homo sapiens"
+      },
+      {
+        "accession": "NC_012920.1",
+        "gene": "mt-10360-12226",
+        "length": 1845,
+        "sha256": "4c9d97ea4b908b3f777ec9622287d0021766401013e073d5e791c6c4c2fd1266",
+        "taxon": "Homo sapiens"
+      },
+      {
+        "accession": "NC_012920.1",
+        "gene": "mt-11977-13830",
+        "length": 1831,
+        "sha256": "638c966926de2017d7519b2bb422d63f1ea0b8d44cff6306ca8a13e4e77a2594",
+        "taxon": "Homo sapiens"
+      },
+      {
+        "accession": "NC_012920.1",
+        "gene": "mt-13477-15349",
+        "length": 1851,
+        "sha256": "f6fee7f7d83cf72b1bf04c6868690a9687513116978bc615a08d0407b843fa93",
+        "taxon": "Homo sapiens"
+      },
+      {
+        "accession": "NC_012920.1",
+        "gene": "mt-14898-151",
+        "length": 1801,
+        "sha256": "57c6c2a7dd8fe5bbb0f99525668e0830cf9ca12ccbc3e27ba81eb72eed1cfb66",
+        "taxon": "Homo sapiens"
+      },
+      {
+        "accession": "NC_012920.1",
+        "gene": "mt-16488-1677",
+        "length": 1737,
+        "sha256": "33a232b328c33d12f661eb1353da0755bf65b4cd5c1e0f931ce1085a333ac611",
+        "taxon": "Homo sapiens"
+      }
+    ],
+    "insecta": [
+      {
+        "accession": "EU494495",
+        "gene": "12S",
+        "length": 420,
+        "sha256": "f12440f362d8037c26ba2668a3e31999d2cb3d541a3d7bef0d25ed2682518485",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "NC_005780",
+        "gene": "16S_1",
+        "length": 380,
+        "sha256": "5b7f3b95703955fca084997b9a11f076aed461b78886cbb8848454b844379d43",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "KM252237",
+        "gene": "16S_1",
+        "length": 379,
+        "sha256": "44e23d689c95c641033baeeb25f0cb72e7bb9094ff3ac862e0b20c4f47ab0a95",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "NC_053546",
+        "gene": "16S_1",
+        "length": 376,
+        "sha256": "e5f5129691d3c5b0526cb4322c4e0566420f408d7090cca76a8ad146718b755c",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "KP073314",
+        "gene": "16S_1",
+        "length": 317,
+        "sha256": "67046e4cd6d2b658a60d77231d2361b324bf93925f8698bc1182d1f747f2d62c",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "OM754561",
+        "gene": "CO1_1",
+        "length": 352,
+        "sha256": "22b7811a5ddf8604ee945184885042ae3a3b9edeb8597ca08dcc781e0e189c35",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "PP230540",
+        "gene": "CO1_1",
+        "length": 304,
+        "sha256": "29d1091f50ad961c1e1a778a80930325f82f63b39b1b25e7e170d93ca599cb8d",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "KJ174812",
+        "gene": "CO1_1",
+        "length": 304,
+        "sha256": "8ba0cf4d35377c7ebbb54000f07053c99d16008cf3e79cb45d8441da95ec1f2f",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "AC254620",
+        "gene": "CO2_1",
+        "length": 325,
+        "sha256": "81018509b4a91b7c6ed8dd12acc7358b2b95015f019c20b07df5da5b496341c9",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "KM252505",
+        "gene": "CO2_1",
+        "length": 291,
+        "sha256": "06f3ffbb21d5f655befcd56a83d2241def842759b48dafda45bcd26cf73831f3",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "GQ398183",
+        "gene": "CO2_1",
+        "length": 288,
+        "sha256": "75a2f13657c465c52bb64e68bea7a87ee7602a32700e5905a346b6dab7692712",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "NC_005780",
+        "gene": "ND1",
+        "length": 240,
+        "sha256": "e1f30300b75f4ba9468d26bde07f925dad14115818211ea869501f46bc6718ab",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "MK659833",
+        "gene": "ND4",
+        "length": 241,
+        "sha256": "af6517445caf93924c95d4a8788083b78cf110408f9b3fd8805d502f1b23ada0",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "PP230540",
+        "gene": "ND4",
+        "length": 241,
+        "sha256": "36eba17e1bc0c8eada369c9d50bea98b464803b954d9d1a2701e0a1a89cecab8",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "NC_005780",
+        "gene": "16S_2",
+        "length": 541,
+        "sha256": "f94072650f22fc0904a71df38975045704212b21a8dcc68a1f48fc3f09d696b5",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "BK006341",
+        "gene": "16S_2",
+        "length": 540,
+        "sha256": "128895aff655a1bc92ad2e338db5fd92da30300a222e9f127e44a38edf45de43",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "PP230540",
+        "gene": "16S_2",
+        "length": 534,
+        "sha256": "66686929b8d17dfa5e1851e37d6a089bc385a664000b4f50bf5c1431a3c22db4",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "NC_026564",
+        "gene": "16S_2",
+        "length": 400,
+        "sha256": "c03f6174544b202af37048463ccb21b978e08f3029e35e62b3ec4c0b0fa3b2e6",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "PP764096",
+        "gene": "CO1_2",
+        "length": 859,
+        "sha256": "51bf43f54d090b6eabf16c53c6c873ee67be7eb506b52ff8e9f943bd6d117366",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "NC_005780",
+        "gene": "CO1_2",
+        "length": 859,
+        "sha256": "6531e505b7dd94b425eb8389223029f42599991f0d18b4bb3aff5ff5a8f116d0",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "KM252239",
+        "gene": "CO1_2",
+        "length": 859,
+        "sha256": "5061c15a94bd8fce86f9d4bc967bdf7fcd872d0fa5b7435e2e62a616a418b777",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "KP074829",
+        "gene": "CO1_2",
+        "length": 855,
+        "sha256": "017bd8b318b157bd0a3e287883fddac70be8f2e280202fe418c6251d412e0f82",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "MW376578",
+        "gene": "CO2_2",
+        "length": 777,
+        "sha256": "108adaa4993ac45ef33426c64df695f7759b03a64454e0906964efbcc0798edf",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "NC_005780",
+        "gene": "CO2_2",
+        "length": 777,
+        "sha256": "079a4e8eaaa2d7172dd2542326297449836dd75be16871ae1521389b52ea39c4",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "KM252494",
+        "gene": "CO2_2",
+        "length": 780,
+        "sha256": "bf44e9b94a9f69e2fff4aca79e082f44f4d53637cfc8dc95243237af0f1ea7cd",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "NC_005780",
+        "gene": "NADH",
+        "length": 550,
+        "sha256": "e582fd811cd01cb9d1561c01423b06de772236495d51b9da13b2740dc734c74b",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "KM252368",
+        "gene": "NADH",
+        "length": 550,
+        "sha256": "e92d453a2c581c33916f2fea577e9e63260745e23864c3ce1f53b92be785aee8",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "PP230540",
+        "gene": "NADH",
+        "length": 544,
+        "sha256": "f01e2075d7ef7a69567543a806fa8efeaf5e13deb7759deefecba8b8c681efe6",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "AC007928",
+        "gene": "Yp2",
+        "length": 685,
+        "sha256": "f45ac6fdf2210db72f9290e6261e07fa53dfd679256671df00689ef3a437d21a",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "NR_133558",
+        "gene": "18S_1",
+        "length": 661,
+        "sha256": "d9560d203e10a1dcbd87c480e049dc7f9b8396a419f38199d186c84c2364766c",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "XR_005544871",
+        "gene": "18S_1",
+        "length": 661,
+        "sha256": "fe0f828018cff69ec1e4dbbeda17b8cbd70f76c4d2ad13ea727bef55e01bcaa9",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "AY183920",
+        "gene": "28S",
+        "length": 829,
+        "sha256": "f878cec63dee7a045f90a49401df23a1482c6816118b83032d581064eefa9348",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "AK281049",
+        "gene": "28S",
+        "length": 636,
+        "sha256": "c34d3a7dda4b364f49af87467f2bf6dfc702788de729e0cb47e9eeb755629197",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "NR_133554",
+        "gene": "18S_2",
+        "length": 1977,
+        "sha256": "35d21bc51d980e58c64ec74ea7fc035b278e1fbeeb55caab5782cd45885268d0",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "XR_004459988",
+        "gene": "18S_2",
+        "length": 1977,
+        "sha256": "bba4bee9df8dc23cbc2e0d75f5100cd43faf4888d8aa84c0657f8d99d1935599",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "XR_006246778",
+        "gene": "18S_2",
+        "length": 1947,
+        "sha256": "a544596cc915356770bc7bb6fc3d428206ac9707ed514fa16584f3f898169991",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "K01281",
+        "gene": "ITS_1",
+        "length": 774,
+        "sha256": "a5fe48d290dc4272bf46c6f3ad92b919eeb0c72363cacd17de6a047407906134",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "PP230540",
+        "gene": "CytB",
+        "length": 403,
+        "sha256": "7d75f8650e104c236b595fc0b12a5a8a74976b7aa3268fd0b5f5715bfff38f81",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "NC_024741",
+        "gene": "CytB",
+        "length": 403,
+        "sha256": "f7944f2a336182246d3bbdffcf7d5b92912818cd61182a1de13d5fa745b92ec3",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "NC_024864",
+        "gene": "ND5",
+        "length": 301,
+        "sha256": "c09cf847c492455f94558517a37d8a454e2eeecaf438d6a9fc5c8a51d1a761d5",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "AK281180",
+        "gene": "ITS_2",
+        "length": 978,
+        "sha256": "23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c",
+        "taxon": "Gryllus bimaculatus"
+      }
+    ],
+    "teleostei": [
+      {
+        "accession": "XR_010033285",
+        "gene": "18S",
+        "length": 489,
+        "sha256": "4ac5513db3fa33072d10851ab1064f973a8279d6c20135f4eb1703a8367744b2",
+        "taxon": "Engraulis encrasicolus"
+      },
+      {
+        "accession": "OP088600",
+        "gene": "18S",
+        "length": 474,
+        "sha256": "631df284bf19361315d3b67ac1318cbd290aa2b6ceae0d59b361e991f3d8f880",
+        "taxon": "Hirundichthys speculiger"
+      },
+      {
+        "accession": "MT410920",
+        "gene": "16S",
+        "length": 605,
+        "sha256": "3a184c6a7f3486b3f9fabba1f3d11d25b339d740782c9689407cc345cba0265d",
+        "taxon": "Engraulis encrasicolus"
+      },
+      {
+        "accession": "NC_082547",
+        "gene": "16S",
+        "length": 605,
+        "sha256": "89c960c2d0a84c008a6957723b8ea67a00aeef21ba9aebd4e39bb5f513ec113f",
+        "taxon": "Nomeus gronovii"
+      },
+      {
+        "accession": "MT410920",
+        "gene": "CO1",
+        "length": 685,
+        "sha256": "74b89ca5ee73d25d0ae7b45bd1e9b9a655a67292d97ae1bf8ae6afa23605bb4e",
+        "taxon": "Engraulis encrasicolus"
+      },
+      {
+        "accession": "OP035085",
+        "gene": "CO1",
+        "length": 685,
+        "sha256": "f0a18d527d157b22eaf0ad7b8a1c42416bc5f0f66e5691a99931f09ea30e293a",
+        "taxon": "Hirundichthys speculiger"
+      },
+      {
+        "accession": "NC_082547",
+        "gene": "CO1",
+        "length": 685,
+        "sha256": "cd6e38cb2b0e8fea25598584af0a4b1f7e50e6b8d1c4da2ffa94c76ef5b84c35",
+        "taxon": "Nomeus gronovii"
+      },
+      {
+        "accession": "OP035085",
+        "gene": "CytB",
+        "length": 337,
+        "sha256": "16b8770e8c6e5e7e78f8c2981216539dffcb89ad20fae8541971b4c4eba9d2ac",
+        "taxon": "Hirundichthys speculiger"
+      },
+      {
+        "accession": "OM509549",
+        "gene": "12S",
+        "length": 417,
+        "sha256": "f6a3a06f77780ce539778f8ea8aa2b7da2252b664d0dc483d80e4c3155a368aa",
+        "taxon": "Engraulis encrasicolus"
+      },
+      {
+        "accession": "OP035085",
+        "gene": "12S",
+        "length": 418,
+        "sha256": "355ac5673376fbf0989245a0441aa12c419dfbe33b986789713c551254083cea",
+        "taxon": "Hirundichthys speculiger"
+      },
+      {
+        "accession": "NC_082547",
+        "gene": "12S",
+        "length": 419,
+        "sha256": "282b68f1813e26fd278913de66dbdf5c9f1717e012658f5ee828a1b70e3edcd7",
+        "taxon": "Nomeus gronovii"
+      }
+    ]
+  },
+  "release_gate": "Not automatically decided: review scoped product evidence, runtime and RSS, including any losses or increases.",
+  "schema_version": 1,
+  "timings": [
+    {
+      "cell": "angiospermae/ERR14009273/1000000",
+      "maximum_s": 31.14,
+      "median_s": 31.0,
+      "minimum_s": 30.97,
+      "n": 3,
+      "values_s": [
+        31.0,
+        31.14,
+        30.97
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "angiospermae/ERR14009273/1000000",
+      "maximum_s": 31.07,
+      "median_s": 30.95,
+      "minimum_s": 30.92,
+      "n": 3,
+      "values_s": [
+        30.95,
+        30.92,
+        31.07
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "angiospermae/SRR25378184/1000000",
+      "maximum_s": 61.01,
+      "median_s": 60.96,
+      "minimum_s": 60.95,
+      "n": 3,
+      "values_s": [
+        60.96,
+        61.01,
+        60.95
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "angiospermae/SRR25378184/1000000",
+      "maximum_s": 60.53,
+      "median_s": 60.37,
+      "minimum_s": 60.2,
+      "n": 3,
+      "values_s": [
+        60.37,
+        60.53,
+        60.2
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/1000000",
+      "maximum_s": 48.63,
+      "median_s": 48.39,
+      "minimum_s": 48.36,
+      "n": 3,
+      "values_s": [
+        48.39,
+        48.36,
+        48.63
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR25099394/1000000",
+      "maximum_s": 47.06,
+      "median_s": 47.03,
+      "minimum_s": 46.8,
+      "n": 3,
+      "values_s": [
+        46.8,
+        47.03,
+        47.06
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/1000000",
+      "maximum_s": 53.73,
+      "median_s": 53.73,
+      "minimum_s": 53.73,
+      "n": 3,
+      "values_s": [
+        53.73,
+        53.73,
+        53.73
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR8617500/1000000",
+      "maximum_s": 52.36,
+      "median_s": 52.3,
+      "minimum_s": 52.22,
+      "n": 3,
+      "values_s": [
+        52.3,
+        52.22,
+        52.36
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/1000000",
+      "maximum_s": 52.42,
+      "median_s": 52.19,
+      "minimum_s": 52.17,
+      "n": 3,
+      "values_s": [
+        52.19,
+        52.42,
+        52.17
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "cnidaria/SRR9278435/1000000",
+      "maximum_s": 50.96,
+      "median_s": 50.96,
+      "minimum_s": 50.72,
+      "n": 3,
+      "values_s": [
+        50.96,
+        50.72,
+        50.96
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "human/SRR17535371/1000000",
+      "maximum_s": 0.41,
+      "median_s": 0.39,
+      "minimum_s": 0.39,
+      "n": 3,
+      "values_s": [
+        0.39,
+        0.39,
+        0.41
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "human/SRR17535371/1000000",
+      "maximum_s": 0.45,
+      "median_s": 0.44,
+      "minimum_s": 0.43,
+      "n": 3,
+      "values_s": [
+        0.45,
+        0.44,
+        0.43
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "maximum_s": 44.18,
+      "median_s": 43.95,
+      "minimum_s": 43.92,
+      "n": 3,
+      "values_s": [
+        44.18,
+        43.92,
+        43.95
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "maximum_s": 43.83,
+      "median_s": 43.83,
+      "minimum_s": 43.74,
+      "n": 3,
+      "values_s": [
+        43.83,
+        43.83,
+        43.74
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "maximum_s": 98.34,
+      "median_s": 98.27000000000001,
+      "minimum_s": 98.0,
+      "n": 3,
+      "values_s": [
+        98.34,
+        98.0,
+        98.27000000000001
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "maximum_s": 96.0,
+      "median_s": 95.9,
+      "minimum_s": 95.78999999999999,
+      "n": 3,
+      "values_s": [
+        96.0,
+        95.78999999999999,
+        95.9
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "maximum_s": 59.77,
+      "median_s": 59.74,
+      "minimum_s": 59.61,
+      "n": 3,
+      "values_s": [
+        59.61,
+        59.74,
+        59.77
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "maximum_s": 60.0,
+      "median_s": 59.46,
+      "minimum_s": 59.42,
+      "n": 3,
+      "values_s": [
+        60.0,
+        59.46,
+        59.42
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "teleostei/SRR22396603/1000000",
+      "maximum_s": 46.2,
+      "median_s": 46.1,
+      "minimum_s": 46.05,
+      "n": 3,
+      "values_s": [
+        46.1,
+        46.05,
+        46.2
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "teleostei/SRR22396603/1000000",
+      "maximum_s": 44.67,
+      "median_s": 44.54,
+      "minimum_s": 44.52,
+      "n": 3,
+      "values_s": [
+        44.54,
+        44.52,
+        44.67
+      ],
+      "version": "candidate"
+    }
+  ]
+}

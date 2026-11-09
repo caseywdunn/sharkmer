@@ -1,0 +1,113 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_restore_inputs_v2.py",
+        "-v"
+      ],
+      "elapsed_seconds": 0.12799904705025256,
+      "returncode": 0,
+      "stderr": "test_actual_remote_size_mismatch_rejected (__main__.RestoreTests) ... ok\ntest_byte_count_bound_rejected (__main__.RestoreTests) ... ok\ntest_changed_source_blocks_publication (__main__.RestoreTests) ... ok\ntest_complete_first_source_then_partial_final_source (__main__.RestoreTests) ... ok\ntest_complete_source_checks_compressed_identity (__main__.RestoreTests) ... ok\ntest_complete_source_rejects_extra_record (__main__.RestoreTests) ... ok\ntest_compressed_read_limit_rejected (__main__.RestoreTests) ... ok\ntest_distinct_local_cache_gzip_sha_is_not_upstream_pin (__main__.RestoreTests) ... ok\ntest_existing_prefix_exact_and_extra_bytes (__main__.RestoreTests) ... ok\ntest_failed_attempt_retains_partial_and_receipt (__main__.RestoreTests) ... ok\ntest_inventory_rejects_unbounded_or_ambiguous_sources (__main__.RestoreTests) ... ok\ntest_prefix_stops_before_additional_records (__main__.RestoreTests) ... ok\ntest_successful_existing_attempt_source_binding (__main__.RestoreTests) ... ok\ntest_symlink_rejected (__main__.RestoreTests) ... ok\ntest_three_complete_sources_in_exact_order (__main__.RestoreTests) ... ok\ntest_truncated_and_invalid_quality_rejected (__main__.RestoreTests) ... ok\ntest_wrong_external_pin_writes_failure_receipt_without_network (__main__.RestoreTests) ... ok\ntest_wrong_raw_digest_rejected (__main__.RestoreTests) ... ok\n\n----------------------------------------------------------------------\nRan 18 tests in 0.019s\n\nOK\n",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_merge_availability.py",
+        "-v"
+      ],
+      "elapsed_seconds": 0.22364473482593894,
+      "returncode": 0,
+      "stderr": "test_changed_fastq_identity_rejected (__main__.MergeTests) ... ok\ntest_changed_receipt_rejected (__main__.MergeTests) ... ok\ntest_duplicate_verified_prefix_rejected (__main__.MergeTests) ... ok\ntest_eight_prior_successes_plus_two_retries (__main__.MergeTests) ... ok\ntest_missing_prefix_rejected (__main__.MergeTests) ... ok\ntest_no_clobber (__main__.MergeTests) ... ok\n\n----------------------------------------------------------------------\nRan 6 tests in 0.109s\n\nOK\n",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "bash",
+        "-n",
+        "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs_v2.sbatch"
+      ],
+      "elapsed_seconds": 0.0058614949230104685,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "scope": "Author synthetic offline controls; no real FASTQ consumed and no network used",
+  "sources_after": {
+    "inventory.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/inventory.json",
+      "sha256": "0e6e6edbebc7430c70519c37fd2bcdd8c2312ddc1b977dfb8b83200e5c1e9ddc",
+      "size_bytes": 72176
+    },
+    "merge_availability.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/merge_availability.py",
+      "sha256": "ff28b469559519cb96acf7ef0b364481118fc9905b35fb0b5111c20ece307552",
+      "size_bytes": 5624
+    },
+    "restore_inputs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs.py",
+      "sha256": "0e921ba136ee8d22abce2a3c0be99e1ad03394ccc6026b465e910f7face2a18a",
+      "size_bytes": 16690
+    },
+    "restore_inputs_v2.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs_v2.py",
+      "sha256": "eb55cdc6c779aa684c051d0873de07e3d6f55274380f6e6c9428e48bb2b3d490",
+      "size_bytes": 17089
+    },
+    "restore_inputs_v2.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs_v2.sbatch",
+      "sha256": "57115a3cb85e40858587fa21cca08242bc5d0bcae6a93afe0733c21f4f555782",
+      "size_bytes": 379
+    },
+    "test_merge_availability.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_merge_availability.py",
+      "sha256": "0a09fa09d0b1dd8c925bef151b852ca96bea33646eacd518b0f8d34a437a6a2d",
+      "size_bytes": 4333
+    },
+    "test_restore_inputs_v2.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_restore_inputs_v2.py",
+      "sha256": "e3247521b17d756f00b545a691cbb883babba8969ce59d80c262393dd4b6d509",
+      "size_bytes": 9456
+    }
+  },
+  "sources_before": {
+    "inventory.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/inventory.json",
+      "sha256": "0e6e6edbebc7430c70519c37fd2bcdd8c2312ddc1b977dfb8b83200e5c1e9ddc",
+      "size_bytes": 72176
+    },
+    "merge_availability.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/merge_availability.py",
+      "sha256": "ff28b469559519cb96acf7ef0b364481118fc9905b35fb0b5111c20ece307552",
+      "size_bytes": 5624
+    },
+    "restore_inputs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs.py",
+      "sha256": "0e921ba136ee8d22abce2a3c0be99e1ad03394ccc6026b465e910f7face2a18a",
+      "size_bytes": 16690
+    },
+    "restore_inputs_v2.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs_v2.py",
+      "sha256": "eb55cdc6c779aa684c051d0873de07e3d6f55274380f6e6c9428e48bb2b3d490",
+      "size_bytes": 17089
+    },
+    "restore_inputs_v2.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs_v2.sbatch",
+      "sha256": "57115a3cb85e40858587fa21cca08242bc5d0bcae6a93afe0733c21f4f555782",
+      "size_bytes": 379
+    },
+    "test_merge_availability.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_merge_availability.py",
+      "sha256": "0a09fa09d0b1dd8c925bef151b852ca96bea33646eacd518b0f8d34a437a6a2d",
+      "size_bytes": 4333
+    },
+    "test_restore_inputs_v2.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_restore_inputs_v2.py",
+      "sha256": "e3247521b17d756f00b545a691cbb883babba8969ce59d80c262393dd4b6d509",
+      "size_bytes": 9456
+    }
+  },
+  "status": "pass"
+}

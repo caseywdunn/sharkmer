@@ -7,7 +7,8 @@ module generates them from result dicts (as built by results.build_result()).
 from datetime import datetime
 from pathlib import Path
 
-from . import primer_analysis, runner
+from . import blast_references, primer_analysis, runner
+from .reference_targets import logical_gene_name, target_logical_genes
 
 
 # ---------------------------------------------------------------------------
@@ -17,12 +18,12 @@ from . import primer_analysis, runner
 # Each gene × sample is scored with a 3-character code:
 #
 #   Position 1 — Recovery:   `-` not recovered, `+` recovered
-#   Position 2 — Reference:  `-` no ref for this gene (any species),
-#                             `+` ref exists for other species only,
-#                             `*` ref exists for this species
-#   Position 3 — BLAST hit:  `-` no hit to same gene,
-#                             `+` hit same gene different species,
-#                             `*` hit same gene same species
+#   Position 2 — Reference:  `-` no verified ref for this gene,
+#                             `+` verified ref for other taxa only,
+#                             `*` verified ref for this taxon
+#   Position 3 — Alignment:  `-` no sufficient same-gene support,
+#                             `+` gene support, other taxon,
+#                             `*` gene and expected-taxon support
 #
 # Possible codes:
 #   ---  not recovered, no references for this gene
@@ -33,46 +34,65 @@ from . import primer_analysis, runner
 #   +++  recovered, refs for other species, hit same gene different species
 #   +*-  recovered, ref for this species, no hit (suspicious)
 #   +*+  recovered, ref for this species, hit different species (unexpected)
-#   +**  recovered, ref for this species, confirmed same gene same species
+#   +**  recovered, reference supports same gene and expected taxon
 
 
 SCORE_LEGEND = (
-    "**Scoring** — three positions: recovery / reference availability / BLAST result.\n"
+    "**Scoring** — three positions: recovery / verified-reference availability / alignment support.\n"
     "\n"
     "| Code | Meaning |\n"
     "|------|---------|\n"
-    "| `+**` | Recovered, confirmed: same gene, same species |\n"
-    "| `+*+` | Recovered, ref for this species exists but hit different species |\n"
-    "| `+*-` | Recovered, ref for this species exists but no BLAST hit (suspicious) |\n"
-    "| `+++` | Recovered, hit same gene in a different species |\n"
-    "| `++-` | Recovered, refs for other species exist but no BLAST hit |\n"
-    "| `+--` | Recovered, no references for this gene |\n"
-    "| `-*-` | Not recovered, ref exists for this species |\n"
-    "| `-+-` | Not recovered, refs exist for other species |\n"
-    "| `---` | Not recovered, no references for this gene |\n"
+    "| `+**` | Recovered; alignment supports the gene and expected taxon |\n"
+    "| `+*+` | Recovered; expected-taxon reference exists but strongest gene support is another taxon |\n"
+    "| `+*-` | Recovered; no sufficient unambiguous same-gene alignment |\n"
+    "| `+++` | Recovered; alignment supports the gene using another taxon |\n"
+    "| `++-` | Recovered; no sufficient unambiguous same-gene alignment |\n"
+    "| `+--` | Recovered; no verified reference for this gene |\n"
+    "| `-*-` | Not recovered; verified reference exists for this taxon |\n"
+    "| `-+-` | Not recovered; verified references exist for other taxa |\n"
+    "| `---` | Not recovered; no verified reference for this gene |\n"
     "\n"
     "Position 1: `-` no product, `+` product recovered. "
-    "Position 2: `-` no reference for any species for this gene, "
-    "`+` reference for other species, `*` reference for this species. "
-    "Position 3: `-` no BLAST hit to same gene, "
-    "`+` hit same gene different species, `*` same gene same species.\n"
+    "Position 2: `-` no verified reference for this gene, "
+    "`+` verified reference for other taxa, `*` verified reference for this taxon. "
+    "Position 3: `-` insufficient, ambiguous, or conflicting evidence; "
+    "`+` same-gene support from another taxon; `*` same-gene and expected-taxon support.\n"
+    "Identity and query-coverage gates are recorded analysis criteria, not universal truth. "
+    "Reference provenance validates the public source region, not its panel gene annotation. "
+    "Reference alignment does not establish sample haplotype truth or read support.\n"
 )
 
 
-def _build_ref_availability(panel_data: dict) -> dict:
+def _build_ref_availability(
+    panel_data: dict | None = None, reference_summary: dict | None = None
+) -> dict:
     """Build a map of reference availability per gene.
 
     Returns: {gene_name: {taxon1, taxon2, ...}} — set of taxa that have
     a reference for each gene. Genes with no references are absent.
     """
     ref_map = {}
-    for ref_block in panel_data.get("references", []):
-        gene = runner.derive_gene_name(ref_block)
-        taxa = set()
-        for seq_entry in ref_block.get("sequences", []):
-            taxa.add(seq_entry["taxon"])
-        if taxa:
-            ref_map[gene] = taxa
+    if isinstance(reference_summary, dict):
+        references = reference_summary.get("verified", [])
+        target_mapping = reference_summary.get("target_logical_genes", {})
+        for reference in references:
+            ref_map.setdefault(reference["gene"], set()).add(reference["taxon"])
+            reference_logical_gene = reference.get("logical_gene") or logical_gene_name(
+                reference["gene"]
+            )
+            for target, logical_gene in target_mapping.items():
+                if logical_gene == reference_logical_gene:
+                    ref_map.setdefault(target, set()).add(reference["taxon"])
+        return ref_map
+    target_mapping = target_logical_genes(panel_data or {})
+    for reference in blast_references.extract_references(panel_data or {}):
+        ref_map.setdefault(reference["gene_name"], set()).add(reference["taxon"])
+        reference_logical_gene = logical_gene_name(
+            reference["gene_name"], panel_data=panel_data
+        )
+        for target, logical_gene in target_mapping.items():
+            if logical_gene == reference_logical_gene:
+                ref_map.setdefault(target, set()).add(reference["taxon"])
     return ref_map
 
 
@@ -91,7 +111,19 @@ def _score_gene(
         p1 = "+"
 
     # Position 2: reference availability for this gene
-    gene_refs = ref_availability.get(gene, set())
+    expected_logical_gene = (
+        ref_match.get("expected_logical_gene")
+        if isinstance(ref_match, dict)
+        else logical_gene_name(gene)
+    ) or logical_gene_name(gene)
+    gene_refs = set().union(
+        *(
+            taxa
+            for target, taxa in ref_availability.items()
+            if target == gene
+            or logical_gene_name(target) == expected_logical_gene
+        )
+    )
     if not gene_refs:
         p2 = "-"
     elif sample_taxon in gene_refs:
@@ -102,19 +134,85 @@ def _score_gene(
     # Position 3: BLAST result (only meaningful if recovered)
     if not recovered or ref_match is None:
         p3 = "-"
-    elif ref_match.get("pct_identity") is None:
-        p3 = "-"
-    elif ref_match.get("on_target"):
-        # Same gene, same species
+    elif (
+        ref_match.get("status") == "gene_supported_expected_taxon"
+        and (
+            ref_match.get("matched_logical_gene")
+            or logical_gene_name(ref_match.get("matched_gene"))
+        )
+        == expected_logical_gene
+        and ref_match.get("all_products_expected_taxon_supported", True)
+    ):
         p3 = "*"
-    elif ref_match.get("matched_gene") is not None:
-        # Got a hit — it's same gene different species
-        # (we only BLAST against same-gene refs now)
+    elif (
+        ref_match.get("status") == "gene_supported_other_taxon"
+        and (
+            ref_match.get("matched_logical_gene")
+            or logical_gene_name(ref_match.get("matched_gene"))
+        )
+        == expected_logical_gene
+    ):
         p3 = "+"
     else:
         p3 = "-"
 
     return f"{p1}{p2}{p3}"
+
+
+def _reference_provenance_summary(result: dict) -> list:
+    references = result.get("provenance", {}).get("references")
+    if not isinstance(references, dict):
+        return []
+    catalog = references.get("catalog") or {}
+    lines = ["## Reference evidence provenance", ""]
+    lines.append(
+        f"- **Verified reference entries**: {references.get('verified_count', 0)}"
+    )
+    lines.append(
+        f"- **Excluded/unverified entries**: {references.get('excluded_count', 0)}"
+    )
+    lines.append(
+        f"- **Reference catalog**: status `{catalog.get('status', 'unavailable')}`, "
+        f"SHA-256 `{catalog.get('sha256') or 'unavailable'}`, path `{catalog.get('path', 'unavailable')}`"
+    )
+    biological_truth = references.get("biological_truth")
+    if biological_truth:
+        lines.append(f"- **Evidence scope**: {biological_truth}")
+    target_mapping = references.get("target_logical_genes") or {}
+    grouped_targets = {}
+    for target, logical_gene in target_mapping.items():
+        grouped_targets.setdefault(logical_gene, []).append(target)
+    reviewed_groups = {
+        logical_gene: sorted(targets)
+        for logical_gene, targets in grouped_targets.items()
+        if len(targets) > 1
+    }
+    if reviewed_groups:
+        rendered_groups = "; ".join(
+            f"`{logical_gene}`: {', '.join(f'`{target}`' for target in targets)}"
+            for logical_gene, targets in sorted(reviewed_groups.items())
+        )
+        lines.append(f"- **Reviewed logical target groups**: {rendered_groups}")
+        lines.append(
+            "- **Primer-region support**: not established by logical target grouping"
+        )
+    excluded = references.get("excluded") or []
+    if excluded:
+        reason_counts = {}
+        for entry in excluded:
+            reason = entry.get("reason", "unspecified")
+            reason_counts[reason] = reason_counts.get(reason, 0) + 1
+        lines.extend(["", "| Exclusion reason | Entries |", "|------------------|--------:|"])
+        for reason, count in sorted(reason_counts.items()):
+            lines.append(f"| {reason} | {count} |")
+    lines.extend(
+        [
+            "",
+            "Public-region verification establishes source provenance only. Gene labels remain panel annotations; alignment does not establish sample haplotype truth or read support.",
+            "",
+        ]
+    )
+    return lines
 
 
 # ---------------------------------------------------------------------------
@@ -147,6 +245,18 @@ def write_panel_report(
     lines.append(f"- **Panel version**: `{panel_version}`")
     lines.append(f"- **sharkmer version**: `{sharkmer_version}`")
     lines.append(f"- **Date**: {now}")
+    executable = result.get("provenance", {}).get("executable") or {}
+    if executable:
+        source_observation = executable.get("workspace_source_observation", {})
+        lines.append(
+            f"- **Executable**: `{executable.get('path', '?')}` "
+            f"(sha256 `{executable.get('sha256', '?')}`)"
+        )
+        lines.append(
+            f"- **Source observation**: `{source_observation.get('revision', '?')}`; "
+            f"dirty={source_observation.get('dirty', '?')}; "
+            f"tree sha256 `{source_observation.get('tree_sha256', '?')}`"
+        )
     machine = result.get("machine", {})
     if machine:
         lines.append(
@@ -164,7 +274,13 @@ def write_panel_report(
     else:
         considered_genes = declared_genes
 
-    ref_availability = _build_ref_availability(panel_data)
+    stored_reference_summary = result.get("provenance", {}).get("references")
+    ref_availability = _build_ref_availability(
+        panel_data,
+        stored_reference_summary if isinstance(stored_reference_summary, dict) else None,
+    )
+
+    lines.extend(_reference_provenance_summary(result))
 
     # Section 2: Depth-recovery matrix (one per sample)
     for sample_entry in result.get("samples", []):
@@ -213,7 +329,9 @@ def write_panel_report(
             cells = []
             for depth in successful:
                 gr = gene_depths.get(depth["max_reads"])
-                if gr and gr.get("recovered"):
+                if gr and gr.get("evaluation_status") == "not_evaluated":
+                    cells.append("N/E")
+                elif gr and gr.get("recovered"):
                     length = gr.get("length")
                     ref = gr.get("reference_match")
                     if ref and ref.get("pct_identity") is not None:
@@ -228,7 +346,9 @@ def write_panel_report(
             # Score from highest successful depth.
             best_depth = successful[-1]
             gr = gene_depths.get(best_depth["max_reads"])
-            if gr and gr.get("recovered"):
+            if gr and gr.get("evaluation_status") == "not_evaluated":
+                score = "N/E"
+            elif gr and gr.get("recovered"):
                 score = _score_gene(
                     True, gene, taxon,
                     gr.get("reference_match"), ref_availability,
@@ -319,6 +439,9 @@ def _cross_sample_summary(
             best = max(successful, key=lambda d: d["max_reads"])
             gene_results = {g["gene"]: g for g in best.get("genes", [])}
             gr = gene_results.get(gene)
+            if gr and gr.get("evaluation_status") == "not_evaluated":
+                cells.append("`N/E`")
+                continue
             if gr and gr.get("recovered"):
                 score = _score_gene(
                     True, gene, taxon,
@@ -434,21 +557,42 @@ def _reference_details(result: dict, considered_genes: list) -> list:
                 continue
             if not gr.get("recovered"):
                 continue
-            ref = gr.get("reference_match")
-            if ref is None:
-                continue
-            rows.append(
-                {
-                    "sample": accession,
-                    "sample_taxon": taxon,
-                    "gene": gene,
-                    "matched_taxon": ref.get("matched_taxon", "---"),
-                    "matched_accession": ref.get("matched_accession", "---"),
-                    "pct_identity": ref.get("pct_identity"),
-                    "align_length": ref.get("align_length"),
-                    "on_target": ref.get("on_target", False),
-                }
-            )
+            for product in gr.get("products", []):
+                ref = product.get("reference_match")
+                if ref is None:
+                    continue
+                rows.append(
+                    {
+                        "sample": accession,
+                        "sample_taxon": taxon,
+                        "gene": gene,
+                        "logical_gene": ref.get("expected_logical_gene")
+                        or gr.get("logical_gene")
+                        or logical_gene_name(gene),
+                        "product": product.get("product_index"),
+                        "status": ref.get("status", "unknown"),
+                        "target_support": ref.get("target_support", "unavailable"),
+                        "sequence_relationship": ref.get("sequence_relationship", "unavailable"),
+                        "matched_gene": ref.get("matched_gene", "---"),
+                        "matched_logical_gene": ref.get(
+                            "matched_logical_gene", "---"
+                        ),
+                        "matched_taxon": ref.get("matched_taxon", "---"),
+                        "matched_accession": ref.get("matched_accession", "---"),
+                        "pct_identity": ref.get("pct_identity"),
+                        "query_coverage_pct": ref.get("query_coverage_pct"),
+                        "query_unaligned_bases": ref.get("query_unaligned_bases"),
+                        "unmatched_query_regions": ref.get("unmatched_query_regions"),
+                        "reference_coverage_pct": ref.get("reference_coverage_pct"),
+                        "unmatched_reference_regions": ref.get("unmatched_reference_regions"),
+                        "gap_count": ref.get("gap_count"),
+                        "haplotype_truth": ref.get("haplotype_truth", "not_established"),
+                        "read_support": ref.get("read_support", "not_evaluated"),
+                        "primer_region_support": ref.get(
+                            "primer_region_support", "not_established"
+                        ),
+                    }
+                )
 
     if not rows:
         return []
@@ -457,20 +601,43 @@ def _reference_details(result: dict, considered_genes: list) -> list:
     lines.append("## Reference match details")
     lines.append("")
     lines.append(
-        "| Sample | Gene | Sample taxon | Ref taxon | Ref accession | Identity | "
-        "Align len |"
+        "| Sample | Target | Logical target | Product | Status | Target support | Sequence relationship | "
+        "Matched reference target | Matched logical target | Sample taxon | Ref taxon | Ref accession | Identity | Query coverage | "
+        "Unmatched query regions | Reference coverage | Unmatched reference regions | "
+        "Gaps | Primer-region support | Haplotype truth | Read support |"
     )
     lines.append(
-        "|--------|------|-------------|-----------|---------------|----------|"
-        "-----------|"
+        "|--------|--------|----------------|--------:|--------|----------------|-----------------------|"
+        "--------------------------|------------------------|-------------|-----------|---------------|----------:|---------------:|"
+        "-------------------------|-------------------:|-----------------------------|"
+        "-----:|----------------------|-----------------|--------------|"
     )
     for r in rows:
         pct = f"{r['pct_identity']:.1f}%" if r["pct_identity"] is not None else "---"
-        alen = str(r["align_length"]) if r["align_length"] is not None else "---"
-        same_sp = "**same**" if r["on_target"] else r["matched_taxon"]
+        coverage = (
+            f"{r['query_coverage_pct']:.1f}%"
+            if r["query_coverage_pct"] is not None
+            else "---"
+        )
+        reference_coverage = (
+            f"{r['reference_coverage_pct']:.1f}%"
+            if r["reference_coverage_pct"] is not None
+            else "---"
+        )
+        unmatched_query = ", ".join(
+            f"{start}-{end}" for start, end in r["unmatched_query_regions"] or []
+        ) or "none"
+        unmatched_reference = ", ".join(
+            f"{start}-{end}" for start, end in r["unmatched_reference_regions"] or []
+        ) or "none"
         lines.append(
-            f"| {r['sample']} | {r['gene']} | {r['sample_taxon']} | "
-            f"{same_sp} | {r['matched_accession']} | {pct} | {alen} |"
+            f"| {r['sample']} | {r['gene']} | {r['logical_gene']} | {r['product']} | {r['status']} | "
+            f"{r['target_support']} | {r['sequence_relationship']} | "
+            f"{r['matched_gene']} | {r['matched_logical_gene']} | {r['sample_taxon']} | "
+            f"{r['matched_taxon']} | {r['matched_accession']} | {pct} | {coverage} | "
+            f"{unmatched_query} | {reference_coverage} | {unmatched_reference} | "
+            f"{r['gap_count'] if r['gap_count'] is not None else '---'} | "
+            f"{r['primer_region_support']} | {r['haplotype_truth']} | {r['read_support']} |"
         )
     lines.append("")
     return lines
@@ -503,7 +670,7 @@ def _format_count(n: int | None) -> str:
 
 
 def _performance_summary(result: dict) -> list:
-    """Performance table: wall time, peak memory, reads, bases, kmers per run."""
+    """Performance table: timing, allocator, input, and counting metrics."""
     rows = []
     for s in result.get("samples", []):
         accession = s["accession"]
@@ -521,8 +688,13 @@ def _performance_summary(result: dict) -> list:
                 "wall_time_s": d.get("wall_time_s"),
                 "peak_mem": stats.get("peak_memory_bytes"),
                 "n_reads": stats.get("n_reads_read"),
+                "n_subreads": stats.get("n_subreads_ingested"),
                 "n_bases": stats.get("n_bases_read"),
                 "n_kmers": stats.get("n_kmers"),
+                "stage_times": stats.get("stage_timings", {}),
+                "peak_rss": d.get("peak_rss_bytes"),
+                "table_capacity": stats.get("count_table_capacity"),
+                "temp_disk": d.get("temp_disk_final_bytes"),
             })
 
     if not rows:
@@ -532,22 +704,49 @@ def _performance_summary(result: dict) -> list:
     lines.append("## Performance")
     lines.append("")
     lines.append(
-        "| Sample | Max reads | Wall time | Peak memory | "
-        "Reads ingested | Bases ingested | Distinct kmers |"
+        "`Records ingested` is the legacy `n_subreads_ingested` field: it currently "
+        "duplicates successfully ingested FASTQ records, while `N` only breaks kmer windows."
+    )
+    lines.append("")
+    lines.append(
+        "| Sample | Max reads | Wall time | Count time | PCR time | Allocator peak | "
+        "Reads read | Records ingested | Bases read | Kmer occurrences | Mbp/s | k-mers/s | "
+        "Peak RSS | Table capacity | Final run disk |"
     )
     lines.append(
-        "|--------|----------:|----------:|------------:|"
-        "---------------:|---------------:|---------------:|"
+        "|--------|----------:|----------:|-----------:|---------:|---------------:|"
+        "------------:|------------------:|-----------:|-----------------:|------:|----------:|"
+        "---------:|---------------:|---------------:|"
     )
     for r in rows:
         k_reads = f"{r['reads'] // 1000}k"
         wall = f"{r['wall_time_s']}s" if r["wall_time_s"] is not None else "---"
+        counting_seconds = sum(
+            r["stage_times"].get(key) or 0
+            for key in ("read_ingest_s", "count_finalize_s")
+        )
+        mbps = (
+            f"{r['n_bases'] / 1_000_000 / counting_seconds:.2f}"
+            if r["n_bases"] is not None and counting_seconds > 0
+            else "---"
+        )
+        kmers_per_second = (
+            f"{r['n_kmers'] / counting_seconds:.0f}"
+            if r["n_kmers"] is not None and counting_seconds > 0
+            else "---"
+        )
+        count_time = f"{counting_seconds:.6f}s" if counting_seconds > 0 else "---"
+        pcr_seconds = r["stage_times"].get("pcr_s")
+        pcr_time = f"{pcr_seconds:.6f}s" if pcr_seconds is not None else "---"
         lines.append(
-            f"| {r['sample']} | {k_reads} | {wall} | "
+            f"| {r['sample']} | {k_reads} | {wall} | {count_time} | {pcr_time} | "
             f"{_format_bytes(r['peak_mem'])} | "
             f"{_format_count(r['n_reads'])} | "
+            f"{_format_count(r['n_subreads'])} | "
             f"{_format_count(r['n_bases'])} | "
-            f"{_format_count(r['n_kmers'])} |"
+            f"{_format_count(r['n_kmers'])} | {mbps} | {kmers_per_second} | "
+            f"{_format_bytes(r['peak_rss'])} | {_format_count(r['table_capacity'])} | "
+            f"{_format_bytes(r['temp_disk'])} |"
         )
     lines.append("")
     return lines
@@ -592,6 +791,16 @@ def write_benchmark_summary(
         panel_version = result.get("panel_version", "?")
         lines.append(f"## {panel_name} v{panel_version}")
         lines.append("")
+        references = result.get("provenance", {}).get("references")
+        if isinstance(references, dict):
+            catalog = references.get("catalog") or {}
+            lines.append(
+                f"Verified references: {references.get('verified_count', 0)}; "
+                f"excluded/unverified: {references.get('excluded_count', 0)}; "
+                f"catalog status `{catalog.get('status', 'unavailable')}`; "
+                f"catalog SHA-256 `{catalog.get('sha256') or 'unavailable'}`."
+            )
+            lines.append("")
 
         samples = result.get("samples", [])
         if not samples:
@@ -601,7 +810,12 @@ def write_benchmark_summary(
 
         # Get ref availability if we have panel data.
         ref_availability = {}
-        if panel_data_map and panel_name in panel_data_map:
+        reference_summary = result.get("provenance", {}).get("references")
+        if isinstance(reference_summary, dict):
+            ref_availability = _build_ref_availability(
+                reference_summary=reference_summary
+            )
+        elif panel_data_map and panel_name in panel_data_map:
             ref_availability = _build_ref_availability(panel_data_map[panel_name])
 
         # Collect all genes across samples.
@@ -631,7 +845,9 @@ def write_benchmark_summary(
                 cells = []
                 for gene in all_genes:
                     gr = gene_map.get(gene)
-                    if gr and gr.get("recovered"):
+                    if gr and gr.get("evaluation_status") == "not_evaluated":
+                        cells.append("`N/E`")
+                    elif gr and gr.get("recovered"):
                         length = gr.get("length", "?")
                         score = _score_gene(
                             True, gene, taxon,

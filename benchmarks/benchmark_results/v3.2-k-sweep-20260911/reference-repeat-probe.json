@@ -1,0 +1,42 @@
+{
+  "purpose": "Supplementary reference-only substring diagnostic, not Sharkmer graph execution or read evidence",
+  "reference": "AK281180",
+  "length": 978,
+  "sequence_sha256": "23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c",
+  "panel": {
+    "path": "/tmp/sharkmer-release-comparison/sources/candidate/panels/insecta.yaml",
+    "sha256": "043a4d224f8186d58459287c54bec7935d5f4921a5087c14a2136cfac42df874"
+  },
+  "orientation": "Sense-strand substrings only; no canonicalization, other templates, sequencing errors, coverage filtering, or primer discovery",
+  "interpretation": "Repeated (k-1)-mers can identify intrinsic merges in a single-reference graph; their absence does not rule out cycles in the actual read-derived graph",
+  "probes": [
+    {
+      "k": 19,
+      "node_length": 18,
+      "distinct_nodes": 961,
+      "repeated_distinct_nodes": 0,
+      "repeated_nodes": []
+    },
+    {
+      "k": 23,
+      "node_length": 22,
+      "distinct_nodes": 957,
+      "repeated_distinct_nodes": 0,
+      "repeated_nodes": []
+    },
+    {
+      "k": 27,
+      "node_length": 26,
+      "distinct_nodes": 953,
+      "repeated_distinct_nodes": 0,
+      "repeated_nodes": []
+    },
+    {
+      "k": 31,
+      "node_length": 30,
+      "distinct_nodes": 949,
+      "repeated_distinct_nodes": 0,
+      "repeated_nodes": []
+    }
+  ]
+}

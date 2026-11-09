@@ -1,0 +1,14 @@
+{
+  "equality_seconds": 0.6067441708873957,
+  "exact_observation_equality_cases": 1835,
+  "projection_limitation": "Excludes FASTQ IO, parsing, hashing and experimental matching density; execution remains bounded by 600 seconds",
+  "random_only_1M_projection_seconds": 86.60344500094652,
+  "source_sha256": {
+    "check_prefilter.py": "3a8fedea8cb1ba8aa4fb246425e297a326bdc2cbfa2bdb9ba381c2f8f03141ba",
+    "manifest.json": "b95c3ba4e6503ce991c40f94b4e191e7da2b8c859a41fddffe722bbcc96b53e7",
+    "scan_prefiltered.py": "799baed7b953ecdb938d6fd7cc2002944219c488498c84c81e3cf06976d1195b"
+  },
+  "status": "pass",
+  "synthetic_random_reads": 2000,
+  "synthetic_random_seconds": 0.17320689000189304
+}

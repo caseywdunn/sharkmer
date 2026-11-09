@@ -1,0 +1,33 @@
+{
+  "checksums_sha256": "35dfff9eea51b7b1240ace47dd0735da75e3c209fb33c795b162288df30517ef",
+  "deterministic_replay_command": [
+    "/usr/bin/python3",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/analyze_linkage.py",
+    "--output",
+    "/tmp/sharkmer-its-linkage-replay-n2mpi01n"
+  ],
+  "deterministic_replay_exit_code": 0,
+  "deterministic_replay_identical": {
+    "block_combinations.tsv": true,
+    "candidate_disposition.tsv": true,
+    "report.json": true,
+    "summary.json": true
+  },
+  "draft_outputs_preserved_at": "/tmp/sharkmer-its-linkage-draft-p_ugdcc6",
+  "producer_sha256": "94b844543ce07f93f4a52a1d83fea2b297ae6d6c456f7e8d3984d83751d9dcde",
+  "status": "pass",
+  "test_command": [
+    "/usr/bin/python3",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009",
+    "-p",
+    "test_linkage.py",
+    "-v"
+  ],
+  "test_exit_code": 0,
+  "test_log_sha256": "29ccf04e724fc18281c10ac65a6a16f5fdf395b41e5d6cc620ff25a543b2029c",
+  "test_source_sha256": "80b2cfaebb37a5932bb236f96f9f0b1bc67077548be777756d967ae8abfd974c"
+}

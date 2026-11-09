@@ -1,0 +1,144 @@
+{
+  "artifacts": {
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/implementation_freeze.json": {
+      "bytes": 13853,
+      "sha256": "adb59435e599228c13d05f4b70511cbc6a8fbfec6ec5a5779b6719a6dee12bda"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/implementation_freeze_verification.json": {
+      "bytes": 371,
+      "sha256": "a82a5cd1a033db11bf56b857e2eb783874324e7e4e2ebebc256c95da3aae8801"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/final-v1/joined_source_hashes.json": {
+      "bytes": 45373,
+      "sha256": "61bfe25fe823b8defe7f48cf5319ac9e34f2fba1a850c375240c9294492b5c02"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/final-v1/sequence_inventory.tsv": {
+      "bytes": 1444324,
+      "sha256": "884c1afdd5566242b6301bbbd74555f8e48c8691ec79c69f5fd4700035d493e2"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/final-v1/target_matrix.tsv": {
+      "bytes": 134527,
+      "sha256": "66102645b29e9d54099f9f76b785443d1255c4bdabb82725f9774c09e5ac4051"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/final-v1/target_matrix_compact.csv": {
+      "bytes": 29592,
+      "sha256": "ad3f6bd8fc628349a6f515792a12fdf54d96b7ed6340d39e9dce6de525c30302"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/final-v1/validation.json": {
+      "bytes": 40471,
+      "sha256": "7b0152e39015306d122b3a96b72d9e0e4ac0ea2a066569454ff38c6716642135"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/checksums.json": {
+      "bytes": 914,
+      "sha256": "07eefa8b3199e210012a3a3c6fffc7bf2c1c0d8cd9e0837883ef547b5775b734"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/per_candidate.tsv": {
+      "bytes": 28506,
+      "sha256": "81414aa2667bfd51381322bcc0c0fa7849dd445c941972b9d6117b57c8e5d084"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/summary.json": {
+      "bytes": 22128,
+      "sha256": "2310823acfd230142823b70e231b485b50cc0771682658abcef1b2e89b1b15a4"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/annotation_review.json": {
+      "bytes": 4095,
+      "sha256": "c32734680b2b17b350c79829edc138c1d379720d855e705920604771ffbafb7a"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/assessment-v2/per_candidate.tsv": {
+      "bytes": 29910,
+      "sha256": "c924e6b2341d7a17876648d5f892f2d5aebc6309136d956f8cc270d6005c38ef"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/assessment-v2/report.json": {
+      "bytes": 286752,
+      "sha256": "b45609ca830b99c7eca49d84a32feaf6a571b9ecd154c2474e2eddb25f2f0008"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/annotation_review.json": {
+      "bytes": 1366,
+      "sha256": "f53f3e4a60dcf11f6a0d1a4857a06281feda1bfe3f21f243e0b279d57045c56f"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/final_matrix_review.json": {
+      "bytes": 1917,
+      "sha256": "98317a6cb6fe89b16a44428c88b559aaef5844ce780728be13da26f12fad2c2c"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/matrix_review.json": {
+      "bytes": 24423,
+      "sha256": "4577859e647df01c230fcf36b9283c6ac8faa68a1c0254cb487605d40c0983e7"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/read_assay_review.json": {
+      "bytes": 7709,
+      "sha256": "d8fe6dc55ca886ce76d03727647175c9ba98c9f0f83bbcc7b3c02c638083817e"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/read_export_review.json": {
+      "bytes": 452,
+      "sha256": "00335089677b12b6a4e538611c654abd4c2b3548dedc28553410e2f998b46bea"
+    },
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/reference_review.json": {
+      "bytes": 4722,
+      "sha256": "5e6ad71e4c66fd65f9f4dcb705a67f4142972dcc917ed34ef669d73c69ef7714"
+    },
+    "dev_docs/HANDOFF.md": {
+      "bytes": 29738,
+      "sha256": "3ee96d4d32d6bc99fa7f179fdfd22f30c928803c7586b0a57ff29b47795f4823"
+    },
+    "dev_docs/PLAN.md": {
+      "bytes": 47243,
+      "sha256": "bf53ef5c17f85dade73125730d371629ddb802187bf237198d17f482b8c17c38"
+    },
+    "dev_docs/PUBLIC_REFERENCE_REPLACEMENTS.md": {
+      "bytes": 20653,
+      "sha256": "a41c0856c50d712ec10453b60a047077a15f68ebf94b68669b684c75fa007f94"
+    },
+    "dev_docs/SEQUENCE_RETENTION_RESULTS.md": {
+      "bytes": 26482,
+      "sha256": "12eb725256b7dcc608b67c680ba340e3407a86d48e47cb4445ab1cf8ddbbe402"
+    }
+  },
+  "completed_utc": "2026-10-10T04:29:47.302388+00:00",
+  "documentation_semantic_review": {
+    "corrections": [
+      "Allowing up to two substitutions per primer.",
+      "ND4 partial hits explicitly identify other loci/taxa, including ND5."
+    ],
+    "reviewer": "/root/gryllus_linkage",
+    "status": "pass_with_precision_corrections_applied"
+  },
+  "goal": "complete recommendations 1-3 above",
+  "out_of_scope_remaining": [
+    "Focused plant panel correction under #156",
+    "Four earlier runtime flags and other release gates",
+    "Full sample-product phase and broader biological validation",
+    "Merge, commit, tag or publication"
+  ],
+  "recommendations": {
+    "1": {
+      "result": "Current implementation, inclusive output and limits frozen; all 74 hashes unchanged.",
+      "status": "complete"
+    },
+    "2": {
+      "counts": {
+        "current_products": 326,
+        "current_represented_targets": 74,
+        "historical_products": 86,
+        "historical_represented_targets": 68,
+        "lost_exact_products": 0,
+        "new_exact_products": 240,
+        "newly_represented_targets": 6,
+        "novel_target_products": 154,
+        "retained_exact_products": 86,
+        "standard_products": 64,
+        "target_rows": 118,
+        "uncertain_products": 262,
+        "zero_output_current_targets": 44
+      },
+      "read_assessed": 228,
+      "reference_assessed": 313,
+      "result": "All 118 target rows plus 326 sequence identities, historical comparison and available scoped evidence joined and independently reviewed.",
+      "status": "complete"
+    },
+    "3": {
+      "result": "All 154 hypotheses on six newly represented targets assessed using bounded reads/references; one atpB-rbcL hypothesis corroborated; 153 remain uncorroborated. trnV-atpE physical primer identity and length conflict resolved; future panel correction remains separate.",
+      "status": "complete"
+    }
+  },
+  "status": "complete"
+}

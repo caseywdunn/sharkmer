@@ -1,0 +1,10 @@
+{
+  "checker": {
+    "sha256": "f22bfb7ce204318d60bde8368a533228bd2165e2503fe942bb4861034c645a29",
+    "size_bytes": 32754
+  },
+  "elapsed_seconds": 48.090604458004236,
+  "error": "'benchmarks/benchmark_results/v3.2-read-histories-20260926/freeze.json' is not in the subpath of '/nfs/roberts/project/pi_cwd7/cwd7/sharkmer' OR one path is relative and the other is absolute.",
+  "error_type": "ValueError",
+  "status": "failed"
+}

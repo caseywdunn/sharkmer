@@ -1,0 +1,384 @@
+{
+  "anchors": {
+    "between_A_C": "TCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCT",
+    "between_C_B": "GCGCGTCGGCGTCGTA",
+    "left": "GCTTGCTCCTATACGCTCGCG",
+    "right": "TTTTCGGCTAACTCGTCTTTT"
+  },
+  "blocks_description": {
+    "A": "overlapping original events 01\u201306, grouped into three literal strings",
+    "B": "original events 07\u201308 omit the alternate C context; rechecked with both contexts",
+    "C": "intervening variable string; required when evaluating A-to-B linkage"
+  },
+  "candidate_context_count": 33,
+  "candidate_gains": 32,
+  "control_counts_reproduced": [
+    {
+      "event_id": "SRR27962769_e2d376bc5b0f09a9_supplementary_retained_corresponding_interval",
+      "ordinals": [
+        20156,
+        51338,
+        83145,
+        105403,
+        127734,
+        173637,
+        197923,
+        198114,
+        426438,
+        426597,
+        429210,
+        429271,
+        429823,
+        430127,
+        430228,
+        430278,
+        430605,
+        431831,
+        522583,
+        612275,
+        781667,
+        784842,
+        787953,
+        788036,
+        788254,
+        862674,
+        925542
+      ],
+      "records": 27
+    },
+    {
+      "event_id": "SRR27962769_e86a7ccf9e78adaf_primary_complete_placement_union_0",
+      "ordinals": [],
+      "records": 0
+    }
+  ],
+  "coordinate_system": "zero_based_half_open",
+  "gains_with_complete_local_span_observed": 11,
+  "gains_with_full_candidate_phase_established": 0,
+  "gains_with_variable_core_observed": 15,
+  "gains_with_variable_core_unobserved": 17,
+  "global_gain_shared_prefix": 518,
+  "global_variable_extent_with_21bp_flanks_lengths": [
+    424,
+    425,
+    426
+  ],
+  "input_subset": {
+    "bases": 150000000,
+    "records": 1000000,
+    "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+    "size_bytes": 365356898
+  },
+  "limitations": [
+    "The 25 reads were saved because they matched one of eight original Q20 windows. Missing combinations are unobserved in this selected ledger, not proven absent from the million-read prefix or sample.",
+    "Every linked span must occur exactly on a single read with Q20 throughout. Separate or overlapping reads are never stitched into a linkage witness.",
+    "Overlapping original windows are not independent alleles. Blocks describe literal strings and do not claim unique indel placement.",
+    "All exact positions and both orientations are retained. Candidate context has 32 gains and one historical ITS assembly, which is not independent biological truth.",
+    "A matching local span can be shared by several candidates. It does not phase the distant differences beginning at position 518 or the full 424\u2013426 bp flanked variable extent.",
+    "Variable-core co-occurrence requires all A/C/B blocks and intervening sequence on a single Q20 read but can have fewer than 21 flanking bases. Flank lengths are explicit; this is reported separately from the full flanked assay.",
+    "Read counts are records, not independent molecules. Duplicated sequences, PCR copies, sequencing errors, other loci, and unsampled alternatives remain possible.",
+    "Full-span candidate mismatches outside a supported interval remain recorded. An incompatible read does not rule out that candidate elsewhere in a mixed sample.",
+    "No new FASTQ scan, read recruitment, gap alignment, whole-repeat reconstruction, or product filtering was performed."
+  ],
+  "maximum_saved_read_length": 150,
+  "minimum_quality_entire_span": 20,
+  "observed_full_span_strings": [
+    {
+      "all_placements": [
+        {
+          "minimum_phred": 11,
+          "ordinal": 362059,
+          "oriented_read_span": [
+            12,
+            125
+          ],
+          "original_read_span": [
+            12,
+            125
+          ],
+          "passes_q20_entire_span": false,
+          "read_id": "@SRR27962769.362059",
+          "sequence": "GCTTGCTCCTATACGCTCGCGCTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTACGGGGCGCGTCGGCGGCGTATTTTTCGGCTAACTCGTCTTTT",
+          "strand": "+"
+        }
+      ],
+      "blocks": null,
+      "candidate_ids": [],
+      "in_saved_candidate_context": false,
+      "length": 113,
+      "q20_read_ordinals": [],
+      "sequence": "GCTTGCTCCTATACGCTCGCGCTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTACGGGGCGCGTCGGCGGCGTATTTTTCGGCTAACTCGTCTTTT",
+      "sequence_sha256": "b2f31effcd03e48cf98ec4f7f4d387d1b42382f3dfc3f767ced553e0b7fbb7d7"
+    },
+    {
+      "all_placements": [
+        {
+          "minimum_phred": 11,
+          "ordinal": 362008,
+          "oriented_read_span": [
+            12,
+            125
+          ],
+          "original_read_span": [
+            12,
+            125
+          ],
+          "passes_q20_entire_span": false,
+          "read_id": "@SRR27962769.362008",
+          "sequence": "GCTTGCTCCTATACGCTCGCGCTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTACGGGGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTT",
+          "strand": "+"
+        },
+        {
+          "minimum_phred": 11,
+          "ordinal": 727671,
+          "oriented_read_span": [
+            0,
+            113
+          ],
+          "original_read_span": [
+            0,
+            113
+          ],
+          "passes_q20_entire_span": false,
+          "read_id": "@SRR27962769.727671",
+          "sequence": "GCTTGCTCCTATACGCTCGCGCTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTACGGGGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTT",
+          "strand": "+"
+        }
+      ],
+      "blocks": {
+        "A": "CTCGCCC",
+        "B": "T",
+        "C": "ACGGG"
+      },
+      "candidate_ids": [
+        "q138",
+        "q146",
+        "q151",
+        "q161"
+      ],
+      "in_saved_candidate_context": true,
+      "length": 113,
+      "q20_read_ordinals": [],
+      "sequence": "GCTTGCTCCTATACGCTCGCGCTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTACGGGGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTT",
+      "sequence_sha256": "9e33996b648b9ebfe8a5682ec4123ccd981f5c6e42a0324341c1d27a798d0922"
+    },
+    {
+      "all_placements": [
+        {
+          "minimum_phred": 11,
+          "ordinal": 784096,
+          "oriented_read_span": [
+            4,
+            117
+          ],
+          "original_read_span": [
+            4,
+            117
+          ],
+          "passes_q20_entire_span": false,
+          "read_id": "@SRR27962769.784096",
+          "sequence": "GCTTGCTCCTATACGCTCGCGCTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTTCGGGGCGCGTCGGCGGCGTATTTTTCGGCTAACTCGTCTTTT",
+          "strand": "+"
+        }
+      ],
+      "blocks": null,
+      "candidate_ids": [],
+      "in_saved_candidate_context": false,
+      "length": 113,
+      "q20_read_ordinals": [],
+      "sequence": "GCTTGCTCCTATACGCTCGCGCTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTTCGGGGCGCGTCGGCGGCGTATTTTTCGGCTAACTCGTCTTTT",
+      "sequence_sha256": "7e1a2bcd74310213fa7cd769dba9e29d598d085658dcbfb6b1ef96a50bf34049"
+    },
+    {
+      "all_placements": [
+        {
+          "minimum_phred": 25,
+          "ordinal": 784113,
+          "oriented_read_span": [
+            4,
+            117
+          ],
+          "original_read_span": [
+            4,
+            117
+          ],
+          "passes_q20_entire_span": true,
+          "read_id": "@SRR27962769.784113",
+          "sequence": "GCTTGCTCCTATACGCTCGCGCTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTTCGGGGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTT",
+          "strand": "+"
+        }
+      ],
+      "blocks": {
+        "A": "CTCGCCC",
+        "B": "T",
+        "C": "TCGGG"
+      },
+      "candidate_ids": [],
+      "in_saved_candidate_context": false,
+      "length": 113,
+      "q20_read_ordinals": [
+        784113
+      ],
+      "sequence": "GCTTGCTCCTATACGCTCGCGCTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTTCGGGGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTT",
+      "sequence_sha256": "49211ab9ad22538934d826c8c2edd9910cadb1af911383d4920ce66002183ad9"
+    },
+    {
+      "all_placements": [
+        {
+          "minimum_phred": 25,
+          "ordinal": 295300,
+          "oriented_read_span": [
+            30,
+            143
+          ],
+          "original_read_span": [
+            30,
+            143
+          ],
+          "passes_q20_entire_span": true,
+          "read_id": "@SRR27962769.295300",
+          "sequence": "GCTTGCTCCTATACGCTCGCGTTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTACGGGGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTT",
+          "strand": "+"
+        }
+      ],
+      "blocks": {
+        "A": "TTCGCCC",
+        "B": "T",
+        "C": "ACGGG"
+      },
+      "candidate_ids": [
+        "q155",
+        "q156",
+        "q158",
+        "SRR27962769_23163ca76f97f5d1"
+      ],
+      "in_saved_candidate_context": true,
+      "length": 113,
+      "q20_read_ordinals": [
+        295300
+      ],
+      "sequence": "GCTTGCTCCTATACGCTCGCGTTCGCCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTACGGGGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTT",
+      "sequence_sha256": "3fa20ceedd7d7eb28d8e79449bea56f480d052c24443b467d872505a31351eea"
+    },
+    {
+      "all_placements": [
+        {
+          "minimum_phred": 37,
+          "ordinal": 32796,
+          "oriented_read_span": [
+            34,
+            146
+          ],
+          "original_read_span": [
+            34,
+            146
+          ],
+          "passes_q20_entire_span": true,
+          "read_id": "@SRR27962769.32796",
+          "sequence": "GCTTGCTCCTATACGCTCGCGTTCGCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTTCTGTGCGCGTCGGCGTCGTACTTTTCGGCTAACTCGTCTTTT",
+          "strand": "+"
+        }
+      ],
+      "blocks": {
+        "A": "TTCGCC",
+        "B": "C",
+        "C": "TCTGT"
+      },
+      "candidate_ids": [
+        "q148",
+        "q154",
+        "q159",
+        "q163"
+      ],
+      "in_saved_candidate_context": true,
+      "length": 112,
+      "q20_read_ordinals": [
+        32796
+      ],
+      "sequence": "GCTTGCTCCTATACGCTCGCGTTCGCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTTCTGTGCGCGTCGGCGTCGTACTTTTCGGCTAACTCGTCTTTT",
+      "sequence_sha256": "5acd203f3e87ae6a49bcb1498148f99794dd15939bc85b33e41780d17ad803f2"
+    },
+    {
+      "all_placements": [
+        {
+          "minimum_phred": 37,
+          "ordinal": 671970,
+          "oriented_read_span": [
+            20,
+            132
+          ],
+          "original_read_span": [
+            18,
+            130
+          ],
+          "passes_q20_entire_span": true,
+          "read_id": "@SRR27962769.671970",
+          "sequence": "GCTTGCTCCTATACGCTCGCGTTCGCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTTCTGTGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTT",
+          "strand": "-"
+        }
+      ],
+      "blocks": {
+        "A": "TTCGCC",
+        "B": "T",
+        "C": "TCTGT"
+      },
+      "candidate_ids": [
+        "q139",
+        "q152",
+        "q160",
+        "q164"
+      ],
+      "in_saved_candidate_context": true,
+      "length": 112,
+      "q20_read_ordinals": [
+        671970
+      ],
+      "sequence": "GCTTGCTCCTATACGCTCGCGTTCGCCTCCGGGCGGGCCGGGTGGAAATGACCGTCGCCGGCGCGTTCTTCTGTGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTT",
+      "sequence_sha256": "549f40090fd2cf1f78e0ec548577fa1622fabdcf252948a41af32d6a4116d89b"
+    }
+  ],
+  "producer": {
+    "bytes": 21053,
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/analyze_linkage.py",
+    "sha256": "94b844543ce07f93f4a52a1d83fea2b297ae6d6c456f7e8d3984d83751d9dcde"
+  },
+  "retained_ITS_reads": 25,
+  "saved_exact_q20_interval_coordinate_bounds": [
+    722,
+    979
+  ],
+  "schema_version": 1,
+  "source_receipts": {
+    "derivation.json": {
+      "bytes": 45764,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/derivation.json",
+      "sha256": "8a580cd8babc048492b5d1ca1ee50cfce45d560271e1c542fb68a03a5caf6478"
+    },
+    "manifest.json": {
+      "bytes": 47136,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/manifest.json",
+      "sha256": "298b0299d15e1c8224308431f7f87fbc2ac0f23721f00618f905a59efca1582a"
+    },
+    "run-v1/execution.json": {
+      "bytes": 7216,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/run-v1/execution.json",
+      "sha256": "e427dc17facb0e32ff2d20cd28a6d5192d722dab406cf6d43180db51f90263b6"
+    },
+    "run-v1/raw.json": {
+      "bytes": 173537,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/run-v1/raw.json",
+      "sha256": "cbb8dcb6b9bc1840df8f04659cab66e40cd07241dd7d9afcb375c5802366cba1"
+    },
+    "summary.json": {
+      "bytes": 6151,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/summary.json",
+      "sha256": "dc41e50a6f224d3519c48e986603ddb00b8360dc6839c53c426205ac86182fee"
+    }
+  },
+  "status": "completed_saved_read_linkage_audit",
+  "tests_source": {
+    "bytes": 4875,
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/test_linkage.py",
+    "sha256": "80b2cfaebb37a5932bb236f96f9f0b1bc67077548be777756d967ae8abfd974c"
+  }
+}

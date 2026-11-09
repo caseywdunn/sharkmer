@@ -1,0 +1,14 @@
+{
+  "recorded_at_utc": "2026-09-28T02:40:55.044211+00:00",
+  "status": "submission_outcome_not_returned",
+  "tool_cell": "100",
+  "known_job_id": null,
+  "observed_paths": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/validation/targeted_probe.py": true,
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/validation/targeted_probe.sbatch": true,
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/targeted-probe-v1": false
+  },
+  "observed_slurm_logs": [],
+  "event": "Compound source-activation plus escalated sbatch call yielded then wait was interrupted after636.7s, before any job ID was returned; root now owns external submission. No resubmission by this agent.",
+  "root_checks_v2_job_id": "27720206"
+}

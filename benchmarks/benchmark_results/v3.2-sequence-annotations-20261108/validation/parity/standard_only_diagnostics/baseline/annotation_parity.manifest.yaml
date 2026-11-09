@@ -1,0 +1,10 @@
+schema_version: 2
+producer: sharkmer
+sample: annotation_parity
+run_id: 18e626a7f495312e-ff472-7e1b7621086107e2
+status: complete
+files:
+- path: annotation_parity.stats.yaml
+  sha256: e302b57ddbce92a30c2e0a41a547013a6a864d71b8bc97dcfa830ef5b53effb1
+- path: annotation_parity_clean.fasta
+  sha256: c2fcc1515a1521521ccc2322b439e41d1315ec1cc397f1a2d36053a5da274023

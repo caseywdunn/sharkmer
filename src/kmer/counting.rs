@@ -33,6 +33,7 @@ trait KmerMap {
     fn get_count(&self, key: u64) -> u32;
     fn contains(&self, key: u64) -> bool;
     fn retain_above(&mut self, min_count: u32);
+    fn capacity(&self) -> usize;
 }
 
 #[cfg(feature = "fxhashmap")]
@@ -65,6 +66,9 @@ impl KmerMap for rustc_hash::FxHashMap<u64, u32> {
     }
     fn retain_above(&mut self, min_count: u32) {
         self.retain(|_, count| *count >= min_count);
+    }
+    fn capacity(&self) -> usize {
+        self.capacity()
     }
 }
 
@@ -101,6 +105,9 @@ impl KmerMap for AHashMap<u64, u32> {
     }
     fn retain_above(&mut self, min_count: u32) {
         self.retain(|_, count| *count >= min_count);
+    }
+    fn capacity(&self) -> usize {
+        self.capacity()
     }
 }
 
@@ -259,6 +266,10 @@ impl KmerCounts {
         self.kmers.len() as u64
     }
 
+    pub fn capacity(&self) -> usize {
+        self.kmers.capacity()
+    }
+
     #[allow(dead_code)]
     pub fn counts(&self) -> Vec<u32> {
         self.kmers.values().copied().collect()
@@ -282,7 +293,7 @@ impl KmerCounts {
         // For even len, partition at `mid` (placing the upper half to the
         // right of index mid), then the max of the lower half is the
         // (mid-1)th order statistic — the other middle value. Averaged
-        // with rounding-down via half-sums to avoid overflow.
+        // with rounding down using their nonnegative difference to avoid overflow.
         let mid = counts.len() / 2;
         if counts.len() % 2 == 0 {
             counts.select_nth_unstable(mid);
@@ -291,7 +302,7 @@ impl KmerCounts {
                 .iter()
                 .max()
                 .expect("non-empty lower half when len >= 2");
-            (lower_max / 2) + (upper_min / 2)
+            lower_max + (upper_min - lower_max) / 2
         } else {
             *counts.select_nth_unstable(mid).1
         }
@@ -443,6 +454,47 @@ mod tests {
     fn test_median_empty() {
         let kc = KmerCounts::new(&5);
         assert_eq!(kc.get_median_count(), 0);
+    }
+
+    #[test]
+    fn test_median_rounding_boundaries() {
+        let cases: &[(&[u32], u32)] = &[
+            (&[], 0),
+            (&[3, 5], 4),
+            (&[3, 3], 3),
+            (&[3, 4], 3),
+            (&[4, 5], 4),
+            (&[1, 3, 5, 9], 4),
+            (&[7, 1, 5], 5),
+            (&[u32::MAX], u32::MAX),
+            (&[u32::MAX, u32::MAX], u32::MAX),
+            (&[u32::MAX, u32::MAX - 1], u32::MAX - 1),
+            (&[u32::MAX, 0], u32::MAX / 2),
+        ];
+        for (counts, expected) in cases {
+            let mut kmer_counts = KmerCounts::new(&5);
+            for (index, count) in counts.iter().enumerate() {
+                kmer_counts.insert(&(index as u64), count);
+            }
+            assert_eq!(
+                kmer_counts.get_median_count(),
+                *expected,
+                "counts={counts:?}"
+            );
+        }
+    }
+
+    #[test]
+    fn test_median_matches_wide_average_for_small_pairs() {
+        for first_count in 0..64_u32 {
+            for second_count in 0..64_u32 {
+                let mut kmer_counts = KmerCounts::new(&5);
+                kmer_counts.insert(&0, &first_count);
+                kmer_counts.insert(&1, &second_count);
+                let expected = ((u64::from(first_count) + u64::from(second_count)) / 2) as u32;
+                assert_eq!(kmer_counts.get_median_count(), expected);
+            }
+        }
     }
 
     #[test]

@@ -1,0 +1,72 @@
+{
+  "biological_execution_clearance": false,
+  "biological_scans_performed": false,
+  "compiled_code_validated": false,
+  "control_limits": [
+    "Capture and frozen-plan unit controls mock pre-existing manifest/build validation to isolate their contract; real validator controls are recorded separately.",
+    "Actual launcher controls execute only synthetic Python children in the available allocation; the real comparison requires exactly two CPUs."
+  ],
+  "python_executable": "/apps/software/2024a/software/Python/3.12.3-GCCcore-13.3.0/bin/python",
+  "python_version": "3.12.3 (main, Mar  4 2026, 16:38:56) [GCC 13.3.0]",
+  "reviewed_artifacts": {
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build_snapshot.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build_snapshot.py",
+      "sha256": "b77e0852017062939621b0fcbf7b40dc8d3c704af1a4599c34c3f2db4814c360",
+      "size_bytes": 10107
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+      "sha256": "33ae477d0684c2618384993c80b1c92730414b47094168b3b5c26645774182e7",
+      "size_bytes": 1438
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/prepare_inputs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/prepare_inputs.py",
+      "sha256": "8dd9c85628a8b274f30999f9683a2497d45584623aac728d73ff9255ac4a5561",
+      "size_bytes": 7672
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/restore_prefix.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/restore_prefix.py",
+      "sha256": "d49717be97a53db7c2501f92e129e0226ee649d8c95cc12566c1b0d3836198d1",
+      "size_bytes": 5841
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/test_harness_independent.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/test_harness_independent.py",
+      "sha256": "3bd7940099e04e7ddf2822971d350cc5f13190e2ed3c144882df1ec8fc67454d",
+      "size_bytes": 17553
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_comparison.py",
+      "sha256": "87bee0cdfb912dd583c940c13c61d4887ce6cde847930059fbd0bcb7fc2b178c",
+      "size_bytes": 27558
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/test_run_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/test_run_comparison.py",
+      "sha256": "499b8604d67a3e7bff69cd3fb2847fd6469642daacc8cb70c924c72eceebb851",
+      "size_bytes": 15887
+    },
+    "dev_docs/UNCERTAIN_PRODUCTS.md": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/dev_docs/UNCERTAIN_PRODUCTS.md",
+      "sha256": "762c4cd0e12dc8070e12dd98a77cec17afea730d4fbeeb8bf5b634f8c65a6092",
+      "size_bytes": 7694
+    }
+  },
+  "scope": "Offline source and synthetic harness review only",
+  "source_bookends_equal": true,
+  "status": "pass",
+  "suites": [
+    {
+      "name": "independent_harness_review",
+      "skipped": 0,
+      "status": "pass",
+      "table_driven_subcases": 33,
+      "test_methods": 20
+    },
+    {
+      "name": "author_harness_controls",
+      "skipped": 0,
+      "status": "pass",
+      "table_driven_subcases": 23,
+      "test_methods": 23
+    }
+  ]
+}

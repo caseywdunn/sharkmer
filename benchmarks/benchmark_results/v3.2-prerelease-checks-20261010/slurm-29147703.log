@@ -1,0 +1,11 @@
+{"gate": "build_default", "status": "pass", "wall_seconds": 10.44}
+{"gate": "plant_eight", "status": "pass", "wall_seconds": 361.39}
+{"gate": "test_default", "status": "pass", "wall_seconds": 70.21}
+{"gate": "test_fxhash", "status": "pass", "wall_seconds": 88.72}
+{"gate": "clippy_default", "status": "pass", "wall_seconds": 42.23}
+{"gate": "clippy_fxhash", "status": "pass", "wall_seconds": 5.72}
+{"gate": "fmt", "status": "pass", "wall_seconds": 0.29}
+{"gate": "python_all", "status": "pass", "wall_seconds": 10.13}
+{"gate": "references", "status": "pass", "wall_seconds": 1.22}
+{"gate": "panels", "status": "pass", "wall_seconds": 2.34}
+{"gate": "fixtures", "status": "pass", "wall_seconds": 9.05}

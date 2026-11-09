@@ -1,0 +1,33 @@
+{
+  "errors": [],
+  "failures": [],
+  "limitations": "Tests verify published receipts and hashes, not storage recovery after power loss or hostile concurrent filesystem writes.",
+  "python": "3.9.21 (main, May 11 2026, 00:00:00) \n[GCC 11.5.0 20240719 (Red Hat 11.5.0-5)]",
+  "reviewed_utc": "2026-09-26T13:43:00.746970+00:00",
+  "runner": {
+    "sha256": "aa5151784d0b08b9242b9e9bd36f319c16602692d95c473c128fdfcbf4280743",
+    "size_bytes": 10446
+  },
+  "scope": "Temporary synthetic files only; no biological data scanned or opened.",
+  "status": "pass",
+  "test_ids": [
+    "__main__.RunnerChecks.test_input_mutation_after_command",
+    "__main__.RunnerChecks.test_launch_setup_error_is_recorded",
+    "__main__.RunnerChecks.test_missing_executable",
+    "__main__.RunnerChecks.test_no_clobber_output",
+    "__main__.RunnerChecks.test_no_clobber_receipt_inline_failure_is_durable",
+    "__main__.RunnerChecks.test_no_clobber_timing",
+    "__main__.RunnerChecks.test_nonzero_exit",
+    "__main__.RunnerChecks.test_preverification_mismatch_stops_remaining_commands",
+    "__main__.RunnerChecks.test_repeat_execution_preserves_receipts",
+    "__main__.RunnerChecks.test_resource_limit_inherited",
+    "__main__.RunnerChecks.test_short_timeout",
+    "__main__.RunnerChecks.test_source_mutation_after_command",
+    "__main__.RunnerChecks.test_success_and_durable_receipts"
+  ],
+  "test_source": {
+    "sha256": "8f761882870142157368af65f20e980cfdb5df17fa3e4fffe00a06dfb9f64145",
+    "size_bytes": 10177
+  },
+  "tests_run": 13
+}

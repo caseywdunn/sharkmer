@@ -1,0 +1,26 @@
+{
+  "status": "ready_for_authorized_commit_and_dev_fast_forward",
+  "authorization": "User requested committing everything and moving reviewed work onto dev for collaborators; no release.",
+  "source_branch": "experiment/sequence-first-retention",
+  "source_base_commit": "1ea21c977455fdf126426e3e000133c02c3f0b32",
+  "local_dev_before": "b5a6c7e1feb8cf7d612ccc1f3a81a39e2c61e4d1",
+  "remote_dev_before": "956e771437a2410a7bcbb1504b033c61dd1e11b6",
+  "tested_sources_verified": 75,
+  "archive_sha256": "ccb49fe8df50d63c3a97ec753aade5384c12de2e094679f1c4d7005c907cf948",
+  "frozen_evidence_files": 740,
+  "frozen_evidence_bytes": 84312605,
+  "excluded": "18 __pycache__ files; all 153 globally ignored raw FASTA/stats evidence files included.",
+  "documentation_updates": [
+    "HANDOFF.md",
+    "PLAN.md",
+    "REVIEW_v3.2.md"
+  ],
+  "historical_receipt_scope": "Prior source, archive, review and completion receipts describe pre-integration state and remain unchanged. Updated handoff documentation records the later integration authorization.",
+  "release_actions_authorized": false,
+  "remaining": [
+    "Remote dev commit verification and normal CI",
+    "Collaborator assessment",
+    "Remaining biological validation gates",
+    "Separate explicit release authorization"
+  ]
+}

@@ -5,6 +5,7 @@ use anyhow::{Context, Result};
 use bio::io::fasta;
 use log::{debug, trace};
 use petgraph::graph::NodeIndex;
+use serde::Serialize;
 use std::fs::File;
 use std::io::Write;
 
@@ -34,9 +35,14 @@ mod graph;
 mod paths;
 mod primers;
 mod pruning;
+#[cfg(test)]
+mod repeat_tests;
+#[cfg(test)]
+mod threshold_tests;
+mod uncertain;
 
 pub use graph::compute_node_budget;
-pub(crate) mod read_filter;
+pub(crate) use uncertain::UncertainProducts;
 pub(crate) mod threading;
 
 // Constants that may require tuning
@@ -238,6 +244,11 @@ pub struct PCRParams {
     pub high_coverage_ratio: f64,
     #[serde(default = "default_tip_coverage_fraction")]
     pub tip_coverage_fraction: f64,
+    #[serde(skip, default)]
+    pub diagnose_withheld_paths: bool,
+    /// Runtime-only delivery of labelled repeat hypotheses; set from the CLI.
+    #[serde(skip, default)]
+    pub emit_uncertain: bool,
 }
 
 fn default_max_length() -> usize {
@@ -281,6 +292,22 @@ pub const DEFAULT_MAX_NODE_VISITS: usize = 2;
 pub const DEFAULT_MAX_NUM_PRIMER_KMERS: usize = 40;
 pub const DEFAULT_HIGH_COVERAGE_RATIO: f64 = 10.0;
 pub const DEFAULT_TIP_COVERAGE_FRACTION: f64 = 0.1;
+pub(crate) const WITHHELD_DIAGNOSTIC_THRESHOLD_PATH_CAP: usize = 32;
+pub(crate) const WITHHELD_DIAGNOSTIC_THRESHOLD_BASE_CAP: usize = 512 * 1024;
+pub(crate) const WITHHELD_DIAGNOSTIC_THRESHOLD_MARKER_CAP: usize = 4096;
+pub(crate) const WITHHELD_DIAGNOSTIC_GENE_PATH_CAP: usize = 64;
+pub(crate) const WITHHELD_DIAGNOSTIC_GENE_BASE_CAP: usize = 1024 * 1024;
+pub(crate) const WITHHELD_DIAGNOSTIC_GENE_MARKER_CAP: usize = 8192;
+pub(crate) const WITHHELD_DIAGNOSTIC_RUN_PATH_CAP: usize = 256;
+// Inclusive delivery has a separate bounded sequence-only allowance alongside
+// the original diagnostic reserve, so extra paths cannot displace old output.
+pub(crate) const UNCERTAIN_SEQUENCE_PATH_SHARE_MULTIPLIER: usize = 3;
+pub(crate) const WITHHELD_DIAGNOSTIC_RUN_BASE_CAP: usize = 4 * 1024 * 1024;
+pub(crate) const WITHHELD_DIAGNOSTIC_RUN_MARKER_CAP: usize = 32768;
+
+pub(crate) fn validate_primer_expansion(params: &PCRParams, kmer_length: usize) -> Result<()> {
+    primers::validate_primer_expansion(params, kmer_length)
+}
 
 /// Result of running in silico PCR for a single gene.
 pub struct PcrOutcome {
@@ -288,6 +315,211 @@ pub struct PcrOutcome {
     pub records: Vec<bio::io::fasta::Record>,
     /// Short description of why no product was found (None if successful)
     pub failure_reason: Option<String>,
+    pub threshold_diagnostics: Vec<PcrThresholdDiagnostic>,
+    pub(crate) uncertain_products: Option<UncertainProducts>,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldDiagnosticCapSet {
+    pub(crate) paths: usize,
+    pub(crate) sequence_bases: usize,
+    pub(crate) marker_occurrences: usize,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldDiagnosticLimits {
+    pub(crate) threshold: WithheldDiagnosticCapSet,
+    pub(crate) gene: WithheldDiagnosticCapSet,
+    pub(crate) run: WithheldDiagnosticCapSet,
+    pub(crate) allocated_run_share_for_gene: WithheldDiagnosticCapSet,
+    pub(crate) unused_share_is_not_redistributed: bool,
+}
+
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldDiagnosticUsage {
+    pub(crate) paths: usize,
+    pub(crate) sequence_bases: usize,
+    pub(crate) marker_occurrences: usize,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum WithheldMarkerCause {
+    PrePruneOmittedSelfLoopNode,
+    PrePruneCyclicSccNode,
+    RetainedCollisionEdge,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub(crate) enum WithheldMarkerIdentityKind {
+    OrientedNodeSequence,
+    OrientedEdgeSequence,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldMarkerOccurrence {
+    pub(crate) cause: WithheldMarkerCause,
+    pub(crate) identity_kind: WithheldMarkerIdentityKind,
+    pub(crate) identity_sequence: String,
+    pub(crate) identity_sha256: String,
+    pub(crate) start: usize,
+    pub(crate) end: usize,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldMarkerCoveredRun {
+    pub(crate) start: usize,
+    pub(crate) end: usize,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldPathRecord {
+    pub(crate) oriented_sequence: String,
+    pub(crate) sequence_sha256: String,
+    pub(crate) sequence_length: usize,
+    pub(crate) node_visit_limit: usize,
+    pub(crate) max_observed_node_visits: usize,
+    pub(crate) omitted_self_loop_marker_occurrences: usize,
+    pub(crate) cyclic_scc_marker_occurrences: usize,
+    pub(crate) retained_collision_marker_occurrences: usize,
+    pub(crate) marker_occurrences: Vec<WithheldMarkerOccurrence>,
+    pub(crate) marker_covered_runs: Vec<WithheldMarkerCoveredRun>,
+}
+
+fn is_zero_usize(value: &usize) -> bool {
+    *value == 0
+}
+
+fn is_false(value: &bool) -> bool {
+    !*value
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+pub(crate) struct WithheldPathDiagnostics {
+    pub(crate) schema_version: u32,
+    pub(crate) coordinate_system: String,
+    pub(crate) purpose: String,
+    pub(crate) marker_span_scope: String,
+    pub(crate) read_support_evaluation: String,
+    pub(crate) limits: WithheldDiagnosticLimits,
+    pub(crate) gene_usage_before_threshold: WithheldDiagnosticUsage,
+    pub(crate) gene_usage_after_threshold: WithheldDiagnosticUsage,
+    pub(crate) observed_withheld_paths: usize,
+    pub(crate) retained_paths: usize,
+    pub(crate) observed_not_retained_paths: usize,
+    pub(crate) retained_sequence_bases: usize,
+    pub(crate) retained_marker_occurrences: usize,
+    #[serde(skip_serializing_if = "is_zero_usize")]
+    pub(crate) retained_summary_only_paths: usize,
+    #[serde(skip_serializing_if = "is_zero_usize")]
+    pub(crate) omitted_detailed_marker_occurrences: usize,
+    #[serde(skip_serializing_if = "is_false")]
+    pub(crate) marker_detail_truncated: bool,
+    pub(crate) dropped_oversize_sequence: usize,
+    pub(crate) dropped_oversize_marker_set: usize,
+    pub(crate) dropped_path_cap: usize,
+    pub(crate) dropped_sequence_base_cap: usize,
+    pub(crate) dropped_marker_cap: usize,
+    pub(crate) node_visit_limit: usize,
+    pub(crate) node_visit_skips: usize,
+    pub(crate) retention_truncated: bool,
+    pub(crate) paths: Vec<WithheldPathRecord>,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+pub struct PcrThresholdDiagnostic {
+    pub threshold: u32,
+    pub connectivity_found: bool,
+    pub node_budget_reached: bool,
+    pub scc_evaluated: bool,
+    pub path_search_evaluated: bool,
+    pub omitted_self_loop_nodes: usize,
+    pub pre_prune_scc_nodes: Option<usize>,
+    pub retained_collision_edges: usize,
+    pub dfs_limit_reached: bool,
+    pub path_quota_reached: bool,
+    pub end_below_min_length: bool,
+    pub max_length_reached: bool,
+    pub completed_candidate_paths: usize,
+    pub eligible_candidate_paths: usize,
+    pub withheld_candidate_paths: usize,
+    pub withheld_by_self_loop_node_paths: usize,
+    pub withheld_by_scc_node_paths: usize,
+    pub withheld_by_collision_edge_paths: usize,
+    pub repeat_tainted_out_of_range_paths: usize,
+    pub generated_products: usize,
+    pub failure_reason: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) withheld_path_diagnostics: Option<WithheldPathDiagnostics>,
+}
+
+fn partition_cap(total: usize, gene_index: usize, gene_count: usize) -> usize {
+    if gene_count == 0 {
+        return 0;
+    }
+    total / gene_count + usize::from(gene_index < total % gene_count)
+}
+
+pub(crate) fn withheld_diagnostic_limits_for_gene(
+    gene_index: usize,
+    gene_count: usize,
+) -> WithheldDiagnosticLimits {
+    let run = WithheldDiagnosticCapSet {
+        paths: WITHHELD_DIAGNOSTIC_RUN_PATH_CAP,
+        sequence_bases: WITHHELD_DIAGNOSTIC_RUN_BASE_CAP,
+        marker_occurrences: WITHHELD_DIAGNOSTIC_RUN_MARKER_CAP,
+    };
+    let gene = WithheldDiagnosticCapSet {
+        paths: WITHHELD_DIAGNOSTIC_GENE_PATH_CAP,
+        sequence_bases: WITHHELD_DIAGNOSTIC_GENE_BASE_CAP,
+        marker_occurrences: WITHHELD_DIAGNOSTIC_GENE_MARKER_CAP,
+    };
+    WithheldDiagnosticLimits {
+        threshold: WithheldDiagnosticCapSet {
+            paths: WITHHELD_DIAGNOSTIC_THRESHOLD_PATH_CAP,
+            sequence_bases: WITHHELD_DIAGNOSTIC_THRESHOLD_BASE_CAP,
+            marker_occurrences: WITHHELD_DIAGNOSTIC_THRESHOLD_MARKER_CAP,
+        },
+        gene,
+        run,
+        allocated_run_share_for_gene: WithheldDiagnosticCapSet {
+            paths: partition_cap(run.paths, gene_index, gene_count).min(gene.paths),
+            sequence_bases: partition_cap(run.sequence_bases, gene_index, gene_count)
+                .min(gene.sequence_bases),
+            marker_occurrences: partition_cap(run.marker_occurrences, gene_index, gene_count)
+                .min(gene.marker_occurrences),
+        },
+        unused_share_is_not_redistributed: true,
+    }
+}
+
+pub(crate) fn inclusive_sequence_limits(
+    mut limits: WithheldDiagnosticLimits,
+) -> WithheldDiagnosticLimits {
+    let extra_share = limits
+        .allocated_run_share_for_gene
+        .paths
+        .saturating_mul(UNCERTAIN_SEQUENCE_PATH_SHARE_MULTIPLIER)
+        .min(limits.gene.paths);
+    limits.threshold.paths = limits.threshold.paths.saturating_mul(2);
+    limits.gene.paths = limits.gene.paths.saturating_mul(2);
+    limits.run.paths = limits
+        .run
+        .paths
+        .saturating_mul(1 + UNCERTAIN_SEQUENCE_PATH_SHARE_MULTIPLIER);
+    limits.allocated_run_share_for_gene.paths = limits
+        .allocated_run_share_for_gene
+        .paths
+        .saturating_add(extra_share);
+    limits.threshold.sequence_bases = limits.threshold.sequence_bases.saturating_mul(2);
+    limits.gene.sequence_bases = limits.gene.sequence_bases.saturating_mul(2);
+    limits.run.sequence_bases = limits.run.sequence_bases.saturating_mul(2);
+    limits.allocated_run_share_for_gene.sequence_bases = limits
+        .allocated_run_share_for_gene
+        .sequence_bases
+        .saturating_mul(2);
+    limits
 }
 
 /// Validate a primer pair and return a list of (error, suggestion) pairs.
@@ -427,7 +659,264 @@ fn compute_coverage_thresholds(primer_count: u32, min_count: u32) -> Vec<u32> {
     thresholds
 }
 
-// The primary function for PCR
+fn earlier_threshold_limit_summary(diagnostics: &[PcrThresholdDiagnostic]) -> Option<String> {
+    let last = diagnostics.last()?;
+    let earlier = diagnostics.get(..diagnostics.len().saturating_sub(1))?;
+    let summaries = earlier
+        .iter()
+        .filter_map(|diagnostic| {
+            let mut causes = Vec::new();
+            if diagnostic.node_budget_reached && !last.node_budget_reached {
+                causes.push("node budget reached");
+            }
+            if diagnostic.dfs_limit_reached && !last.dfs_limit_reached {
+                causes.push("DFS state limit reached");
+            }
+            if diagnostic.path_quota_reached && !last.path_quota_reached {
+                causes.push("path quota reached");
+            }
+            if diagnostic.withheld_candidate_paths > 0
+                || diagnostic.repeat_tainted_out_of_range_paths > 0
+            {
+                let last_has_repeat_uncertainty =
+                    last.withheld_candidate_paths > 0 || last.repeat_tainted_out_of_range_paths > 0;
+                if !last_has_repeat_uncertainty {
+                    causes.push("candidate-local repeat uncertainty");
+                }
+            }
+            if causes.is_empty() {
+                None
+            } else {
+                Some(format!(
+                    "threshold {}: {}",
+                    diagnostic.threshold,
+                    causes.join(", ")
+                ))
+            }
+        })
+        .collect::<Vec<_>>();
+    if summaries.is_empty() {
+        None
+    } else {
+        Some(summaries.join("; "))
+    }
+}
+
+struct ThresholdEvaluation {
+    records: Vec<AssemblyRecord>,
+    failure_reason: Option<String>,
+    diagnostic: PcrThresholdDiagnostic,
+}
+
+#[allow(clippy::too_many_arguments)]
+fn evaluate_threshold_graph(
+    mut pruned_graph: petgraph::stable_graph::StableDiGraph<DBNode, DBEdge>,
+    extension_repeat_markers: graph::ExtensionRepeatMarkers,
+    min_count: u32,
+    kmer_counts: &FilteredKmerCounts,
+    sample_name: &str,
+    params: &PCRParams,
+    dump_graph: bool,
+    output_directory: &str,
+    reads: Option<&[crate::io::ReadRecord]>,
+    diagnostic_budget: Option<&mut paths::WithheldDiagnosticBudget>,
+) -> Result<ThresholdEvaluation> {
+    let repeat_markers =
+        graph::repeat_markers_before_pruning(&pruned_graph, extension_repeat_markers);
+    let omitted_self_loop_nodes = repeat_markers.omitted_self_loop_sub_kmers.len();
+    let pre_prune_scc_nodes = repeat_markers.cyclic_scc_sub_kmers.len();
+    let retained_collision_edges = repeat_markers.retained_collision_edges.len();
+    let prune_start = std::time::Instant::now();
+    gene_info!(params.gene_name, "Pruning the assembly graph...");
+
+    pruning::remove_low_coverage_tips(
+        &mut pruned_graph,
+        &kmer_counts.get_k(),
+        params.tip_coverage_fraction,
+    );
+    pruning::reachability_pruning(&mut pruned_graph);
+    graph::annotate_coverage_ratios(&mut pruned_graph);
+    gene_info!(
+        params.gene_name,
+        "Done. Time to prune graph: {}",
+        format_duration(prune_start.elapsed())
+    );
+
+    if dump_graph || log::log_enabled!(log::Level::Trace) {
+        let dot_string = write_annotated_dot(&pruned_graph, kmer_counts);
+        let file_name = format!(
+            "{}{}_{}_{}.dot",
+            output_directory, sample_name, params.gene_name, min_count
+        );
+        trace!("Writing dot file {}", file_name);
+        let mut file = File::create(&file_name).context("Unable to create dot file")?;
+        file.write_all(dot_string.as_bytes())
+            .context("Unable to write dot file")?;
+    }
+
+    let threading_annotations = if let Some(reads) = reads {
+        if !reads.is_empty() {
+            let threading_start = std::time::Instant::now();
+            gene_info!(
+                params.gene_name,
+                "Threading reads through assembly graph..."
+            );
+            let has_paired = reads
+                .iter()
+                .any(|read| read.mate != crate::io::Mate::Unpaired);
+            let annotations = if has_paired {
+                threading::thread_reads_paired(&pruned_graph, reads, kmer_counts.get_k())
+            } else {
+                threading::thread_reads(&pruned_graph, reads, kmer_counts.get_k())
+            };
+            let supported_edges = annotations
+                .edge_support
+                .values()
+                .filter(|support| support.read_support_total > 0)
+                .count();
+            gene_info!(
+                params.gene_name,
+                "Threading: {}/{} edges have read support, {} branch links, {} paired links. Time: {}",
+                supported_edges,
+                pruned_graph.edge_count(),
+                annotations.branch_links.len(),
+                annotations.paired_links.len(),
+                format_duration(threading_start.elapsed())
+            );
+            Some(annotations)
+        } else {
+            None
+        }
+    } else {
+        None
+    };
+
+    let path_start = std::time::Instant::now();
+    gene_info!(
+        params.gene_name,
+        "Traversing the assembly graph to find paths from forward to reverse primers..."
+    );
+
+    let edge_preferences = threading_annotations
+        .as_ref()
+        .map(|annotations| bubble::resolve_bubbles(&pruned_graph, annotations));
+    let mut path_search = paths::search_assembly_paths(
+        &pruned_graph,
+        kmer_counts,
+        params,
+        edge_preferences.as_ref(),
+        &repeat_markers,
+        diagnostic_budget,
+    );
+
+    gene_info!(
+        params.gene_name,
+        "Found {} paths. Time: {}",
+        path_search.paths.len(),
+        format_duration(path_start.elapsed())
+    );
+
+    if path_search.dfs_limit_reached {
+        gene_warn!(
+            params.gene_name,
+            "Path search reached the DFS state limit of {} at threshold {}.",
+            params.max_dfs_states,
+            min_count
+        );
+    }
+    if path_search.path_limit_reached {
+        gene_warn!(
+            params.gene_name,
+            "Path search reached the per-primer-pair path limit of {} at threshold {}.",
+            params.max_paths_per_pair,
+            min_count
+        );
+    }
+
+    if path_search.withheld_candidate_path_count > 0 {
+        gene_warn!(
+            params.gene_name,
+            "Withholding {} complete candidate path(s) because repeat length is unresolved at threshold {}.",
+            path_search.withheld_candidate_path_count,
+            min_count
+        );
+    }
+
+    let mut diagnostic = PcrThresholdDiagnostic {
+        threshold: min_count,
+        connectivity_found: true,
+        node_budget_reached: false,
+        scc_evaluated: true,
+        path_search_evaluated: true,
+        omitted_self_loop_nodes,
+        pre_prune_scc_nodes: Some(pre_prune_scc_nodes),
+        retained_collision_edges,
+        dfs_limit_reached: path_search.dfs_limit_reached,
+        path_quota_reached: path_search.path_limit_reached,
+        end_below_min_length: path_search.end_below_min_length,
+        max_length_reached: path_search.max_length_reached,
+        completed_candidate_paths: path_search.completed_candidate_path_count,
+        eligible_candidate_paths: path_search.eligible_candidate_path_count,
+        withheld_candidate_paths: path_search.withheld_candidate_path_count,
+        withheld_by_self_loop_node_paths: path_search.withheld_by_self_loop_node_count,
+        withheld_by_scc_node_paths: path_search.withheld_by_scc_node_count,
+        withheld_by_collision_edge_paths: path_search.withheld_by_collision_edge_count,
+        repeat_tainted_out_of_range_paths: path_search.repeat_tainted_out_of_range_path_count,
+        generated_products: 0,
+        failure_reason: None,
+        withheld_path_diagnostics: path_search.withheld_path_diagnostics.take(),
+    };
+
+    if path_search.paths.is_empty() {
+        let failure_reason =
+            if path_search.withheld_candidate_path_count > 0 && path_search.dfs_limit_reached {
+                "DFS state limit reached; completed candidate paths had unresolved repeat length"
+            } else if path_search.withheld_candidate_path_count > 0 {
+                "repeat length unresolved for all complete candidate paths"
+            } else if path_search.repeat_tainted_out_of_range_path_count > 0 {
+                "repeat length unresolved on an out-of-range start-to-end path"
+            } else if path_search.dfs_limit_reached {
+                "DFS state limit reached before a valid amplicon was found"
+            } else if path_search.path_limit_reached {
+                "path limit reached before a valid amplicon was found"
+            } else if path_search.end_below_min_length || path_search.max_length_reached {
+                "connectivity found but no path satisfied the requested length range"
+            } else {
+                "connectivity found but no start-to-end path remained after pruning"
+            };
+        diagnostic.failure_reason = Some(failure_reason.to_string());
+        return Ok(ThresholdEvaluation {
+            records: Vec::new(),
+            failure_reason: Some(failure_reason.to_string()),
+            diagnostic,
+        });
+    }
+
+    let (records, _) = paths::generate_sequences_from_paths(
+        &pruned_graph,
+        path_search.paths,
+        kmer_counts,
+        sample_name,
+        params,
+        0,
+        threading_annotations.as_ref(),
+    )?;
+
+    let failure_reason = if records.is_empty() {
+        Some("connectivity found but no path produced a valid-length amplicon".to_string())
+    } else {
+        None
+    };
+    diagnostic.generated_products = records.len();
+    diagnostic.failure_reason = failure_reason.clone();
+    Ok(ThresholdEvaluation {
+        records,
+        failure_reason,
+        diagnostic,
+    })
+}
+
+#[allow(clippy::too_many_arguments)]
 pub fn do_pcr(
     kmer_counts: &FilteredKmerCounts,
     sample_name: &str,
@@ -436,8 +925,29 @@ pub fn do_pcr(
     output_directory: &str,
     reads: Option<&[crate::io::ReadRecord]>,
     max_num_nodes: usize,
+    withheld_diagnostic_limits: WithheldDiagnosticLimits,
 ) -> Result<PcrOutcome> {
     gene_info!(params.gene_name, "Running PCR");
+    let emission_limits = if params.emit_uncertain {
+        inclusive_sequence_limits(withheld_diagnostic_limits)
+    } else {
+        withheld_diagnostic_limits
+    };
+
+    if params.max_length < kmer_counts.get_k() {
+        return Ok(PcrOutcome {
+            records: Vec::new(),
+            failure_reason: Some(format!(
+                "max-length {} is shorter than k-mer length {}",
+                params.max_length,
+                kmer_counts.get_k()
+            )),
+            threshold_diagnostics: Vec::new(),
+            uncertain_products: params
+                .emit_uncertain
+                .then(|| UncertainProducts::empty(emission_limits)),
+        });
+    }
 
     gene_info!(params.gene_name, "Preprocessing primers");
     let (forward_primer_kmers, reverse_primer_kmers) =
@@ -464,25 +974,12 @@ pub fn do_pcr(
         return Ok(PcrOutcome {
             records: Vec::new(),
             failure_reason: Some(format!("{} not found", which)),
+            threshold_diagnostics: Vec::new(),
+            uncertain_products: params
+                .emit_uncertain
+                .then(|| UncertainProducts::empty(emission_limits)),
         });
     }
-
-    // Filter reads to those relevant to this gene (if reads available)
-    let gene_reads: Option<Vec<&crate::io::ReadRecord>> = reads.map(|all_reads| {
-        let filter = read_filter::PrimerReadFilter::from_primer_kmers(
-            &forward_primer_kmers,
-            &reverse_primer_kmers,
-            kmer_counts.get_k(),
-        );
-        let filtered = filter.filter_reads(all_reads);
-        gene_info!(
-            params.gene_name,
-            "Read threading: {} of {} reads match primer kmers",
-            filtered.len(),
-            all_reads.len()
-        );
-        filtered
-    });
 
     // Log forward primer kmers for diagnostics
     let mut sorted_forward: Vec<(u64, u32)> =
@@ -563,8 +1060,16 @@ pub fn do_pcr(
     debug!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
     let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
-    let amplicon_index: usize = 0;
     let mut failure_reason: Option<String> = Some("no path found".to_string());
+    let mut threshold_diagnostics = Vec::with_capacity(coverage_thresholds.len());
+    let mut withheld_diagnostic_budget = (params.diagnose_withheld_paths || params.emit_uncertain)
+        .then(|| {
+            if params.emit_uncertain {
+                paths::WithheldDiagnosticBudget::for_emission(withheld_diagnostic_limits)
+            } else {
+                paths::WithheldDiagnosticBudget::new(withheld_diagnostic_limits)
+            }
+        });
 
     // Coverage threshold sweep: at each min_count, clone the seed graph fresh
     // and extend at that threshold. Pruning + path-finding happens after each
@@ -572,16 +1077,14 @@ pub fn do_pcr(
     // threshold step is independent — no incremental state across steps.
     gene_info!(
         params.gene_name,
-        "Extending graph with thresholds {:?} (global budget {})",
+        "Extending graph with thresholds {:?} (global budget {}, repeat edge count floor {})",
         coverage_thresholds,
-        max_num_nodes
+        max_num_nodes,
+        max_primer_count
     );
 
     let extend_start = std::time::Instant::now();
-    let mut found_path_signal = false;
-    let mut current_graph = seed_graph.clone();
     let _ = node_lookup;
-
     'threshold_loop: for (step_idx, min_count) in coverage_thresholds.iter().enumerate() {
         gene_info!(
             params.gene_name,
@@ -601,147 +1104,90 @@ pub fn do_pcr(
         // Unified bidirectional extension: processes forward and reverse
         // seeds in one pass with an interleaved frontier. Symmetric — swapping
         // forward/reverse primer labels doesn't change behavior.
-        let (final_graph, _final_lookup, found) = graph::extend_graph(
-            fresh_graph,
-            fresh_lookup,
+        let (final_graph, _final_lookup, found, extension_repeat_markers, node_budget_reached) =
+            graph::extend_graph(
+                fresh_graph,
+                fresh_lookup,
+                kmer_counts,
+                min_count,
+                params,
+                max_primer_count,
+                max_num_nodes,
+            )?;
+        if !found {
+            let threshold_failure = if node_budget_reached {
+                "node budget exceeded"
+            } else {
+                "no start-to-end connectivity established at this threshold"
+            };
+            failure_reason = Some(threshold_failure.to_string());
+            threshold_diagnostics.push(PcrThresholdDiagnostic {
+                threshold: *min_count,
+                connectivity_found: false,
+                node_budget_reached,
+                omitted_self_loop_nodes: extension_repeat_markers.omitted_self_loop_sub_kmers.len(),
+                retained_collision_edges: extension_repeat_markers.retained_collision_edges.len(),
+                failure_reason: Some(threshold_failure.to_string()),
+                withheld_path_diagnostics: withheld_diagnostic_budget
+                    .as_ref()
+                    .map(|budget| budget.empty_threshold_diagnostics(params.max_node_visits)),
+                ..PcrThresholdDiagnostic::default()
+            });
+            continue;
+        }
+        let mut evaluation = evaluate_threshold_graph(
+            final_graph,
+            extension_repeat_markers,
+            *min_count,
             kmer_counts,
-            min_count,
+            sample_name,
             params,
-            max_num_nodes,
+            dump_graph,
+            output_directory,
+            reads,
+            withheld_diagnostic_budget.as_mut(),
         )?;
+        evaluation.diagnostic.node_budget_reached = node_budget_reached;
 
-        current_graph = final_graph;
-
-        if found {
-            found_path_signal = true;
+        if !evaluation.records.is_empty() {
+            gene_info!(
+                params.gene_name,
+                "Obtained {} PCR product(s) at threshold {}.",
+                evaluation.records.len(),
+                min_count
+            );
+            threshold_diagnostics.push(evaluation.diagnostic);
+            assembly_records_all.extend(evaluation.records);
+            failure_reason = None;
             break 'threshold_loop;
         }
-    }
 
-    if current_graph.node_count() >= max_num_nodes {
-        failure_reason = Some("node budget exceeded".to_string());
+        let evaluation_failure = evaluation
+            .failure_reason
+            .unwrap_or_else(|| "connectivity found but no valid amplicon was produced".to_string());
+        failure_reason = Some(if node_budget_reached {
+            format!("node budget exceeded; {}", evaluation_failure)
+        } else {
+            evaluation_failure
+        });
+        evaluation.diagnostic.failure_reason = failure_reason.clone();
+        threshold_diagnostics.push(evaluation.diagnostic);
     }
 
     gene_info!(
         params.gene_name,
-        "Done. Time to extend graph: {}",
+        "Done. Time to extend and evaluate graphs: {}",
         format_duration(extend_start.elapsed())
     );
 
-    if found_path_signal {
-        // Prune and find paths on a copy
-        let mut pruned_graph = current_graph.clone();
-        let prune_start = std::time::Instant::now();
-        gene_info!(params.gene_name, "Pruning the assembly graph...");
-
-        pruning::remove_low_coverage_tips(
-            &mut pruned_graph,
-            &kmer_counts.get_k(),
-            params.tip_coverage_fraction,
-        );
-        pruning::reachability_pruning(&mut pruned_graph);
-        graph::annotate_coverage_ratios(&mut pruned_graph);
-
-        gene_info!(
-            params.gene_name,
-            "Done. Time to prune graph: {}",
-            format_duration(prune_start.elapsed())
-        );
-
-        if dump_graph || log::log_enabled!(log::Level::Trace) {
-            let dot_string = write_annotated_dot(&pruned_graph, kmer_counts);
-            let file_name = format!(
-                "{}{}_{}_{}.dot",
-                output_directory, sample_name, params.gene_name, params.min_count
-            );
-            trace!("Writing dot file {}", file_name);
-            let mut file = File::create(&file_name).context("Unable to create dot file")?;
-            file.write_all(dot_string.as_bytes())
-                .context("Unable to write dot file")?;
-        }
-
-        // Thread reads through the pruned graph (if available)
-        let threading_annotations = if let Some(ref reads) = gene_reads {
-            if !reads.is_empty() {
-                let start = std::time::Instant::now();
-                gene_info!(
-                    params.gene_name,
-                    "Threading reads through assembly graph..."
-                );
-                let has_paired = reads.iter().any(|r| r.mate != crate::io::Mate::Unpaired);
-                let ann = if has_paired {
-                    threading::thread_reads_paired(&pruned_graph, reads, kmer_counts.get_k())
-                } else {
-                    threading::thread_reads(&pruned_graph, reads, kmer_counts.get_k())
-                };
-                let supported_edges = ann
-                    .edge_support
-                    .values()
-                    .filter(|s| s.read_support_total > 0)
-                    .count();
-                gene_info!(
-                    params.gene_name,
-                    "Threading: {}/{} edges have read support, {} branch links, {} paired links. Time: {}",
-                    supported_edges,
-                    pruned_graph.edge_count(),
-                    ann.branch_links.len(),
-                    ann.paired_links.len(),
-                    format_duration(start.elapsed())
-                );
-                Some(ann)
-            } else {
-                None
-            }
-        } else {
-            None
-        };
-
-        let path_start = std::time::Instant::now();
-        gene_info!(
-            params.gene_name,
-            "Traversing the assembly graph to find paths from forward to reverse primers..."
-        );
-
-        let edge_preferences = threading_annotations
-            .as_ref()
-            .map(|ann| bubble::resolve_bubbles(&pruned_graph, ann));
-
-        let all_paths = paths::get_assembly_paths(
-            &pruned_graph,
-            kmer_counts,
-            params,
-            edge_preferences.as_ref(),
-        );
-
-        gene_info!(
-            params.gene_name,
-            "Found {} paths. Time: {}",
-            all_paths.len(),
-            format_duration(path_start.elapsed())
-        );
-
-        if !all_paths.is_empty() {
-            let (records, new_index) = paths::generate_sequences_from_paths(
-                &pruned_graph,
-                all_paths,
-                kmer_counts,
-                sample_name,
-                params,
-                amplicon_index,
-                threading_annotations.as_ref(),
-            )?;
-            let _ = new_index;
-
-            if !records.is_empty() {
-                gene_info!(
-                    params.gene_name,
-                    "Obtained {} PCR product(s).",
-                    records.len()
-                );
-                assembly_records_all.extend(records);
-                failure_reason = None;
-            }
-        }
+    if assembly_records_all.is_empty()
+        && let Some(summary) = earlier_threshold_limit_summary(&threshold_diagnostics)
+    {
+        failure_reason = Some(format!(
+            "{}; earlier threshold outcomes: {}",
+            failure_reason.as_deref().unwrap_or("no path found"),
+            summary
+        ));
     }
 
     debug!(
@@ -761,9 +1207,11 @@ pub fn do_pcr(
     gene_info!(params.gene_name, "Done.");
 
     if assembly_records_all.is_empty() {
+        let reported_failure = failure_reason.as_deref().unwrap_or("no path found");
         gene_info!(
             params.gene_name,
-            "No path was found from a forward primer binding site to a reverse primer binding site. Abandoning PCR."
+            "No valid PCR product was recovered: {}. Abandoning PCR.",
+            reported_failure
         );
         gene_info!(params.gene_name, "Suggested actions:");
         gene_info!(
@@ -776,9 +1224,21 @@ pub fn do_pcr(
             "  - The primers may have non-specific binding and are not close enough to generate a product. Consider increasing the primer trim length from the default to create a more specific primer."
         );
 
+        let uncertain_products = params.emit_uncertain.then(|| {
+            uncertain::collect(
+                sample_name,
+                &params.gene_name,
+                params.diagnose_withheld_paths,
+                emission_limits,
+                &[],
+                &mut threshold_diagnostics,
+            )
+        });
         return Ok(PcrOutcome {
             records: Vec::new(),
             failure_reason,
+            threshold_diagnostics,
+            uncertain_products,
         });
     }
 
@@ -786,7 +1246,7 @@ pub fn do_pcr(
 
     // Re-number products sequentially (0, 1, 2, ...) after dedup so IDs are
     // deterministic regardless of thread count or path enumeration order.
-    let records = records
+    let records: Vec<fasta::Record> = records
         .into_iter()
         .enumerate()
         .map(|(i, record)| {
@@ -812,9 +1272,21 @@ pub fn do_pcr(
         })
         .collect();
 
+    let uncertain_products = params.emit_uncertain.then(|| {
+        uncertain::collect(
+            sample_name,
+            &params.gene_name,
+            params.diagnose_withheld_paths,
+            emission_limits,
+            &records,
+            &mut threshold_diagnostics,
+        )
+    });
     Ok(PcrOutcome {
         records,
         failure_reason: None,
+        threshold_diagnostics,
+        uncertain_products,
     })
 }
 
@@ -1278,6 +1750,8 @@ mod tests {
             max_primer_kmers: DEFAULT_MAX_NUM_PRIMER_KMERS,
             high_coverage_ratio: DEFAULT_HIGH_COVERAGE_RATIO,
             tip_coverage_fraction: DEFAULT_TIP_COVERAGE_FRACTION,
+            diagnose_withheld_paths: false,
+            emit_uncertain: false,
         };
 
         (read_string, k, replicates, kmer_counts, params)
@@ -1360,12 +1834,19 @@ mod tests {
         assert_eq!(get_start_nodes(&seed_graph).len(), 1);
         assert_eq!(get_end_nodes(&seed_graph).len(), 1);
 
-        let (mut graph_result, _node_lookup_final, _found) = graph::extend_graph(
+        let (
+            mut graph_result,
+            _node_lookup_final,
+            _found,
+            _extension_repeat_markers,
+            _node_budget_reached,
+        ) = graph::extend_graph(
             seed_graph,
             node_lookup,
             &filtered,
             &min_count,
             &params,
+            0,
             graph::DEFAULT_MAX_NUM_NODES,
         )
         .unwrap();

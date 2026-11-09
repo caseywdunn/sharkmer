@@ -1,0 +1,18 @@
+[angiospermae_trnK-rps16] Path search reached the DFS state limit of 100000 at threshold 2.
+[angiospermae_ycf6-psbM] Path search reached the DFS state limit of 100000 at threshold 6.
+[angiospermae_trnL-F] Path search reached the DFS state limit of 100000 at threshold 4.
+[angiospermae_trnL-F] Path search reached the DFS state limit of 100000 at threshold 2.
+[angiospermae_trnL-F] Withholding 1 complete candidate path(s) because repeat length is unresolved at threshold 2.
+  + angiospermae_psbA-trnH (1 product: 1 standard, 0 uncertain; 508 bp)
+  - angiospermae_rpl36-infA-rps8 (no products, node budget exceeded)
+  - angiospermae_trnK-rps16 (no products, node budget exceeded; DFS state limit reached before a valid amplicon was found)
+  + angiospermae_trnV-atpE (1 product: 1 standard, 0 uncertain; 929 bp)
+  + angiospermae_trnC-ycf6 (1 product: 1 standard, 0 uncertain; 593 bp)
+  + angiospermae_ycf6-psbM (1 product: 1 standard, 0 uncertain; 937 bp)
+  + angiospermae_psbM-trnD (1 product: 1 standard, 0 uncertain; 699 bp)
+  + angiospermae_atpB-rbcL (1 product: 1 standard, 0 uncertain; 812 bp)
+  ? angiospermae_trnL-F (1 product: 0 standard, 1 uncertain; 599 bp)
+    Uncertain records have unresolved repeat structure and unevaluated read support.
+    Standard admission: node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length
+  + angiospermae_ITS (1 product: 1 standard, 0 uncertain; 753 bp)
+sharkmer complete: 1,000,000 reads, 8/10 targets with output (angiospermae_psbA-trnH, angiospermae_trnV-atpE, angiospermae_trnC-ycf6, angiospermae_ycf6-psbM, angiospermae_psbM-trnD, angiospermae_atpB-rbcL, angiospermae_trnL-F, angiospermae_ITS), 8 records (7 standard, 1 uncertain), allocator peak 2.1 GB, 1m 11s

@@ -1,0 +1,145 @@
+{
+  "control_counts_reproduced": [
+    27,
+    0
+  ],
+  "distinct_read_ids_across_its_windows": 25,
+  "events": [
+    {
+      "compatible_frozen_candidates": 11,
+      "distinct_full_read_sequences_rc_collapsed": 10,
+      "distinct_read_ids": 11,
+      "event_id": "its_local_01",
+      "exact_q20_records": 11,
+      "role": "ITS_local_occurrence",
+      "window_length": 43,
+      "window_sequence": "GCTTGCTCCTATACGCTCGCGCTCGCCCTCCGGGCGGGCCGGG"
+    },
+    {
+      "compatible_frozen_candidates": 11,
+      "distinct_full_read_sequences_rc_collapsed": 8,
+      "distinct_read_ids": 8,
+      "event_id": "its_local_02",
+      "exact_q20_records": 8,
+      "role": "ITS_local_occurrence",
+      "window_length": 47,
+      "window_sequence": "GCTTGCTCCTATACGCTCGCGCTCGCCCTCCGGGCGGGCCGGGTGGA"
+    },
+    {
+      "compatible_frozen_candidates": 10,
+      "distinct_full_read_sequences_rc_collapsed": 2,
+      "distinct_read_ids": 2,
+      "event_id": "its_local_03",
+      "exact_q20_records": 2,
+      "role": "ITS_local_occurrence",
+      "window_length": 43,
+      "window_sequence": "GCTTGCTCCTATACGCTCGCGTTCGCCCTCCGGGCGGGCCGGG"
+    },
+    {
+      "compatible_frozen_candidates": 12,
+      "distinct_full_read_sequences_rc_collapsed": 3,
+      "distinct_read_ids": 3,
+      "event_id": "its_local_04",
+      "exact_q20_records": 3,
+      "role": "ITS_local_occurrence",
+      "window_length": 46,
+      "window_sequence": "GCTTGCTCCTATACGCTCGCGTTCGCCTCCGGGCGGGCCGGGTGGA"
+    },
+    {
+      "compatible_frozen_candidates": 10,
+      "distinct_full_read_sequences_rc_collapsed": 3,
+      "distinct_read_ids": 4,
+      "event_id": "its_local_05",
+      "exact_q20_records": 4,
+      "role": "ITS_local_occurrence",
+      "window_length": 43,
+      "window_sequence": "TCCTATACGCTCGCGTTCGCCCTCCGGGCGGGCCGGGTGGAAA"
+    },
+    {
+      "compatible_frozen_candidates": 12,
+      "distinct_full_read_sequences_rc_collapsed": 4,
+      "distinct_read_ids": 4,
+      "event_id": "its_local_06",
+      "exact_q20_records": 4,
+      "role": "ITS_local_occurrence",
+      "window_length": 42,
+      "window_sequence": "TCCTATACGCTCGCGTTCGCCTCCGGGCGGGCCGGGTGGAAA"
+    },
+    {
+      "compatible_frozen_candidates": 10,
+      "distinct_full_read_sequences_rc_collapsed": 3,
+      "distinct_read_ids": 3,
+      "event_id": "its_local_07",
+      "exact_q20_records": 3,
+      "role": "ITS_local_occurrence",
+      "window_length": 43,
+      "window_sequence": "TCTGTGCGCGTCGGCGTCGTACTTTTCGGCTAACTCGTCTTTT"
+    },
+    {
+      "compatible_frozen_candidates": 11,
+      "distinct_full_read_sequences_rc_collapsed": 4,
+      "distinct_read_ids": 5,
+      "event_id": "its_local_08",
+      "exact_q20_records": 5,
+      "role": "ITS_local_occurrence",
+      "window_length": 43,
+      "window_sequence": "TCTGTGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTT"
+    },
+    {
+      "compatible_frozen_candidates": 1,
+      "distinct_full_read_sequences_rc_collapsed": 15,
+      "distinct_read_ids": 27,
+      "event_id": "SRR27962769_e2d376bc5b0f09a9_supplementary_retained_corresponding_interval",
+      "exact_q20_records": 27,
+      "role": "CO1_control",
+      "window_length": 60,
+      "window_sequence": "GCAGTTGGAATTACAGCTCTTTTATTATTATTATCATTACCAGTCCTAGCCGGTGCTATT"
+    },
+    {
+      "compatible_frozen_candidates": 1,
+      "distinct_full_read_sequences_rc_collapsed": 0,
+      "distinct_read_ids": 0,
+      "event_id": "SRR27962769_e86a7ccf9e78adaf_primary_complete_placement_union_0",
+      "exact_q20_records": 0,
+      "role": "CO1_control",
+      "window_length": 81,
+      "window_sequence": "GCAGTTGGAATTACAGCTCTTTTATTATTATTATCATTATCATTATTATTATTATCATTACCAGTCCTAGCCGGTGCTATT"
+    }
+  ],
+  "its_windows_assayed": 8,
+  "its_windows_observed": 8,
+  "limitations": [
+    "ITS read matches establish only occurrence of the local string; multiple full hypotheses share each string.",
+    "Scanner unique-record and corroborated-local-bridge fields must not be interpreted as full-hypothesis support.",
+    "Candidate IDs on collapsed events identify coordinate representatives; memberships preserve every original nearest-window endpoint.",
+    "Finite-context placements inspect only the 32 gains and five old control candidates; target specificity is not established.",
+    "The exact assay requires Q20 or better throughout both 21-base flanks and the intervening allele, in either read orientation.",
+    "No matching read in this fixed first-million R1 prefix does not prove absence; mismatches, gaps, sampling and low quality limit sensitivity.",
+    "Overlapping windows may share reads and cannot be counted as independent evidence.",
+    "Nearest-window indel coordinates are one representation; the literal spanning string is assayed without asserting a unique mutation position.",
+    "The entire variable extent of the 32 gains is longer than a 150-base read; local matches cannot establish whole-product phase or biological correctness.",
+    "High-quality exact occurrence does not exclude sequencing errors or establish biological polymorphism.",
+    "Distinct read IDs or sequences do not certify independent molecules. Counts across overlapping events cannot be summed as independent observations."
+  ],
+  "metrics": {
+    "exit_code": 0,
+    "max_rss_kib": 16896,
+    "system_seconds": 0.16,
+    "user_seconds": 27.23,
+    "wall_seconds": 28.66
+  },
+  "next_question": "Which combinations of observed local strings are linked within individual reads, and which full hypotheses remain indistinguishable or unlinked?",
+  "source_receipts": {
+    "derivation.json": "8a580cd8babc048492b5d1ca1ee50cfce45d560271e1c542fb68a03a5caf6478",
+    "run-v1/execution.json": "e427dc17facb0e32ff2d20cd28a6d5192d722dab406cf6d43180db51f90263b6",
+    "run-v1/raw.json": "cbb8dcb6b9bc1840df8f04659cab66e40cd07241dd7d9afcb375c5802366cba1",
+    "summarize_pilot.py": "f8a6342b374b4af63cc8d78022757f1c57b533faab5b4a3940c7e54af89029df"
+  },
+  "status": "completed_local_occurrence_pilot",
+  "verified_input_subset": {
+    "bases": 150000000,
+    "records": 1000000,
+    "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+    "size_bytes": 365356898
+  }
+}

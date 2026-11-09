@@ -49,11 +49,12 @@ codes H, D, Y, N, R that generate many kmer variants.
 
 **Mitigation (user):** Increase `trim` to use more of the primer (more
 specific matching). Decrease `mismatches` to reduce the number of
-variants. Increase `--max-nodes` (hidden) to allow a larger graph.
+variants. Increase `--node-budget-global` (hidden) to allow a larger graph
+for each gene and coverage threshold; it is not a whole-run RAM cap.
 
-**Mitigation (developer):** Better seed evaluation to distinguish
-on-target from off-target seeds. `--read-eval` helps. The
-`--max-primer-kmers` cap (default 100) limits the worst cases.
+**Mitigation (developer):** Improve primer design and graph diagnostics. The
+`--max-primer-kmers` cap (default 40) limits retained seed kmers; primer
+expansion is also checked before reads are ingested.
 
 #### Primer too specific for cross-species use
 
@@ -113,7 +114,7 @@ tandem repeats). The de Bruijn graph includes edges from many genomic
 copies, creating a dense tangle that exceeds the node budget or makes
 path finding intractable.
 
-**Mitigation (user):** Increase `--max-nodes` (hidden). May not help
+**Mitigation (user):** Increase `--node-budget-global` (hidden). May not help
 if the repeat complexity is inherently too high.
 
 **Mitigation (developer):** Read threading with repeat-aware scoring
@@ -157,20 +158,14 @@ The most common failure cause. At low read counts, some kmers in the
 amplicon region are never observed (count 0) or observed only once
 (below min_count=2). The graph has gaps where coverage drops out.
 
-The required read count depends on genome size. For a 150 bp read
-library:
+The required read count depends on genome size, target copy number, library
+composition, and local sequence effects. Whole-library read counts are not
+measured per-target, per-haplotype, or per-kmer coverage. Mitochondrial and
+plastid targets can be variably enriched, but that enrichment depends on the
+library, tissue, and sample.
 
-| Genome | Size | Reads for ~5x mt coverage | Reads for ~5x nuclear |
-| --- | --- | --- | --- |
-| Drosophila | 144 Mb | ~1M | ~5M |
-| Coral (Porites) | 542 Mb | ~4M | ~18M |
-| Human | 3.1 Gb | ~20M | ~103M |
-
-Mitochondrial and plastid genes are easier because organellar copy
-number provides ~100x enrichment over single-copy nuclear genes.
-
-**Mitigation (user):** Increase `--max-reads`. More reads = higher
-coverage per kmer = fewer gaps.
+**Mitigation (user):** Increase `--max-reads`. More reads increase the chance
+of observing target kmers, but do not guarantee uniform local support.
 
 #### Uneven coverage across the amplicon
 
@@ -179,7 +174,8 @@ coverage due to GC bias, library preparation artifacts, or secondary
 structure. This creates the same gap problem as insufficient total
 coverage but is harder to predict.
 
-Some datasets are highly depleted in mitochondrial reads (eg ERR571460), due to filtering or diffrences in mitochodnrial abundance across tissues.
+Some datasets are highly depleted in mitochondrial reads (eg ERR571460), due
+to filtering or differences in mitochondrial abundance across tissues.
 
 **Mitigation (user):** Increase `--max-reads` to raise the coverage
 floor. Decrease `-k` so that each unique kmer is covered by more reads
@@ -202,16 +198,14 @@ amplicon is connected.
 This failure is sample-specific even though primer degeneracy is fixed:
 different genomes have different off-target match profiles.
 
-**Mitigation (user):** Increase `--max-nodes` (hidden) to allow a
+**Mitigation (user):** Increase `--node-budget-global` (hidden) to allow a
 larger graph. Decrease primer `mismatches` to reduce off-target
 matches. Increase primer `trim` to use more of the primer sequence
 (more specific).
 
-**Mitigation (developer):** Better seed evaluation — the current
-`evaluate_seeds()` filters seeds by branching ratio and local
-exploration size, but some off-target seeds pass because they extend
-linearly into off-target regions. Read-backed seed evaluation
-(`--read-eval`) helps by checking read divergence.
+**Mitigation (developer):** Better seed ordering and graph diagnostics can
+reduce off-target work. Read threading supplies local graph evidence but does
+not establish a complete haplotype or repeat copy count.
 
 #### Seed evaluation threshold too stringent
 
@@ -267,11 +261,11 @@ Controls how many reads from the input are used.
 - **Decrease:** Faster runtime, but genes with low coverage will fail.
   Useful for quick surveys or when only high-copy targets (mt, plastid)
   are needed.
-- **Guidance:** Start with 1M for mt/plastid genes. Use 4-8M for
-  nuclear genes in medium genomes. Use 16M+ for large genomes or
-  single-copy targets. If a gene recovers at a lower count but drops
-  out at a higher count, this indicates a graph complexity issue rather
-  than a coverage issue.
+- **Guidance:** Calibration runs often start at 1M records for high-copy
+  mt/plastid markers and use larger sweeps for nuclear or single-copy targets.
+  These are examples, not target-coverage estimates. If a gene recovers at a
+  lower count but drops out at a higher count, this indicates a graph
+  complexity issue rather than a simple coverage deficit.
 
 ### Kmer size (`-k`)
 
@@ -282,7 +276,7 @@ Controls the length of kmers used for counting and graph construction.
 - **Decrease (e.g., k=21):** Each kmer has higher coverage, bridging
   low-complexity gaps, but graphs have more branching and are larger.
   Below k=15, specificity is too low for most applications.
-- **Default:** 31. Consider 21 for AT-rich organisms (Lepidoptera mt,
+- **Default:** 19. Consider 21 for AT-rich organisms (Lepidoptera mt,
   some plastid genomes).
 
 ### Primer mismatches (`mismatches` in panel YAML)
@@ -315,16 +309,12 @@ Expected amplicon size range.
 - **Too wide:** Allows spurious products from off-target amplification.
 - **Guidance:** Set based on known amplicon sizes with ~20% margin.
 
-### Read evaluation (`--read-eval`)
+### Archived read evaluation
 
-Enables read-backed seed evaluation (Pass 1 read retention).
-
-- **On:** Filters off-target seeds more effectively by checking read
-  divergence around seed nodes. Costs ~10% more memory (retained reads)
-  and ~5% more time.
-- **Off (default):** Faster, lower memory. Adequate for most cases.
-- **Guidance:** Enable for degenerate primers or when seed explosion is
-  suspected (many seeds abandoned in verbose output).
+Earlier development builds described a `--read-eval` seed-evaluation flag.
+It is not a current CLI option. Use the current primer-expansion diagnostics,
+node budget, and optional read threading instead; threading remains local
+evidence rather than full-haplotype reconstruction.
 
 ### Read threading (`--read-threading`)
 
@@ -346,13 +336,12 @@ the algorithm's resource budgets and heuristic thresholds.
 
 | Parameter | Default | Effect of increase | Effect of decrease |
 | --- | ---: | --- | --- |
-| `--max-nodes` | 50,000 | Allows larger graphs; may recover genes in complex regions but uses more memory and time | Smaller graphs; faster but may truncate before amplicon is connected |
+| `--node-budget-global` | auto 100,000–500,000 | Allows a larger graph per gene/threshold; may recover complex targets but uses more time | Smaller graphs; faster but may truncate before amplicon is connected |
 | `--max-dfs-states` | 100,000 | Explores more paths; finds products in complex graphs | Faster path finding but may miss valid paths |
 | `--max-paths-per-pair` | 20 | Reports more variant products | Fewer output sequences |
-| `--max-node-visits` | 2 | Tolerates more cycles (tandem repeats) | Stricter cycle avoidance |
-| `--max-primer-kmers` | 100 | Keeps more primer variants; better for degenerate primers | Fewer seeds; cleaner graphs |
-| `--max-seed-nodes` | 500 | More thorough seed evaluation | Faster seed filtering |
-| `--high-coverage-ratio` | 10.0 | Allows higher-coverage edges (less aggressive repeat filtering) | More aggressive repeat filtering |
+| `--max-node-visits` | 2 | Permits more DFS revisits before bounding search | Stricter cycle avoidance; repeat-touched candidates remain uncertain |
+| `--max-primer-kmers` | 40 | Retains more primer-matching kmers after expansion | Fewer seeds; cleaner graphs |
+| `--high-coverage-ratio` | 10.0 | Allows higher graph-median-ratio edges (less aggressive repeat filtering) | More aggressive filtering, subject to the observed-primer-count floor |
 | `--tip-coverage-fraction` | 0.1 | Prunes more tips (higher coverage threshold for keeping tips) | Preserves more tips |
 
 ### Hard-coded constants
@@ -363,9 +352,6 @@ the algorithm's resource budgets and heuristic thresholds.
 | `COVERAGE_STEPS` | 4 | `mod.rs` | Number of threshold steps from initial to min_count |
 | `MAX_NUM_AMPLICONS` | 20 | `paths.rs` | Hard limit on output FASTA records per gene |
 | `EXTENSION_EVALUATION_FREQUENCY` | 1,000 | `graph.rs` | Graph size checked every N nodes |
-| `MAX_BRANCHING_RATIO` | 0.4 | `seed_eval.rs` | Abandon seed if branching ratio exceeds this |
-| `BUDGET_BRANCHING_THRESHOLD` | 0.2 | `seed_eval.rs` | Abandon seed if budget exhausted AND branching > this |
-| `MIN_EXTENSION_FRACTION` | 0.1 | `seed_eval.rs` | Abandon seed if terminated with < 10% of expected nodes |
 | `MAX_BUBBLE_DEPTH` | 50 | `bubble.rs` | Maximum depth for bubble detection |
 
 ## Real-world failure examples
@@ -378,7 +364,7 @@ Full primer binding site data is in
 
 | Gene | Sample | Reads | Primer mm | Root cause |
 | --- | --- | ---: | :---: | --- |
-| 16S | Porites lutea | 1M | 0+0 | 542 Mb genome; ~0.4x mt coverage at 1M reads |
+| 16S | Porites lutea | 1M | 0+0 | 542 Mb genome; low estimated organellar sampling at 1M reads |
 | CO1 | Xenia sp. | 1M | 0+0 | 223 Mb genome; insufficient mt coverage |
 | ND4 | Drosophila | 1M | 0+0 | Primer kmer counts 3-11; **recovers at 4M** |
 | ND4 | Heliconius | 1M | 0+0 | Reverse primer not found in reads at 1M |

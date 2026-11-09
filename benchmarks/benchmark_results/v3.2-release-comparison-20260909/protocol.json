@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "comparison_id": "released-3.1.0-vs-3.2.0-dev-20260909",
+  "validator_root": "/tmp/sharkmer-release-comparison/sources/candidate",
+  "output_root": "/tmp/sharkmer-release-comparison/execution",
+  "dataset_role": "calibration_regression_not_held_out",
+  "config": {
+    "path": "/tmp/sharkmer-release-comparison/sources/candidate/benchmarks/benchmark.yaml",
+    "sha256": "643d1c2040a8ef755aad5622526210dea2c8c5e36ebe27704f1e8c320eeaa6c9"
+  },
+  "settings": {
+    "k": 19,
+    "threads": 2,
+    "chunks": 0,
+    "read_threading": false,
+    "paired": false,
+    "timeout_seconds": 1800,
+    "address_space_limit_bytes": 42949672960,
+    "cpu_list": [
+      0,
+      1
+    ],
+    "prewarm_each_invocation": true,
+    "input_format": "uncompressed_four_line_fastq"
+  },
+  "panels": [
+    {
+      "name": "angiospermae",
+      "path": "/tmp/sharkmer-release-comparison/sources/candidate/panels/angiospermae.yaml",
+      "sha256": "b41760aa28d0f0128ae06151fe1c265b50bb3ed612f51734ed3e911b58dda8c0"
+    },
+    {
+      "name": "bacteria",
+      "path": "/tmp/sharkmer-release-comparison/sources/candidate/panels/bacteria.yaml",
+      "sha256": "3a3a9df11359cd1736f2edd52279d2ddb4c6a819dbf797fab59ba55ceae842ae"
+    },
+    {
+      "name": "cnidaria",
+      "path": "/tmp/sharkmer-release-comparison/sources/candidate/panels/cnidaria.yaml",
+      "sha256": "c7cebcaf6d2ce7fa9b6a23ef6a1e93e58adc8254334f006216eb4d4ddbb07b6d"
+    },
+    {
+      "name": "human",
+      "path": "/tmp/sharkmer-release-comparison/sources/candidate/panels/human.yaml",
+      "sha256": "ac4359b88bbf3202218066288d0caffd571884edff7d14a402b7c3038755fdc1"
+    },
+    {
+      "name": "insecta",
+      "path": "/tmp/sharkmer-release-comparison/sources/candidate/panels/insecta.yaml",
+      "sha256": "043a4d224f8186d58459287c54bec7935d5f4921a5087c14a2136cfac42df874"
+    },
+    {
+      "name": "teleostei",
+      "path": "/tmp/sharkmer-release-comparison/sources/candidate/panels/teleostei.yaml",
+      "sha256": "1c6a32b5c1e30c1881ee08c80352ac87810f4c8a8c6608ffe94f1d0e8c843e59"
+    }
+  ],
+  "samples": [
+    {
+      "panel": "cnidaria",
+      "input": "SRR9278435",
+      "taxon": "Xenia sp.",
+      "depths": [
+        1000000,
+        2000000,
+        4000000,
+        8000000
+      ]
+    },
+    {
+      "panel": "cnidaria",
+      "input": "SRR25099394",
+      "taxon": "Agalma elegans",
+      "depths": [
+        1000000,
+        2000000,
+        4000000,
+        8000000
+      ]
+    },
+    {
+      "panel": "cnidaria",
+      "input": "SRR8617500",
+      "taxon": "Rhopilema esculentum",
+      "depths": [
+        1000000,
+        2000000,
+        4000000,
+        8000000
+      ]
+    },
+    {
+      "panel": "human",
+      "input": "SRR17535371",
+      "taxon": "Homo sapiens",
+      "depths": [
+        1000000
+      ]
+    },
+    {
+      "panel": "teleostei",
+      "input": "SRR22396603",
+      "taxon": "Nomeus gronovii",
+      "depths": [
+        1000000
+      ]
+    },
+    {
+      "panel": "angiospermae",
+      "input": "SRR25378184",
+      "taxon": "Liriodendron tulipifera",
+      "depths": [
+        1000000
+      ]
+    },
+    {
+      "panel": "angiospermae",
+      "input": "ERR14009273",
+      "taxon": "Acer monspessulanum",
+      "depths": [
+        1000000
+      ]
+    },
+    {
+      "panel": "insecta",
+      "input": "SRR31887760",
+      "taxon": "Drosophila melanogaster",
+      "depths": [
+        1000000,
+        2000000,
+        4000000,
+        8000000
+      ]
+    },
+    {
+      "panel": "insecta",
+      "input": "SRR1057608",
+      "taxon": "Heliconius pachinus",
+      "depths": [
+        1000000,
+        2000000,
+        4000000,
+        8000000
+      ]
+    },
+    {
+      "panel": "insecta",
+      "input": "SRR27962769",
+      "taxon": "Gryllus bimaculatus",
+      "depths": [
+        1000000,
+        2000000,
+        4000000,
+        8000000
+      ]
+    },
+    {
+      "panel": "bacteria",
+      "input": "SRR19418213",
+      "taxon": "rhizosphere metagenome",
+      "depths": [
+        1000000
+      ]
+    },
+    {
+      "panel": "bacteria",
+      "input": "SRR24806237",
+      "taxon": "coral metagenome",
+      "depths": [
+        1000000
+      ]
+    },
+    {
+      "panel": "bacteria",
+      "input": "ERR2596344",
+      "taxon": "seawater metagenome",
+      "depths": [
+        1000000
+      ]
+    }
+  ],
+  "schedule": {
+    "primary_depth": 1000000,
+    "primary_pairs": 3,
+    "deeper_pairs": 1,
+    "order_seed": 20260909,
+    "depth_order": "ascending; all primary cells before deeper cells"
+  },
+  "limitations": [
+    "Local uncompressed input comparison excludes network/cache/decompression costs.",
+    "Three paired timings at1M support median/range summaries, not strong statistical significance.",
+    "Deeper cells have one paired run only: accuracy/resource checks with descriptive timings.",
+    "Historical inputs are calibration/regression data, not held-out sensitivity truth.",
+    "40GiB is a virtual-address-space ceiling, not an RSS cap or16GB laptop validation."
+  ],
+  "machine": {
+    "platform": "Linux-7.0.0-30-generic-x86_64-with-glibc2.39",
+    "cpu_topology": "CPU CORE SOCKET ONLINE\n  0    0      0    yes\n  1    1      0    yes\n  2    2      0    yes\n  3    3      0    yes\n  4    4      0    yes\n  5    5      0    yes\n  6    0      0    yes\n  7    1      0    yes\n  8    2      0    yes\n  9    3      0    yes\n 10    4      0    yes\n 11    5      0    yes\n",
+    "meminfo_before": "MemTotal:       65665656 kB\nMemFree:        27450764 kB\nMemAvailable:   58097032 kB\nBuffers:         1411196 kB\nCached:         28775124 kB\nSwapCached:        66420 kB\nActive:          4680332 kB\nInactive:       31466988 kB\nActive(anon):    3099216 kB\nInactive(anon):  2890816 kB\nActive(file):    1581116 kB\nInactive(file): 28576172 kB\nUnevictable:       23864 kB\nMlocked:               0 kB\nSwapTotal:       4194300 kB\nSwapFree:        3854672 kB\nZswap:                 0 kB\nZswapped:              0 kB\nDirty:             99124 kB\nWriteback:            68 kB\nAnonPages:       5963008 kB\nMapped:           778860 kB\nShmem:             10424 kB\nKReclaimable:    1198192 kB\nSlab:            1636340 kB\nSReclaimable:    1198192 kB\nSUnreclaim:       438148 kB\nKernelStack:       14832 kB\nPageTables:        40572 kB\nSecPageTables:      3868 kB\nNFS_Unstable:          0 kB\nBounce:                0 kB\nWritebackTmp:          0 kB\nCommitLimit:    37027128 kB\nCommitted_AS:   16358808 kB\nVmallocTotal:   34359738367 kB\nVmallocUsed:      207280 kB\nVmallocChunk:          0 kB\nPercpu:            22848 kB\nHardwareCorrupted:     0 kB\nAnonHugePages:     14336 kB\nShmemHugePages:     4096 kB\nShmemPmdMapped:        0 kB\nFileHugePages:   8417280 kB\nFilePmdMapped:         0 kB\nCmaTotal:              0 kB\nCmaFree:         2581440 kB\nUnaccepted:            0 kB\nBalloon:               0 kB\nHugePages_Total:       0\nHugePages_Free:        0\nHugePages_Rsvd:        0\nHugePages_Surp:        0\nHugepagesize:       2048 kB\nHugetlb:               0 kB\nDirectMap4k:      881264 kB\nDirectMap2M:    17817600 kB\nDirectMap1G:    48234496 kB\n",
+    "cpu0_governor": "powersave"
+  }
+}

@@ -59,7 +59,7 @@ struct PanelFile {
     #[allow(dead_code)]
     changelog: Vec<ChangelogEntry>,
     primers: Vec<PCRParams>,
-    /// Gold-standard reference amplicon sequences for validation. Not used by
+    /// Independent public-record regions for validation. Not used by
     /// the Rust pipeline; consumed by the Python validation tooling.
     #[serde(default)]
     #[allow(dead_code)]
@@ -111,6 +111,24 @@ struct ReferenceSequence {
     #[serde(default)]
     accession: Option<String>,
     sequence: String,
+    #[serde(default)]
+    provenance: Option<ReferenceProvenance>,
+}
+
+#[derive(serde::Deserialize)]
+#[serde(deny_unknown_fields)]
+#[allow(dead_code)]
+struct ReferenceProvenance {
+    schema_version: u32,
+    kind: String,
+    accession_version: String,
+    source_sequence_sha256: String,
+    source_length: usize,
+    start: usize,
+    end: usize,
+    strand: String,
+    wraps_origin: bool,
+    sequence_sha256: String,
 }
 
 #[derive(serde::Deserialize)]
@@ -625,6 +643,46 @@ primers:
 "#;
         let result = parse_panel_yaml(yaml);
         assert!(result.is_err(), "expected rejection of unknown field");
+    }
+
+    #[test]
+    fn test_reference_provenance_is_optional_for_assembly() {
+        let reference: ReferenceSequence =
+            serde_yaml_ng::from_str("taxon: Test taxon\naccession: TEST_123\nsequence: ACGT\n")
+                .unwrap();
+        assert!(reference.provenance.is_none());
+    }
+
+    #[test]
+    fn test_reference_provenance_schema() {
+        let yaml = r#"
+taxon: Test taxon
+accession: TEST_123.1
+sequence: ACGT
+provenance:
+  schema_version: 1
+  kind: public_record_region
+  accession_version: TEST_123.1
+  source_sequence_sha256: source_digest
+  source_length: 20
+  start: 4
+  end: 8
+  strand: "+"
+  wraps_origin: false
+  sequence_sha256: region_digest
+"#;
+        let reference: ReferenceSequence = serde_yaml_ng::from_str(yaml).unwrap();
+        let provenance = reference.provenance.unwrap();
+        assert_eq!(provenance.start, 4);
+        assert_eq!(provenance.end, 8);
+        assert!(!provenance.wraps_origin);
+        for malformed in [
+            yaml.replace("start: 4", "start: -1"),
+            yaml.replace("wraps_origin: false", "wraps_origin: not_a_boolean"),
+            yaml.replace("start: 4", "start: 4\n  invented_field: value"),
+        ] {
+            assert!(serde_yaml_ng::from_str::<ReferenceSequence>(&malformed).is_err());
+        }
     }
 
     #[test]

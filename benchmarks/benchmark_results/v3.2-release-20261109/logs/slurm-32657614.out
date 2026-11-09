@@ -1,0 +1,45 @@
+Running "module reset". Resetting modules to system default. The following $MODULEPATH directories have been removed: None
+2026-11-09T07:35:15-05:00
+95f5390535690f0a9add083f48a5077590096e40
+2e185f445a171d6a030330725cd61e8d7b6874399a12eb8237914d101857d04b  Cargo.toml
+9568713ff6db97d9a52afbffdd049595ab4e85e6c3be6dbfb986b0070688d620  Cargo.lock
+b80b4ada711e355fa141cf4c8291489276b146f4b12fcdc32e5998bd3f6c50fc  scripts/release_check.py
+rustc 1.98.1 (48a229cea 2026-09-01)
+Python 3.14.3
+
+== metadata ==
+Metadata agrees: sharkmer 3.2.0
+
+== fmt ==
++ cargo fmt --all --check
+
+== clippy ==
++ cargo clippy --all-targets --locked --offline -- -D warnings
+    Checking sharkmer v3.2.0 (/nfs/roberts/project/pi_cwd7/cwd7/sharkmer)
+error: this `if` statement can be collapsed
+   --> src/pcr/graph.rs:452:13
+    |
+452 | /             if let Some(count) = kmer_counts.get_canonical(&kmer) {
+453 | |                 if count >= *min_count {
+454 | |                     candidate_kmers[n_candidates] = Some(kmer);
+455 | |                     n_candidates += 1;
+456 | |                 }
+457 | |             }
+    | |_____________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#collapsible_if
+    = note: `-D clippy::collapsible-if` implied by `-D warnings`
+    = help: to override `-D warnings` add `#[allow(clippy::collapsible_if)]`
+help: collapse nested if block
+    |
+452 ~             if let Some(count) = kmer_counts.get_canonical(&kmer)
+453 ~                 && count >= *min_count {
+454 |                     candidate_kmers[n_candidates] = Some(kmer);
+455 |                     n_candidates += 1;
+456 ~                 }
+    |
+
+error: could not compile `sharkmer` (bin "sharkmer" test) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `sharkmer` (bin "sharkmer") due to 1 previous error
+Release check failed: Command '['cargo', 'clippy', '--all-targets', '--locked', '--offline', '--', '-D', 'warnings']' returned non-zero exit status 101.

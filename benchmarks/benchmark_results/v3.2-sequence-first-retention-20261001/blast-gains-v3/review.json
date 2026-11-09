@@ -1,0 +1,110 @@
+{
+  "by_target": {
+    "SRR1057608:insecta_ND4": {
+      "panel_hits": 16,
+      "public_hits": 32,
+      "queries": 32
+    },
+    "SRR25378184:angiospermae_psbA-trnH": {
+      "panel_hits": 0,
+      "public_hits": 0,
+      "queries": 32
+    },
+    "SRR25378184:angiospermae_trnV-atpE": {
+      "panel_hits": 0,
+      "public_hits": 32,
+      "queries": 32
+    },
+    "SRR27962769:insecta_18S_1": {
+      "panel_hits": 17,
+      "public_hits": 17,
+      "queries": 17
+    },
+    "SRR27962769:insecta_ITS_2": {
+      "panel_hits": 0,
+      "public_hits": 32,
+      "queries": 32
+    },
+    "SRR27962769:insecta_Yp2": {
+      "panel_hits": 32,
+      "public_hits": 32,
+      "queries": 32
+    },
+    "SRR31887760:insecta_12S": {
+      "panel_hits": 23,
+      "public_hits": 23,
+      "queries": 23
+    }
+  },
+  "exact_full_query_same_taxon": 0,
+  "high_coverage_hsps": [
+    {
+      "identity_pct": 64.237,
+      "query_coverage_pct": 93.348,
+      "query_id": "q119",
+      "query_taxon": "Gryllus bimaculatus",
+      "source_accession": "PP764096.1",
+      "source_taxon": "Drosophila melanogaster"
+    },
+    {
+      "identity_pct": 64.437,
+      "query_coverage_pct": 93.222,
+      "query_id": "q120",
+      "query_taxon": "Gryllus bimaculatus",
+      "source_accession": "PP764096.1",
+      "source_taxon": "Drosophila melanogaster"
+    },
+    {
+      "identity_pct": 64.326,
+      "query_coverage_pct": 93.215,
+      "query_id": "q130",
+      "query_taxon": "Gryllus bimaculatus",
+      "source_accession": "PP764096.1",
+      "source_taxon": "Drosophila melanogaster"
+    },
+    {
+      "identity_pct": 64.031,
+      "query_coverage_pct": 91.304,
+      "query_id": "q132",
+      "query_taxon": "Gryllus bimaculatus",
+      "source_accession": "PP764096.1",
+      "source_taxon": "Drosophila melanogaster"
+    },
+    {
+      "identity_pct": 64.548,
+      "query_coverage_pct": 93.222,
+      "query_id": "q135",
+      "query_taxon": "Gryllus bimaculatus",
+      "source_accession": "PP764096.1",
+      "source_taxon": "Drosophila melanogaster"
+    }
+  ],
+  "interpretation": "No qualifying alignment in this bounded catalog; biological validity and read support remain unassessed.",
+  "panels": {
+    "angiospermae": {
+      "hsp_count": 0,
+      "hsps_at_least_90pct_coverage": 0,
+      "hsps_at_least_90pct_identity": 0,
+      "hsps_meeting_both": 0,
+      "queries_with_hits": 0,
+      "references": 19
+    },
+    "insecta": {
+      "hsp_count": 1103,
+      "hsps_at_least_90pct_coverage": 0,
+      "hsps_at_least_90pct_identity": 0,
+      "hsps_meeting_both": 0,
+      "queries_with_hits": 88,
+      "references": 42
+    }
+  },
+  "public_hsps": 5289,
+  "public_hsps_at_least_90pct_coverage": 5,
+  "public_hsps_at_least_90pct_identity": 78,
+  "public_hsps_meeting_both": 0,
+  "public_queries_with_hits": 168,
+  "queries": 200,
+  "scope": "saved v3 local BLAST outputs and pinned source catalog",
+  "sources": 121,
+  "status": "passed"
+}

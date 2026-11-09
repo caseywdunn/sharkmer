@@ -1,0 +1,10 @@
+schema_version: 2
+producer: sharkmer
+sample: synthetic_NC_008326_1_after
+run_id: 18dd7d9ad46fa06a-28dcb-866a18b393e620b2
+status: complete
+files:
+- path: synthetic_NC_008326_1_after.stats.yaml
+  sha256: 1f5b3f6e44e84db2b101f67f822da6493a1730a3dbb6b7d2fc9a47aceaa9c266
+- path: synthetic_NC_008326_1_after_angiospermae_trnV-atpE.fasta
+  sha256: fcab39d9a5cdcd069a2833551ad84e3e2c8cb40156f44e1303df0fcfcaff55a9

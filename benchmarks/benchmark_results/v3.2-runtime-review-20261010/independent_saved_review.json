@@ -1,0 +1,18 @@
+{
+  "artifacts": {
+    "SAVED_FINDINGS.md": "71731f794d41bc820ea5f5ae5e164176e73f298477896b3f163af009aa7003cf",
+    "saved_analysis.json": "e9ae5e181b99f717f270a518e51da91aee62e5ded2d15a24e9fba107ed37c85f",
+    "saved_identity_deltas.json": "e0b37a86e84b5fc76af9662a09e2aec79d1cc7b635a12a2b3917ed25728448f9"
+  },
+  "historical_invocations_verified": 48,
+  "identity_comparisons_verified": 8,
+  "immutable_source_receipts_verified": 750,
+  "limitations": [
+    "StagePCR includes FASTA staging; residualwall time does not measure I/Owait orfsync. CPU sums threads.",
+    "Different historical nodes/times and three replicates prevent causal historical attribution or equivalence claims; flags remain review findings.",
+    "Liriodendron prefix is original656431R1+343569R2 ordered concatenation, notR1-only.",
+    "Two explicitly recorded historical live validator/test hashes changed; saved executable/harness/raw receipts remain verified."
+  ],
+  "review": "Independent raw GNU time/stats/receipt reconciliation reproduces all metrics and medians; every sample prefix is identical across12 invocations; all retained/gained/lost sets agree and no historical sequence is lost in these four cells.",
+  "status": "pass"
+}

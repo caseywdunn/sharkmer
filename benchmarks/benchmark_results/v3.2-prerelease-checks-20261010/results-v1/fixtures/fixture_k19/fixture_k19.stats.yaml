@@ -1,0 +1,29 @@
+sharkmer_version: 3.2.0-dev
+command: /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer -k 19 -t 2 --chunks 0 -s fixture_k19 -o /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/fixtures/fixture_k19 /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+sample: fixture_k19
+run_id: 18dd7e2234f50e73-29e00-430692168eefb8b4
+output_manifest: fixture_k19.manifest.yaml
+run_status: complete
+product_output_schema_version: 2
+product_output_layout: combined_classified
+input_source:
+  kind: local_files
+  inputs:
+  - /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+  paired: false
+  max_reads: 0
+kmer_length: 19
+chunks: 0
+n_reads_read: 100000
+n_bases_read: 15000000
+n_subreads_ingested: 100000
+n_bases_ingested: 14999541
+n_kmers: 13197385
+count_table_capacity: 14680064
+peak_memory_bytes: 570476023
+stage_timings:
+  read_ingest_s: 1.456740023
+  count_finalize_s: 0.858138571
+  read_threading_input_s: null
+  pcr_s: 3.61e-7
+  pipeline_total_s: 2.3543111420000002

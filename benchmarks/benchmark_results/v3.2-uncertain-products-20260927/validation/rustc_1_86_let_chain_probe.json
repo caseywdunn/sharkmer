@@ -1,0 +1,21 @@
+{
+  "timestamp_utc": "2026-09-27T20:59:23.417088+00:00",
+  "module": "Rust/1.86.0-GCCcore-13.3.0",
+  "rustc_version": "rustc 1.86.0 (05f9846f8 2025-03-31) (built from a source tarball)",
+  "source": "fn main() {\n    if true && let Some(value) = Some(1_u8) {\n        assert_eq!(value, 1);\n    }\n}\n",
+  "source_sha256": "697b15c140f248bc73bd080c561c9a79d4037c6dc52932a377bb1b40b39675d4",
+  "argv": [
+    "rustc",
+    "--edition=2024",
+    "/tmp/sharkmer-let-chain-probe-eys9y7h9/let_chain.rs",
+    "-o",
+    "/tmp/sharkmer-let-chain-probe-eys9y7h9/probe"
+  ],
+  "exit_code": 1,
+  "stdout": "",
+  "stderr": "error[E0658]: `let` expressions in this position are unstable\n --> /tmp/sharkmer-let-chain-probe-eys9y7h9/let_chain.rs:2:16\n  |\n2 |     if true && let Some(value) = Some(1_u8) {\n  |                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  |\n  = note: see issue #53667 <https://github.com/rust-lang/rust/issues/53667> for more information\n\nerror: aborting due to 1 previous error\n\nFor more information about this error, try `rustc --explain E0658`.\n",
+  "compiled": false,
+  "scope": "Standalone syntax probe only; no repository source modified; no full build; no feature overrides",
+  "interpretation": "The installed Rust 1.86 compiler rejects the let-chain syntax already used in baseline source",
+  "production_tests_status": "not_compiled_or_executed"
+}

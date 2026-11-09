@@ -1,0 +1,29 @@
+............................................................................................................s.........................................................................................
+----------------------------------------------------------------------
+Ran 198 tests in 8.288s
+
+OK (skipped=1)
+{"output": "/tmp/tmpiuxtk6y4/result.json", "recruited_records": 1}
+  18S_2 product ?: gene_supported_expected_taxon
+  ITS_2 product 0: failed_run
+  [local] running sharkmer for A @ 1k reads...
+  completed in 0.0s, 1 genes amplified
+  [local] running sharkmer for A @ 1k reads...
+  completed in 0.0s, 0 genes amplified
+  [local] running sharkmer for A @ 1k reads...
+  completed in 0.0s, 0 genes amplified
+  [local] running sharkmer for A @ 1k reads...
+  completed in 0.0s, 1 genes amplified
+  target product 0: gene_supported_expected_taxon
+  target product 1: wrong_gene
+  target product 0: no_verified_reference
+  [local] running sharkmer for sample @ 0k reads...
+  ERROR: sharkmer failed (0.0s)
+  stderr tail: useful stderr
+  [ena] running sharkmer for remote-sample @ 0k reads...
+  ERROR: sharkmer output manifest invalid: Stats manifest lacks actual input-source provenance
+  [local] running sharkmer for sample @ 0k reads...
+  ERROR: sharkmer output manifest invalid: Current-run stats manifest is missing or not a regular file: /tmp/tmp5183ly4h/runs/panel_sample_0k_ce5f3a890535/panel_sample_0k.stats.yaml
+Building sharkmer (release)...
+Results written to: /tmp/tmpdui5xjx9/panel_1_3.2.0_20260908_162116_000000_4fb8bf06.yaml
+Results written to: /tmp/tmpdui5xjx9/panel_1_3.2.0_20260908_162116_000000_09f29cfe.yaml

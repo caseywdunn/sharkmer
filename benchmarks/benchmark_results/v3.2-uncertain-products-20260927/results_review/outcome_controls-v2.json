@@ -1,0 +1,21 @@
+{
+  "status": "pass",
+  "test_methods": 4,
+  "mutation_subcases": 4,
+  "biological_data_used": false,
+  "reason_for_rerun": "Bind final reviewer source after empty-product list parser correction; repeated controls are not additional evidence",
+  "reviewed_sources": {
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/independent_outcome_review.py": {
+      "sha256": "68ee06ae31701eb0081d7708ff73527b0fb205379c400fabf7f95022c0ee3bb7",
+      "size_bytes": 16916
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/test_independent_outcome_review.py": {
+      "sha256": "a6e9d12e61cf43b9ee2ce279f185674a4e331d66de0778c957889d8431080947",
+      "size_bytes": 3520
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/outcome_controls-v2.log": {
+      "sha256": "1f8dd3b8a08c8b1aecbc1efcff48d2d8367ff3975e4d4c652590d3f97e375b7c",
+      "size_bytes": 548
+    }
+  }
+}

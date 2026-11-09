@@ -1,0 +1,126 @@
+{
+  "alerts": [
+    {
+      "advisory_affected_range": "< 0.103.13",
+      "alert": 7,
+      "first_patched": "0.103.13",
+      "ghsa": "GHSA-82j2-j2ch-gfr8",
+      "package": "rustls-webpki",
+      "selected": "0.103.13",
+      "within_selected_fixed_minor_line": true
+    },
+    {
+      "advisory_affected_range": ">= 0.7.0, < 0.8.6",
+      "alert": 6,
+      "first_patched": "0.8.6",
+      "ghsa": "GHSA-cq8v-f236-94qc",
+      "package": "rand",
+      "selected": "0.8.6",
+      "within_selected_fixed_minor_line": true
+    },
+    {
+      "advisory_affected_range": ">= 0.101.0, < 0.103.12",
+      "alert": 5,
+      "first_patched": "0.103.12",
+      "ghsa": "GHSA-xgp8-3hg3-c2mh",
+      "package": "rustls-webpki",
+      "selected": "0.103.13",
+      "within_selected_fixed_minor_line": true
+    },
+    {
+      "advisory_affected_range": ">= 0.101.0, < 0.103.12",
+      "alert": 4,
+      "first_patched": "0.103.12",
+      "ghsa": "GHSA-965h-392x-2mh5",
+      "package": "rustls-webpki",
+      "selected": "0.103.13",
+      "within_selected_fixed_minor_line": true
+    }
+  ],
+  "changes": [
+    {
+      "checksum": [
+        "34af8d1a0e25924bc5b7c43c079c942339d8f0a8b57c39049bef581b46327404",
+        "5ca0ecfa931c29007047d1bc58e623ab12e5590e8c7cc53200d5202b69266d8a"
+      ],
+      "package": "rand",
+      "version": [
+        "0.8.5",
+        "0.8.6"
+      ]
+    },
+    {
+      "checksum": [
+        "df33b2b81ac578cabaf06b89b0631153a3f416b0a886e8a7a1707fb51abbd1ef",
+        "61c429a8649f110dddef65e2a5ad240f747e85f7758a6bccc7e5777bd33f756e"
+      ],
+      "package": "rustls-webpki",
+      "version": [
+        "0.103.10",
+        "0.103.13"
+      ]
+    }
+  ],
+  "findings": [
+    "Only two Cargo.lock package versions/checksums changed; their dependency edges and every other lock entry are unchanged.",
+    "Cargo.toml changes only the direct rand compatible-version lower bound to0.8.6. Working manifests match preserved after snapshots, and before snapshots match current HEAD.",
+    "The four saved open repository advisories are covered by rand0.8.6 and rustls-webpki0.103.13. This does not claim a comprehensive dependency security audit or remotely closed alerts.",
+    "Runtime paths include random output identifiers and ureq downloads via rustls/webpki. Repository source search found no explicit custom logger registration or CRL revocation options; exploit preconditions were not assumed."
+  ],
+  "no_release_authorization": true,
+  "remaining_checks": [
+    "Offline locked final compilation, both backend tests/Clippy, and final behavioral validation remain necessary.",
+    "Registry crate artifact integrity and resolution should be verified by Cargo during the final locked build."
+  ],
+  "source_receipts": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/Cargo.lock": {
+      "sha256": "248d51af7c3121ba3387af71e9766b5e5c1bba01becc7a599212215981eb3558",
+      "size_bytes": 57390
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/Cargo.toml": {
+      "sha256": "99d2b50c12c9928bb96ab7b113eb21d54917fd8b44905b3f39533374c4a4efba",
+      "size_bytes": 1582
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/dependency/after.Cargo.lock": {
+      "sha256": "248d51af7c3121ba3387af71e9766b5e5c1bba01becc7a599212215981eb3558",
+      "size_bytes": 57390
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/dependency/after.Cargo.toml": {
+      "sha256": "99d2b50c12c9928bb96ab7b113eb21d54917fd8b44905b3f39533374c4a4efba",
+      "size_bytes": 1582
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/dependency/alerts-before.json": {
+      "sha256": "a3f951cd6251d01b56740de8693518d6f7820796d62c3bfcaed135aa508056fa",
+      "size_bytes": 19405
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/dependency/before.Cargo.lock": {
+      "sha256": "e2c47a967781a25ef845cea33bbb99e6a2cb20e50328a9bb5a651eac9190ff0b",
+      "size_bytes": 57390
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/dependency/before.Cargo.toml": {
+      "sha256": "c89fb75cfe2fdd1cfe68c741361c3522101d03948b5c82307c9d8b91eb08f01a",
+      "size_bytes": 1582
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/dependency/update-receipt.json": {
+      "sha256": "1d029235b51cb37e2124251d806967119f632a8d672fe5c5c32ea9e643e16df6",
+      "size_bytes": 1577
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/cache.rs": {
+      "sha256": "eedee1f06177c339305a15d74a2bab136f67e710ff103937241915a1a4a50fda",
+      "size_bytes": 43295
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/io.rs": {
+      "sha256": "86daf8b13f2ea8e75fe4a3c10d30da5a135d0d5358866804a919afbf4a0f79a1",
+      "size_bytes": 47378
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/output.rs": {
+      "sha256": "df610ba8dcdc82cca0f54530206cbe8d024a7dc246f97e00faf8336e41fbd349",
+      "size_bytes": 32198
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/preconfigured.rs": {
+      "sha256": "1fbe095161c63a75f2ee93cd2e863430b2e35df9acb4bfd5f30f9eac86cd4ed1",
+      "size_bytes": 25543
+    }
+  },
+  "status": "pass_dependency_diff_and_saved_advisory_review"
+}

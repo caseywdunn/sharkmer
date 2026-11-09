@@ -1,0 +1,23 @@
+schema_version: 1
+dataset_role: calibration_regression
+description: >-
+  Included offline smoke fixture. This protects harness and established recovery behavior;
+  it is not held-out biological performance evidence.
+samples:
+  - panel: cnidaria
+    accession: ERR571460
+    taxon: Porites lutea
+    input: ../tests/fixtures/ERR571460_100k_R1.fastq.gz
+    input_sha256: 3d554c9bad681c519c2c0f5a77e87bd6d7bd06a0ffff845a4b9cb22ced8e3eef
+    max_reads: [100000]
+    expected:
+      counting-only:
+        n_kmers: 13197385
+      end-to-end:
+        genes:
+          18S:
+            - length: 1783
+              sha256: dc5aaf114fe93ed446a6b262242adba9acfea9aca3f5877279fe5f1ae664aafb
+          28S_2:
+            - length: 430
+              sha256: 4f1428f3822658991a58ef52d66033e7362de5a7effd442e0190ee0c76a96dcd

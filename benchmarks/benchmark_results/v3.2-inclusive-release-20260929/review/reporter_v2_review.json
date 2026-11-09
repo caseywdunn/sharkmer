@@ -1,0 +1,48 @@
+{
+  "author_methods": 11,
+  "change": "math.fsum plus abs_tol1e-9 seconds, rel_tol0 for aggregate median sum only; exact observations, identities and other checks unchanged. Original failed report and source preserved.",
+  "date": "2026-09-30",
+  "independent_artifact_binding_methods": 3,
+  "independent_log": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/independent_reporter_v2_controls.log",
+    "sha256": "3d6b526e642b96fa150cd871000fda0564e3bd591482ed346425b7da8697bac0",
+    "size_bytes": 474
+  },
+  "limitations": "Passing reporting integrity does not resolve four measured runtime priority flags or biological uncertainty.",
+  "observed_original_difference_seconds": 5.684341886080802e-14,
+  "purpose": "versioned_reporter_numeric_fix_review",
+  "reviewed_artifacts": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report-v1/report.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report-v1/report.json",
+      "sha256": "5b62bb3ae6d464b277aca6b3fbeb101632baf0a159d7bc829e023274a58bce01",
+      "size_bytes": 857071
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_comparison.py",
+      "sha256": "50efe204f40812f79edd89589759a9365eeba8d5ef42e5fcbac04c43ec9ab609",
+      "size_bytes": 19037
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_comparison_v2.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_comparison_v2.py",
+      "sha256": "11868acc3dad96fef7217b7d19d3b18a868f7a4ef97a79a7222c04ca3b771a8f",
+      "size_bytes": 19509
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_v2_controls.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/report_v2_controls.json",
+      "sha256": "53a13a12b9d0c3ab7f52a7068a99f69df1a5a2b2b637ac7ad628e35f4bb21917",
+      "size_bytes": 3275
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/test_report_comparison_v2.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/results/test_report_comparison_v2.py",
+      "sha256": "4af8d00fce6088b3358c4cae274a3962f10b8e4cf5b2c9a1293605244967d2c3",
+      "size_bytes": 10570
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/test_independent_reporter.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/test_independent_reporter.py",
+      "sha256": "84c42bcc1338be7e534628672bdfac270eaf15496a5e881adf7b1440212a8447",
+      "size_bytes": 3705
+    }
+  },
+  "source_bookends_equal": true,
+  "status": "pass"
+}

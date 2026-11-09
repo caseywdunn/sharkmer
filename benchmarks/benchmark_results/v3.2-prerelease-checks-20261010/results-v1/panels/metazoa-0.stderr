@@ -1,0 +1,32 @@
+sharkmer 3.2.0-dev (dry run)
+
+Input:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+
+Configuration:
+  Sample:         schema_probe
+  Output dir:     /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/metazoa-0-dry-output/
+  Kmer length:    19
+  Chunks:         0
+  Threads:        2
+  Min kmer count: 2
+  PCR output:     standard and labelled uncertain products
+
+Output files:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/metazoa-0-dry-output/schema_probe.stats.yaml
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/metazoa-0-dry-output/schema_probe_metazoa_18S-V3.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/metazoa-0-dry-output/schema_probe_metazoa_18S-V5-V7S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/metazoa-0-dry-output/schema_probe_metazoa_18S-V5-V7L.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/metazoa-0-dry-output/schema_probe_metazoa_18S-V7.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/metazoa-0-dry-output/schema_probe_metazoa_18S-V7p-V8.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/metazoa-0-dry-output/schema_probe_metazoa_18S-V9_1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/metazoa-0-dry-output/schema_probe_metazoa_18S-V9_2.fasta
+
+PCR primers (7 genes):
+  metazoa_18S-V3 (fwd: AACGGCTA...AAGG, rev: CACCAGAC...CAAT, len: 50-300)
+  metazoa_18S-V5-V7S (fwd: TGACGGAA...CCAG, rev: TCCACCAA...GGCC, len: 50-300)
+  metazoa_18S-V5-V7L (fwd: AAACGATG...CGAT, rev: TCCACCAA...GGCC, len: 50-300)
+  metazoa_18S-V7 (fwd: GGCCGTTC...TGGA, rev: TGCGGCCC...TAAG, len: 50-300)
+  metazoa_18S-V7p-V8 (fwd: AACAGGTC...CCTT, rev: TGTGTACA...GGAC, len: 50-300)
+  metazoa_18S-V9_1 (fwd: CTTTGTAC...CGTC, rev: CCTTGTTA...CTCT, len: 50-300)
+  metazoa_18S-V9_2 (fwd: CCCTGCCH...ACAC, rev: CCTTCYGC...CTAC, len: 1-300)

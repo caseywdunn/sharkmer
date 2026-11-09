@@ -1,0 +1,84 @@
+{
+  "by_target": {
+    "SRR1057608:insecta_ND4": {
+      "count": 32,
+      "statuses": {
+        "no_significant_hit": 32
+      }
+    },
+    "SRR25378184:angiospermae_psbA-trnH": {
+      "count": 32,
+      "statuses": {
+        "no_significant_hit": 32
+      }
+    },
+    "SRR25378184:angiospermae_trnV-atpE": {
+      "count": 32,
+      "statuses": {
+        "no_verified_reference": 32
+      }
+    },
+    "SRR27962769:insecta_18S_1": {
+      "count": 17,
+      "statuses": {
+        "no_significant_hit": 17
+      }
+    },
+    "SRR27962769:insecta_ITS_2": {
+      "count": 32,
+      "statuses": {
+        "no_significant_hit": 32
+      }
+    },
+    "SRR27962769:insecta_Yp2": {
+      "count": 32,
+      "statuses": {
+        "no_significant_hit": 32
+      }
+    },
+    "SRR31887760:insecta_12S": {
+      "count": 23,
+      "statuses": {
+        "no_significant_hit": 23
+      }
+    }
+  },
+  "criteria": {
+    "evalue": "1e-10",
+    "min_identity_pct": 90,
+    "min_query_coverage_pct": 90,
+    "task": "blastn default"
+  },
+  "reference_audits": {
+    "angiospermae": {
+      "audit_sha256": "cdc6683671a1dce363883cdb388debbb4d9099cb2dfa6ced39665ded4c892c8e",
+      "catalog": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/reference_sources.json.gz",
+        "record_count": 121,
+        "sha256": "bc277321831258c00b6794a51b0289445c837f99b2399e54aa43fe5e60b0f49a",
+        "status": "verified_local_snapshot",
+        "trust_basis": "pinned_local_catalog; not live public-record authentication"
+      },
+      "verified_count": 19
+    },
+    "insecta": {
+      "audit_sha256": "a42149d910e8703573a0ae5c5ce9ab914214663a68fcee1885269f04e1cf3a42",
+      "catalog": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/reference_sources.json.gz",
+        "record_count": 121,
+        "sha256": "bc277321831258c00b6794a51b0289445c837f99b2399e54aa43fe5e60b0f49a",
+        "status": "verified_local_snapshot",
+        "trust_basis": "pinned_local_catalog; not live public-record authentication"
+      },
+      "verified_count": 42
+    }
+  },
+  "reference_scope": "verified public-record panel regions in pinned local catalog",
+  "schema_version": 1,
+  "scope": "200 exact new sequence identities from corrected pair-1 candidate outputs",
+  "statuses": {
+    "no_significant_hit": 168,
+    "no_verified_reference": 32
+  },
+  "total": 200
+}

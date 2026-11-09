@@ -1,0 +1,78 @@
+{
+  "activation": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/activate.sh",
+    "sha256": "897f8c0eccb1e626c657e9afa27c4e374c878dd4ff62350b0e691c275eeb41e2",
+    "size_bytes": 400
+  },
+  "biological_comparison_runs_submitted": false,
+  "environment_export": {
+    "CARGO_HOME": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/cargo",
+    "RUSTUP_HOME": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup",
+    "method": "direct sbatch --export=ALL,CARGO_HOME=...,RUSTUP_HOME=..."
+  },
+  "jobs": [
+    {
+      "job_id": "27720206",
+      "output_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/checks-v2",
+      "purpose": "checks-v2",
+      "script": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/checks.sbatch",
+        "sha256": "65ffbc884725621673326789a8166c929ca6fc260320a964d6b0d00ffe7ca3c6",
+        "size_bytes": 549
+      },
+      "slurm_log_candidates": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/slurm/checks-v2-27720206.log"
+      ],
+      "source": "root collaboration report; authoritative complete command is in root tool transcript",
+      "submitted_by": "root"
+    },
+    {
+      "job_id": "27724044",
+      "output_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/targeted-probe-v2",
+      "purpose": "targeted-probe-v2",
+      "script": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/validation/targeted_probe.sbatch",
+        "sha256": "60b0df5d4e3747147482b9ee603f0ee19293b174f29924df293792c2d8551875",
+        "size_bytes": 393
+      },
+      "slurm_log_candidates": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/slurm/targeted-probe-v2-27724044.log"
+      ],
+      "source": "root collaboration report; authoritative complete command is in root tool transcript",
+      "submitted_by": "root"
+    },
+    {
+      "job_id": "27725424",
+      "output_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/checks-v3",
+      "purpose": "checks-v3",
+      "script": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/checks.sbatch",
+        "sha256": "65ffbc884725621673326789a8166c929ca6fc260320a964d6b0d00ffe7ca3c6",
+        "size_bytes": 549
+      },
+      "slurm_log_candidates": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/slurm/checks-v3-27725424.log"
+      ],
+      "source": "root collaboration report; authoritative complete command is in root tool transcript",
+      "submitted_by": "root"
+    },
+    {
+      "job_id": "27727125",
+      "output_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/builds/candidate-v1",
+      "purpose": "candidate-v1",
+      "script": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build.sbatch",
+        "sha256": "3507e06ca6abcd5e73f8b9d295aa5d141b73537814f0052a1e0003217cc0a451",
+        "size_bytes": 463
+      },
+      "slurm_log_candidates": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/slurm/candidate-v1-27727125.log"
+      ],
+      "source": "root collaboration report; authoritative complete command is in root tool transcript",
+      "submitted_by": "root"
+    }
+  ],
+  "recorded_at_utc": "2026-09-28T04:19:44.701878+00:00",
+  "schema_version": 1,
+  "status": "submitted_reported_by_root"
+}

@@ -1,0 +1,15 @@
+test_duplicate_count_change_is_not_hidden_by_set_comparison (test_assessment.AssessmentControls.test_duplicate_count_change_is_not_hidden_by_set_comparison) ... ok
+test_each_aggregate_count_change_requires_review (test_assessment.AssessmentControls.test_each_aggregate_count_change_requires_review) ... ok
+test_exact_uncertain_source_product_is_reconstruction_not_sample_phase (test_assessment.AssessmentControls.test_exact_uncertain_source_product_is_reconstruction_not_sample_phase) ... ok
+test_failed_execution_is_not_zero_products (test_assessment.AssessmentControls.test_failed_execution_is_not_zero_products) ... ok
+test_reference_hash_at_wrong_target_is_not_synthetic_success (test_assessment.AssessmentControls.test_reference_hash_at_wrong_target_is_not_synthetic_success) ... ok
+test_run_specific_output_filenames_do_not_make_false_control_change (test_assessment.AssessmentControls.test_run_specific_output_filenames_do_not_make_false_control_change) ... ok
+test_same_sequence_status_switch_is_control_change (test_assessment.AssessmentControls.test_same_sequence_status_switch_is_control_change) ... ok
+test_synthetic_control_change_requires_review_despite_source_match (test_assessment.AssessmentControls.test_synthetic_control_change_requires_review_despite_source_match) ... ok
+test_uncertainty_search_retention_and_nested_marker_flags_are_compared (test_assessment.AssessmentControls.test_uncertainty_search_retention_and_nested_marker_flags_are_compared) ... ok
+test_zero_product_failure_or_threshold_change_requires_review (test_assessment.AssessmentControls.test_zero_product_failure_or_threshold_change_requires_review) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.004s
+
+OK

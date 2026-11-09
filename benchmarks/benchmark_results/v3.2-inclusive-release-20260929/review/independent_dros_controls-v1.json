@@ -1,0 +1,104 @@
+{
+  "log": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/independent_dros_controls-v1.log",
+    "sha256": "498d6dfe54a8716512b7199fc54bd11123d7a216a705f0bd0cf33a0279d73e34",
+    "size_bytes": 488
+  },
+  "scope": "Synthetic audit linkage only; author fixture and publication parser mock explicit; no biological scan",
+  "sources_after": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/test_independent_dros_ledger.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/test_independent_dros_ledger.py",
+      "sha256": "79e7c4a4f0a7b79b40494efbcd4cce9210a4e3b8deb7a13d686588ed58e620a1",
+      "size_bytes": 2822
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/audit_ledger.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/audit_ledger.py",
+      "sha256": "9033b8bfb172ab61b40c765af61a00be3c52e3ee97bd545f3027712ee7ba12cb",
+      "size_bytes": 13136
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/build_controls.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/build_controls.py",
+      "sha256": "3c9f193e948adf2eed12f4bc31b0f06c53448d33413750b9e6728dcd9bdcfcbf",
+      "size_bytes": 6277
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/build_controls.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/build_controls.sbatch",
+      "sha256": "78ff233a8447a5dee866bcbfafa022d8998a5aad11e3d69e21c3fdd34e6cdca3",
+      "size_bytes": 395
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/python-controls-v2.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/python-controls-v2.json",
+      "sha256": "20f2ff3f76de7073aaafd2e09da0e2932f32e3b917bb2a4fcffc7898fe5388bd",
+      "size_bytes": 1629
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/run_replay.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/run_replay.py",
+      "sha256": "8c15becfc4dfeeb64377e4e13404b5b0e3c6020a61eedc7abfc53c0e776e3522",
+      "size_bytes": 8095
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/run_replay.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/run_replay.sbatch",
+      "sha256": "68126fc3db05a8f73efdd2502b9d6d52ca4d1222c366c167e17a41a4ea0c03cc",
+      "size_bytes": 388
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/source-freeze-v1.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/source-freeze-v1.json",
+      "sha256": "5eea541bb2e1d30850d957d6826ce3686db48c13348051161b81fe672cb09e24",
+      "size_bytes": 11886
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/test_audit_ledger.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/test_audit_ledger.py",
+      "sha256": "1faed4d9cfa5aee396fb6a51a3080aef5c68622e2786a74a1fb4e689a396ce11",
+      "size_bytes": 10026
+    }
+  },
+  "sources_before": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/test_independent_dros_ledger.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/test_independent_dros_ledger.py",
+      "sha256": "79e7c4a4f0a7b79b40494efbcd4cce9210a4e3b8deb7a13d686588ed58e620a1",
+      "size_bytes": 2822
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/audit_ledger.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/audit_ledger.py",
+      "sha256": "9033b8bfb172ab61b40c765af61a00be3c52e3ee97bd545f3027712ee7ba12cb",
+      "size_bytes": 13136
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/build_controls.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/build_controls.py",
+      "sha256": "3c9f193e948adf2eed12f4bc31b0f06c53448d33413750b9e6728dcd9bdcfcbf",
+      "size_bytes": 6277
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/build_controls.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/build_controls.sbatch",
+      "sha256": "78ff233a8447a5dee866bcbfafa022d8998a5aad11e3d69e21c3fdd34e6cdca3",
+      "size_bytes": 395
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/python-controls-v2.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/python-controls-v2.json",
+      "sha256": "20f2ff3f76de7073aaafd2e09da0e2932f32e3b917bb2a4fcffc7898fe5388bd",
+      "size_bytes": 1629
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/run_replay.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/run_replay.py",
+      "sha256": "8c15becfc4dfeeb64377e4e13404b5b0e3c6020a61eedc7abfc53c0e776e3522",
+      "size_bytes": 8095
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/run_replay.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/run_replay.sbatch",
+      "sha256": "68126fc3db05a8f73efdd2502b9d6d52ca4d1222c366c167e17a41a4ea0c03cc",
+      "size_bytes": 388
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/source-freeze-v1.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/source-freeze-v1.json",
+      "sha256": "5eea541bb2e1d30850d957d6826ce3686db48c13348051161b81fe672cb09e24",
+      "size_bytes": 11886
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/test_audit_ledger.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/test_audit_ledger.py",
+      "sha256": "1faed4d9cfa5aee396fb6a51a3080aef5c68622e2786a74a1fb4e689a396ce11",
+      "size_bytes": 10026
+    }
+  },
+  "status": "pass",
+  "tests_run": 2
+}

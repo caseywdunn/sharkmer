@@ -146,6 +146,9 @@ validation:
 
 **Per-primer:** `gene`, `forward_seq`, `reverse_seq`.
 
+Primer sequences use uppercase IUPAC bases. `min_count` must be at least 2,
+and `trim` must retain at least one 3' base.
+
 ### Optional panel-level fields
 
 | Field | Description |
@@ -164,7 +167,7 @@ validation:
 | `maintainers` | List of `{name, orcid, contact, notes}`. |
 | `changelog` | List of `{panel_version, date, sharkmer_version, changes, notes}`. |
 | `validation` | Validation block (see below). |
-| `references` | Reference sequences for BLAST-identity validation. |
+| `references` | Independent public-record regions with exact extraction provenance; product assessment allows sequence variation. |
 
 ### Optional per-primer fields
 
@@ -175,17 +178,23 @@ validation:
 | `compartment` | INSDC /organelle value. Absent = nuclear. `"mitochondrion"` \| `"plastid:chloroplast"` \| etc. |
 | `gene_type` | `"protein_coding"` \| `"rRNA"` \| `"tRNA"` \| `"rRNA_SSU"` \| `"rRNA_LSU"` \| `"rRNA_5S"` \| `"ITS"`. |
 | `copy_number` | `"single_copy"` \| `"low_copy"` \| `"high_copy"`. |
-| `deprecated` | `true` to soft-deprecate (runs, warns). Default `false`. |
+| `deprecated` | `true` to skip this primer with a warning. Default `false`. |
 | `deprecated_by` | Name of the replacement entry. |
 | `deprecated_reason` | Human-readable reason for deprecation. |
 | `min_length`, `max_length` | Amplicon length search window (bp). |
-| `min_count` | Minimum kmer count to seed the graph. |
+| `min_count` | Minimum kmer count to seed the graph (≥ 2). |
 | `mismatches` | Allowed mismatches per primer during kmer expansion. |
-| `trim` | Bases to trim from each primer end (≤ k−1, default k=19). |
-| `expected_length` | Expected amplicon length for reporting. |
+| `trim` | Positive number of 3' primer bases retained for seeding (≤ k−1, default k=19). |
+| `expected_length` | Provenance metadata; current Rust and Python validation do not use it to search, rank, constrain, or score output. |
 | `citation` | Primer-level citation. |
 | `notes` | Free-text notes about this primer pair. |
 | `dedup_edit_threshold` | Levenshtein distance below which two products are merged (default 10). |
+
+The YAML fields `max_dfs_states`, `max_paths_per_pair`, `max_node_visits`,
+`max_primer_kmers`, `high_coverage_ratio`, and `tip_coverage_fraction` are
+accepted for compatibility but are not effective per-primer tuning: startup
+overwrites every one with the corresponding global CLI value, including its
+default. `dedup_edit_threshold` remains the supported per-primer tuning field.
 
 ### Output naming
 
@@ -208,9 +217,10 @@ contain `_`.
   Bump the patch digit for notes/citation/validation edits, the minor digit
   for new primers or changed expectations, and the major digit for breaking
   changes (renamed or removed genes).
-- `expected_length` is the canonical expected amplicon length. It is distinct
-  from the `min_length`/`max_length` *search* window, which should be wider
-  to accommodate biological variation.
+- `expected_length` is retained provenance metadata. It is distinct from the
+  Rust `min_length`/`max_length` *search* window, which should be wider to
+  accommodate biological variation; current Rust and Python validation do not
+  use it to constrain search, ranking, emitted FASTA records, or scoring.
 - `dedup_edit_threshold` controls the Levenshtein distance below which two
   output products are collapsed into one (default 10). Lower it (e.g. 0–2)
   for panels targeting complex samples where distinct but closely related
@@ -315,7 +325,7 @@ conda activate sharkmer-bench
 
 This runs sharkmer against each declared sample at each declared read depth
 (using the shared cache under `benchmarks/data/cache/`), BLASTs the
-recovered amplicons against the sequences in the panel's `references:` block,
+recovered amplicons against provenance-verified public regions in the panel's `references:` block,
 and emits two output files:
 
 - A markdown report to `panels/validation_reports/` — human-readable,
@@ -324,9 +334,23 @@ and emits two output files:
 - A YAML result file to `panels/validation_results/` — machine-readable
   record of the same run, useful for diffing across panel versions.
 
-The validator writes reports to `panels/validation_reports/` by default. If
-your panel lives outside the repo (e.g. a private panel under development),
-use `--output-dir` to redirect reports to a directory of your choice:
+Reference provenance requires exact public-record extraction; product validation
+does **not** require exact reference equality. SNPs and indels can retain gene
+support. Reports distinguish alignment support, sequence differences, and
+unestablished sample haplotype truth; read support is not evaluated by reference
+BLAST. Missing or unverified references are excluded visibly, not treated as
+proof that a product is incorrect. See the [reference contract and audit](dev_docs/REFERENCE_PROVENANCE.md).
+The [public replacement source map](dev_docs/PUBLIC_REFERENCE_REPLACEMENTS.md)
+records accessioned alternatives, related taxa, partial loci, and unresolved
+annotation conflicts. Reviewed alternative primer indices can share gene-level
+evidence; this does not establish the intended primer-bounded region or the
+sample's complete haplotype.
+Use `--reference-catalog path/catalog.json.gz` for a reviewed external catalog.
+
+The validator writes Markdown reports to `panels/validation_reports/` by
+default. `--output-dir` redirects only those Markdown reports; YAML results
+still go to `panels/validation_results/`, and invocation artifacts retain their
+separate run directory. For example, for a panel outside the repo:
 
 ```bash
 python scripts/validate_panel.py ~/my_panels/arachnida.yaml \
@@ -379,8 +403,11 @@ when it does, that is information we want.
 External panel contributions are welcome. 
 
 Contributed panels must include a `validation:` block with samples for
-validating the primers, and a `references:` block with reference sequences
-for BLAST identity checking. All primers in the panel should return at least
+validating the primers, and a `references:` block with independently sourced
+public regions and verified extraction provenance for BLAST support assessment.
+Sharkmer products are regression fixtures, not biological references. Review
+gene annotations separately from source provenance, and do not require an
+archive individual to share every allele with the read sample. All primers in the panel should return at least
 some correct targets. If during development you find that some primers return
 no products, off-target products (according to BLAST), or are highly
 unreliable, remove them from the panel before submitting. Dead primers slow

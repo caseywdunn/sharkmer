@@ -1,0 +1,82 @@
+{
+  "checks": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_restore_inputs.py",
+        "-v"
+      ],
+      "elapsed_seconds": 0.12189982598647475,
+      "returncode": 0,
+      "stderr": "test_byte_count_bound_rejected (__main__.RestoreTests) ... ok\ntest_changed_source_blocks_publication (__main__.RestoreTests) ... ok\ntest_complete_first_source_then_partial_final_source (__main__.RestoreTests) ... ok\ntest_complete_source_checks_compressed_identity (__main__.RestoreTests) ... ok\ntest_complete_source_rejects_extra_record (__main__.RestoreTests) ... ok\ntest_compressed_read_limit_rejected (__main__.RestoreTests) ... ok\ntest_existing_prefix_exact_and_extra_bytes (__main__.RestoreTests) ... ok\ntest_failed_attempt_retains_partial_and_receipt (__main__.RestoreTests) ... ok\ntest_inventory_rejects_unbounded_or_ambiguous_sources (__main__.RestoreTests) ... ok\ntest_prefix_stops_before_additional_records (__main__.RestoreTests) ... ok\ntest_successful_existing_attempt_source_binding (__main__.RestoreTests) ... ok\ntest_symlink_rejected (__main__.RestoreTests) ... ok\ntest_three_complete_sources_in_exact_order (__main__.RestoreTests) ... ok\ntest_truncated_and_invalid_quality_rejected (__main__.RestoreTests) ... ok\ntest_wrong_external_pin_writes_failure_receipt_without_network (__main__.RestoreTests) ... ok\ntest_wrong_raw_digest_rejected (__main__.RestoreTests) ... ok\n\n----------------------------------------------------------------------\nRan 16 tests in 0.017s\n\nOK\n",
+      "stdout": ""
+    },
+    {
+      "argv": [
+        "bash",
+        "-n",
+        "benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs.sbatch"
+      ],
+      "elapsed_seconds": 0.005807261914014816,
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ],
+  "scope": "Author synthetic offline controls; no real FASTQ consumed and no network used",
+  "sources_after": {
+    "derive_restoration_sources.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/derive_restoration_sources.py",
+      "sha256": "5eec28b75d180fd1a83144848c69bd33dc37c2ca6bb17e32b33141fcb2cc4f99",
+      "size_bytes": 1631
+    },
+    "inventory.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/inventory.json",
+      "sha256": "0e6e6edbebc7430c70519c37fd2bcdd8c2312ddc1b977dfb8b83200e5c1e9ddc",
+      "size_bytes": 72176
+    },
+    "restore_inputs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs.py",
+      "sha256": "0e921ba136ee8d22abce2a3c0be99e1ad03394ccc6026b465e910f7face2a18a",
+      "size_bytes": 16690
+    },
+    "restore_inputs.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs.sbatch",
+      "sha256": "54f1a793167733431b67d6e370e06f716c2d5de5b70df470ac7a7a1834df07e7",
+      "size_bytes": 377
+    },
+    "test_restore_inputs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_restore_inputs.py",
+      "sha256": "4b42bf93da9ccc42ec4f91b27116274f05f4f5be76fdd4a8a7e92224e4d825eb",
+      "size_bytes": 8291
+    }
+  },
+  "sources_before": {
+    "derive_restoration_sources.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/derive_restoration_sources.py",
+      "sha256": "5eec28b75d180fd1a83144848c69bd33dc37c2ca6bb17e32b33141fcb2cc4f99",
+      "size_bytes": 1631
+    },
+    "inventory.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/inventory.json",
+      "sha256": "0e6e6edbebc7430c70519c37fd2bcdd8c2312ddc1b977dfb8b83200e5c1e9ddc",
+      "size_bytes": 72176
+    },
+    "restore_inputs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs.py",
+      "sha256": "0e921ba136ee8d22abce2a3c0be99e1ad03394ccc6026b465e910f7face2a18a",
+      "size_bytes": 16690
+    },
+    "restore_inputs.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs.sbatch",
+      "sha256": "54f1a793167733431b67d6e370e06f716c2d5de5b70df470ac7a7a1834df07e7",
+      "size_bytes": 377
+    },
+    "test_restore_inputs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_restore_inputs.py",
+      "sha256": "4b42bf93da9ccc42ec4f91b27116274f05f4f5be76fdd4a8a7e92224e4d825eb",
+      "size_bytes": 8291
+    }
+  },
+  "status": "pass"
+}

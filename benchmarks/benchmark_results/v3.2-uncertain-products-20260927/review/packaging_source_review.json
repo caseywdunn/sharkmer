@@ -1,0 +1,41 @@
+{
+  "author_fixture_reused_for_setup_only": true,
+  "command": [
+    "/usr/bin/python3",
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/test_packaging_independent.py",
+    "-v"
+  ],
+  "limits": [
+    "Final real result review and selected artifacts remain prerequisites for real packaging.",
+    "This source review is separate from biological execution clearance."
+  ],
+  "log": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/packaging_independent.log",
+    "sha256": "df06ca582221dd3eeafd6e8caee9882387a79d368b151c1b76923b44ce52931a",
+    "size_bytes": 687
+  },
+  "recorded_utc": "2026-09-28T04:19:20.149048+00:00",
+  "returncode": 0,
+  "reviewed_artifacts": {
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/test_packaging_independent.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/test_packaging_independent.py",
+      "sha256": "e547d13ba7ac5f5d1127c297c4346b3ad7a14af641f3f7c2fdf6ad75f677fd06",
+      "size_bytes": 4962
+    },
+    "tmp/uncertain-products-20260927/package_evidence.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/package_evidence.py",
+      "sha256": "85e08a1f930b5232528d1c85414b0ce405a2c88002f22c51af2d32fca7c68038",
+      "size_bytes": 19824
+    },
+    "tmp/uncertain-products-20260927/test_package_evidence.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/test_package_evidence.py",
+      "sha256": "5e4667bd1dea13da8197f83a99abb9bbd3b3dec3db804d8a1091e95434115c52",
+      "size_bytes": 9444
+    }
+  },
+  "scope": "Independent packager source and synthetic controls; no real experiment archive or biological scan",
+  "source_bookends_equal": true,
+  "status": "pass",
+  "table_driven_omission_subcases": 9,
+  "test_methods": 6
+}

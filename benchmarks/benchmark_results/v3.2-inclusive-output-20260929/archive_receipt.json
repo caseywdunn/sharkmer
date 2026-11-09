@@ -1,0 +1,24 @@
+{
+  "archive": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-output-20260929/evidence.tar.gz",
+    "sha256": "d07114f5d4c1a2b440efd589980b966fddf8d3b1567d394a31df11b3f24596f0",
+    "size_bytes": 12856077
+  },
+  "embedded_manifest_sha256": "b047c72b5c2c4d856557f7984a3aa586dc8cb267291308ee0969fb772831bda5",
+  "independent_reopen_hash_verification": "pass",
+  "member_count": 282,
+  "outcome_review": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-output-20260929/review/outcome_review.json",
+    "sha256": "8be8e9f9c4ac3ee0b6a31b82c74a52b0005ffcd0a00294cc474615e56d003dcd",
+    "size_bytes": 111159
+  },
+  "payload_bytes": 22550628,
+  "schema_version": 1,
+  "source_bookends_equal": true,
+  "status": "pass",
+  "verification": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-output-20260929/attempt-v1/verification.json",
+    "sha256": "4dce8ada14b938900d62a6ff08bf248a576891d08d461e906a51fda95a6062fb",
+    "size_bytes": 229528
+  }
+}

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "status": "verified_copy",
+  "packaging_attempt": "archive-v2",
+  "files": [
+    {
+      "source": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v2/evidence.tar.gz",
+      "published": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/evidence.tar.gz",
+      "sha256": "c9f71e952720cc40a21e8f3a1774a7eac261a11312ac0737db88b85d4831c780",
+      "size_bytes": 24742787
+    },
+    {
+      "source": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v2/ARCHIVE_PLAN.json",
+      "published": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_PLAN.json",
+      "sha256": "052e020938c976a4a406140cfb86227c0032b219e5727604d8307961454df627",
+      "size_bytes": 426569
+    },
+    {
+      "source": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v2/ARCHIVE_CONTENTS.json",
+      "published": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_CONTENTS.json",
+      "sha256": "75e6edc4044f99e1b64b94e8fda9b74e0dae7c8b6f3e7ef0ed07cb635439c67f",
+      "size_bytes": 144382
+    },
+    {
+      "source": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/archive-v2/ARCHIVE_RECEIPT.json",
+      "published": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/ARCHIVE_RECEIPT.json",
+      "sha256": "1a4f08ea3460924556732154ce72fc3480611a888c29323f4efd0f90baa89ed9",
+      "size_bytes": 876
+    }
+  ]
+}

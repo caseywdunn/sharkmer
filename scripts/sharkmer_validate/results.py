@@ -4,12 +4,14 @@ Both validation and benchmarks produce the same result format. Structure is
 depth-first: panel -> samples -> depths -> genes.
 """
 
+import hashlib
 from datetime import datetime
 from pathlib import Path
 
 import yaml
 
-from . import runner
+from . import blast_references, runner
+from .reference_targets import logical_gene_name, target_logical_genes
 
 RESULTS_DIR = runner.REPO_ROOT / "panels" / "validation_results"
 
@@ -23,6 +25,10 @@ def build_result(
     machine_info: dict | None = None,
     extra_args: list | None = None,
     sweep_label: str | None = None,
+    executable_provenance: dict | None = None,
+    evaluated_genes: list[str] | None = None,
+    run_id: str | None = None,
+    reference_catalog_path: Path | None = None,
 ) -> dict:
     """Build the result dict from sample_results.
 
@@ -39,9 +45,17 @@ def build_result(
     panel_name = panel_data.get("name", "unknown")
     panel_version = runner.get_panel_version(panel_data)
 
-    parameters: dict = {
-        "k": runner.K,
-        "threads": runner.THREADS,
+    runs_flat = [run for _, runs in sample_results for run in runs]
+    actual_parameter_sets = [run.get("actual_parameters", {}) for run in runs_flat]
+    parameters: dict = {"runs": actual_parameter_sets}
+    reference_provenance = blast_references.reference_checksums(
+        panel_data, reference_catalog_path
+    )
+    target_mapping = reference_provenance.get(
+        "target_logical_genes", target_logical_genes(panel_data)
+    )
+    reference_genes = {
+        reference["logical_gene"] for reference in reference_provenance["verified"]
     }
     if extra_args:
         parameters["extra_args"] = list(extra_args)
@@ -52,11 +66,26 @@ def build_result(
         "sharkmer_version": sharkmer_version,
         "git_commit": runner.get_git_commit(),
         "date": datetime.now().strftime("%Y-%m-%d"),
+        "run_id": run_id,
         "parameters": parameters,
         "blast_mode": blast_mode,
+        "reference_evidence_scope": {
+            "target_support": "alignment support against verified external references",
+            "target_gene_absence": "not established by a competing or missing reference alignment",
+            "sequence_relationship": "relationship between product and selected reference alignment",
+            "primer_region_support": "not established by logical gene grouping or reference alignment",
+            "haplotype_truth": "not established without explicit independent sample truth",
+            "read_support": "not evaluated by reference BLAST",
+        },
         "rustc_version": runner.get_rustc_version(),
-        "hash_backend": "ahashmap",  # default feature flag
-        "build_profile": "release",
+        "provenance": {
+            "executable": executable_provenance,
+            "panel": {
+                "path": str(panel_path.resolve()),
+                "sha256": runner._sha256_file(panel_path),
+            },
+            "references": reference_provenance,
+        },
     }
 
     if sweep_label:
@@ -65,6 +94,14 @@ def build_result(
     if machine_info is None:
         machine_info = runner.get_machine_info()
     result["machine"] = machine_info
+    result["metric_availability"] = {
+        "stage_times": "sharkmer_stats",
+        "allocator_peak_bytes": "sharkmer_peak_alloc",
+        "peak_rss_bytes": "gnu_time_linux_or_null",
+        "temp_disk_peak_bytes": None,
+        "temp_disk_final_bytes": "invocation_directory_scan",
+        "os_page_cache_state": None,
+    }
 
     samples = []
     for sample_block, runs in sample_results:
@@ -77,11 +114,38 @@ def build_result(
             for prod in run.get("genes", []):
                 gene_entry = {
                     "gene": prod["gene"],
-                    "recovered": True,
+                    "logical_gene": logical_gene_name(
+                        prod["gene"], target_mapping=target_mapping
+                    ),
+                    "recovered": prod.get("recovered", bool(prod.get("products"))),
                     "length": prod["lengths"][0] if prod.get("lengths") else None,
                     "n_products": prod.get("n_products", 0),
                     "kmer_count_median": prod.get("kmer_count_median"),
+                    "evaluation_status": "recovered"
+                    if prod.get("recovered", bool(prod.get("products")))
+                    else "no_product",
+                    "reference_status": "verified_reference_available"
+                    if logical_gene_name(
+                        prod["gene"], target_mapping=target_mapping
+                    ) in reference_genes
+                    else "no_verified_reference",
                 }
+
+                if prod.get("failure_reason"):
+                    gene_entry["failure_reason"] = prod["failure_reason"]
+
+                product_entries = []
+                for product in prod.get("products", []):
+                    product_entry = {
+                        "product_index": product.get("product_index"),
+                        "length": product.get("length"),
+                        "sha256": hashlib.sha256(product.get("sequence", "").encode()).hexdigest(),
+                        "kmer_count_median": product.get("kmer_count_median"),
+                        "reference_match": product.get("reference_match"),
+                    }
+                    product_entries.append(product_entry)
+                if product_entries:
+                    gene_entry["products"] = product_entries
 
                 ref_match = prod.get("reference_match")
                 if ref_match:
@@ -89,15 +153,29 @@ def build_result(
 
                 gene_results.append(gene_entry)
 
-            # Add entries for genes not recovered at this depth.
             recovered_genes = {g["gene"] for g in gene_results}
             all_genes = runner.panel_gene_names(panel_data)
             for gene in all_genes:
                 if gene not in recovered_genes:
+                    if evaluated_genes is not None and gene not in evaluated_genes:
+                        evaluation_status = "not_evaluated"
+                    elif not run.get("success", False):
+                        evaluation_status = "failed_run"
+                    else:
+                        evaluation_status = "no_product"
                     gene_results.append(
                         {
                             "gene": gene,
+                            "logical_gene": logical_gene_name(
+                                gene, target_mapping=target_mapping
+                            ),
                             "recovered": False,
+                            "evaluation_status": evaluation_status,
+                            "reference_status": "verified_reference_available"
+                            if logical_gene_name(
+                                gene, target_mapping=target_mapping
+                            ) in reference_genes
+                            else "no_verified_reference",
                         }
                     )
 
@@ -106,6 +184,15 @@ def build_result(
                 "wall_time_s": run.get("wall_time_s"),
                 "success": run.get("success", False),
                 "genes": gene_results,
+                "command": run.get("command"),
+                "actual_parameters": run.get("actual_parameters"),
+                "input": run.get("input"),
+                "logs": run.get("logs"),
+                "failure": run.get("failure"),
+                "peak_rss_bytes": run.get("peak_rss_bytes"),
+                "peak_rss_provenance": run.get("peak_rss_provenance"),
+                "temp_disk_final_bytes": run.get("temp_disk_bytes"),
+                "known_truth": run.get("known_truth"),
             }
             run_stats = run.get("run_stats")
             if run_stats:

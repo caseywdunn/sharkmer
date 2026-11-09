@@ -1,0 +1,10 @@
+{
+  "branch": "experiment/sequence-first-retention",
+  "freeze_sha256": "adb59435e599228c13d05f4b70511cbc6a8fbfec6ec5a5779b6719a6dee12bda",
+  "git_diff_check": "pass",
+  "head": "1ea21c977455fdf126426e3e000133c02c3f0b32",
+  "production_diff_from_head_empty": true,
+  "source_files_verified": 74,
+  "status": "pass",
+  "verified_utc": "2026-10-10T04:27:34.149227+00:00"
+}

@@ -1,0 +1,13 @@
+test_all_active_references_reconstruct_from_pinned_sources (test_public_reference_replacements.PublicReplacementTests.test_all_active_references_reconstruct_from_pinned_sources) ... ok
+test_corrected_plant_assay_has_in_range_exact_public_references (test_public_reference_replacements.PublicReplacementTests.test_corrected_plant_assay_has_in_range_exact_public_references) ... ok
+test_full_public_genes_replace_short_benchmark_comparators (test_public_reference_replacements.PublicReplacementTests.test_full_public_genes_replace_short_benchmark_comparators) ... ok
+test_genomic_h3_replacement_is_shared_not_fabricated_alleles (test_public_reference_replacements.PublicReplacementTests.test_genomic_h3_replacement_is_shared_not_fabricated_alleles) ... ok
+test_legacy_plant_reverse_endpoint_is_outside_current_length_bounds (test_public_reference_replacements.PublicReplacementTests.test_legacy_plant_reverse_endpoint_is_outside_current_length_bounds) ... ok
+test_public_16s_replacements_do_not_reintroduce_muts (test_public_reference_replacements.PublicReplacementTests.test_public_16s_replacements_do_not_reintroduce_muts) ... ok
+test_rhopilema_cox1_uses_reverse_origin_spanning_gene (test_public_reference_replacements.PublicReplacementTests.test_rhopilema_cox1_uses_reverse_origin_spanning_gene) ... ok
+test_unresolved_cnidarian_gene_conflicts_remain_unfilled (test_public_reference_replacements.PublicReplacementTests.test_unresolved_cnidarian_gene_conflicts_remain_unfilled) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 1.157s
+
+OK

@@ -1,0 +1,28 @@
+[angiospermae_psbA-trnH] Path search reached the DFS state limit of 100000 at threshold 14.
+[angiospermae_psbA-trnH] Path search reached the DFS state limit of 100000 at threshold 9.
+[angiospermae_psbA-trnH] Path search reached the DFS state limit of 100000 at threshold 2.
+[angiospermae_psbA-trnH] Withholding 2105 complete candidate path(s) because repeat length is unresolved at threshold 2.
+[angiospermae_trnV-atpE] Path search reached the DFS state limit of 100000 at threshold 10.
+[angiospermae_trnV-atpE] Path search reached the DFS state limit of 100000 at threshold 2.
+[angiospermae_trnV-atpE] Withholding 4788 complete candidate path(s) because repeat length is unresolved at threshold 2.
+[angiospermae_atpB-rbcL] Path search reached the DFS state limit of 100000 at threshold 29.
+[angiospermae_atpB-rbcL] Path search reached the DFS state limit of 100000 at threshold 20.
+[angiospermae_atpB-rbcL] Withholding 1 complete candidate path(s) because repeat length is unresolved at threshold 20.
+[angiospermae_atpB-rbcL] Path search reached the DFS state limit of 100000 at threshold 11.
+  ? angiospermae_psbA-trnH (49 products: 0 standard, 49 uncertain; 407, 464, 364, 306, 407, 385, 442, 342, 284, 495, 552, 452, 394, 495, 473, 530, 430, 372, 517, 574, 474, 416, 517, 495, 552, 452, 394, 515, 572, 472, 414, 515, 550, 392, 386, 328, 306, 363, 263, 407, 349, 327, 284, 365, 307, 285, 242, 142, 261 bp)
+    Uncertain records have unresolved repeat structure and unevaluated read support.
+    Standard admission: node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length
+  + angiospermae_rpl36-infA-rps8 (1 product: 1 standard, 0 uncertain; 552 bp)
+  + angiospermae_trnK-rps16 (1 product: 1 standard, 0 uncertain; 657 bp)
+  ? angiospermae_trnV-atpE (41 products: 0 standard, 41 uncertain; 416, 435, 454, 453, 472, 473, 493, 511, 530, 548, 566, 565, 566, 585, 584, 602, 601, 600, 599, 635, 634, 652, 651, 670, 669, 705, 704, 721, 740, 740, 739, 757, 756, 756, 755, 705, 670, 653, 671, 670, 671 bp)
+    Uncertain records have unresolved repeat structure and unevaluated read support.
+    Standard admission: node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length
+  + angiospermae_trnC-ycf6 (1 product: 1 standard, 0 uncertain; 1099 bp)
+  + angiospermae_ycf6-psbM (1 product: 1 standard, 0 uncertain; 927 bp)
+  + angiospermae_psbM-trnD (1 product: 1 standard, 0 uncertain; 1287 bp)
+  ? angiospermae_atpB-rbcL (1 product: 0 standard, 1 uncertain; 812 bp)
+    Uncertain records have unresolved repeat structure and unevaluated read support.
+    Standard admission: node budget exceeded; earlier threshold outcomes: threshold 29: DFS state limit reached; threshold 20: DFS state limit reached, candidate-local repeat uncertainty; threshold 11: DFS state limit reached
+  + angiospermae_trnL-F (1 product: 1 standard, 0 uncertain; 434 bp)
+  - angiospermae_ITS (no products, node budget exceeded)
+sharkmer complete: 1,000,000 reads, 9/10 targets with output (angiospermae_psbA-trnH, angiospermae_rpl36-infA-rps8, angiospermae_trnK-rps16, angiospermae_trnV-atpE, angiospermae_trnC-ycf6, angiospermae_ycf6-psbM, angiospermae_psbM-trnD, angiospermae_atpB-rbcL, angiospermae_trnL-F), 97 records (6 standard, 91 uncertain), allocator peak 4.3 GB, 1m 49s

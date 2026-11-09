@@ -1,0 +1,885 @@
+{
+  "bindings_unchanged": true,
+  "build_environment": {
+    "CARGO_BUILD_JOBS": "2",
+    "CARGO_ENCODED_RUSTFLAGS": null,
+    "CARGO_HOME": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/cargo",
+    "CARGO_TARGET_DIR": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target",
+    "PYTHONPATH": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps",
+    "RUSTC_WRAPPER": null,
+    "RUSTFLAGS": null,
+    "RUSTUP_HOME": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup",
+    "RUST_TEST_THREADS": "1"
+  },
+  "cpus": [
+    25,
+    40
+  ],
+  "finished": 1791726922.8286593,
+  "frozen_binary": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+    "sha256": "3a6505da2750982c333b077a065ad9e0cd0e6607c6963fa7140a0b44da71a899",
+    "size_bytes": 7040024
+  },
+  "gates": [
+    {
+      "command": [
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2"
+      ],
+      "files": [
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/build_default/constraints.json",
+          "sha256": "56efb96bda7efa5d41060fc61798c80c08feb6d401246d84ed4f3627706b23aa",
+          "size_bytes": 600
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/build_default/stderr.log",
+          "sha256": "980e002d99dba6345b47b629b3fd565ee025232b4cf66a643b044f36fbe411c2",
+          "size_bytes": 63
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/build_default/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/build_default/time.json",
+          "sha256": "24fae449b6ee55103c70dc09bfd76773a7dcaf92b347aa748982a20b786da45e",
+          "size_bytes": 99
+        }
+      ],
+      "launch_command": [
+        "/usr/bin/prlimit",
+        "--as=12884901888",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+        "--receipt",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/build_default/constraints.json",
+        "--expected-cpus",
+        "25,40",
+        "--expected-as",
+        "12884901888",
+        "--",
+        "/usr/bin/time",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/build_default/time.json",
+        "-f",
+        "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+        "--",
+        "cargo",
+        "build",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2"
+      ],
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 64128,
+        "system_seconds": 0.26,
+        "user_seconds": 0.31,
+        "wall_seconds": 10.44
+      },
+      "name": "build_default",
+      "observer_wall_seconds": 10.713200870901346,
+      "returncode": 0,
+      "status": "pass",
+      "timeout_seconds": 1200
+    },
+    {
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/run_comparison.py",
+        "--binary",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "--scope",
+        "all",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant"
+      ],
+      "files": [
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/plant_eight/constraints.json",
+          "sha256": "33f28e86cc8e415ac12ff1a57ef847e87960d500a841871ae92ace56a9302b16",
+          "size_bytes": 1040
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/plant_eight/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/plant_eight/stdout.log",
+          "sha256": "feb7bbc179ac9a4096c0881c723128d4302e23903f7a8c44666b54a77e7d3d72",
+          "size_bytes": 983
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/plant_eight/time.json",
+          "sha256": "0a36a5a65f2e002ed4f3e559a057bac1999a60f95879ad8be6d3323787a05f93",
+          "size_bytes": 105
+        }
+      ],
+      "launch_command": [
+        "/usr/bin/prlimit",
+        "--as=12884901888",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+        "--receipt",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/plant_eight/constraints.json",
+        "--expected-cpus",
+        "25,40",
+        "--expected-as",
+        "12884901888",
+        "--",
+        "/usr/bin/time",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/plant_eight/time.json",
+        "-f",
+        "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/run_comparison.py",
+        "--binary",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "--scope",
+        "all",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant"
+      ],
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 4461700,
+        "system_seconds": 11.38,
+        "user_seconds": 339.62,
+        "wall_seconds": 361.39
+      },
+      "name": "plant_eight",
+      "observer_wall_seconds": 361.6400640211068,
+      "returncode": 0,
+      "status": "pass",
+      "timeout_seconds": 3600
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2"
+      ],
+      "files": [
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_default/constraints.json",
+          "sha256": "ba20171a57e8372059d76e5e950c74585a283aaa5a56977d418701c504748463",
+          "size_bytes": 598
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_default/stderr.log",
+          "sha256": "cc1222cf08843a14080f1a79b58efcaf029482428bb642b2594e52f1a324f808",
+          "size_bytes": 498
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_default/stdout.log",
+          "sha256": "f5e74ffc2b997a1d9a4a2d0219f001310b4c5255a505d22d5d24cbf58a0da2d4",
+          "size_bytes": 19699
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_default/time.json",
+          "sha256": "fb0e4f8966a4ee5738f69942062ffc0d6789ecad03c8fbb2698ee969b63989a2",
+          "size_bytes": 101
+        }
+      ],
+      "launch_command": [
+        "/usr/bin/prlimit",
+        "--as=12884901888",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+        "--receipt",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_default/constraints.json",
+        "--expected-cpus",
+        "25,40",
+        "--expected-as",
+        "12884901888",
+        "--",
+        "/usr/bin/time",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_default/time.json",
+        "-f",
+        "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+        "--",
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2"
+      ],
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 632404,
+        "system_seconds": 3.02,
+        "user_seconds": 60.66,
+        "wall_seconds": 70.21
+      },
+      "name": "test_default",
+      "observer_wall_seconds": 70.94403430679813,
+      "returncode": 0,
+      "status": "pass",
+      "timeout_seconds": 1200
+    },
+    {
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "--no-default-features",
+        "--features",
+        "fxhashmap"
+      ],
+      "files": [
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_fxhash/constraints.json",
+          "sha256": "98184ff9c94bee72b6c82f1f10385a634b2db0504a19b88cbd5998a79daa15c2",
+          "size_bytes": 661
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_fxhash/stderr.log",
+          "sha256": "601d4be27d32bcd85c51cd521352ad84fc8e4de330fffc8d2d307810969fa61c",
+          "size_bytes": 498
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_fxhash/stdout.log",
+          "sha256": "60b9e0637458951f0f8fb8ea6b9e770f3e52d736930ae9fe93c0e51df226b09e",
+          "size_bytes": 19699
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_fxhash/time.json",
+          "sha256": "405d071b2905d70e238e20176afc3ff95367204c57a23b67300f8426d7889705",
+          "size_bytes": 102
+        }
+      ],
+      "launch_command": [
+        "/usr/bin/prlimit",
+        "--as=12884901888",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+        "--receipt",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_fxhash/constraints.json",
+        "--expected-cpus",
+        "25,40",
+        "--expected-as",
+        "12884901888",
+        "--",
+        "/usr/bin/time",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_fxhash/time.json",
+        "-f",
+        "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+        "--",
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "--no-default-features",
+        "--features",
+        "fxhashmap"
+      ],
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 631852,
+        "system_seconds": 3.12,
+        "user_seconds": 112.8,
+        "wall_seconds": 88.72
+      },
+      "name": "test_fxhash",
+      "observer_wall_seconds": 89.00358111364767,
+      "returncode": 0,
+      "status": "pass",
+      "timeout_seconds": 1200
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "files": [
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/constraints.json",
+          "sha256": "a1c8b23f10345a3ef2d451542e7b67260692b1730bc2a6ebcf021beac0261b1f",
+          "size_bytes": 642
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/stderr.log",
+          "sha256": "0de2ff439f6a7556a5a17f416753e38c5540451da3cad4f863cbb5c28cc1751b",
+          "size_bytes": 381
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/time.json",
+          "sha256": "a6331167a1bef02f0bd07967b8a0b6833080c8905849bcac93af3a989e9b1899",
+          "size_bytes": 101
+        }
+      ],
+      "launch_command": [
+        "/usr/bin/prlimit",
+        "--as=12884901888",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+        "--receipt",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/constraints.json",
+        "--expected-cpus",
+        "25,40",
+        "--expected-as",
+        "12884901888",
+        "--",
+        "/usr/bin/time",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/time.json",
+        "-f",
+        "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+        "--",
+        "cargo",
+        "clippy",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 482468,
+        "system_seconds": 1.74,
+        "user_seconds": 17.97,
+        "wall_seconds": 42.23
+      },
+      "name": "clippy_default",
+      "observer_wall_seconds": 42.40285377623513,
+      "returncode": 0,
+      "status": "pass",
+      "timeout_seconds": 1200
+    },
+    {
+      "command": [
+        "cargo",
+        "clippy",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "--no-default-features",
+        "--features",
+        "fxhashmap",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "files": [
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_fxhash/constraints.json",
+          "sha256": "c7e30ce6b1d7ca6159cb6ca2d7b3da2e148b42028b26ded3bdb1652c9162e79d",
+          "size_bytes": 705
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_fxhash/stderr.log",
+          "sha256": "70c93b108edd110cc451429e09ad7be2571647e9e583f7767f58f25a80ef0334",
+          "size_bytes": 150
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_fxhash/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_fxhash/time.json",
+          "sha256": "ddde9529e73861085d6ee9af6e8b36b5527d813f04c31aeb636cc9517363d3cd",
+          "size_bytes": 99
+        }
+      ],
+      "launch_command": [
+        "/usr/bin/prlimit",
+        "--as=12884901888",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+        "--receipt",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_fxhash/constraints.json",
+        "--expected-cpus",
+        "25,40",
+        "--expected-as",
+        "12884901888",
+        "--",
+        "/usr/bin/time",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_fxhash/time.json",
+        "-f",
+        "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+        "--",
+        "cargo",
+        "clippy",
+        "--all-targets",
+        "--locked",
+        "--offline",
+        "-j",
+        "2",
+        "--no-default-features",
+        "--features",
+        "fxhashmap",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 437240,
+        "system_seconds": 0.63,
+        "user_seconds": 5.8,
+        "wall_seconds": 5.72
+      },
+      "name": "clippy_fxhash",
+      "observer_wall_seconds": 5.888854455668479,
+      "returncode": 0,
+      "status": "pass",
+      "timeout_seconds": 1200
+    },
+    {
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "files": [
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fmt/constraints.json",
+          "sha256": "624586e7d3cf90624b00594745de6b706153ca2fae3b4e00675ea63e6d3bd312",
+          "size_bytes": 546
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fmt/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fmt/stdout.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fmt/time.json",
+          "sha256": "38873afe7784273dfb1aa0925954110c70ad18cba37e29eea8816973a4da99ba",
+          "size_bytes": 98
+        }
+      ],
+      "launch_command": [
+        "/usr/bin/prlimit",
+        "--as=12884901888",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+        "--receipt",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fmt/constraints.json",
+        "--expected-cpus",
+        "25,40",
+        "--expected-as",
+        "12884901888",
+        "--",
+        "/usr/bin/time",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fmt/time.json",
+        "-f",
+        "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+        "--",
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 51840,
+        "system_seconds": 0.03,
+        "user_seconds": 0.21,
+        "wall_seconds": 0.29
+      },
+      "name": "fmt",
+      "observer_wall_seconds": 0.4735560589469969,
+      "returncode": 0,
+      "status": "pass",
+      "timeout_seconds": 120
+    },
+    {
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "files": [
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/python_all/constraints.json",
+          "sha256": "b9731215ab4874a8f70551ff2828325ab7725595780088a88e23cc55ef7e99d0",
+          "size_bytes": 686
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/python_all/stderr.log",
+          "sha256": "ce9143064450f2f7a6221b61313e1089465bbc4762351793d490c7c3e3c26e8e",
+          "size_bytes": 31648
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/python_all/stdout.log",
+          "sha256": "f83e65da6250a71df4ecded67ea3b9cd5cdead9b7b97ba1def288bfce0e313ac",
+          "size_bytes": 1319
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/python_all/time.json",
+          "sha256": "2a09ce6a7f609a27e814bd70d3daf749f9c516a9d71271e229971702cb6e6d45",
+          "size_bytes": 99
+        }
+      ],
+      "launch_command": [
+        "/usr/bin/prlimit",
+        "--as=12884901888",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+        "--receipt",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/python_all/constraints.json",
+        "--expected-cpus",
+        "25,40",
+        "--expected-as",
+        "12884901888",
+        "--",
+        "/usr/bin/time",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/python_all/time.json",
+        "-f",
+        "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_*.py",
+        "-v"
+      ],
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 72960,
+        "system_seconds": 0.34,
+        "user_seconds": 6.93,
+        "wall_seconds": 10.13
+      },
+      "name": "python_all",
+      "observer_wall_seconds": 10.25659553380683,
+      "returncode": 0,
+      "status": "pass",
+      "timeout_seconds": 600
+    },
+    {
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/run_final_checks.py",
+        "--gate",
+        "references",
+        "--binary",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/references"
+      ],
+      "files": [
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/references/constraints.json",
+          "sha256": "5f4f6a70fac4804ee2e74e5f20300ca764ebe4c7869c0236995837cb7ccb8193",
+          "size_bytes": 1047
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/references/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/references/stdout.log",
+          "sha256": "b3b253fc03d400d6d1be6edec8e3358c3dc8c4dcd5c80881608b47acd0813d6f",
+          "size_bytes": 180
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/references/time.json",
+          "sha256": "6607ad5668251483db7cc17873ac8733c316d82bff0d5dac97775cde41cb5ff7",
+          "size_bytes": 98
+        }
+      ],
+      "launch_command": [
+        "/usr/bin/prlimit",
+        "--as=12884901888",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+        "--receipt",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/references/constraints.json",
+        "--expected-cpus",
+        "25,40",
+        "--expected-as",
+        "12884901888",
+        "--",
+        "/usr/bin/time",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/references/time.json",
+        "-f",
+        "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/run_final_checks.py",
+        "--gate",
+        "references",
+        "--binary",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/references"
+      ],
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 34656,
+        "system_seconds": 0.06,
+        "user_seconds": 0.97,
+        "wall_seconds": 1.22
+      },
+      "name": "references",
+      "observer_wall_seconds": 1.3751187110319734,
+      "returncode": 0,
+      "status": "pass",
+      "timeout_seconds": 600
+    },
+    {
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/run_final_checks.py",
+        "--gate",
+        "panels",
+        "--binary",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels"
+      ],
+      "files": [
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/panels/constraints.json",
+          "sha256": "751a07b844c6a7b56a685e3b9bc054a3bd34d39351ec6f2bbb78819f746891fa",
+          "size_bytes": 1036
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/panels/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/panels/stdout.log",
+          "sha256": "f97551afa20fa529b910fbb5ca49e2dd900239baa727d895bd6a1c70ea4e6d3e",
+          "size_bytes": 172
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/panels/time.json",
+          "sha256": "6e1439c5e0cb1a7784d90d90926f7f1915874937f98d3946f5c3fa06793cc0f3",
+          "size_bytes": 98
+        }
+      ],
+      "launch_command": [
+        "/usr/bin/prlimit",
+        "--as=12884901888",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+        "--receipt",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/panels/constraints.json",
+        "--expected-cpus",
+        "25,40",
+        "--expected-as",
+        "12884901888",
+        "--",
+        "/usr/bin/time",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/panels/time.json",
+        "-f",
+        "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/run_final_checks.py",
+        "--gate",
+        "panels",
+        "--binary",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels"
+      ],
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 33024,
+        "system_seconds": 0.12,
+        "user_seconds": 1.05,
+        "wall_seconds": 2.34
+      },
+      "name": "panels",
+      "observer_wall_seconds": 2.531161014921963,
+      "returncode": 0,
+      "status": "pass",
+      "timeout_seconds": 600
+    },
+    {
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/run_final_checks.py",
+        "--gate",
+        "fixtures",
+        "--binary",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/fixtures"
+      ],
+      "files": [
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fixtures/constraints.json",
+          "sha256": "db95b7310d4e79ce5b1fa37437b4fd03d23ae8e2c2b4ea307234b2fe154ffc79",
+          "size_bytes": 1042
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fixtures/stderr.log",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fixtures/stdout.log",
+          "sha256": "fed1c82285c4f0567942eff960c50111b04b11492a0f30f6c72b09d5adde7139",
+          "size_bytes": 176
+        },
+        {
+          "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fixtures/time.json",
+          "sha256": "d39b1f30d2d22713b9fa67b97e2b14b9043f27be21ca74ce9fadcc1388520efa",
+          "size_bytes": 99
+        }
+      ],
+      "launch_command": [
+        "/usr/bin/prlimit",
+        "--as=12884901888",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+        "--receipt",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fixtures/constraints.json",
+        "--expected-cpus",
+        "25,40",
+        "--expected-as",
+        "12884901888",
+        "--",
+        "/usr/bin/time",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/fixtures/time.json",
+        "-f",
+        "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+        "--",
+        "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/run_final_checks.py",
+        "--gate",
+        "fixtures",
+        "--binary",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/fixtures"
+      ],
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 563880,
+        "system_seconds": 0.4,
+        "user_seconds": 7.46,
+        "wall_seconds": 9.05
+      },
+      "name": "fixtures",
+      "observer_wall_seconds": 9.47528025507927,
+      "returncode": 0,
+      "status": "pass",
+      "timeout_seconds": 900
+    }
+  ],
+  "machine": {
+    "machine": "x86_64",
+    "node": "c1102u05n01.mghpcc.ycrc.yale.edu",
+    "processor": "x86_64",
+    "release": "5.14.0-570.140.1.el9_6.x86_64",
+    "system": "Linux",
+    "version": "#1 SMP PREEMPT_DYNAMIC Mon Sep 7 09:47:52 EDT 2026"
+  },
+  "not_run_gates": [],
+  "plan": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/plan-v2.json",
+    "sha256": "bda19fa8e6164ed689605713454663a18caa0fdb2f896770aafcc109c4dbf0c0",
+    "size_bytes": 65308
+  },
+  "python": "3.14.3 | packaged by conda-forge | (main, Feb  9 2026, 21:56:02) [GCC 14.3.0]",
+  "slurm_job_id": "29147703",
+  "source_files_unchanged": true,
+  "started": 1791726311.5220044,
+  "status": "pass",
+  "tool_versions": {
+    "blastn": "blastn: 2.17.0+\n Package: blast 2.17.0, build Aug 11 2025 09:46:06",
+    "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+    "makeblastdb": "makeblastdb: 2.17.0+\n Package: blast 2.17.0, build Aug 11 2025 09:46:06",
+    "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)"
+  },
+  "topology": [
+    {
+      "core": 10,
+      "cpu": 25,
+      "socket": 1
+    },
+    {
+      "core": 25,
+      "cpu": 40,
+      "socket": 0
+    }
+  ]
+}

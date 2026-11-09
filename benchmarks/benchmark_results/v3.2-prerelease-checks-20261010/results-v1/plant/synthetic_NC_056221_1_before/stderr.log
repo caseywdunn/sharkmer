@@ -1,0 +1,12 @@
+Only 2892 FASTQ records read. sPCR typically needs many more reads to produce results.
+  - angiospermae_psbA-trnH (no products, forward and reverse primers not found)
+  - angiospermae_rpl36-infA-rps8 (no products, forward and reverse primers not found)
+  - angiospermae_trnK-rps16 (no products, forward and reverse primers not found)
+  - angiospermae_trnV-atpE (no products, no start-to-end connectivity established at this threshold)
+  - angiospermae_trnC-ycf6 (no products, forward and reverse primers not found)
+  - angiospermae_ycf6-psbM (no products, forward and reverse primers not found)
+  - angiospermae_psbM-trnD (no products, forward and reverse primers not found)
+  - angiospermae_atpB-rbcL (no products, forward and reverse primers not found)
+  - angiospermae_trnL-F (no products, forward and reverse primers not found)
+  - angiospermae_ITS (no products, forward and reverse primers not found)
+sharkmer complete: 2,892 reads, 0/10 targets with output, 0 records (0 standard, 0 uncertain), allocator peak 635.5 KB, 0.3s

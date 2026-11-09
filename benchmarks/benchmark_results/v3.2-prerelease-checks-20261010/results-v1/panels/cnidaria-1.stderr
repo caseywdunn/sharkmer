@@ -1,0 +1,32 @@
+sharkmer 3.2.0-dev (dry run)
+
+Input:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+
+Configuration:
+  Sample:         schema_probe
+  Output dir:     /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/cnidaria-1-dry-output/
+  Kmer length:    19
+  Chunks:         0
+  Threads:        2
+  Min kmer count: 2
+  PCR output:     standard and labelled uncertain products
+
+Output files:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/cnidaria-1-dry-output/schema_probe.stats.yaml
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/cnidaria-1-dry-output/schema_probe_cnidaria_16S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/cnidaria-1-dry-output/schema_probe_cnidaria_CO1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/cnidaria-1-dry-output/schema_probe_cnidaria_18S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/cnidaria-1-dry-output/schema_probe_cnidaria_28S_1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/cnidaria-1-dry-output/schema_probe_cnidaria_ITS_1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/cnidaria-1-dry-output/schema_probe_cnidaria_ITS_2.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/cnidaria-1-dry-output/schema_probe_cnidaria_28S_2.fasta
+
+PCR primers (7 genes):
+  cnidaria_16S (fwd: GRCTGTTT...CATA, rev: AATTCAAC...GAGG, len: 500-700)
+  cnidaria_CO1 (fwd: WAAYCATA...ATAT, rev: GGRTGMCC...CARA, len: 600-800)
+  cnidaria_18S (fwd: AACCTGGT...CAGT, rev: TGATCCTT...CTAC, len: 1600-2000)
+  cnidaria_28S_1 (fwd: CCYYAGTA...GAGT, rev: SWACAGAT...TTCG, len: 2900-3500)
+  cnidaria_ITS_1 (fwd: TACACACC...ACTA, rev: ACTCGCCG...RRGG, len: 600-1000)
+  cnidaria_ITS_2 (fwd: GTAGGTGA...ATCA, rev: ACTCGCCG...RRGG, len: 600-1000)
+  cnidaria_28S_2 (fwd: CGTGAAAC...AGGG, rev: TTGGTCCG...GACG, len: 300-700)

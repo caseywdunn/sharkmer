@@ -1,0 +1,13 @@
+A	C	B	candidate_count	candidate_ids	q20_full_flanked_read_ordinals	q20_variable_core_read_ordinals	full_flanked_disposition	variable_core_disposition
+CTCGCCC	ACGGG	C	0				unobserved_in_selected_saved_ledger	unobserved_in_selected_saved_ledger
+CTCGCCC	ACGGG	T	4	q138,q146,q151,q161		273451,427221	unobserved_in_selected_saved_ledger	observed
+CTCGCCC	TCTGT	C	3	q144,q165,q166			unobserved_in_selected_saved_ledger	unobserved_in_selected_saved_ledger
+CTCGCCC	TCTGT	T	4	q137,q141,q143,q145			unobserved_in_selected_saved_ledger	unobserved_in_selected_saved_ledger
+TTCGCC	ACGGG	C	0				unobserved_in_selected_saved_ledger	unobserved_in_selected_saved_ledger
+TTCGCC	ACGGG	T	4	q142,q147,q149,q150			unobserved_in_selected_saved_ledger	unobserved_in_selected_saved_ledger
+TTCGCC	TCTGT	C	4	q148,q154,q159,q163	32796	32796	observed	observed
+TTCGCC	TCTGT	T	4	q139,q152,q160,q164	671970	220238,671970,692060	observed	observed
+TTCGCCC	ACGGG	C	0				unobserved_in_selected_saved_ledger	unobserved_in_selected_saved_ledger
+TTCGCCC	ACGGG	T	4	q155,q156,q158,SRR27962769_23163ca76f97f5d1	295300	295300,697174	observed	observed
+TTCGCCC	TCTGT	C	3	q140,q157,q167			unobserved_in_selected_saved_ledger	unobserved_in_selected_saved_ledger
+TTCGCCC	TCTGT	T	3	q136,q153,q162			unobserved_in_selected_saved_ledger	unobserved_in_selected_saved_ledger

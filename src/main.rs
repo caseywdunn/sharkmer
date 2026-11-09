@@ -11,11 +11,12 @@ mod cli;
 mod format;
 mod io;
 mod kmer;
+mod output;
 mod pcr;
 mod stats;
 
 use cli::Args;
-use stats::RunStats;
+use stats::{InputSourceStats, RunStats, StageTimings};
 
 #[global_allocator]
 static PEAK_ALLOC: PeakAlloc = PeakAlloc;
@@ -37,15 +38,10 @@ fn main() -> Result<()> {
 
     // Apply CLI tuning overrides to all PCR params.
     //
-    // Precedence: CLI flags > panel defaults > hardcoded defaults. Every
-    // field below unconditionally overwrites the per-panel value with the
-    // CLI-provided value, even when the user did not explicitly set the
-    // flag — the CLI parser fills unset flags with the hardcoded defaults,
-    // so the effective precedence still holds but panel-supplied values
-    // for these specific fields are not honored. This is intentional: the
-    // hidden tuning flags are meant for debugging the PCR engine globally,
-    // not for per-gene customization (which is what the per-primer keys in
-    // the panel YAML are for).
+    // Global CLI values always win: unset flags supply their hardcoded defaults
+    // and overwrite these panel compatibility fields. This is intentional for
+    // hidden engine diagnostics, not per-gene tuning. dedup_edit_threshold
+    // remains the supported per-primer runtime tuning field.
     for p in &mut pcr_runs {
         p.max_dfs_states = args.max_dfs_states;
         p.max_paths_per_pair = args.max_paths_per_pair;
@@ -53,6 +49,8 @@ fn main() -> Result<()> {
         p.max_primer_kmers = args.max_primer_kmers;
         p.high_coverage_ratio = args.high_coverage_ratio;
         p.tip_coverage_fraction = args.tip_coverage_fraction;
+        p.diagnose_withheld_paths = args.diagnose_withheld_paths;
+        p.emit_uncertain = args.emit_uncertain || !args.no_emit_uncertain;
     }
 
     // Handle --validate-panels early: pure primer check, no sample/output needed
@@ -90,6 +88,7 @@ fn main() -> Result<()> {
     // Create the output directory now that we know this is not a dry run
     std::fs::create_dir_all(&directory)
         .with_context(|| format!("Failed to create output directory: {}", directory))?;
+    let mut output_transaction = output::OutputTransaction::begin(&args.outdir, &sample)?;
 
     // Set the number of threads for Rayon to use
     rayon::ThreadPoolBuilder::new()
@@ -109,6 +108,7 @@ fn main() -> Result<()> {
     };
 
     // Ingest FASTQ reads from all input sources (Pass 1: kmer counting)
+    let ingest_start = std::time::Instant::now();
     let (state, n_reads_ingested, n_bases_ingested, n_kmers_ingested, read_plan) =
         io::ingest_reads(
             &args,
@@ -117,9 +117,35 @@ fn main() -> Result<()> {
             cache_config.as_ref(),
             show_progress,
         )?;
+    let read_ingest_s = ingest_start.elapsed().as_secs_f64();
+    let (input_source_kind, input_source_inputs) = match &read_plan.source {
+        io::ReadSourcePlan::LocalFiles(paths) => (
+            "local_files".to_string(),
+            paths
+                .iter()
+                .map(|path| path.to_string_lossy().into_owned())
+                .collect(),
+        ),
+        io::ReadSourcePlan::CachedRemote(paths) => (
+            "cached_remote".to_string(),
+            paths
+                .iter()
+                .map(|path| path.to_string_lossy().into_owned())
+                .collect(),
+        ),
+        io::ReadSourcePlan::UncachedRemote(urls) => ("uncached_remote".to_string(), urls.clone()),
+        io::ReadSourcePlan::Unavailable => ("unavailable".to_string(), Vec::new()),
+    };
+    let input_source = InputSourceStats {
+        kind: input_source_kind,
+        inputs: input_source_inputs,
+        paired: read_plan.paired,
+        max_reads: read_plan.max_reads,
+    };
 
     // Consolidate chunks and optionally write histograms
     let mut state = state;
+    let finalize_start = std::time::Instant::now();
     let (kmer_counts, n_singleton_kmers) = io::consolidate_and_histogram(
         &mut state,
         &args,
@@ -129,8 +155,11 @@ fn main() -> Result<()> {
         n_kmers_ingested,
         show_progress,
     )?;
+    let count_finalize_s = finalize_start.elapsed().as_secs_f64();
+    let count_table_capacity = kmer_counts.capacity();
 
     // Pass 2: re-read sequences for read threading (opt-in via --read-threading)
+    let threading_input_start = std::time::Instant::now();
     let threading_reads = if args.read_threading && !pcr_runs.is_empty() {
         match &read_plan.source {
             io::ReadSourcePlan::Unavailable => {
@@ -142,12 +171,17 @@ fn main() -> Result<()> {
     } else {
         None
     };
+    let read_threading_input_s = if args.read_threading && !pcr_runs.is_empty() {
+        Some(threading_input_start.elapsed().as_secs_f64())
+    } else {
+        None
+    };
 
-    // Resolve global node budget: user-pinned or dynamic based on data volume
+    // Resolve the per-gene/threshold node budget from user input or data volume
     let node_budget_global = match args.node_budget_global {
         Some(budget) => {
             info!(
-                "Global node budget: {} (pinned via --node-budget-global)",
+                "Per-gene/threshold node budget: {} (pinned via --node-budget-global)",
                 budget
             );
             budget
@@ -155,7 +189,7 @@ fn main() -> Result<()> {
         None => {
             let budget = pcr::compute_node_budget(n_bases_ingested);
             info!(
-                "Global node budget: {} (auto, based on {} bp ingested; ~{}M reads at 150bp). Pin with --node-budget-global.",
+                "Per-gene/threshold node budget: {} (auto, based on {} bp ingested; ~{}M reads at 150bp). Pin with --node-budget-global.",
                 budget,
                 n_bases_ingested,
                 n_bases_ingested / 150_000_000
@@ -165,6 +199,7 @@ fn main() -> Result<()> {
     };
 
     // Run in silico PCR
+    let pcr_start = std::time::Instant::now();
     let pcr_results = stats::run_pcr(
         &kmer_counts,
         &pcr_runs,
@@ -175,7 +210,9 @@ fn main() -> Result<()> {
         show_progress,
         threading_reads.as_deref(),
         node_budget_global,
+        &mut output_transaction,
     )?;
+    let pcr_s = pcr_start.elapsed().as_secs_f64();
 
     // Build and write run statistics
     let command = std::env::args().collect::<Vec<String>>().join(" ");
@@ -183,6 +220,12 @@ fn main() -> Result<()> {
         sharkmer_version: env!("CARGO_PKG_VERSION").to_string(),
         command,
         sample: sample.clone(),
+        run_id: output_transaction.run_id().to_string(),
+        output_manifest: output_transaction.manifest_basename().to_string(),
+        run_status: "complete".to_string(),
+        product_output_schema_version: 3,
+        product_output_layout: "combined_warnings".to_string(),
+        input_source,
         kmer_length: args.k,
         chunks: args.chunks,
         n_reads_read: state.n_reads_read,
@@ -192,11 +235,20 @@ fn main() -> Result<()> {
         n_kmers: n_kmers_ingested,
         n_multi_kmers: n_singleton_kmers.map(|s| n_kmers_ingested.saturating_sub(s)),
         n_singleton_kmers,
+        count_table_capacity,
         peak_memory_bytes: PEAK_ALLOC.peak_usage() as u64,
+        stage_timings: StageTimings {
+            read_ingest_s,
+            count_finalize_s,
+            read_threading_input_s,
+            pcr_s,
+            pipeline_total_s: start_run.elapsed().as_secs_f64(),
+        },
         pcr_results,
     };
 
-    stats::write_stats(&run_stats, &directory, &sample)?;
+    stats::write_stats(&run_stats, &mut output_transaction)?;
+    output_transaction.commit()?;
 
     // Print final summary
     stats::print_summary(&run_stats, start_run.elapsed());

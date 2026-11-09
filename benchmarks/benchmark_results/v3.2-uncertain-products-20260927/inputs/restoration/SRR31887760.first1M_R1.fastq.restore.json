@@ -1,0 +1,13 @@
+{
+  "accession": "SRR31887760",
+  "bases": 0,
+  "elapsed_seconds": 0.010751807014457881,
+  "error": "<urlopen error [Errno -2] Name or service not known>",
+  "error_type": "URLError",
+  "input_manifest_sha256": "cccead23eaafb91494241bf19470dd8cdd9a9e1c060b0f7d65e9016091f2f2f6",
+  "records": 0,
+  "size_bytes": 0,
+  "source_sha256": "d49717be97a53db7c2501f92e129e0226ee649d8c95cc12566c1b0d3836198d1",
+  "status": "failed",
+  "transport": {}
+}

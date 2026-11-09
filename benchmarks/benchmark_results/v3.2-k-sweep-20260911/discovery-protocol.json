@@ -1,0 +1,260 @@
+{
+  "settings": {
+    "threads": 2,
+    "chunks": 0,
+    "read_threading": false,
+    "paired": false,
+    "timeout_seconds": 1800,
+    "address_space_limit_bytes": 42949672960,
+    "cpu_list": [
+      0,
+      1
+    ],
+    "prewarm_each_invocation": true,
+    "input_format": "uncompressed_four_line_fastq"
+  },
+  "priority": "2026-09-11 user: protect abundant organelle/ribosomal recovery and runtime/RAM; metagenomic and single-copy nuclear optimization deferred",
+  "limitations": [
+    "Local uncompressed fixed-prefix calibration, not held-out truth; network/gzip/BLAST excluded.",
+    "Whole unchanged panels are timed; recovery is assessed by target metadata and per-product evidence, not raw total products.",
+    "Small number of paired measurements supports descriptive comparisons, not portable statistical guarantees.",
+    "40 GiB virtual-address limit is not an RSS cap or 16 GB laptop validation.",
+    "All inputs are previously inspected calibration data, not independent held-out truth.",
+    "Larger k changes coverage, observed seed context and accepted kmer workload; no coverage, primer or search-budget retuning.",
+    "Exact recovery is not independent read-supported repeat-copy truth; no release/default change is authorized."
+  ],
+  "baseline_role": "baseline",
+  "purpose": "Preregistered longer-k calibration under #153; no production/default changes or release",
+  "samples": [
+    {
+      "panel": "insecta",
+      "input": "SRR31887760",
+      "taxon": "Drosophila melanogaster",
+      "depth": 1000000,
+      "pairs": 3
+    },
+    {
+      "panel": "insecta",
+      "input": "SRR1057608",
+      "taxon": "Heliconius pachinus",
+      "depth": 1000000,
+      "pairs": 3
+    },
+    {
+      "panel": "insecta",
+      "input": "SRR27962769",
+      "taxon": "Gryllus bimaculatus",
+      "depth": 1000000,
+      "pairs": 3
+    }
+  ],
+  "expected_commits": {
+    "baseline": "5a664680c91ad59f32b8c2a847b8fef37f34a0ae",
+    "candidate": "0c38d6a051082cc2a1eb961b4206837f82948fda"
+  },
+  "review_criteria": {
+    "recovery": "Flag every lost high-copy candidate; prioritize reference-supported and dominant products. Compare sequence membership independent of index, retain classification and median/minimum support. Do not require restoration of unsupported repeat-copy claims.",
+    "runtime": "Report every increase; prioritize investigation of >5% per-cell paired median wall increase. Descriptive only; no automatic no-regression claim.",
+    "ram": "Report every increase; prioritize investigation of >2% per-cell paired median RSS increase.",
+    "failures": "Any nonzero CLI exit, timeout, resource breach, count mismatch, invalid provenance/output or BLAST evaluation error invalidates that cell.",
+    "deferred": "Metagenomic and single-copy nuclear diversity/recovery are not current release gates.",
+    "release": "Stop before release for user review, regardless of numeric thresholds."
+  },
+  "target_metadata": {
+    "insecta": [
+      {
+        "gene": "12S",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "rRNA_SSU",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "16S_1",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "rRNA_LSU",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "CO1_1",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "protein_coding",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "CO2_1",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "protein_coding",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "CytB",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "protein_coding",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "ND1",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "protein_coding",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "ND4",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "protein_coding",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "ND5",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "protein_coding",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "16S_2",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "rRNA_LSU",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "CO1_2",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "protein_coding",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "CO2_2",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "protein_coding",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "NADH",
+        "scope": "high_copy_candidate",
+        "compartment": "mitochondrion",
+        "gene_type": "protein_coding",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "Fz4",
+        "scope": "deferred_or_unclassified",
+        "compartment": null,
+        "gene_type": "protein_coding",
+        "copy_number": "single_copy"
+      },
+      {
+        "gene": "Gpdh",
+        "scope": "deferred_or_unclassified",
+        "compartment": null,
+        "gene_type": "protein_coding",
+        "copy_number": "single_copy"
+      },
+      {
+        "gene": "Pgi",
+        "scope": "deferred_or_unclassified",
+        "compartment": null,
+        "gene_type": "protein_coding",
+        "copy_number": "single_copy"
+      },
+      {
+        "gene": "Yp2",
+        "scope": "deferred_or_unclassified",
+        "compartment": null,
+        "gene_type": "protein_coding",
+        "copy_number": "single_copy"
+      },
+      {
+        "gene": "18S_1",
+        "scope": "high_copy_candidate",
+        "compartment": null,
+        "gene_type": "rRNA_SSU",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "28S",
+        "scope": "high_copy_candidate",
+        "compartment": null,
+        "gene_type": "rRNA_LSU",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "18S_2",
+        "scope": "high_copy_candidate",
+        "compartment": null,
+        "gene_type": "rRNA_SSU",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "ITS_1",
+        "scope": "high_copy_candidate",
+        "compartment": null,
+        "gene_type": "ITS",
+        "copy_number": "high_copy"
+      },
+      {
+        "gene": "ITS_2",
+        "scope": "high_copy_candidate",
+        "compartment": null,
+        "gene_type": "ITS",
+        "copy_number": "high_copy"
+      }
+    ]
+  },
+  "schema_version": 1,
+  "registered_at": "2026-09-11T16:35:14.603304+00:00",
+  "allowed_k": [
+    19,
+    23,
+    27,
+    31
+  ],
+  "ordering": {
+    "outer_order": ["pair_index", "protocol_sample_order"],
+    "k_rotation": "left_by_(pair_index_minus_1_plus_zero_based_sample_index)_modulo_k_count",
+    "version_order": "baseline_first_when_(pair_index_plus_zero_based_sample_index_plus_allowed_k_index)_modulo_2_equals_1",
+    "same_k_version_pair_contiguous": true
+  },
+  "fixed_reference": {
+    "execution": "/tmp/sharkmer-high-copy-20260911/final-execution",
+    "analysis": "/tmp/sharkmer-high-copy-20260911/final-analysis",
+    "protocol_sha256": "8b9e1ad915f0e1ebde5fe904d2e938d408c218bb6ff17c7da73a7986677f7f5b",
+    "diagnostic_audit_sha256": "fcfee505da9fe0d7e2ef464546c530db0890adf6dbe8ca7c5bb4d0f5f9653194",
+    "baseline_k": 19,
+    "expected_lost_high_copy_products": 7,
+    "expected_candidate_high_copy_products_all_ten_samples": 64,
+    "exact_its2_sha256": "23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c"
+  },
+  "confirmation_selection": {
+    "status": "preregistered_before_discovery",
+    "eligible": "k > 19; all discovery invocations and classifications valid and same-version sequence/classification stable; restores at least one of the seven exact missing high-copy products in every replicate; preserves every k19 candidate confirmed_product sequence in the affected samples in every replicate",
+    "rank_descending": [
+      "exact_reference_ITS2_restored",
+      "number_of_seven_exact_missing_products_restored",
+      "number_of_k19_released_high_copy_sequences_retained"
+    ],
+    "tie_break": "lowest k",
+    "select_at_most": 1,
+    "confirmation": "Three alternating pairs at selected k for the seven remaining non-insect samples from the frozen ten-sample protocol; same inputs, panels, and settings",
+    "if_none_eligible": "Do not expand timings; report the result and uncertainties for user review",
+    "release_gate": "Selection is exploratory calibration, not a change to default k or release approval; report every other high-copy loss and resource increase"
+  },
+  "comparison_contract": {
+    "primary": "Exact gene-plus-sequence membership, not product index or raw gene/product totals",
+    "same_k": "Both versions at each k, including aggregate read/base/kmer occurrence parity",
+    "cross_k": "Both versions against fixed k19 released and candidate memberships; read/base/prefix equality required, kmer occurrence totals may differ",
+    "changed_endpoints": "Keep exact sequence changes visible; only separately report boundary equivalence if demonstrated from frozen FASTA/panel evidence; never count as exact rescue",
+    "mechanism": "Retain seed/threshold/SCC/collision/node/DFS/path diagnostics; k changes seed context and effective support as well as topology, so cannot attribute every change solely to repeat resolution",
+    "resources": "Whole unchanged-panel wall/RSS; same-k version comparisons and within-version cross-k comparisons; three same-host repeats are descriptive"
+  }
+}

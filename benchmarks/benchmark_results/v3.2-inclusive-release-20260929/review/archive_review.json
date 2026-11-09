@@ -1,0 +1,61 @@
+{
+  "archive": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/evidence.tar.gz",
+    "sha256": "edc1b638ef896575a86a7da972bead7b2be9ea25bb074e05d00c400a1570ec58",
+    "size_bytes": 41922729
+  },
+  "checker": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/check_archive_independent.py",
+    "sha256": "fc0254e689cdc5c4d9e4316d1813909d2d657eae71c07f7b67c464b0c6d5b6e7",
+    "size_bytes": 10006
+  },
+  "checks": [
+    "Every payload and exact member set match the embedded manifest and SHA256SUMS; no links, duplicate or unsafe member names.",
+    "Both exact production source trees, complete scratch diagnostic source and all prior full-check sources are included.",
+    "All sixty invocation receipts, output/timing/log/constraint files, six report tables, reviewed documents and anchor fingerprints are included.",
+    "Failed restoration/report attempts and versioned corrected sources are preserved.",
+    "External raw FASTQs, executable payloads, target/toolchain/cache trees and nested archives are excluded; exact checked-source FASTQ fixtures are retained.",
+    "Archive digest is unchanged across the independent reopen and coverage checks."
+  ],
+  "complete_dros_ledgers": 16,
+  "date": "2026-09-30",
+  "expanded_source_counts": {
+    "baseline": 35,
+    "candidate": 52,
+    "dros_scratch": 76,
+    "prior_full_checks": 85
+  },
+  "limitations": [
+    "Evidence integrity pass does not resolve the four runtime flags, validate uncertain biological hypotheses, or authorize release."
+  ],
+  "main_invocations": 60,
+  "main_output_and_execution_files": 786,
+  "member_count": 1303,
+  "outcome_review": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/outcome_review.json",
+    "sha256": "fed44738fd1d6df1c144d16218b3deb248f86e490285e7c4871b2319d503203c",
+    "size_bytes": 569639
+  },
+  "packaging_receipt": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/archive_receipt.json",
+    "sha256": "0b9fdea40474ecba4b317838e1913c1991cc85c606b1e887432a36cda66c4434",
+    "size_bytes": 2425
+  },
+  "payload_bytes": 100699432,
+  "payload_count": 1301,
+  "prior_checked_source_equivalent_payloads": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/candidate/source/tests/fixtures/ERR571460_100k_R1.fastq.gz",
+      "sha256": "3d554c9bad681c519c2c0f5a77e87bd6d7bd06a0ffff845a4b9cb22ced8e3eef",
+      "size_bytes": 10710465
+    }
+  },
+  "purpose": "Independent archive member/hash, required output/source/document coverage and exclusion review",
+  "retained_source_fastq_fixtures": [
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/baseline/source/tests/fixtures/ERR571460_100k_R1.fastq.gz",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/candidate/source/tests/fixtures/ERR571460_100k_R1.fastq.gz",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/dros12s/source-v1/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+  ],
+  "schema_version": 1,
+  "status": "pass"
+}

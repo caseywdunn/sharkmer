@@ -134,6 +134,8 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
         max_primer_kmers: pcr::DEFAULT_MAX_NUM_PRIMER_KMERS,
         high_coverage_ratio: pcr::DEFAULT_HIGH_COVERAGE_RATIO,
         tip_coverage_fraction: pcr::DEFAULT_TIP_COVERAGE_FRACTION,
+        diagnose_withheld_paths: false,
+        emit_uncertain: false,
     };
 
     Ok(pcr_params)
@@ -297,6 +299,27 @@ pub(crate) struct Args {
     /// moved into do_pcr() for per-gene streaming before public exposure.
     #[arg(long, help_heading = "PCR", hide = true)]
     pub(crate) read_threading: bool,
+
+    #[arg(
+        long,
+        help = "Retain bounded diagnostic records for repeat-withheld paths",
+        help_heading = "PCR",
+        hide = true
+    )]
+    pub(crate) diagnose_withheld_paths: bool,
+
+    /// Include bounded sequences with assembly warnings (already enabled by default)
+    #[arg(
+        long,
+        help_heading = "PCR",
+        hide = true,
+        conflicts_with = "no_emit_uncertain"
+    )]
+    pub(crate) emit_uncertain: bool,
+
+    /// Exclude sequences with assembly warnings from FASTA output
+    #[arg(long, help_heading = "PCR", conflicts_with = "emit_uncertain")]
+    pub(crate) no_emit_uncertain: bool,
 
     /// Treat input as paired-end reads (exactly 2 files required: R1, R2).
     /// Hidden: ingestion works, but the paired-end phasing pipeline it is
@@ -553,6 +576,16 @@ pub(crate) fn collect_pcr_params(args: &Args) -> Result<Vec<pcr::PCRParams>> {
         );
     }
 
+    for pcr_params in &pcr_runs {
+        pcr::validate_primer_expansion(pcr_params, args.k).map_err(|error| {
+            anyhow::anyhow!(
+                "Primer expansion validation failed for {} ({}): {error:#}",
+                pcr_params.gene_name,
+                pcr_params.source
+            )
+        })?;
+    }
+
     // Warn and clamp if any primer's min-count < --min-kmer-count
     for pcr_params in pcr_runs.iter_mut() {
         if pcr_params.min_count < args.min_kmer_count {
@@ -781,6 +814,14 @@ pub(crate) fn handle_dry_run(
     eprintln!("  Chunks:         {}", args.chunks);
     eprintln!("  Threads:        {}", args.threads);
     eprintln!("  Min kmer count: {}", args.min_kmer_count);
+    eprintln!(
+        "  PCR output:     {}",
+        if args.no_emit_uncertain {
+            "records without assembly warnings only"
+        } else {
+            "records with and without assembly warnings"
+        }
+    );
     if let Some(max) = args.max_reads {
         eprintln!("  Max reads:      {}", max);
     }
@@ -823,6 +864,7 @@ pub(crate) fn handle_dry_run(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use clap::Parser;
 
     #[test]
     fn test_parse_pcr_primers_duplicate_key_rejected() {
@@ -856,5 +898,91 @@ mod tests {
             .expect("values containing '=' should parse via splitn(2)");
         assert_eq!(params.gene_name, "X");
         assert_eq!(params.citation, "https://doi.org/10.1/abc?x=1&y=2");
+    }
+
+    #[test]
+    fn test_primer_budget_fails_during_collection_before_input_resolution() {
+        let primer = format!("{}{}{}", "N".repeat(5), "B".repeat(2), "A".repeat(23));
+        let args = Args::try_parse_from([
+            "sharkmer",
+            "--ena",
+            "SRR000000",
+            "-k",
+            "31",
+            "--pcr-primers",
+            &format!("name=budget,forward={primer},reverse=ACGTACGT,trim=30,mismatches=1"),
+        ])
+        .unwrap();
+
+        let error = collect_pcr_params(&args).unwrap_err();
+        assert!(format!("{error:#}").contains("generated mismatch candidates"));
+    }
+
+    #[test]
+    fn test_builtin_panel_passes_primer_budget_validation() {
+        let args = Args::try_parse_from(["sharkmer", "--pcr-panel", "cnidaria"]).unwrap();
+        let params = collect_pcr_params(&args).unwrap();
+
+        assert!(!params.is_empty());
+    }
+
+    #[test]
+    fn test_counting_only_kmer_length_one_remains_valid() {
+        let args = Args::try_parse_from(["sharkmer", "-k", "1"]).unwrap();
+        let params = collect_pcr_params(&args).unwrap();
+
+        validate_args(&args, &params).unwrap();
+    }
+
+    #[test]
+    fn test_withheld_path_diagnostics_flag_is_hidden_but_parseable() {
+        let args =
+            Args::try_parse_from(["sharkmer", "--diagnose-withheld-paths", "reads.fastq"]).unwrap();
+
+        assert!(args.diagnose_withheld_paths);
+        let help = Args::try_parse_from(["sharkmer", "--help"])
+            .unwrap_err()
+            .to_string();
+        assert!(!help.contains("--diagnose-withheld-paths"));
+    }
+
+    #[test]
+    fn uncertain_delivery_defaults_on_with_explicit_opt_out_and_legacy_opt_in() {
+        let default_args = Args::try_parse_from(["sharkmer", "reads.fastq"]).unwrap();
+        assert!(!default_args.no_emit_uncertain);
+        let enabled =
+            Args::try_parse_from(["sharkmer", "--emit-uncertain", "reads.fastq"]).unwrap();
+        assert!(enabled.emit_uncertain);
+        assert!(!enabled.no_emit_uncertain);
+        assert!(!enabled.diagnose_withheld_paths);
+        let disabled =
+            Args::try_parse_from(["sharkmer", "--no-emit-uncertain", "reads.fastq"]).unwrap();
+        assert!(disabled.no_emit_uncertain);
+        assert!(
+            Args::try_parse_from(["sharkmer", "--emit-uncertain", "--no-emit-uncertain"]).is_err()
+        );
+        let help = Args::try_parse_from(["sharkmer", "--help"])
+            .unwrap_err()
+            .to_string();
+        assert!(help.contains("--no-emit-uncertain"));
+    }
+
+    #[test]
+    fn combined_output_allows_legacy_gene_names_ending_in_uncertain() {
+        let specifications = [
+            "name=A,forward=ACGTACGTACGTACGTACGT,reverse=TGCATGCATGCATGCATGCA",
+            "name=A.uncertain,forward=ACGTACGTACGTACGTACGT,reverse=TGCATGCATGCATGCATGCA",
+        ];
+        let args = Args::try_parse_from([
+            "sharkmer",
+            "--ena",
+            "SRR1",
+            "--pcr-primers",
+            specifications[0],
+            "--pcr-primers",
+            specifications[1],
+        ])
+        .unwrap();
+        assert_eq!(collect_pcr_params(&args).unwrap().len(), 2);
     }
 }

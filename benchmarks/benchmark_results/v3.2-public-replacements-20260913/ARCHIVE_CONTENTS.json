@@ -1,0 +1,781 @@
+{
+  "member_count": 155,
+  "members": [
+    {
+      "path": "active_reference_audit.json",
+      "sha256": "339cd9753d4236a558a40101f58cbc6d3fb5f21895298588eac8d16442a098cf",
+      "size_bytes": 2023
+    },
+    {
+      "path": "agalma_receipt.json",
+      "sha256": "d5087211b522145fc446039b76c9f1cdd59182c5fb1af30ec252846637160836",
+      "size_bytes": 709
+    },
+    {
+      "path": "agalma_request.json",
+      "sha256": "039e130777cda5d069845a4ec23571909463c57eb36e7a0e6f4b76dee2bed26f",
+      "size_bytes": 317
+    },
+    {
+      "path": "build_cnidaria_proposals.py",
+      "sha256": "d7e6a0a510ad97cd76a858e6d6bf189a9f9d141dabaae7c64706f897c67ea749",
+      "size_bytes": 8582
+    },
+    {
+      "path": "clippy.log",
+      "sha256": "6a559f7451a97fb32c49ba88ea5a27d590a5f2f12e6941fbdc4c9a08199da031",
+      "size_bytes": 135
+    },
+    {
+      "path": "cnidaria_other/agalma_search.json",
+      "sha256": "324838c34c44678c8bc61d521120692d54064f2e424a58ed14756872c9798acc",
+      "size_bytes": 736
+    },
+    {
+      "path": "cnidaria_other/extra_records.xml",
+      "sha256": "c9e979ab93c7a629970838b8f4ae53ac6ac3b2b89b5a594c62259d72d6d7ea2a",
+      "size_bytes": 118345
+    },
+    {
+      "path": "cnidaria_other/haliclystus_features.xml",
+      "sha256": "54b51eed4ffa0c23fdf9c670e82268f84873af3a0f9790d6b30b2ea190929765",
+      "size_bytes": 58876
+    },
+    {
+      "path": "cnidaria_other/haliclystus_ribosomal_search.json",
+      "sha256": "d3fcb77faa8245c9a291509979bd091a621d2865d3b7633ef18cb510ba10350e",
+      "size_bytes": 758
+    },
+    {
+      "path": "cnidaria_other/haliclystus_search.json",
+      "sha256": "1b3d6f4314f469a5584092d8b8e6f3d13efbf6dfd847b933ca8cd64b4c85dc45",
+      "size_bytes": 642
+    },
+    {
+      "path": "cnidaria_other/proposals.json",
+      "sha256": "4b4147a90146cb065a4f3cfcf6bca51ab80f0c55561df5cd079e442628e5d25e",
+      "size_bytes": 274629
+    },
+    {
+      "path": "cnidaria_other/public_records.xml",
+      "sha256": "3782060a29626b90ae9561bcced4dcd507698471a0c0510b47e03b0f71b9c9b5",
+      "size_bytes": 268064
+    },
+    {
+      "path": "cnidaria_other/xenia_search.json",
+      "sha256": "7190054f5f9d62cf76fc1c5bb3ea0742b4749a4194de1be907f75a38fd1a9408",
+      "size_bytes": 830
+    },
+    {
+      "path": "formatting.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "frozen_before/panels/angiospermae.yaml",
+      "sha256": "90c1cbdf163a43ac7eed3d9b52bdf7fd35fd14fbcfef15fa4abd6013fa4ee28b",
+      "size_bytes": 19628
+    },
+    {
+      "path": "frozen_before/panels/c_elegans.yaml",
+      "sha256": "5c6ac32a26a8eddce3f605f24e5f5e92269cd68903d1b89bac838a667480681d",
+      "size_bytes": 30551
+    },
+    {
+      "path": "frozen_before/panels/cnidaria.yaml",
+      "sha256": "ea029c033de302a1d10a9036fd027cb10700cc9d8fdf77221972d00728c8e146",
+      "size_bytes": 19316
+    },
+    {
+      "path": "frozen_before/panels/examples/reference.yaml",
+      "sha256": "2441a7ea422c8f45b912a432191f84bb5cd4b8930af6755ba53a9b2ac6b5b44d",
+      "size_bytes": 11382
+    },
+    {
+      "path": "frozen_before/panels/hydrozoa.yaml",
+      "sha256": "f72a4d86a631cd2e998741a7ff64f827808f216665e4753d38240028eb989854",
+      "size_bytes": 71587
+    },
+    {
+      "path": "frozen_before/panels/insecta.yaml",
+      "sha256": "ce479186b77649c47616b1ffa9a0c21fa8dc3536367088b4df6459e5deb96519",
+      "size_bytes": 29391
+    },
+    {
+      "path": "frozen_before/panels/reference_sources.json.gz",
+      "sha256": "f6abbfa3ffab56cc0be24a0a9b560b33033c499de7c949ae6fff988f8f91f6c1",
+      "size_bytes": 605342
+    },
+    {
+      "path": "frozen_before/panels/teleostei.yaml",
+      "sha256": "c56c87cc16079399398207f589db92cecc87853fc4f311e7be6b2353df26fa0c",
+      "size_bytes": 13452
+    },
+    {
+      "path": "haliclystus_features_receipt.json",
+      "sha256": "9534dac03516010bfc2877ed50d2e8eca2b7b4678222b7f29486d17570ccd3b3",
+      "size_bytes": 554
+    },
+    {
+      "path": "haliclystus_features_request.json",
+      "sha256": "3f3973124151a92ba39d7e4b0c6c70edbe5aeb9e85ade93d2594dd33a519d4fc",
+      "size_bytes": 338
+    },
+    {
+      "path": "haliclystus_receipt.json",
+      "sha256": "485fa884dfe0d995a50dc5b676376a8bb1f01ba549dfc821a32b0e2b7ca1b01c",
+      "size_bytes": 640
+    },
+    {
+      "path": "haliclystus_request.json",
+      "sha256": "de7e13d062de7965bad4b969c6775e25666a9eb7dd3ac9862f6666639dec052b",
+      "size_bytes": 300
+    },
+    {
+      "path": "haliclystus_ribosomal_receipt.json",
+      "sha256": "df02a2da55218aa47a5062a6d453cad9bd032a0c3e2ffdb9ea0f7c9cb91626c6",
+      "size_bytes": 704
+    },
+    {
+      "path": "haliclystus_ribosomal_request.json",
+      "sha256": "e13b1fbc9b1c183aaee15b14c01169768347b41b65bb20a29ec7ec6d90156bb8",
+      "size_bytes": 342
+    },
+    {
+      "path": "insecta/build_proposals.py",
+      "sha256": "08e22dfc436f7ea59802cfeb348ffa2c4616f3fc659719d6f7e4789c4d205cc9",
+      "size_bytes": 16589
+    },
+    {
+      "path": "insecta/map_nadh_primers.py",
+      "sha256": "824218f471c2387109eaa6ce4151d7343e62f630984a2a6e17be59bd9f720a59",
+      "size_bytes": 12666
+    },
+    {
+      "path": "insecta/nadh_primer_mapping.json",
+      "sha256": "747fcdb35abcd41d4a4d71d17d0e9a9726f1bc6b010c5e2c56f7b8093e48c545",
+      "size_bytes": 34942
+    },
+    {
+      "path": "insecta/proposals.json",
+      "sha256": "b9699ca81107db30c077d9f34602eb44792feea161629940b1c5fb2009c1e8f5",
+      "size_bytes": 285034
+    },
+    {
+      "path": "insecta/raw/quarantined_records.gb.xml",
+      "sha256": "da7cd3dbfc3637762196a6208a6c4543ba7b7a7e8c0a11098f7111e36ba1e2d3",
+      "size_bytes": 893462
+    },
+    {
+      "path": "insecta/raw/replacement_records.gb.xml",
+      "sha256": "5ffecd92de959d1cf5d30e401329bae339b350ec5d8a7fd9e7cfedc6084f5e5b",
+      "size_bytes": 85176
+    },
+    {
+      "path": "insecta/raw/search_d_tanythrix_12s.json",
+      "sha256": "2a0bc72fb5d261c1d99846b7015854b9ac1d6b147f2243c3a65bbab17aa5ebbb",
+      "size_bytes": 478
+    },
+    {
+      "path": "insecta/raw/search_d_tanythrix_18s.json",
+      "sha256": "cb69da23a93373cab591f433d214c07bed9811cf2cd37c624eaeebdac7d41e5b",
+      "size_bytes": 736
+    },
+    {
+      "path": "insecta/raw/search_d_tanythrix_its.json",
+      "sha256": "8f326b58ba1ff1058147285e4fee7215fc1b734d319130aff92eb28c2529afd6",
+      "size_bytes": 798
+    },
+    {
+      "path": "insecta/raw/search_d_tanythrix_mito.json",
+      "sha256": "c6592116448e28d65080eda5019a9758bf6dfdd7c53eed0a86796f526fc617cc",
+      "size_bytes": 736
+    },
+    {
+      "path": "insecta/raw/search_dmel_28s.json",
+      "sha256": "c2fd41a256d5ba2e9394956789b9cf97e78e0bae5450b15cfdd857d64498fafb",
+      "size_bytes": 651
+    },
+    {
+      "path": "insecta/raw/search_dmel_yp2.json",
+      "sha256": "f961a221df69b6b6b39a8d96e39cd202343d9492ed23b0c8183787e78c647ae9",
+      "size_bytes": 596
+    },
+    {
+      "path": "insecta/raw/search_drosophila_its1.json",
+      "sha256": "98bba4ee2c483ea8070282135b150162d9d8d299c2e193799d9a6ce795972466",
+      "size_bytes": 919
+    },
+    {
+      "path": "insecta/raw/search_gryllus_28s.json",
+      "sha256": "ce14142c0ba9e1d92ba18c4b22302fb2f73bf8cb7b313d4dc9a125cd8afc4300",
+      "size_bytes": 751
+    },
+    {
+      "path": "insecta/raw/search_gryllus_its2.json",
+      "sha256": "19ff9329d4e8432de7e88a2dffbf78a29fe94495bb8cd88e9e5e9dad7844de62",
+      "size_bytes": 554
+    },
+    {
+      "path": "insecta/raw/summary_d_tanythrix_its.json",
+      "sha256": "cbac0fc39f9fa9051e3da48d2a2ef0de50d4933b01c92be40f86dc143d9a2e01",
+      "size_bytes": 3761
+    },
+    {
+      "path": "insecta/raw/summary_d_tanythrix_mito.json",
+      "sha256": "c86fc3c74b70f97a6fe55c3c918604f4ada67be35812458adf786b69802a7923",
+      "size_bytes": 7057
+    },
+    {
+      "path": "insecta/raw/summary_dmel_28s.json",
+      "sha256": "c42e23771a2270f4cbc5c43bd9cf19f4ee1a733018c5747522d5d66d2bee06ec",
+      "size_bytes": 5791
+    },
+    {
+      "path": "insecta/raw/summary_dmel_yp2.json",
+      "sha256": "7669aa9552bf44fa3a60debeda58edd0f279aaa7f8774a39379dbfbab117f7f8",
+      "size_bytes": 6114
+    },
+    {
+      "path": "insecta/raw/summary_drosophila_its1.json",
+      "sha256": "ab9a32714402f0cc6d8eae3a289e54fb5e82462c1697f99f1c8da13fdd9d1f91",
+      "size_bytes": 7430
+    },
+    {
+      "path": "insecta/raw/summary_gryllus_28s.json",
+      "sha256": "f02a103d74e646058c06f99a515446a2e728c6e276d8034facded52ae599a088",
+      "size_bytes": 6659
+    },
+    {
+      "path": "insecta/raw/summary_gryllus_its2.json",
+      "sha256": "191fef6054aa7356b5679122de58c9362bbee51049007d15c31902e816b695c6",
+      "size_bytes": 1339
+    },
+    {
+      "path": "insecta/test_nadh_primer_mapping.py",
+      "sha256": "45e3652ce519fa592b56ede7a64b2785a302a614352f83da6ba1f4cb1b3c729d",
+      "size_bytes": 3106
+    },
+    {
+      "path": "insecta/test_proposals.py",
+      "sha256": "169829b89a7a6f25cdafab7d99b43cffe1cee10eb1eb026eab4b4d9e38e2d145",
+      "size_bytes": 5324
+    },
+    {
+      "path": "integration.patch",
+      "sha256": "0e049f1b10a98e3f13dabe5d21728c19390d9b91d253984ab6bf8a8c7483d01e",
+      "size_bytes": 111642
+    },
+    {
+      "path": "integration_receipt.json",
+      "sha256": "1fe2c76ca0865e4a20aafbfe3cf8e046e153f65fcdc72312ecdacbe68b411af3",
+      "size_bytes": 232086
+    },
+    {
+      "path": "package_evidence.py",
+      "sha256": "d00533f2081121bff31b92abdf1ca473ff3b27c0542d63713fd993bc4bb1fa4e",
+      "size_bytes": 3201
+    },
+    {
+      "path": "panel_invariants.json",
+      "sha256": "855c98b687151ae569ee0b938327670209d199f42ed9e9949aee2ec132a2983b",
+      "size_bytes": 2555
+    },
+    {
+      "path": "panel_invariants.py",
+      "sha256": "c57bf9fc1d65ccfe74b49c941088b29b7229e277a625f8860849558393404cde",
+      "size_bytes": 3408
+    },
+    {
+      "path": "plant_issue.md",
+      "sha256": "9a598642569f7675693203a96b2daa1618e63520c14b84d009e4fe3a438759eb",
+      "size_bytes": 1671
+    },
+    {
+      "path": "plants_nematode/build_proposals.py",
+      "sha256": "d36e2eebe84b68082c0fcb07a232c768af98fdb8a2e42cf4b1586dca539ab24f",
+      "size_bytes": 15655
+    },
+    {
+      "path": "plants_nematode/fetch_records.py",
+      "sha256": "a07435ad30688d0633e95b5f162911364fb9db9bd1c0ce3095dedafde3141a22",
+      "size_bytes": 2327
+    },
+    {
+      "path": "plants_nematode/proposals.json",
+      "sha256": "e9c72c3e1ae04ba83fcbfdbf1212d5436e31bded7cc19d61e6b3e953a20c2c4c",
+      "size_bytes": 1396188
+    },
+    {
+      "path": "plants_nematode/raw/artifact_manifest.json",
+      "sha256": "5833fc727746031a91f10ffb2f53a4df4e903cecd184b16412de8b5ee8dabd03",
+      "size_bytes": 7269
+    },
+    {
+      "path": "plants_nematode/raw/esummary.json",
+      "sha256": "03f77e348b9c8c53473690448ee6efff2738db324408b6733d907178fd61c7b5",
+      "size_bytes": 7870
+    },
+    {
+      "path": "plants_nematode/raw/genbank/FO080392.2.gb",
+      "sha256": "4239ae0ad39c6d60eb1e236da95682b2fb8a2c77ea2e5f7bdb645c22c987e73a",
+      "size_bytes": 32235
+    },
+    {
+      "path": "plants_nematode/raw/genbank/FO080948.gb",
+      "sha256": "e6660e3d5cdf43c9d43326036338953b6311f06836f568798062d7ce0a44fc95",
+      "size_bytes": 38854
+    },
+    {
+      "path": "plants_nematode/raw/genbank/LN680643.gb",
+      "sha256": "18b6bb61035991df11af6eaecc58a855a92e5616188e0302c2716b7ddc8d9011",
+      "size_bytes": 2619
+    },
+    {
+      "path": "plants_nematode/raw/genbank/MN990625.gb",
+      "sha256": "4326ce176f8a2b3ac79cd9c9ba9dbab819cf13cf26ff26601bca2c2ed1937cf8",
+      "size_bytes": 282463
+    },
+    {
+      "path": "plants_nematode/raw/genbank/MZ366774.gb",
+      "sha256": "81d53331d20cbd475b5b27f2c064e448c9b7c48e914d534fd762a27b77db946b",
+      "size_bytes": 10498
+    },
+    {
+      "path": "plants_nematode/raw/genbank/NC_003281.10_ef1a_locus.gb",
+      "sha256": "6f0ef35525c4c1d6a2a30efe0da9c56b70d4e4e7c9c6b3c871a6b9d708e61ce6",
+      "size_bytes": 12527
+    },
+    {
+      "path": "plants_nematode/raw/genbank/NC_003281.10_his72_locus.gb",
+      "sha256": "100bb367377be1e222f822a04cba02feaf89400d3a133837e1589694802e94d7",
+      "size_bytes": 12533
+    },
+    {
+      "path": "plants_nematode/raw/genbank/NC_008326.gb",
+      "sha256": "a760c71e3142783fd5fca084707adbc7b3ada6d8b1dd1cb5c6333e788007e76f",
+      "size_bytes": 311184
+    },
+    {
+      "path": "plants_nematode/raw/genbank/NC_049166.gb",
+      "sha256": "0388e4c9f041239c5231dd82c1adbbc0a293d0bf956354777de2ce4fa0c24a17",
+      "size_bytes": 304890
+    },
+    {
+      "path": "plants_nematode/raw/genbank/NC_056221.gb",
+      "sha256": "403d325caf480bb34f788038d10adf1cced759541b9392aecf986c1a25edbc9c",
+      "size_bytes": 306469
+    },
+    {
+      "path": "plants_nematode/raw/genbank/NM_001268234.5.gb",
+      "sha256": "94eb59daed4c5735bab198864fe844d950b22381a7c8d3368caf9dbf872b6665",
+      "size_bytes": 3914
+    },
+    {
+      "path": "plants_nematode/raw/genbank/NM_066119.9.gb",
+      "sha256": "e85b3c94b481df18dcbd59c266c43067ccd0578d9f7cc662584c2e0f5fbbcf91",
+      "size_bytes": 5529
+    },
+    {
+      "path": "plants_nematode/raw/genbank/NM_072875.gb",
+      "sha256": "8e8b7e4888033f2c733c42d372845f7ec2a5ce79554279073d04cb72f19aa6bc",
+      "size_bytes": 3550
+    },
+    {
+      "path": "plants_nematode/raw/genbank/OQ613386.gb",
+      "sha256": "a13cb036562e108dd671d0183fb5932f1c0353b581a4dcd183947b9e6799a495",
+      "size_bytes": 216860
+    },
+    {
+      "path": "plants_nematode/raw/genbank/OR400606.gb",
+      "sha256": "501c04d4e940e55a46a578229a698370902ece12b8a7572e05e96d4bd0956db7",
+      "size_bytes": 286060
+    },
+    {
+      "path": "plants_nematode/raw/genbank/X15634.gb",
+      "sha256": "f6ae2c4467c3eb3b2c01e1f217e74b62f3ba65afb828b4e90e2903bde9bc3c56",
+      "size_bytes": 5819
+    },
+    {
+      "path": "plants_nematode/raw/genbank/Z98866.1.gb",
+      "sha256": "cdd200f46b8e4f4b1d017b320d7aeac45194a4ba261b8b715a3570eecf70f6fe",
+      "size_bytes": 161621
+    },
+    {
+      "path": "plants_nematode/raw/genbank_receipts.json",
+      "sha256": "fdebfaac5fc2d1cd4e4838aafe2551b9a395bd7db26cbe0946356fb8e9fb83cb",
+      "size_bytes": 11714
+    },
+    {
+      "path": "plants_nematode/raw/gene_ef1a_summary.json",
+      "sha256": "37643bdd8f14e16e919da9d5ebcd1625cf47a46f2469e08aab7204ecca98c3c6",
+      "size_bytes": 1355
+    },
+    {
+      "path": "plants_nematode/raw/gene_his72_search.json",
+      "sha256": "0766aec7c449e6d8c6b2a9688f7835819eaeb335e2b85c7473a26f61a96a7a61",
+      "size_bytes": 491
+    },
+    {
+      "path": "plants_nematode/raw/gene_his72_summary.json",
+      "sha256": "6c337aec218578a2fd35781f0c285c241410cadd6ac7ae50da1a05db007db8cb",
+      "size_bytes": 1350
+    },
+    {
+      "path": "plants_nematode/raw/search_candidates_summary.json",
+      "sha256": "2e05d80f33b1c13537ea0ee38a3dd5b5bcb47b1a5d1b628c5dd18b854ade1078",
+      "size_bytes": 16802
+    },
+    {
+      "path": "plants_nematode/raw/search_ef1a.json",
+      "sha256": "7842833e15123cc648deec433462ffc415fc2e6361b1d667608232f310ec5c70",
+      "size_bytes": 807
+    },
+    {
+      "path": "plants_nematode/raw/search_f31e3_bounded.json",
+      "sha256": "90aae51dc7853a87fe38fef0e4b403ecd388d000b336124ae105fcc9204a8533",
+      "size_bytes": 709
+    },
+    {
+      "path": "plants_nematode/raw/search_f31e3_bounded_summary.json",
+      "sha256": "a44ebb317aa3d093dff3f16cc846056e51a3ddd342a8f582685de1a2289504c9",
+      "size_bytes": 716
+    },
+    {
+      "path": "plants_nematode/raw/search_his72.json",
+      "sha256": "4a318fdac922c3ab6bc0aee6d776c189614a5156e871b4d012f6ca305d332ffa",
+      "size_bytes": 664
+    },
+    {
+      "path": "plants_nematode/raw/search_y49e10.json",
+      "sha256": "7963b5c7cfbe84ef64ffda06d602bd83e077c0b952fa800312acfbaaa0d4de6f",
+      "size_bytes": 861
+    },
+    {
+      "path": "plants_nematode/raw/search_y49e10_bounded.json",
+      "sha256": "158d94a66fb0aaba2e025ca365fae03af92f70f9a958ef476287f338b8e98b47",
+      "size_bytes": 708
+    },
+    {
+      "path": "plants_nematode/raw/search_y49e10_bounded_summary.json",
+      "sha256": "53d59cdb0824745864d1327cb968b6054ac7892f2b4db7ab776e32f87f5f6766",
+      "size_bytes": 696
+    },
+    {
+      "path": "plants_nematode/raw/search_y49e10_clone.json",
+      "sha256": "b7ec301e88c8bdf2dd6529341b9d61f2c02fb4bcde585e69acd02a8a3effd771",
+      "size_bytes": 785
+    },
+    {
+      "path": "plants_nematode/raw/search_y49e10_summary.json",
+      "sha256": "db9edcd4e661b3063776da2865415b244aea7385b4213c4ffe73d502326e5008",
+      "size_bytes": 14252
+    },
+    {
+      "path": "plants_nematode/validate_proposals.py",
+      "sha256": "5c9c285ae3f67856bb78ce6ba5cc93168fbb756afa778aac22ce879b28218f22",
+      "size_bytes": 8821
+    },
+    {
+      "path": "plants_nematode/validation.json",
+      "sha256": "5a06a9b41694e5ebce4bcd53d261862c3e0c99dc8910d6b31fdcdc8734c7c302",
+      "size_bytes": 8306
+    },
+    {
+      "path": "plants_nematode/validation.md",
+      "sha256": "11a007c97acf1b2a74275b36685ee8d8e6651c96fadb74afc7d690186d747c0b",
+      "size_bytes": 2796
+    },
+    {
+      "path": "prepare_integration.py",
+      "sha256": "f22ee378619edddda18f2f15620b8b0b85931e435874ee8cb059f2b802845129",
+      "size_bytes": 11191
+    },
+    {
+      "path": "proposed_after/panels/angiospermae.yaml",
+      "sha256": "9ff46bf3d343920c33a2a5c41b0858f0d8401f67729d737f17e73350dae365de",
+      "size_bytes": 27946
+    },
+    {
+      "path": "proposed_after/panels/c_elegans.yaml",
+      "sha256": "08127fcf98cf374b07dcbfffc321bb2c179c413019d0c23f7e4fb33421125dc0",
+      "size_bytes": 32377
+    },
+    {
+      "path": "proposed_after/panels/cnidaria.yaml",
+      "sha256": "95e8e3c4c4285c3e00767714af6b4ab34cc782af08cd0ef6c13c65794c5f58f8",
+      "size_bytes": 66332
+    },
+    {
+      "path": "proposed_after/panels/hydrozoa.yaml",
+      "sha256": "69eded39844fc460c96ea2636b10b720551cd3dfb6690e3e4ed7c5417019d879",
+      "size_bytes": 72868
+    },
+    {
+      "path": "proposed_after/panels/insecta.yaml",
+      "sha256": "a28cd3b2d045270b3f6bf3e2e6f9362a4dfb6d55c6adb42d445461ec95a64160",
+      "size_bytes": 72108
+    },
+    {
+      "path": "proposed_after/panels/reference_sources.json.gz",
+      "sha256": "bc277321831258c00b6794a51b0289445c837f99b2399e54aa43fe5e60b0f49a",
+      "size_bytes": 643168
+    },
+    {
+      "path": "proposed_after/panels/teleostei.yaml",
+      "sha256": "ad077a381996f6d50cd548a88aa683464fefb409d6686e51cc2a49e033aba67c",
+      "size_bytes": 16053
+    },
+    {
+      "path": "python_tests.log",
+      "sha256": "e4a3f84eba0a857c0f86f9026b8d3188e0261ee749efe5f548c15c165b0dd365",
+      "size_bytes": 1104
+    },
+    {
+      "path": "reclassification/COMMAND.txt",
+      "sha256": "fa7e57d6981f33a363b4ed49ddecdf76e884678fbe7cd2cb69e8ca0f5056e33b",
+      "size_bytes": 454
+    },
+    {
+      "path": "reclassification/SUMMARY.md",
+      "sha256": "9e98e793c6dd11d428256db1f82353abcc6cf87a34eda4457645704ae6770211",
+      "size_bytes": 2289
+    },
+    {
+      "path": "reclassification/reclassify_saved_outputs.py",
+      "sha256": "0569b62cd5e592a5f8b0a8b1f9c79b9e44cb9d80d243c8eae25d7d4ce15dd4e0",
+      "size_bytes": 16279
+    },
+    {
+      "path": "reclassification/saved_output_reclassification.json",
+      "sha256": "b20a24758e02d53880e5ed8ddf4a1a8677e1c8e88e197c33fc4ad1f9c7eb2f97",
+      "size_bytes": 1517897
+    },
+    {
+      "path": "root_batch_receipt.json",
+      "sha256": "04f51c2d68a1299224d636a04d496a2b73ad2b55021aadc008fa475c2061d5b0",
+      "size_bytes": 548
+    },
+    {
+      "path": "root_batch_request.json",
+      "sha256": "cab225e34a1ee3ebb31916dcbae897891cca211d005c4a73f1c575ae371973cc",
+      "size_bytes": 494
+    },
+    {
+      "path": "root_extra_receipt.json",
+      "sha256": "52e6085901a5088f715d77fc7bfa710e11b3977730064697fe8d84cacc8543f8",
+      "size_bytes": 547
+    },
+    {
+      "path": "root_extra_request.json",
+      "sha256": "0a32462aa85f2a91df02bb785ce3d09be4ab089cebf5a339c69618d54f40e9d3",
+      "size_bytes": 411
+    },
+    {
+      "path": "rust_tests.log",
+      "sha256": "d36738f4ee93454b744bdb5a90f5a762ca50315f7e6648e49f7dddade974a79f",
+      "size_bytes": 16566
+    },
+    {
+      "path": "source_tree/.github/workflows/ci.yml",
+      "sha256": "3284423f07445b9515de10215e1ed8258e6fa1a7f7afa3cbef22d624ac78236e",
+      "size_bytes": 1835
+    },
+    {
+      "path": "source_tree/CHANGELOG.md",
+      "sha256": "7a4996d3d52a2e4f7a3efa49bf05b307aaebf92c544d9c3dd59f3dfe3dc2ae5b",
+      "size_bytes": 18654
+    },
+    {
+      "path": "source_tree/PCR.md",
+      "sha256": "01ad214465ad79bd16888f3c19a728f2f14dc8dba7c0ae061eb5c2bb05a7046f",
+      "size_bytes": 19519
+    },
+    {
+      "path": "source_tree/benchmarks/DATASETS.md",
+      "sha256": "de14e984f7310848756dda87f0023c4454c584e77a67c7daa29d22c84ea3003c",
+      "size_bytes": 3799
+    },
+    {
+      "path": "source_tree/benchmarks/run_benchmark.py",
+      "sha256": "097a53063a11023d050bf81881a14bd4f8dd3969b29e8d0d46448c095abf9ef5",
+      "size_bytes": 16899
+    },
+    {
+      "path": "source_tree/dev_docs/PLAN.md",
+      "sha256": "bbf0db7363bab30de17d5c424aafa0bcd947a5dbb2ad207bccd71bfcc4b1e01a",
+      "size_bytes": 34916
+    },
+    {
+      "path": "source_tree/dev_docs/PUBLIC_REFERENCE_REPLACEMENTS.md",
+      "sha256": "dac172c0020671b611e7d9f518b8b91d809b3c98ea1349cf2c0857606c347871",
+      "size_bytes": 19062
+    },
+    {
+      "path": "source_tree/dev_docs/REFERENCE_PROVENANCE.md",
+      "sha256": "22eb5850943dc362cd3760eb7b8a9398e63d0ac62bcf0884c599c052ca804b10",
+      "size_bytes": 14611
+    },
+    {
+      "path": "source_tree/panels/angiospermae.yaml",
+      "sha256": "9ff46bf3d343920c33a2a5c41b0858f0d8401f67729d737f17e73350dae365de",
+      "size_bytes": 27946
+    },
+    {
+      "path": "source_tree/panels/bacteria.yaml",
+      "sha256": "3a3a9df11359cd1736f2edd52279d2ddb4c6a819dbf797fab59ba55ceae842ae",
+      "size_bytes": 2618
+    },
+    {
+      "path": "source_tree/panels/c_elegans.yaml",
+      "sha256": "08127fcf98cf374b07dcbfffc321bb2c179c413019d0c23f7e4fb33421125dc0",
+      "size_bytes": 32377
+    },
+    {
+      "path": "source_tree/panels/cnidaria.yaml",
+      "sha256": "95e8e3c4c4285c3e00767714af6b4ab34cc782af08cd0ef6c13c65794c5f58f8",
+      "size_bytes": 66332
+    },
+    {
+      "path": "source_tree/panels/examples/reference.yaml",
+      "sha256": "2441a7ea422c8f45b912a432191f84bb5cd4b8930af6755ba53a9b2ac6b5b44d",
+      "size_bytes": 11382
+    },
+    {
+      "path": "source_tree/panels/human.yaml",
+      "sha256": "5219c2ae2a44a1ca0416f4fefe46fbe4d116c8cb64d31fc5805e23c900e95fd3",
+      "size_bytes": 32626
+    },
+    {
+      "path": "source_tree/panels/hydrozoa.yaml",
+      "sha256": "69eded39844fc460c96ea2636b10b720551cd3dfb6690e3e4ed7c5417019d879",
+      "size_bytes": 72868
+    },
+    {
+      "path": "source_tree/panels/insecta.yaml",
+      "sha256": "a28cd3b2d045270b3f6bf3e2e6f9362a4dfb6d55c6adb42d445461ec95a64160",
+      "size_bytes": 72108
+    },
+    {
+      "path": "source_tree/panels/metazoa.yaml",
+      "sha256": "a024b2b9ee3b41495028fba53291236f8c576165459a6b5819f51bead4853314",
+      "size_bytes": 3265
+    },
+    {
+      "path": "source_tree/panels/reference_sources.json.gz",
+      "sha256": "bc277321831258c00b6794a51b0289445c837f99b2399e54aa43fe5e60b0f49a",
+      "size_bytes": 643168
+    },
+    {
+      "path": "source_tree/panels/teleostei.yaml",
+      "sha256": "ad077a381996f6d50cd548a88aa683464fefb409d6686e51cc2a49e033aba67c",
+      "size_bytes": 16053
+    },
+    {
+      "path": "source_tree/schemas/panel/v2.json",
+      "sha256": "b11f5e0cbd5293ab7af39e3dd0d757f5b9e7527eabd35e09541c254a0ca5f284",
+      "size_bytes": 15160
+    },
+    {
+      "path": "source_tree/scripts/audit_panel_references.py",
+      "sha256": "198f772ec327a237d30f2cdb7117832f0cccb0591ec92cde0018c79c32d947ae",
+      "size_bytes": 21875
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/__init__.py",
+      "sha256": "74055f81f13c98598121d62b30817d1c999959a803900c61da926b5e214d5d7c",
+      "size_bytes": 77
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/blast_references.py",
+      "sha256": "010ff7ed543bc30e0b28392e615c95d95fa672bae2246766bd03d36d91368aa0",
+      "size_bytes": 43601
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/primer_analysis.py",
+      "sha256": "cd856bfaa355297405dc5512511141087cd8f7930ee59980291139a67c7cc41f",
+      "size_bytes": 6944
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/reference_provenance.py",
+      "sha256": "00a5dafd0b02d37290ea122687cce8f07ce47f3098ec2e8de3860d8e9526732a",
+      "size_bytes": 10813
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/reference_targets.py",
+      "sha256": "62c1871cc284ec4891f244acaa2f6ce44ab280fbf3e7ef724c3ab107bb401956",
+      "size_bytes": 3373
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/report.py",
+      "sha256": "84f62833807e05190712e863b7048a0af1d1405228bc9dfe20a0f6e94942662c",
+      "size_bytes": 35095
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/results.py",
+      "sha256": "96b3e6beb633fc33646cfa62989361f16ec4120ea59da7a028438e7850e10929",
+      "size_bytes": 9832
+    },
+    {
+      "path": "source_tree/scripts/sharkmer_validate/runner.py",
+      "sha256": "b19a74b2f5265b9963acfa6f48cd8b700ba82268db68e2dede4a5d640261b50e",
+      "size_bytes": 35681
+    },
+    {
+      "path": "source_tree/scripts/validate_panel.py",
+      "sha256": "9a7deefd14a03fb178b92ccf6d71919b27ce69f85e046eb2d41f0bd16e1cd422",
+      "size_bytes": 14692
+    },
+    {
+      "path": "source_tree/tests/fixtures/validation/same_gene_split.xml",
+      "sha256": "616e3c7f59c0f0d2d90b8057725e804bb5fb118390f5d73c87a83f35c7634b5e",
+      "size_bytes": 733
+    },
+    {
+      "path": "source_tree/tests/fixtures/validation/short_fragment.xml",
+      "sha256": "9d7d964d1f27e972d45684c62c897287e2fa0cb5c130463b77c2037db539b292",
+      "size_bytes": 449
+    },
+    {
+      "path": "source_tree/tests/fixtures/validation/wrong_gene.xml",
+      "sha256": "13227159125dd41a46fb19634630880fb350f355560ac3954dfc03755654e1e2",
+      "size_bytes": 456
+    },
+    {
+      "path": "source_tree/tests/test_public_reference_replacements.py",
+      "sha256": "db22613bb61bdc82477c596784d460faf61be10f2d178990465a3193e17cc9c0",
+      "size_bytes": 3195
+    },
+    {
+      "path": "source_tree/tests/test_reference_catalog.py",
+      "sha256": "2e1128520d2171f94ba8799e054352df8069073f0d67eb9850cb1478cd3e4297",
+      "size_bytes": 9990
+    },
+    {
+      "path": "source_tree/tests/test_reference_provenance.py",
+      "sha256": "9cdce0856e754670816e482d85ff97ca49fbcee6c41fc4187256e9d82e54bc3b",
+      "size_bytes": 8616
+    },
+    {
+      "path": "source_tree/tests/test_reference_targets.py",
+      "sha256": "34e71637364c3d55687d7e457eff80ab476c1a4dcacb6f6cf306deb2a6232de4",
+      "size_bytes": 16821
+    },
+    {
+      "path": "source_tree/tests/test_validation_harness.py",
+      "sha256": "f511814d7174389a53b0292c56e04cc7ea4e27dc11bd4e7584efc2cdb175502d",
+      "size_bytes": 48060
+    },
+    {
+      "path": "xenia_receipt.json",
+      "sha256": "6d28e7ca9bf826ce76897b5b4ce8e234ddd3c4768525f413a126df207ee3c364",
+      "size_bytes": 748
+    },
+    {
+      "path": "xenia_request.json",
+      "sha256": "09a3c95048cbf325dd6865cd2a272207cdb4779091609e41f70527239360b8c1",
+      "size_bytes": 271
+    }
+  ],
+  "schema_version": 1
+}

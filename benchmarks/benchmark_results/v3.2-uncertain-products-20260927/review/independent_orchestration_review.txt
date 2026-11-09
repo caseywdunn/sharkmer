@@ -1,0 +1,13 @@
+test_every_required_command_cannot_be_replaced_by_success (independent_orchestration_review.CheckReceiptGate.test_every_required_command_cannot_be_replaced_by_success) ... ok
+test_log_and_compiler_bytes_are_rechecked (independent_orchestration_review.CheckReceiptGate.test_log_and_compiler_bytes_are_rechecked) ... ok
+test_release_feature_and_all_targets_flags_are_required (independent_orchestration_review.CheckReceiptGate.test_release_feature_and_all_targets_flags_are_required) ... ok
+test_required_step_cwd_and_order_are_bound (independent_orchestration_review.CheckReceiptGate.test_required_step_cwd_and_order_are_bound) ... ok
+test_runtime_and_shared_compilation_environment_must_match (independent_orchestration_review.CheckReceiptGate.test_runtime_and_shared_compilation_environment_must_match) ... ok
+test_valid_synthetic_gate_control (independent_orchestration_review.CheckReceiptGate.test_valid_synthetic_gate_control) ... ok
+test_spawn_failure_is_receipted_and_cannot_be_overwritten (independent_orchestration_review.FailureReceiptContract.test_spawn_failure_is_receipted_and_cannot_be_overwritten) ... ok
+test_timeout_kills_descendant_and_keeps_receipt (independent_orchestration_review.FailureReceiptContract.test_timeout_kills_descendant_and_keeps_receipt) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.839s
+
+OK

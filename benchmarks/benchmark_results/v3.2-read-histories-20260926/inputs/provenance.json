@@ -1,0 +1,106 @@
+{
+  "classes": [
+    {
+      "class_id": "region_1_class_1",
+      "length": 61,
+      "region_id": "region_1",
+      "sequence_sha256": "40404d364fae6911f8382db2872c32f7b5cd45341a5df60e648195681959a381"
+    },
+    {
+      "class_id": "region_1_class_2",
+      "length": 124,
+      "region_id": "region_1",
+      "sequence_sha256": "a83b1cc8a71e9ea691f0ff7cfb7df8e45bb7805e042505cbbf1bb6c61b6b1031"
+    },
+    {
+      "class_id": "region_2_class_1",
+      "length": 62,
+      "region_id": "region_2",
+      "sequence_sha256": "1554fc065a40de1e2781cf715a67d9983b6e30b66f5533b402cc94e67e641c8f"
+    },
+    {
+      "class_id": "region_2_class_2",
+      "length": 147,
+      "region_id": "region_2",
+      "sequence_sha256": "8375d374c9a026b86f71b11bfce1f2c86e1e1078ec510e8aac472cb4af4ed684"
+    }
+  ],
+  "decoy_limitation": "Archived self_context annotations and full candidates are lineage metadata only; no decoy matching is performed by this prototype.",
+  "outputs": {
+    "archive_contents.json": {
+      "sha256": "dcf9821b93b1b993115890953b6c45a3ab82e7dda090e988100f2523a9deda10",
+      "size_bytes": 37191
+    },
+    "expected_prefix.json": {
+      "archive_member": "inputs/expected_prefix.json",
+      "sha256": "ad67cd0d405ba6ad76d768361ada1238ac4ea666e41f3d5a45f11d070a586810",
+      "size_bytes": 154
+    },
+    "graph_archive_manifest.json": {
+      "archive_member": "graph_capture_v2/graphs/audit_manifest.json",
+      "sha256": "0000602640a763c72b562c1febc2676e618d6587fe3738f32998bfcf730c9780",
+      "size_bytes": 102684
+    },
+    "graph_post.json": {
+      "archive_member": "graph_capture_v2/graphs/post_prune.json",
+      "sha256": "b23e89f11d6ed653c7d8113a3f2c07506932049c8ed2397d4083a2f5fd5dfd40",
+      "size_bytes": 775953
+    },
+    "graph_pre.json": {
+      "archive_member": "graph_capture_v2/graphs/pre_prune.json",
+      "sha256": "0810b40673c4e4bdc7dcad0573bbe7f3f49e8a0b4542ff5789bd7ce2ec545bf9",
+      "size_bytes": 1752228
+    },
+    "its_manifest.json": {
+      "sha256": "029ee64efc499f444a0ad64561dd2d54945d8529513a3a81bea67591b6aa0183",
+      "size_bytes": 2448
+    },
+    "originals/region_1.scanner_manifest.json": {
+      "archive_member": "local_assays/region_1.scanner_manifest.json",
+      "sha256": "b0e7e4c9b25b9dbce9a06570a87e80ccf41f473b2a24c637dec8a109b75edd82",
+      "size_bytes": 13898
+    },
+    "originals/region_2.scanner_manifest.json": {
+      "archive_member": "local_assays/region_2.scanner_manifest.json",
+      "sha256": "33d7921f42c9d20f1536e632fdead3cabd430b207c0dfcc648c38124d79a41d2",
+      "size_bytes": 15650
+    },
+    "prior_recruitment_manifest.json": {
+      "sha256": "8a61d8a1982fb5e4f2ad2cd40585a150f533066ad09949f9213cf66ebf1bc582",
+      "size_bytes": 7160
+    },
+    "scc_analysis.json": {
+      "archive_member": "local_assays/analysis.json",
+      "sha256": "0084a204c6622badd2cb61ab644cba42d84c43267a380153d54850366599d3c8",
+      "size_bytes": 92176
+    }
+  },
+  "preparation_source": {
+    "sha256": "a221b3913f5989315f68ad0e3b81e8a9c486e4c4b834e554ec053db83151fdd7",
+    "size_bytes": 7832
+  },
+  "prior_diagnostic_checkpoint": "69104d2",
+  "region_ids": [
+    "region_1",
+    "region_2"
+  ],
+  "restored_from": "tmp/its-recruitment-20260925/prior",
+  "schema_version": 1,
+  "scope": "Archived input verification and literal ITS class selection only; no biological reads scanned",
+  "selected_archive_members_verified": 7,
+  "sources": {
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/manifest.json": {
+      "sha256": "8a61d8a1982fb5e4f2ad2cd40585a150f533066ad09949f9213cf66ebf1bc582",
+      "size_bytes": 7160
+    },
+    "benchmarks/benchmark_results/v3.2-its-scc-audit-20260913/ARCHIVE_CONTENTS.json": {
+      "sha256": "dcf9821b93b1b993115890953b6c45a3ab82e7dda090e988100f2523a9deda10",
+      "size_bytes": 37191
+    },
+    "benchmarks/benchmark_results/v3.2-its-scc-audit-20260913/evidence.tar.gz": {
+      "sha256": "14799e1b8da1c1efc8675647a8c5a26076edde9894e55107f37db0ec0ba6abc3",
+      "size_bytes": 1702530
+    }
+  },
+  "status": "verified"
+}

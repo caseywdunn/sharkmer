@@ -1,0 +1,997 @@
+panel: human
+panel_version: 1.0.1
+sharkmer_version: 3.1.0
+git_commit: 2183d5e
+date: '2026-09-09'
+run_id: 20260909_132424_485613_b9e858d8
+parameters:
+  runs:
+  - &id011
+    k: 19
+    threads: 2
+    max_reads: 1000000
+    options:
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-warm-b728f14/runs/benchmark_human_20260909_132424_485613_b9e858d8/human_SRR17535371_1000k_9b2e33693732/
+    - -s
+    - human_SRR17535371_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/human.yaml
+    - --ena
+    - SRR17535371
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    benchmark_scope: end-to-end
+    graph_dump: false
+    cache_mode: warm
+    effective_panel:
+      path: /home/claude/repos/sharkmer/panels/human.yaml
+      sha256: ac4359b88bbf3202218066288d0caffd571884edff7d14a402b7c3038755fdc1
+blast_mode: references
+rustc_version: rustc 1.98.1 (48a229cea 2026-09-01)
+provenance:
+  executable:
+    path: /tmp/sharkmer-v3.2-review/baseline-b728f14
+    sha256: 70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1
+    size_bytes: 6598536
+    selected_explicitly: true
+    built_for_run: false
+    build_command: null
+    build_flags: []
+    build_environment: {}
+    build_profile: null
+    cargo_artifact_features: null
+    hash_backend: unknown
+    workspace_source_observation:
+      revision: fb86ccdec19bfa63ca97987202250b4442b3db31
+      dirty: true
+      tree_sha256: 6a4f6276de79c01c44560235505913cb7b9a553dbf3e5d7dfb86966f9e538a3a
+      relationship_to_explicit_binary: unknown
+    fingerprinted_at: '2026-09-09T13:24:24.379543+00:00'
+  panel:
+    path: /home/claude/repos/sharkmer/panels/human.yaml
+    sha256: ac4359b88bbf3202218066288d0caffd571884edff7d14a402b7c3038755fdc1
+  references:
+  - gene: mt-1404-3947
+    taxon: Homo sapiens
+    accession: NC_012920.1
+    length: 2522
+    sha256: f681d3a136acd04b2521f09820d1ce1395f56eaaf70675eac70d26e4f05ba2aa
+  - gene: mt-3734-6739
+    taxon: Homo sapiens
+    accession: NC_012920.1
+    length: 2983
+    sha256: 6e850e43e267ba991974fd7eb4c5e146734177bf2909271d1a72d4dcab177e42
+  - gene: mt-6511-9220
+    taxon: Homo sapiens
+    accession: NC_012920.1
+    length: 2687
+    sha256: ae3c691ad561768ba718fab2af8b93bc54af18a1c939a38a357fce2e7118d6e4
+  - gene: mt-8910-10648
+    taxon: Homo sapiens
+    accession: NC_012920.1
+    length: 1717
+    sha256: 42d04ad8b92d9ffe6265618f4a69802415fc0a997e313a47f855e1cdc70bae45
+  - gene: mt-10360-12226
+    taxon: Homo sapiens
+    accession: NC_012920.1
+    length: 1845
+    sha256: 4c9d97ea4b908b3f777ec9622287d0021766401013e073d5e791c6c4c2fd1266
+  - gene: mt-11977-13830
+    taxon: Homo sapiens
+    accession: NC_012920.1
+    length: 1831
+    sha256: 638c966926de2017d7519b2bb422d63f1ea0b8d44cff6306ca8a13e4e77a2594
+  - gene: mt-13477-15349
+    taxon: Homo sapiens
+    accession: NC_012920.1
+    length: 1851
+    sha256: f6fee7f7d83cf72b1bf04c6868690a9687513116978bc615a08d0407b843fa93
+  - gene: mt-14898-151
+    taxon: Homo sapiens
+    accession: NC_012920.1
+    length: 1801
+    sha256: 57c6c2a7dd8fe5bbb0f99525668e0830cf9ca12ccbc3e27ba81eb72eed1cfb66
+  - gene: mt-16488-1677
+    taxon: Homo sapiens
+    accession: NC_012920.1
+    length: 1737
+    sha256: 33a232b328c33d12f661eb1353da0755bf65b4cd5c1e0f931ce1085a333ac611
+machine:
+  os: Linux 7.0.0-30-generic
+  cpu_model: x86_64
+  cpu_cores: 12
+  total_ram_gb: 62.6
+metric_availability:
+  stage_times: sharkmer_stats
+  allocator_peak_bytes: sharkmer_peak_alloc
+  peak_rss_bytes: gnu_time_linux_or_null
+  temp_disk_peak_bytes: null
+  temp_disk_final_bytes: invocation_directory_scan
+  os_page_cache_state: null
+samples:
+- accession: SRR17535371
+  taxon: ''
+  depths:
+  - max_reads: 1000000
+    wall_time_s: 1.051174565043766
+    success: true
+    genes:
+    - gene: mt-1404-3947
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: repeat evidence encountered before start-to-end connectivity
+        could be established
+    - gene: mt-3734-6739
+      recovered: true
+      length: 2990
+      n_products: 1
+      kmer_count_median: 778
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 2990
+        sha256: 03c2cbd791702dced1f7555a120979ffb77c287346322b426d798ef9a4e05edf
+        kmer_count_median: 778
+        reference_match:
+          status: confirmed_gene_other_taxon
+          expected_gene: mt-3734-6739
+          expected_taxon: ''
+          matched_gene: mt-3734-6739
+          matched_taxon: Homo sapiens
+          matched_accession: NC 012920.1
+          pct_identity: 99.866
+          align_length: 2975
+          query_length: 2990
+          query_coverage_pct: 99.498
+          aligned_fraction: 0.994983
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id001
+          - gene: mt-3734-6739
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 2975
+            pct_identity: 99.8655462184874
+            identity_count: 2971
+            bit_score: 5472.74
+            query_coverage_pct: 99.49832775919732
+            query_from: 1
+            query_to: 2975
+            subject_from: 9
+            subject_to: 2983
+          - gene: mt-6511-9220
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 221
+            pct_identity: 100.0
+            identity_count: 221
+            bit_score: 409.23
+            query_coverage_pct: 7.391304347826087
+            query_from: 2770
+            query_to: 2990
+            subject_from: 1
+            subject_to: 221
+          - gene: mt-1404-3947
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 184
+            pct_identity: 100.0
+            identity_count: 184
+            bit_score: 340.904
+            query_coverage_pct: 6.153846153846154
+            query_from: 1
+            query_to: 184
+            subject_from: 2339
+            subject_to: 2522
+          on_target: false
+          thresholds: &id002
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_gene_other_taxon
+        expected_gene: mt-3734-6739
+        expected_taxon: ''
+        matched_gene: mt-3734-6739
+        matched_taxon: Homo sapiens
+        matched_accession: NC 012920.1
+        pct_identity: 99.866
+        align_length: 2975
+        query_length: 2990
+        query_coverage_pct: 99.498
+        aligned_fraction: 0.994983
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id001
+        on_target: false
+        thresholds: *id002
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: mt-6511-9220
+      recovered: true
+      length: 2694
+      n_products: 1
+      kmer_count_median: null
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 2694
+        sha256: 60afa17b355c59cc5f00360660ef540b79a487b3bd18377ed9862a7708830efd
+        kmer_count_median: null
+        reference_match:
+          status: confirmed_gene_other_taxon
+          expected_gene: mt-6511-9220
+          expected_taxon: ''
+          matched_gene: mt-6511-9220
+          matched_taxon: Homo sapiens
+          matched_accession: NC 012920.1
+          pct_identity: 99.888
+          align_length: 2679
+          query_length: 2694
+          query_coverage_pct: 99.443
+          aligned_fraction: 0.994432
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id003
+          - gene: mt-6511-9220
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 2679
+            pct_identity: 99.88801791713325
+            identity_count: 2676
+            bit_score: 4931.67
+            query_coverage_pct: 99.44320712694878
+            query_from: 1
+            query_to: 2679
+            subject_from: 9
+            subject_to: 2687
+          - gene: mt-8910-10648
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 303
+            pct_identity: 100.0
+            identity_count: 303
+            bit_score: 560.655
+            query_coverage_pct: 11.247216035634743
+            query_from: 2392
+            query_to: 2694
+            subject_from: 1
+            subject_to: 303
+          - gene: mt-3734-6739
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 198
+            pct_identity: 100.0
+            identity_count: 198
+            bit_score: 366.757
+            query_coverage_pct: 7.349665924276169
+            query_from: 1
+            query_to: 198
+            subject_from: 2786
+            subject_to: 2983
+          on_target: false
+          thresholds: &id004
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_gene_other_taxon
+        expected_gene: mt-6511-9220
+        expected_taxon: ''
+        matched_gene: mt-6511-9220
+        matched_taxon: Homo sapiens
+        matched_accession: NC 012920.1
+        pct_identity: 99.888
+        align_length: 2679
+        query_length: 2694
+        query_coverage_pct: 99.443
+        aligned_fraction: 0.994432
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id003
+        on_target: false
+        thresholds: *id004
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: mt-8910-10648
+      recovered: true
+      length: 1725
+      n_products: 1
+      kmer_count_median: 751
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 1725
+        sha256: 1b92f0a3473f8b0742e24d495ea8e9d1cf6035cce55823a4169b261765606c73
+        kmer_count_median: 751
+        reference_match:
+          status: confirmed_gene_other_taxon
+          expected_gene: mt-8910-10648
+          expected_taxon: ''
+          matched_gene: mt-8910-10648
+          matched_taxon: Homo sapiens
+          matched_accession: NC 012920.1
+          pct_identity: 99.708
+          align_length: 1710
+          query_length: 1725
+          query_coverage_pct: 99.13
+          aligned_fraction: 0.991304
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id005
+          - gene: mt-8910-10648
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 1710
+            pct_identity: 99.70760233918129
+            identity_count: 1705
+            bit_score: 3131.19
+            query_coverage_pct: 99.1304347826087
+            query_from: 1
+            query_to: 1710
+            subject_from: 8
+            subject_to: 1717
+          - gene: mt-6511-9220
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 281
+            pct_identity: 100.0
+            identity_count: 281
+            bit_score: 520.029
+            query_coverage_pct: 16.28985507246377
+            query_from: 1
+            query_to: 281
+            subject_from: 2407
+            subject_to: 2687
+          - gene: mt-10360-12226
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 282
+            pct_identity: 99.29078014184397
+            identity_count: 280
+            bit_score: 510.796
+            query_coverage_pct: 16.347826086956523
+            query_from: 1444
+            query_to: 1725
+            subject_from: 1
+            subject_to: 282
+          on_target: false
+          thresholds: &id006
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_gene_other_taxon
+        expected_gene: mt-8910-10648
+        expected_taxon: ''
+        matched_gene: mt-8910-10648
+        matched_taxon: Homo sapiens
+        matched_accession: NC 012920.1
+        pct_identity: 99.708
+        align_length: 1710
+        query_length: 1725
+        query_coverage_pct: 99.13
+        aligned_fraction: 0.991304
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id005
+        on_target: false
+        thresholds: *id006
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: mt-10360-12226
+      recovered: true
+      length: 1853
+      n_products: 1
+      kmer_count_median: 1019
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 1853
+        sha256: f9651761bd4d462f95252358ed1a75ed69ac98a6f3385335eedc0cd5be2f0672
+        kmer_count_median: 1019
+        reference_match:
+          status: confirmed_gene_other_taxon
+          expected_gene: mt-10360-12226
+          expected_taxon: ''
+          matched_gene: mt-10360-12226
+          matched_taxon: Homo sapiens
+          matched_accession: NC 012920.1
+          pct_identity: 99.619
+          align_length: 1838
+          query_length: 1853
+          query_coverage_pct: 99.191
+          aligned_fraction: 0.991905
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id007
+          - gene: mt-10360-12226
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 1838
+            pct_identity: 99.61915125136018
+            identity_count: 1831
+            bit_score: 3356.48
+            query_coverage_pct: 99.19050188882892
+            query_from: 1
+            query_to: 1838
+            subject_from: 8
+            subject_to: 1845
+          - gene: mt-8910-10648
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 260
+            pct_identity: 99.23076923076923
+            identity_count: 258
+            bit_score: 470.169
+            query_coverage_pct: 14.031300593631949
+            query_from: 1
+            query_to: 260
+            subject_from: 1458
+            subject_to: 1717
+          - gene: mt-11977-13830
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 243
+            pct_identity: 100.0
+            identity_count: 243
+            bit_score: 449.856
+            query_coverage_pct: 13.113869400971398
+            query_from: 1611
+            query_to: 1853
+            subject_from: 1
+            subject_to: 243
+          on_target: false
+          thresholds: &id008
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_gene_other_taxon
+        expected_gene: mt-10360-12226
+        expected_taxon: ''
+        matched_gene: mt-10360-12226
+        matched_taxon: Homo sapiens
+        matched_accession: NC 012920.1
+        pct_identity: 99.619
+        align_length: 1838
+        query_length: 1853
+        query_coverage_pct: 99.191
+        aligned_fraction: 0.991905
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id007
+        on_target: false
+        thresholds: *id008
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: mt-11977-13830
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: repeat evidence encountered before start-to-end connectivity
+        could be established
+    - gene: mt-13477-15349
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: repeat evidence encountered before start-to-end connectivity
+        could be established
+    - gene: mt-14898-151
+      recovered: true
+      length: 1808
+      n_products: 1
+      kmer_count_median: 1117
+      evaluation_status: recovered
+      reference_status: available
+      products:
+      - product_index: 0
+        length: 1808
+        sha256: 17631adad883fb91c1c7dc2c40233d42d1597486836869404853a5adde23f17f
+        kmer_count_median: 1117
+        reference_match:
+          status: confirmed_gene_other_taxon
+          expected_gene: mt-14898-151
+          expected_taxon: ''
+          matched_gene: mt-14898-151
+          matched_taxon: Homo sapiens
+          matched_accession: NC 012920.1
+          pct_identity: 99.331
+          align_length: 1794
+          query_length: 1808
+          query_coverage_pct: 99.17
+          aligned_fraction: 0.991704
+          hsp_count: 1
+          split_alignment: false
+          chimeric_alignment: false
+          alignment_structure_status: single_hsp_gate
+          alignment_evidence: &id009
+          - gene: mt-14898-151
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 1794
+            pct_identity: 99.33110367892976
+            identity_count: 1782
+            bit_score: 3245.68
+            query_coverage_pct: 99.17035398230088
+            query_from: 1
+            query_to: 1793
+            subject_from: 8
+            subject_to: 1801
+          - gene: mt-13477-15349
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 421
+            pct_identity: 99.5249406175772
+            identity_count: 419
+            bit_score: 767.48
+            query_coverage_pct: 23.285398230088497
+            query_from: 1
+            query_to: 421
+            subject_from: 1429
+            subject_to: 1849
+          - gene: mt-16488-1677
+            taxon: Homo sapiens
+            accession: NC 012920.1
+            align_length: 226
+            pct_identity: 99.11504424778761
+            identity_count: 224
+            bit_score: 407.383
+            query_coverage_pct: 12.5
+            query_from: 1583
+            query_to: 1808
+            subject_from: 1
+            subject_to: 226
+          on_target: false
+          thresholds: &id010
+            min_query_coverage_pct: 90.0
+            min_identity_pct: 90.0
+            coverage_rule: single_contiguous_hsp
+          error: null
+      reference_match:
+        status: confirmed_gene_other_taxon
+        expected_gene: mt-14898-151
+        expected_taxon: ''
+        matched_gene: mt-14898-151
+        matched_taxon: Homo sapiens
+        matched_accession: NC 012920.1
+        pct_identity: 99.331
+        align_length: 1794
+        query_length: 1808
+        query_coverage_pct: 99.17
+        aligned_fraction: 0.991704
+        hsp_count: 1
+        split_alignment: false
+        chimeric_alignment: false
+        alignment_structure_status: single_hsp_gate
+        alignment_evidence: *id009
+        on_target: false
+        thresholds: *id010
+        error: null
+        all_products_confirmed: false
+        n_products_evaluated: 1
+    - gene: mt-16488-1677
+      recovered: false
+      length: null
+      n_products: 0
+      kmer_count_median: null
+      evaluation_status: no_product
+      reference_status: available
+      failure_reason: repeat evidence encountered before start-to-end connectivity
+        could be established
+    command:
+    - /tmp/sharkmer-v3.2-review/baseline-b728f14
+    - -k
+    - '19'
+    - -t
+    - '2'
+    - --max-reads
+    - '1000000'
+    - -o
+    - /tmp/sharkmer-v3.2-review/calibration-warm-b728f14/runs/benchmark_human_20260909_132424_485613_b9e858d8/human_SRR17535371_1000k_9b2e33693732/
+    - -s
+    - human_SRR17535371_1000k
+    - --pcr-panel-file
+    - /home/claude/repos/sharkmer/panels/human.yaml
+    - --ena
+    - SRR17535371
+    - --cache-dir
+    - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+    actual_parameters: *id011
+    input:
+      source: ena
+      accession: SRR17535371
+      subset:
+        method: first_reads
+        max_reads: 1000000
+      cache_mode: warm
+      cache_state_before:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      cache_state_after:
+      - metadata_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.meta.yaml
+        data_file: 088ff7c634139825de48bf21b5861c5aa2ba99965d192131f3b4be5325ea074f.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_2.fastq.gz
+        sha256: de105aef376352a27685a62bcc83f4e7be4ba724fe454faf15dd80bb2c99949d
+        n_reads: 83843
+        complete: true
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+      - metadata_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.meta.yaml
+        data_file: 27a3637a98ad46694d37369d369b84fee4057e43c07b105e0414159b4f06f9a5.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR927/005/SRR9278435/SRR9278435.fastq.gz
+        sha256: 89acc1c9e92b6e02e25873b76976cb437c0d3c69c3682d02449e129a16e7a9be
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.meta.yaml
+        data_file: 2ebbffed1d20dcee76f8bf3d159a92479558875934a0d6c56cc1ef5134e594da.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz
+        sha256: d243dd0a72bc88f11c7106ff954c829967faf0b11f9e2505f44cfa739c093151
+        n_reads: 1000000
+        complete: false
+      - metadata_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.meta.yaml
+        data_file: 4d064887d553aab3e121c0203584db2109a3e71e57c235b8314dd3ddab3b72ac.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR248/037/SRR24806237/SRR24806237_1.fastq.gz
+        sha256: 8db2544c08e5aa8e3d34b0bbd7615af58e9d770481ea1239630204616b9e0362
+        n_reads: 83843
+        complete: true
+      - metadata_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.meta.yaml
+        data_file: 6c58e5a8c6e9e5d4db9ccdd6fe5613550ec3e10efcabf1d9240d97c6731d7812.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_1.fastq.gz
+        sha256: cb5196b331c7fd09ad621d8a0a46afa8499fd89ca5844c7417da7f74c74526e8
+        n_reads: 29852
+        complete: true
+      - metadata_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.meta.yaml
+        data_file: 81ac13698dd9388fee81ce3c36024ec74e9c7afc79b04feb6a96a091572dd398.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_1.fastq.gz
+        sha256: 339d79d89a999bf94792e95e991f6832045612ef36bbafcbbdf325b1ee424536
+        n_reads: 262991
+        complete: true
+      - metadata_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.meta.yaml
+        data_file: b0e627b2c5620c5aae7e398948f716688fd68ca824baadf76f9f1fa0dda40164.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz
+        sha256: 4e4ad6d3f2e2ca823ce62789818e4d859bb3113cfc2511ad49ba8576d160de85
+        n_reads: 1000000
+        complete: false
+      - metadata_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.meta.yaml
+        data_file: b96d4badecc98b38ebb310dd226ea01608135b0a57e7b701543d4bf66a4474d9.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR194/013/SRR19418213/SRR19418213_2.fastq.gz
+        sha256: 503e2a1742344d442c3b83cccc9b0710739a093eccf403328c2e41aa43682fc7
+        n_reads: 262991
+        complete: true
+      - metadata_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.meta.yaml
+        data_file: ba444c4efd0b3c8f44150092bf2abd354cf756d8c1f126800eafdbc9c3bf4e10.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz
+        sha256: 029f963bd46103762a83b223523565774c8cd03129f9a297c33f7dc7205d7345
+        n_reads: 1000000
+        complete: false
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+      - metadata_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.meta.yaml
+        data_file: da391a793cd5931efe7a5e8edb8592136a610a46bd8ed7d683ad7dd1a56f27a7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR140/073/ERR14009273/ERR14009273_1.fastq.gz
+        sha256: 261660f61e5a6775e58b4626f57a4b255f1fa64fa38ee6079de5676a2ef90f22
+        n_reads: 1000000
+        complete: false
+      - metadata_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.meta.yaml
+        data_file: dc186686cd77904de3e9abcec731988b48f742ce930958c17b902ea13fda36c0.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR259/004/ERR2596344/ERR2596344_2.fastq.gz
+        sha256: 8f51f378c8e4500c208ed95c4db54aee8f5cfd856a5bdaa542ce91774eaa7523
+        n_reads: 29852
+        complete: true
+      - metadata_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.meta.yaml
+        data_file: ed4ad9cad34d2b090e08b6cc76cca935ed5a08cff905c7b9a37b4f12c78f8cd3.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR250/094/SRR25099394/SRR25099394_1.fastq.gz
+        sha256: 0782c391c706ea260afb7e0c5980a697c0f9748a092c5f0436ac137383e6555e
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.meta.yaml
+        data_file: f3a941d6a52ff543ff5ef98f2e29677e3e5cff6d2c03a004f1d8df5f930322cf.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR223/003/SRR22396603/SRR22396603_1.fastq.gz
+        sha256: d9859ad73d12d0e4a0896f7284dd5a319e6be96fcae8dcf376c92abeff803626
+        n_reads: 1000000
+        complete: false
+      - metadata_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.meta.yaml
+        data_file: f6bcce0f4b81263589f09d4707fac27077be6d1b171b3ab3b5daec5dce4b10ff.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_1.fastq.gz
+        sha256: 67ca036912bb69a727856563db3caa6dae9c52d631dd9bbe63bd17adc5d8980e
+        n_reads: 656431
+        complete: true
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+      - metadata_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.meta.yaml
+        data_file: fc3e86cc53025f2a12df05291edeefa7bf16353ec19e036150094c7acdf983a8.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR253/084/SRR25378184/SRR25378184_2.fastq.gz
+        sha256: 6c73d06f15f6610e925980b246ce5db598574d089c47aefc98b0b95d591e33a3
+        n_reads: 656431
+        complete: true
+      - metadata_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.meta.yaml
+        data_file: fed352ef30307a55932e62734bfa1baa3fd23c8031022508d13d2463b245aee7.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR861/000/SRR8617500/SRR8617500_1.fastq.gz
+        sha256: 882ee119f5fb13508dd5763bc26fc1c2133c917ccde7527f9d87426fe129726d
+        n_reads: 1000000
+        complete: false
+      observed_n_reads: 108518
+      observed_n_bases: 18093925
+      observed_source_plan: &id012
+        kind: cached_remote
+        inputs:
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        - /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        paired: false
+        max_reads: 1000000
+      selected_cache_entries:
+      - metadata_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.meta.yaml
+        data_file: 0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371.fastq.gz
+        sha256: dcb77f8b9345a28ffafaa77310638471de35018254b801b160c555de179b4b21
+        n_reads: 30024
+        complete: true
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/0dcba070f0c0f33b9ff34a7b9de3501a4f23d66d4d9ad57c4ac4c973c8d07a5b.fastq.gz
+      - metadata_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.meta.yaml
+        data_file: fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_1.fastq.gz
+        sha256: 5c136f80d8642250bfefee3aac31962ffe5accd2b0a1e62398ad412d850751c8
+        n_reads: 39247
+        complete: true
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/fa7964379a071ebe921c4e0937be16abc9416e4cc6201a8e18c1a03bd477a61a.fastq.gz
+      - metadata_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.meta.yaml
+        data_file: d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+        url: http://ftp.sra.ebi.ac.uk/vol1/fastq/SRR175/071/SRR17535371/SRR17535371_2.fastq.gz
+        sha256: c8b90b6044071d5b34584696d5cc04849fc4a7f4a2ddb6945c6c41151fc05efe
+        n_reads: 39247
+        complete: true
+        path: /tmp/sharkmer-v3.2-review/calibration-b728f14/cache/d65cfd71bb9261fa4fb353c5428509f6d677b786611f16424f1511cf3fc89d33.fastq.gz
+    logs:
+      stdout: /tmp/sharkmer-v3.2-review/calibration-warm-b728f14/runs/benchmark_human_20260909_132424_485613_b9e858d8/human_SRR17535371_1000k_9b2e33693732/human_SRR17535371_1000k.stdout.log
+      stderr: /tmp/sharkmer-v3.2-review/calibration-warm-b728f14/runs/benchmark_human_20260909_132424_485613_b9e858d8/human_SRR17535371_1000k_9b2e33693732/human_SRR17535371_1000k.stderr.log
+      resource_usage: /tmp/sharkmer-v3.2-review/calibration-warm-b728f14/runs/benchmark_human_20260909_132424_485613_b9e858d8/human_SRR17535371_1000k_9b2e33693732/resource_usage.txt
+    failure: null
+    peak_rss_bytes: 25382912
+    peak_rss_provenance: proc_time_linux
+    temp_disk_final_bytes: 17079
+    known_truth: null
+    run_stats:
+      sharkmer_version: 3.1.0
+      command: /tmp/sharkmer-v3.2-review/baseline-b728f14 -k 19 -t 2 --max-reads 1000000
+        -o /tmp/sharkmer-v3.2-review/calibration-warm-b728f14/runs/benchmark_human_20260909_132424_485613_b9e858d8/human_SRR17535371_1000k_9b2e33693732/
+        -s human_SRR17535371_1000k --pcr-panel-file /home/claude/repos/sharkmer/panels/human.yaml
+        --ena SRR17535371 --cache-dir /tmp/sharkmer-v3.2-review/calibration-b728f14/cache
+      sample: human_SRR17535371_1000k
+      input_source: *id012
+      kmer_length: 19
+      chunks: 0
+      n_reads_read: 108518
+      n_bases_read: 18093925
+      n_subreads_ingested: 108518
+      n_bases_ingested: 18092177
+      n_kmers: 16138457
+      count_table_capacity: 458752
+      peak_memory_bytes: 17915062
+      stage_timings:
+        read_ingest_s: 0.875787819
+        count_finalize_s: 0.010302976
+        read_threading_input_s: null
+        pcr_s: 0.160858172
+        pipeline_total_s: 1.047972011
+      pcr_results:
+      - gene_name: human_mt-1404-3947
+        status: fail
+        n_products: 0
+        failure_reason: repeat evidence encountered before start-to-end connectivity
+          could be established
+      - gene_name: human_mt-3734-6739
+        status: success
+        n_products: 1
+        product_lengths:
+        - 2990
+        output_file: human_SRR17535371_1000k_human_mt-3734-6739.fasta
+      - gene_name: human_mt-6511-9220
+        status: success
+        n_products: 1
+        product_lengths:
+        - 2694
+        output_file: human_SRR17535371_1000k_human_mt-6511-9220.fasta
+      - gene_name: human_mt-8910-10648
+        status: success
+        n_products: 1
+        product_lengths:
+        - 1725
+        output_file: human_SRR17535371_1000k_human_mt-8910-10648.fasta
+      - gene_name: human_mt-10360-12226
+        status: success
+        n_products: 1
+        product_lengths:
+        - 1853
+        output_file: human_SRR17535371_1000k_human_mt-10360-12226.fasta
+      - gene_name: human_mt-11977-13830
+        status: fail
+        n_products: 0
+        failure_reason: repeat evidence encountered before start-to-end connectivity
+          could be established
+      - gene_name: human_mt-13477-15349
+        status: fail
+        n_products: 0
+        failure_reason: repeat evidence encountered before start-to-end connectivity
+          could be established
+      - gene_name: human_mt-14898-151
+        status: success
+        n_products: 1
+        product_lengths:
+        - 1808
+        output_file: human_SRR17535371_1000k_human_mt-14898-151.fasta
+      - gene_name: human_mt-16488-1677
+        status: fail
+        n_products: 0
+        failure_reason: repeat evidence encountered before start-to-end connectivity
+          could be established

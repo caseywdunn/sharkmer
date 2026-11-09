@@ -1,0 +1,868 @@
+{
+  "actual_per_target_status_counts": {
+    "fail": 44,
+    "success": 64,
+    "uncertain": 10
+  },
+  "authenticated_archived_fasta_members_verified": 68,
+  "counts": {
+    "current_products": 326,
+    "current_represented_targets": 74,
+    "historical_products": 86,
+    "historical_represented_targets": 68,
+    "lost_exact_products": 0,
+    "new_exact_products": 240,
+    "newly_represented_targets": 6,
+    "novel_target_products": 154,
+    "retained_exact_products": 86,
+    "standard_products": 64,
+    "target_rows": 118,
+    "uncertain_products": 262,
+    "zero_output_current_targets": 44
+  },
+  "limits": [
+    "Run status pass denotes command completion. All 44 zero-output targets have actual target status fail and bounded-search/connectivity reasons; zeros do not establish biological absence.",
+    "Sequence retention and emission counts do not establish reference identity, local read support or whole-product validity."
+  ],
+  "reviewer_source_sha256": "d775a657e3c1c2c79cf37699da7d3dcaa5f1db6427c1b56898bc0be69df7f73d",
+  "scope": "Exactly ten matched samples and their complete five frozen panels; 118 attempted sample-target rows. Literal oriented full-sequence identities, with reverse complements retained separately. Not an overlap claim for the three absent bacterial/metagenomic samples.",
+  "source_files_verified": 96,
+  "status": "pass",
+  "target_outcomes": [
+    {
+      "accession": "SRR9278435",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_16S",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR9278435",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_CO1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR9278435",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_18S",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR9278435",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_28S_1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR9278435",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_ITS_1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR9278435",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_ITS_2",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR9278435",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_28S_2",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR25099394",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "cnidaria_16S",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR25099394",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded; repeat length unresolved on an out-of-range start-to-end path",
+      "gene": "cnidaria_CO1",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR25099394",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_18S",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR25099394",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_28S_1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR25099394",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_ITS_1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR25099394",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_ITS_2",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR25099394",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_28S_2",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR8617500",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "cnidaria_16S",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR8617500",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_CO1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR8617500",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_18S",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR8617500",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_28S_1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR8617500",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "cnidaria_ITS_1",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR8617500",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_ITS_2",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR8617500",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "cnidaria_28S_2",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR17535371",
+      "current_total": 0,
+      "failure_reason": "no start-to-end connectivity established at this threshold",
+      "gene": "human_mt-1404-3947",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR17535371",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "human_mt-3734-6739",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR17535371",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "human_mt-6511-9220",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR17535371",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "human_mt-8910-10648",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR17535371",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "human_mt-10360-12226",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR17535371",
+      "current_total": 0,
+      "failure_reason": "no start-to-end connectivity established at this threshold",
+      "gene": "human_mt-11977-13830",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR17535371",
+      "current_total": 0,
+      "failure_reason": "no start-to-end connectivity established at this threshold",
+      "gene": "human_mt-13477-15349",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR17535371",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "human_mt-14898-151",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR17535371",
+      "current_total": 0,
+      "failure_reason": "no start-to-end connectivity established at this threshold",
+      "gene": "human_mt-16488-1677",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR22396603",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "teleostei_18S",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR22396603",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "teleostei_16S",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR22396603",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "teleostei_CO1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR22396603",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded; repeat length unresolved on an out-of-range start-to-end path",
+      "gene": "teleostei_CytB",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR22396603",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "teleostei_12S",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR25378184",
+      "current_total": 49,
+      "failure_reason": "node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length",
+      "gene": "angiospermae_psbA-trnH",
+      "target_status": "uncertain"
+    },
+    {
+      "accession": "SRR25378184",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "angiospermae_rpl36-infA-rps8",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR25378184",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "angiospermae_trnK-rps16",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR25378184",
+      "current_total": 41,
+      "failure_reason": "node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length",
+      "gene": "angiospermae_trnV-atpE",
+      "target_status": "uncertain"
+    },
+    {
+      "accession": "SRR25378184",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "angiospermae_trnC-ycf6",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR25378184",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "angiospermae_ycf6-psbM",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR25378184",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "angiospermae_psbM-trnD",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR25378184",
+      "current_total": 1,
+      "failure_reason": "node budget exceeded; earlier threshold outcomes: threshold 29: DFS state limit reached; threshold 20: DFS state limit reached, candidate-local repeat uncertainty; threshold 11: DFS state limit reached",
+      "gene": "angiospermae_atpB-rbcL",
+      "target_status": "uncertain"
+    },
+    {
+      "accession": "SRR25378184",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "angiospermae_trnL-F",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR25378184",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "angiospermae_ITS",
+      "target_status": "fail"
+    },
+    {
+      "accession": "ERR14009273",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "angiospermae_psbA-trnH",
+      "target_status": "success"
+    },
+    {
+      "accession": "ERR14009273",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "angiospermae_rpl36-infA-rps8",
+      "target_status": "fail"
+    },
+    {
+      "accession": "ERR14009273",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded; DFS state limit reached before a valid amplicon was found",
+      "gene": "angiospermae_trnK-rps16",
+      "target_status": "fail"
+    },
+    {
+      "accession": "ERR14009273",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "angiospermae_trnV-atpE",
+      "target_status": "fail"
+    },
+    {
+      "accession": "ERR14009273",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "angiospermae_trnC-ycf6",
+      "target_status": "success"
+    },
+    {
+      "accession": "ERR14009273",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "angiospermae_ycf6-psbM",
+      "target_status": "success"
+    },
+    {
+      "accession": "ERR14009273",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "angiospermae_psbM-trnD",
+      "target_status": "success"
+    },
+    {
+      "accession": "ERR14009273",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "angiospermae_atpB-rbcL",
+      "target_status": "success"
+    },
+    {
+      "accession": "ERR14009273",
+      "current_total": 1,
+      "failure_reason": "node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length",
+      "gene": "angiospermae_trnL-F",
+      "target_status": "uncertain"
+    },
+    {
+      "accession": "ERR14009273",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "angiospermae_ITS",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 26,
+      "failure_reason": "node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length",
+      "gene": "insecta_12S",
+      "target_status": "uncertain"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_16S_1",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_CO1_1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_CO2_1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_CytB",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_ND1",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_ND4",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_ND5",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 1,
+      "failure_reason": "node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length",
+      "gene": "insecta_16S_2",
+      "target_status": "uncertain"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_CO1_2",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_CO2_2",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_NADH",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_Fz4",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded; DFS state limit reached before a valid amplicon was found",
+      "gene": "insecta_Gpdh",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded; earlier threshold outcomes: threshold 5: DFS state limit reached",
+      "gene": "insecta_Pgi",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_Yp2",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_18S_1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_28S",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_18S_2",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_ITS_1",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR31887760",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_ITS_2",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_12S",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_16S_1",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_CO1_1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_CO2_1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_CytB",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 2,
+      "failure_reason": null,
+      "gene": "insecta_ND1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 44,
+      "failure_reason": "node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length",
+      "gene": "insecta_ND4",
+      "target_status": "uncertain"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_ND5",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_16S_2",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_CO1_2",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_CO2_2",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_NADH",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_Fz4",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "no start-to-end connectivity established at this threshold",
+      "gene": "insecta_Gpdh",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_Pgi",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "no start-to-end connectivity established at this threshold",
+      "gene": "insecta_Yp2",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_18S_1",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_28S",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_18S_2",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "no start-to-end connectivity established at this threshold",
+      "gene": "insecta_ITS_1",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR1057608",
+      "current_total": 0,
+      "failure_reason": "no start-to-end connectivity established at this threshold",
+      "gene": "insecta_ITS_2",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_12S",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_16S_1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 2,
+      "failure_reason": null,
+      "gene": "insecta_CO1_1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_CO2_1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_CytB",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_ND1",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_ND4",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_ND5",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_16S_2",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_CO1_2",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded; DFS state limit reached before a valid amplicon was found",
+      "gene": "insecta_CO2_2",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 1,
+      "failure_reason": null,
+      "gene": "insecta_NADH",
+      "target_status": "success"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_Fz4",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded; DFS state limit reached before a valid amplicon was found",
+      "gene": "insecta_Gpdh",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded; earlier threshold outcomes: threshold 6: DFS state limit reached",
+      "gene": "insecta_Pgi",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 35,
+      "failure_reason": "node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length",
+      "gene": "insecta_Yp2",
+      "target_status": "uncertain"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 18,
+      "failure_reason": "node budget exceeded; DFS state limit reached; completed candidate paths had unresolved repeat length",
+      "gene": "insecta_18S_1",
+      "target_status": "uncertain"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_28S",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_18S_2",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 0,
+      "failure_reason": "node budget exceeded",
+      "gene": "insecta_ITS_1",
+      "target_status": "fail"
+    },
+    {
+      "accession": "SRR27962769",
+      "current_total": 44,
+      "failure_reason": "node budget exceeded; earlier threshold outcomes: threshold 4: candidate-local repeat uncertainty",
+      "gene": "insecta_ITS_2",
+      "target_status": "uncertain"
+    }
+  ],
+  "validation_sha256": "45e346680271d981befe9ddc2184f9a28c5a11755db9b3faa8e469e12093bd55",
+  "zero_output_failure_reasons": {
+    "no start-to-end connectivity established at this threshold": 8,
+    "node budget exceeded": 28,
+    "node budget exceeded; DFS state limit reached before a valid amplicon was found": 4,
+    "node budget exceeded; earlier threshold outcomes: threshold 5: DFS state limit reached": 1,
+    "node budget exceeded; earlier threshold outcomes: threshold 6: DFS state limit reached": 1,
+    "node budget exceeded; repeat length unresolved on an out-of-range start-to-end path": 2
+  }
+}

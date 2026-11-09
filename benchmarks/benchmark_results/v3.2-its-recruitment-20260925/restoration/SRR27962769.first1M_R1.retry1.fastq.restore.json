@@ -1,0 +1,20 @@
+{
+  "status": "verified",
+  "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz",
+  "output": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/data/its-recruitment-20260925/SRR27962769.first1M_R1.retry1.fastq",
+  "expected": {
+    "records": 1000000,
+    "bases": 150000000,
+    "size_bytes": 365356898,
+    "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794"
+  },
+  "observed": {
+    "records": 1000000,
+    "bases": 150000000,
+    "size_bytes": 365356898,
+    "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794"
+  },
+  "elapsed_seconds": 13.471482515335083,
+  "scope": "First 1M R1 records only; not original 8M-record staged file",
+  "source_sha256": "f3f9b2d0974564698ccf971953c53657466c72fc745283e0f51cd93cfd2445ab"
+}

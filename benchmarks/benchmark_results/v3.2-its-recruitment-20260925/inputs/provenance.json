@@ -1,0 +1,154 @@
+{
+  "archive_contents_sha256": "dcf9821b93b1b993115890953b6c45a3ab82e7dda090e988100f2523a9deda10",
+  "archive_path": "benchmarks/benchmark_results/v3.2-its-scc-audit-20260913/evidence.tar.gz",
+  "archive_sha256": "14799e1b8da1c1efc8675647a8c5a26076edde9894e55107f37db0ec0ba6abc3",
+  "classes": [
+    {
+      "class_id": "region_1_class_1",
+      "self_context": [
+        {
+          "decoy_id": "SRR27962769_23163ca76f97f5d1",
+          "end": 133,
+          "start": 72,
+          "strand": "-"
+        }
+      ],
+      "source_candidate_id": "region_1_class_1",
+      "source_event_id": "region_1_class_1_interior",
+      "source_interval": [
+        0,
+        61
+      ],
+      "source_member": "local_assays/region_1.scanner_manifest.json"
+    },
+    {
+      "class_id": "region_1_class_2",
+      "self_context": [],
+      "source_candidate_id": "region_1_class_2",
+      "source_event_id": "region_1_class_2_interior",
+      "source_interval": [
+        0,
+        124
+      ],
+      "source_member": "local_assays/region_1.scanner_manifest.json"
+    },
+    {
+      "class_id": "region_2_class_1",
+      "self_context": [
+        {
+          "decoy_id": "SRR27962769_23163ca76f97f5d1",
+          "end": 317,
+          "start": 255,
+          "strand": "+"
+        }
+      ],
+      "source_candidate_id": "region_2_class_1",
+      "source_event_id": "region_2_class_1_interior",
+      "source_interval": [
+        0,
+        62
+      ],
+      "source_member": "local_assays/region_2.scanner_manifest.json"
+    },
+    {
+      "class_id": "region_2_class_2",
+      "self_context": [],
+      "source_candidate_id": "region_2_class_2",
+      "source_event_id": "region_2_class_2_interior",
+      "source_interval": [
+        0,
+        147
+      ],
+      "source_member": "local_assays/region_2.scanner_manifest.json"
+    },
+    {
+      "class_id": "SRR27962769_e2d376bc5b0f09a9_supplementary_retained_corresponding_interval",
+      "self_context": [
+        {
+          "decoy_id": "SRR27962769_e2d376bc5b0f09a9",
+          "end": 349,
+          "start": 289,
+          "strand": "+"
+        }
+      ],
+      "source_candidate_id": "SRR27962769_e2d376bc5b0f09a9",
+      "source_event_id": "SRR27962769_e2d376bc5b0f09a9_supplementary_retained_corresponding_interval",
+      "source_interval": [
+        289,
+        349
+      ],
+      "source_member": "inputs/co1_control_manifest.json"
+    },
+    {
+      "class_id": "SRR27962769_e86a7ccf9e78adaf_primary_complete_placement_union_0",
+      "self_context": [
+        {
+          "decoy_id": "SRR27962769_e86a7ccf9e78adaf",
+          "end": 370,
+          "start": 289,
+          "strand": "+"
+        }
+      ],
+      "source_candidate_id": "SRR27962769_e86a7ccf9e78adaf",
+      "source_event_id": "SRR27962769_e86a7ccf9e78adaf_primary_complete_placement_union_0",
+      "source_interval": [
+        289,
+        370
+      ],
+      "source_member": "inputs/co1_control_manifest.json"
+    }
+  ],
+  "coordinate_semantics": "Zero-based half-open; self_context strand expresses class orientation relative to decoy.",
+  "decoy_scope": "All five original CO1-control competitors: historical ITS, 16S, 12S, retained CO1, lost CO1. These are hypotheses, not independent references.",
+  "derived_manifest_sha256": "8a61d8a1982fb5e4f2ad2cd40585a150f533066ad09949f9213cf66ebf1bc582",
+  "originals": [
+    {
+      "archive_member": "inputs/candidate.json",
+      "path": "originals/inputs/candidate.json",
+      "sha256": "3d3aac8b03478363c1c79413d855344d6908f1c6b7e415bc0d9f8dcc17581683",
+      "size_bytes": 3282
+    },
+    {
+      "archive_member": "inputs/expected_prefix.json",
+      "path": "originals/inputs/expected_prefix.json",
+      "sha256": "ad67cd0d405ba6ad76d768361ada1238ac4ea666e41f3d5a45f11d070a586810",
+      "size_bytes": 154
+    },
+    {
+      "archive_member": "inputs/co1_control_manifest.json",
+      "path": "originals/inputs/co1_control_manifest.json",
+      "sha256": "3da888e302751668165c2a50e84cba19d3511203454ea5df7ba1a4aa3755254d",
+      "size_bytes": 8802
+    },
+    {
+      "archive_member": "inputs/prior_read_manifest.json",
+      "path": "originals/inputs/prior_read_manifest.json",
+      "sha256": "7085036d70e9d9e8f85987fab561eec4946b36aabf776d6c15916e465500d608",
+      "size_bytes": 115195
+    },
+    {
+      "archive_member": "inputs/source_manifest.json",
+      "path": "originals/inputs/source_manifest.json",
+      "sha256": "d4559a0381bbe1f96b077040ac055704cf45343f02248bc33b30076869a4647b",
+      "size_bytes": 1733
+    },
+    {
+      "archive_member": "local_assays/region_1.scanner_manifest.json",
+      "path": "originals/local_assays/region_1.scanner_manifest.json",
+      "sha256": "b0e7e4c9b25b9dbce9a06570a87e80ccf41f473b2a24c637dec8a109b75edd82",
+      "size_bytes": 13898
+    },
+    {
+      "archive_member": "local_assays/region_2.scanner_manifest.json",
+      "path": "originals/local_assays/region_2.scanner_manifest.json",
+      "sha256": "33d7921f42c9d20f1536e632fdead3cabd430b207c0dfcc648c38124d79a41d2",
+      "size_bytes": 15650
+    }
+  ],
+  "restore_path": "tmp/its-recruitment-20260925/prior",
+  "schema_version": 1,
+  "scope": "Unchanged archived sequence hypotheses and controls; no new read outcomes inspected.",
+  "script_sha256": "996fd74d4da08cf897542725bdb5731e039850fd2e9ecade9382970b38b073f4",
+  "unassayed_limitations": "Extra-cycle sequences have no asserted full-product self-context; local alignments do not establish repeat copy number or global phase.",
+  "verified_members": 205
+}

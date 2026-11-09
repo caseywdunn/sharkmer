@@ -1,0 +1,196 @@
+{
+  "artifacts": {
+    "reads/results-v1/contrasts.tsv": {
+      "bytes": 79788,
+      "sha256": "27b8369db264bc2d504ea1e007e8cda1e4ae7faac0b903fb8d4705d0c1b4d3b7"
+    },
+    "reads/results-v1/evidence_overlay.json": {
+      "bytes": 232299,
+      "sha256": "11e19978872ad2420bd9741dc41ca35c04ea40a0874cbeb658f48d6f3bbd9e4a"
+    },
+    "reads/results-v1/per_candidate.json": {
+      "bytes": 128437,
+      "sha256": "c2b7c2f4525b227d6305d863629bbf8b5acac538d9fc6e6548dcf630bfc673b8"
+    },
+    "reads/results-v1/per_candidate.tsv": {
+      "bytes": 28506,
+      "sha256": "81414aa2667bfd51381322bcc0c0fa7849dd445c941972b9d6117b57c8e5d084"
+    },
+    "reads/results-v1/per_event.tsv": {
+      "bytes": 116888,
+      "sha256": "998ce52e87f85dfdb9fa42eeea73bb9c8e4041b15f6fe77506b0d2a8fedab6c4"
+    },
+    "reads/results-v1/summary.json": {
+      "bytes": 22128,
+      "sha256": "2310823acfd230142823b70e231b485b50cc0771682658abcef1b2e89b1b15a4"
+    },
+    "reads/results-v1/target_summary.tsv": {
+      "bytes": 595,
+      "sha256": "e38a64bbcb598355f2c406166863b6910e61179ce57a3329ed61efafe3e4266f"
+    },
+    "reads/run-v1/ERR14009273/execution.json": {
+      "bytes": 4691,
+      "sha256": "6f4a92677b2f4b00313ace60a2e3e568583d4068187434ec049e699d2851be59"
+    },
+    "reads/run-v1/ERR14009273/raw.json": {
+      "bytes": 340349,
+      "sha256": "c44ca7efc8967c30616a09c7fb2ddde65a8e0e5aea8e6a2140104b44c0775daa"
+    },
+    "reads/run-v1/ERR14009273/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "reads/run-v1/ERR14009273/stdout.log": {
+      "bytes": 464,
+      "sha256": "bc3c62b40123f8083e2fa4713cbd2cbfa6f3218add31f5eaae32234998f3871c"
+    },
+    "reads/run-v1/ERR14009273/time.json": {
+      "bytes": 100,
+      "sha256": "f3255efb46112a821d0045ef661fc82ce8f56d73f3f62ee7737ace773c166910"
+    },
+    "reads/run-v1/SRR1057608/execution.json": {
+      "bytes": 4688,
+      "sha256": "89fa276f23c96bf1232314eeaf19067e1cd6251324348f513b6057916c5ca475"
+    },
+    "reads/run-v1/SRR1057608/raw.json": {
+      "bytes": 292515,
+      "sha256": "5b363696035923322cc71dc6395c2b7e3f1f8968246014ca8aa5476456b1f56f"
+    },
+    "reads/run-v1/SRR1057608/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "reads/run-v1/SRR1057608/stdout.log": {
+      "bytes": 464,
+      "sha256": "3d927226403316574695f12bf4ffcd727443b78eef28eb82e203ea37e3b0386d"
+    },
+    "reads/run-v1/SRR1057608/time.json": {
+      "bytes": 100,
+      "sha256": "0ac654738ef7692a5ec24936ee052e4dd0da47c59b4414866716356d9fa71746"
+    },
+    "reads/run-v1/SRR25378184/execution.json": {
+      "bytes": 4696,
+      "sha256": "4bef27967897b909117a1a489b13d11d4ae3a29e6db08c1cb52614c5e9643465"
+    },
+    "reads/run-v1/SRR25378184/raw.json": {
+      "bytes": 1591154,
+      "sha256": "eebc91f8988efdbd9bcb5ba65d3aab754a95608adbcb540dc9a2e3f0dff14486"
+    },
+    "reads/run-v1/SRR25378184/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "reads/run-v1/SRR25378184/stdout.log": {
+      "bytes": 466,
+      "sha256": "cf2c237fa5160a3c2ba31a40e22b3f1d6d366bef44c3c25e518be145c7fc702f"
+    },
+    "reads/run-v1/SRR25378184/time.json": {
+      "bytes": 100,
+      "sha256": "9a5097569579cfac88c76874b28b6e1d9e366f2b24fe01d152679ac2fd47242f"
+    },
+    "reads/run-v1/SRR27962769/execution.json": {
+      "bytes": 4694,
+      "sha256": "246cf59e6a6762881e85117252989c3869f2e2c5b4a2d68738393d7af96d2a44"
+    },
+    "reads/run-v1/SRR27962769/raw.json": {
+      "bytes": 401169,
+      "sha256": "ae97d384f2ef89b36ea32b73d82dae02a4c63f04f4949c20dada076f1ee363dd"
+    },
+    "reads/run-v1/SRR27962769/stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "reads/run-v1/SRR27962769/stdout.log": {
+      "bytes": 465,
+      "sha256": "e25c7222e6ad16fbbc3a2c6d065ef282aae43616e87eda393e6d954ee37c4610"
+    },
+    "reads/run-v1/SRR27962769/time.json": {
+      "bytes": 100,
+      "sha256": "133a9dacb5bc8192d99e3f446fa9d72027a5f710514569d4151a28ed9cb137b2"
+    }
+  },
+  "complete_count_evidence": "Complete counts are accepted from hash-bound successful prefix scans and independently controlled scanner semantics. This review does not rescan FASTQ; selected ledgers cannot establish negative findings.",
+  "findings": "One Liriodendron atpB-rbcL candidate has all scheduled 61 bp tiles observed at Q20; other 153 candidates have no scheduled tile or callable nearest-contrast exact string in raw or Q20 complete counts.",
+  "focused_candidates": 154,
+  "independent_synthetic_controls_sha256": "1eeacf8c3716caa498395bb6458504d8eff9d6b9820d676455484be342a2f36a",
+  "limitations": [
+    "Saved examples are selected and capped; per-event completeness is verified separately. No global cap was reached.",
+    "All 833 emitted events have at least some eligible reads, but 22 missing-complete-flank endpoint memberships remain explicitly uncallable.",
+    "Observed tiles may be shared or overlapping; covered-base unions are marginal coverage and do not establish a single full-length molecule.",
+    "No exact local observation is not biological absence; reference relationship is assessed separately."
+  ],
+  "positive_controls_pass": 8,
+  "protocol_review_sha256": "32ffb90d9bfe8147399d79ae9f78631fa62575a23a9ed9d0ebc79258755c55a0",
+  "reviewer_source_sha256": "2cf39ea1fe562f3bf2003f7fce0cb690d94680c348a4e53c9a35b26677548a27",
+  "samples": [
+    {
+      "accession": "ERR14009273",
+      "all_candidate_placements_verified": 101,
+      "callable_events": 98,
+      "events_verified": 98,
+      "global_ledger_caps_reached": false,
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 17664,
+        "system_seconds": 0.09,
+        "user_seconds": 21.08,
+        "wall_seconds": 22.39
+      },
+      "positive_controls_pass": 2,
+      "saved_match_positions_independently_checked": 585,
+      "selected_ledger_reads_independently_checked": 317
+    },
+    {
+      "accession": "SRR1057608",
+      "all_candidate_placements_verified": 375,
+      "callable_events": 158,
+      "events_verified": 158,
+      "global_ledger_caps_reached": false,
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 17664,
+        "system_seconds": 0.07,
+        "user_seconds": 17.94,
+        "wall_seconds": 18.97
+      },
+      "positive_controls_pass": 2,
+      "saved_match_positions_independently_checked": 289,
+      "selected_ledger_reads_independently_checked": 197
+    },
+    {
+      "accession": "SRR25378184",
+      "all_candidate_placements_verified": 3396,
+      "callable_events": 444,
+      "events_verified": 444,
+      "global_ledger_caps_reached": false,
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 22764,
+        "system_seconds": 0.12,
+        "user_seconds": 34.81,
+        "wall_seconds": 37.73
+      },
+      "positive_controls_pass": 2,
+      "saved_match_positions_independently_checked": 1651,
+      "selected_ledger_reads_independently_checked": 434
+    },
+    {
+      "accession": "SRR27962769",
+      "all_candidate_placements_verified": 879,
+      "callable_events": 133,
+      "events_verified": 133,
+      "global_ledger_caps_reached": false,
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 18432,
+        "system_seconds": 0.09,
+        "user_seconds": 25.2,
+        "wall_seconds": 26.41
+      },
+      "positive_controls_pass": 2,
+      "saved_match_positions_independently_checked": 387,
+      "selected_ledger_reads_independently_checked": 110
+    }
+  ],
+  "status": "pass"
+}

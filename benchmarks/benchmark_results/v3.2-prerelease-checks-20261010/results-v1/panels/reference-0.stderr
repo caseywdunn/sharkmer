@@ -1,0 +1,33 @@
+Panel 'reference_hydrozoa': skipping deprecated primer 'hydrozoa_28S_2'. Use '28S_1' instead. Reason: Shorter amplicon; use 28S_1 for better phylogenetic resolution.
+sharkmer 3.2.0-dev (dry run)
+
+Input:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+
+Configuration:
+  Sample:         schema_probe
+  Output dir:     /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/reference-0-dry-output/
+  Kmer length:    19
+  Chunks:         0
+  Threads:        2
+  Min kmer count: 2
+  PCR output:     standard and labelled uncertain products
+
+Output files:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/reference-0-dry-output/schema_probe.stats.yaml
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/reference-0-dry-output/schema_probe_hydrozoa_16S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/reference-0-dry-output/schema_probe_hydrozoa_CO1_1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/reference-0-dry-output/schema_probe_hydrozoa_CO1_2.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/reference-0-dry-output/schema_probe_hydrozoa_18S.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/reference-0-dry-output/schema_probe_hydrozoa_ITS_1.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/reference-0-dry-output/schema_probe_hydrozoa_ITS_2.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/reference-0-dry-output/schema_probe_hydrozoa_28S_1.fasta
+
+PCR primers (7 genes):
+  hydrozoa_16S (fwd: GRCTGTTT...CATA, rev: AATTCAAC...GAGG, len: 400-700)
+  hydrozoa_CO1_1 (fwd: WAAYCATA...ATAT, rev: GGRTGMCC...CARA, len: 600-800)
+  hydrozoa_CO1_2 (fwd: TCAACCAA...GCAC, rev: TAGACTTC...ATCA, len: 500-800)
+  hydrozoa_18S (fwd: AACCTGGT...CAGT, rev: TGATCCTT...CTAC, len: 1600-2000)
+  hydrozoa_ITS_1 (fwd: TACACACC...ACTA, rev: ACTCGCCG...RRGG, len: 600-1000)
+  hydrozoa_ITS_2 (fwd: GTAGGTGA...ATCA, rev: ACTCGCCG...RRGG, len: 600-1000)
+  hydrozoa_28S_1 (fwd: CCYYAGTA...GAGT, rev: SWACAGAT...TTCG, len: 2900-3500)

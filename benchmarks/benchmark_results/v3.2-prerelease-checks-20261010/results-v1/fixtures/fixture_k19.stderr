@@ -1,0 +1,2 @@
+No --pcr-panel/--pcr-panel-file/--pcr-primers and --chunks is 0: only a stats file will be produced
+sharkmer complete: 100,000 reads, 13,197,385 kmers, allocator peak 544.0 MB, 3.2s

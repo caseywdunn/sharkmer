@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "status": "planned_pending_review_and_frozen_binary",
+  "purpose": "Evaluate the versioned angiospermae trnV-atpE reverse-primer correction with unchanged assembly policy.",
+  "panel_before": "proposal-v2/angiospermae-before.yaml",
+  "panel_after": "proposal-v2/angiospermae-after.yaml",
+  "input_receipts": "proposal-v2/mapping.json",
+  "execution": {
+    "same_binary_before_after": true,
+    "kmer_length": 19,
+    "threads": 1,
+    "chunks": 0,
+    "full_panel": true,
+    "default_inclusive_output": true,
+    "timeout_seconds_per_invocation": 600,
+    "address_space_limit_bytes": 2147483648,
+    "physical_cpus": 1,
+    "sequential_invocations": true,
+    "fresh_output_directories": true,
+    "binary_and_panel_hashes_before_after": true,
+    "run_receipts_require": ["exact_command", "exit_status", "wall_seconds", "peak_rss", "input_prefix_digest", "output_file_digests", "stats", "manifest_completion_state"]
+  },
+  "synthetic": {
+    "source_accessions": ["NC_008326.1", "NC_056221.1"],
+    "input_format": "All 151-base windows in both orientations from the old source interval plus 100 bp flanks; Phred40; no mutations.",
+    "panel_variants": ["before", "after"],
+    "expected_corrected_source_intervals": [
+      {"accession": "NC_008326.1", "start": 55525, "end": 56434, "length": 909},
+      {"accession": "NC_056221.1", "start": 54176, "end": 55105, "length": 929}
+    ],
+    "assertions": [
+      "Search all emitted standard and uncertain records for the exact independently extracted corrected interval; report every discrepancy and status.",
+      "The legacy canonical source interval is above max_length1000 and cannot be admitted as an in-range product.",
+      "Do not assume the old panel emits zero shorter alternative graph paths; enumerate them if present.",
+      "Synthetic source reconstruction is an assembler diagnostic, not evidence for a real-sample haplotype."
+    ]
+  },
+  "real": {
+    "sample_accessions": ["SRR25378184", "ERR14009273"],
+    "panel_variants": ["before", "after"],
+    "reads": "Same previously verified first 1000000 raw R1 FASTQ records for each accession.",
+    "controls": "Other nine primer definitions are identical; compare each by literal sequence SHA-256, multiplicity, assembly_status and search-limit diagnostics.",
+    "changed_target": "Enumerate all before/after trnV-atpE records; report exact and partial independent-reference matches separately. Output changes for this redesigned assay are not an unchanged-assay retention comparison.",
+    "claim_limits": [
+      "A matching public reference establishes independent sequence/target support, not full phasing in the sequenced sample.",
+      "Acer opalus references are related-species proxies for Acer monspessulanum.",
+      "No assembly admission gates, repeat policy, retention bounds or output inclusion policy change.",
+      "Runtime results from these bounded checks do not replace collaborator performance assessment before release."
+    ]
+  },
+  "release_authorized": false
+}

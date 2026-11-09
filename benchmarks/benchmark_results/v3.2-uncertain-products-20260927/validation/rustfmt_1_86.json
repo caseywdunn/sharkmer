@@ -1,0 +1,68 @@
+{
+  "timestamp_utc": "2026-09-27T20:58:53.671442+00:00",
+  "module": "Rust/1.86.0-GCCcore-13.3.0",
+  "initial_format_check": "Parsed all Rust files; formatting differences confined to changed/new sources",
+  "commands": [
+    {
+      "argv": [
+        "rustfmt",
+        "--version"
+      ],
+      "exit_code": 0,
+      "stdout": "rustfmt 1.8.0\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "formatted_files": [
+    "src/cli.rs",
+    "src/pcr/mod.rs",
+    "src/pcr/repeat_tests.rs",
+    "src/pcr/uncertain.rs",
+    "src/stats.rs",
+    "tests/uncertain_products.rs"
+  ],
+  "unexpected_formatted_files": [],
+  "rust_tests_status": "not_compiled_or_executed; supported compiler still required; no feature overrides used",
+  "after_sha256": {
+    "src/cli.rs": "558fdc4ebb75602dc1b078eafe77d539ac4093bbc58541c5dd939d84ef5d5e62",
+    "src/main.rs": "f32e0a2409200eae6606b0ca397744d64aa9ed17726c0a1c6399ba9ccce11dd6",
+    "src/pcr/mod.rs": "9bffe8224f0fd17333c40fc5185f5996db67233c6e2bf03da2d3f424ff884aa0",
+    "src/pcr/paths.rs": "5e04df471002c3c95a209709aa72d674e9e6ca19012f6300cf7cc04eef93b4cd",
+    "src/pcr/primers.rs": "77040755dbd78ac8e9cfb173b069dc4c52740ac18784caede5f2a1a21f5770b2",
+    "src/pcr/repeat_tests.rs": "d03b972f1755cbe324ffc53f7fa3bc04d0bb6c6c2b8a264251397ea65c555d0d",
+    "src/pcr/uncertain.rs": "9b31a33cd5959c1926eb5d1f7970ddd9af606baf212af90f45123940114e5837",
+    "src/stats.rs": "caff30bb8d103c77683bb63c23e43f6274c7b6c32683195bbcbfb4f0a7211c2d",
+    "tests/uncertain_products.rs": "e57999d9a33fa9b1f2dba9e2930b7a7a724e47653c097ed115cbe925016c6f21"
+  }
+}

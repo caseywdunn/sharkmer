@@ -1,0 +1,214 @@
+{
+  "address_space_bytes": 42949672960,
+  "baseline": "956e771437a2410a7bcbb1504b033c61dd1e11b6",
+  "branch": "experiment/its-read-threading",
+  "commands": [
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_its_recruitment.py",
+        "--fastq",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/data/its-recruitment-20260925/SRR27962769.first1M_R1.retry1.fastq",
+        "--manifest",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/manifest.json",
+        "--expected-prefix",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/expected_prefix.json",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/its-recruitment-20260925/run-v1/recruitment.json"
+      ],
+      "id": "recruitment"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py",
+        "--fastq",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/data/its-recruitment-20260925/SRR27962769.first1M_R1.retry1.fastq",
+        "--events",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/co1_control_manifest.json",
+        "--expected-prefix",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/expected_prefix.json",
+        "--max-substitutions",
+        "0",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/its-recruitment-20260925/run-v1/co1_substitutions_0.json"
+      ],
+      "id": "co1_substitutions_0"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py",
+        "--fastq",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/data/its-recruitment-20260925/SRR27962769.first1M_R1.retry1.fastq",
+        "--events",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/co1_control_manifest.json",
+        "--expected-prefix",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/expected_prefix.json",
+        "--max-substitutions",
+        "1",
+        "--output",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/its-recruitment-20260925/run-v1/co1_substitutions_1.json"
+      ],
+      "id": "co1_substitutions_1"
+    }
+  ],
+  "fastq": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/data/its-recruitment-20260925/SRR27962769.first1M_R1.retry1.fastq",
+  "frozen_utc": "2026-09-26T14:14:35.141356+00:00",
+  "input_identity": {
+    "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+    "size_bytes": 365356898
+  },
+  "python": "3.9.21 (main, May 11 2026, 00:00:00) \n[GCC 11.5.0 20240719 (Red Hat 11.5.0-5)]",
+  "root": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer",
+  "run_dir": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/its-recruitment-20260925/run-v1",
+  "schema_version": 1,
+  "sources": {
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/README.md": {
+      "sha256": "ca7ecf89964b850985b24160e53efa01ab949b121e788555c873964d0d2d4b6f",
+      "size_bytes": 3124
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/derivation_reproduction_receipt.json": {
+      "sha256": "5233eb5910c8670b03e0c7c5d51ffc1f24b13fb6b9e7788971981e874b3ed4dc",
+      "size_bytes": 2663
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/manifest.json": {
+      "sha256": "8a61d8a1982fb5e4f2ad2cd40585a150f533066ad09949f9213cf66ebf1bc582",
+      "size_bytes": 7160
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/candidate.json": {
+      "sha256": "3d3aac8b03478363c1c79413d855344d6908f1c6b7e415bc0d9f8dcc17581683",
+      "size_bytes": 3282
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/co1_control_manifest.json": {
+      "sha256": "3da888e302751668165c2a50e84cba19d3511203454ea5df7ba1a4aa3755254d",
+      "size_bytes": 8802
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/expected_prefix.json": {
+      "sha256": "ad67cd0d405ba6ad76d768361ada1238ac4ea666e41f3d5a45f11d070a586810",
+      "size_bytes": 154
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/prior_read_manifest.json": {
+      "sha256": "7085036d70e9d9e8f85987fab561eec4946b36aabf776d6c15916e465500d608",
+      "size_bytes": 115195
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/source_manifest.json": {
+      "sha256": "d4559a0381bbe1f96b077040ac055704cf45343f02248bc33b30076869a4647b",
+      "size_bytes": 1733
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/local_assays/region_1.scanner_manifest.json": {
+      "sha256": "b0e7e4c9b25b9dbce9a06570a87e80ccf41f473b2a24c637dec8a109b75edd82",
+      "size_bytes": 13898
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/local_assays/region_2.scanner_manifest.json": {
+      "sha256": "33d7921f42c9d20f1536e632fdead3cabd430b207c0dfcc648c38124d79a41d2",
+      "size_bytes": 15650
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/provenance.json": {
+      "sha256": "011ed471b587a3b4bc50bbf52887e69ede37d6a162aef3e8d734e83c12c738e6",
+      "size_bytes": 5502
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/restore_derive_inputs.py": {
+      "sha256": "996fd74d4da08cf897542725bdb5731e039850fd2e9ecade9382970b38b073f4",
+      "size_bytes": 9285
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/verification_receipt.json": {
+      "sha256": "04de898682a64a754618559de1ee40ed277d639c9cc7961f9326c26e36875da1",
+      "size_bytes": 4760
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/verify_inputs.py": {
+      "sha256": "f7263a2748189b9dbc831a53cebd855313597590b79101da365b8c70808bc217",
+      "size_bytes": 12279
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/restoration/SRR27962769.first1M_R1.fastq.restore.json": {
+      "sha256": "6283aa9a12f954a1a754ed9446a63ab05a079dda76d099b59e91be8fac8f1831",
+      "size_bytes": 265
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/restoration/SRR27962769.first1M_R1.retry1.fastq.restore.json": {
+      "sha256": "f6214895ecfded0a1a1a8df6ee3dc3a73cac1919530e97dd15103b42771b1a9f",
+      "size_bytes": 807
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/restore_prefix.py": {
+      "sha256": "f3f9b2d0974564698ccf971953c53657466c72fc745283e0f51cd93cfd2445ab",
+      "size_bytes": 3415
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/FINAL_PROTOCOL_RUNNER_REVIEW.md": {
+      "sha256": "0913647059c8f954b541dda24343626d6aaf95a3319193c61b8642587b0bb58d",
+      "size_bytes": 2870
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/INDEPENDENT_REVIEW.md": {
+      "sha256": "92b54e50ceacf5f25311c907fdf252c8f75911dce674ada3c27d807a735dde32",
+      "size_bytes": 6062
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/final_execution_review.json": {
+      "sha256": "9c2d091e696fa25cb4cb3e5b6130ac437ae10774ea86d43e8a65949a99d0ecb3",
+      "size_bytes": 2678
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/independent_cli_results.initial.json": {
+      "sha256": "00fedae46e2b25d4f45c65e74585aa3ff2377eb6fdcd71a3bcb7b5d9d5c68cf4",
+      "size_bytes": 710
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/independent_cli_review.py": {
+      "sha256": "a05b279ef5ffb1d257172f75dd5ffb13e47c08096d288e38f797a867c7eb312f",
+      "size_bytes": 4069
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/independent_synthetic_results.final.json": {
+      "sha256": "93a57911219fb6903c0eb538f45e99e49a9282e629c78f6fdcb1d3d73171c552",
+      "size_bytes": 19061
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/independent_synthetic_results.initial.json": {
+      "sha256": "3e12e48e0bbfe07211d48e9f9d41b507b4cf6cd84db98d9cef95a5c0cd4c8776",
+      "size_bytes": 18372
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/independent_synthetic_results.updated.json": {
+      "sha256": "a03d02b20d53320bd25e0c5da9122f49ede9c1645771f937f4f5cef113c1525d",
+      "size_bytes": 19062
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/independent_synthetic_review.py": {
+      "sha256": "95a8b2ac9ebdee6970745e69975955dc46f33ee88907eaf2f9c551dc23cb2241",
+      "size_bytes": 11174
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/review_binding.json": {
+      "sha256": "5d20a90e94450c3e49a56391209424ec933f56801907406cf7e6a1839d7d72ba",
+      "size_bytes": 3001
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/runner_synthetic_results.json": {
+      "sha256": "eb2bbb325980b2537fb6ebd908fbd69b35d7c2e41e8e0ac6a12c2ba05d241b7a",
+      "size_bytes": 1526
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/scanner_tests.final.log": {
+      "sha256": "197da0273cc4cf21342818d45405d23a43fed86d934039c2c41a787c1da27ef9",
+      "size_bytes": 2771
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/review/test_runner_independent.py": {
+      "sha256": "8f761882870142157368af65f20e980cfdb5df17fa3e4fffe00a06dfb9f64145",
+      "size_bytes": 10177
+    },
+    "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/run_experiment.py": {
+      "sha256": "aa5151784d0b08b9242b9e9bd36f319c16602692d95c473c128fdfcbf4280743",
+      "size_bytes": 10446
+    },
+    "dev_docs/ITS_READ_RECRUITMENT_PROTOCOL.md": {
+      "sha256": "21e713458e802d2a60cdc2c42873ab9de82706aa1bb25b4b4e65548c154c856d",
+      "size_bytes": 10588
+    },
+    "scripts/audit_its_recruitment.py": {
+      "sha256": "5c6268e840a626eb980713da8b0a1992030c50bad0e258241dcce703b3f0a75d",
+      "size_bytes": 33328
+    },
+    "scripts/audit_read_bridges.py": {
+      "sha256": "f6f1371bb4884c2a8e9475e5c56b99a30b8c429267a294cdeba19905db411983",
+      "size_bytes": 14031
+    },
+    "tests/test_its_recruitment.py": {
+      "sha256": "0e3f8392659385c970fea136db716dfa52fc9f169976c8bc8738d2a4ce5c6a2e",
+      "size_bytes": 26237
+    },
+    "tests/test_read_bridges.py": {
+      "sha256": "7011db475b149cf92fc07660fba91dc660406a2be5af4e95a81a55302499b2ab",
+      "size_bytes": 11165
+    }
+  },
+  "statement": "Protocol, sources, inputs, synthetic review, and argv frozen before new biological scans",
+  "timeout_seconds_per_command": 1800
+}

@@ -1,0 +1,22 @@
+{
+  "errors": 0,
+  "failures": 0,
+  "original_scanner_position_comparison_cases": 27,
+  "randomized_brute_force_matcher_cases": 600,
+  "scope": "Synthetic independent exact matching, raw/Q20 counts, orientation/overlap, quality, callability, capped ledger and prefix-attestation controls; no experimental FASTQ scan",
+  "source_hashes_after": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/scan_exact_v2.py": "7c842a406f0f2d90facd85e788ac565a9235315d41c14505968a36cd76a8347c",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/check_exact_independent_v2.py": "2d670afb14377bb5b7738be69455cba49d95a99c9adcef072907a8362660146d",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py": "f6f1371bb4884c2a8e9475e5c56b99a30b8c429267a294cdeba19905db411983"
+  },
+  "source_hashes_before": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/scan_exact_v2.py": "7c842a406f0f2d90facd85e788ac565a9235315d41c14505968a36cd76a8347c",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/check_exact_independent_v2.py": "2d670afb14377bb5b7738be69455cba49d95a99c9adcef072907a8362660146d",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py": "f6f1371bb4884c2a8e9475e5c56b99a30b8c429267a294cdeba19905db411983"
+  },
+  "sources_unchanged": true,
+  "status": "pass",
+  "test_log": "test_candidate_placements_preserve_orientations_and_repeats (__main__.IndependentControls) ... ok\ntest_example_quotas_do_not_truncate_counts (__main__.IndependentControls) ... ok\ntest_global_base_cap_keeps_all_counts (__main__.IndependentControls) ... ok\ntest_global_match_cap_counts_full_observation_payload (__main__.IndependentControls) ... ok\ntest_global_read_cap_zero_keeps_all_counts (__main__.IndependentControls) ... ok\ntest_length_callability_counts_short_records_honestly (__main__.IndependentControls) ... ok\ntest_palindromic_overlaps_are_physical_occurrences (__main__.IndependentControls) ... ok\ntest_q20_positions_equal_original_scanner_after_palindrome_normalization (__main__.IndependentControls) ... ok\ntest_quality_applies_to_each_complete_physical_span (__main__.IndependentControls) ... ok\ntest_randomized_matcher_equals_independent_brute_force (__main__.IndependentControls) ... ok\ntest_scan_attests_prefix_and_rejects_changed_expected_hash (__main__.IndependentControls) ... ok\ntest_shared_read_bonus_preserves_all_event_observations (__main__.IndependentControls) ... ok\n\n----------------------------------------------------------------------\nRan 12 tests in 0.117s\n\nOK\n",
+  "tests_run": 12,
+  "wall_seconds": 0.11805214686319232
+}

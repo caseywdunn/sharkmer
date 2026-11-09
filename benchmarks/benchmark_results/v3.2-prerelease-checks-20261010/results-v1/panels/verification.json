@@ -1,0 +1,566 @@
+{
+  "binary": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+    "sha256": "3a6505da2750982c333b077a065ad9e0cd0e6607c6963fa7140a0b44da71a899",
+    "size_bytes": 7040024
+  },
+  "builtin_exports": 9,
+  "jsonschema_version": "4.26.0",
+  "loader_dry_runs": 19,
+  "panels": [
+    {
+      "commands": [
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "--export-panel",
+            "angiospermae"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-0-dry-output",
+            "--dry-run",
+            "--pcr-panel",
+            "angiospermae",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/angiospermae-1-dry-output",
+            "--dry-run",
+            "--pcr-panel-file",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/angiospermae.yaml",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        }
+      ],
+      "panel": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/angiospermae.yaml",
+        "sha256": "99d1c629953a0d0a9e70f4c0414047c7d7b9e0a69d07d88bedff1c47b107b14e",
+        "size_bytes": 31657
+      },
+      "schema": "pass"
+    },
+    {
+      "commands": [
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "--export-panel",
+            "bacteria"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/bacteria-0-dry-output",
+            "--dry-run",
+            "--pcr-panel",
+            "bacteria",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/bacteria-1-dry-output",
+            "--dry-run",
+            "--pcr-panel-file",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/bacteria.yaml",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        }
+      ],
+      "panel": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/bacteria.yaml",
+        "sha256": "3a3a9df11359cd1736f2edd52279d2ddb4c6a819dbf797fab59ba55ceae842ae",
+        "size_bytes": 2618
+      },
+      "schema": "pass"
+    },
+    {
+      "commands": [
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "--export-panel",
+            "c_elegans"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/c_elegans-0-dry-output",
+            "--dry-run",
+            "--pcr-panel",
+            "c_elegans",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/c_elegans-1-dry-output",
+            "--dry-run",
+            "--pcr-panel-file",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/c_elegans.yaml",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        }
+      ],
+      "panel": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/c_elegans.yaml",
+        "sha256": "08127fcf98cf374b07dcbfffc321bb2c179c413019d0c23f7e4fb33421125dc0",
+        "size_bytes": 32377
+      },
+      "schema": "pass"
+    },
+    {
+      "commands": [
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "--export-panel",
+            "cnidaria"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/cnidaria-0-dry-output",
+            "--dry-run",
+            "--pcr-panel",
+            "cnidaria",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/cnidaria-1-dry-output",
+            "--dry-run",
+            "--pcr-panel-file",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/cnidaria.yaml",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        }
+      ],
+      "panel": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/cnidaria.yaml",
+        "sha256": "95e8e3c4c4285c3e00767714af6b4ab34cc782af08cd0ef6c13c65794c5f58f8",
+        "size_bytes": 66332
+      },
+      "schema": "pass"
+    },
+    {
+      "commands": [
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "--export-panel",
+            "human"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/human-0-dry-output",
+            "--dry-run",
+            "--pcr-panel",
+            "human",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/human-1-dry-output",
+            "--dry-run",
+            "--pcr-panel-file",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/human.yaml",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        }
+      ],
+      "panel": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/human.yaml",
+        "sha256": "5219c2ae2a44a1ca0416f4fefe46fbe4d116c8cb64d31fc5805e23c900e95fd3",
+        "size_bytes": 32626
+      },
+      "schema": "pass"
+    },
+    {
+      "commands": [
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "--export-panel",
+            "hydrozoa"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/hydrozoa-0-dry-output",
+            "--dry-run",
+            "--pcr-panel",
+            "hydrozoa",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/hydrozoa-1-dry-output",
+            "--dry-run",
+            "--pcr-panel-file",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/hydrozoa.yaml",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        }
+      ],
+      "panel": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/hydrozoa.yaml",
+        "sha256": "69eded39844fc460c96ea2636b10b720551cd3dfb6690e3e4ed7c5417019d879",
+        "size_bytes": 72868
+      },
+      "schema": "pass"
+    },
+    {
+      "commands": [
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "--export-panel",
+            "insecta"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-0-dry-output",
+            "--dry-run",
+            "--pcr-panel",
+            "insecta",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/insecta-1-dry-output",
+            "--dry-run",
+            "--pcr-panel-file",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/insecta.yaml",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        }
+      ],
+      "panel": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/insecta.yaml",
+        "sha256": "a28cd3b2d045270b3f6bf3e2e6f9362a4dfb6d55c6adb42d445461ec95a64160",
+        "size_bytes": 72108
+      },
+      "schema": "pass"
+    },
+    {
+      "commands": [
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "--export-panel",
+            "metazoa"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/metazoa-0-dry-output",
+            "--dry-run",
+            "--pcr-panel",
+            "metazoa",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/metazoa-1-dry-output",
+            "--dry-run",
+            "--pcr-panel-file",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/metazoa.yaml",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        }
+      ],
+      "panel": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/metazoa.yaml",
+        "sha256": "a024b2b9ee3b41495028fba53291236f8c576165459a6b5819f51bead4853314",
+        "size_bytes": 3265
+      },
+      "schema": "pass"
+    },
+    {
+      "commands": [
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "--export-panel",
+            "teleostei"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/teleostei-0-dry-output",
+            "--dry-run",
+            "--pcr-panel",
+            "teleostei",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        },
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/teleostei-1-dry-output",
+            "--dry-run",
+            "--pcr-panel-file",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/teleostei.yaml",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        }
+      ],
+      "panel": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/teleostei.yaml",
+        "sha256": "ad077a381996f6d50cd548a88aa683464fefb409d6686e51cc2a49e033aba67c",
+        "size_bytes": 16053
+      },
+      "schema": "pass"
+    },
+    {
+      "commands": [
+        {
+          "command": [
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+            "-k",
+            "19",
+            "-t",
+            "2",
+            "--chunks",
+            "0",
+            "-s",
+            "schema_probe",
+            "-o",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/reference-0-dry-output",
+            "--dry-run",
+            "--pcr-panel-file",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/examples/reference.yaml",
+            "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+          ],
+          "returncode": 0
+        }
+      ],
+      "panel": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/examples/reference.yaml",
+        "sha256": "2441a7ea422c8f45b912a432191f84bb5cd4b8930af6755ba53a9b2ac6b5b44d",
+        "size_bytes": 11382
+      },
+      "schema": "pass"
+    }
+  ],
+  "schema_checks": 10,
+  "status": "pass"
+}

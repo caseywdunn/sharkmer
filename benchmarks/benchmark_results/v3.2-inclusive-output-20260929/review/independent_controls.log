@@ -1,0 +1,11 @@
+test_class_partition_cannot_hide_duplicate_id (test_combined_independent.IndependentCombinedControls) ... ok
+test_outer_schema2_and_inner_assessment_schema1_are_distinct (test_combined_independent.IndependentCombinedControls) ... ok
+test_quoted_duplicate_and_empty_status_are_not_classes (test_combined_independent.IndependentCombinedControls) ... ok
+test_relabeling_stats_as_legacy_cannot_admit_manifest2 (test_combined_independent.IndependentCombinedControls) ... ok
+test_requested_standard_file_does_not_bypass_other_uncertain_only_validation (test_combined_independent.IndependentCombinedControls) ... ok
+test_suffix_named_target_has_disjoint_record_ids_and_standard_selection (test_combined_independent.IndependentCombinedControls) ... ok
+test_unowned_legacy_sidecar_is_ignored_but_cannot_join_current_receipts (test_combined_independent.IndependentCombinedControls) ... ok
+
+Ran 7 tests in 0.145s
+
+OK

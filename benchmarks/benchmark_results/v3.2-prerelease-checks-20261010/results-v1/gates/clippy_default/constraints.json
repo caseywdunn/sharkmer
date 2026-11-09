@@ -1,0 +1,31 @@
+{
+  "affinity": [
+    25,
+    40
+  ],
+  "command": [
+    "/usr/bin/time",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/time.json",
+    "-f",
+    "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+    "--",
+    "cargo",
+    "clippy",
+    "--all-targets",
+    "--locked",
+    "--offline",
+    "-j",
+    "2",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "pid": 170866,
+  "rlimit_as_soft_hard": [
+    12884901888,
+    12884901888
+  ],
+  "status": "pass",
+  "unix_time": 1791726848.6953905
+}

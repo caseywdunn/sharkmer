@@ -5,6 +5,127 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] - 2026-11-09
+
+Sharkmer 3.2 includes bounded repeat-uncertain hypotheses in the normal FASTA
+output, with readable warnings and an option to exclude them. Ordinary headers
+omit warning fields. Recovery, repeat handling, cache ownership, and interrupted
+output handling are corrected; the `angiospermae` panel also receives an assay
+correction with changed sequence boundaries.
+
+The scoped historical-panel comparison retains all 86 v3.1 sequence identities;
+22 now carry warnings. Additional records are hypotheses, not validated loci or
+haplotypes. Independent held-out data and biological validation across all nine
+panels remain future work, so these results do not establish general precision,
+recall, or repeat correctness. The focused performance comparison finds runtime
+increases of 0.21–1.45% on three longer workloads and 0.04 s on Human, with median
+RSS changes below 0.15%. See [the review](dev_docs/REVIEW_v3.2.md) and
+[sequence-retention results](dev_docs/SEQUENCE_RETENTION_RESULTS.md).
+
+### Added
+
+- Default inclusion of bounded repeat-uncertain hypotheses in each target's
+  normal FASTA, with `assembly_status=warning` and readable
+  `assembly_status_causes` on warning-bearing records; records without warnings
+  omit status. `--no-emit-uncertain` requests records without warnings.
+  Stats describe total output
+  and separate standard/uncertain counts; uncertain-only targets report that
+  status. Schema-3 manifests distinguish the new combined format. Standard
+  assembly gates, validation and reference-bootstrap selection remain
+  unchanged; previous owned split outputs migrate safely (#157).
+- Per-product validation with collinear alignment coverage, explicit
+  wrong-gene/ambiguous/conflicting/unreferenced outcomes, checksummed executable and
+  input provenance, stage timings, and separately identified allocator-heap
+  and process-RSS measurements (#129). Historical inputs remain calibration
+  data, not independently held-out biological validation.
+- Public-record reference catalog, exact extraction provenance, offline audit,
+  known annotation-conflict exclusions, and anti-promotion bootstrap guards
+  (#129). The complete audit preserves all 159 historical references separately;
+  subsequent annotation-reviewed public replacements expand active panels to
+  158 independently sourced regions, covering 60 of 61 quarantined entries
+  (including the already replaced documentation example and the versioned
+  plant-assay correction). One remains unresolved; related taxa and partial
+  loci are not asserted sample truth.
+- Current-run output manifests with run identity, completion state, and
+  SHA-256 receipts. FASTA/stats publication is staged and coordinated by a
+  per-sample lease; interrupted runs cannot be validated as complete (#134).
+- Checked primer expansion work and allocation-count limits before read
+  ingestion or ENA resolution (#135).
+
+### Fixed
+
+- Correct the declared minimum Rust version to 1.88, matching the let-chain
+  syntax already used by the source (#164).
+- Update locked `rand` to 0.8.6 and `rustls-webpki` to 0.103.13 for the four
+  reviewed dependency alerts; require at least rand 0.8.6 in the manifest.
+- Correct the `angiospermae` `trnV-atpE` reverse primer from atpB S1022 to
+  published atpE/trnV_6R, with exact independent public-region references
+  (#156). Panel **2.0.0** retains the target name but changes its sequence
+  boundaries incompatibly with panel 1.x. This extended marker includes
+  the complete atpE gene and ends at the overlapping atpE/atpB boundary;
+  it is not a pure intergenic spacer. Other primers and assay limits are
+  unchanged.
+- Read every member of concatenated gzip inputs during ingestion, caching,
+  and read-threading replay (#130).
+- Retry lower coverage thresholds until a valid in-range amplicon is found,
+  rather than stopping at graph connectivity. Retain shared high-coverage
+  primer backbones without overriding the configured coverage ratio (#131).
+- Exclude paths crossing unresolved repeat-length regions from standard
+  admission instead of confidently reporting shortened homopolymer/tandem-repeat
+  products (#132).
+- Keep repeat-rejected candidates from consuming the valid-product path
+  quota; continue searching for clean routes within the existing DFS, length,
+  and node-visit limits (#154).
+- Scope retained high-coverage graph-collision uncertainty to the exact edge
+  traversed, while preserving conservative self-loop and cyclic-component
+  withholding. Record bounded per-threshold search and repeat-cause diagnostics
+  for successful and failed genes (#155).
+- Include interior reads in optional threading; normalize strands, preserve
+  invalid-base gaps, and count support once per FASTQ record or paired fragment,
+  without repeated-visit or overlapping-mate inflation (#133).
+- Correct floor rounding of even-sized integer k-mer count medians without
+  overflow (#136).
+- Serialize cooperating cache users through replay, retain verified entries
+  during replacement downloads, and clear only checksum-verified owned pairs
+  rather than recursively deleting the supplied cache directory (#137).
+
+### Changed
+
+- Share local and CI release checks through `scripts/release-check`, including
+  release metadata, both Rust backends, panel loaders, and pinned sequence
+  fixtures; verify tag/version agreement automatically (#164).
+- Clarify sequence annotations (#159). Warning causes
+  identify unresolved homopolymer length, unresolved repeat structure, or a
+  suspected high-coverage repeat. Omit unevaluated read-support fields and keep
+  detailed diagnostic provenance and target-wide limits in stats. Preserve
+  released ordinary-header fields, sequence identifiers, and delivered sequences.
+  Readers retain older output contracts; removal or renaming of released
+  fields is deferred to v4.0.
+- Reference evaluation separates variant-tolerant gene support, sequence
+  relationship, unestablished haplotype truth, and unevaluated read support.
+  New outputs use `gene_supported_*`, not `confirmed_product`; compatible
+  split alignments alone are not chimeras. Legacy panels still load in the
+  updated binary, but new provenance-bearing panels require the updated loader
+  (#129). Counting and repeat policies are unchanged by this evaluation update.
+- Reviewed indexed targets share gene-level reference evidence without claiming
+  primer-region identity. ITS grouping is restricted to reviewed panel/primer
+  definitions; arbitrary external ITS labels remain distinct (#129).
+- Reruns invalidate only verified outputs owned by the same sample. Modified,
+  unowned, and symlink collisions, including unowned legacy files, are preserved
+  and refused; use a fresh output directory to retain prior results. Histogram
+  and DOT files are outside the output transaction (#134).
+- Cache-wide leases currently serialize whole runs sharing a directory.
+  Clearing preserves the directory/lock and ambiguous or modified entries;
+  forced-interruption leftovers may require a fresh cache directory or
+  `--no-cache`. Older clients ignoring the lock are not coordinated (#137).
+- PCR requires positive effective primer trim and k >= 2; counting-only k=1
+  remains supported. Excessive primer ambiguity/mismatch expansion fails
+  early with actionable limits (#135).
+- Documentation and diagnostics distinguish local assembly evidence from
+  full-haplotype support, per-target depth from whole-genome depth, and
+  allocator heap from RSS. Removed obsolete flag guidance and corrected panel
+  schema/deprecation descriptions (#138).
+
 ## [3.1.0] - 2026-04-13
 
 ### Added
@@ -268,6 +389,7 @@ details.
 - Bioconda recipe for binary distribution
 - sharkmer_viewer Python tool for histogram visualization
 
+[3.2.0]: https://github.com/caseywdunn/sharkmer/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/caseywdunn/sharkmer/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/caseywdunn/sharkmer/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/caseywdunn/sharkmer/compare/v1.0.1...v2.0.0

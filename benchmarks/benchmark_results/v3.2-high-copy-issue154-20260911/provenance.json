@@ -1,0 +1,764 @@
+{
+  "builds": {
+    "created_at": "2026-09-11T13:08:41.348891+00:00",
+    "schema_version": 1,
+    "versions": {
+      "candidate": {
+        "binary_path": "/tmp/sharkmer-high-copy-20260911/issue154-build/binaries/sharkmer-candidate",
+        "binary_sha256": "bcbac0dd58940bbb381970abfd35a06dd9ab2b0f7933674e3fe242e02673a367",
+        "binary_version": "sharkmer 3.2.0-dev (https://github.com/caseywdunn/sharkmer)",
+        "build_command": [
+          "cargo",
+          "build",
+          "--locked",
+          "--offline",
+          "--release",
+          "--message-format=json-render-diagnostics"
+        ],
+        "build_cwd": "/tmp/sharkmer-high-copy-20260911/issue154-build/sources/candidate",
+        "build_environment": {
+          "CARGO_ENCODED_RUSTFLAGS": null,
+          "CARGO_TARGET_DIR": "/tmp/sharkmer-high-copy-20260911/issue154-build/targets/candidate",
+          "RUSTC_WORKSPACE_WRAPPER": null,
+          "RUSTC_WRAPPER": null,
+          "RUSTFLAGS": null
+        },
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "cargo_artifact_features": [
+          "ahashmap",
+          "default"
+        ],
+        "cargo_artifact_profile": {
+          "debug_assertions": false,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": false,
+          "test": false
+        },
+        "cargo_lock_sha256": "e2c47a967781a25ef845cea33bbb99e6a2cb20e50328a9bb5a651eac9190ff0b",
+        "commit": "7b057dcde7594fd64cc0f23903f49c3fa1c23974",
+        "git_tree_oid": "ca7b3d61a314fbfd8033307b7fdef042e1775430",
+        "release_tag": null,
+        "release_tag_commit": null,
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "source_archive": "/tmp/sharkmer-high-copy-20260911/issue154-build/candidate-source.tar",
+        "source_archive_sha256": "8d9081814aa29d1e6800ea8f0f03cd07c7d222277a35841a05baa4a7529c91fa",
+        "source_binding": "built_from_verified_clean_git_archive_with_locked_dependencies",
+        "source_export": "/tmp/sharkmer-high-copy-20260911/issue154-build/sources/candidate",
+        "source_export_pristine_after_build": true,
+        "source_tree_sha256_after_build": "2fe1d9dee900ef10bbba2cb48f23f54a0f69e923aba8fb7277e529031f0544b5",
+        "source_tree_sha256_before_build": "2fe1d9dee900ef10bbba2cb48f23f54a0f69e923aba8fb7277e529031f0544b5"
+      },
+      "pre_fix": {
+        "binary_path": "/tmp/sharkmer-high-copy-20260911/issue154-build/binaries/sharkmer-pre_fix",
+        "binary_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+        "binary_version": "sharkmer 3.2.0-dev (https://github.com/caseywdunn/sharkmer)",
+        "build_command": [
+          "cargo",
+          "build",
+          "--locked",
+          "--offline",
+          "--release",
+          "--message-format=json-render-diagnostics"
+        ],
+        "build_cwd": "/tmp/sharkmer-high-copy-20260911/issue154-build/sources/pre_fix",
+        "build_environment": {
+          "CARGO_ENCODED_RUSTFLAGS": null,
+          "CARGO_TARGET_DIR": "/tmp/sharkmer-high-copy-20260911/issue154-build/targets/pre_fix",
+          "RUSTC_WORKSPACE_WRAPPER": null,
+          "RUSTC_WRAPPER": null,
+          "RUSTFLAGS": null
+        },
+        "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+        "cargo_artifact_features": [
+          "ahashmap",
+          "default"
+        ],
+        "cargo_artifact_profile": {
+          "debug_assertions": false,
+          "debuginfo": 0,
+          "opt_level": "3",
+          "overflow_checks": false,
+          "test": false
+        },
+        "cargo_lock_sha256": "e2c47a967781a25ef845cea33bbb99e6a2cb20e50328a9bb5a651eac9190ff0b",
+        "commit": "47536207e4b7e6570fc1169436a7af47a51a9c99",
+        "git_tree_oid": "90736609b29ecafe587d3e69823b2eace0ce1437",
+        "release_tag": null,
+        "release_tag_commit": null,
+        "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+        "source_archive": "/tmp/sharkmer-high-copy-20260911/issue154-build/pre_fix-source.tar",
+        "source_archive_sha256": "a9f87b74d660a905d05c3ca587ac748a01fe2f4e69457d4c6723bf488341713d",
+        "source_binding": "built_from_verified_clean_git_archive_with_locked_dependencies",
+        "source_export": "/tmp/sharkmer-high-copy-20260911/issue154-build/sources/pre_fix",
+        "source_export_pristine_after_build": true,
+        "source_tree_sha256_after_build": "55234da0e1b77f0e66a1ac2a73ad2ac30f2d165908e250b87ae24176fc7436d7",
+        "source_tree_sha256_before_build": "55234da0e1b77f0e66a1ac2a73ad2ac30f2d165908e250b87ae24176fc7436d7"
+      }
+    }
+  },
+  "cpu_affinity": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "frozen_receipts": {
+    "build_wrapper": {
+      "path": "/tmp/sharkmer-high-copy-20260911/issue154-execution/receipts/build.py",
+      "sha256": "bf733a1a2c713cf33b2be722e2487f83f2f259442b7fd76d78e3993af5c4c0a0",
+      "size_bytes": 844
+    },
+    "builder": {
+      "path": "/tmp/sharkmer-high-copy-20260911/issue154-execution/receipts/build_versions.py",
+      "sha256": "1c7128c86d74f1d10ca15900721ecc9acf933cc53d86d5d5ba8cfc9633324f87",
+      "size_bytes": 5408
+    },
+    "builds": {
+      "path": "/tmp/sharkmer-high-copy-20260911/issue154-execution/receipts/builds.json",
+      "sha256": "2ba8645c2ac591a3823a45e999398b3e7e77c75e4b0c60b2696465673a240670",
+      "size_bytes": 4710
+    },
+    "driver": {
+      "path": "/tmp/sharkmer-high-copy-20260911/issue154-execution/receipts/benchmark.py",
+      "sha256": "99def950f3974fb553ee19a92aecc138430ba571cda9de59ba5990c3c7f90713",
+      "size_bytes": 11070
+    },
+    "helper": {
+      "path": "/tmp/sharkmer-high-copy-20260911/issue154-execution/receipts/helper.py",
+      "sha256": "f0d7eee4631819921eadb6b4dddf05b422c5e6eaf4c554db82259cd1c41bec97",
+      "size_bytes": 67620
+    },
+    "inputs": {
+      "path": "/tmp/sharkmer-high-copy-20260911/issue154-execution/receipts/inputs.json",
+      "sha256": "4763732cebacd43d3e295afe17ff903bdd1a6fc07449de24a03cd263b692cacf",
+      "size_bytes": 45269
+    },
+    "legacy_adapter": {
+      "path": "/tmp/sharkmer-high-copy-20260911/issue154-execution/receipts/postprocess_legacy.py",
+      "sha256": "f9e58a665c530b71c96ad7fb79508ba1598df7119feb7c52ee403aeb3e790aef",
+      "size_bytes": 27915
+    },
+    "original_builds": {
+      "path": "/tmp/sharkmer-high-copy-20260911/issue154-execution/receipts/original-builds.json",
+      "sha256": "475518df001573fd5f4a05316a16d6b29e4bac4d402bd49530a4207d9f32cec7",
+      "size_bytes": 4604
+    },
+    "original_protocol": {
+      "path": "/tmp/sharkmer-high-copy-20260911/issue154-execution/receipts/original-protocol.json",
+      "sha256": "097485889647071ce0ec7de56ceb9030f90a6ad27ddacbf5cb37cc2a37cbb825",
+      "size_bytes": 7175
+    },
+    "protocol": {
+      "path": "/tmp/sharkmer-high-copy-20260911/issue154-execution/receipts/protocol.json",
+      "sha256": "73414292e8d2562cfe7484a08cf16b59311c216631dd27b49168f6faa3af8829",
+      "size_bytes": 6612
+    }
+  },
+  "inputs": {
+    "inputs": [
+      {
+        "accession": "SRR31887760",
+        "ena_metadata": {
+          "fields": {
+            "fastq_bytes": "1449336386;1469922374",
+            "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_2.fastq.gz",
+            "fastq_md5": "2c4e9fc97bffcc9281d9d8f362c60c7f;a4e4a52acc000cb28608f98b47db7042",
+            "read_count": "17265830",
+            "run_accession": "SRR31887760",
+            "scientific_name": "Drosophila melanogaster"
+          },
+          "path": "/tmp/sharkmer-release-comparison/ena/SRR31887760.tsv",
+          "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR31887760&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+          "sha256": "bff2ead87c921470acb6006eeaf8c5704c487c594a60236b87108bf028e987ab"
+        },
+        "historical_1m_prefix": {
+          "bases": 101000000,
+          "records": 1000000,
+          "sha256": "b952eb9be7212ae79da85b0548b1c74a0343637d8af400ae9a08968b297638ae",
+          "size_bytes": 267366976
+        },
+        "historical_1m_prefix_identical": true,
+        "id": "SRR31887760",
+        "path": "/tmp/sharkmer-release-comparison/inputs/SRR31887760.fastq",
+        "prefixes": {
+          "1000000": {
+            "bases": 101000000,
+            "records": 1000000,
+            "sha256": "b952eb9be7212ae79da85b0548b1c74a0343637d8af400ae9a08968b297638ae",
+            "size_bytes": 267366976
+          },
+          "2000000": {
+            "bases": 202000000,
+            "records": 2000000,
+            "sha256": "c798c01b4e2907728f115dfccd59a20f73d54d51cb3f7daf0b6c59b0d242f6bc",
+            "size_bytes": 535859390
+          },
+          "4000000": {
+            "bases": 404000000,
+            "records": 4000000,
+            "sha256": "a2cf1ace700372d40512b9f33ef453f4443aeec5b82a6f3d0e830b6989bdb823",
+            "size_bytes": 1072845041
+          },
+          "8000000": {
+            "bases": 808000000,
+            "records": 8000000,
+            "sha256": "95250efe8110653f9255782bca96e4a4e206e7f0f891451ce363470f5d7bc0e7",
+            "size_bytes": 2146802050
+          }
+        },
+        "prepared_at": "2026-09-09T16:33:00.372079+00:00",
+        "requested_max_records": 8000000,
+        "sha256": "95250efe8110653f9255782bca96e4a4e206e7f0f891451ce363470f5d7bc0e7",
+        "size_bytes": 2146802050,
+        "source_consumption": [
+          {
+            "eof_verified": false,
+            "records": 8000000,
+            "transport": {
+              "full_upstream_checksum_verified": false,
+              "headers": {
+                "Accept-Ranges": "bytes",
+                "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+                "Access-Control-Allow-Methods": "GET,OPTIONS",
+                "Access-Control-Allow-Origin": "*",
+                "Connection": "close",
+                "Content-Length": "1449336386",
+                "Content-Type": "application/x-gzip",
+                "Date": "Wed, 09 Sep 2026 16:26:18 GMT",
+                "ETag": "\"56631e42-62dfe4aac1a80\"",
+                "Last-Modified": "Thu, 13 Feb 2025 04:14:18 GMT",
+                "Server": "Apache"
+              },
+              "kind": "https_gzip_prefix",
+              "status": 200
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz"
+          }
+        ],
+        "source_urls_ordered": [
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz",
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_2.fastq.gz"
+        ],
+        "total_bases": 808000000,
+        "total_records": 8000000
+      },
+      {
+        "accession": "SRR1057608",
+        "ena_metadata": {
+          "fields": {
+            "fastq_bytes": "2144836368;2146068154",
+            "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_2.fastq.gz",
+            "fastq_md5": "4c2a08d94de1ad21f3bf50c1d18cdff4;f29c4ba70ce750588b386f70a5dd147e",
+            "read_count": "27465279",
+            "run_accession": "SRR1057608",
+            "scientific_name": "Heliconius pachinus"
+          },
+          "path": "/tmp/sharkmer-release-comparison/ena/SRR1057608.tsv",
+          "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR1057608&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+          "sha256": "3200fe09f95b1c96c4f35c19529781d7aa8923bbc1c977b2a4b83369daecf87b"
+        },
+        "historical_1m_prefix": {
+          "bases": 89994628,
+          "records": 1000000,
+          "sha256": "a65515c2b54d585ca1028f2c865381aed16f4da9f7cc956f1c8d3fdcda8ca3e0",
+          "size_bytes": 211767048
+        },
+        "historical_1m_prefix_identical": true,
+        "id": "SRR1057608",
+        "path": "/tmp/sharkmer-release-comparison/inputs/SRR1057608.fastq",
+        "prefixes": {
+          "1000000": {
+            "bases": 89994628,
+            "records": 1000000,
+            "sha256": "a65515c2b54d585ca1028f2c865381aed16f4da9f7cc956f1c8d3fdcda8ca3e0",
+            "size_bytes": 211767048
+          },
+          "2000000": {
+            "bases": 179988194,
+            "records": 2000000,
+            "sha256": "db400cff131c54be57600ef9b4a92aaefb621db3c5d1c98f8786bc2ce0f662f2",
+            "size_bytes": 425754180
+          },
+          "4000000": {
+            "bases": 359972261,
+            "records": 4000000,
+            "sha256": "cd4c0eb1e6d0a52ee296d4044f48b2eedb7fb3a933d81c868d5c070c329e577b",
+            "size_bytes": 853722314
+          },
+          "8000000": {
+            "bases": 719945978,
+            "records": 8000000,
+            "sha256": "c510fc8a625f7c89b4031c108d67aeaca31cba08e118846fdb7f76ed9323ec8a",
+            "size_bytes": 1709669748
+          }
+        },
+        "prepared_at": "2026-09-09T16:40:03.684385+00:00",
+        "requested_max_records": 8000000,
+        "sha256": "c510fc8a625f7c89b4031c108d67aeaca31cba08e118846fdb7f76ed9323ec8a",
+        "size_bytes": 1709669748,
+        "source_consumption": [
+          {
+            "eof_verified": false,
+            "records": 8000000,
+            "transport": {
+              "full_upstream_checksum_verified": false,
+              "headers": {
+                "Accept-Ranges": "bytes",
+                "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+                "Access-Control-Allow-Methods": "GET,OPTIONS",
+                "Access-Control-Allow-Origin": "*",
+                "Connection": "close",
+                "Content-Length": "2144836368",
+                "Content-Type": "application/x-gzip",
+                "Date": "Wed, 09 Sep 2026 16:33:05 GMT",
+                "ETag": "\"7fd79b10-4f7473e6e5740\"",
+                "Last-Modified": "Fri, 18 Apr 2014 01:41:09 GMT",
+                "Server": "Apache"
+              },
+              "kind": "https_gzip_prefix",
+              "status": 200
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz"
+          }
+        ],
+        "source_urls_ordered": [
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz",
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_2.fastq.gz"
+        ],
+        "total_bases": 719945978,
+        "total_records": 8000000
+      },
+      {
+        "accession": "SRR27962769",
+        "ena_metadata": {
+          "fields": {
+            "fastq_bytes": "508891806;553172276",
+            "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_2.fastq.gz",
+            "fastq_md5": "ceab3f7c7809b13d1422c3e108faccbc;74fa2edb91358238d73dd618deea284e",
+            "read_count": "7209861",
+            "run_accession": "SRR27962769",
+            "scientific_name": "Gryllus bimaculatus"
+          },
+          "path": "/tmp/sharkmer-release-comparison/ena/SRR27962769.tsv",
+          "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR27962769&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+          "sha256": "13327f2a455012720fc23338a5d1f85b8e5275c667d6aea2a373fd60198cb810"
+        },
+        "historical_1m_prefix": {
+          "bases": 150000000,
+          "records": 1000000,
+          "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+          "size_bytes": 365356898
+        },
+        "historical_1m_prefix_identical": true,
+        "id": "SRR27962769",
+        "path": "/tmp/sharkmer-release-comparison/inputs/SRR27962769.fastq",
+        "prefixes": {
+          "1000000": {
+            "bases": 150000000,
+            "records": 1000000,
+            "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+            "size_bytes": 365356898
+          },
+          "2000000": {
+            "bases": 300000000,
+            "records": 2000000,
+            "sha256": "785a3afe758678fd68ec277e56a3d7537e669763c4448b45b1a167d9c2cb5785",
+            "size_bytes": 731824249
+          },
+          "4000000": {
+            "bases": 600000000,
+            "records": 4000000,
+            "sha256": "8a2d7dc0bae6717161620a13ec82f5eac04565f956073e9ab37184af82f5d98c",
+            "size_bytes": 1464761835
+          },
+          "8000000": {
+            "bases": 1200000000,
+            "records": 8000000,
+            "sha256": "d4252f0052d9eaf1753debd1c82eb132666f2300e43d80524ded9275a81081b2",
+            "size_bytes": 2929733806
+          }
+        },
+        "prepared_at": "2026-09-09T16:46:38.570856+00:00",
+        "requested_max_records": 8000000,
+        "sha256": "d4252f0052d9eaf1753debd1c82eb132666f2300e43d80524ded9275a81081b2",
+        "size_bytes": 2929733806,
+        "source_consumption": [
+          {
+            "eof_verified": true,
+            "records": 7209861,
+            "transport": {
+              "full_upstream_checksum_verified": false,
+              "headers": {
+                "Accept-Ranges": "bytes",
+                "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+                "Access-Control-Allow-Methods": "GET,OPTIONS",
+                "Access-Control-Allow-Origin": "*",
+                "Connection": "close",
+                "Content-Length": "508891806",
+                "Content-Type": "application/x-gzip",
+                "Date": "Wed, 09 Sep 2026 16:40:12 GMT",
+                "ETag": "\"1e55129e-61bc370b8dd00\"",
+                "Last-Modified": "Wed, 26 Jun 2024 04:28:04 GMT",
+                "Server": "Apache"
+              },
+              "kind": "https_gzip_prefix",
+              "status": 200
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz"
+          },
+          {
+            "eof_verified": false,
+            "records": 790139,
+            "transport": {
+              "full_upstream_checksum_verified": false,
+              "headers": {
+                "Accept-Ranges": "bytes",
+                "Access-Control-Allow-Headers": "Authorization,Origin,User-Agent,X-Requested-With,If-Modified-Since,Cache-Control,Content-Type,Range,Accept",
+                "Access-Control-Allow-Methods": "GET,OPTIONS",
+                "Access-Control-Allow-Origin": "*",
+                "Connection": "close",
+                "Content-Length": "553172276",
+                "Content-Type": "application/x-gzip",
+                "Date": "Wed, 09 Sep 2026 16:45:45 GMT",
+                "ETag": "\"20f8bd34-61bc3709a5880\"",
+                "Last-Modified": "Wed, 26 Jun 2024 04:28:02 GMT",
+                "Server": "Apache"
+              },
+              "kind": "https_gzip_prefix",
+              "status": 200
+            },
+            "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_2.fastq.gz"
+          }
+        ],
+        "source_urls_ordered": [
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz",
+          "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_2.fastq.gz"
+        ],
+        "total_bases": 1200000000,
+        "total_records": 8000000
+      }
+    ],
+    "preparation": {
+      "command": [
+        "python",
+        "/tmp/sharkmer-release-comparison/stage_inputs.py"
+      ],
+      "description": "Immutable record-aligned uncompressed FASTQ; each 1M prefix verified against earlier checksum-verified calibration cache.",
+      "limits": "first8M for six configured sweep samples; first1M or EOF for remaining samples",
+      "record_order": "ENA URL order, sequential, unpaired",
+      "remote_integrity_note": "Staged full/prefix SHA-256 verifies comparison identity. Partial remote downloads do not verify full upstream compressed MD5.",
+      "tool_versions": {
+        "python": "3.13.13"
+      }
+    },
+    "schema_version": 1
+  },
+  "machine": {
+    "cpu_cores": 12,
+    "cpu_model": "x86_64",
+    "os": "Linux 7.0.0-30-generic",
+    "total_ram_gb": 62.6
+  },
+  "protocol": {
+    "baseline_role": "pre_fix",
+    "expected_commits": {
+      "candidate": "7b057dcde7594fd64cc0f23903f49c3fa1c23974",
+      "pre_fix": "47536207e4b7e6570fc1169436a7af47a51a9c99"
+    },
+    "limitations": [
+      "Local uncompressed fixed-prefix calibration, not held-out truth; network/gzip/BLAST excluded.",
+      "Whole unchanged panels are timed; recovery is assessed by target metadata and per-product evidence, not raw total products.",
+      "Small number of paired measurements supports descriptive comparisons, not portable statistical guarantees.",
+      "40 GiB virtual-address limit is not an RSS cap or 16 GB laptop validation."
+    ],
+    "priority": "2026-09-11 user: protect abundant organelle/ribosomal recovery and runtime/RAM; metagenomic and single-copy nuclear optimization deferred",
+    "purpose": "Bounded issue154 check before merge; three affected insect panels, pre-fix vs154",
+    "review_criteria": {
+      "deferred": "Metagenomic and single-copy nuclear diversity/recovery are not current release gates.",
+      "failures": "Any nonzero CLI exit, timeout, resource breach, count mismatch, invalid provenance/output or BLAST evaluation error invalidates that cell.",
+      "ram": "Report every increase; prioritize investigation of >2% per-cell paired median RSS increase.",
+      "recovery": "Flag every lost high-copy candidate; prioritize reference-supported and dominant products. Compare sequence membership independent of index, retain classification and median/minimum support. Do not require restoration of unsupported repeat-copy claims.",
+      "release": "Stop before release for user review, regardless of numeric thresholds.",
+      "runtime": "Report every increase; prioritize investigation of >5% per-cell paired median wall increase. Descriptive only; no automatic no-regression claim."
+    },
+    "samples": [
+      {
+        "depth": 1000000,
+        "input": "SRR31887760",
+        "pairs": 1,
+        "panel": "insecta",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR1057608",
+        "pairs": 1,
+        "panel": "insecta",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR27962769",
+        "pairs": 1,
+        "panel": "insecta",
+        "taxon": "Gryllus bimaculatus"
+      }
+    ],
+    "settings": {
+      "address_space_limit_bytes": 42949672960,
+      "chunks": 0,
+      "cpu_list": [
+        0,
+        1
+      ],
+      "input_format": "uncompressed_four_line_fastq",
+      "k": 19,
+      "paired": false,
+      "prewarm_each_invocation": true,
+      "read_threading": false,
+      "threads": 2,
+      "timeout_seconds": 1800
+    },
+    "target_metadata": {
+      "insecta": [
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "12S",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "16S_1",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO1_1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO2_1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CytB",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "ND1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "ND4",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "ND5",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "16S_2",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO1_2",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO2_2",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "NADH",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Fz4",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Gpdh",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Pgi",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Yp2",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "18S_1",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "28S",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "18S_2",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS_1",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS_2",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        }
+      ]
+    }
+  },
+  "schedule": [
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "cell_index": 0,
+      "depth": 1000000,
+      "input": "SRR31887760",
+      "invocation_id": "000_insecta_SRR31887760_1000000_pair1_pre_fix",
+      "order_position": 1,
+      "pair_index": 1,
+      "panel": "insecta",
+      "taxon": "Drosophila melanogaster",
+      "version": "pre_fix"
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "cell_index": 0,
+      "depth": 1000000,
+      "input": "SRR31887760",
+      "invocation_id": "000_insecta_SRR31887760_1000000_pair1_candidate",
+      "order_position": 2,
+      "pair_index": 1,
+      "panel": "insecta",
+      "taxon": "Drosophila melanogaster",
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "cell_index": 1,
+      "depth": 1000000,
+      "input": "SRR1057608",
+      "invocation_id": "001_insecta_SRR1057608_1000000_pair1_candidate",
+      "order_position": 1,
+      "pair_index": 1,
+      "panel": "insecta",
+      "taxon": "Heliconius pachinus",
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "cell_index": 1,
+      "depth": 1000000,
+      "input": "SRR1057608",
+      "invocation_id": "001_insecta_SRR1057608_1000000_pair1_pre_fix",
+      "order_position": 2,
+      "pair_index": 1,
+      "panel": "insecta",
+      "taxon": "Heliconius pachinus",
+      "version": "pre_fix"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "cell_index": 2,
+      "depth": 1000000,
+      "input": "SRR27962769",
+      "invocation_id": "002_insecta_SRR27962769_1000000_pair1_pre_fix",
+      "order_position": 1,
+      "pair_index": 1,
+      "panel": "insecta",
+      "taxon": "Gryllus bimaculatus",
+      "version": "pre_fix"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "cell_index": 2,
+      "depth": 1000000,
+      "input": "SRR27962769",
+      "invocation_id": "002_insecta_SRR27962769_1000000_pair1_candidate",
+      "order_position": 2,
+      "pair_index": 1,
+      "panel": "insecta",
+      "taxon": "Gryllus bimaculatus",
+      "version": "candidate"
+    }
+  ],
+  "started_at": "2026-09-11T13:12:49.188066+00:00",
+  "timing_boundary": "all invocations before any BLAST",
+  "validator": {
+    "blast_references_sha256": "fb07d39d0bda0e5da8f8a18018dccda87266fc84fe7cdd4f6f2144a6421843f4",
+    "root": "/tmp/sharkmer-release-comparison/sources/candidate",
+    "runner_sha256": "b19a74b2f5265b9963acfa6f48cd8b700ba82268db68e2dede4a5d640261b50e"
+  }
+}

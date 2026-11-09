@@ -1,0 +1,24 @@
+schema_version: 2
+producer: sharkmer
+sample: real_ERR14009273_after
+run_id: 18dd7ddd0074d42d-292fc-320ca5f4a2a7b742
+status: complete
+files:
+- path: real_ERR14009273_after.stats.yaml
+  sha256: 7f6c25c2cdc11a51588be917c37b143267337f7390c2d7a0695c6f8677e6001a
+- path: real_ERR14009273_after_angiospermae_ITS.fasta
+  sha256: b2ee321af5dd1dfa1a584f3d61a79b6dfad0ce0f8cf68dbd7b774510081b8bc8
+- path: real_ERR14009273_after_angiospermae_atpB-rbcL.fasta
+  sha256: 33da23602e35f3f67fef8c8703607069c152724dec428d74c9ea499071e8fc57
+- path: real_ERR14009273_after_angiospermae_psbA-trnH.fasta
+  sha256: 72a6afc0e77724075e331b7b0fb8c0731ecc3c056dda250f27e2b4f9f5457793
+- path: real_ERR14009273_after_angiospermae_psbM-trnD.fasta
+  sha256: c2aa84ec6afe5b6cc784f4a2ced0cbc42685b9853ef653114421f6c065c3dab8
+- path: real_ERR14009273_after_angiospermae_trnC-ycf6.fasta
+  sha256: 2caf683fb4481d018df48e3251f200c4e216f7fe3de928ce00bd13608853ea14
+- path: real_ERR14009273_after_angiospermae_trnL-F.fasta
+  sha256: ee5a1ceb31225f836d399ceb997c79172c9f71ca8d242dfe97c5bfd239b59d8c
+- path: real_ERR14009273_after_angiospermae_trnV-atpE.fasta
+  sha256: 6926566af904d7b6ea61dbc0a5db24495b46c838fec959db98097b104e4828b2
+- path: real_ERR14009273_after_angiospermae_ycf6-psbM.fasta
+  sha256: 1a06fda24995b31ef0c2823119a9b39c6a3e35bfa529583a1f255ce138c72005

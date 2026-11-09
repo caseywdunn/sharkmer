@@ -1,0 +1,12 @@
+schema_version: 2
+producer: sharkmer
+sample: fixture_k31
+run_id: 18dd7e22f5f1efd9-29e88-fa12a10c050b97d1
+status: complete
+files:
+- path: fixture_k31.stats.yaml
+  sha256: 5b222fb558355c70b40f82c0ae982e598d8e6ec90a03270b93e299e6a1beb320
+- path: fixture_k31_cnidaria_18S.fasta
+  sha256: 858d3bc2d07ba0251680345a37db2662cdcc69e2693b892942e3b4cff8cace15
+- path: fixture_k31_cnidaria_28S_2.fasta
+  sha256: 98c980fb34fe4c91931ac13b1c10186352aa3c99090ce2fd1f5f297ff3edc96f

@@ -1,0 +1,588 @@
+{
+  "limitations": [
+    "Exact local evidence does not establish locus specificity, biological truth, full-product linkage or independent molecules.",
+    "Tiles overlap and may be shared between candidate contexts. Covered span unions are marginal coverage only.",
+    "Raw/Q20 counts cover every expected input record; example ledgers are explicitly capped and selected.",
+    "Incomplete-flank and overlength windows remain uncallable; exact zero counts do not establish sample absence."
+  ],
+  "samples": [
+    {
+      "accession": "ERR14009273",
+      "events": 98,
+      "ledger": {
+        "cap_omitted_requests_by_reason": {},
+        "complete_counts_despite_example_caps": true,
+        "limits": {
+          "bases": 1000000,
+          "matches": 100000,
+          "reads": 5000
+        },
+        "no_molecule_or_footprint_uniqueness_inferred": true,
+        "selection": "first 8 Q20 and first 2 raw-only records per event, with shared-read bonus and global caps",
+        "stored_bases": 31612,
+        "stored_match_positions": 585,
+        "stored_reads": 317
+      },
+      "matching_records": 806,
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 17664,
+        "system_seconds": 0.09,
+        "user_seconds": 21.08,
+        "wall_seconds": 22.39
+      },
+      "positive_controls": [
+        {
+          "accession": "ERR14009273",
+          "distinct_nearest_endpoint_strings": 0,
+          "distinct_tile_strings": 34,
+          "gene": "angiospermae_ITS",
+          "incomplete_flank_endpoint_memberships": 0,
+          "length": 753,
+          "local_read_status": "local_exact_q20_occurrences_observed",
+          "overlength_nearest_endpoint_strings": 0,
+          "positive_control_pass": true,
+          "q20_observed_nearest_endpoint_strings": 0,
+          "q20_observed_strings_unique_to_candidate_in_finite_context": 34,
+          "q20_observed_tile_span_union_bases": 753,
+          "q20_observed_tile_strings": 34,
+          "raw_observed_nearest_endpoint_strings": 0,
+          "raw_observed_tile_span_union_bases": 753,
+          "raw_observed_tile_strings": 34,
+          "role": "positive_control",
+          "scheduled_tiles": 34,
+          "sha256": "ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+          "whole_product_validation": "not_established"
+        },
+        {
+          "accession": "ERR14009273",
+          "distinct_nearest_endpoint_strings": 0,
+          "distinct_tile_strings": 37,
+          "gene": "angiospermae_atpB-rbcL",
+          "incomplete_flank_endpoint_memberships": 0,
+          "length": 812,
+          "local_read_status": "local_exact_q20_occurrences_observed",
+          "overlength_nearest_endpoint_strings": 0,
+          "positive_control_pass": true,
+          "q20_observed_nearest_endpoint_strings": 0,
+          "q20_observed_strings_unique_to_candidate_in_finite_context": 37,
+          "q20_observed_tile_span_union_bases": 812,
+          "q20_observed_tile_strings": 37,
+          "raw_observed_nearest_endpoint_strings": 0,
+          "raw_observed_tile_span_union_bases": 812,
+          "raw_observed_tile_strings": 37,
+          "role": "positive_control",
+          "scheduled_tiles": 37,
+          "sha256": "3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+          "whole_product_validation": "not_established"
+        }
+      ],
+      "read_length_histogram": {
+        "100": 58976,
+        "101": 831959,
+        "30": 216,
+        "31": 224,
+        "32": 270,
+        "33": 218,
+        "34": 277,
+        "35": 288,
+        "36": 286,
+        "37": 302,
+        "38": 317,
+        "39": 329,
+        "40": 359,
+        "41": 337,
+        "42": 354,
+        "43": 366,
+        "44": 399,
+        "45": 374,
+        "46": 397,
+        "47": 454,
+        "48": 404,
+        "49": 427,
+        "50": 509,
+        "51": 530,
+        "52": 595,
+        "53": 534,
+        "54": 616,
+        "55": 533,
+        "56": 611,
+        "57": 697,
+        "58": 609,
+        "59": 627,
+        "60": 664,
+        "61": 662,
+        "62": 649,
+        "63": 675,
+        "64": 701,
+        "65": 721,
+        "66": 754,
+        "67": 770,
+        "68": 819,
+        "69": 817,
+        "70": 842,
+        "71": 864,
+        "72": 843,
+        "73": 894,
+        "74": 939,
+        "75": 945,
+        "76": 685,
+        "77": 763,
+        "78": 894,
+        "79": 1011,
+        "80": 1102,
+        "81": 1205,
+        "82": 1230,
+        "83": 1300,
+        "84": 1462,
+        "85": 1558,
+        "86": 1700,
+        "87": 1859,
+        "88": 1997,
+        "89": 2356,
+        "90": 2529,
+        "91": 2855,
+        "92": 3438,
+        "93": 3930,
+        "94": 4830,
+        "95": 5764,
+        "96": 6767,
+        "97": 8408,
+        "98": 10580,
+        "99": 15824
+      },
+      "verified_prefix": {
+        "bases": 99211896,
+        "records": 1000000,
+        "sha256": "9b0248592f5616f52f473c7080462390b578b614e8ef523c6491e36d442dafb1",
+        "size_bytes": 255801372
+      }
+    },
+    {
+      "accession": "SRR1057608",
+      "events": 158,
+      "ledger": {
+        "cap_omitted_requests_by_reason": {},
+        "complete_counts_despite_example_caps": true,
+        "limits": {
+          "bases": 1000000,
+          "matches": 100000,
+          "reads": 5000
+        },
+        "no_molecule_or_footprint_uniqueness_inferred": true,
+        "selection": "first 8 Q20 and first 2 raw-only records per event, with shared-read bonus and global caps",
+        "stored_bases": 17719,
+        "stored_match_positions": 289,
+        "stored_reads": 197
+      },
+      "matching_records": 758,
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 17664,
+        "system_seconds": 0.07,
+        "user_seconds": 17.94,
+        "wall_seconds": 18.97
+      },
+      "positive_controls": [
+        {
+          "accession": "SRR1057608",
+          "distinct_nearest_endpoint_strings": 0,
+          "distinct_tile_strings": 13,
+          "gene": "insecta_CO1_1",
+          "incomplete_flank_endpoint_memberships": 0,
+          "length": 304,
+          "local_read_status": "local_exact_q20_occurrences_observed",
+          "overlength_nearest_endpoint_strings": 0,
+          "positive_control_pass": true,
+          "q20_observed_nearest_endpoint_strings": 0,
+          "q20_observed_strings_unique_to_candidate_in_finite_context": 13,
+          "q20_observed_tile_span_union_bases": 304,
+          "q20_observed_tile_strings": 13,
+          "raw_observed_nearest_endpoint_strings": 0,
+          "raw_observed_tile_span_union_bases": 304,
+          "raw_observed_tile_strings": 13,
+          "role": "positive_control",
+          "scheduled_tiles": 13,
+          "sha256": "8ba0cf4d35377c7ebbb54000f07053c99d16008cf3e79cb45d8441da95ec1f2f",
+          "whole_product_validation": "not_established"
+        },
+        {
+          "accession": "SRR1057608",
+          "distinct_nearest_endpoint_strings": 0,
+          "distinct_tile_strings": 12,
+          "gene": "insecta_CO2_1",
+          "incomplete_flank_endpoint_memberships": 0,
+          "length": 288,
+          "local_read_status": "local_exact_q20_occurrences_observed",
+          "overlength_nearest_endpoint_strings": 0,
+          "positive_control_pass": true,
+          "q20_observed_nearest_endpoint_strings": 0,
+          "q20_observed_strings_unique_to_candidate_in_finite_context": 12,
+          "q20_observed_tile_span_union_bases": 288,
+          "q20_observed_tile_strings": 12,
+          "raw_observed_nearest_endpoint_strings": 0,
+          "raw_observed_tile_span_union_bases": 288,
+          "raw_observed_tile_strings": 12,
+          "role": "positive_control",
+          "scheduled_tiles": 12,
+          "sha256": "75a2f13657c465c52bb64e68bea7a87ee7602a32700e5905a346b6dab7692712",
+          "whole_product_validation": "not_established"
+        }
+      ],
+      "read_length_histogram": {
+        "32": 1,
+        "36": 2,
+        "38": 1,
+        "40": 1,
+        "41": 2,
+        "42": 1,
+        "43": 2,
+        "44": 2,
+        "45": 1,
+        "46": 1,
+        "47": 1,
+        "48": 2,
+        "49": 1,
+        "51": 2,
+        "52": 6,
+        "53": 1,
+        "54": 2,
+        "55": 7,
+        "56": 6,
+        "57": 5,
+        "58": 6,
+        "59": 5,
+        "60": 2,
+        "61": 3,
+        "62": 3,
+        "63": 3,
+        "64": 4,
+        "65": 1,
+        "66": 4,
+        "67": 5,
+        "68": 4,
+        "69": 4,
+        "70": 4,
+        "71": 9,
+        "72": 5,
+        "73": 1,
+        "74": 8,
+        "75": 2,
+        "76": 10,
+        "77": 9,
+        "78": 26,
+        "79": 90,
+        "80": 24,
+        "90": 999721
+      },
+      "verified_prefix": {
+        "bases": 89994628,
+        "records": 1000000,
+        "sha256": "a65515c2b54d585ca1028f2c865381aed16f4da9f7cc956f1c8d3fdcda8ca3e0",
+        "size_bytes": 211767048
+      }
+    },
+    {
+      "accession": "SRR25378184",
+      "events": 444,
+      "ledger": {
+        "cap_omitted_requests_by_reason": {},
+        "complete_counts_despite_example_caps": true,
+        "limits": {
+          "bases": 1000000,
+          "matches": 100000,
+          "reads": 5000
+        },
+        "no_molecule_or_footprint_uniqueness_inferred": true,
+        "selection": "first 8 Q20 and first 2 raw-only records per event, with shared-read bonus and global caps",
+        "stored_bases": 65534,
+        "stored_match_positions": 1651,
+        "stored_reads": 434
+      },
+      "matching_records": 919,
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 22764,
+        "system_seconds": 0.12,
+        "user_seconds": 34.81,
+        "wall_seconds": 37.73
+      },
+      "positive_controls": [
+        {
+          "accession": "SRR25378184",
+          "distinct_nearest_endpoint_strings": 0,
+          "distinct_tile_strings": 60,
+          "gene": "angiospermae_psbM-trnD",
+          "incomplete_flank_endpoint_memberships": 0,
+          "length": 1287,
+          "local_read_status": "local_exact_q20_occurrences_observed",
+          "overlength_nearest_endpoint_strings": 0,
+          "positive_control_pass": true,
+          "q20_observed_nearest_endpoint_strings": 0,
+          "q20_observed_strings_unique_to_candidate_in_finite_context": 60,
+          "q20_observed_tile_span_union_bases": 1287,
+          "q20_observed_tile_strings": 60,
+          "raw_observed_nearest_endpoint_strings": 0,
+          "raw_observed_tile_span_union_bases": 1287,
+          "raw_observed_tile_strings": 60,
+          "role": "positive_control",
+          "scheduled_tiles": 60,
+          "sha256": "e9898573db0183da6b7f80727476bb72246c560f5de373e9b2586cede1a37dfe",
+          "whole_product_validation": "not_established"
+        },
+        {
+          "accession": "SRR25378184",
+          "distinct_nearest_endpoint_strings": 0,
+          "distinct_tile_strings": 25,
+          "gene": "angiospermae_rpl36-infA-rps8",
+          "incomplete_flank_endpoint_memberships": 0,
+          "length": 552,
+          "local_read_status": "local_exact_q20_occurrences_observed",
+          "overlength_nearest_endpoint_strings": 0,
+          "positive_control_pass": true,
+          "q20_observed_nearest_endpoint_strings": 0,
+          "q20_observed_strings_unique_to_candidate_in_finite_context": 25,
+          "q20_observed_tile_span_union_bases": 552,
+          "q20_observed_tile_strings": 25,
+          "raw_observed_nearest_endpoint_strings": 0,
+          "raw_observed_tile_span_union_bases": 552,
+          "raw_observed_tile_strings": 25,
+          "role": "positive_control",
+          "scheduled_tiles": 25,
+          "sha256": "9d24409abb93cd61eb5d04b5f191d5d3c8c1c96827b563dbec7135aca1e4bd1b",
+          "whole_product_validation": "not_established"
+        }
+      ],
+      "read_length_histogram": {
+        "151": 1000000
+      },
+      "verified_prefix": {
+        "bases": 151000000,
+        "records": 1000000,
+        "sha256": "2a44558f81127ac7aae0f8b9789d3ac5d589986e172c5ba27784a5d84f287bd3",
+        "size_bytes": 371615360
+      }
+    },
+    {
+      "accession": "SRR27962769",
+      "events": 133,
+      "ledger": {
+        "cap_omitted_requests_by_reason": {},
+        "complete_counts_despite_example_caps": true,
+        "limits": {
+          "bases": 1000000,
+          "matches": 100000,
+          "reads": 5000
+        },
+        "no_molecule_or_footprint_uniqueness_inferred": true,
+        "selection": "first 8 Q20 and first 2 raw-only records per event, with shared-read bonus and global caps",
+        "stored_bases": 16500,
+        "stored_match_positions": 387,
+        "stored_reads": 110
+      },
+      "matching_records": 236,
+      "metrics": {
+        "exit_code": 0,
+        "max_rss_kib": 18432,
+        "system_seconds": 0.09,
+        "user_seconds": 25.2,
+        "wall_seconds": 26.41
+      },
+      "positive_controls": [
+        {
+          "accession": "SRR27962769",
+          "distinct_nearest_endpoint_strings": 0,
+          "distinct_tile_strings": 15,
+          "gene": "insecta_CO1_1",
+          "incomplete_flank_endpoint_memberships": 0,
+          "length": 352,
+          "local_read_status": "local_exact_q20_occurrences_observed",
+          "overlength_nearest_endpoint_strings": 0,
+          "positive_control_pass": true,
+          "q20_observed_nearest_endpoint_strings": 0,
+          "q20_observed_strings_unique_to_candidate_in_finite_context": 2,
+          "q20_observed_tile_span_union_bases": 352,
+          "q20_observed_tile_strings": 15,
+          "raw_observed_nearest_endpoint_strings": 0,
+          "raw_observed_tile_span_union_bases": 352,
+          "raw_observed_tile_strings": 15,
+          "role": "positive_control",
+          "scheduled_tiles": 15,
+          "sha256": "e2d376bc5b0f09a954f7dfb6083ff3e4a768a2b687685e18349f66dd25cfc9c0",
+          "whole_product_validation": "not_established"
+        },
+        {
+          "accession": "SRR27962769",
+          "distinct_nearest_endpoint_strings": 0,
+          "distinct_tile_strings": 12,
+          "gene": "insecta_CO2_1",
+          "incomplete_flank_endpoint_memberships": 0,
+          "length": 288,
+          "local_read_status": "local_exact_q20_occurrences_observed",
+          "overlength_nearest_endpoint_strings": 0,
+          "positive_control_pass": true,
+          "q20_observed_nearest_endpoint_strings": 0,
+          "q20_observed_strings_unique_to_candidate_in_finite_context": 12,
+          "q20_observed_tile_span_union_bases": 288,
+          "q20_observed_tile_strings": 12,
+          "raw_observed_nearest_endpoint_strings": 0,
+          "raw_observed_tile_span_union_bases": 288,
+          "raw_observed_tile_strings": 12,
+          "role": "positive_control",
+          "scheduled_tiles": 12,
+          "sha256": "660fe7a5eb0e9edf02db0254455941d046e95c11da69b0a7a8de4e28449a054f",
+          "whole_product_validation": "not_established"
+        }
+      ],
+      "read_length_histogram": {
+        "150": 1000000
+      },
+      "verified_prefix": {
+        "bases": 150000000,
+        "records": 1000000,
+        "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+        "size_bytes": 365356898
+      }
+    }
+  ],
+  "scope": "All 154 candidates in the six previously unrecovered targets",
+  "source_files": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/manifests-v2/ERR14009273.json": {
+      "bytes": 66355,
+      "sha256": "889d4ae65bf7864260d9058e1d02bb89b89008532f1ef8e2ad15c599f5ba4c8d"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/manifests-v2/SRR1057608.json": {
+      "bytes": 239067,
+      "sha256": "bcb14839c966e8eb7d66b449118e5a4aff64358b61e5dcacbd66697a54e743a3"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/manifests-v2/SRR25378184.json": {
+      "bytes": 1083315,
+      "sha256": "a6b5047fe58f644850936802e0129d3a18b679c592f579a439efe713fa72a3b1"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/manifests-v2/SRR27962769.json": {
+      "bytes": 428510,
+      "sha256": "f4b4653d16d83fb10772a784024a75b652834144e2a152d617881b95d65d44f5"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/ERR14009273/execution.json": {
+      "bytes": 4691,
+      "sha256": "6f4a92677b2f4b00313ace60a2e3e568583d4068187434ec049e699d2851be59"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/ERR14009273/raw.json": {
+      "bytes": 340349,
+      "sha256": "c44ca7efc8967c30616a09c7fb2ddde65a8e0e5aea8e6a2140104b44c0775daa"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/ERR14009273/time.json": {
+      "bytes": 100,
+      "sha256": "f3255efb46112a821d0045ef661fc82ce8f56d73f3f62ee7737ace773c166910"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR1057608/execution.json": {
+      "bytes": 4688,
+      "sha256": "89fa276f23c96bf1232314eeaf19067e1cd6251324348f513b6057916c5ca475"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR1057608/raw.json": {
+      "bytes": 292515,
+      "sha256": "5b363696035923322cc71dc6395c2b7e3f1f8968246014ca8aa5476456b1f56f"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR1057608/time.json": {
+      "bytes": 100,
+      "sha256": "0ac654738ef7692a5ec24936ee052e4dd0da47c59b4414866716356d9fa71746"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR25378184/execution.json": {
+      "bytes": 4696,
+      "sha256": "4bef27967897b909117a1a489b13d11d4ae3a29e6db08c1cb52614c5e9643465"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR25378184/raw.json": {
+      "bytes": 1591154,
+      "sha256": "eebc91f8988efdbd9bcb5ba65d3aab754a95608adbcb540dc9a2e3f0dff14486"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR25378184/time.json": {
+      "bytes": 100,
+      "sha256": "9a5097569579cfac88c76874b28b6e1d9e366f2b24fe01d152679ac2fd47242f"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR27962769/execution.json": {
+      "bytes": 4694,
+      "sha256": "246cf59e6a6762881e85117252989c3869f2e2c5b4a2d68738393d7af96d2a44"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR27962769/raw.json": {
+      "bytes": 401169,
+      "sha256": "ae97d384f2ef89b36ea32b73d82dae02a4c63f04f4949c20dada076f1ee363dd"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR27962769/time.json": {
+      "bytes": 100,
+      "sha256": "133a9dacb5bc8192d99e3f446fa9d72027a5f710514569d4151a28ed9cb137b2"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/summarize_assays.py": {
+      "bytes": 11805,
+      "sha256": "87e1848c4bbae347bc0321d730b5397af625351eff0882c9cadf8dbd753d930b"
+    }
+  },
+  "status": "complete",
+  "targets": [
+    {
+      "accession": "ERR14009273",
+      "candidates": 1,
+      "candidates_with_all_tiles_q20_observed": 0,
+      "candidates_with_any_q20_local_string": 0,
+      "candidates_with_any_q20_tile": 0,
+      "candidates_with_q20_nearest_endpoint": 0,
+      "candidates_without_any_raw_local_string": 1,
+      "gene": "angiospermae_trnL-F",
+      "whole_product_validation": "not_established"
+    },
+    {
+      "accession": "SRR1057608",
+      "candidates": 44,
+      "candidates_with_all_tiles_q20_observed": 0,
+      "candidates_with_any_q20_local_string": 0,
+      "candidates_with_any_q20_tile": 0,
+      "candidates_with_q20_nearest_endpoint": 0,
+      "candidates_without_any_raw_local_string": 44,
+      "gene": "insecta_ND4",
+      "whole_product_validation": "not_established"
+    },
+    {
+      "accession": "SRR25378184",
+      "candidates": 1,
+      "candidates_with_all_tiles_q20_observed": 1,
+      "candidates_with_any_q20_local_string": 1,
+      "candidates_with_any_q20_tile": 1,
+      "candidates_with_q20_nearest_endpoint": 0,
+      "candidates_without_any_raw_local_string": 0,
+      "gene": "angiospermae_atpB-rbcL",
+      "whole_product_validation": "not_established"
+    },
+    {
+      "accession": "SRR25378184",
+      "candidates": 49,
+      "candidates_with_all_tiles_q20_observed": 0,
+      "candidates_with_any_q20_local_string": 0,
+      "candidates_with_any_q20_tile": 0,
+      "candidates_with_q20_nearest_endpoint": 0,
+      "candidates_without_any_raw_local_string": 49,
+      "gene": "angiospermae_psbA-trnH",
+      "whole_product_validation": "not_established"
+    },
+    {
+      "accession": "SRR25378184",
+      "candidates": 41,
+      "candidates_with_all_tiles_q20_observed": 0,
+      "candidates_with_any_q20_local_string": 0,
+      "candidates_with_any_q20_tile": 0,
+      "candidates_with_q20_nearest_endpoint": 0,
+      "candidates_without_any_raw_local_string": 41,
+      "gene": "angiospermae_trnV-atpE",
+      "whole_product_validation": "not_established"
+    },
+    {
+      "accession": "SRR27962769",
+      "candidates": 18,
+      "candidates_with_all_tiles_q20_observed": 0,
+      "candidates_with_any_q20_local_string": 0,
+      "candidates_with_any_q20_tile": 0,
+      "candidates_with_q20_nearest_endpoint": 0,
+      "candidates_without_any_raw_local_string": 18,
+      "gene": "insecta_18S_1",
+      "whole_product_validation": "not_established"
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "sacct",
+    "-j",
+    "29012047",
+    "--format=JobID,State,ExitCode,Elapsed,AllocCPUS,MaxRSS",
+    "-P"
+  ],
+  "exit_code": 0,
+  "output": "JobID|State|ExitCode|Elapsed|AllocCPUS|MaxRSS\n29012047|COMPLETED|0:0|00:01:17|2|\n29012047.batch|COMPLETED|0:0|00:01:17|2|95256K\n29012047.extern|COMPLETED|0:0|00:01:17|2|\n",
+  "slurm_log": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/slurm-29012047.log",
+    "sha256": "1abd75d17940e9eaa4e04a3f8aec20a84d759109ff1726c8dfd5ad433e240da3",
+    "size_bytes": 1095
+  }
+}

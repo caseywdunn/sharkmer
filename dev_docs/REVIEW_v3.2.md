@@ -1,0 +1,555 @@
+# v3.2 pre-release review
+
+Prepared 2026-09-09; status updated 2026-11-09. **Release authorized by the user;
+final packaging checks and publication are in progress.**
+
+## Decision ownership (2026-11-08)
+
+The user has replaced the collaborator-review prerequisite with assessment by
+the user and coding agent in this session. No external collaborator sign-off
+is required. The user makes the final release decision after the evidence and
+remaining limitations are recorded against the [release gates](PLAN.md#release-gate).
+The user subsequently approved deferring the new held-out dataset and full
+nine-panel biological campaign from v3.2, while retaining both before further
+assembly tuning or broad accuracy claims. This is a scope deferral, not
+completed biological validation. The approved
+[focused final-build check](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+now passes all 32 invocations. Independent review verifies all 86 historical
+identities, expected warnings, exact 326-record historical and 287-record
+corrected-panel inventories, 444 raw artifacts, and 141 unchanged source/tool
+bindings. The three longer runtime comparisons increase 0.21–1.45%; Human
+increases 0.04 s, and median RSS changes in all four stay below 0.15%.
+The technical assessment accepts these scoped costs and supports release.
+The user explicitly authorized the release ritual on 2026-11-08. Final packaging
+checks and publication remain to be completed and recorded; no further release
+confirmation is required.
+
+The warning-header revision is merged into `dev` at `7dd8e7f` via
+[#161](https://github.com/caseywdunn/sharkmer/pull/161). Its
+[verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
+passes all eight local gates, and [CI on the merged commit](https://github.com/caseywdunn/sharkmer/actions/runs/42512601101)
+passes Linux/macOS tests, formatting, Clippy, and Python/reference checks.
+The October evidence below retains its original source and assay scope.
+
+## Stable-version engineering checks (2026-11-09)
+
+The [release-check bundle](../benchmarks/benchmark_results/v3.2-release-20261109/README.md) preserves
+all three jobs. Job 32654564 passes all eight groups with the unchanged
+`3.2.0-dev` binary; job 32659082 passes all eight groups on `3.2.0` after an
+equivalent nested-`if` rewrite. The intervening job 32657614 stops at the Clippy
+suggestion exposed by correcting the declared Rust minimum to 1.88. Both
+successful runs pass 283 Rust tests per backend, 213 Python tests without skips,
+158 reference checks, ten schemas, nine exports, 19 loader dry runs, and fixture
+sequence oracles. They run Rust 1.98.1, not the declared minimum toolchain.
+
+The logs bind Cargo metadata and the check runner before/after execution; the
+bundle records production and tooling hashes after the final run. The stable
+binary is `cf4d8f4edf28fddd06e064d6c8d77a8450189a2710c159e584d0a34ebe59652d`.
+Only package metadata and the equivalent guard spelling change from the
+accepted production candidate. This does not rerun or expand the biological
+comparison. Packaging, release-commit/tag CI, and publication remain pending.
+
+## Current assessment (2026-10-11)
+
+The user authorized the plant assay correction, runtime investigation and
+remaining local validation. The October requirement for collaborator performance
+assessment is superseded by the November decision above. The candidate was prepared on
+`experiment/sequence-first-retention`; the user subsequently authorized committing
+the reviewed work and integrating it into **`dev`** for release assessment.
+Record the exact `dev` commit with evaluation results. At that October
+checkpoint, release publication was not authorized; the November release
+decision above supersedes that hold.
+Earlier dated checkpoints below describe their own source versions and scopes.
+
+The [complete historical-panel comparison](SEQUENCE_RETENTION_RESULTS.md#complete-target-comparison-and-six-new-targets-2026-10-10)
+contains all 118 sample–target combinations: 86 historical identities retained,
+zero lost, 240 new, with 64 standard and 262 uncertain records. Representation
+rises 68 → 74 targets. The subsequent plant correction changes the assay itself,
+so its results must be reported separately from unchanged-assay retention.
+
+### Plant assay and dependency corrections
+
+Angiospermae panel **2.0.0** retains the `trnV-atpE` name and 400–1,000 bp
+bounds but replaces the incorrectly assigned atpB S1022 reverse primer with
+published atpE/trnV_6R, `GGAGAGCAATTTGAAGAAATG`. The extended marker includes
+atpE and ends at the overlapping atpE/atpB boundary; it is not a pure spacer.
+Independent mapping predicts effective 909 bp Liriodendron and 929 bp Acer
+intervals, versus the old 1,359/1,379 bp intervals. The other nine assays are
+unchanged. Two exact public-region references bring the audited catalog's
+active panel regions to 158; the Acer opalus reference remains an explicit
+proxy for the benchmark A. monspessulanum. The changed primer/coordinates are
+an intentional compatibility change from panel 1.x. See the
+[reviewed proposal](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_proposal_v2_review.json).
+
+The lockfile updates only `rand` 0.8.5 → 0.8.6 and `rustls-webpki`
+0.103.10 → 0.103.13; the direct rand minimum is also 0.8.6. These versions
+cover the four previously recorded advisory targets. The
+[independent dependency review](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/dependency/independent_review.json)
+checks the exact diff and saved GitHub advisories. Default-branch alert closure
+is separate from local remediation; this is not a comprehensive security audit.
+
+All eight [before/after plant checks](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/summary.json)
+pass using the same final binary and reviewed panel snapshots:
+
+| Input | Old trnV-atpE output | Corrected output | Full-panel total, before → after |
+| --- | --- | --- | ---: |
+| Liriodendron, SRR25378184 | 41 uncertain hypotheses | One standard 909 bp sequence, exact NC_008326.1 region | 97 → 57 |
+| Acer, ERR14009273 | No product | One standard 929 bp sequence, exact Acer opalus proxy region | 7 → 8 |
+| Synthetic NC_008326.1 source reads | No product | Exact 909 bp standard sequence | 0 → 1 |
+| Synthetic NC_056221.1 source reads | No product | Exact 929 bp standard sequence | 0 → 1 |
+
+All five ingestion/k-mer counts agree within each before/after pair. The
+other nine targets preserve exact sequences, multiplicity, status, and
+normalized outcome/search diagnostics in all four comparisons. Liriodendron's
+full panel changes 6 standard + 91 uncertain → 7 + 50; Acer changes 6 + 1 →
+7 + 1. These are changed-assay results, not a sequence-retention filter or
+a claim that the old 41 hypotheses were proven biologically false. Exact
+public sequence support also does not phase a full product in the sequenced
+sample. The Liriodendron input preserves its original ordered 656,431 R1 +
+343,569 R2 prefix; no paired-fragment inference is made.
+
+The [complete plant assessment](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/assessment-v1/report.json)
+verifies both old-assay inventories against the saved 118-row matrix and
+retains partial-reference evidence for all 41 replaced hypotheses. A
+[separate independent assessment review](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_assessment_review.json)
+verifies the reference joins and combined inventory. The
+[derived combined inventory](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/assessment-v1/derived_combined_inventory.json)
+uses eight saved samples plus these two fresh corrected-assay plant runs:
+**287 records = 66 standard + 221 uncertain; 86 release identities retained,
+zero lost, 201 new; 75/118 targets represented.** This is not a fresh ten-sample
+final-build benchmark. The reduced total reflects the changed plant assay.
+
+The single real before/after runs took Liriodendron 109.53/107.69 seconds
+and Acer 48.08/71.26 seconds, at one CPU. They test functionality with a
+changed assay, not controlled performance equivalence. In particular, the
+longer Acer after-run belongs in performance acceptance rather than being
+silently excluded or called an established regression from one pair.
+
+### Final local validation
+
+Slurm job **29147703** completed successfully in 10m13s on two physical
+CPUs with a 16 GiB allocation. All **11 gates** in the
+[final result](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/result.json)
+pass; 75 source/config/fixture files and 178 tool/helper bindings are
+unchanged before/after execution. The
+[independent terminal review](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/independent_results_review.json)
+passes all 492 receipt checks, including raw test and plant outputs.
+The frozen default-feature executable is
+[saved here](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer),
+SHA-256 `3a6505da2750982c333b077a065ad9e0cd0e6607c6963fa7140a0b44da71a899`.
+
+| Gate | Result |
+| --- | --- |
+| Rust tests, each of two hash backends | 251 unit + 29 integration passed; none ignored |
+| Clippy, both backends; formatting | Passed |
+| Python tests, with BLAST on PATH | 200 passed, no skips; real BLAST integration ran |
+| Exact public-reference provenance | 158/158 verified across ten panel files |
+| Explicit JSON Schema validation | Nine built-ins + reference example passed |
+| Embedded panel/export and loader checks | Nine exports match source; 19 dry runs passed |
+| Fixture CLI oracles | k19 exact count; k31 exact standard sequence hashes passed |
+| Plant correction | All eight bounded invocations and four comparisons passed |
+
+The largest measured process RSS was 4,461,700 KiB during the plant checks.
+No assembly, admission, retention, publication or inclusive-output code was
+changed. The dependency updates and versioned panel correction are the
+production changes in this follow-up.
+
+### Preserved candidate for assessment
+
+The [tested source snapshot](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz)
+contains the source and fixture inputs needed to build and test this development
+candidate, with an internal file manifest. Its
+[archive receipt](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2-receipt.json)
+binds every member to the tested source, base commit, final plan and binary.
+Its three supplemental benchmark/environment helpers match the base commit;
+they were outside the 75-file pre/post validation inventory. This corrected
+v2 archive supersedes the preserved first archive, which omitted those helpers.
+The [production patch](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate.patch)
+shows changes relative to `1ea21c9`. Extract into a fresh directory and use
+`cargo build --release --locked`; validation used Rust/Cargo 1.98.1 with the
+default hash backend. This is a local review snapshot, not a published release.
+The authorized Git handoff uses `dev`; the archive and its receipts preserve
+the exact source tested before integration. Subsequent handoff documentation
+updates do not change that tested source.
+
+### Runtime investigation completed; performance acceptance remains open
+
+The [saved-evidence investigation](../benchmarks/benchmark_results/v3.2-runtime-review-20261010/SAVED_FINDINGS.md)
+authenticates all 48 relevant invocations across the release → inclusive and
+inclusive → retention comparisons. The original four wall flags remain recorded:
+Human +2.74 s, Liriodendron +4.17 s, Rhopilema +2.66 s and Heliconius +2.48 s.
+The later retention change adds median CPU time of 1.95, 1.11 and 0.87 s in
+the three longer workloads, respectively. These are measured costs, without
+function-level causal attribution. All sequences in these four cells are
+retained; more output alone cannot explain the unchanged-output Rhopilema case.
+
+The same inclusive binary's Human wall median varied 4.29 → 0.66 s between
+historical environments while CPU was 0.71 → 0.70 s. A
+[new bounded Human diagnostic](../benchmarks/benchmark_results/v3.2-runtime-review-20261010/HUMAN_FINDINGS.md)
+uses 12 untraced measurements plus four separate traces. Release → frozen
+retention wall medians are 0.71 → 1.14 s with NFS output and 0.47 → 0.51 s
+with node-local output. All 16 runs preserve five exact products and nine
+target outcomes. Traces show delays in NFS opens, renames and removals;
+fsync is not the dominant measured call. Synchronization and transaction
+semantics remain unchanged.
+
+This supports current filesystem sensitivity, not a proven explanation of
+the historical delay. Three repeats on one host do not establish equivalence
+or acceptable performance. The diagnostic uses frozen pre-correction binaries;
+the user and coding agent assess the final candidate on the intended storage and
+hardware, reporting absolute times, CPU, RSS, sequences/statuses, and exact
+input/panel/build identities. Keep traced timings separate and state cache
+conditions. The [independent outcome review](../benchmarks/benchmark_results/v3.2-runtime-review-20261010/independent_human_results_review.json)
+passes; it does not close performance acceptance.
+
+### Remaining acceptance boundaries
+
+- **Focused recovery/performance review: met 2026-11-08.** All 32 invocations
+  and independent result checks pass. The measured costs are acceptable for
+  the agreed scope: Human's percentage flag is a 40 ms median increase with
+  overlapping ranges; the longer workloads increase 0.21–1.45%, and all four
+  median RSS increases stay below 0.15%. The
+  [results and disposition](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+  preserve every pair and the separate corrected-plant checks. These results
+  do not prove statistical equivalence or explain the older timing flags.
+  The user authorized the release ritual on 2026-11-08; final packaging checks
+  and publication remain pending.
+- **Held-out registration: deferred from v3.2 by the user, 2026-11-08.**
+  The work is not completed. Register biological inputs and independent
+  truth that were not used to develop or tune the assembly rules, with fixed
+  checksums, subsets, callable targets, and tolerances. "Independent" describes
+  the evidence, not a requirement for an external reviewer. The 118-target
+  matrix and plant replays remain calibration/regression evidence. Retain this
+  requirement before further assembly tuning or broad accuracy claims.
+- **All-panel biological validation: deferred from v3.2 by the user, 2026-11-08.**
+  The work is not completed. Evaluate actual emitted products
+  and negative controls across all nine panels, including gene identity and
+  whole-product alignment coverage. Loading panels and validating their schemas
+  do not test those biological outcomes. The
+  default all-panel script expands to 100 sample/depth invocations, plus the
+  reference example; schema/loader checks are a separate, smaller gate.
+  Register and bound any wider run before executing it; retain this evaluation
+  before further assembly tuning or broad accuracy claims.
+- Linux and macOS CI pass on the merged November candidate. Slurm memory limits do not establish
+  performance on a physical 16 GB laptop; that remains a hardware claim to test,
+  not a new implied release requirement.
+- The independently annotated Agalma ITS source remains missing under #129.
+
+## Earlier assessment checkpoints
+
+**Assessment (2026-09-30):** development integration and all 60 fresh
+[inclusive release comparison](INCLUSIVE_RELEASE_RESULTS.md) invocations pass.
+`dev` now contains `ed04bde`; `baseline/pre-inclusive-dev-20260929` preserves
+`956e771`. Default output contains 64 standard and 62 uncertain records;
+69/71 released high-copy identities are available, including five recovered
+uncertain hypotheses. The [Drosophila diagnostic](DROS12S_RETENTION_RESULTS.md)
+finds both remaining 12S identities enumerated then discarded by marker
+retention. Four runtime increases exceed the 5% priority threshold; none of
+the RSS increases exceeds 2%. Independent raw outcome review passes; the
+evidence bundle records final report and archive verification receipts.
+Earlier integration holds below are historical; no release is authorized.
+
+**Current checkpoint (2026-09-29):** the user requested default inclusive delivery:
+standard and uncertain records together in the normal target FASTA, explicit
+header labels, and a standard-only opt-out. [The revised contract](INCLUSIVE_OUTPUT.md)
+defines combined schema-2 delivery and inclusive total counts. Implementation
+and all six default/opt-out regressions pass: 60 records by default (26 standard,
+34 uncertain), exactly the preceding sequences, with the same five of seven
+historical identities available as uncertain hypotheses. Both Rust backends
+pass 247 unit and 29 integration tests, formatting and Clippy; Python runs 197
+tests with one skip and all 156 references verify. See [the results](INCLUSIVE_OUTPUT_RESULTS.md)
+and linked review/archive receipts. The earlier completed split-output
+evaluation below is a preserved checkpoint; no merge or release is authorized.
+
+**Preceding checkpoint (2026-09-28):** [#157](https://github.com/caseywdunn/sharkmer/issues/157)
+is implemented and its nine frozen baseline/off/on comparisons are complete on
+`experiment/uncertain-products`. The
+[output contract and comparison protocol](UNCERTAIN_PRODUCTS.md) preserve
+standard admission/counts and expose bounded graph-path hypotheses in separate
+labelled FASTA and stats. Both hash backends pass 246 unit and 26 integration
+tests, formatting and Clippy; Python runs 184 tests with one existing skip,
+and all 156 references verify across ten panels.
+
+The [new results](UNCERTAIN_PRODUCTS_RESULTS.md) show unchanged standard
+sequences and counts (11 Gryllus, 9 Drosophila, 6 Heliconius), with 17/4/13
+additional uncertain hypotheses. Five of seven exact historical identities
+appear in this separate output: Gryllus CO1_1 373 bp and ITS_2 978 bp,
+Heliconius ND1 263 bp, and Drosophila 12S 475 bp and 16S_2 590 bp. Drosophila
+12S 487/499 bp remain unobserved under the fixed search/retention bounds.
+Emission does not validate repeat structure or restore standard recovery.
+Independent outcome review passes; the bundle records final results and
+archive verification receipts. The
+experiment remains unmerged, `dev` stays at `956e771`, and reconstruction,
+seven-loss disposition, held-out validation and release decisions remain open.
+
+**Preceding diagnostic status (2026-09-27):** the isolated `experiment/its-read-threading`
+branch completes the [variation-aware ITS diagnostic](ITS_READ_RECRUITMENT_RESULTS.md)
+and a [positioned read-history prototype](READ_HISTORY_RESULTS.md).
+The latter preserves information lost by aggregate threading counts, but all
+four fixed ITS classes still have zero complete exact witnesses. Known-read
+breaks are unchanged before/after pruning; gapped-alignment evidence remains
+outside exact-walk sensitivity. Production assembly and repeat admission
+remain unchanged. See [HANDOFF.md](HANDOFF.md) for the
+latest code/evidence checkpoints and next investigation. Historical code and
+test totals below are not current totals; no release gate is waived.
+
+**2026-09-13 reference correction:** the [accessioned-reference assessment](BENCHMARK_reference_gates.md)
+finds that the 978 bp Gryllus ITS_2 reference is a bootstrap amplicon, not the
+256 bp public AK281180.1 record. The exact match cited below is therefore not
+independent full-length biological confirmation. All 22 public-corroborated
+hydrozoa templates reconstruct correctly before/after #132/current at k19/k31
+with diagnostic native-endpoint primers. This clean-template result does not
+prove real-data regressions absent; #129/#153 and user review remain open.
+
+**Subsequent direct-release benchmark:** [BENCHMARK_v3.2_vs_v3.1.md](BENCHMARK_v3.2_vs_v3.1.md)
+compares pristine released v3.1.0 with the candidate across 114 invocations.
+It finds roughly flat runtime/RAM but 179 -> 71 primary products, including a
+lost exact-reference Gryllus ITS_2 product. Release remains on hold for
+[#153–155](https://github.com/caseywdunn/sharkmer/issues/153). The intermediate
+baseline calibration below is retained as history, not release-to-release parity.
+
+**2026-09-11 follow-up:** [#154/#155 evidence](BENCHMARK_high_copy_followups.md)
+records reviewed quota/marker/diagnostic fixes, six supplemental invocations,
+and 60 fresh comparisons against released v3.1.0. Candidate sequences remain
+unchanged from pre-fix development code. High-copy products are 71 -> 64,
+including the lost exact-reference Gryllus ITS_2. Median-runtime sum is 1.81%
+lower, human is 0.05 s slower, and RSS is effectively unchanged. Both hash
+backends pass 221 unit and 22 integration tests; all 13 independent control
+invocations pass applicable checks. #154/#155 implementation is complete,
+but **the high-copy release gate remains open under #153**. Metagenomic and
+single-copy nuclear recovery losses are deferred, not current blockers.
+
+## Scope and status
+
+The v3.2 correctness implementation covers #129–138. The reviewed code point
+is `03c0fc62ee0521f85a527b86f78252a60be1500b`, package `3.2.0-dev`.
+This is the original implementation checkpoint. Subsequent changes include
+the #154/#155 fixes and opt-in withheld-path diagnostics; see the handoff for
+the latest production-code and evidence commits.
+
+Incremental `--chunks` counting and histogram compatibility remain supported.
+The fast exact counter, bounded-memory replay/storage, low-coverage nuclear
+policy, and metagenomic diversity policy remain v4.0/v4.1/v4.2 work in
+[PLAN.md](PLAN.md). This release does not claim to solve those harder inference
+problems or to improve speed/RAM through a new counter.
+
+Implementation and independent reviews:
+
+| Issue | Implementer | Reviewer | Dev implementation commit |
+| --- | --- | --- | --- |
+| #129 validation/provenance | Sol | Astra | `6991d73` |
+| #130 concatenated gzip | Terra | Sol | `1903d87` |
+| #136 integer median | Root | Terra | `d47c3c1` |
+| #131 threshold retry | Sol | Terra | `9284916` |
+| #132 repeat uncertainty | Sol | Terra | `b728f14` |
+| #135 primer budgets | Terra | Sol | `b41f6f8` |
+| #133 oriented read evidence | Sol | Terra | `fb86ccd` |
+| #134 current-run outputs | Sol; root validator integration | Terra | `2183d5e` |
+| #137 cache ownership/coordination | Terra | Sol | `973edbb` |
+| #138 documentation/diagnostics | Terra; root changelog/version | Sol | `03c0fc6` |
+
+## Correctness evidence
+
+- Release Rust tests pass with both default `ahashmap` and
+  `--no-default-features --features fxhashmap`: **213 unit + 22 integration
+  tests for each backend**. Formatting and both Clippy configurations pass.
+- **39 Python regressions** pass. Both implementer and reviewer validated all
+  nine built-in panels plus the reference example against the JSON Schema.
+  Built-in loader and reference CLI validation pass. Six README sPCR commands
+  pass dry-run parsing with the included fixture substituted for example local
+  filenames and the original cnidaria panel substituted for its exported copy.
+- Gzip regressions cover multiple members, corruption in a later member,
+  record limits, paired reads, replay, and failed cache publication.
+- An independent CLI mixture with shared primer ends, 400 bp at count 100 and
+  180 bp at count 4, previously failed the 170–210 bp search window; the repaired
+  implementation returns exactly the 180 bp target.
+- At k=19, an A18 repeat control remains exactly 138 bp. A19, A40, and AC40
+  targets that previously collapsed to 138 bp are now withheld with explicit
+  repeat uncertainty rather than emitted at the wrong length. This is an
+  intentional output reduction, not repeat-copy reconstruction.
+- Threading tests cover interior reads, reverse complements, invalid-base
+  continuity breaks, inverted motifs, strand ties, and repeated/overlapping
+  evidence. The pinned high-copy fixture is unchanged with threading enabled.
+- An independent real-SIGKILL probe confirms incomplete output cannot validate
+  as current success, restart recovers the exact target, and an unrelated FASTA
+  survives. Rust tests additionally cover partial publication and collisions.
+- An independent CLI cache-clear probe waits for an existing lease through a
+  directory alias, removes a verified legacy pair, and preserves modified,
+  orphaned, symlink, and unrelated entries plus the cache directory/lock.
+- Pathological ambiguous primers fail before ENA resolution under a 128 MiB
+  address-space limit and five-second timeout. Integer median boundary and
+  exhaustive small-pair regressions protect overflow-safe floor rounding.
+
+These synthetic/fixture regressions protect specified behaviors. They are not
+independent biological sensitivity or haplotype-accuracy measurements.
+
+## Final calibration
+
+All **13 historical samples across six panels** completed successfully at k=19,
+two threads, and a requested cap of one million FASTQ records. All read/kmer
+occurrence totals and all **71 product lengths/SHA-256 values** match the warm
+repaired baseline. Selected input checksums/subsets/source plans and panel and
+reference identities also match.
+
+The baseline is the preserved executable historically labeled `b728f14`, used
+after the threshold and repeat fixes, **not untouched 3.1.0**. The label is not
+verified build provenance. It was selected explicitly;
+its recorded workspace observations do not establish its build source. The
+binary SHA is `70acbf1be0334f29f5d157e288dc2d509a5864cc17cf61a9e7e9ab6c7b8a31f1`.
+The final executable was built by the harness immediately before fingerprinting
+from clean `03c0fc6`, using release/default `ahashmap`; SHA
+`387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82`.
+
+Final per-product reference-classifier outcomes are: 39 confirmed products,
+2 confirmed gene/other taxon, 8 no reference, 6 insufficient alignment,
+3 split/chimeric alignment, 5 ambiguous gene, 3 wrong gene, and 5 no significant
+hit. **71 emitted products does not mean 71 validated biological products.**
+The only classification changes are five human products corrected from
+other-taxon to confirmed after registering the previously missing
+`Homo sapiens` sample metadata. That is a metadata correction, not improved
+sequence recovery. ENA scientific-name metadata was checked for SRR17535371;
+the explicit taxon and provenance note are in `benchmarks/benchmark.yaml`.
+
+| Panel | Accession | Actual records | Baseline wall s | Final wall s | Final peak RSS GiB |
+| --- | --- | ---: | ---: | ---: | ---: |
+| angiospermae | ERR14009273 | 1,000,000 | 31.95 | 32.99 | 2.132 |
+| angiospermae | SRR25378184 | 1,000,000 | 62.21 | 63.07 | 4.257 |
+| bacteria | ERR2596344 | 59,704 | 1.37 | 1.26 | 0.074 |
+| bacteria | SRR19418213 | 525,982 | 14.69 | 14.84 | 1.070 |
+| bacteria | SRR24806237 | 167,686 | 2.31 | 2.23 | 0.140 |
+| cnidaria | SRR25099394 | 1,000,000 | 48.46 | 49.33 | 4.257 |
+| cnidaria | SRR8617500 | 1,000,000 | 56.67 | 54.24 | 4.257 |
+| cnidaria | SRR9278435 | 1,000,000 | 54.16 | 53.94 | 4.257 |
+| human | SRR17535371 | 108,518 | 1.05 | 0.99 | 0.024 |
+| insecta | SRR1057608 | 1,000,000 | 45.03 | 45.23 | 2.132 |
+| insecta | SRR27962769 | 1,000,000 | 99.41 | 99.55 | 4.257 |
+| insecta | SRR31887760 | 1,000,000 | 60.66 | 61.23 | 2.132 |
+| teleostei | SRR22396603 | 1,000,000 | 46.52 | 48.05 | 4.257 |
+
+These are single-run diagnostics, not evidence of a speedup. Both comparisons
+use a warm application cache; OS page-cache state is unknown. The host has
+12 CPUs and 62.6 GiB reported RAM, running Linux, Rust 1.98.1, and BLAST 2.17.0.
+The final run had a 12 GiB address-space limit, which is not an RSS measurement
+or a real 16 GB laptop validation. Four inputs exhaust below the requested
+cap. Timings cover the Sharkmer invocation, not the subsequent BLAST analysis.
+Stage/throughput, allocator, RSS, and final-disk metrics remain separate in the
+raw results; peak temporary disk is not measured.
+
+The pinned ERR571460 100k fixture passes both oracles: k=19 has exactly
+13,197,385 kmer occurrences; k=31 retains exactly the established 18S (1,783 bp)
+and 28S_2 (430 bp) products and has 11,996,833 occurrences. Threading preserves
+those exact product hashes. The real-BLAST classifications for this fixture
+remain other-taxon for 18S and no-significant-hit for 28S_2, distinct from the
+exact-sequence regression oracle.
+
+See the [machine-readable comparison](../benchmarks/benchmark_results/v3.2-review-20260909/comparison.json)
+and [artifact index](../benchmarks/benchmark_results/v3.2-review-20260909/README.md)
+for raw baseline/final results, input/binary provenance, and reproduction
+commands. This is calibration/regression evidence only, not held-out validation.
+
+## Behavior changes to review
+
+- Standard sPCR retries lower thresholds after invalid candidates, but stops at
+  the first threshold producing a valid product. It is not exhaustive
+  rare-template recovery. Unresolved repeat-touched products are withheld.
+- Optional read threading supplies local support, not whole-haplotype proof or
+  molecule deduplication. Distinct FASTQ records can still represent duplicate
+  molecules. Paired long-range links are not consumed by path selection.
+- FASTA/stats outputs now require a complete, matching, checksummed current-run
+  manifest. Reruns invalidate only verified prior outputs owned by that sample.
+  Legacy/foreign/modified/symlink collisions are preserved and refused; use a
+  fresh output directory when upgrading or retaining earlier results.
+- Output publication is a manifest-mediated transaction, not an atomic rename
+  of an entire multi-file directory. Readers must honor the manifest. Histogram
+  and DOT outputs remain outside this transaction. Argument-validation failures
+  occur before a transaction and leave previous results untouched.
+- Cache leases serialize cooperating processes sharing a directory for the
+  entire run, including replay. This prioritizes correctness over concurrent
+  throughput. Older clients ignoring the lease are not coordinated.
+- Normal failed cache replacement preserves the previous verified generation.
+  Forced interruption can leave ambiguous/orphan entries; lookup refuses them
+  and clear preserves them with warnings instead of guessing ownership. A fresh
+  directory or `--no-cache` is the conservative recovery path.
+- PCR requires k >= 2 and positive effective primer trim; count-only k=1 remains
+  supported. Primer expansion has explicit checked work/allocation-count limits.
+- `n_subreads_ingested` retains its existing legacy record-count semantics; it
+  does not count N-split segments. `n_kmers` counts occurrences, not distinct
+  keys. Allocator peak, process RSS, and final disk size are different metrics.
+
+## Remaining release gates
+
+This original gate inventory is retained for provenance. The current
+assessment above records completed recovery, runtime investigation, dependency
+patches and local checks. The user and coding agent own the current acceptance
+decisions; the 2026-11-08 user-approved deferral removes held-out registration
+and the full all-panel biological campaign from v3.2 release prerequisites.
+They remain unfinished scientific work. This historical inventory does not
+reinstate those superseded prerequisites, collaborator review, or the former
+publication hold. The user authorized the release ritual on 2026-11-08.
+
+1. **User review and release authorization (historical hold, now superseded).**
+   Publication was not authorized at this checkpoint. The explicit 2026-11-08
+   release instruction satisfies this decision gate; final packaging checks
+   remain required.
+2. **Independent held-out registration (#129).** No held-out biological inputs
+   or truth have been supplied. Freeze accessions, checksums, subsets, callable
+   targets, truth, and tolerances before further assembly-policy tuning. Existing
+   historical data remain calibration/regression data; #129 stays open.
+3. **Release-baseline regressions and wider panel validation.** The subsequent
+   [direct comparison](BENCHMARK_v3.2_vs_v3.1.md) completes the configured
+   2/4/8M depth sweeps and repeated 1M timings, but exposes unresolved output
+   losses and repeat/search-budget concerns (#153–155). The historical matrix
+   covers six panels, not biological validation of all nine. Run the
+   broader release procedure in CONTRIBUTING.md and inspect every product and
+   negative control before publishing; primer/schema loading alone is not
+   biological validation.
+
+   **2026-09-11 scope clarification:** release review protects observed
+   organelle/rRNA recovery on the frozen calibration inputs, including the
+   reference-supported Gryllus ITS_2 loss, plus runtime and RAM under the
+   scoped protocol. `copy_number` and `compartment` metadata are not evidence
+   of abundance or read support. Conservative withholding of unsupported
+   repeat-copy claims remains intentional. Metagenomic-diversity and
+   single-copy-nuclear recovery regressions are deferred to v4.1/v4.2, not new
+   v3.2 blockers; this does not waive the independent held-out or all-panel
+   biological-validation gates.
+4. **Dependency alert triage.** Four existing default-branch Dependabot alerts
+   were observed during this review: rustls-webpki malformed CRL BIT STRING
+   panic/DoS (high, #7), rand custom-logger unsoundness (low, #6), and
+   rustls-webpki wildcard/URI name-constraint handling (low, #5/#4). These were
+   not introduced or remediated by this work. Check applicability and patch or
+   explicitly disposition them before publication; this was not a security audit.
+
+   Read-only lockfile/advisory triage confirms the affected packages remain in
+   dev. `ureq 2.12.1 -> rustls 0.23.37 -> rustls-webpki 0.103.10` is the runtime
+   path; GitHub lists `0.103.13` as the smallest single patched target covering
+   all three webpki alerts. Direct runtime `rand 0.8.5` is also affected; GitHub
+   lists `0.8.6` as the first patched version for its release line. These are
+   documented update targets, not tested dependency changes or an assessment of
+   exploitability in Sharkmer. Primary advisories:
+   [CRL panic](https://github.com/advisories/GHSA-82j2-j2ch-gfr8),
+   [rand logger](https://github.com/advisories/GHSA-cq8v-f236-94qc),
+   [wildcard constraints](https://github.com/advisories/GHSA-xgp8-3hg3-c2mh), and
+   [URI constraints](https://github.com/advisories/GHSA-965h-392x-2mh5).
+
+## Historical issues audited, not silently closed
+
+Current-code audit comments were recorded on #121–126; all remain open:
+
+| Issue | Remaining scope |
+| --- | --- |
+| #121 | `requires_sharkmer` absent; missing `panel_version` warns rather than enforcing the complete proposed schema contract. |
+| #122 | Validator `--output-dir` controls Markdown only; machine results and run artifacts use separate locations. |
+| #123 | Positive indices and complete indexing within mixed indexed/unindexed groups are not enforced; `gene_name` compatibility remains. |
+| #124 | Optional annotation fields exist, but gene/copy metadata are incomplete in human, angiospermae, and bacteria panels. Do not infer missing biology. |
+| #125 | Removing parsed-but-ignored `expected` is a future schema v3 migration, not this compatibility-preserving release. |
+| #126 | Reference-sequence `notes` is absent in the Rust model and v2 schema. |
+
+## Next implementation cycle
+
+First review the direct-release losses under #153 and resolve or disposition
+#154–155. After the v3.2 review gate, begin v4.0 with the count-store/replay/evidence
+contracts in #139. Retain exact counts and one-pass ingestion; measure bounded end-to-end
+resources before selecting packed counters or external storage. Keep legacy
+incremental counting isolated rather than deleting it. Do not use a higher
+FASTA product count as evidence of better nuclear/metagenomic inference.

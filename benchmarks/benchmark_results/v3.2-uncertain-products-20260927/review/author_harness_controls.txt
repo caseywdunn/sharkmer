@@ -1,0 +1,28 @@
+test_approximate_not_exact (author_harness_controls.Controls.test_approximate_not_exact) ... ok
+test_each_preexisting_parity_dimension_matters (author_harness_controls.Controls.test_each_preexisting_parity_dimension_matters) ... ok
+test_exact_nine_commands_flags_order_and_limits (author_harness_controls.Controls.test_exact_nine_commands_flags_order_and_limits) ... ok
+test_execute_failed_gate_has_receipt_and_no_clobber (author_harness_controls.Controls.test_execute_failed_gate_has_receipt_and_no_clobber) ... ok
+test_external_freeze_pin_rejected_before_output (author_harness_controls.Controls.test_external_freeze_pin_rejected_before_output) ... ok
+test_failed_process_receipt_and_input_bookends (author_harness_controls.Controls.test_failed_process_receipt_and_input_bookends) ... ok
+test_fingerprint_mutation (author_harness_controls.Controls.test_fingerprint_mutation) ... ok
+test_frozen_commands_tamper_rejected (author_harness_controls.Controls.test_frozen_commands_tamper_rejected) ... ok
+test_launcher_observes_enforced_limits_and_rejects_wrong_expectation (author_harness_controls.Controls.test_launcher_observes_enforced_limits_and_rejects_wrong_expectation) ... ok
+test_loss_identity_corruption_rejected (author_harness_controls.Controls.test_loss_identity_corruption_rejected) ... ok
+test_missing_and_duplicate_jobs_rejected (author_harness_controls.Controls.test_missing_and_duplicate_jobs_rejected) ... ok
+test_missing_compiler_creates_failed_build_receipt (author_harness_controls.Controls.test_missing_compiler_creates_failed_build_receipt) ... ok
+test_no_clobber_json (author_harness_controls.Controls.test_no_clobber_json) ... ok
+test_only_direct_new_payload_removed (author_harness_controls.Controls.test_only_direct_new_payload_removed) ... ok
+test_optional_kmer_count_presence_and_values_are_compared (author_harness_controls.Controls.test_optional_kmer_count_presence_and_values_are_compared) ... ok
+test_parity_and_exact_separate (author_harness_controls.Controls.test_parity_and_exact_separate) ... ok
+test_prefix_exact (author_harness_controls.Controls.test_prefix_exact) ... ok
+test_prefix_rejects_truncated_malformed_extra_and_identity (author_harness_controls.Controls.test_prefix_rejects_truncated_malformed_extra_and_identity) ... ok
+test_preparation_receipts_reject_derived_input_mutation (author_harness_controls.Controls.test_preparation_receipts_reject_derived_input_mutation) ... ok
+test_process_timeout_kills_group_and_preserves_receipt (author_harness_controls.Controls.test_process_timeout_kills_group_and_preserves_receipt) ... ok
+test_reverse_complement_separate (author_harness_controls.Controls.test_reverse_complement_separate) ... ok
+test_review_requires_pass_nonempty_and_coverage (author_harness_controls.Controls.test_review_requires_pass_nonempty_and_coverage) ... ok
+test_symlink_source_is_rejected (author_harness_controls.Controls.test_symlink_source_is_rejected) ... ok
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.308s
+
+OK

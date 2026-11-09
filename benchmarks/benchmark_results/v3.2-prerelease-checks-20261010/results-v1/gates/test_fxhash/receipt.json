@@ -1,0 +1,78 @@
+{
+  "command": [
+    "cargo",
+    "test",
+    "--release",
+    "--locked",
+    "--offline",
+    "-j",
+    "2",
+    "--no-default-features",
+    "--features",
+    "fxhashmap"
+  ],
+  "files": [
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_fxhash/constraints.json",
+      "sha256": "98184ff9c94bee72b6c82f1f10385a634b2db0504a19b88cbd5998a79daa15c2",
+      "size_bytes": 661
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_fxhash/stderr.log",
+      "sha256": "601d4be27d32bcd85c51cd521352ad84fc8e4de330fffc8d2d307810969fa61c",
+      "size_bytes": 498
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_fxhash/stdout.log",
+      "sha256": "60b9e0637458951f0f8fb8ea6b9e770f3e52d736930ae9fe93c0e51df226b09e",
+      "size_bytes": 19699
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_fxhash/time.json",
+      "sha256": "405d071b2905d70e238e20176afc3ff95367204c57a23b67300f8426d7889705",
+      "size_bytes": 102
+    }
+  ],
+  "launch_command": [
+    "/usr/bin/prlimit",
+    "--as=12884901888",
+    "--",
+    "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+    "--receipt",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_fxhash/constraints.json",
+    "--expected-cpus",
+    "25,40",
+    "--expected-as",
+    "12884901888",
+    "--",
+    "/usr/bin/time",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/test_fxhash/time.json",
+    "-f",
+    "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+    "--",
+    "cargo",
+    "test",
+    "--release",
+    "--locked",
+    "--offline",
+    "-j",
+    "2",
+    "--no-default-features",
+    "--features",
+    "fxhashmap"
+  ],
+  "metrics": {
+    "exit_code": 0,
+    "max_rss_kib": 631852,
+    "system_seconds": 3.12,
+    "user_seconds": 112.8,
+    "wall_seconds": 88.72
+  },
+  "name": "test_fxhash",
+  "observer_wall_seconds": 89.00358111364767,
+  "returncode": 0,
+  "status": "pass",
+  "timeout_seconds": 1200
+}

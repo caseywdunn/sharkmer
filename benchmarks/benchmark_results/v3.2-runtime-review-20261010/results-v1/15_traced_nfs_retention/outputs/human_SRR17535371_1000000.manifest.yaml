@@ -1,0 +1,18 @@
+schema_version: 2
+producer: sharkmer
+sample: human_SRR17535371_1000000
+run_id: 18dd3c4f5df90261-173c1e-010c221df4a3a557
+status: complete
+files:
+- path: human_SRR17535371_1000000.stats.yaml
+  sha256: 983bfb5fd4fc6b3b4b064b3818a0a90ff806b37c0d10c0a4bae06548b1e8d949
+- path: human_SRR17535371_1000000_human_mt-10360-12226.fasta
+  sha256: e32a8ef6c6903733310e7551809a1e0b7222fca0484fc65db3e09228dd37f6cd
+- path: human_SRR17535371_1000000_human_mt-14898-151.fasta
+  sha256: 3a92f486a37dbafd2a5ffe03a09bee59bf64442be9defc86d32280d8fec330a7
+- path: human_SRR17535371_1000000_human_mt-3734-6739.fasta
+  sha256: ca55515ea2448c8a6593dcf2c8aac5bf08b83c8638f0bb876370d5e0df2f4502
+- path: human_SRR17535371_1000000_human_mt-6511-9220.fasta
+  sha256: 67e21f272e25132482ac2d56beacfe82c3b487bcadbe187b61fc7fa8fbe099b8
+- path: human_SRR17535371_1000000_human_mt-8910-10648.fasta
+  sha256: ce52b95ef07b3b3daade02192567ff33435ac131a59f1ec3c96664926ec2e4e0

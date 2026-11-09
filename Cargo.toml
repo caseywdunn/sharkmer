@@ -1,10 +1,10 @@
 [package]
 name = "sharkmer"
-version = "3.1.0"
+version = "3.2.0"
 authors = ["Casey Dunn <casey.dunn@yale.edu>"]
 description = "In silico PCR (sPCR) and incremental kmer counting from whole-genome shotgun reads"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.88"
 license = "MIT"
 repository = "https://github.com/caseywdunn/sharkmer"
 
@@ -24,7 +24,7 @@ ahashmap = []
 [dependencies]
 clap = { version = "4.2.7", features = ["derive"]}
 clap_complete = { version = "4" }
-rand = { version = "0.8.5"}
+rand = { version = "0.8.6"}
 rayon = { version = "1.7.0"}
 petgraph = { version = "0.6.4"}
 bio = { version = "1.4.0"}
@@ -40,6 +40,7 @@ indicatif = { version = "0.17" }
 ureq = { version = "2" }
 peak_alloc = { version = "0.3" }
 dirs = { version = "6" }
+fs2 = { version = "0.4" }
 sha2 = { version = "0.10" }
 tempfile = { version = "3" }
 smallvec = { version = "1" }

@@ -1,0 +1,53 @@
+sharkmer_version: 3.1.0
+command: /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/build-v1/baseline/sharkmer -k 19 -t 2 --chunks 0 --max-reads 1000000 -o /tmp/sharkmer-runtime-29012047-nqhkakk1/04_block1_local_release/outputs/ -s human_SRR17535371_1000000 --pcr-panel-file /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/human.yaml /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v2/SRR17535371.fastq
+sample: human_SRR17535371_1000000
+kmer_length: 19
+chunks: 0
+n_reads_read: 108518
+n_bases_read: 18093925
+n_subreads_ingested: 108518
+n_bases_ingested: 18092177
+n_kmers: 16138457
+peak_memory_bytes: 17882588
+pcr_results:
+- gene_name: human_mt-1404-3947
+  status: fail
+  n_products: 0
+  failure_reason: no path found
+- gene_name: human_mt-3734-6739
+  status: success
+  n_products: 1
+  product_lengths:
+  - 2990
+- gene_name: human_mt-6511-9220
+  status: success
+  n_products: 1
+  product_lengths:
+  - 2694
+- gene_name: human_mt-8910-10648
+  status: success
+  n_products: 1
+  product_lengths:
+  - 1725
+- gene_name: human_mt-10360-12226
+  status: success
+  n_products: 1
+  product_lengths:
+  - 1853
+- gene_name: human_mt-11977-13830
+  status: fail
+  n_products: 0
+  failure_reason: no path found
+- gene_name: human_mt-13477-15349
+  status: fail
+  n_products: 0
+  failure_reason: no path found
+- gene_name: human_mt-14898-151
+  status: success
+  n_products: 1
+  product_lengths:
+  - 1808
+- gene_name: human_mt-16488-1677
+  status: fail
+  n_products: 0
+  failure_reason: no path found

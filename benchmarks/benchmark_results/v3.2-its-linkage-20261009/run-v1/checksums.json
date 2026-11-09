@@ -1,0 +1,22 @@
+{
+  "block_combinations.tsv": {
+    "bytes": 1334,
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/block_combinations.tsv",
+    "sha256": "553dbaa1671856544ca1c01e31335162980f3446d7f02c7a1f14e679b0ab52d7"
+  },
+  "candidate_disposition.tsv": {
+    "bytes": 4201,
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/candidate_disposition.tsv",
+    "sha256": "92dc952df75468a3d923a0fade151dc312c27ab58695445f608dfc5953e69102"
+  },
+  "report.json": {
+    "bytes": 721259,
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/report.json",
+    "sha256": "51c9e0fd6512942dfbc56d15557de5410f4281ea26bc7a746d24face3eebc687"
+  },
+  "summary.json": {
+    "bytes": 13153,
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/summary.json",
+    "sha256": "225ebf3d0f4fe1ae6ef6f0fef84ab5013d2f9717041f4a06e84de46198d1c3bd"
+  }
+}

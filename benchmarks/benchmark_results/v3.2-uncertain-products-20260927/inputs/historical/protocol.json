@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "purpose": "Pre-run protocol for a bounded, non-statistical withheld-path-diagnostics parity comparison.",
+  "baseline_commit": "58ca2a671f33eb329ff3249d6859d86625ba0495",
+  "baseline_binary": {
+    "path": "/tmp/sharkmer-withheld-diagnostics-20260913/sharkmer-base-58ca2a6",
+    "sha256": "d481ba32d9d1b0fe6f46f50cbe5fd82be4a1dfcafb45ea5a63ef97d79dab98c2",
+    "build_receipt": "/tmp/sharkmer-withheld-diagnostics-20260913/baseline_build_receipt.json",
+    "verification": "An isolated release build from git archive 58ca2a671f33eb329ff3249d6859d86625ba0495 produced the same SHA-256."
+  },
+  "panel": {
+    "path": "/home/claude/repos/sharkmer/panels/insecta.yaml",
+    "sha256_before_run": "a28cd3b2d045270b3f6bf3e2e6f9362a4dfb6d55c6adb42d445461ec95a64160",
+    "policy": "All nine jobs use this single pinned panel byte sequence."
+  },
+  "common_invocation": {
+    "k": 19,
+    "threads": 2,
+    "chunks": 0,
+    "max_reads": 1000000,
+    "paired": false,
+    "read_threading": false,
+    "cpu_list": "0,1",
+    "address_space_limit_bytes": 42949672960,
+    "timeout_seconds": 1800,
+    "prewarm": "Read and validate exactly the first 1,000,000 FASTQ records before each timed command; prewarm duration is excluded from wall-time reporting."
+  },
+  "samples": {
+    "SRR27962769": {
+      "sample": "Gryllus bimaculatus",
+      "input": "/tmp/sharkmer-release-comparison/inputs/SRR27962769.fastq",
+      "full_sha256": "d4252f0052d9eaf1753debd1c82eb132666f2300e43d80524ded9275a81081b2",
+      "prefix": {
+        "records": 1000000,
+        "bases": 150000000,
+        "size_bytes": 365356898,
+        "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794"
+      },
+      "roles": ["baseline_off", "changed_off", "changed_on"]
+    },
+    "SRR31887760": {
+      "sample": "Drosophila melanogaster",
+      "input": "/tmp/sharkmer-release-comparison/inputs/SRR31887760.fastq",
+      "full_sha256": "95250efe8110653f9255782bca96e4a4e206e7f0f891451ce363470f5d7bc0e7",
+      "prefix": {
+        "records": 1000000,
+        "bases": 101000000,
+        "size_bytes": 267366976,
+        "sha256": "b952eb9be7212ae79da85b0548b1c74a0343637d8af400ae9a08968b297638ae"
+      },
+      "roles": ["changed_on", "baseline_off", "changed_off"]
+    },
+    "SRR1057608": {
+      "sample": "Heliconius pachinus",
+      "input": "/tmp/sharkmer-release-comparison/inputs/SRR1057608.fastq",
+      "full_sha256": "c510fc8a625f7c89b4031c108d67aeaca31cba08e118846fdb7f76ed9323ec8a",
+      "prefix": {
+        "records": 1000000,
+        "bases": 89994628,
+        "size_bytes": 211767048,
+        "sha256": "a65515c2b54d585ca1028f2c865381aed16f4da9f7cc956f1c8d3fdcda8ca3e0"
+      },
+      "roles": ["changed_off", "changed_on", "baseline_off"]
+    }
+  },
+  "comparison_contract": {
+    "count_fields": ["n_reads_read", "n_bases_read", "n_subreads_ingested", "n_bases_ingested", "n_kmers"],
+    "product_contract": "Ordered FASTA records, complete headers, sequence bytes, and sequence SHA-256 values must be equal across each sample's three roles.",
+    "diagnostic_contract": "Aggregate threshold diagnostics must be equal after removal only of the explicitly preregistered opt-in payload key. Unknown changed fields fail comparison.",
+    "preregistered_payload_key": "withheld_path_diagnostics",
+    "timing_contract": "One balanced trio per sample yields descriptive wall time and maximum RSS only; it is not statistical evidence or a global performance claim.",
+    "read_support_limit": "Absence in a capped 1M-record collection does not establish absence of a graph path or biological sequence."
+  },
+  "focused_diagnostic_only": {
+    "manifest": "/tmp/sharkmer-withheld-diagnostics-20260913/focused_panels/manifest.json",
+    "manifest_sha256": "e777c3fcaa8e76bdc648e0c5b49b30b105b72076aff2fd73fc71f0aedd0acfe4",
+    "identity_receipt": "/tmp/sharkmer-withheld-diagnostics-20260913/focused_panels/identity.json",
+    "identity_receipt_sha256": "896e0ac4b8dae9366723f60ef2d383284f176c9df440a5d9faceb7b0460f440b",
+    "runs_after_full_panel": [
+      {
+        "accession": "SRR27962769",
+        "panel": "/tmp/sharkmer-withheld-diagnostics-20260913/focused_panels/SRR27962769.insecta.focused.yaml",
+        "panel_sha256": "686610b55c1732ca28dfaa2da61aade6b3b16ad1a11ed841b29dc8d42a6a72f2",
+        "targets": ["CO1_1", "ITS_2"],
+        "effective_per_gene_threshold_node_budget": 100000
+      },
+      {
+        "accession": "SRR31887760",
+        "panel": "/tmp/sharkmer-withheld-diagnostics-20260913/focused_panels/SRR31887760.insecta.focused.yaml",
+        "panel_sha256": "085afb8b5b7ea699e761957b164805ff1b8877501f59df113c9e200e8c724e83",
+        "targets": ["12S", "16S_2"],
+        "effective_per_gene_threshold_node_budget": 100000
+      },
+      {
+        "accession": "SRR1057608",
+        "panel": "/tmp/sharkmer-withheld-diagnostics-20260913/focused_panels/SRR1057608.insecta.focused.yaml",
+        "panel_sha256": "8b933bc42eb498bbccae42c88922d27b1e160668db8f47612089c548faa86d86",
+        "targets": ["ND1"],
+        "effective_per_gene_threshold_node_budget": 100000
+      }
+    ],
+    "comparison": "Each focused changed_on run is diagnostic-only and is compared with its full-panel changed_on counterpart for the selected targets' ordered products, existing aggregate diagnostics, and five count fields. Focused wall time/RSS are not aggregate parity metrics."
+  },
+  "synthetic_and_control_parity_plan": [
+    "Run Sol/Astra-approved focused diagnostics unit tests before real comparisons.",
+    "Flag-off behavior must preserve existing synthetic exact-product, withheld-repeat, count, and aggregate diagnostic results.",
+    "Flag-on behavior must preserve the same products and counts while adding only the approved diagnostic payload for withheld-path controls.",
+    "No synthetic result is used to infer recovery correctness or sample haplotype truth from the real capped inputs."
+  ]
+}

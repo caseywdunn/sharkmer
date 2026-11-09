@@ -1,5 +1,11 @@
 # Design Decisions
 
+> **Historical record.** This document preserves design exploration and
+> benchmark results from earlier development branches. It is not current CLI
+> reference: use README.md and PCR.md for v3.2 behavior. References below to
+> removed flags or retired components are archival unless explicitly labeled
+> current v3.2 behavior.
+
 Background analysis and reasoning behind architectural decisions for sharkmer
 development. Each section records the considerations at the time a decision
 was made, so future work can revisit assumptions if circumstances change.
@@ -509,15 +515,14 @@ The pipeline becomes:
    - Disconnected components not reachable from any start node
    - This is the only step that edits graph structure
 3. **Annotate with kmer coverage** (already available from construction)
-4. **Annotate with read support** (Phase 5 — optional, skipped with
-   `--no-read-threading`)
-5. **Annotate with phasing** (Phase 5 — branch-point links from read
-   runs; Phase 6 — paired-end links)
+4. **Annotate with read support** when `--read-threading` enables replay
+5. **Annotate with phasing** (branch-point links from read runs; paired-end
+   links are retained but not yet consumed in path selection)
 6. **Score and select paths** using all available annotations (Phase 6).
    Bubbles are resolved here by choosing the best-supported path(s),
-   not by deleting the alternatives from the graph. Multiple paths can
-   be emitted if they represent real variants (preparation for v4.0
-   metagenomics).
+   not by deleting the alternatives from the graph. Multiple candidate paths
+   can be emitted; emission alone does not establish real variants or complete
+   haplotypes (preparation for v4.0 metagenomics).
 7. **Emit sequences** from selected paths
 
 This means Phase 3 "pruning" (tip clipping, bubble popping) becomes
@@ -581,22 +586,21 @@ genes at moderate coverage. All are addressed in v3 (Phases 3-7).
 seeded with all primer kmers. See "Single graph seeded with all forward
 primer kmers" section above.
 
-**2. Greedy forward-only extension.** Fixed: v3 has both `extend_graph()`
-(forward from start nodes) and `extend_graph_reverse()` (backward from
-end nodes). The two frontiers meet in the amplicon interior.
+**2. Greedy forward-only extension.** Fixed: the unified bidirectional
+`extend_graph()` interleaves forward and reverse frontiers from the primer
+seeds so either orientation can establish interior connectivity.
 
 **3. Ad-hoc ballooning controls.** Fixed: v1 had backward degree checks,
 long-range degree checks, `BALLOONING_COUNT_THRESHOLD_MULTIPLIER`, and
-`pop_balloons()` — all removed. V3 uses coverage-based edge filtering
-(`high_coverage_ratio` to reject edges far above the median) and
-`MAX_NUM_NODES` as a hard safety bound. Seed evaluation (`seed_eval.rs`)
-filters off-target seeds before full extension based on bounded local
-exploration and branching ratio.
+`pop_balloons()` — all removed. V3.2 uses coverage-based edge filtering with
+an observed-primer-count floor and a per-gene/threshold node budget. There is
+no separate `seed_eval.rs` stage.
 
 **4. Destructive pruning before path finding.** Fixed: v1's
 `remove_side_branches()` and `remove_orphan_nodes()` are replaced by
 `remove_low_coverage_tips()` (coverage-aware, only clips short tips below
-a fraction of local median) and `reachability_pruning()` (removes nodes
+a fraction of the current graph-wide edge-count median) and
+`reachability_pruning()` (removes nodes
 not on any start-to-end path). See "Graph annotation model" above.
 
 **5. `all_simple_paths` enumeration is exponential.** Fixed: v3 uses a
@@ -605,20 +609,21 @@ Edges are sorted by coverage (and bubble-resolution preferences when
 available), so the highest-quality paths are found first. Bounded by
 `max_paths_per_pair` and `max_dfs_states`.
 
-**6. Cycle avoidance is absolute.** Fixed: v3 allows cycles in the graph
-structure. Cycle control is enforced during path finding via bounded
-node revisitation (`max_node_visits`, default 2), allowing traversal
-through tandem duplications while preventing infinite loops.
+**6. Cycle avoidance is absolute.** Fixed: cycles remain in the graph while
+path search uses bounded node revisitation (`max_node_visits`, default 2).
+This bounds traversal without establishing repeat copy count; repeat-touched
+candidates remain uncertain.
 
 **7. Path scoring is minimal.** Fixed: v3 scores paths using multiple
 signals including kmer min/mean/median counts, coverage consistency,
 and (when available) read support and bubble-resolution preferences
 from `resolve_bubbles()`.
 
-**8. Threshold annealing rebuilds from scratch.** Fixed: v3 accumulates
-the graph across threshold steps. `prepare_for_lower_threshold()` resets
-terminal flags so previously-terminal nodes can extend at the lower
-threshold. The graph grows incrementally rather than being rebuilt.
+**8. Threshold annealing rebuilds from scratch.** Current v3.2 behavior
+intentionally starts from a fresh seed-graph clone at every threshold, then
+performs extension, pruning, and path evaluation independently. Lower
+thresholds are retried after connected but invalid candidates; the sweep stops
+only at the first valid product.
 
 ### How other de Bruijn assemblers handle traversal
 
@@ -675,135 +680,22 @@ parameter rather than the count threshold. The key insight is that the
 graphs at different parameters should *share information*, not be built
 independently.
 
-### V3 approach (implemented)
+### Current v3.2 traversal
 
-The v3 approach addresses each v1 shortcoming. Here are the key design
-decisions and how specific challenges are handled:
+Each gene seeds one graph with all forward and reverse primer kmers. At each
+descending threshold, the implementation clones that seed graph, applies
+unified bidirectional extension, prunes and annotates the resulting graph,
+then evaluates path, length, and repeat criteria. A connected graph without a
+valid product does not stop the sweep; lower thresholds are tried. Standard
+search stops at the first threshold that produces a valid candidate, rather
+than combining or exhaustively scoring candidates from every threshold.
 
-**Single graph per gene, seeded with all primer kmers.** All forward
-primer kmers seed start nodes in one graph; all reverse primer kmers
-seed end nodes. Eliminates the v1 N-graph-per-gene waste.
-
-**Bidirectional extension.** `extend_graph()` extends forward from start
-nodes; `extend_graph_reverse()` extends backward from end nodes. Forward
-extension runs first; reverse extension is skipped if forward already
-reached an end node (to avoid wasting the node budget on off-target
-reverse seeds).
-
-**Coverage-based edge filtering.** During extension, edges with count
-far above the median edge count (`high_coverage_ratio`, default 10x)
-are skipped — they likely lead into repetitive regions. This replaces
-the v1 topology-based ballooning heuristics.
-
-**Seed evaluation.** Before full graph extension, `evaluate_seeds()`
-performs bounded local exploration of each seed node. Seeds that show
-excessive branching, terminate too quickly, or exhaust their node budget
-with high branching ratios are marked terminal and excluded from full
-extension. Seeds that reach an opposite-direction seed are kept for
-early product recovery.
-
-**Threshold annealing: incremental, not rebuild.** The stepping-down
-threshold approach starts conservative and relaxes progressively:
-
-- The graph is built once at the highest threshold.
-- At each subsequent (lower) threshold, `prepare_for_lower_threshold()`
-  resets terminal flags so previously-blocked nodes can extend further.
-  Only newly qualifying edges are added; existing structure is preserved.
-- Path finding runs after each threshold step. Products found at any
-  threshold are collected and scored together.
-- At high thresholds, only high-confidence edges exist and the graph is
-  small/fast. Most amplicons are found here. Lower thresholds add edges
-  incrementally.
-
-**Graph size controls:**
-
-1. **Seed evaluation** filters off-target seeds before full extension.
-2. **High-coverage edge filtering** skips edges far above the median.
-3. **Reachability pruning** removes nodes not on any start-to-end path.
-4. **Low-coverage tip removal** clips short dead-end tips.
-5. **`MAX_NUM_NODES`** (default 50,000) is a hard safety bound.
-
-**Coverage-weighted DFS path finding.** `get_assembly_paths()` uses a
-custom stack-based DFS instead of petgraph's `all_simple_paths`:
-
-1. From each start node, traverse toward end nodes. Edges are sorted by
-   coverage (and bubble-resolution preferences when available), so the
-   highest-scoring edges are explored first.
-2. When an end node is reached, record the path. Continue exploring
-   alternative paths with backtracking, bounded by `max_paths_per_pair`
-   and `max_dfs_states`.
-3. Because the traversal is coverage-ordered, the first paths found are
-   the highest-quality paths.
-
-**Cycle handling.** Cycles are allowed in the graph structure. During path
-finding, a node can be visited up to `max_node_visits` times (default 2).
-This allows traversal through tandem duplications while preventing
-infinite loops.
-
-**Path scoring.** Paths are scored using `PathScore` which combines:
-
-- `kmer_min_count`, `kmer_mean_count`, `kmer_median_count`
-- `read_support_total`, `read_support_min` (when read threading is active)
-- Bubble-resolution edge preferences from `resolve_bubbles()`
-
-**Light structural cleanup.** The only structural edits to the graph:
-
-- `remove_low_coverage_tips()`: tips shorter than k with coverage below
-  `tip_coverage_fraction` of the local median.
-- `reachability_pruning()`: removes nodes not on any start-to-end path.
-
-Everything else — bubbles, side branches with real coverage, repeat
-edges — stays in the graph and is handled by the scorer.
-
-### Threshold selection: how to avoid being too high or too low
-
-This is the most delicate practical challenge. A threshold too high misses
-real amplicon edges (especially in low-coverage regions of the amplicon,
-which are common near GC-biased or repetitive primer binding sites). A
-threshold too low admits noise and repeats, bloating the graph.
-
-The annealing approach addresses this by trying thresholds from high to
-low. Products found at each threshold are collected and scored together:
-
-- **Too-high thresholds** produce incomplete graphs (no start-to-end
-  path) or paths with gaps. These are simply not scored — no harm done,
-  and the lower thresholds fill in.
-- **Too-low thresholds** produce noisy graphs with many paths. The scorer
-  penalizes paths with high coverage variance and low minimum count. If a
-  clean path was already found at a higher threshold, the noisy paths from
-  lower thresholds will score worse.
-- **The "just right" threshold** produces a graph with a clear, high-
-  coverage path from start to end. This path scores best and is emitted.
-
-The threshold sequence starts at
-`primer_count / COVERAGE_MULTIPLIER` and steps down to `min_count` in
-`COVERAGE_STEPS` steps. These constants may need tuning based on
-benchmarks, but the framework is robust to the exact values because all
-threshold levels contribute candidates rather than short-circuiting.
-
-**Which primer count statistic to use matters.** Extension thresholds
-and seed eval thresholds serve different purposes and need different
-primer count statistics:
-
-- **Extension thresholds use the max** primer kmer count (`max` of
-  forward and reverse minimums). Starting high keeps the graph focused on
-  confident kmers first, avoiding premature node budget exhaustion. If
-  the initial threshold is too low, the graph extends aggressively into
-  low-coverage regions and hits the 50K node budget before connecting
-  forward and reverse primer sites.
-
-- **Seed eval threshold uses the median** primer kmer count. Degenerate
-  primers (ambiguity codes H, D, Y, N, R) generate off-target genomic
-  matches that inflate the max far above real amplicon coverage. Using
-  max for seed eval makes the threshold too stringent: real seeds cannot
-  extend even a single node, and every seed is falsely abandoned. The
-  median is robust to these outliers. See `FAILURE_ANALYSIS.md` "Root
-  cause: seed eval threshold" for the diagnostic evidence.
-
-This split was validated by benchmark regression: using median for both
-caused 41 gene regressions (graphs exhausting node budget), while using
-max for both caused seed eval failures for degenerate primers. The split
-approach recovers all genes from both failure modes.
+The extension filter rejects high-count repeat-like edges above
+`max(current_graph_edge_median * high_coverage_ratio, observed_primer_count)`.
+The node budget applies independently to each gene/threshold attempt.
+Reachability pruning and low-coverage tip removal are the structural cleanup;
+DFS is bounded by path/state/revisit limits. Repeat or cycle evidence is
+reported conservatively rather than treated as resolved copy count.
 
 **Why not use a single adaptive threshold?** Some assemblers (e.g.,
 MEGAHIT) use iterative approaches that automatically find the right
@@ -823,17 +715,20 @@ budget quadrupled runtime. Benchmark evidence (commit 5ed7445,
 2026-04-03): raising the global budget from 50K to 200K (4×) increased
 Agalma elegans runtime from 22s to 347s (~16×, consistent with 4²).
 
-**Fix (commit bfea426):** Both `extend_graph()` and
-`extend_graph_reverse()` now use a `VecDeque` frontier queue. Unvisited
-nodes are pushed to the queue when created; the main loop pops from
-the front. This makes extension O(n) in the number of nodes added.
-Benchmark: Agalma with `--max-nodes 200000` dropped from 347s to 65s
-(5.3× speedup).
+**Historical v3 frontier optimization (commit bfea426):** The then-separate
+`extend_graph()` and `extend_graph_reverse()` functions moved to `VecDeque`
+frontiers. The current unified `extend_graph()` retains frontier-based
+extension. The old benchmark used the removed `--max-nodes` flag and is not a
+current tuning recommendation.
 
-**Current budget defaults.** The global `--node-budget-global` is set
-dynamically based on data volume (#113). Per-component budgets (default
-10K via `--node-budget-component`) bound each connected component
-independently.
+**Historical v3 budget defaults.** The following analysis describes the old
+global and per-component scheme, including the removed
+`--node-budget-component` control.
+
+**Current v3.2 behavior.** `--node-budget-global` is an auto-selected or
+user-pinned node limit passed to each gene/coverage-threshold graph attempt.
+It is not an aggregate run-memory budget and no per-component CLI budget
+exists.
 
 **Why dynamic global budget.** The optimal global budget depends on
 read count. Sweep of 6 samples × 5 read counts × 4 budgets (k=19,
@@ -879,12 +774,11 @@ consume enough budget to starve on-target components in some genes
 per-component budget is the primary protection against runaway
 extension; the global budget is a backstop.
 
-### Why `--read-eval` is off by default
+### Archived: removed `--read-eval` experiment
 
-Read-backed seed evaluation (`--read-eval`) retains primer-matching
-reads during Pass 1 and uses read divergence to reject off-target
-seeds. Benchmark comparison at 1M reads (commit b5d48ef, 2026-04-03,
-14 samples):
+This v3 experiment evaluated a removed `--read-eval` flag that retained
+primer-matching reads during Pass 1. It is not a current option. Benchmark
+comparison at 1M reads (commit b5d48ef, 2026-04-03, 14 historical samples):
 
 | Mode | Total genes | Total time |
 | --- | ---: | ---: |
@@ -897,11 +791,9 @@ prioritized architecture with per-component budgets (#112) already
 filters off-target seeds effectively at 1M reads, making read-eval
 redundant at this coverage level.
 
-`--read-eval` may still help at higher read counts (4M+) where more
-off-target seeds survive basic seed evaluation, or for specific genes
-where read divergence is the only signal distinguishing on-target from
-off-target seeds (e.g., Drosophila ITS at 4M in the failure analysis).
-It remains available as an opt-in flag for these cases.
+These results do not establish a current tuning recommendation. Optional
+`--read-threading` provides local graph evidence in v3.2, but does not prove
+complete haplotypes, long-range phase, or repeat copy count.
 
 ### Kmer size (`-k`) selection
 
@@ -909,15 +801,15 @@ The kmer size controls the trade-off between specificity (longer kmers
 = simpler graphs, fewer false extensions) and sensitivity (shorter
 kmers = higher per-kmer coverage, bridging low-complexity regions).
 
-**Sweep at 1M reads** (commit b5d48ef, 2026-04-03, 14 benchmark
-samples, `--pcr-stopping-criteria first-product`):
+**Historical sweep at 1M reads** (commit b5d48ef, 2026-04-03, 14 historical
+samples):
 
 | k | Total genes | Total time | Notes |
 | ---: | ---: | ---: | --- |
 | 15 | 79 | 187s | Too short: branching kills most eukaryotes; bacteria benefit |
 | 17 | **119** | 188s | Best for Rhopilema (21), Drosophila (15), Acer (10) |
 | 19 | **119** | 150s | Best for Heliconius (12), Gryllus (16); faster than k=17 |
-| 21 | 103 | 154s | Current default; safe but suboptimal |
+| 21 | 103 | 154s | Then-current default; safe but suboptimal |
 | 25 | 97 | 154s | Declining — longer kmers need more coverage |
 | 31 | 95 | 154s | Worst for most samples |
 
@@ -985,7 +877,7 @@ The sweep matrix (from `scripts/validate_all_panels_slurm.sh`):
 **Sweeps are one-variable-at-a-time.** Interactions are not tested;
 each cell varies one knob with the others at their default.
 
-### Recovery results (total points across 8 panels, deepest tier)
+### Historical recovery results (total points across 8 panels, deepest tier)
 
 | Knob | Winner | Runners-up | Δ vs old default |
 |---|---|---|---|

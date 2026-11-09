@@ -1,0 +1,109 @@
+name: bacteria
+schema_version: "2"
+panel_version: 1.0.0
+description: "Bacterial 16S metabarcoding primers"
+clade: "Bacteria"
+taxon_id: 2
+
+maintainers:
+  - name: "Samuel Church"
+    orcid: "https://orcid.org/0000-0002-8451-103X"
+
+changelog:
+  - panel_version: 1.0.0
+    date: 2026-04-05
+    sharkmer_version: "3.0.0"
+    changes: "Initial versioned schema."
+
+primers:
+  - gene: "16S"
+    region: "341F-785R"
+    gene_type: "rRNA_SSU"
+    forward_seq: "CCTACGGGNGGCWGCAG"
+    reverse_seq: "GACTACHVGGGTATCTAATCC"
+    min_length: 200
+    max_length: 500
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
+    notes: "V3-V4"
+
+  - gene: "16S"
+    region: "PRK341F-PRK806R"
+    gene_type: "rRNA_SSU"
+    forward_seq: "CCTACGGGRBGCASCAG"
+    reverse_seq: "GGACTACYVGGGTATCTAAT"
+    min_length: 200
+    max_length: 500
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
+    notes: "V3-V4-v2"
+
+  - gene: "16S"
+    region: "515F-806R"
+    gene_type: "rRNA_SSU"
+    forward_seq: "GTGCCAGCMGCCGCGGTAA"
+    reverse_seq: "GGACTACHVGGGTWTCTAAT"
+    min_length: 200
+    max_length: 500
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
+    notes: "V4"
+
+  - gene: "16S"
+    region: "515F-806RB"
+    gene_type: "rRNA_SSU"
+    forward_seq: "GTGCCAGCMGCCGCGGTAA"
+    reverse_seq: "GGACTACNVGGGTWTCTAAT"
+    min_length: 200
+    max_length: 500
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "Lee et al 2023. doi: 10.3389/fmars.2023.1199116"
+    notes: "V4"
+
+  - gene: "16S"
+    region: "68F-783Rabc"
+    gene_type: "rRNA_SSU"
+    forward_seq: "TNANACATGCAAGTCGRRCG"
+    reverse_seq: "CTACCAGGGTATCTAATCCTG"
+    min_length: 200
+    max_length: 500
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "McAllister et al., 2011, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+    notes: "V1-V4"
+
+  - gene: "16S"
+    region: "341F-783Rabc"
+    gene_type: "rRNA_SSU"
+    forward_seq: "CCTACGGGNGGCWGCAG"
+    reverse_seq: "CTACCAGGGTATCTAATCCTG"
+    min_length: 200
+    max_length: 500
+    min_count: 2
+    mismatches: 2
+    trim: 15
+    citation: "Sakai et al., 2004, doi: http://dx.doi.org/10.3389/fmicb.2016.00650"
+    notes: "V3-V4"
+
+validation:
+  samples:
+    - accession: SRR19418213
+      taxon: "rhizosphere metagenome"
+      max_reads: [1000000]
+
+    - accession: SRR24806237
+      taxon: "coral metagenome"
+      max_reads: [1000000]
+
+    - accession: ERR2596344
+      taxon: "seawater metagenome"
+      max_reads: [1000000]

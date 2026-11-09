@@ -1,0 +1,212 @@
+{
+  "checks": {
+    "best_sets_checked": 234,
+    "cigars_checked": 5916,
+    "class_pair_distances_checked": 6058,
+    "context_minima_checked": 700,
+    "decoy_placements_checked": 2572,
+    "flank_matches_checked": 1910,
+    "observations": 117,
+    "pairs_checked": 6058
+  },
+  "distinct_context_dp_queries": 70,
+  "distinct_dp_queries": 309,
+  "elapsed_seconds": 3.4579821929801255,
+  "freeze_sha256": "cb68a200f410a89980380cf7d4c290c3d825c7b501f43acf16736ec954abe600",
+  "its2_full_read_sequence_sha256": "5a3b30477ccc2c7e0bccd250ca150511e5e00a3e9ed400f6486b6f4d5f6a0e8e",
+  "its2_identical_full_read_ordinals": [
+    442978,
+    443018
+  ],
+  "its_best_details": [
+    {
+      "cigar": "71=1D3=1I10=1X61=",
+      "class_id": "region_2_class_2",
+      "distance": 3,
+      "finite_decoy_placements": 0,
+      "full_read_sequence_sha256": "5a3b30477ccc2c7e0bccd250ca150511e5e00a3e9ed400f6486b6f4d5f6a0e8e",
+      "low_quality_span_offsets": [
+        146
+      ],
+      "minimum_finite_decoy_distance": 37,
+      "minimum_observed_quality": 11,
+      "ordinal": 442978,
+      "oriented_interval": [
+        1,
+        148
+      ],
+      "physical_interval": [
+        2,
+        149
+      ],
+      "qualification": "best_unfiltered",
+      "read_id": "@SRR27962769.442978",
+      "region_id": "region_2",
+      "span_length": 147,
+      "span_sha256": "347ee0ec09a75ec0124ce108f35909056b1381614bbf74a8d9269118b1e56d0b",
+      "strand": "-",
+      "tied_optimal_alignments": true
+    },
+    {
+      "cigar": "71=1D3=1I10=1X60=1D",
+      "class_id": "region_2_class_2",
+      "distance": 4,
+      "finite_decoy_placements": 0,
+      "full_read_sequence_sha256": "5a3b30477ccc2c7e0bccd250ca150511e5e00a3e9ed400f6486b6f4d5f6a0e8e",
+      "low_quality_span_offsets": [],
+      "minimum_finite_decoy_distance": 36,
+      "minimum_observed_quality": 25,
+      "ordinal": 442978,
+      "oriented_interval": [
+        1,
+        147
+      ],
+      "physical_interval": [
+        3,
+        149
+      ],
+      "qualification": "best_q20",
+      "read_id": "@SRR27962769.442978",
+      "region_id": "region_2",
+      "span_length": 146,
+      "span_sha256": "8e1db097319d8878f5b5c86836854a4505c7b78cfdd1db08bed6fe0aae02b3b6",
+      "strand": "-",
+      "tied_optimal_alignments": true
+    },
+    {
+      "cigar": "71=1D3=1I10=1X61=",
+      "class_id": "region_2_class_2",
+      "distance": 3,
+      "finite_decoy_placements": 0,
+      "full_read_sequence_sha256": "5a3b30477ccc2c7e0bccd250ca150511e5e00a3e9ed400f6486b6f4d5f6a0e8e",
+      "low_quality_span_offsets": [],
+      "minimum_finite_decoy_distance": 37,
+      "minimum_observed_quality": 25,
+      "ordinal": 443018,
+      "oriented_interval": [
+        1,
+        148
+      ],
+      "physical_interval": [
+        2,
+        149
+      ],
+      "qualification": "best_unfiltered",
+      "read_id": "@SRR27962769.443018",
+      "region_id": "region_2",
+      "span_length": 147,
+      "span_sha256": "347ee0ec09a75ec0124ce108f35909056b1381614bbf74a8d9269118b1e56d0b",
+      "strand": "-",
+      "tied_optimal_alignments": true
+    },
+    {
+      "cigar": "71=1D3=1I10=1X61=",
+      "class_id": "region_2_class_2",
+      "distance": 3,
+      "finite_decoy_placements": 0,
+      "full_read_sequence_sha256": "5a3b30477ccc2c7e0bccd250ca150511e5e00a3e9ed400f6486b6f4d5f6a0e8e",
+      "low_quality_span_offsets": [],
+      "minimum_finite_decoy_distance": 37,
+      "minimum_observed_quality": 25,
+      "ordinal": 443018,
+      "oriented_interval": [
+        1,
+        148
+      ],
+      "physical_interval": [
+        2,
+        149
+      ],
+      "qualification": "best_q20",
+      "read_id": "@SRR27962769.443018",
+      "region_id": "region_2",
+      "span_length": 147,
+      "span_sha256": "347ee0ec09a75ec0124ce108f35909056b1381614bbf74a8d9269118b1e56d0b",
+      "strand": "-",
+      "tied_optimal_alignments": true
+    },
+    {
+      "cigar": "2=1X121=",
+      "class_id": "region_1_class_2",
+      "distance": 1,
+      "finite_decoy_placements": 0,
+      "full_read_sequence_sha256": "e0af709d3056defcd8d388bfdae4726ae898385a1fbebee766556d19010ac679",
+      "low_quality_span_offsets": [
+        4,
+        8,
+        28,
+        67
+      ],
+      "minimum_finite_decoy_distance": 42,
+      "minimum_observed_quality": 11,
+      "ordinal": 700435,
+      "oriented_interval": [
+        17,
+        141
+      ],
+      "physical_interval": [
+        9,
+        133
+      ],
+      "qualification": "best_unfiltered",
+      "read_id": "@SRR27962769.700435",
+      "region_id": "region_1",
+      "span_length": 124,
+      "span_sha256": "11cc478587e949836d8c795e6b9b34619f1d288b47afebab04cec6f6ddb8d16f",
+      "strand": "-",
+      "tied_optimal_alignments": false
+    }
+  ],
+  "qualified_co1_best_distance_counts": {
+    "0": 27,
+    "1": 2
+  },
+  "recruited_records": 117,
+  "recruitment_output_sha256": "d2d3792eed0574f2d3113dd7f23b8ea94e9e4a5be36a5491d3f02e3f253c9669",
+  "region_counts_recomputed": [
+    {
+      "ambiguous_records": 0,
+      "both_flanks_records": 1,
+      "distinct_recruited_read_ids": 27,
+      "left_only_records": 11,
+      "left_records": 12,
+      "no_ordered_pair_records": 26,
+      "ordered_pair_records": 1,
+      "recruited_records": 27,
+      "region_id": "region_1",
+      "right_only_records": 15,
+      "right_records": 16,
+      "unique_records": 0
+    },
+    {
+      "ambiguous_records": 0,
+      "both_flanks_records": 2,
+      "distinct_recruited_read_ids": 28,
+      "left_only_records": 13,
+      "left_records": 15,
+      "no_ordered_pair_records": 26,
+      "ordered_pair_records": 2,
+      "recruited_records": 28,
+      "region_id": "region_2",
+      "right_only_records": 13,
+      "right_records": 15,
+      "unique_records": 2
+    },
+    {
+      "ambiguous_records": 0,
+      "both_flanks_records": 36,
+      "distinct_recruited_read_ids": 62,
+      "left_only_records": 16,
+      "left_records": 52,
+      "no_ordered_pair_records": 26,
+      "ordered_pair_records": 36,
+      "recruited_records": 62,
+      "region_id": "co1_control",
+      "right_only_records": 10,
+      "right_records": 46,
+      "unique_records": 29
+    }
+  ],
+  "scope": "Independent post-outcome verification of reported ledger alignments; not a new biological assay",
+  "status": "pass"
+}

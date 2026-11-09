@@ -1,0 +1,728 @@
+{
+  "source_000": {
+    "accession": "AC007928.7",
+    "length": 176395,
+    "sha256": "2f542beedf86ea5a53e0601f15dbdb0d1cf48d761636dd9af5f08e8db66fc6f2",
+    "taxon": "Drosophila melanogaster"
+  },
+  "source_001": {
+    "accession": "AC254620.1",
+    "length": 185003,
+    "sha256": "aaa87413012b80f3a4a2c6bbd7c42172702d4c5e5c2b0700a11f50e814e0cf9e",
+    "taxon": "Drosophila melanogaster"
+  },
+  "source_002": {
+    "accession": "AF358082.1",
+    "length": 1822,
+    "sha256": "ac556950707dc729fc533bd2b188b487fe05291a456dd239e1f15f06e6c6fa32",
+    "taxon": "Hydra vulgaris"
+  },
+  "source_003": {
+    "accession": "AF358102.1",
+    "length": 1820,
+    "sha256": "5d06f984ef30588e1002ce30a7d56278c47c240f56cc3d8512563808d890b737",
+    "taxon": "Haliclystus sanjuanensis"
+  },
+  "source_004": {
+    "accession": "AK281049.1",
+    "length": 899,
+    "sha256": "e88c06b204dd07b9699ecd77ae4855562421a37395baeb0d2868eeac69235256",
+    "taxon": "Gryllus bimaculatus"
+  },
+  "source_005": {
+    "accession": "AK281180.1",
+    "length": 256,
+    "sha256": "a57a17e5e938d747abda188b1ff1010dfa92c7996b608e00a73f64c46a799bbe",
+    "taxon": "Gryllus bimaculatus"
+  },
+  "source_006": {
+    "accession": "AP038780.1",
+    "length": 13994,
+    "sha256": "40b2e0051f483f5d12e27a445f2bd12748d307a295622528d0c3725aab2d3b4b",
+    "taxon": "Caenorhabditis elegans"
+  },
+  "source_007": {
+    "accession": "AY183920.1",
+    "length": 9149,
+    "sha256": "f8d833b468518040c7d7051faf3b8292d366c58e2c20c96b7a8d377597464f17",
+    "taxon": "Drosophila melanogaster"
+  },
+  "source_008": {
+    "accession": "AY845346.1",
+    "length": 1755,
+    "sha256": "9effca41164a80d7d6c4643d4a4c3a3340d1e5b221ee8d2b1070989f771c2e0e",
+    "taxon": "Haliclystus octoradiatus"
+  },
+  "source_009": {
+    "accession": "AY920791.1",
+    "length": 3280,
+    "sha256": "e239609541dd33408db128c122a36c792904096acf7926cc5013c29cc14604ce",
+    "taxon": "Aglantha digitale"
+  },
+  "source_010": {
+    "accession": "AY935284.1",
+    "length": 596,
+    "sha256": "81452654d9926166b32eb102372caa03eeba8f6f27a948b52acfb6c3b5355266",
+    "taxon": "Physalia physalis"
+  },
+  "source_011": {
+    "accession": "AY937313.1",
+    "length": 1755,
+    "sha256": "32bfde9bc0ed31f781501e7ffef8a8382717c4dd4db820f5065b5d512978d806",
+    "taxon": "Agalma elegans"
+  },
+  "source_012": {
+    "accession": "BK006341.1",
+    "length": 14874,
+    "sha256": "e1d8e7088d57a3d03c30359a7ab8b00213e7ea8d120aeac353e4ae2e47be5fdc",
+    "taxon": "Drosophila grimshawi"
+  },
+  "source_013": {
+    "accession": "CP084675.1",
+    "length": 13928,
+    "sha256": "a5844f01fafb531646e477f4e833cbc89a1bdd3c99a791c3aef43c0369402e6f",
+    "taxon": "Caenorhabditis elegans"
+  },
+  "source_014": {
+    "accession": "EU247821.1",
+    "length": 1738,
+    "sha256": "14cb29b7486bc9e443903016f9f87707d31b692b874ed12003625937caeaa8e2",
+    "taxon": "Aglantha digitale"
+  },
+  "source_015": {
+    "accession": "EU272542.1",
+    "length": 2403,
+    "sha256": "c61a0ee3e2b2d0015c8376577745930fda9cfc3503911c845bf07e5ee0ee1d11",
+    "taxon": "Agalma elegans"
+  },
+  "source_016": {
+    "accession": "EU272576.1",
+    "length": 3193,
+    "sha256": "dfd4b802955051347ffd51f675996c6ab38d43b4449a4ac7cac1b9440fdb6d09",
+    "taxon": "Nanomia bijuga"
+  },
+  "source_017": {
+    "accession": "EU272596.1",
+    "length": 3203,
+    "sha256": "758415df8d394c5d5396c50a4194a9725d53045ab4baa0cd9e9afef3abeebfe2",
+    "taxon": "Turritopsis dohrnii"
+  },
+  "source_018": {
+    "accession": "EU272638.1",
+    "length": 1762,
+    "sha256": "c14b8e270630d7b3dee94937b700877d8db5d594eb9c97e0076ac37697a6e25c",
+    "taxon": "Turritopsis dohrnii"
+  },
+  "source_019": {
+    "accession": "EU293971.1",
+    "length": 539,
+    "sha256": "a423c5161298e1e673b0de287c78ad766001226ce56f646510b7d189c4c8315d",
+    "taxon": "Craspedacusta sowerbii"
+  },
+  "source_020": {
+    "accession": "EU448095.1",
+    "length": 3093,
+    "sha256": "7786c1f4310f8f4386d479860b341d0e1cab2290a8fbd9781745134e05c016dc",
+    "taxon": "Physalia physalis"
+  },
+  "source_021": {
+    "accession": "EU494495.1",
+    "length": 697,
+    "sha256": "f50d4fd0135a9be70d9b96f85c7bd4d7cd1216d95ab6558536aa3e2a4916091a",
+    "taxon": "Drosophila adunca"
+  },
+  "source_022": {
+    "accession": "FJ214552.1",
+    "length": 555,
+    "sha256": "0a561e33f52d9b850b2e4e6f0aee68d1a815d44ad19a210b67a73b49f3b1723b",
+    "taxon": "Hydractinia symbiolongicarpus"
+  },
+  "source_023": {
+    "accession": "FO080392.2",
+    "length": 22895,
+    "sha256": "8f2f9af48f357921106aab310ca1d5f4337c0af018458822df74fdcfd7cef09a",
+    "taxon": "Caenorhabditis elegans"
+  },
+  "source_024": {
+    "accession": "FO080948.1",
+    "length": 28194,
+    "sha256": "43c8f338e440cf1bf1e99a76e2013b3e222a8c2f2869e6e3e0fbb9db31434e1d",
+    "taxon": "Caenorhabditis elegans"
+  },
+  "source_025": {
+    "accession": "GQ119943.1",
+    "length": 852,
+    "sha256": "eb2f60fc5bb87eca9b0fe69ba26c3eaa6734477096b130a801ff528205c89bed",
+    "taxon": "Agalma elegans"
+  },
+  "source_026": {
+    "accession": "GQ120033.1",
+    "length": 1017,
+    "sha256": "c6e9f943af10673c3ae4a7e0d5dcc8892836d84d70555f8b4b7b9f0a05c5dc4f",
+    "taxon": "Physalia physalis"
+  },
+  "source_027": {
+    "accession": "GQ120065.1",
+    "length": 1026,
+    "sha256": "b8b36b775e72c76e2ee9ecfed49b444d12753cd919d5dd6e8489db25102f7b95",
+    "taxon": "Clytia hemisphaerica"
+  },
+  "source_028": {
+    "accession": "GQ120073.1",
+    "length": 812,
+    "sha256": "af6de0d79bd7f04c208cb797479279aa0ce2f70dbee558d653eb8cdc6237f5da",
+    "taxon": "Aglantha digitale"
+  },
+  "source_029": {
+    "accession": "GQ398183.1",
+    "length": 1611,
+    "sha256": "65cfcfe0ba04b7de96cff05378f54c6146d74ec91ab889d5c55d95fd78a831bc",
+    "taxon": "Heliconius pachinus"
+  },
+  "source_030": {
+    "accession": "GQ849060.1",
+    "length": 2859,
+    "sha256": "40233e3d60a983c6b8cf314b3e6211c1be0f87d59e5ab72ddb887b19ca58aa24",
+    "taxon": "Morbakka virulenta"
+  },
+  "source_031": {
+    "accession": "GQ849083.1",
+    "length": 1733,
+    "sha256": "3b45cfa61332331de54e9d30c8543adf477a4ca0a787a0c73648939ac960e6ba",
+    "taxon": "Morbakka virulenta"
+  },
+  "source_032": {
+    "accession": "HG999760.1",
+    "length": 914,
+    "sha256": "61e69a43be9120ec2877da424505459d1d780cde8707d170458af6e6a58fae1a",
+    "taxon": "Xenia umbellata"
+  },
+  "source_033": {
+    "accession": "HM022146.1",
+    "length": 728,
+    "sha256": "d58b5a91df6b78afd102815b2f72b370bfc32cdb68259ec0f4c961decf29345f",
+    "taxon": "Haliclystus stejnegeri"
+  },
+  "source_034": {
+    "accession": "HM022147.1",
+    "length": 722,
+    "sha256": "93fe21f2380c54cb68adfb0497d0d75af51ba8d43db6e9b5c354210e4f05eea8",
+    "taxon": "Haliclystus stejnegeri"
+  },
+  "source_035": {
+    "accession": "HQ170726.1",
+    "length": 688,
+    "sha256": "209b8782f0d0e0d1526984d01e5a36bbcd9a814eb29754430ba6e46620727a01",
+    "taxon": "Drosophila tanythrix"
+  },
+  "source_036": {
+    "accession": "HQ171031.1",
+    "length": 383,
+    "sha256": "8dc0988d3ebd8728cff1765abe187cee48d2a276e6cf16ccc5edf082e79deff6",
+    "taxon": "Drosophila tanythrix"
+  },
+  "source_037": {
+    "accession": "JQ407377.1",
+    "length": 1725,
+    "sha256": "a7aca04f0da4ff81d2d2b5b9659c1071e0f17e618779c560a956032f0b4697cf",
+    "taxon": "Hydractinia symbiolongicarpus"
+  },
+  "source_038": {
+    "accession": "JQ410732.1",
+    "length": 3248,
+    "sha256": "aba44c244239b51901932d6422254f09aa750095ca161def91bc604948095968",
+    "taxon": "Hydractinia symbiolongicarpus"
+  },
+  "source_039": {
+    "accession": "K01281.1",
+    "length": 277,
+    "sha256": "ea98d8a029f23635db857c9e95d40aec5e025cd1c2bd95cb0ff08e182a3a596b",
+    "taxon": "Drosophila melanogaster"
+  },
+  "source_040": {
+    "accession": "KC864852.1",
+    "length": 951,
+    "sha256": "d3356631defe4be9c9e1c3a62d4c77c30c742f94ca2a70feef24e20661099ee9",
+    "taxon": "Xenia sp. 1202010"
+  },
+  "source_041": {
+    "accession": "KF977402.1",
+    "length": 537,
+    "sha256": "064bcc1a8530eff5004679bee2cfd46ffe17e0a61bcd0d7354a0bf69d020e2ba",
+    "taxon": "Nanomia bijuga"
+  },
+  "source_042": {
+    "accession": "KJ174812.1",
+    "length": 665,
+    "sha256": "fbe88e813b25c32373a77728ae129c31dcb74475e737317bffee4f09d026c8f2",
+    "taxon": "Heliconius pachinus"
+  },
+  "source_043": {
+    "accession": "KM252237.1",
+    "length": 475,
+    "sha256": "e1696fd34d7297e26889c3d729a924e34ccf6f3260fd1bcfee379318246a02df",
+    "taxon": "Drosophila paracracens"
+  },
+  "source_044": {
+    "accession": "KM252239.1",
+    "length": 829,
+    "sha256": "58e7543ee9cbdbfd4583b9614d159521bfd7fcf69554e31146807aecbbbb25ca",
+    "taxon": "Drosophila diamphidiopoda"
+  },
+  "source_045": {
+    "accession": "KM252368.1",
+    "length": 520,
+    "sha256": "2ad26e1217f660afc54a1293e5a4f16d415300e28309bb99ba8f750372dc611d",
+    "taxon": "Drosophila tanythrix"
+  },
+  "source_046": {
+    "accession": "KM252494.1",
+    "length": 749,
+    "sha256": "43018740728cbf0f53406a807e3acf2bb1780b789440be267e2b0e84b50d496b",
+    "taxon": "Drosophila diamphidiopoda"
+  },
+  "source_047": {
+    "accession": "KM252505.1",
+    "length": 713,
+    "sha256": "9cf58bca8b6b1d3e3d9e1c50213249f24fdb3da086e13c30ba36c0d3621a161d",
+    "taxon": "Drosophila yooni"
+  },
+  "source_048": {
+    "accession": "KM508879.1",
+    "length": 1266,
+    "sha256": "2f87970b7f6446aa6c7f7c05e253072cb13de27a128a9b0586c2c7051f3b5c79",
+    "taxon": "Gryllus bimaculatus"
+  },
+  "source_049": {
+    "accession": "KP073314.1",
+    "length": 504,
+    "sha256": "972fe4aa26c010609e169be6c3349b9fe9a24b246c2a2f3f106f7b49cb8a5105",
+    "taxon": "Heliconius pachinus"
+  },
+  "source_050": {
+    "accession": "KP074829.1",
+    "length": 2294,
+    "sha256": "30aedf390d347ceaecd6ba658062f36585ef3c7a4b3d74c48aa8d6e7ef0192ba",
+    "taxon": "Heliconius pachinus"
+  },
+  "source_051": {
+    "accession": "KP776745.1",
+    "length": 611,
+    "sha256": "fe1a77f1e3c363b5a36dcffd981f17254c2e18790900429b51a72761b840683f",
+    "taxon": "Aglantha digitale"
+  },
+  "source_052": {
+    "accession": "KR270069.1",
+    "length": 558,
+    "sha256": "85fc0afea1b3c5630938000566e3b54cf34405c48da229f3e11dc078d97ff5a5",
+    "taxon": "Drosophila diamphidiopoda"
+  },
+  "source_053": {
+    "accession": "KR338966.1",
+    "length": 813,
+    "sha256": "007772de8565ebd94600ef3510c1140c20c4c400a6f2862241993bc585b5c75a",
+    "taxon": "Rhopilema esculentum"
+  },
+  "source_054": {
+    "accession": "KU257501.1",
+    "length": 581,
+    "sha256": "23635004fef00746ec67896a5160c1d64e2780336d090de67a2a3e679f229503",
+    "taxon": "Haliclystus octoradiatus"
+  },
+  "source_055": {
+    "accession": "KU308592.1",
+    "length": 3166,
+    "sha256": "f73a654fbc0f0dff560da7d046de60a036ac3fed0d32349c64e26a0548a26fbc",
+    "taxon": "Haliclystus octoradiatus"
+  },
+  "source_056": {
+    "accession": "KU308625.1",
+    "length": 653,
+    "sha256": "87cd4f150d27db3b7807f06076a7ebabe74ea633beab34b19ba5c2abc4c9c371",
+    "taxon": "Haliclystus octoradiatus"
+  },
+  "source_057": {
+    "accession": "KX096596.1",
+    "length": 847,
+    "sha256": "dbdd4c6d83c4f50ea561c17405e7741044d206ee54610d41213db038a483f2bd",
+    "taxon": "Turritopsis dohrnii"
+  },
+  "source_058": {
+    "accession": "KX665441.1",
+    "length": 1772,
+    "sha256": "004b065bc3a7a326d36f9e3d4ad288eb44e4a9914162806bd33dde32ce398727",
+    "taxon": "Clytia hemisphaerica"
+  },
+  "source_059": {
+    "accession": "KX665495.1",
+    "length": 3294,
+    "sha256": "59f00afb6970c778a4feaca36b3695f636cb0a92232652a3603e5f0775b3ce49",
+    "taxon": "Clytia hemisphaerica"
+  },
+  "source_060": {
+    "accession": "KY442629.1",
+    "length": 935,
+    "sha256": "d24434ea0ae33b84b676bfe10619b5020aa999211a0f5a7dc7e8eec43919b0a8",
+    "taxon": "Xenia sp."
+  },
+  "source_061": {
+    "accession": "L14423.1",
+    "length": 1114,
+    "sha256": "0097e74b8151fbcaf2cf2b2327665d81e5682483aa5b3b74b5fb91c08124848d",
+    "taxon": "Drosophila melanogaster"
+  },
+  "source_062": {
+    "accession": "LC467070.1",
+    "length": 698,
+    "sha256": "6ab2ece2b66f186b02142d928eb277b655163cb4d06f05711ffe2b7b348789b2",
+    "taxon": "Xenia sp. 2 TK-2019"
+  },
+  "source_063": {
+    "accession": "LN680643.1",
+    "length": 737,
+    "sha256": "8bd5fe2b67054d322598fe00727d658f7b7d5edccfb1cc60a73ebd6615d0d65b",
+    "taxon": "Euphorbia glareosa"
+  },
+  "source_064": {
+    "accession": "MF538734.1",
+    "length": 636,
+    "sha256": "cf9a8b3b606afa18997d6844cdaa44612506ce9b6d4695a714299d7448495525",
+    "taxon": "Turritopsis dohrnii"
+  },
+  "source_065": {
+    "accession": "MK441842.1",
+    "length": 664,
+    "sha256": "993d13caf0cea8a87346a6c0525fafe2d5c177f226cb560e5744021b031af7b0",
+    "taxon": "Gryllus bimaculatus"
+  },
+  "source_066": {
+    "accession": "MK659833.1",
+    "length": 15786,
+    "sha256": "7ae19092c619aab2207dad42782002e8abeb1ed50336e8fe4719aef645408f58",
+    "taxon": "Drosophila neonasuta"
+  },
+  "source_067": {
+    "accession": "MN601815.1",
+    "length": 664,
+    "sha256": "c21bcf958268e0d1820224abeaa8b0a8294b6e0540e4c51ef84e548a23bde2c6",
+    "taxon": "Craspedacusta sowerbii"
+  },
+  "source_068": {
+    "accession": "MN990625.1",
+    "length": 159961,
+    "sha256": "5017785441d506ee86e9acc451cdacae2cdde0db7a3705e79e71f11425d056f5",
+    "taxon": "Liriodendron tulipifera"
+  },
+  "source_069": {
+    "accession": "MT410920.1",
+    "length": 16674,
+    "sha256": "f0f399dc7f3f71afa03f821c0a158a550ade4f6a865b0fd75b8a32245ee26f7f",
+    "taxon": "Engraulis encrasicolus"
+  },
+  "source_070": {
+    "accession": "MW070149.1",
+    "length": 7552,
+    "sha256": "da97042de57b25c0dc63941d592f71bc625179cc0305780439ad8cf3eddeacc3",
+    "taxon": "Acer monspessulanum"
+  },
+  "source_071": {
+    "accession": "MW376578.1",
+    "length": 14728,
+    "sha256": "2e689c54e0fa8213f8afcd84c5f2c1a99d2af100518e52019cb579a265060494",
+    "taxon": "Drosophila melanogaster"
+  },
+  "source_072": {
+    "accession": "MZ366774.1",
+    "length": 6432,
+    "sha256": "156863ac23dc7ecde0bae4c515fde29eeb6210daa91109d344eb36b3e0c86173",
+    "taxon": "Opuntia bonaerensis"
+  },
+  "source_073": {
+    "accession": "NC_005780.1",
+    "length": 14950,
+    "sha256": "f32df834a122624c288767f98d5d4621c8506d0cb81d86d5da48a55a0b49789e",
+    "taxon": "Drosophila sechellia"
+  },
+  "source_074": {
+    "accession": "NC_008326.1",
+    "length": 159886,
+    "sha256": "b667e2bc25deb94e0c19a8dbd09e103bd0504e16083e7c284de22b00e64bb3c8",
+    "taxon": "Liriodendron tulipifera"
+  },
+  "source_075": {
+    "accession": "NC_011220.1",
+    "length": 8194,
+    "sha256": "d2fde29495b2e2d68250c644342f964d932c35979b0fb3a76bc4eb55c31b9a02",
+    "taxon": "Hydra vulgaris"
+  },
+  "source_076": {
+    "accession": "NC_012920.1",
+    "length": 16569,
+    "sha256": "f156ff3f65bbcc80c7ebb9936dceb96b1477b4f8f535c4e1dbe7baea225cbc66",
+    "taxon": "Homo sapiens"
+  },
+  "source_077": {
+    "accession": "NC_024741.1",
+    "length": 15369,
+    "sha256": "9d37742a2b5fac2183fbc73a892b2bd07a173a72c6dd9147d88d1c27b721973d",
+    "taxon": "Heliconius pachinus"
+  },
+  "source_078": {
+    "accession": "NC_024864.1",
+    "length": 15367,
+    "sha256": "b1e7ce970b7b242ed797b8a07b0c36215847c9aa5382de9aff1b5c5627a327fe",
+    "taxon": "Heliconius cydno"
+  },
+  "source_079": {
+    "accession": "NC_026564.1",
+    "length": 15372,
+    "sha256": "41383db9553110405106d3a967777b251d320ec16d2e8f5d522240da742e7a9e",
+    "taxon": "Heliconius sara"
+  },
+  "source_080": {
+    "accession": "NC_035741.1",
+    "length": 15855,
+    "sha256": "3a5b3344b96f9d33de3d0379e385de4fe2f6e967488c71b63182d5eb024861c3",
+    "taxon": "Rhopilema esculentum"
+  },
+  "source_081": {
+    "accession": "NC_049166.1",
+    "length": 156063,
+    "sha256": "76858f76a6062023288085d1948e73d9b7819ba54e1bc088274a4adce05caa6e",
+    "taxon": "Acer sutchuenense subsp. tienchuanense"
+  },
+  "source_082": {
+    "accession": "NC_053546.1",
+    "length": 16075,
+    "sha256": "e67e9962422e9ff6029027e33b87ce23461c146607bae2fc4effcb6653d22745",
+    "taxon": "Gryllus bimaculatus"
+  },
+  "source_083": {
+    "accession": "NC_056221.1",
+    "length": 156145,
+    "sha256": "e5b03a378060cff04b2241517f14d02bb08991fb68c560fd0bc29731b00fcdf9",
+    "taxon": "Acer opalus"
+  },
+  "source_084": {
+    "accession": "NC_082547.1",
+    "length": 16523,
+    "sha256": "1bfa756aeae4bb116a342386339fca93fde7e8013f8dd9b6b40545c9b7520d51",
+    "taxon": "Nomeus gronovii"
+  },
+  "source_085": {
+    "accession": "NC_083948.1",
+    "length": 152441,
+    "sha256": "cb7f507e11e756dd94862a18ee54c505f06470f5da96949c4547865672055480",
+    "taxon": "Opuntia pycnantha"
+  },
+  "source_086": {
+    "accession": "NC_087798.1",
+    "length": 138084,
+    "sha256": "bf3f42a59973995ce4d340baa22463cf174137bcfecc03cec3d7b5116c15255e",
+    "taxon": "Opuntia cochenillifera"
+  },
+  "source_087": {
+    "accession": "NM_072875.1",
+    "length": 411,
+    "sha256": "68c35d68085015408cbab8f25106cf62a4c09f5f02df70f7da3fe6f25259a985",
+    "taxon": "Caenorhabditis elegans"
+  },
+  "source_088": {
+    "accession": "NR_133554.1",
+    "length": 4191,
+    "sha256": "f3a524346c7072aab5dee2399251c14548258a801ced120d1c6f1294a36ec679",
+    "taxon": "Drosophila melanogaster"
+  },
+  "source_089": {
+    "accession": "NR_133558.1",
+    "length": 8118,
+    "sha256": "95a08ef61c8b2ef5662909de956c2fba96b4b0dadb5dd3f4c91bc7fb75cdbed7",
+    "taxon": "Drosophila melanogaster"
+  },
+  "source_090": {
+    "accession": "NR_133562.1",
+    "length": 3970,
+    "sha256": "393f7cbc3ea582c189d2547a975537a37d3f58f30a2d5afc821ee7c7a9e0ddd4",
+    "taxon": "Drosophila melanogaster"
+  },
+  "source_091": {
+    "accession": "OM509549.1",
+    "length": 665,
+    "sha256": "88a38f6fbe388a214b609ca20eb36ff27fc3c7a34678d5efbafed97d910b9b27",
+    "taxon": "Engraulis encrasicolus"
+  },
+  "source_092": {
+    "accession": "OM754561.1",
+    "length": 650,
+    "sha256": "c00eca906d8d5ecd88f8e401e4de4e74e200413d4c13c3a5b92e7f0b559b5c12",
+    "taxon": "Drosophila tanythrix"
+  },
+  "source_093": {
+    "accession": "OP035085.1",
+    "length": 16523,
+    "sha256": "97d2e279b46c611c3373711ee014c389b4c727466150f193ad6e8c2033f6643c",
+    "taxon": "Hirundichthys speculiger"
+  },
+  "source_094": {
+    "accession": "OP088600.1",
+    "length": 7294,
+    "sha256": "5aae0f0a737f1b41818f3db576c5e67ca0d19a07eedbe06d11690459f004950f",
+    "taxon": "Hirundichthys speculiger"
+  },
+  "source_095": {
+    "accession": "OQ323445.1",
+    "length": 658,
+    "sha256": "9fd890755e460d615c05d6348d818bda74c01ee541fed95690195ffbe2ae1e24",
+    "taxon": "Hydractinia symbiolongicarpus"
+  },
+  "source_096": {
+    "accession": "OQ613386.1",
+    "length": 123275,
+    "sha256": "365ffe1cc464672839f2ca40bd87fb83300221311c6c59bb1642c4a8613167de",
+    "taxon": "Opuntia engelmannii var. cuija"
+  },
+  "source_097": {
+    "accession": "OQ957203.1",
+    "length": 15054,
+    "sha256": "9d0ef88967b8c0a84b661db5aa4f108a34c4875ee7f28ae4bfd6a9477b29f621",
+    "taxon": "Agalma elegans"
+  },
+  "source_098": {
+    "accession": "OR236730.1",
+    "length": 1682,
+    "sha256": "9266da4a8db5d00b246596e5bff0a4923ca5fd9b1f079ae9590f4ab8381859b8",
+    "taxon": "Craspedacusta sowerbii"
+  },
+  "source_099": {
+    "accession": "OR400210.1",
+    "length": 3177,
+    "sha256": "9ef95615bb93c9624410bfeb7f746034a538f46fb456b584621450ef63abf5db",
+    "taxon": "Morbakka sp. MKL-2023"
+  },
+  "source_100": {
+    "accession": "OR400211.1",
+    "length": 3394,
+    "sha256": "1e075d53f89b5a10ce7052b0c99c6f8d8f750f4229abe518d32b1a5d5c03c1d3",
+    "taxon": "Morbakka sp. MKL-2023"
+  },
+  "source_101": {
+    "accession": "OR400606.1",
+    "length": 162797,
+    "sha256": "3428d06ef07c850a57c7473251d852356de0f11ffbbf0f1fa0e9a9fea50da513",
+    "taxon": "Euphorbia jolkinii"
+  },
+  "source_102": {
+    "accession": "OU744455.1",
+    "length": 18316,
+    "sha256": "7f2674ed55efcff6eb02418e9db8ca951e3dc070abf84b85b13c7d0a6fc88798",
+    "taxon": "Haliclystus octoradiatus"
+  },
+  "source_103": {
+    "accession": "PP214196.1",
+    "length": 586,
+    "sha256": "4fd9a775e383c9184c6f56d2e29740a6b1ca54bd4c0bbf2abfd6b2bffa4f7085",
+    "taxon": "Agalma elegans"
+  },
+  "source_104": {
+    "accession": "PP230540.1",
+    "length": 15955,
+    "sha256": "cc6a83cdeb809de57f2b81702ac1cb238cff1dde134d1e3a11a7862e6eec6a1b",
+    "taxon": "Gryllus bimaculatus"
+  },
+  "source_105": {
+    "accession": "PP764096.1",
+    "length": 18666,
+    "sha256": "48d99db95ad48539fec201f214f9bc5351dad6f4b9285a2ecbb64e924aa64f03",
+    "taxon": "Drosophila melanogaster"
+  },
+  "source_106": {
+    "accession": "X03680.1",
+    "length": 7203,
+    "sha256": "c91d31ea7ebad152d51694e3cf036c251703fa834a73d15fa7673d733f6a3e67",
+    "taxon": "Caenorhabditis elegans"
+  },
+  "source_107": {
+    "accession": "X15634.1",
+    "length": 1300,
+    "sha256": "6179b54c39631afe8ff89023888258d0f2a24345dc6f5caf1d4c6a45841908b7",
+    "taxon": "Caenorhabditis elegans"
+  },
+  "source_108": {
+    "accession": "XM_047005986.1",
+    "length": 5017,
+    "sha256": "e78bd891739360b3ee5cd32eb146cc0e9fbdfcfb7af7f8702d7e7f2d1d78b31c",
+    "taxon": "Xenia sp. Carnegie-2017"
+  },
+  "source_109": {
+    "accession": "XR_004459988.1",
+    "length": 1995,
+    "sha256": "c786236821f946f0bd0ff88089d0c0844b154a16003595a882d90f3f409e492a",
+    "taxon": "Drosophila mauritiana"
+  },
+  "source_110": {
+    "accession": "XR_005544871.1",
+    "length": 1994,
+    "sha256": "ba7bb3e6298464bc3549177589d8449c95655580c97359b6f87620a2f86ac0c5",
+    "taxon": "Drosophila simulans"
+  },
+  "source_111": {
+    "accession": "XR_006246778.1",
+    "length": 1994,
+    "sha256": "1266376544afe4fa0f356b522832ce52d23ee91b31188a202a417a49cde9a9e8",
+    "taxon": "Drosophila grimshawi"
+  },
+  "source_112": {
+    "accession": "XR_006952126.1",
+    "length": 1823,
+    "sha256": "991679ee27372480e76848cecf9cdd50c00dd00b3da74696045ef48e47361ca6",
+    "taxon": "Xenia sp. Carnegie-2017"
+  },
+  "source_113": {
+    "accession": "XR_006952137.1",
+    "length": 3589,
+    "sha256": "99ff1cec79c16a181a94b25c85388f398af8eab42a296aeeec7f15f1806ddd86",
+    "taxon": "Xenia sp. Carnegie-2017"
+  },
+  "source_114": {
+    "accession": "XR_006952139.1",
+    "length": 3579,
+    "sha256": "9b06582a5b66465160eccf4560678b231bc7dda28881afa1985253b7302b7442",
+    "taxon": "Xenia sp. Carnegie-2017"
+  },
+  "source_115": {
+    "accession": "XR_007021210.2",
+    "length": 3649,
+    "sha256": "72ae565f9c8edee1f8be2009125d72dce81c0a7d7d376225b7f5a5c5a45a8e97",
+    "taxon": "Hydra vulgaris"
+  },
+  "source_116": {
+    "accession": "XR_010033285.1",
+    "length": 1857,
+    "sha256": "dbab5b5cc6154c9e39a55e02e42afb8db970542c9bee508d79f0ebcaf3f0cc20",
+    "taxon": "Engraulis encrasicolus"
+  },
+  "source_117": {
+    "accession": "XR_010517292.1",
+    "length": 1814,
+    "sha256": "64300fcd1f464b7d85c23d7e2a857291a6cfa5a1a760ac728e95a363ffbc7663",
+    "taxon": "Rhopilema esculentum"
+  },
+  "source_118": {
+    "accession": "XR_010517322.1",
+    "length": 3627,
+    "sha256": "662d52e60b28f4ec06d919d180d5db1651d2d5ea8b9ee5df75083d7bcc32644e",
+    "taxon": "Rhopilema esculentum"
+  },
+  "source_119": {
+    "accession": "Z92784.2",
+    "length": 33103,
+    "sha256": "17d14033b81d534df491e3219589445db51ed5584b32a759b1a6eb9604bb9d61",
+    "taxon": "Caenorhabditis elegans"
+  },
+  "source_120": {
+    "accession": "Z98866.1",
+    "length": 125590,
+    "sha256": "a0c81934a189c18b3b790b1de10c32abb319a4bb2202943c6a7783d18496f5e8",
+    "taxon": "Caenorhabditis elegans"
+  }
+}

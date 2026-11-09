@@ -22,8 +22,9 @@ After cloning the repo, install the pre-commit hook:
 
     ln -sf ../../scripts/pre-commit .git/hooks/pre-commit
 
-This runs the same quality gates as CI before every commit: `cargo fmt --all --check`,
-`cargo clippy -- -D warnings`, and `cargo test --release`.
+This runs the baseline Rust checks before every commit: `cargo fmt --all --check`,
+`cargo clippy -- -D warnings`, and `cargo test --release`. The complete
+release check below also covers both backends, Python, panels, and metadata.
 
 Some common rust tasks in development:
 
@@ -57,10 +58,10 @@ setup is needed — `cargo test` handles it automatically.
 
 1. Create an issue branch from `dev` (`git checkout -b issue-NNN dev`)
 2. Do the work, ensure it passes quality gates
-3. Merge to `dev` and push (`git checkout dev && git merge issue-NNN && git push`)
+3. Push the issue branch and open a pull request into `dev`; merge after CI passes
 4. Delete the issue branch
-5. When ready to release: merge `dev` to `master`, tag the release, create
-   a `vN` branch from the tag
+5. When ready to release, follow the release ritual below, including updating
+   the existing `vN` maintenance branch or creating it for a new major version
 
 Always merge and push completed issue branches to `dev` before starting the
 next issue. This keeps `dev` up to date and avoids dependency tangles when
@@ -89,6 +90,19 @@ A branch is considered passing when:
 These steps assume all work is complete on `dev`, quality gates pass, and
 regression benchmarks have been run.
 
+**v3.2 scope exception approved by the user, 2026-11-08:** follow the retained
+[release assessment](dev_docs/REVIEW_v3.2.md#decision-ownership-2026-11-08) and
+[final-build results](benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+in place of the full benchmark and biological sample campaigns in steps 1–3.
+Use the retained release-baseline evidence and focused check of saved sequences,
+warning classifications, and the four flagged performance comparisons; keep
+the intentional plant-assay change separate. The new held-out dataset and
+full nine-panel biological evaluation are deferred, not passed. Quality gates,
+reference-provenance checks, and schema/export/loader checks for all built-in
+panels and the reference example remain required. Retain the deferred biological
+work before further assembly tuning or broad accuracy claims. The general
+procedure below continues to apply to other releases.
+
 ### 1. Run and commit benchmarks
 
 Before preparing the release, run the full regression benchmark suite on `dev`
@@ -97,8 +111,9 @@ and commit the results:
     conda activate sharkmer-bench
     python benchmarks/run_benchmark.py
 
-Review the results in `benchmarks/benchmark_results/` and compare against prior versions
-with `benchmarks/compare.py`. If there are regressions, fix them before
+Review the results in `benchmarks/benchmark_results/` and compare the structured
+per-product YAML records, classifications, and performance fields with prior
+runs. There is no separate comparison script. Investigate regressions before
 proceeding. Commit the benchmark results to `dev`:
 
     git add benchmarks/benchmark_results/
@@ -135,65 +150,125 @@ in the binary but must parse and validate cleanly before every release:
 If the reference panel fails to load or validate, the schema implementation
 or documentation is out of sync. Fix the discrepancy before proceeding.
 
-### 4. Prepare the release
+### 4. Check readiness and prepare the release
 
-- Verify `version` in `Cargo.toml` matches the intended release (e.g. `3.0.0`).
-- Verify `CHANGELOG.md` has an entry for this version with the correct date.
-- Verify `meta.yaml` version and sha256 are updated (sha256 can only be
-  finalized after the GitHub release tarball exists — use `PLACEHOLDER` until
-  then).
+Confirm readiness gates in `dev_docs/PLAN.md` are met or explicitly waived;
+complete the final packaging/publication gate through the steps below.
+Activate the benchmark environment (which supplies Python, PyYAML, jsonschema,
+and BLAST+) and use a Rust toolchain with rustfmt and Clippy. Run the same
+release check used by CI on pull requests into `master`:
 
-### 5. Merge to master and push
+    git fetch origin
+    git switch dev
+    git merge --ff-only origin/dev
+    conda activate sharkmer-bench
+    scripts/release-check
 
-    git checkout master
-    git merge dev
-    git push origin master
+The check runs formatting, Clippy and Rust tests with both backends, the full
+Python suite, the offline reference audit, all nine built-in panels and the
+reference example (schemas, exports, and loader dry runs), and the pinned
+known-answer CLI fixture. It checks Cargo/lockfile/changelog agreement and,
+for release versions, the recipe version. It does not run the biological
+campaigns in steps 1–3. Use `--offline` when Cargo dependencies are cached;
+`--only` selects individual gates for diagnosis. Run the full check in a Slurm
+allocation on the cluster, not in the coding-agent allocation.
 
-### 6. Tag the release
+Prepare a release branch from the checked `dev` (the examples use v3.2.0):
 
-    git tag -a vX.Y.Z -m "vX.Y.Z"
-    git push origin vX.Y.Z
+    VERSION=3.2.0
+    git switch -c "release-${VERSION}" origin/dev
+
+Set the package version in `Cargo.toml` and `Cargo.lock` to `${VERSION}` without
+`-dev`. Rename the changelog's `[Unreleased]` heading to
+`[3.2.0] - YYYY-MM-DD` with the actual release date. Set `meta.yaml` to the same
+version and use `PLACEHOLDER` for its checksum until the tagged archive exists.
+Run `scripts/release-check` again, then commit these changes. Save the release
+changelog section for the pull requests and GitHub release:
+
+    awk -v heading="## [${VERSION}] -" 'index($0, heading)==1 {printing=1; next} /^## / && printing {exit} printing {print}' CHANGELOG.md > /tmp/sharkmer-release-notes.md
+    git push -u origin "release-${VERSION}"
+    gh pr create --base dev --head "release-${VERSION}" --title "Prepare ${VERSION}" --body-file /tmp/sharkmer-release-notes.md
+    gh pr checks "release-${VERSION}" --watch
+    gh pr merge "release-${VERSION}" --merge
+
+### 5. Merge the release into master
+
+Open the release pull request from `dev`. After CI passes and release is
+authorized, merge with a merge commit so the development history is preserved:
+
+    gh pr create --base master --head dev --title "Release ${VERSION}" --body-file /tmp/sharkmer-release-notes.md
+    gh pr checks dev --watch
+    gh pr merge dev --merge
+
+The user already authorized the v3.2 release ritual; that decision is recorded
+in the retained release assessment linked above.
+
+### 6. Tag the exact released commit
+
+    git fetch origin
+    git tag -a "v${VERSION}" origin/master -m "Release ${VERSION}"
+    git push origin "v${VERSION}"
 
 ### 7. Create the GitHub release
 
-Go to <https://github.com/caseywdunn/sharkmer/releases/new>, select the tag
-you just pushed, and create a release. Use the CHANGELOG entry as the release
-notes.
+    gh release create "v${VERSION}" --verify-tag --title "${VERSION}" --notes-file /tmp/sharkmer-release-notes.md
 
-Alternatively, use the CLI (replace `X.Y.Z` with the version number):
+### 8. Advance the release maintenance branch
 
-    VERSION=X.Y.Z
-    gh release create "v${VERSION}" --title "v${VERSION}" --notes-file - <<< "$(sed -n "/^## \[${VERSION}\]/,/^## \[/{ /^## \[${VERSION}\]/d; /^## \[/d; p; }" CHANGELOG.md)"
+For v3.2, fast-forward the existing `v3` branch to the release tag:
 
-### 8. Create the release maintenance branch
+    git switch v3
+    git merge --ff-only origin/v3
+    git merge --ff-only "v${VERSION}"
+    git push origin v3
 
-    git checkout -b vN vX.Y.Z   # e.g. git checkout -b v3 v3.0.0
-    git push origin vN
+If there is no local `v3`, first use `git switch --track origin/v3`. Create a
+new `vN` branch from the tag only when releasing a new major version that has
+no maintenance branch. A failed fast-forward requires investigating the branch
+history; do not recreate or force-push the existing branch.
 
-This branch is used for future patch releases (vX.Y.1, etc.) without
-pulling in unreleased work from `dev`.
+### 9. Finalize the bioconda recipe
 
-### 9. Update the bioconda recipe
+Download the exact URL used by `meta.yaml`. Hash the saved archive only after
+the HTTP request succeeds:
 
-After the GitHub release is created, get the sha256 of the source tarball:
+    curl --fail --location --output "/tmp/sharkmer-${VERSION}.tar.gz" "https://github.com/caseywdunn/sharkmer/archive/refs/tags/v${VERSION}.tar.gz" &&
+        sha256sum "/tmp/sharkmer-${VERSION}.tar.gz"
 
-    curl -sL https://github.com/caseywdunn/sharkmer/archive/refs/tags/vX.Y.Z.tar.gz | sha256sum
+Replace `PLACEHOLDER` in `meta.yaml` with this checksum on the post-release
+branch below. Test and submit the recipe through the Bioconda workflow below;
+record the package pull request and build outcome with the release evidence.
 
-Update `meta.yaml` with the real sha256, then follow the bioconda submission
-steps in the Bioconda section below.
+### 10. Resume development and verify ancestry
 
-### 10. Resume development
+Start from `origin/master` so the next development branch carries the actual
+release merge commit:
 
-    git checkout dev
+    git fetch origin
+    git switch -c "post-release-${VERSION}" origin/master
 
-Update `Cargo.toml` version to the next development version (e.g. `3.1.0-dev`)
-and add an `[Unreleased]` section to `CHANGELOG.md`.
+For v3.2, set the package version in `Cargo.toml` and `Cargo.lock` to
+`4.0.0-dev`, add an empty `[Unreleased]` changelog section, and prune the released
+section from `dev_docs/PLAN.md` while preserving its evidence and deferred work.
+Keep the recipe at `3.2.0` and insert the checksum from step 9. Run
+`scripts/release-check`, commit, and return these changes to `dev` through a PR:
+
+    git push -u origin "post-release-${VERSION}"
+    gh pr create --base dev --head "post-release-${VERSION}" --title "Start development after ${VERSION}" --body "Preserve release ancestry, start 4.0.0-dev, and finalize the released source checksum."
+    gh pr checks "post-release-${VERSION}" --watch
+    gh pr merge "post-release-${VERSION}" --merge
+    git fetch origin
+    git merge-base --is-ancestor "v${VERSION}" origin/dev
+    gh run list --workflow tag-check.yml --branch "v${VERSION}"
+
+The ancestry check must succeed. Verify that the tag workflow passed; it
+requires the tag, Cargo versions, recipe version, and dated changelog to agree.
 
 ## Regression benchmarks
 
-A benchmark suite in `benchmarks/` runs sharkmer against 14 real-world SRA
-datasets across multiple primer panels. Run after each development phase or
-before a release to check for regressions.
+A benchmark suite in `benchmarks/` runs sharkmer against 13 real-world SRA
+datasets across 6 of the 9 built-in primer panels. Run after each development
+phase or before a release to check for regressions.
 
 Set up the benchmark conda environment (first time only):
 
@@ -214,17 +289,27 @@ Then activate it before running benchmarks:
     # Run specific samples only
     python benchmarks/run_benchmark.py --samples Porites_lutea Agalma_elegans
 
-    # Pre-download all sample data without running benchmarks
-    python benchmarks/run_benchmark.py --download-only
+    # Run the included offline counting oracle
+    python benchmarks/run_benchmark.py --config benchmarks/known_truth.yaml -k 19 --scope counting-only --no-blast
 
-Results are written as YAML to `benchmarks/benchmark_results/` with the date, version,
-and git commit in the filename. Use `benchmarks/compare.py` to diff results
-across versions.
+Per-panel YAML and Markdown results and a commit-labelled combined summary are
+written to `benchmarks/benchmark_results/`. Compare the structured per-product
+records and performance fields between runs; the repository does not currently
+provide an automated cross-run comparator.
 
-Sample data (~1M reads each) is cached in `benchmarks/data/` and downloaded
-from ENA on first run. The download streams and truncates early, so it does
-not fetch full runs. Configuration (samples, panels, read counts) is in
-`benchmarks/config.yaml`.
+Dataset roles, offline known-truth commands, and the registration gate for
+future held-out data are defined in `benchmarks/DATASETS.md`. Results record
+the executable fingerprint and workspace source observation, effective
+command, input and reference checksums, cache protocol, stage timings,
+throughput, table capacity, allocator peak, peak RSS when available, and final
+run-directory size. Unavailable metrics remain null with an availability
+statement.
+
+Sample data is cached in `benchmarks/data/` and downloaded from ENA on first
+run. The 1M setting is a requested FASTQ-record cap, not a promise that every
+input reaches it; four calibration inputs exhaust earlier. The download streams
+and truncates early, so it does not fetch full runs. Configuration (samples,
+panels, read counts) is in `benchmarks/benchmark.yaml`.
 
 ## Bioconda recipe
 

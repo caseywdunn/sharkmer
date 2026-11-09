@@ -1,0 +1,8 @@
+{
+  "status": "failed",
+  "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz",
+  "error": "<urlopen error [Errno -2] Name or service not known>",
+  "records": 0,
+  "size_bytes": 0,
+  "elapsed_seconds": 0.032094717025756836
+}

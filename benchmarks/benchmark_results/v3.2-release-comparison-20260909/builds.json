@@ -1,0 +1,98 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-09T16:07:58.627752+00:00",
+  "versions": {
+    "baseline": {
+      "commit": "5a664680c91ad59f32b8c2a847b8fef37f34a0ae",
+      "git_tree_oid": "d5114939fc2e89a0c0761d9190b53cfb51e73f5b",
+      "release_tag": "v3.1.0",
+      "release_tag_commit": "5a664680c91ad59f32b8c2a847b8fef37f34a0ae",
+      "source_export": "/tmp/sharkmer-release-comparison/sources/baseline",
+      "source_archive": "/tmp/sharkmer-release-comparison/baseline-source.tar",
+      "source_archive_sha256": "5bea09cfd4bc1c6918094848a2e8a3d2e3f9ffbd96395ec703b9004011600f03",
+      "source_tree_sha256_before_build": "290dc527579909dc36805e059c15767276d82365ebdddea45ddbc1d117088599",
+      "source_tree_sha256_after_build": "290dc527579909dc36805e059c15767276d82365ebdddea45ddbc1d117088599",
+      "source_export_pristine_after_build": true,
+      "binary_path": "/tmp/sharkmer-release-comparison/binaries/sharkmer-baseline",
+      "binary_sha256": "4cb93c72c830e052bf9bf03638eec2a060a699c5741ea0630fd9225ecc5b5e18",
+      "binary_version": "sharkmer 3.1.0 (https://github.com/caseywdunn/sharkmer)",
+      "cargo_lock_sha256": "4f556fac3069ec4b8b84a881f12a683900e2671189fa9f64a0ccd7199c42183e",
+      "build_command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json-render-diagnostics"
+      ],
+      "build_cwd": "/tmp/sharkmer-release-comparison/sources/baseline",
+      "build_environment": {
+        "CARGO_TARGET_DIR": "/tmp/sharkmer-release-comparison/targets/baseline",
+        "RUSTFLAGS": null,
+        "CARGO_ENCODED_RUSTFLAGS": null,
+        "RUSTC_WRAPPER": null,
+        "RUSTC_WORKSPACE_WRAPPER": null
+      },
+      "cargo_artifact_features": [
+        "ahashmap",
+        "default"
+      ],
+      "cargo_artifact_profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+      "source_binding": "built_from_verified_clean_git_archive_with_locked_dependencies"
+    },
+    "candidate": {
+      "commit": "ba64f573048b6c19a528278028810af5bd475b81",
+      "git_tree_oid": "fb09226656b8c3625c887f81aa74aa9c6a3e0565",
+      "release_tag": null,
+      "release_tag_commit": null,
+      "source_export": "/tmp/sharkmer-release-comparison/sources/candidate",
+      "source_archive": "/tmp/sharkmer-release-comparison/candidate-source.tar",
+      "source_archive_sha256": "4469902f77f7cc10d6520d61d4dc57c4f2810e0c676c6b1a276241e23e2dcb8d",
+      "source_tree_sha256_before_build": "05db86de78a7ac18f1f0165465a6ccca7b4e2356be7f7701f5db1818487274ab",
+      "source_tree_sha256_after_build": "05db86de78a7ac18f1f0165465a6ccca7b4e2356be7f7701f5db1818487274ab",
+      "source_export_pristine_after_build": true,
+      "binary_path": "/tmp/sharkmer-release-comparison/binaries/sharkmer-candidate",
+      "binary_sha256": "387af7374e567828ed334ac488a032d79933f4f34a1da3823edc6c3ea7275b82",
+      "binary_version": "sharkmer 3.2.0-dev (https://github.com/caseywdunn/sharkmer)",
+      "cargo_lock_sha256": "e2c47a967781a25ef845cea33bbb99e6a2cb20e50328a9bb5a651eac9190ff0b",
+      "build_command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "--message-format=json-render-diagnostics"
+      ],
+      "build_cwd": "/tmp/sharkmer-release-comparison/sources/candidate",
+      "build_environment": {
+        "CARGO_TARGET_DIR": "/tmp/sharkmer-release-comparison/targets/candidate",
+        "RUSTFLAGS": null,
+        "CARGO_ENCODED_RUSTFLAGS": null,
+        "RUSTC_WRAPPER": null,
+        "RUSTC_WORKSPACE_WRAPPER": null
+      },
+      "cargo_artifact_features": [
+        "ahashmap",
+        "default"
+      ],
+      "cargo_artifact_profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      },
+      "rustc": "rustc 1.98.1 (48a229cea 2026-09-01)\nbinary: rustc\ncommit-hash: 48a229ceaefd4985c50990b14116b6d856af0985\ncommit-date: 2026-09-01\nhost: x86_64-unknown-linux-gnu\nrelease: 1.98.1\nLLVM version: 22.1.8",
+      "cargo": "cargo 1.98.1 (797e8a9bc 2026-08-05)",
+      "source_binding": "built_from_verified_clean_git_archive_with_locked_dependencies"
+    }
+  }
+}

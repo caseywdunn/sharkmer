@@ -1,0 +1,29 @@
+{
+  "invocation": "unittest.defaultTestLoader.loadTestsFromModule(independent_uncertain_review)",
+  "python_executable": "/apps/software/2024a/software/Python/3.12.3-GCCcore-13.3.0/bin/python",
+  "python_version": "3.12.3 (main, Mar  4 2026, 16:38:56) [GCC 13.3.0]",
+  "regression_copy_is_additional_independent_evidence": false,
+  "scope": "Independent synthetic parser and publication controls; no graph reconstruction, threshold-counter replay, or biological execution clearance",
+  "sources": {
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/review/test_uncertain_output_independent.py": {
+      "sha256": "24bd3e0d7c984885c9f9cf9a506ab41ccb13546fcdc81c2b41ad1d225d861ccf",
+      "size_bytes": 19792
+    },
+    "scripts/sharkmer_validate/runner.py": {
+      "sha256": "5a3ed0f8b31cdd63527e70f7e5152d3bfdf1c1275ce30c2da57e126da5381562",
+      "size_bytes": 36631
+    },
+    "scripts/sharkmer_validate/uncertain.py": {
+      "sha256": "77302e4f8b06648d91f75781ea1ba48c2b51cccab7b6e0d1a2fc0a1a350721d4",
+      "size_bytes": 9450
+    },
+    "tests/test_uncertain_output.py": {
+      "sha256": "b9a2f62cb0b14ffffc57d60852d2627edec2d47cdd9c3507be02d0210f15928e",
+      "size_bytes": 19803
+    }
+  },
+  "sources_unchanged": true,
+  "status": "pass",
+  "table_driven_subcases": 69,
+  "test_methods": 18
+}

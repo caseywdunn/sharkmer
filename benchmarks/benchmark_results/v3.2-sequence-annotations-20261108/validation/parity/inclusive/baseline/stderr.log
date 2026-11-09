@@ -1,0 +1,7 @@
+Only 8 FASTQ records read. sPCR typically needs many more reads to produce results.
+[repeat] Withholding 1 complete candidate path(s) because repeat length is unresolved at threshold 2.
+  ? repeat (1 product: 0 standard, 1 uncertain; 137 bp)
+    Uncertain records have unresolved repeat structure and unevaluated read support.
+    Standard admission: repeat length unresolved for all complete candidate paths
+  + clean (1 product: 1 standard, 0 uncertain; 160 bp)
+sharkmer complete: 8 reads, 2/2 targets with output (repeat, clean), 2 records (1 standard, 1 uncertain), allocator peak 96.2 KB, 0.0s

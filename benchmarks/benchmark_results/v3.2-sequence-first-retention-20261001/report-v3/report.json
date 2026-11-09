@@ -1,0 +1,14 @@
+{
+  "gained_uncertain_identities": 200,
+  "new_total": 326,
+  "new_uncertain": 262,
+  "new_uncertain_fraction": 0.803680981595092,
+  "old_total": 126,
+  "old_uncertain": 62,
+  "rss_priority_accessions": [],
+  "standard": 64,
+  "status": "pass",
+  "sum_median_wall_new_s": 442.35,
+  "sum_median_wall_old_s": 434.59,
+  "wall_priority_accessions": []
+}

@@ -1,0 +1,429 @@
+{
+  "configured_length_bounds": [
+    400,
+    1000
+  ],
+  "coordinate_system": "zero_based_half_open_forward_source_unless_strand_specified",
+  "effective_forward": "CGAGTTGCTCTACCA",
+  "effective_reverse": "ACATTTAGATGCTAC",
+  "forward_full": "GTGTAAACGAGTTGCTCTACCA",
+  "kmer_length": 19,
+  "mismatches_each_primer": 2,
+  "producer_sha256": "938717313cb778d0cab196cf58b149d26a6140cde342223fd3d2266b234d2905",
+  "records": [
+    {
+      "accession": "NC_008326.1",
+      "archive_member": "plants_nematode/raw/genbank/NC_008326.gb",
+      "boundary_gene_annotations": [
+        {
+          "end": 55557,
+          "genbank_location": "complement(54895..55557)",
+          "gene": "trnV-UAC",
+          "start": 54894,
+          "strand": "-"
+        },
+        {
+          "end": 56422,
+          "genbank_location": "complement(56018..56422)",
+          "gene": "atpE",
+          "start": 56017,
+          "strand": "-"
+        },
+        {
+          "end": 57915,
+          "genbank_location": "complement(56419..57915)",
+          "gene": "atpB",
+          "start": 56418,
+          "strand": "-"
+        }
+      ],
+      "effective_primer_pairs": [
+        {
+          "amplicon_length": 1359,
+          "amplicon_sha256": "fdb392904158b7b8fdbf30649640f522fccbc0588e99fb950fea5272900fa633",
+          "forward": {
+            "end": 55540,
+            "genes": [
+              {
+                "end": 55557,
+                "genbank_location": "complement(54895..55557)",
+                "gene": "trnV-UAC",
+                "start": 54894,
+                "strand": "-"
+              }
+            ],
+            "mismatch_positions": [
+              4,
+              14
+            ],
+            "mismatches": 2,
+            "observed": "CGAGGTGCTCTACCT",
+            "source_span": [
+              55525,
+              55540
+            ],
+            "start": 55525
+          },
+          "reverse_binding": {
+            "end": 56884,
+            "genes": [
+              {
+                "end": 57915,
+                "genbank_location": "complement(56419..57915)",
+                "gene": "atpB",
+                "start": 56418,
+                "strand": "-"
+              }
+            ],
+            "mismatch_positions": [],
+            "mismatches": 0,
+            "observed": "GTAGCATCTAAATGT",
+            "source_span": [
+              56869,
+              56884
+            ],
+            "start": 56869
+          },
+          "strand": "+",
+          "within_400_1000_bound": false,
+          "wraps_origin": false
+        }
+      ],
+      "full_primer_pairs": [
+        {
+          "amplicon_length": 1376,
+          "amplicon_sha256": "58e1ce0f009855ad2cd4e953c381ab7de661f83c1e07ed762d7f23052e15459a",
+          "forward": {
+            "end": 55540,
+            "genes": [
+              {
+                "end": 55557,
+                "genbank_location": "complement(54895..55557)",
+                "gene": "trnV-UAC",
+                "start": 54894,
+                "strand": "-"
+              }
+            ],
+            "mismatch_positions": [
+              11,
+              21
+            ],
+            "mismatches": 2,
+            "observed": "GTGTAAACGAGGTGCTCTACCT",
+            "source_span": [
+              55518,
+              55540
+            ],
+            "start": 55518
+          },
+          "reverse_binding": {
+            "end": 56894,
+            "genes": [
+              {
+                "end": 57915,
+                "genbank_location": "complement(56419..57915)",
+                "gene": "atpB",
+                "start": 56418,
+                "strand": "-"
+              }
+            ],
+            "mismatch_positions": [],
+            "mismatches": 0,
+            "observed": "GTAGCATCTAAATGTGCAAATGTCG",
+            "source_span": [
+              56869,
+              56894
+            ],
+            "start": 56869
+          },
+          "strand": "+",
+          "within_400_1000_bound": false,
+          "wraps_origin": false
+        }
+      ],
+      "organism": "Liriodendron tulipifera",
+      "raw_genbank_sha256": "a760c71e3142783fd5fca084707adbc7b3ada6d8b1dd1cb5c6333e788007e76f",
+      "source_length": 159886,
+      "source_sha256": "b667e2bc25deb94e0c19a8dbd09e103bd0504e16083e7c284de22b00e64bb3c8"
+    },
+    {
+      "accession": "NC_056221.1",
+      "archive_member": "plants_nematode/raw/genbank/NC_056221.gb",
+      "boundary_gene_annotations": [
+        {
+          "end": 54208,
+          "genbank_location": "complement(53545..54208)",
+          "gene": "trnV-UAC",
+          "start": 53544,
+          "strand": "-"
+        },
+        {
+          "end": 55093,
+          "genbank_location": "complement(54692..55093)",
+          "gene": "atpE",
+          "start": 54691,
+          "strand": "-"
+        },
+        {
+          "end": 56586,
+          "genbank_location": "complement(55090..56586)",
+          "gene": "atpB",
+          "start": 55089,
+          "strand": "-"
+        }
+      ],
+      "effective_primer_pairs": [
+        {
+          "amplicon_length": 1379,
+          "amplicon_sha256": "a3f34b0690c230d797ca5e940c3011207dc7f2394e0a18756609f74e13990de8",
+          "forward": {
+            "end": 54191,
+            "genes": [
+              {
+                "end": 54208,
+                "genbank_location": "complement(53545..54208)",
+                "gene": "trnV-UAC",
+                "start": 53544,
+                "strand": "-"
+              }
+            ],
+            "mismatch_positions": [
+              4,
+              14
+            ],
+            "mismatches": 2,
+            "observed": "CGAGGTGCTCTACCT",
+            "source_span": [
+              54176,
+              54191
+            ],
+            "start": 54176
+          },
+          "reverse_binding": {
+            "end": 55555,
+            "genes": [
+              {
+                "end": 56586,
+                "genbank_location": "complement(55090..56586)",
+                "gene": "atpB",
+                "start": 55089,
+                "strand": "-"
+              }
+            ],
+            "mismatch_positions": [
+              2
+            ],
+            "mismatches": 1,
+            "observed": "GTCGCATCTAAATGT",
+            "source_span": [
+              55540,
+              55555
+            ],
+            "start": 55540
+          },
+          "strand": "+",
+          "within_400_1000_bound": false,
+          "wraps_origin": false
+        }
+      ],
+      "full_primer_pairs": [
+        {
+          "amplicon_length": 1396,
+          "amplicon_sha256": "1039e423c1fd197e0c1dc05c45decd037ec25047be411e3d19b346185cf006d9",
+          "forward": {
+            "end": 54191,
+            "genes": [
+              {
+                "end": 54208,
+                "genbank_location": "complement(53545..54208)",
+                "gene": "trnV-UAC",
+                "start": 53544,
+                "strand": "-"
+              }
+            ],
+            "mismatch_positions": [
+              11,
+              21
+            ],
+            "mismatches": 2,
+            "observed": "GTGTAAACGAGGTGCTCTACCT",
+            "source_span": [
+              54169,
+              54191
+            ],
+            "start": 54169
+          },
+          "reverse_binding": {
+            "end": 55565,
+            "genes": [
+              {
+                "end": 56586,
+                "genbank_location": "complement(55090..56586)",
+                "gene": "atpB",
+                "start": 55089,
+                "strand": "-"
+              }
+            ],
+            "mismatch_positions": [
+              2
+            ],
+            "mismatches": 1,
+            "observed": "GTCGCATCTAAATGTGCAAATGTCG",
+            "source_span": [
+              55540,
+              55565
+            ],
+            "start": 55540
+          },
+          "strand": "+",
+          "within_400_1000_bound": false,
+          "wraps_origin": false
+        }
+      ],
+      "organism": "Acer opalus",
+      "raw_genbank_sha256": "403d325caf480bb34f788038d10adf1cced759541b9392aecf986c1a25edbc9c",
+      "source_length": 156145,
+      "source_sha256": "e5b03a378060cff04b2241517f14d02bb08991fb68c560fd0bc29731b00fcdf9"
+    },
+    {
+      "accession": "MN990625.1",
+      "archive_member": "plants_nematode/raw/genbank/MN990625.gb",
+      "boundary_gene_annotations": [
+        {
+          "end": 55636,
+          "genbank_location": "complement(54974..55636)",
+          "gene": "trnV-UAC",
+          "start": 54973,
+          "strand": "-"
+        },
+        {
+          "end": 56501,
+          "genbank_location": "complement(56097..56501)",
+          "gene": "atpE",
+          "start": 56096,
+          "strand": "-"
+        },
+        {
+          "end": 57994,
+          "genbank_location": "complement(56498..57994)",
+          "gene": "atpB",
+          "start": 56497,
+          "strand": "-"
+        }
+      ],
+      "effective_primer_pairs": [
+        {
+          "amplicon_length": 1359,
+          "amplicon_sha256": "fdb392904158b7b8fdbf30649640f522fccbc0588e99fb950fea5272900fa633",
+          "forward": {
+            "end": 55619,
+            "genes": [
+              {
+                "end": 55636,
+                "genbank_location": "complement(54974..55636)",
+                "gene": "trnV-UAC",
+                "start": 54973,
+                "strand": "-"
+              }
+            ],
+            "mismatch_positions": [
+              4,
+              14
+            ],
+            "mismatches": 2,
+            "observed": "CGAGGTGCTCTACCT",
+            "source_span": [
+              55604,
+              55619
+            ],
+            "start": 55604
+          },
+          "reverse_binding": {
+            "end": 56963,
+            "genes": [
+              {
+                "end": 57994,
+                "genbank_location": "complement(56498..57994)",
+                "gene": "atpB",
+                "start": 56497,
+                "strand": "-"
+              }
+            ],
+            "mismatch_positions": [],
+            "mismatches": 0,
+            "observed": "GTAGCATCTAAATGT",
+            "source_span": [
+              56948,
+              56963
+            ],
+            "start": 56948
+          },
+          "strand": "+",
+          "within_400_1000_bound": false,
+          "wraps_origin": false
+        }
+      ],
+      "full_primer_pairs": [
+        {
+          "amplicon_length": 1376,
+          "amplicon_sha256": "58e1ce0f009855ad2cd4e953c381ab7de661f83c1e07ed762d7f23052e15459a",
+          "forward": {
+            "end": 55619,
+            "genes": [
+              {
+                "end": 55636,
+                "genbank_location": "complement(54974..55636)",
+                "gene": "trnV-UAC",
+                "start": 54973,
+                "strand": "-"
+              }
+            ],
+            "mismatch_positions": [
+              11,
+              21
+            ],
+            "mismatches": 2,
+            "observed": "GTGTAAACGAGGTGCTCTACCT",
+            "source_span": [
+              55597,
+              55619
+            ],
+            "start": 55597
+          },
+          "reverse_binding": {
+            "end": 56973,
+            "genes": [
+              {
+                "end": 57994,
+                "genbank_location": "complement(56498..57994)",
+                "gene": "atpB",
+                "start": 56497,
+                "strand": "-"
+              }
+            ],
+            "mismatch_positions": [],
+            "mismatches": 0,
+            "observed": "GTAGCATCTAAATGTGCAAATGTCG",
+            "source_span": [
+              56948,
+              56973
+            ],
+            "start": 56948
+          },
+          "strand": "+",
+          "within_400_1000_bound": false,
+          "wraps_origin": false
+        }
+      ],
+      "organism": "Liriodendron tulipifera",
+      "raw_genbank_sha256": "4326ce176f8a2b3ac79cd9c9ba9dbab819cf13cf26ff26601bca2c2ed1937cf8",
+      "source_length": 159961,
+      "source_sha256": "5017785441d506ee86e9acc451cdacae2cdde0db7a3705e79e71f11425d056f5"
+    }
+  ],
+  "reverse_full": "CGACATTTGCACATTTAGATGCTAC",
+  "schema_version": 1,
+  "scope": "Exact source-coordinate assay mapping under Hamming mismatches only; this is not a Sharkmer graph run or sample callability test.",
+  "status": "completed",
+  "trim_bases": 15
+}

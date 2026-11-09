@@ -1,0 +1,67 @@
+{
+  "activation": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/activate.sh",
+    "sha256": "897f8c0eccb1e626c657e9afa27c4e374c878dd4ff62350b0e691c275eeb41e2",
+    "size_bytes": 400
+  },
+  "biological_comparison_runs_submitted": false,
+  "environment": {
+    "CARGO_HOME": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/cargo",
+    "PATH_prefix": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/cargo/bin",
+    "RUSTUP_HOME": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup"
+  },
+  "jobs": [
+    {
+      "argv": [
+        "sbatch",
+        "--parsable",
+        "--output=tmp/uncertain-products-20260927/slurm/checks-v1-%j.log",
+        "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/checks.sbatch",
+        "--cargo",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo",
+        "--rustc",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+        "--output",
+        "tmp/uncertain-products-20260927/checks-v1"
+      ],
+      "job_id": "27713604",
+      "purpose": "checks-v1",
+      "script": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/checks.sbatch",
+        "sha256": "65ffbc884725621673326789a8166c929ca6fc260320a964d6b0d00ffe7ca3c6",
+        "size_bytes": 549
+      },
+      "slurm_log": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/slurm/checks-v1-27713604.log"
+    },
+    {
+      "argv": [
+        "sbatch",
+        "--parsable",
+        "--output=tmp/uncertain-products-20260927/slurm/baseline-v3-%j.log",
+        "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build.sbatch",
+        "--cargo",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo",
+        "--rustc",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+        "--output",
+        "tmp/uncertain-products-20260927/builds/baseline-v3"
+      ],
+      "job_id": "27713695",
+      "purpose": "baseline-v3",
+      "script": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build.sbatch",
+        "sha256": "3507e06ca6abcd5e73f8b9d295aa5d141b73537814f0052a1e0003217cc0a451",
+        "size_bytes": 463
+      },
+      "slurm_log": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/slurm/baseline-v3-27713695.log"
+    }
+  ],
+  "recorded_at_utc": "2026-09-28T01:15:22.053266+00:00",
+  "schema_version": 1,
+  "status": "submitted",
+  "toolchain_install_receipt": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/validation/toolchain_install.json",
+    "sha256": "1f3b02ef1a2bb3278107596b9cd3a5d682fe096a66c0a46f34510de4ac19c4ff",
+    "size_bytes": 2433
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "job_id": "27584622",
+  "requested_partition": "day",
+  "requested_cpus": 1,
+  "requested_memory": "40G",
+  "requested_wall_time": "02:00:00",
+  "sacct_argv": [
+    "sacct",
+    "-j",
+    "27584622",
+    "--noheader",
+    "--parsable2",
+    "--format=JobID,JobName,State,ExitCode,Elapsed,AllocCPUS,ReqMem,MaxRSS"
+  ],
+  "sacct_stdout": "27584622|its-recruitment|COMPLETED|0:0|00:03:56|1|40G|\n27584622.batch|batch|COMPLETED|0:0|00:03:56|1||398928K\n27584622.extern|extern|COMPLETED|0:0|00:03:56|1||\n"
+}

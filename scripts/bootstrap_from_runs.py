@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
 """
-Bootstrap reference sequences by running panel validations, collecting
+Collect regression-only Sharkmer sequences by running panel validations, collecting
 amplicons, and BLASTing them against NCBI nt with taxonomic restriction.
+
+These outputs are Sharkmer assemblies, not independent biological references.
+A BLAST hit annotates an assembly; its accession does not establish provenance
+for the entire query. Never promote these sequences into panel references.
 
 For each panel:
   1. Run sharkmer at the highest declared max_reads for each validation sample
@@ -172,7 +176,10 @@ def blast_sequence_remote(sequence: str, email: str, taxon: str = "") -> dict | 
 
 
 def collect_amplicons_from_runs(
-    panel_data: dict, run_dir: Path, panel_name: str
+    panel_data: dict,
+    run_dir: Path,
+    panel_name: str,
+    current_runs: dict[tuple[str, int], dict] | None = None,
 ) -> list:
     """Collect best amplicon per (gene, sample) from a run directory.
 
@@ -192,7 +199,24 @@ def collect_amplicons_from_runs(
         for max_reads in max_reads_list:
             k_reads = max_reads // 1000
             prefix = f"{panel_name}_{accession}_{k_reads}k"
-            products = runner.parse_fasta_products(prefix, run_dir)
+            current_run = (current_runs or {}).get((accession, max_reads))
+            if current_run is not None:
+                products = current_run.get("genes", []) if current_run.get("success") else []
+            else:
+                manifest_paths = sorted(
+                    [
+                        *run_dir.glob(f"{prefix}_*/{prefix}.stats.yaml"),
+                        *run_dir.glob(f"{prefix}_*/{prefix}.manifest.yaml"),
+                    ],
+                    key=lambda path: path.stat().st_mtime,
+                    reverse=True,
+                )
+                if not manifest_paths:
+                    products = runner.parse_fasta_products(prefix, run_dir)
+                else:
+                    products = runner.parse_fasta_products(
+                        prefix, manifest_paths[0].parent
+                    )
             if not products:
                 continue
 
@@ -234,7 +258,7 @@ def find_latest_run_dir(panel_name: str) -> Path | None:
     """Find the most recent validation run directory for a panel."""
     candidates = sorted(RUNS_DIR.glob(f"{panel_name}_*"), reverse=True)
     for d in candidates:
-        if d.is_dir() and list(d.glob("*.fasta")):
+        if d.is_dir() and next(d.rglob("*.fasta"), None) is not None:
             return d
     return None
 
@@ -265,6 +289,7 @@ def run_panel(
 
     # Step 1: Get amplicons (run sharkmer or reuse).
     run_dir = None
+    current_runs = {}
     if reuse_runs:
         run_dir = find_latest_run_dir(panel_name)
         if run_dir:
@@ -273,7 +298,8 @@ def run_panel(
             print(f"No existing runs for {panel_name}, running sharkmer...")
 
     if run_dir is None:
-        runner.build_sharkmer()
+        executable_provenance = runner.build_sharkmer()
+        executable = Path(executable_provenance["path"])
         stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         run_dir = RUNS_DIR / f"{panel_name}_{stamp}"
 
@@ -282,12 +308,20 @@ def run_panel(
             # Run at highest depth only.
             max_reads = max(sample.get("max_reads", [1_000_000]))
             print(f"\n--- {sample.get('taxon', accession)} @ {max_reads // 1000}k ---")
-            runner.run_sharkmer(
-                panel_path, panel_name, accession, max_reads, run_dir
+            run = runner.run_sharkmer(
+                panel_path,
+                panel_name,
+                accession,
+                max_reads,
+                run_dir,
+                executable=executable,
             )
+            current_runs[(accession, max_reads)] = run
 
     # Step 2: Collect amplicons.
-    amplicons = collect_amplicons_from_runs(panel_data, run_dir, panel_name)
+    amplicons = collect_amplicons_from_runs(
+        panel_data, run_dir, panel_name, current_runs=current_runs
+    )
     print(f"\nCollected {len(amplicons)} amplicons")
 
     if not amplicons:
@@ -346,15 +380,20 @@ def run_panel(
                 )
     print(f"\nTSV: {tsv_path}")
 
-    # YAML with sequences for reference population.
     yaml_path = BOOTSTRAP_DIR / f"{panel_name}_{stamp}.yaml"
     output = {
+        "schema_version": 1,
+        "purpose": "regression_only",
+        "source_kind": "sharkmer_assembly",
+        "independent_reference": False,
         "panel": panel_name,
         "date": datetime.now().strftime("%Y-%m-%d"),
         "amplicons": [],
     }
     for amp in amplicons:
         entry = {
+            "source_kind": "sharkmer_assembly",
+            "independent_reference": False,
             "gene": amp["gene"],
             "taxon": amp["taxon"],
             "sample_accession": amp["accession"],
@@ -375,7 +414,7 @@ def run_panel(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Bootstrap references by running validations and BLASTing results."
+        description="Collect regression-only Sharkmer assemblies and optional BLAST annotations."
     )
     parser.add_argument(
         "panels", nargs="*",

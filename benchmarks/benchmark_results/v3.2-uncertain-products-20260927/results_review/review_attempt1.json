@@ -1,0 +1,7 @@
+{
+  "status": "failed",
+  "attempt": 1,
+  "error": "KeyError(product_lengths) at raw empty-standard-product entry",
+  "classification": "Reviewer parser incorrectly required an omitted empty list; no producer data discrepancy",
+  "superseded_source_sha256": "0002514fe74af2cbf746c768db125d5fd5c1bd8ea0a35da198f9b147f01cc065"
+}

@@ -1,0 +1,78 @@
+{
+  "command": [
+    "cargo",
+    "clippy",
+    "--all-targets",
+    "--locked",
+    "--offline",
+    "-j",
+    "2",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "files": [
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/constraints.json",
+      "sha256": "a1c8b23f10345a3ef2d451542e7b67260692b1730bc2a6ebcf021beac0261b1f",
+      "size_bytes": 642
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/stderr.log",
+      "sha256": "0de2ff439f6a7556a5a17f416753e38c5540451da3cad4f863cbb5c28cc1751b",
+      "size_bytes": 381
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/time.json",
+      "sha256": "a6331167a1bef02f0bd07967b8a0b6833080c8905849bcac93af3a989e9b1899",
+      "size_bytes": 101
+    }
+  ],
+  "launch_command": [
+    "/usr/bin/prlimit",
+    "--as=12884901888",
+    "--",
+    "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+    "--receipt",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/constraints.json",
+    "--expected-cpus",
+    "25,40",
+    "--expected-as",
+    "12884901888",
+    "--",
+    "/usr/bin/time",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/gates/clippy_default/time.json",
+    "-f",
+    "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+    "--",
+    "cargo",
+    "clippy",
+    "--all-targets",
+    "--locked",
+    "--offline",
+    "-j",
+    "2",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "metrics": {
+    "exit_code": 0,
+    "max_rss_kib": 482468,
+    "system_seconds": 1.74,
+    "user_seconds": 17.97,
+    "wall_seconds": 42.23
+  },
+  "name": "clippy_default",
+  "observer_wall_seconds": 42.40285377623513,
+  "returncode": 0,
+  "status": "pass",
+  "timeout_seconds": 1200
+}

@@ -1,0 +1,97 @@
+{
+  "samples": [
+    {
+      "accession": "SRR27962769",
+      "archived_ena_metadata": {
+        "fields": {
+          "fastq_bytes": "508891806;553172276",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_2.fastq.gz",
+          "fastq_md5": "ceab3f7c7809b13d1422c3e108faccbc;74fa2edb91358238d73dd618deea284e",
+          "read_count": "7209861",
+          "run_accession": "SRR27962769",
+          "scientific_name": "Gryllus bimaculatus"
+        },
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR27962769.tsv",
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR27962769&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "sha256": "13327f2a455012720fc23338a5d1f85b8e5275c667d6aea2a373fd60198cb810"
+      },
+      "expected_prefix": {
+        "bases": 150000000,
+        "records": 1000000,
+        "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+        "size_bytes": 365356898
+      },
+      "path": "data/its-recruitment-20260925/SRR27962769.first1M_R1.retry1.fastq",
+      "roles": [
+        "baseline_off",
+        "changed_off",
+        "changed_on"
+      ],
+      "sample": "Gryllus bimaculatus",
+      "source_url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR279/069/SRR27962769/SRR27962769_1.fastq.gz"
+    },
+    {
+      "accession": "SRR31887760",
+      "archived_ena_metadata": {
+        "fields": {
+          "fastq_bytes": "1449336386;1469922374",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_2.fastq.gz",
+          "fastq_md5": "2c4e9fc97bffcc9281d9d8f362c60c7f;a4e4a52acc000cb28608f98b47db7042",
+          "read_count": "17265830",
+          "run_accession": "SRR31887760",
+          "scientific_name": "Drosophila melanogaster"
+        },
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR31887760.tsv",
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR31887760&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "sha256": "bff2ead87c921470acb6006eeaf8c5704c487c594a60236b87108bf028e987ab"
+      },
+      "expected_prefix": {
+        "bases": 101000000,
+        "records": 1000000,
+        "sha256": "b952eb9be7212ae79da85b0548b1c74a0343637d8af400ae9a08968b297638ae",
+        "size_bytes": 267366976
+      },
+      "path": "tmp/uncertain-products-20260927/reads/SRR31887760.first1M_R1.fastq",
+      "roles": [
+        "changed_on",
+        "baseline_off",
+        "changed_off"
+      ],
+      "sample": "Drosophila melanogaster",
+      "source_url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR318/060/SRR31887760/SRR31887760_1.fastq.gz"
+    },
+    {
+      "accession": "SRR1057608",
+      "archived_ena_metadata": {
+        "fields": {
+          "fastq_bytes": "2144836368;2146068154",
+          "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz;ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_2.fastq.gz",
+          "fastq_md5": "4c2a08d94de1ad21f3bf50c1d18cdff4;f29c4ba70ce750588b386f70a5dd147e",
+          "read_count": "27465279",
+          "run_accession": "SRR1057608",
+          "scientific_name": "Heliconius pachinus"
+        },
+        "path": "/tmp/sharkmer-release-comparison/ena/SRR1057608.tsv",
+        "query_url": "https://www.ebi.ac.uk/ena/portal/api/filereport?accession=SRR1057608&result=read_run&fields=run_accession%2Cfastq_ftp%2Cscientific_name%2Cread_count%2Cfastq_md5%2Cfastq_bytes&format=tsv",
+        "sha256": "3200fe09f95b1c96c4f35c19529781d7aa8923bbc1c977b2a4b83369daecf87b"
+      },
+      "expected_prefix": {
+        "bases": 89994628,
+        "records": 1000000,
+        "sha256": "a65515c2b54d585ca1028f2c865381aed16f4da9f7cc956f1c8d3fdcda8ca3e0",
+        "size_bytes": 211767048
+      },
+      "path": "tmp/uncertain-products-20260927/reads/SRR1057608.first1M_R1.fastq",
+      "roles": [
+        "changed_off",
+        "changed_on",
+        "baseline_off"
+      ],
+      "sample": "Heliconius pachinus",
+      "source_url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR105/008/SRR1057608/SRR1057608_1.fastq.gz"
+    }
+  ],
+  "schema_version": 1,
+  "scope": "Exact consumed R1 prefixes only; original longer staged-file identities are not reproduced",
+  "upstream_integrity_limit": "Prefix SHA256 verifies consumed bytes; partial download does not verify complete compressed ENA MD5"
+}

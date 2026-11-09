@@ -1,0 +1,36 @@
+sharkmer 3.2.0-dev (dry run)
+
+Input:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+
+Configuration:
+  Sample:         schema_probe
+  Output dir:     /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/human-0-dry-output/
+  Kmer length:    19
+  Chunks:         0
+  Threads:        2
+  Min kmer count: 2
+  PCR output:     standard and labelled uncertain products
+
+Output files:
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/human-0-dry-output/schema_probe.stats.yaml
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/human-0-dry-output/schema_probe_human_mt-1404-3947.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/human-0-dry-output/schema_probe_human_mt-3734-6739.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/human-0-dry-output/schema_probe_human_mt-6511-9220.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/human-0-dry-output/schema_probe_human_mt-8910-10648.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/human-0-dry-output/schema_probe_human_mt-10360-12226.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/human-0-dry-output/schema_probe_human_mt-11977-13830.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/human-0-dry-output/schema_probe_human_mt-13477-15349.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/human-0-dry-output/schema_probe_human_mt-14898-151.fasta
+  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/panels/human-0-dry-output/schema_probe_human_mt-16488-1677.fasta
+
+PCR primers (9 genes):
+  human_mt-1404-3947 (fwd: ACTTAAGG...GATT, rev: TCGATGTT...ACTA, len: 2400-2600)
+  human_mt-3734-6739 (fwd: AAGTCACC...TCTA, rev: GATATCAT...TACC, len: 2800-3200)
+  human_mt-6511-9220 (fwd: CTGCTGGC...ACTA, rev: GATTGGTG...GTTG, len: 2500-2900)
+  human_mt-8910-10648 (fwd: CTTACCAC...TACA, rev: GGCACAAT...AGGG, len: 1600-1900)
+  human_mt-10360-12226 (fwd: GTCTGGCC...TACA, rev: CAGTTCTT...TCGG, len: 1700-2000)
+  human_mt-11977-13830 (fwd: CTCCCTCT...CAAC, rev: AAGTCCTA...GCGA, len: 1700-2000)
+  human_mt-13477-15349 (fwd: GCAGGAAT...ACAG, rev: GTGCAAGA...GAGT, len: 1600-2000)
+  human_mt-14898-151 (fwd: TAGCCATG...CAGA, rev: GGATGAGG...AGAC, len: 1700-2000)
+  human_mt-16488-1677 (fwd: CTGTATCC...TCCT, rev: GTTTAGCT...AAGT, len: 1600-1900)

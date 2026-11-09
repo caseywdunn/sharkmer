@@ -1,0 +1,111 @@
+{
+  "approved_scope": [
+    "Retry only SRR17535371 and SRR25378184 in fresh restore-v2 paths",
+    "Keep v1 helpers, inventory, failed receipts and partial files unchanged",
+    "Complete upstream sources must match archived ENA MD5/size and exact EOF; record new upstream SHA and label local-cache SHA separately",
+    "Final ordered raw prefix SHA256/bytes/records/bases remain exact requirements",
+    "Merge eight prior verified rows with two retry rows, require one verified receipt for each original sample, preserve all attempts and source/receipt bindings",
+    "Main benchmark must rehash each exact consumed prefix before invocation and verify unchanged bytes afterward"
+  ],
+  "controls": {
+    "author_merge_methods": 6,
+    "author_restoration_methods": 18,
+    "independent_review": "Source and fixture inspection; no duplicate execution of unchanged author tests",
+    "shell_syntax": "pass",
+    "source_bookends_equal": true
+  },
+  "date": "2026-09-30",
+  "diagnosis": "Historical transport.compressed_sha256 came from verified_historical_cache and identifies local gzip cache bytes, not the upstream ENA gzip. Both failed complete streams matched archived upstream MD5 and size. Original producer lines62-81 and153-157 independently inspected.",
+  "interpretation": "This corrects representation provenance; it does not relax biological input byte identity.",
+  "main_clearance": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/main_execution_review.json",
+    "sha256": "0566db99d965414bbd5219c42e53d480ca9a30d0bf05ba408a86b330235b7917",
+    "size_bytes": 56220
+  },
+  "main_sources_unchanged": true,
+  "purpose": "restoration_v2_and_merge_supplemental_execution_clearance",
+  "reviewed_sources": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/historical_identities.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/historical_identities.json",
+      "sha256": "0b0ca2ce3678a2f36c5d24814db507b17e290462002ce37a5afb49516b2493d1",
+      "size_bytes": 420719
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/inventory.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/inventory.json",
+      "sha256": "0e6e6edbebc7430c70519c37fd2bcdd8c2312ddc1b977dfb8b83200e5c1e9ddc",
+      "size_bytes": 72176
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/merge_availability.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/merge_availability.py",
+      "sha256": "ff28b469559519cb96acf7ef0b364481118fc9905b35fb0b5111c20ece307552",
+      "size_bytes": 5624
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restoration_v2_controls.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restoration_v2_controls.json",
+      "sha256": "63043a81c0085654739b7c9dc8f1815bee0f797c92c8e89f07d07440db262071",
+      "size_bytes": 7157
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs.py",
+      "sha256": "0e921ba136ee8d22abce2a3c0be99e1ad03394ccc6026b465e910f7face2a18a",
+      "size_bytes": 16690
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs_v2.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs_v2.py",
+      "sha256": "eb55cdc6c779aa684c051d0873de07e3d6f55274380f6e6c9428e48bb2b3d490",
+      "size_bytes": 17089
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs_v2.sbatch": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/restore_inputs_v2.sbatch",
+      "sha256": "57115a3cb85e40858587fa21cca08242bc5d0bcae6a93afe0733c21f4f555782",
+      "size_bytes": 379
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_merge_availability.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_merge_availability.py",
+      "sha256": "0a09fa09d0b1dd8c925bef151b852ca96bea33646eacd518b0f8d34a437a6a2d",
+      "size_bytes": 4333
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_restore_inputs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_restore_inputs.py",
+      "sha256": "4b42bf93da9ccc42ec4f91b27116274f05f4f5be76fdd4a8a7e92224e4d825eb",
+      "size_bytes": 8291
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_restore_inputs_v2.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/test_restore_inputs_v2.py",
+      "sha256": "e3247521b17d756f00b545a691cbb883babba8969ce59d80c262393dd4b6d509",
+      "size_bytes": 9456
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/main_execution_review.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/main_execution_review.json",
+      "sha256": "0566db99d965414bbd5219c42e53d480ca9a30d0bf05ba408a86b330235b7917",
+      "size_bytes": 56220
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/run_release_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/run_release_comparison.py",
+      "sha256": "e477ae4fd356b17ea71de0f5c8da18feefc4c548f29cabc612a53aebc07a3512",
+      "size_bytes": 27287
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-release-comparison-20260909/tools/stage_inputs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-release-comparison-20260909/tools/stage_inputs.py",
+      "sha256": "b91fa6aac94ae80a990fac7d0c30e267dae31d29e1a41ad0f91ec1e2b9605cb4",
+      "size_bytes": 10795
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/SRR17535371.restore.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/SRR17535371.restore.json",
+      "sha256": "0b51b500db63bb2cac84ef2e78436b11e61d07ab444e1b084215421fd95ebb65",
+      "size_bytes": 2036
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/SRR25378184.restore.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/SRR25378184.restore.json",
+      "sha256": "379353cd1bb10faaae9f24cb5071a0ac937086c4fa2baabf59e792e2fad55b84",
+      "size_bytes": 2059
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/availability.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/availability.json",
+      "sha256": "8d71adbd5b1127592257b860589900fe06273cb8e038e2cf22282bb603cc7fa2",
+      "size_bytes": 8961
+    }
+  },
+  "schema_version": 1,
+  "status": "pass"
+}

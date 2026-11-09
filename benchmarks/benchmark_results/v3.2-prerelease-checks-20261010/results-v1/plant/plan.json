@@ -1,0 +1,424 @@
+{
+  "binary": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+    "sha256": "3a6505da2750982c333b077a065ad9e0cd0e6607c6963fa7140a0b44da71a899",
+    "size_bytes": 7040024
+  },
+  "bindings": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/build_pair.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/build_pair.py",
+      "sha256": "1505db5f897da1176a61d5349ccf43c6ae4ad7dd364f85393dba0cd55b2b5763",
+      "size_bytes": 4663
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/run_release_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/run_release_comparison.py",
+      "sha256": "e477ae4fd356b17ea71de0f5c8da18feefc4c548f29cabc612a53aebc07a3512",
+      "size_bytes": 27287
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/checksums.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/checksums.json",
+      "sha256": "7d2eead2cfd58163dfc7389789c17aad23b5d9df6ec77db3dcada71d6b783aa9",
+      "size_bytes": 706
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/mapping.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/mapping.json",
+      "sha256": "7ccd70d1d4e1aee6905bd3b17dfca2c5b125370dbf82555de61cffbdbfade612",
+      "size_bytes": 55099
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/protocol-v3.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/protocol-v3.json",
+      "sha256": "ed1692acc8631ee204dc8ccc5c255b8fa4d534e2bf96692a45c3cd7840a67265",
+      "size_bytes": 4548
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/run_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/run_comparison.py",
+      "sha256": "e27eb6161061ee059a0feff8b3aa572b1f58188177c3dd77555f42bd7703ef51",
+      "size_bytes": 14707
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-release-comparison-20260909/tools/postprocess_legacy.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-release-comparison-20260909/tools/postprocess_legacy.py",
+      "sha256": "f9e58a665c530b71c96ad7fb79508ba1598df7119feb7c52ee403aeb3e790aef",
+      "size_bytes": 27915
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build_snapshot.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build_snapshot.py",
+      "sha256": "edb077d170f8e485bcc19647ce8ab231be1abbff377e77595951d52d02110ff8",
+      "size_bytes": 10292
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+      "sha256": "33ae477d0684c2618384993c80b1c92730414b47094168b3b5c26645774182e7",
+      "size_bytes": 1438
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_comparison.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_comparison.py",
+      "sha256": "87bee0cdfb912dd583c940c13c61d4887ce6cde847930059fbd0bcb7fc2b178c",
+      "size_bytes": 27558
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_compiled_checks.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_compiled_checks.py",
+      "sha256": "65e407f0867c5af36bb1d4279f049557190c8f06c94d84eef48810d7b636314c",
+      "size_bytes": 9437
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/__init__.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/__init__.py",
+      "sha256": "74055f81f13c98598121d62b30817d1c999959a803900c61da926b5e214d5d7c",
+      "size_bytes": 77
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/runner.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/runner.py",
+      "sha256": "3c2446757e7020c96699d5b9b9ee74114027f1ab44aa957f5d9dc787ce1124fc",
+      "size_bytes": 37696
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/uncertain.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/uncertain.py",
+      "sha256": "bfaaa44e69ef1d6ba776d5d83961ccd638508f8424bc8e6e295fb7299d5ccd38",
+      "size_bytes": 15412
+    }
+  },
+  "cpus": [
+    25
+  ],
+  "jobs": [
+    {
+      "address_space_bytes": 2147483648,
+      "available_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_008326.1.synthetic.fastq",
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "19",
+        "-t",
+        "1",
+        "--chunks",
+        "0",
+        "--max-reads",
+        "1000000",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_008326_1_before/outputs/",
+        "-s",
+        "synthetic_NC_008326_1_before",
+        "--pcr-panel-file",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-before.yaml",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_008326.1.synthetic.fastq"
+      ],
+      "directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_008326_1_before",
+      "expected_corrected_sha256": "8150cf0b4ec2c207ea6f7a45c85ffed36be9c74a12bdf4e3188bec739f1f5379",
+      "expected_prefix": {
+        "bases": 430652,
+        "records": 2852,
+        "sha256": "ab4cfa3709bfe02b296e39c121ae95c42cc3d1af467939eeb24f9bd1902eb3c4",
+        "size_bytes": 932604
+      },
+      "input_file": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_008326.1.synthetic.fastq",
+        "sha256": "ab4cfa3709bfe02b296e39c121ae95c42cc3d1af467939eeb24f9bd1902eb3c4",
+        "size_bytes": 932604
+      },
+      "outputs_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_008326_1_before/outputs",
+      "sample_id": "NC_008326.1",
+      "sample_prefix": "synthetic_NC_008326_1_before",
+      "scope": "synthetic",
+      "status": "planned",
+      "variant": "before"
+    },
+    {
+      "address_space_bytes": 2147483648,
+      "available_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_008326.1.synthetic.fastq",
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "19",
+        "-t",
+        "1",
+        "--chunks",
+        "0",
+        "--max-reads",
+        "1000000",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_008326_1_after/outputs/",
+        "-s",
+        "synthetic_NC_008326_1_after",
+        "--pcr-panel-file",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-after.yaml",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_008326.1.synthetic.fastq"
+      ],
+      "directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_008326_1_after",
+      "expected_corrected_sha256": "8150cf0b4ec2c207ea6f7a45c85ffed36be9c74a12bdf4e3188bec739f1f5379",
+      "expected_prefix": {
+        "bases": 430652,
+        "records": 2852,
+        "sha256": "ab4cfa3709bfe02b296e39c121ae95c42cc3d1af467939eeb24f9bd1902eb3c4",
+        "size_bytes": 932604
+      },
+      "input_file": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_008326.1.synthetic.fastq",
+        "sha256": "ab4cfa3709bfe02b296e39c121ae95c42cc3d1af467939eeb24f9bd1902eb3c4",
+        "size_bytes": 932604
+      },
+      "outputs_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_008326_1_after/outputs",
+      "sample_id": "NC_008326.1",
+      "sample_prefix": "synthetic_NC_008326_1_after",
+      "scope": "synthetic",
+      "status": "planned",
+      "variant": "after"
+    },
+    {
+      "address_space_bytes": 2147483648,
+      "available_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_056221.1.synthetic.fastq",
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "19",
+        "-t",
+        "1",
+        "--chunks",
+        "0",
+        "--max-reads",
+        "1000000",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_before/outputs/",
+        "-s",
+        "synthetic_NC_056221_1_before",
+        "--pcr-panel-file",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-before.yaml",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_056221.1.synthetic.fastq"
+      ],
+      "directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_before",
+      "expected_corrected_sha256": "60a67ee9a9fac06519b8aff377abc4f2ab9e252b12121adf28ff37421e9dfc9a",
+      "expected_prefix": {
+        "bases": 436692,
+        "records": 2892,
+        "sha256": "d110be1cf4f0cbceba775d6fd11fd0c97c57e407fc7278d17f9dff9b66adbeab",
+        "size_bytes": 945684
+      },
+      "input_file": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_056221.1.synthetic.fastq",
+        "sha256": "d110be1cf4f0cbceba775d6fd11fd0c97c57e407fc7278d17f9dff9b66adbeab",
+        "size_bytes": 945684
+      },
+      "outputs_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_before/outputs",
+      "sample_id": "NC_056221.1",
+      "sample_prefix": "synthetic_NC_056221_1_before",
+      "scope": "synthetic",
+      "status": "planned",
+      "variant": "before"
+    },
+    {
+      "address_space_bytes": 2147483648,
+      "available_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_056221.1.synthetic.fastq",
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "19",
+        "-t",
+        "1",
+        "--chunks",
+        "0",
+        "--max-reads",
+        "1000000",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/outputs/",
+        "-s",
+        "synthetic_NC_056221_1_after",
+        "--pcr-panel-file",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-after.yaml",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_056221.1.synthetic.fastq"
+      ],
+      "directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after",
+      "expected_corrected_sha256": "60a67ee9a9fac06519b8aff377abc4f2ab9e252b12121adf28ff37421e9dfc9a",
+      "expected_prefix": {
+        "bases": 436692,
+        "records": 2892,
+        "sha256": "d110be1cf4f0cbceba775d6fd11fd0c97c57e407fc7278d17f9dff9b66adbeab",
+        "size_bytes": 945684
+      },
+      "input_file": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_056221.1.synthetic.fastq",
+        "sha256": "d110be1cf4f0cbceba775d6fd11fd0c97c57e407fc7278d17f9dff9b66adbeab",
+        "size_bytes": 945684
+      },
+      "outputs_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/outputs",
+      "sample_id": "NC_056221.1",
+      "sample_prefix": "synthetic_NC_056221_1_after",
+      "scope": "synthetic",
+      "status": "planned",
+      "variant": "after"
+    },
+    {
+      "address_space_bytes": 12884901888,
+      "available_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v2/SRR25378184.fastq",
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "19",
+        "-t",
+        "1",
+        "--chunks",
+        "0",
+        "--max-reads",
+        "1000000",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_SRR25378184_before/outputs/",
+        "-s",
+        "real_SRR25378184_before",
+        "--pcr-panel-file",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-before.yaml",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v2/SRR25378184.fastq"
+      ],
+      "directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_SRR25378184_before",
+      "expected_prefix": {
+        "bases": 151000000,
+        "records": 1000000,
+        "sha256": "2a44558f81127ac7aae0f8b9789d3ac5d589986e172c5ba27784a5d84f287bd3",
+        "size_bytes": 371615360
+      },
+      "input_file": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v2/SRR25378184.fastq",
+        "sha256": "2a44558f81127ac7aae0f8b9789d3ac5d589986e172c5ba27784a5d84f287bd3",
+        "size_bytes": 371615360
+      },
+      "outputs_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_SRR25378184_before/outputs",
+      "sample_id": "SRR25378184",
+      "sample_prefix": "real_SRR25378184_before",
+      "scope": "real",
+      "status": "planned",
+      "variant": "before"
+    },
+    {
+      "address_space_bytes": 12884901888,
+      "available_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v2/SRR25378184.fastq",
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "19",
+        "-t",
+        "1",
+        "--chunks",
+        "0",
+        "--max-reads",
+        "1000000",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_SRR25378184_after/outputs/",
+        "-s",
+        "real_SRR25378184_after",
+        "--pcr-panel-file",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-after.yaml",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v2/SRR25378184.fastq"
+      ],
+      "directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_SRR25378184_after",
+      "expected_prefix": {
+        "bases": 151000000,
+        "records": 1000000,
+        "sha256": "2a44558f81127ac7aae0f8b9789d3ac5d589986e172c5ba27784a5d84f287bd3",
+        "size_bytes": 371615360
+      },
+      "input_file": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v2/SRR25378184.fastq",
+        "sha256": "2a44558f81127ac7aae0f8b9789d3ac5d589986e172c5ba27784a5d84f287bd3",
+        "size_bytes": 371615360
+      },
+      "outputs_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_SRR25378184_after/outputs",
+      "sample_id": "SRR25378184",
+      "sample_prefix": "real_SRR25378184_after",
+      "scope": "real",
+      "status": "planned",
+      "variant": "after"
+    },
+    {
+      "address_space_bytes": 12884901888,
+      "available_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/ERR14009273.fastq",
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "19",
+        "-t",
+        "1",
+        "--chunks",
+        "0",
+        "--max-reads",
+        "1000000",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_ERR14009273_before/outputs/",
+        "-s",
+        "real_ERR14009273_before",
+        "--pcr-panel-file",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-before.yaml",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/ERR14009273.fastq"
+      ],
+      "directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_ERR14009273_before",
+      "expected_prefix": {
+        "bases": 99211896,
+        "records": 1000000,
+        "sha256": "9b0248592f5616f52f473c7080462390b578b614e8ef523c6491e36d442dafb1",
+        "size_bytes": 255801372
+      },
+      "input_file": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/ERR14009273.fastq",
+        "sha256": "9b0248592f5616f52f473c7080462390b578b614e8ef523c6491e36d442dafb1",
+        "size_bytes": 255801372
+      },
+      "outputs_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_ERR14009273_before/outputs",
+      "sample_id": "ERR14009273",
+      "sample_prefix": "real_ERR14009273_before",
+      "scope": "real",
+      "status": "planned",
+      "variant": "before"
+    },
+    {
+      "address_space_bytes": 12884901888,
+      "available_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/ERR14009273.fastq",
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "19",
+        "-t",
+        "1",
+        "--chunks",
+        "0",
+        "--max-reads",
+        "1000000",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_ERR14009273_after/outputs/",
+        "-s",
+        "real_ERR14009273_after",
+        "--pcr-panel-file",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-after.yaml",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/ERR14009273.fastq"
+      ],
+      "directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_ERR14009273_after",
+      "expected_prefix": {
+        "bases": 99211896,
+        "records": 1000000,
+        "sha256": "9b0248592f5616f52f473c7080462390b578b614e8ef523c6491e36d442dafb1",
+        "size_bytes": 255801372
+      },
+      "input_file": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v1/ERR14009273.fastq",
+        "sha256": "9b0248592f5616f52f473c7080462390b578b614e8ef523c6491e36d442dafb1",
+        "size_bytes": 255801372
+      },
+      "outputs_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/real_ERR14009273_after/outputs",
+      "sample_id": "ERR14009273",
+      "sample_prefix": "real_ERR14009273_after",
+      "scope": "real",
+      "status": "planned",
+      "variant": "after"
+    }
+  ],
+  "panels": {
+    "after": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-after.yaml",
+      "sha256": "99d1c629953a0d0a9e70f4c0414047c7d7b9e0a69d07d88bedff1c47b107b14e",
+      "size_bytes": 31657
+    },
+    "before": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-before.yaml",
+      "sha256": "9ff46bf3d343920c33a2a5c41b0858f0d8401f67729d737f17e73350dae365de",
+      "size_bytes": 27946
+    }
+  },
+  "protocol": "protocol-v3.json",
+  "scope": "all",
+  "slurm_job_id": "29147703",
+  "timing_scope": "Bounded functionality checks; not a paired performance benchmark."
+}

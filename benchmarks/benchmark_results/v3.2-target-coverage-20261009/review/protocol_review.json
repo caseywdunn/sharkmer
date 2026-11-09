@@ -1,0 +1,112 @@
+{
+  "artifacts": {
+    "matrix/sequence_inventory.json": {
+      "bytes": 688838,
+      "sha256": "45443cd27646735ca62034835af6f9b1fff04c2e8fa957c77a2321ec6cac90d3"
+    },
+    "matrix/validation.json": {
+      "bytes": 94522,
+      "sha256": "45e346680271d981befe9ddc2184f9a28c5a11755db9b3faa8e469e12093bd55"
+    },
+    "reads/manifests-v1/ERR14009273.json": {
+      "bytes": 66349,
+      "sha256": "39a3205b1147f280de6f0278c287110e62ead3b42cd8f3d770f88569977cb235"
+    },
+    "reads/manifests-v1/SRR1057608.json": {
+      "bytes": 239061,
+      "sha256": "a149d8faef3e609c06abe8dcef9af44126bd7a1b9dc6fb0a224abf97d464e68f"
+    },
+    "reads/manifests-v1/SRR25378184.json": {
+      "bytes": 1083309,
+      "sha256": "859c065ce30dfe83f3c7fd1aa61a118b675e70b3efbb6cefaf6832f4814a4095"
+    },
+    "reads/manifests-v1/SRR27962769.json": {
+      "bytes": 428504,
+      "sha256": "e3604bc32829bbc0fd9a23c423651f3c799e14136917768c06495221db57a03a"
+    },
+    "reads/prepare_assays.py": {
+      "bytes": 8735,
+      "sha256": "0f1d4f35f67e647c74a0309acf0101dcf0fd23c63e54f1e59f5c65888c3b90d8"
+    },
+    "reads/run_assay.py": {
+      "bytes": 3067,
+      "sha256": "f64f826553875c70d533396a6226841a0e79c2c64c14b505a308f6b865de4830"
+    },
+    "reads/scan_exact.py": {
+      "bytes": 11211,
+      "sha256": "1f41db14003317fb66ec68d9d64724f2f4c515ba3d6a77733e48f86d50046894"
+    },
+    "review/check_exact_independent.py": {
+      "bytes": 14273,
+      "sha256": "555b19477b1f12917b82cbbc9b0302fa62bcfd20118b977d82c358a0b2b0b879"
+    },
+    "review/check_protocol.py": {
+      "bytes": 9597,
+      "sha256": "43aaafbc7d8e50ef63291ee8757e4211fe7f08470e829414d1e7118fb4860e42"
+    },
+    "review/exact_independent_controls.json": {
+      "bytes": 2829,
+      "sha256": "897723aaaa0070ada16a4f6b2eda9563d0961910c750ca63755e6afd6393eb35"
+    }
+  },
+  "conditions": [
+    "Each predefined control must have at least one Q20 exact tile before interpreting that sample's negative findings; these new schedules do not have preregistered numerical counts.",
+    "Callability must use actual length histogram; overlength windows and missing complete flanks are uncallable.",
+    "Report complete counts separately from capped examples, including cap reasons and per-event completeness. Saved records are not a complete or representative read population.",
+    "Observed tiles and contrast endpoints do not certify target identity, biological validity or whole-product linkage."
+  ],
+  "focused_candidates": 154,
+  "review": "All four manifests independently reconstructed from the frozen complete current inventory. All tiles, contrasts, canonical orientations, endpoint memberships, explicit incomplete-flank exclusions, full sample contexts, control membership and assembly-prefix identities match.",
+  "samples": [
+    {
+      "accession": "SRR25378184",
+      "events": 444,
+      "focused_candidates": 91,
+      "full_sample_context": 97,
+      "incomplete_flank_endpoints": 18,
+      "maximum_window_length": 67,
+      "minimum_window_length": 42,
+      "nearest_contrasts": 90,
+      "tile_memberships": 2154,
+      "unchanged_standard_controls": 2
+    },
+    {
+      "accession": "ERR14009273",
+      "events": 98,
+      "focused_candidates": 1,
+      "full_sample_context": 7,
+      "incomplete_flank_endpoints": 0,
+      "maximum_window_length": 61,
+      "minimum_window_length": 61,
+      "nearest_contrasts": 0,
+      "tile_memberships": 98,
+      "unchanged_standard_controls": 2
+    },
+    {
+      "accession": "SRR1057608",
+      "events": 158,
+      "focused_candidates": 44,
+      "full_sample_context": 51,
+      "incomplete_flank_endpoints": 4,
+      "maximum_window_length": 61,
+      "minimum_window_length": 42,
+      "nearest_contrasts": 44,
+      "tile_memberships": 301,
+      "unchanged_standard_controls": 2
+    },
+    {
+      "accession": "SRR27962769",
+      "events": 133,
+      "focused_candidates": 18,
+      "full_sample_context": 109,
+      "incomplete_flank_endpoints": 0,
+      "maximum_window_length": 61,
+      "minimum_window_length": 42,
+      "nearest_contrasts": 18,
+      "tile_memberships": 765,
+      "unchanged_standard_controls": 2
+    }
+  ],
+  "source_review": "Exact matcher uses complete overlapping prefix-seed selection; counts continue after every representative cap. Wrapper enforces one CPU,600 seconds and2GiB and freezes source identities before/after. Both strand matches use the physical read quality span; palindromes count once per position.",
+  "status": "approved_for_bounded_execution"
+}

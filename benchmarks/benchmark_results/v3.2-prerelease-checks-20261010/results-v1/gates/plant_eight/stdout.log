@@ -1,0 +1,9 @@
+{"sample": "NC_008326.1", "variant": "before", "status": "pass", "wall_seconds": 0.78, "error": null}
+{"sample": "NC_008326.1", "variant": "after", "status": "pass", "wall_seconds": 0.3, "error": null}
+{"sample": "NC_056221.1", "variant": "before", "status": "pass", "wall_seconds": 0.25, "error": null}
+{"sample": "NC_056221.1", "variant": "after", "status": "pass", "wall_seconds": 0.2, "error": null}
+{"sample": "SRR25378184", "variant": "before", "status": "pass", "wall_seconds": 109.53, "error": null}
+{"sample": "SRR25378184", "variant": "after", "status": "pass", "wall_seconds": 107.69, "error": null}
+{"sample": "ERR14009273", "variant": "before", "status": "pass", "wall_seconds": 48.08, "error": null}
+{"sample": "ERR14009273", "variant": "after", "status": "pass", "wall_seconds": 71.26, "error": null}
+{"status": "pass", "summary": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/summary.json"}

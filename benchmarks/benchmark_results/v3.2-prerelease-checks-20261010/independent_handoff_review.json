@@ -1,0 +1,123 @@
+{
+  "archive_members_verified": 85,
+  "frozen_source_members_verified": 75,
+  "isolated_test_discovery": {
+    "import_errors": 0,
+    "test_cases": 200,
+    "test_execution": false
+  },
+  "local_links_checked": 160,
+  "release_authorized": false,
+  "remaining_material_review_findings": [],
+  "resolved_issue": "The preserved v1 archive omitted the benchmark runner imported by Python tests. Version2 includes that runner plus documented environment/config helpers, explicitly labelled as base-commit files outside the75 recorded pre/post hashes. All current handoff links point to v2.",
+  "reviewed_documents": [
+    "dev_docs/REVIEW_v3.2.md",
+    "dev_docs/HANDOFF.md",
+    "dev_docs/PLAN.md",
+    "dev_docs/PUBLIC_REFERENCE_REPLACEMENTS.md",
+    "CHANGELOG.md",
+    "benchmarks/DATASETS.md",
+    "dev_docs/SEQUENCE_RETENTION_RESULTS.md"
+  ],
+  "scope": "Final semantic documentation and corrected source-archive review; no repeated tests, builds or assays.",
+  "semantic_findings": [
+    "Historical unchanged-assay scope326 records/240 new is correctly separated from the derived mixed-age corrected-assay inventory287=66standard+221uncertain,86retained/0lost/201new,75of118 represented.",
+    "All11 terminal gates,280Rust tests per backend (251unit+29integration),200Python tests/no skips,158 references and eight plant invocations agree with raw evidence.",
+    "Panel2.0.0 changes one assay endpoint while preserving inclusive assembly/output policy. Exact909/929bp references, related-species Acer proxy and unestablished full sample phase are accurately described.",
+    "Runtime findings distinguish descriptive costs, current NFS output-location sensitivity, uncertain historical causation and final-build performance acceptance.",
+    "Collaborator review, explicit release authorization, held-out/wider biological validation, macOS results and the remaining independent Agalma reference are not represented as complete.",
+    "The archive contains all tested Rust source, embedded panels, local test fixtures and Python local imports; external Cargo/Python/BLAST dependencies remain installation prerequisites. No claim of vendored/offline environment reproduction is made."
+  ],
+  "source_receipts": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/CHANGELOG.md": {
+      "sha256": "565a3816e1079b405906b02849961482eea87e769deff679ff4c8268e80e4b82",
+      "size_bytes": 20475
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/DATASETS.md": {
+      "sha256": "40de6752dbd00c7066600a8bc09a9de270f02c95ad220a45be66a27651d350e0",
+      "size_bytes": 3854
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_assessment_review.json": {
+      "sha256": "7977b15c8932a9e1bafbe6c791053c0d22d684967a48f9762aad1d24a2ee406f",
+      "size_bytes": 41236
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/RESULTS.md": {
+      "sha256": "bd7e829370bb9b89c70f2c61dd9c333dbbe8041d9a21f9c4ceaf7931fd836c35",
+      "size_bytes": 4603
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2-import-check.json": {
+      "sha256": "9a97971e631e1902a9ad8b53123ba0832e89d04cfb8e364c5056959ab0a0c090",
+      "size_bytes": 461
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2-receipt.json": {
+      "sha256": "6ef7bbaea6d2579f914972a938f3477e845f0fa788c2723df97ddb607339ac5f",
+      "size_bytes": 14058
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz": {
+      "sha256": "ccb49fe8df50d63c3a97ec753aade5384c12de2e094679f1c4d7005c907cf948",
+      "size_bytes": 11689605
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate.patch": {
+      "sha256": "000c38f5cf222389adfc1195983e91c235fdf7c80e37b026f5344f57c1d94310",
+      "size_bytes": 13890
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/dependency/independent_review.json": {
+      "sha256": "10369e1507643466e6a52ebb42214a1013bb6a2fc56a3754bbc2d09cf3933e9d",
+      "size_bytes": 5453
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/independent_plan_v2_review.json": {
+      "sha256": "f06c203e16ecf6f95a500b000b4bbb31f1f846da58bef35f6738679604033ce6",
+      "size_bytes": 2477
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/independent_results_review.json": {
+      "sha256": "5b77bdabd3893203f31216b53210d7dc6b68778d750bab183276a72697b7e776",
+      "size_bytes": 202408
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/plan-v2.json": {
+      "sha256": "bda19fa8e6164ed689605713454663a18caa0fdb2f896770aafcc109c4dbf0c0",
+      "size_bytes": 65308
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer": {
+      "sha256": "3a6505da2750982c333b077a065ad9e0cd0e6607c6963fa7140a0b44da71a899",
+      "size_bytes": 7040024
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/result.json": {
+      "sha256": "0900616b4531c22a1f59fb37f452c9704e10842177aed28d1b877512c84ad5d9",
+      "size_bytes": 37124
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/independent_human_results_review.json": {
+      "sha256": "3889d953de5e75c7883fb72e25ac4e68c9366a8d5a6297596a35354cb2e369db",
+      "size_bytes": 72047
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/independent_saved_review.json": {
+      "sha256": "647a23e49dbe2793b724ea71d31bc6e96ce2f375be06224587ed21b5505193e4",
+      "size_bytes": 1219
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/dev_docs/HANDOFF.md": {
+      "sha256": "762bc55ef6dc6b71b1a24c722a8dd729ad0819506ae71a8d35d8dcb4956ecc7e",
+      "size_bytes": 32172
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/dev_docs/PLAN.md": {
+      "sha256": "f8cd5799fee5a733e4f3d123550979ddcb059b06ae75932b852944dd4be7002e",
+      "size_bytes": 49263
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/dev_docs/PUBLIC_REFERENCE_REPLACEMENTS.md": {
+      "sha256": "2d170fd34e92bc4194742177befbda0308cf769431f0a75a1965d137eb35bfbd",
+      "size_bytes": 23241
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/dev_docs/REVIEW_v3.2.md": {
+      "sha256": "75fd47766b122febf65d851b9b65435214146401a163edc5927c06b693ce38ef",
+      "size_bytes": 30909
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/dev_docs/SEQUENCE_RETENTION_RESULTS.md": {
+      "sha256": "b2c9eacae465acdcda767f274f302eb49489f308a03263c58b1ad81911bd60ce",
+      "size_bytes": 27021
+    }
+  },
+  "status": "pass",
+  "supplemental_base_commit_helpers": [
+    "benchmarks/benchmark.yaml",
+    "benchmarks/environment.yaml",
+    "benchmarks/run_benchmark.py"
+  ]
+}

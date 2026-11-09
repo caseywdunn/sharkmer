@@ -1,0 +1,315 @@
+use super::*;
+use crate::kmer::KmerCounts;
+use petgraph::stable_graph::StableDiGraph;
+use rand::{Rng, SeedableRng};
+
+fn synthetic_targets(lengths: &[usize]) -> (Vec<String>, PCRParams) {
+    let mut random = rand::rngs::StdRng::seed_from_u64(131);
+    let mut random_dna = |length| -> String {
+        (0..length)
+            .map(|_| b"ACGT"[random.gen_range(0..4)] as char)
+            .collect()
+    };
+    let prefix = random_dna(25);
+    let suffix = random_dna(25);
+    let targets = lengths
+        .iter()
+        .map(|length| {
+            format!(
+                "{}{}{}",
+                prefix,
+                random_dna(length - prefix.len() - suffix.len()),
+                suffix
+            )
+        })
+        .collect();
+    let reverse =
+        String::from_utf8(bio::alphabets::dna::revcomp(&suffix.as_bytes()[10..])).unwrap();
+    let params = crate::cli::parse_pcr_primers_string(&format!(
+        "name=threshold,forward={},reverse={},trim=15,mismatches=0,min-length=170,max-length=210,dedup-edit-threshold=0",
+        &prefix[..15], reverse
+    ))
+    .unwrap();
+    (targets, params)
+}
+
+fn counts_for(targets: &[(&str, usize)]) -> KmerCounts {
+    let kmer_length = 19;
+    let mut counts = KmerCounts::new(&kmer_length);
+    for (target, copies) in targets {
+        for _ in 0..*copies {
+            counts.ingest_seq(target).unwrap();
+        }
+    }
+    counts
+}
+
+fn run_pcr(counts: &KmerCounts, params: &PCRParams) -> PcrOutcome {
+    do_pcr(
+        &counts.filtered_view(2),
+        "threshold",
+        params,
+        false,
+        "/tmp/",
+        None,
+        10_000,
+        withheld_diagnostic_limits_for_gene(0, 1),
+    )
+    .unwrap()
+}
+
+#[test]
+fn lower_threshold_is_tried_after_connected_path_is_too_long() {
+    let (targets, params) = synthetic_targets(&[400, 180]);
+    let counts = counts_for(&[(&targets[0], 100), (&targets[1], 4)]);
+
+    let outcome = run_pcr(&counts, &params);
+
+    assert_eq!(
+        outcome.records.len(),
+        1,
+        "unexpected outcome: {:?}",
+        outcome.failure_reason
+    );
+    assert_eq!(outcome.records[0].seq(), targets[1].as_bytes());
+    assert!(outcome.threshold_diagnostics.len() > 1);
+    assert!(outcome.threshold_diagnostics.len() <= COVERAGE_STEPS as usize);
+    assert_eq!(
+        outcome
+            .threshold_diagnostics
+            .last()
+            .unwrap()
+            .generated_products,
+        1
+    );
+    assert!(
+        outcome
+            .threshold_diagnostics
+            .windows(2)
+            .all(|pair| pair[0].threshold != pair[1].threshold)
+    );
+}
+
+#[test]
+fn out_of_range_products_report_length_failure() {
+    for target_length in [160, 400] {
+        let (targets, params) = synthetic_targets(&[target_length]);
+        let counts = counts_for(&[(&targets[0], 100)]);
+
+        let outcome = run_pcr(&counts, &params);
+
+        assert!(outcome.records.is_empty());
+        assert_eq!(
+            outcome.failure_reason.as_deref(),
+            Some("connectivity found but no path satisfied the requested length range")
+        );
+    }
+}
+
+#[test]
+fn exact_length_boundaries_are_valid() {
+    for target_length in [170, 210] {
+        let (targets, mut params) = synthetic_targets(&[target_length]);
+        params.min_length = target_length;
+        params.max_length = target_length;
+        let counts = counts_for(&[(&targets[0], 10)]);
+
+        let outcome = run_pcr(&counts, &params);
+
+        assert_eq!(outcome.records.len(), 1);
+        assert_eq!(outcome.records[0].seq(), targets[0].as_bytes());
+    }
+}
+
+#[test]
+fn standard_mode_stops_at_first_threshold_with_a_valid_product() {
+    let (targets, params) = synthetic_targets(&[200, 180]);
+    let counts = counts_for(&[(&targets[0], 100), (&targets[1], 4)]);
+
+    let outcome = run_pcr(&counts, &params);
+
+    assert_eq!(outcome.records.len(), 1);
+    assert_eq!(outcome.records[0].seq(), targets[0].as_bytes());
+    assert_eq!(outcome.threshold_diagnostics.len(), 1);
+    assert_eq!(outcome.threshold_diagnostics[0].generated_products, 1);
+    assert!(outcome.threshold_diagnostics[0].path_search_evaluated);
+}
+
+#[test]
+fn max_length_shorter_than_k_is_explicitly_unsupported() {
+    let (targets, mut params) = synthetic_targets(&[180]);
+    params.max_length = 18;
+    let counts = counts_for(&[(&targets[0], 10)]);
+
+    let outcome = run_pcr(&counts, &params);
+
+    assert!(outcome.records.is_empty());
+    assert_eq!(
+        outcome.failure_reason.as_deref(),
+        Some("max-length 18 is shorter than k-mer length 19")
+    );
+}
+
+#[test]
+fn disconnected_graph_after_pruning_has_explicit_failure() {
+    let mut graph = StableDiGraph::new();
+    graph.add_node(DBNode {
+        sub_kmer: 0,
+        is_start: true,
+        is_end: false,
+    });
+    graph.add_node(DBNode {
+        sub_kmer: 1,
+        is_start: false,
+        is_end: true,
+    });
+    let mut counts = KmerCounts::new(&3);
+    counts.insert(&0, &10);
+    let filtered = counts.filtered_view(1);
+    let (_, mut params) = synthetic_targets(&[180]);
+    params.min_length = 0;
+    params.max_length = 100;
+
+    let evaluation = evaluate_threshold_graph(
+        graph,
+        graph::ExtensionRepeatMarkers::default(),
+        1,
+        &filtered,
+        "threshold",
+        &params,
+        false,
+        "/tmp/",
+        None,
+        None,
+    )
+    .unwrap();
+
+    assert!(evaluation.records.is_empty());
+    assert_eq!(
+        evaluation.failure_reason.as_deref(),
+        Some("connectivity found but no start-to-end path remained after pruning")
+    );
+}
+
+#[test]
+fn search_limits_have_explicit_failures() {
+    let (targets, params) = synthetic_targets(&[180]);
+    let counts = counts_for(&[(&targets[0], 10)]);
+
+    let mut dfs_limited = params.clone();
+    dfs_limited.max_dfs_states = 0;
+    let dfs_outcome = run_pcr(&counts, &dfs_limited);
+    assert!(dfs_outcome.records.is_empty());
+    assert_eq!(
+        dfs_outcome.failure_reason.as_deref(),
+        Some("DFS state limit reached before a valid amplicon was found")
+    );
+    assert!(
+        dfs_outcome
+            .threshold_diagnostics
+            .iter()
+            .all(|diagnostic| diagnostic.dfs_limit_reached)
+    );
+
+    let mut path_limited = params;
+    path_limited.max_paths_per_pair = 0;
+    let path_outcome = run_pcr(&counts, &path_limited);
+    assert!(path_outcome.records.is_empty());
+    assert_eq!(
+        path_outcome.failure_reason.as_deref(),
+        Some("path limit reached before a valid amplicon was found")
+    );
+    assert!(
+        path_outcome
+            .threshold_diagnostics
+            .iter()
+            .all(|diagnostic| diagnostic.path_quota_reached)
+    );
+}
+
+#[test]
+fn node_budget_failure_remains_explicit() {
+    let (targets, params) = synthetic_targets(&[180]);
+    let counts = counts_for(&[(&targets[0], 10)]);
+
+    let outcome = do_pcr(
+        &counts.filtered_view(2),
+        "threshold",
+        &params,
+        false,
+        "/tmp/",
+        None,
+        1,
+        withheld_diagnostic_limits_for_gene(0, 1),
+    )
+    .unwrap();
+
+    assert!(outcome.records.is_empty());
+    assert_eq!(
+        outcome.failure_reason.as_deref(),
+        Some("node budget exceeded")
+    );
+    assert!(
+        outcome
+            .threshold_diagnostics
+            .iter()
+            .all(|diagnostic| diagnostic.node_budget_reached)
+    );
+    assert!(
+        outcome
+            .threshold_diagnostics
+            .iter()
+            .all(|diagnostic| !diagnostic.scc_evaluated)
+    );
+}
+
+#[test]
+fn earlier_threshold_limits_are_not_erased_by_later_no_connectivity() {
+    let earlier_repeat = PcrThresholdDiagnostic {
+        threshold: 8,
+        connectivity_found: true,
+        scc_evaluated: true,
+        path_search_evaluated: true,
+        withheld_candidate_paths: 3,
+        withheld_by_scc_node_paths: 3,
+        ..PcrThresholdDiagnostic::default()
+    };
+    let earlier_dfs = PcrThresholdDiagnostic {
+        threshold: 6,
+        connectivity_found: true,
+        scc_evaluated: true,
+        path_search_evaluated: true,
+        dfs_limit_reached: true,
+        ..PcrThresholdDiagnostic::default()
+    };
+    let later_no_connectivity = PcrThresholdDiagnostic {
+        threshold: 2,
+        failure_reason: Some(
+            "no start-to-end connectivity established at this threshold".to_string(),
+        ),
+        ..PcrThresholdDiagnostic::default()
+    };
+
+    let summary =
+        earlier_threshold_limit_summary(&[earlier_repeat, earlier_dfs, later_no_connectivity])
+            .unwrap();
+
+    assert!(summary.contains("threshold 8: candidate-local repeat uncertainty"));
+    assert!(summary.contains("threshold 6: DFS state limit reached"));
+}
+
+#[test]
+fn threshold_diagnostics_serialization_is_bounded_and_contains_no_graph_ids() {
+    let (targets, params) = synthetic_targets(&[400, 180]);
+    let counts = counts_for(&[(&targets[0], 100), (&targets[1], 4)]);
+    let outcome = run_pcr(&counts, &params);
+
+    let serialized = serde_yaml_ng::to_string(&outcome.threshold_diagnostics).unwrap();
+
+    assert!(outcome.threshold_diagnostics.len() <= COVERAGE_STEPS as usize);
+    assert!(!serialized.contains("sub_kmer"));
+    assert!(!serialized.contains("edge_id"));
+    assert!(!serialized.contains("withheld_path_diagnostics"));
+    assert!(serialized.contains("completed_candidate_paths"));
+    assert!(serialized.contains("retained_collision_edges"));
+}

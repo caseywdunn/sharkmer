@@ -1,0 +1,266 @@
+{
+  "scope": "Exact Q20 local tile occurrences in eight controls; no full-product truth inferred",
+  "sequence_evidence": [
+    {
+      "accession": "ERR14009273",
+      "gene": "angiospermae_ITS",
+      "read_evidence_details": {
+        "accession": "ERR14009273",
+        "distinct_nearest_endpoint_strings": 0,
+        "distinct_tile_strings": 34,
+        "gene": "angiospermae_ITS",
+        "incomplete_flank_endpoint_memberships": 0,
+        "length": 753,
+        "local_read_status": "local_exact_q20_occurrences_observed",
+        "overlength_nearest_endpoint_strings": 0,
+        "positive_control_pass": true,
+        "q20_observed_nearest_endpoint_strings": 0,
+        "q20_observed_strings_unique_to_candidate_in_finite_context": 34,
+        "q20_observed_tile_span_union_bases": 753,
+        "q20_observed_tile_strings": 34,
+        "raw_observed_nearest_endpoint_strings": 0,
+        "raw_observed_tile_span_union_bases": 753,
+        "raw_observed_tile_strings": 34,
+        "role": "positive_control",
+        "scheduled_tiles": 34,
+        "sha256": "ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748",
+        "whole_product_validation": "not_established"
+      },
+      "read_evidence_links": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/summary.json",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/ERR14009273/raw.json"
+      ],
+      "read_evidence_status": "positive_control_local_exact_q20_occurrences_observed",
+      "sha256": "ccbdd4a654f2c2a817663362970c1761173a40ccf11e57c6ef56691a3f19c748"
+    },
+    {
+      "accession": "ERR14009273",
+      "gene": "angiospermae_atpB-rbcL",
+      "read_evidence_details": {
+        "accession": "ERR14009273",
+        "distinct_nearest_endpoint_strings": 0,
+        "distinct_tile_strings": 37,
+        "gene": "angiospermae_atpB-rbcL",
+        "incomplete_flank_endpoint_memberships": 0,
+        "length": 812,
+        "local_read_status": "local_exact_q20_occurrences_observed",
+        "overlength_nearest_endpoint_strings": 0,
+        "positive_control_pass": true,
+        "q20_observed_nearest_endpoint_strings": 0,
+        "q20_observed_strings_unique_to_candidate_in_finite_context": 37,
+        "q20_observed_tile_span_union_bases": 812,
+        "q20_observed_tile_strings": 37,
+        "raw_observed_nearest_endpoint_strings": 0,
+        "raw_observed_tile_span_union_bases": 812,
+        "raw_observed_tile_strings": 37,
+        "role": "positive_control",
+        "scheduled_tiles": 37,
+        "sha256": "3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07",
+        "whole_product_validation": "not_established"
+      },
+      "read_evidence_links": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/summary.json",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/ERR14009273/raw.json"
+      ],
+      "read_evidence_status": "positive_control_local_exact_q20_occurrences_observed",
+      "sha256": "3eeb5e1346a7669203804a51d5b474840b36b2d78a96e74daa6748986eee2c07"
+    },
+    {
+      "accession": "SRR1057608",
+      "gene": "insecta_CO1_1",
+      "read_evidence_details": {
+        "accession": "SRR1057608",
+        "distinct_nearest_endpoint_strings": 0,
+        "distinct_tile_strings": 13,
+        "gene": "insecta_CO1_1",
+        "incomplete_flank_endpoint_memberships": 0,
+        "length": 304,
+        "local_read_status": "local_exact_q20_occurrences_observed",
+        "overlength_nearest_endpoint_strings": 0,
+        "positive_control_pass": true,
+        "q20_observed_nearest_endpoint_strings": 0,
+        "q20_observed_strings_unique_to_candidate_in_finite_context": 13,
+        "q20_observed_tile_span_union_bases": 304,
+        "q20_observed_tile_strings": 13,
+        "raw_observed_nearest_endpoint_strings": 0,
+        "raw_observed_tile_span_union_bases": 304,
+        "raw_observed_tile_strings": 13,
+        "role": "positive_control",
+        "scheduled_tiles": 13,
+        "sha256": "8ba0cf4d35377c7ebbb54000f07053c99d16008cf3e79cb45d8441da95ec1f2f",
+        "whole_product_validation": "not_established"
+      },
+      "read_evidence_links": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/summary.json",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR1057608/raw.json"
+      ],
+      "read_evidence_status": "positive_control_local_exact_q20_occurrences_observed",
+      "sha256": "8ba0cf4d35377c7ebbb54000f07053c99d16008cf3e79cb45d8441da95ec1f2f"
+    },
+    {
+      "accession": "SRR1057608",
+      "gene": "insecta_CO2_1",
+      "read_evidence_details": {
+        "accession": "SRR1057608",
+        "distinct_nearest_endpoint_strings": 0,
+        "distinct_tile_strings": 12,
+        "gene": "insecta_CO2_1",
+        "incomplete_flank_endpoint_memberships": 0,
+        "length": 288,
+        "local_read_status": "local_exact_q20_occurrences_observed",
+        "overlength_nearest_endpoint_strings": 0,
+        "positive_control_pass": true,
+        "q20_observed_nearest_endpoint_strings": 0,
+        "q20_observed_strings_unique_to_candidate_in_finite_context": 12,
+        "q20_observed_tile_span_union_bases": 288,
+        "q20_observed_tile_strings": 12,
+        "raw_observed_nearest_endpoint_strings": 0,
+        "raw_observed_tile_span_union_bases": 288,
+        "raw_observed_tile_strings": 12,
+        "role": "positive_control",
+        "scheduled_tiles": 12,
+        "sha256": "75a2f13657c465c52bb64e68bea7a87ee7602a32700e5905a346b6dab7692712",
+        "whole_product_validation": "not_established"
+      },
+      "read_evidence_links": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/summary.json",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR1057608/raw.json"
+      ],
+      "read_evidence_status": "positive_control_local_exact_q20_occurrences_observed",
+      "sha256": "75a2f13657c465c52bb64e68bea7a87ee7602a32700e5905a346b6dab7692712"
+    },
+    {
+      "accession": "SRR25378184",
+      "gene": "angiospermae_psbM-trnD",
+      "read_evidence_details": {
+        "accession": "SRR25378184",
+        "distinct_nearest_endpoint_strings": 0,
+        "distinct_tile_strings": 60,
+        "gene": "angiospermae_psbM-trnD",
+        "incomplete_flank_endpoint_memberships": 0,
+        "length": 1287,
+        "local_read_status": "local_exact_q20_occurrences_observed",
+        "overlength_nearest_endpoint_strings": 0,
+        "positive_control_pass": true,
+        "q20_observed_nearest_endpoint_strings": 0,
+        "q20_observed_strings_unique_to_candidate_in_finite_context": 60,
+        "q20_observed_tile_span_union_bases": 1287,
+        "q20_observed_tile_strings": 60,
+        "raw_observed_nearest_endpoint_strings": 0,
+        "raw_observed_tile_span_union_bases": 1287,
+        "raw_observed_tile_strings": 60,
+        "role": "positive_control",
+        "scheduled_tiles": 60,
+        "sha256": "e9898573db0183da6b7f80727476bb72246c560f5de373e9b2586cede1a37dfe",
+        "whole_product_validation": "not_established"
+      },
+      "read_evidence_links": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/summary.json",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR25378184/raw.json"
+      ],
+      "read_evidence_status": "positive_control_local_exact_q20_occurrences_observed",
+      "sha256": "e9898573db0183da6b7f80727476bb72246c560f5de373e9b2586cede1a37dfe"
+    },
+    {
+      "accession": "SRR25378184",
+      "gene": "angiospermae_rpl36-infA-rps8",
+      "read_evidence_details": {
+        "accession": "SRR25378184",
+        "distinct_nearest_endpoint_strings": 0,
+        "distinct_tile_strings": 25,
+        "gene": "angiospermae_rpl36-infA-rps8",
+        "incomplete_flank_endpoint_memberships": 0,
+        "length": 552,
+        "local_read_status": "local_exact_q20_occurrences_observed",
+        "overlength_nearest_endpoint_strings": 0,
+        "positive_control_pass": true,
+        "q20_observed_nearest_endpoint_strings": 0,
+        "q20_observed_strings_unique_to_candidate_in_finite_context": 25,
+        "q20_observed_tile_span_union_bases": 552,
+        "q20_observed_tile_strings": 25,
+        "raw_observed_nearest_endpoint_strings": 0,
+        "raw_observed_tile_span_union_bases": 552,
+        "raw_observed_tile_strings": 25,
+        "role": "positive_control",
+        "scheduled_tiles": 25,
+        "sha256": "9d24409abb93cd61eb5d04b5f191d5d3c8c1c96827b563dbec7135aca1e4bd1b",
+        "whole_product_validation": "not_established"
+      },
+      "read_evidence_links": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/summary.json",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR25378184/raw.json"
+      ],
+      "read_evidence_status": "positive_control_local_exact_q20_occurrences_observed",
+      "sha256": "9d24409abb93cd61eb5d04b5f191d5d3c8c1c96827b563dbec7135aca1e4bd1b"
+    },
+    {
+      "accession": "SRR27962769",
+      "gene": "insecta_CO1_1",
+      "read_evidence_details": {
+        "accession": "SRR27962769",
+        "distinct_nearest_endpoint_strings": 0,
+        "distinct_tile_strings": 15,
+        "gene": "insecta_CO1_1",
+        "incomplete_flank_endpoint_memberships": 0,
+        "length": 352,
+        "local_read_status": "local_exact_q20_occurrences_observed",
+        "overlength_nearest_endpoint_strings": 0,
+        "positive_control_pass": true,
+        "q20_observed_nearest_endpoint_strings": 0,
+        "q20_observed_strings_unique_to_candidate_in_finite_context": 2,
+        "q20_observed_tile_span_union_bases": 352,
+        "q20_observed_tile_strings": 15,
+        "raw_observed_nearest_endpoint_strings": 0,
+        "raw_observed_tile_span_union_bases": 352,
+        "raw_observed_tile_strings": 15,
+        "role": "positive_control",
+        "scheduled_tiles": 15,
+        "sha256": "e2d376bc5b0f09a954f7dfb6083ff3e4a768a2b687685e18349f66dd25cfc9c0",
+        "whole_product_validation": "not_established"
+      },
+      "read_evidence_links": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/summary.json",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR27962769/raw.json"
+      ],
+      "read_evidence_status": "positive_control_local_exact_q20_occurrences_observed",
+      "sha256": "e2d376bc5b0f09a954f7dfb6083ff3e4a768a2b687685e18349f66dd25cfc9c0"
+    },
+    {
+      "accession": "SRR27962769",
+      "gene": "insecta_CO2_1",
+      "read_evidence_details": {
+        "accession": "SRR27962769",
+        "distinct_nearest_endpoint_strings": 0,
+        "distinct_tile_strings": 12,
+        "gene": "insecta_CO2_1",
+        "incomplete_flank_endpoint_memberships": 0,
+        "length": 288,
+        "local_read_status": "local_exact_q20_occurrences_observed",
+        "overlength_nearest_endpoint_strings": 0,
+        "positive_control_pass": true,
+        "q20_observed_nearest_endpoint_strings": 0,
+        "q20_observed_strings_unique_to_candidate_in_finite_context": 12,
+        "q20_observed_tile_span_union_bases": 288,
+        "q20_observed_tile_strings": 12,
+        "raw_observed_nearest_endpoint_strings": 0,
+        "raw_observed_tile_span_union_bases": 288,
+        "raw_observed_tile_strings": 12,
+        "role": "positive_control",
+        "scheduled_tiles": 12,
+        "sha256": "660fe7a5eb0e9edf02db0254455941d046e95c11da69b0a7a8de4e28449a054f",
+        "whole_product_validation": "not_established"
+      },
+      "read_evidence_links": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/summary.json",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/run-v1/SRR27962769/raw.json"
+      ],
+      "read_evidence_status": "positive_control_local_exact_q20_occurrences_observed",
+      "sha256": "660fe7a5eb0e9edf02db0254455941d046e95c11da69b0a7a8de4e28449a054f"
+    }
+  ],
+  "source_hashes": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/prepare_control_overlay.py": "589b716ba08f6bd359920bea83614d3c3672941252578ac94a98ff090b185efc",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/sequence_inventory.json": "45443cd27646735ca62034835af6f9b1fff04c2e8fa957c77a2321ec6cac90d3",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/summary.json": "2310823acfd230142823b70e231b485b50cc0771682658abcef1b2e89b1b15a4"
+  }
+}

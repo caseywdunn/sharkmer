@@ -1,0 +1,5 @@
+accession	binary_sha256	identical_products_and_input_counts	earlier_wall_median_s	later_wall_median_s	earlier_cpu_median_s	later_cpu_median_s	scope
+SRR17535371	68ea253a5b03740d7a9083c18465c9143fed31aaf1a0b8b378ce669f35d4f992	True	4.29	0.66	0.7100000000000001	0.7000000000000001	Different nodes and times; descriptive bridge, not controlled causal comparison
+SRR25378184	68ea253a5b03740d7a9083c18465c9143fed31aaf1a0b8b378ce669f35d4f992	True	56.8	53.92	88.79	88.91	Different nodes and times; descriptive bridge, not controlled causal comparison
+SRR8617500	68ea253a5b03740d7a9083c18465c9143fed31aaf1a0b8b378ce669f35d4f992	True	46.53	43.05	64.81	63.3	Different nodes and times; descriptive bridge, not controlled causal comparison
+SRR1057608	68ea253a5b03740d7a9083c18465c9143fed31aaf1a0b8b378ce669f35d4f992	True	44.07	42.42	72.28	73.23	Different nodes and times; descriptive bridge, not controlled causal comparison

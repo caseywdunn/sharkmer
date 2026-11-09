@@ -1,0 +1,5 @@
+   Compiling sharkmer v3.2.0-dev (/nfs/roberts/project/pi_cwd7/cwd7/sharkmer)
+    Finished `release` profile [optimized] target(s) in 49.92s
+     Running unittests src/main.rs (tmp/sequence-retention-20261001/target/release/deps/sharkmer-237e3fda5a691710)
+     Running tests/spcr_18s.rs (tmp/sequence-retention-20261001/target/release/deps/spcr_18s-d7518733aea42c93)
+     Running tests/uncertain_products.rs (tmp/sequence-retention-20261001/target/release/deps/uncertain_products-d86cbed7b23d9d7d)

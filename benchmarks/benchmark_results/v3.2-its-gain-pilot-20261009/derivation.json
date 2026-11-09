@@ -1,0 +1,1468 @@
+{
+  "candidate_context_count": 37,
+  "control_events": 2,
+  "coordinate_system": "zero_based_half_open_in_emitted_oriented_sequences",
+  "endpoint_memberships": 64,
+  "global_gain_shared_prefix": 518,
+  "global_gain_shared_suffix": 77,
+  "global_variable_extent_with_21bp_flanks_lengths": [
+    424,
+    425,
+    426
+  ],
+  "limitations": [
+    "ITS read matches establish only occurrence of the local string; multiple full hypotheses share each string.",
+    "Scanner unique-record and corroborated-local-bridge fields must not be interpreted as full-hypothesis support.",
+    "Candidate IDs on collapsed events identify coordinate representatives; memberships preserve every original nearest-window endpoint.",
+    "Finite-context placements inspect only the 32 gains and five old control candidates; target specificity is not established.",
+    "The exact assay requires Q20 or better throughout both 21-base flanks and the intervening allele, in either read orientation.",
+    "No matching read in this fixed first-million R1 prefix does not prove absence; mismatches, gaps, sampling and low quality limit sensitivity.",
+    "Overlapping windows may share reads and cannot be counted as independent evidence.",
+    "Nearest-window indel coordinates are one representation; the literal spanning string is assayed without asserting a unique mutation position.",
+    "The entire variable extent of the 32 gains is longer than a 150-base read; local matches cannot establish whole-product phase or biological correctness."
+  ],
+  "nearest_window_rows": 32,
+  "producer_sha256": "766815339a432fd266a108bfc9623476a9a8b853f5ba490749b83e0fcb711728",
+  "representative_rule": "Identical forward window strings collapse; smallest candidate ID then coordinates represents each window",
+  "result_files": {
+    "expected_prefix.json": {
+      "bytes": 154,
+      "sha256": "ad67cd0d405ba6ad76d768361ada1238ac4ea666e41f3d5a45f11d070a586810"
+    },
+    "manifest.json": {
+      "bytes": 47136,
+      "sha256": "298b0299d15e1c8224308431f7f87fbc2ac0f23721f00618f905a59efca1582a"
+    }
+  },
+  "schema_version": 1,
+  "selected_queries": 32,
+  "source_files": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/nearest_windows.tsv": {
+      "bytes": 51393,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/nearest_windows.tsv",
+      "sha256": "85c65f03b12f2aa7ab5b01f40711c023304dd2e3f9547da0bcc4074808089e12"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/report.json": {
+      "bytes": 12638,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/report.json",
+      "sha256": "d0584ef0e0053458f95e9eccfb4575deb19e0b99d26f6aa0ff98d921407372c4"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/triage_saved_gains.py": {
+      "bytes": 12378,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-gain-triage-20261009/triage_saved_gains.py",
+      "sha256": "1c8e217e8501f959c47727def611f31c2bea920bfb6c405fdb5271f1a7a3e857"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/co1_control_manifest.json": {
+      "bytes": 8802,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/co1_control_manifest.json",
+      "sha256": "3da888e302751668165c2a50e84cba19d3511203454ea5df7ba1a4aa3755254d"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/expected_prefix.json": {
+      "bytes": 154,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/inputs/originals/inputs/expected_prefix.json",
+      "sha256": "ad67cd0d405ba6ad76d768361ada1238ac4ea666e41f3d5a45f11d070a586810"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/gained_queries.fasta": {
+      "bytes": 120268,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/gained_queries.fasta",
+      "sha256": "6815689b6e81f7f8d33c06cd5ed149e4aba4d18f68a2641242642c21eaba3054"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/per_sequence.json": {
+      "bytes": 279786,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/per_sequence.json",
+      "sha256": "48c58d94713a33539617489c550510e8e23c14a08784d1557e87682c5a6b75d4"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/report-v3/uncertain_gains.tsv": {
+      "bytes": 19600,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/report-v3/uncertain_gains.tsv",
+      "sha256": "9585462dd788a791fabc612c8ab2d92bf09423beacc350ce9569fc0bf940d94c"
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py": {
+      "bytes": 14031,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py",
+      "sha256": "f6f1371bb4884c2a8e9475e5c56b99a30b8c429267a294cdeba19905db411983"
+    }
+  },
+  "total_events": 10,
+  "unique_local_windows": 8,
+  "windows": [
+    {
+      "event_id": "its_local_01",
+      "finite_context_template_placements": [
+        {
+          "candidate_id": "q137",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q138",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q141",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q143",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q144",
+          "start": 810,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q145",
+          "start": 810,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q146",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q151",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q161",
+          "start": 810,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q165",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q166",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        }
+      ],
+      "length": 43,
+      "memberships": [
+        {
+          "allele": "C",
+          "candidate_id": "q138",
+          "candidate_sha256": "26668610984b6f2c36010422f0899842b4113030f0a283126980065ad6a2cba1",
+          "end": 831,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q155",
+          "nearest_query_id": "q138",
+          "start": 830,
+          "window_end": 852,
+          "window_start": 809
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q141",
+          "candidate_sha256": "613d52ef1963b731285a89f49704a003dcb907dbb1b983e7a90ef1e52bb91f39",
+          "end": 831,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q153",
+          "nearest_query_id": "q141",
+          "start": 830,
+          "window_end": 852,
+          "window_start": 809
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q143",
+          "candidate_sha256": "7c797e2aadac8e9bd9ecc407bbe5b316481acbe744fb76233908f3aea6e20651",
+          "end": 831,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q162",
+          "nearest_query_id": "q143",
+          "start": 830,
+          "window_end": 852,
+          "window_start": 809
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q145",
+          "candidate_sha256": "7efa78264317404a549f8087cac92d787cc1d074fbd2ff80a0c6417dc6434a20",
+          "end": 832,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q136",
+          "nearest_query_id": "q145",
+          "start": 831,
+          "window_end": 853,
+          "window_start": 810
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q146",
+          "candidate_sha256": "81f75a2ebe09de9e84e12a05529d12988f5507ec761149c32e29faa00b75cc9c",
+          "end": 831,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q156",
+          "nearest_query_id": "q146",
+          "start": 830,
+          "window_end": 852,
+          "window_start": 809
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q161",
+          "candidate_sha256": "d3cd47fb5a63f4a96a0841a14616dd120ff7124151f0c074657ba1d900cbceb4",
+          "end": 832,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q158",
+          "nearest_query_id": "q161",
+          "start": 831,
+          "window_end": 853,
+          "window_start": 810
+        }
+      ],
+      "sequence": "GCTTGCTCCTATACGCTCGCGCTCGCCCTCCGGGCGGGCCGGG",
+      "sequence_sha256": "21b74e8c09fde98cfa8899b4bf15c07338f87176e745a2a7e2749231390d3d09",
+      "unique_template_placement": false
+    },
+    {
+      "event_id": "its_local_02",
+      "finite_context_template_placements": [
+        {
+          "candidate_id": "q137",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q138",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q141",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q143",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q144",
+          "start": 810,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q145",
+          "start": 810,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q146",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q151",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q161",
+          "start": 810,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q165",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q166",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        }
+      ],
+      "length": 47,
+      "memberships": [
+        {
+          "allele": "CTCGC",
+          "candidate_id": "q151",
+          "candidate_sha256": "97bb9ec3012d8345646d2736ba050d30f453351a504339db1bbd1b85a54a6690",
+          "end": 835,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q151",
+          "nearest_query_id": "q150",
+          "start": 830,
+          "window_end": 856,
+          "window_start": 809
+        },
+        {
+          "allele": "CTCGC",
+          "candidate_id": "q151",
+          "candidate_sha256": "97bb9ec3012d8345646d2736ba050d30f453351a504339db1bbd1b85a54a6690",
+          "end": 835,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q150",
+          "nearest_query_id": "q151",
+          "start": 830,
+          "window_end": 856,
+          "window_start": 809
+        }
+      ],
+      "sequence": "GCTTGCTCCTATACGCTCGCGCTCGCCCTCCGGGCGGGCCGGGTGGA",
+      "sequence_sha256": "2660d50f348f68c22494b232ebf3d4cf3cfcb4269cc94217840b26f389552be5",
+      "unique_template_placement": false
+    },
+    {
+      "event_id": "its_local_03",
+      "finite_context_template_placements": [
+        {
+          "candidate_id": "q136",
+          "start": 810,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q140",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q153",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q155",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q156",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q157",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q158",
+          "start": 810,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q162",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q167",
+          "start": 810,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "SRR27962769_23163ca76f97f5d1",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        }
+      ],
+      "length": 43,
+      "memberships": [
+        {
+          "allele": "T",
+          "candidate_id": "q136",
+          "candidate_sha256": "23ce8d88f0bf6cf6dca1c1a8f22c883d454851577c28b80f0d94562a910756b6",
+          "end": 832,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q136",
+          "nearest_query_id": "q145",
+          "start": 831,
+          "window_end": 853,
+          "window_start": 810
+        },
+        {
+          "allele": "T",
+          "candidate_id": "q153",
+          "candidate_sha256": "a0e2f11c3f579a2d362c5e01818a3f276eadd73ea70dde8c4e2770c71262382d",
+          "end": 831,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q153",
+          "nearest_query_id": "q141",
+          "start": 830,
+          "window_end": 852,
+          "window_start": 809
+        },
+        {
+          "allele": "T",
+          "candidate_id": "q155",
+          "candidate_sha256": "af378c42cfc3affa8a1846c7823214fd63402c4c6a3c024af139deecd7f0fb77",
+          "end": 831,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q155",
+          "nearest_query_id": "q138",
+          "start": 830,
+          "window_end": 852,
+          "window_start": 809
+        },
+        {
+          "allele": "T",
+          "candidate_id": "q156",
+          "candidate_sha256": "bd529f472f06a9d1a2113ac16ac67f4767b7eddb7388bb5ad2df7fc34c0eb265",
+          "end": 831,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q156",
+          "nearest_query_id": "q146",
+          "start": 830,
+          "window_end": 852,
+          "window_start": 809
+        },
+        {
+          "allele": "T",
+          "candidate_id": "q158",
+          "candidate_sha256": "c9a82ec1e4faef1d3d10b23012980b01128be482784e1e0738d84b19ae3b8c34",
+          "end": 832,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q158",
+          "nearest_query_id": "q161",
+          "start": 831,
+          "window_end": 853,
+          "window_start": 810
+        },
+        {
+          "allele": "T",
+          "candidate_id": "q162",
+          "candidate_sha256": "d6bdb18c6088b8234c4a470982b26ecd7f3935c80b4a60696a5feb44c22899b1",
+          "end": 831,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q162",
+          "nearest_query_id": "q143",
+          "start": 830,
+          "window_end": 852,
+          "window_start": 809
+        }
+      ],
+      "sequence": "GCTTGCTCCTATACGCTCGCGTTCGCCCTCCGGGCGGGCCGGG",
+      "sequence_sha256": "6736c19131c2795a73d422d1d646a815731030cd0699c81f4cb1c9bb84204c51",
+      "unique_template_placement": false
+    },
+    {
+      "event_id": "its_local_04",
+      "finite_context_template_placements": [
+        {
+          "candidate_id": "q139",
+          "start": 810,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q142",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q147",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q148",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q149",
+          "start": 810,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q150",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q152",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q154",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q159",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q160",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q163",
+          "start": 810,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q164",
+          "start": 809,
+          "strand": "+",
+          "substitutions": 0
+        }
+      ],
+      "length": 46,
+      "memberships": [
+        {
+          "allele": "TTCG",
+          "candidate_id": "q150",
+          "candidate_sha256": "944d29a529dac858707fc7eba65db009d0b85cdb3f393480b927cf2a03f62df0",
+          "end": 834,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q151",
+          "nearest_query_id": "q150",
+          "start": 830,
+          "window_end": 855,
+          "window_start": 809
+        },
+        {
+          "allele": "TTCG",
+          "candidate_id": "q150",
+          "candidate_sha256": "944d29a529dac858707fc7eba65db009d0b85cdb3f393480b927cf2a03f62df0",
+          "end": 834,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q150",
+          "nearest_query_id": "q151",
+          "start": 830,
+          "window_end": 855,
+          "window_start": 809
+        }
+      ],
+      "sequence": "GCTTGCTCCTATACGCTCGCGTTCGCCTCCGGGCGGGCCGGGTGGA",
+      "sequence_sha256": "d9f73a93c1c829f905005d463e5d4d67f1c41c9e8ba3f16189f4e09b2613224f",
+      "unique_template_placement": false
+    },
+    {
+      "event_id": "its_local_05",
+      "finite_context_template_placements": [
+        {
+          "candidate_id": "q136",
+          "start": 816,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q140",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q153",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q155",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q156",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q157",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q158",
+          "start": 816,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q162",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q167",
+          "start": 816,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "SRR27962769_23163ca76f97f5d1",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        }
+      ],
+      "length": 43,
+      "memberships": [
+        {
+          "allele": "C",
+          "candidate_id": "q136",
+          "candidate_sha256": "23ce8d88f0bf6cf6dca1c1a8f22c883d454851577c28b80f0d94562a910756b6",
+          "end": 838,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q139",
+          "nearest_query_id": "q136",
+          "start": 837,
+          "window_end": 859,
+          "window_start": 816
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q136",
+          "candidate_sha256": "23ce8d88f0bf6cf6dca1c1a8f22c883d454851577c28b80f0d94562a910756b6",
+          "end": 838,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q136",
+          "nearest_query_id": "q139",
+          "start": 837,
+          "window_end": 859,
+          "window_start": 816
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q140",
+          "candidate_sha256": "43800b038eefca6c23901e6a75feb4044c3c3839decea2bb7dba9ab3c406d037",
+          "end": 837,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q159",
+          "nearest_query_id": "q140",
+          "start": 836,
+          "window_end": 858,
+          "window_start": 815
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q140",
+          "candidate_sha256": "43800b038eefca6c23901e6a75feb4044c3c3839decea2bb7dba9ab3c406d037",
+          "end": 837,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q140",
+          "nearest_query_id": "q159",
+          "start": 836,
+          "window_end": 858,
+          "window_start": 815
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q153",
+          "candidate_sha256": "a0e2f11c3f579a2d362c5e01818a3f276eadd73ea70dde8c4e2770c71262382d",
+          "end": 837,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q160",
+          "nearest_query_id": "q153",
+          "start": 836,
+          "window_end": 858,
+          "window_start": 815
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q153",
+          "candidate_sha256": "a0e2f11c3f579a2d362c5e01818a3f276eadd73ea70dde8c4e2770c71262382d",
+          "end": 837,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q153",
+          "nearest_query_id": "q160",
+          "start": 836,
+          "window_end": 858,
+          "window_start": 815
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q155",
+          "candidate_sha256": "af378c42cfc3affa8a1846c7823214fd63402c4c6a3c024af139deecd7f0fb77",
+          "end": 837,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q155",
+          "nearest_query_id": "q147",
+          "start": 836,
+          "window_end": 858,
+          "window_start": 815
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q155",
+          "candidate_sha256": "af378c42cfc3affa8a1846c7823214fd63402c4c6a3c024af139deecd7f0fb77",
+          "end": 837,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q147",
+          "nearest_query_id": "q155",
+          "start": 836,
+          "window_end": 858,
+          "window_start": 815
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q156",
+          "candidate_sha256": "bd529f472f06a9d1a2113ac16ac67f4767b7eddb7388bb5ad2df7fc34c0eb265",
+          "end": 837,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q156",
+          "nearest_query_id": "q142",
+          "start": 836,
+          "window_end": 858,
+          "window_start": 815
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q156",
+          "candidate_sha256": "bd529f472f06a9d1a2113ac16ac67f4767b7eddb7388bb5ad2df7fc34c0eb265",
+          "end": 837,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q142",
+          "nearest_query_id": "q156",
+          "start": 836,
+          "window_end": 858,
+          "window_start": 815
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q157",
+          "candidate_sha256": "be0cbc7cc76a4e8fa1d8f4b7395d27c7ba8903a56df0b7f8169e6cb564792763",
+          "end": 837,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q157",
+          "nearest_query_id": "q148",
+          "start": 836,
+          "window_end": 858,
+          "window_start": 815
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q157",
+          "candidate_sha256": "be0cbc7cc76a4e8fa1d8f4b7395d27c7ba8903a56df0b7f8169e6cb564792763",
+          "end": 837,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q148",
+          "nearest_query_id": "q157",
+          "start": 836,
+          "window_end": 858,
+          "window_start": 815
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q158",
+          "candidate_sha256": "c9a82ec1e4faef1d3d10b23012980b01128be482784e1e0738d84b19ae3b8c34",
+          "end": 838,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q158",
+          "nearest_query_id": "q149",
+          "start": 837,
+          "window_end": 859,
+          "window_start": 816
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q158",
+          "candidate_sha256": "c9a82ec1e4faef1d3d10b23012980b01128be482784e1e0738d84b19ae3b8c34",
+          "end": 838,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q149",
+          "nearest_query_id": "q158",
+          "start": 837,
+          "window_end": 859,
+          "window_start": 816
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q162",
+          "candidate_sha256": "d6bdb18c6088b8234c4a470982b26ecd7f3935c80b4a60696a5feb44c22899b1",
+          "end": 837,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q164",
+          "nearest_query_id": "q162",
+          "start": 836,
+          "window_end": 858,
+          "window_start": 815
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q162",
+          "candidate_sha256": "d6bdb18c6088b8234c4a470982b26ecd7f3935c80b4a60696a5feb44c22899b1",
+          "end": 837,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q162",
+          "nearest_query_id": "q164",
+          "start": 836,
+          "window_end": 858,
+          "window_start": 815
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q167",
+          "candidate_sha256": "f75592b46f53e7a2a15e0193ba9eb448419c4ef6834e5fffbd2831d2d9623728",
+          "end": 838,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q167",
+          "nearest_query_id": "q163",
+          "start": 837,
+          "window_end": 859,
+          "window_start": 816
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q167",
+          "candidate_sha256": "f75592b46f53e7a2a15e0193ba9eb448419c4ef6834e5fffbd2831d2d9623728",
+          "end": 838,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q163",
+          "nearest_query_id": "q167",
+          "start": 837,
+          "window_end": 859,
+          "window_start": 816
+        }
+      ],
+      "sequence": "TCCTATACGCTCGCGTTCGCCCTCCGGGCGGGCCGGGTGGAAA",
+      "sequence_sha256": "19278dfda4effe11a374c85fa3ce401813d2045325c27e4a777bde6de764da3d",
+      "unique_template_placement": false
+    },
+    {
+      "event_id": "its_local_06",
+      "finite_context_template_placements": [
+        {
+          "candidate_id": "q139",
+          "start": 816,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q142",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q147",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q148",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q149",
+          "start": 816,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q150",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q152",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q154",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q159",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q160",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q163",
+          "start": 816,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q164",
+          "start": 815,
+          "strand": "+",
+          "substitutions": 0
+        }
+      ],
+      "length": 42,
+      "memberships": [
+        {
+          "allele": "",
+          "candidate_id": "q139",
+          "candidate_sha256": "42de9a5a6b8b566723ed2f7e4ffdad7b1d9a78bd1ef74f72e5f6a69d84475033",
+          "end": 837,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q139",
+          "nearest_query_id": "q136",
+          "start": 837,
+          "window_end": 858,
+          "window_start": 816
+        },
+        {
+          "allele": "",
+          "candidate_id": "q139",
+          "candidate_sha256": "42de9a5a6b8b566723ed2f7e4ffdad7b1d9a78bd1ef74f72e5f6a69d84475033",
+          "end": 837,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q136",
+          "nearest_query_id": "q139",
+          "start": 837,
+          "window_end": 858,
+          "window_start": 816
+        },
+        {
+          "allele": "",
+          "candidate_id": "q142",
+          "candidate_sha256": "74e3451fe0ff2afacaeb238ab6488749218f46131f2b4c690fb3a6050e38c27d",
+          "end": 836,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q156",
+          "nearest_query_id": "q142",
+          "start": 836,
+          "window_end": 857,
+          "window_start": 815
+        },
+        {
+          "allele": "",
+          "candidate_id": "q142",
+          "candidate_sha256": "74e3451fe0ff2afacaeb238ab6488749218f46131f2b4c690fb3a6050e38c27d",
+          "end": 836,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q142",
+          "nearest_query_id": "q156",
+          "start": 836,
+          "window_end": 857,
+          "window_start": 815
+        },
+        {
+          "allele": "",
+          "candidate_id": "q147",
+          "candidate_sha256": "8941929c7ae1d2da279156238283401f9d61ac66310b98bc63c5db1b9fbdc7d0",
+          "end": 836,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q155",
+          "nearest_query_id": "q147",
+          "start": 836,
+          "window_end": 857,
+          "window_start": 815
+        },
+        {
+          "allele": "",
+          "candidate_id": "q147",
+          "candidate_sha256": "8941929c7ae1d2da279156238283401f9d61ac66310b98bc63c5db1b9fbdc7d0",
+          "end": 836,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q147",
+          "nearest_query_id": "q155",
+          "start": 836,
+          "window_end": 857,
+          "window_start": 815
+        },
+        {
+          "allele": "",
+          "candidate_id": "q148",
+          "candidate_sha256": "895b602066534f4eaebdbc04535ec7f608f90a467240b4831a0ff058df9e9355",
+          "end": 836,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q157",
+          "nearest_query_id": "q148",
+          "start": 836,
+          "window_end": 857,
+          "window_start": 815
+        },
+        {
+          "allele": "",
+          "candidate_id": "q148",
+          "candidate_sha256": "895b602066534f4eaebdbc04535ec7f608f90a467240b4831a0ff058df9e9355",
+          "end": 836,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q148",
+          "nearest_query_id": "q157",
+          "start": 836,
+          "window_end": 857,
+          "window_start": 815
+        },
+        {
+          "allele": "",
+          "candidate_id": "q149",
+          "candidate_sha256": "8d708162288e9e957291b97bfd9d369c986f36ecc658bd89251eb30487a83ee2",
+          "end": 837,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q158",
+          "nearest_query_id": "q149",
+          "start": 837,
+          "window_end": 858,
+          "window_start": 816
+        },
+        {
+          "allele": "",
+          "candidate_id": "q149",
+          "candidate_sha256": "8d708162288e9e957291b97bfd9d369c986f36ecc658bd89251eb30487a83ee2",
+          "end": 837,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q149",
+          "nearest_query_id": "q158",
+          "start": 837,
+          "window_end": 858,
+          "window_start": 816
+        },
+        {
+          "allele": "",
+          "candidate_id": "q159",
+          "candidate_sha256": "cc6890e7c3bf4b8573db910bf6c15a9d2252a31135584fdd7d281666f45961eb",
+          "end": 836,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q159",
+          "nearest_query_id": "q140",
+          "start": 836,
+          "window_end": 857,
+          "window_start": 815
+        },
+        {
+          "allele": "",
+          "candidate_id": "q159",
+          "candidate_sha256": "cc6890e7c3bf4b8573db910bf6c15a9d2252a31135584fdd7d281666f45961eb",
+          "end": 836,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q140",
+          "nearest_query_id": "q159",
+          "start": 836,
+          "window_end": 857,
+          "window_start": 815
+        },
+        {
+          "allele": "",
+          "candidate_id": "q160",
+          "candidate_sha256": "cf46e674554b83f33b178abb993bb876c1a1c9ed5be35822ffcf920e5a436ac6",
+          "end": 836,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q160",
+          "nearest_query_id": "q153",
+          "start": 836,
+          "window_end": 857,
+          "window_start": 815
+        },
+        {
+          "allele": "",
+          "candidate_id": "q160",
+          "candidate_sha256": "cf46e674554b83f33b178abb993bb876c1a1c9ed5be35822ffcf920e5a436ac6",
+          "end": 836,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q153",
+          "nearest_query_id": "q160",
+          "start": 836,
+          "window_end": 857,
+          "window_start": 815
+        },
+        {
+          "allele": "",
+          "candidate_id": "q163",
+          "candidate_sha256": "d8b7ede0d139d7a78ba246f714ddba0764f71207f07d12304018f8ce05307a30",
+          "end": 837,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q167",
+          "nearest_query_id": "q163",
+          "start": 837,
+          "window_end": 858,
+          "window_start": 816
+        },
+        {
+          "allele": "",
+          "candidate_id": "q163",
+          "candidate_sha256": "d8b7ede0d139d7a78ba246f714ddba0764f71207f07d12304018f8ce05307a30",
+          "end": 837,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q163",
+          "nearest_query_id": "q167",
+          "start": 837,
+          "window_end": 858,
+          "window_start": 816
+        },
+        {
+          "allele": "",
+          "candidate_id": "q164",
+          "candidate_sha256": "dbcfe27dbece08da7d2ce5bc6b6399d636bc995eac43d9a0e185c590fe38e490",
+          "end": 836,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q164",
+          "nearest_query_id": "q162",
+          "start": 836,
+          "window_end": 857,
+          "window_start": 815
+        },
+        {
+          "allele": "",
+          "candidate_id": "q164",
+          "candidate_sha256": "dbcfe27dbece08da7d2ce5bc6b6399d636bc995eac43d9a0e185c590fe38e490",
+          "end": 836,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q162",
+          "nearest_query_id": "q164",
+          "start": 836,
+          "window_end": 857,
+          "window_start": 815
+        }
+      ],
+      "sequence": "TCCTATACGCTCGCGTTCGCCTCCGGGCGGGCCGGGTGGAAA",
+      "sequence_sha256": "941a8f84669bba95a77cd7d8cb7bd7bab73f539d6fbbdda8cb3436bd51fd045d",
+      "unique_template_placement": false
+    },
+    {
+      "event_id": "its_local_07",
+      "finite_context_template_placements": [
+        {
+          "candidate_id": "q140",
+          "start": 879,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q144",
+          "start": 880,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q148",
+          "start": 878,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q154",
+          "start": 878,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q157",
+          "start": 879,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q159",
+          "start": 878,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q163",
+          "start": 879,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q165",
+          "start": 879,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q166",
+          "start": 879,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q167",
+          "start": 880,
+          "strand": "+",
+          "substitutions": 0
+        }
+      ],
+      "length": 43,
+      "memberships": [
+        {
+          "allele": "C",
+          "candidate_id": "q144",
+          "candidate_sha256": "7d79dde3cf6715e4dee443c162579ac71173b2ce78391bf59f4d95a45c2a48f6",
+          "end": 902,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q145",
+          "nearest_query_id": "q144",
+          "start": 901,
+          "window_end": 923,
+          "window_start": 880
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q154",
+          "candidate_sha256": "a5bea90b6409971d64a04141e4592b37ef72fc25879708e4e80ff72978a0b759",
+          "end": 900,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q154",
+          "nearest_query_id": "q152",
+          "start": 899,
+          "window_end": 921,
+          "window_start": 878
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q154",
+          "candidate_sha256": "a5bea90b6409971d64a04141e4592b37ef72fc25879708e4e80ff72978a0b759",
+          "end": 900,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q152",
+          "nearest_query_id": "q154",
+          "start": 899,
+          "window_end": 921,
+          "window_start": 878
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q165",
+          "candidate_sha256": "e61fe880bd70a1900535f7ef1adbd30af55fe9a368da9c1a8cf38219770033a4",
+          "end": 901,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q143",
+          "nearest_query_id": "q165",
+          "start": 900,
+          "window_end": 922,
+          "window_start": 879
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q166",
+          "candidate_sha256": "efb52a3ebadbffa52117b0295acdd186808686a688128208cbc49a260852b92d",
+          "end": 901,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q166",
+          "nearest_query_id": "q137",
+          "start": 900,
+          "window_end": 922,
+          "window_start": 879
+        },
+        {
+          "allele": "C",
+          "candidate_id": "q166",
+          "candidate_sha256": "efb52a3ebadbffa52117b0295acdd186808686a688128208cbc49a260852b92d",
+          "end": 901,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q137",
+          "nearest_query_id": "q166",
+          "start": 900,
+          "window_end": 922,
+          "window_start": 879
+        }
+      ],
+      "sequence": "TCTGTGCGCGTCGGCGTCGTACTTTTCGGCTAACTCGTCTTTT",
+      "sequence_sha256": "68e8d3a810c1c0c1ff8de9662d66021f20bc4f168f5c432cf793e7f2478edbda",
+      "unique_template_placement": false
+    },
+    {
+      "event_id": "its_local_08",
+      "finite_context_template_placements": [
+        {
+          "candidate_id": "q136",
+          "start": 880,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q137",
+          "start": 879,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q139",
+          "start": 879,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q141",
+          "start": 879,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q143",
+          "start": 879,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q145",
+          "start": 880,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q152",
+          "start": 878,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q153",
+          "start": 879,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q160",
+          "start": 878,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q162",
+          "start": 879,
+          "strand": "+",
+          "substitutions": 0
+        },
+        {
+          "candidate_id": "q164",
+          "start": 878,
+          "strand": "+",
+          "substitutions": 0
+        }
+      ],
+      "length": 43,
+      "memberships": [
+        {
+          "allele": "T",
+          "candidate_id": "q137",
+          "candidate_sha256": "246c4e11701deab7974b1c70ef9a8f84395655e84e7db760ee2763c735606e9b",
+          "end": 901,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q166",
+          "nearest_query_id": "q137",
+          "start": 900,
+          "window_end": 922,
+          "window_start": 879
+        },
+        {
+          "allele": "T",
+          "candidate_id": "q137",
+          "candidate_sha256": "246c4e11701deab7974b1c70ef9a8f84395655e84e7db760ee2763c735606e9b",
+          "end": 901,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q137",
+          "nearest_query_id": "q166",
+          "start": 900,
+          "window_end": 922,
+          "window_start": 879
+        },
+        {
+          "allele": "T",
+          "candidate_id": "q143",
+          "candidate_sha256": "7c797e2aadac8e9bd9ecc407bbe5b316481acbe744fb76233908f3aea6e20651",
+          "end": 901,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q143",
+          "nearest_query_id": "q165",
+          "start": 900,
+          "window_end": 922,
+          "window_start": 879
+        },
+        {
+          "allele": "T",
+          "candidate_id": "q145",
+          "candidate_sha256": "7efa78264317404a549f8087cac92d787cc1d074fbd2ff80a0c6417dc6434a20",
+          "end": 902,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q145",
+          "nearest_query_id": "q144",
+          "start": 901,
+          "window_end": 923,
+          "window_start": 880
+        },
+        {
+          "allele": "T",
+          "candidate_id": "q152",
+          "candidate_sha256": "9c9ebed543b45bfe505e473a2f94ed9deb9251302a7e492bfa584f7a1bca6fab",
+          "end": 900,
+          "endpoint_role": "query",
+          "nearest_neighbor_id": "q154",
+          "nearest_query_id": "q152",
+          "start": 899,
+          "window_end": 921,
+          "window_start": 878
+        },
+        {
+          "allele": "T",
+          "candidate_id": "q152",
+          "candidate_sha256": "9c9ebed543b45bfe505e473a2f94ed9deb9251302a7e492bfa584f7a1bca6fab",
+          "end": 900,
+          "endpoint_role": "neighbor",
+          "nearest_neighbor_id": "q152",
+          "nearest_query_id": "q154",
+          "start": 899,
+          "window_end": 921,
+          "window_start": 878
+        }
+      ],
+      "sequence": "TCTGTGCGCGTCGGCGTCGTATTTTTCGGCTAACTCGTCTTTT",
+      "sequence_sha256": "fd6599fb7d0e8a3f19fb1458cf53d446052fe103abda6e4e3520213d329180ec",
+      "unique_template_placement": false
+    }
+  ]
+}

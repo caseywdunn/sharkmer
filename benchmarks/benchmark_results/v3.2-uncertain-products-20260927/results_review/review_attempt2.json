@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/apps/software/2024a/software/Python/3.12.3-GCCcore-13.3.0/bin/python",
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/independent_outcome_review.py",
+    "--comparison",
+    "tmp/uncertain-products-20260927/comparison-v1",
+    "--freeze-sha256",
+    "ab139c02c2a14874fb66c41322268bdf5c690b837120c113f95f2ef2fe4cbb79",
+    "--output",
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/independent_outcome_review.json"
+  ],
+  "returncode": 0,
+  "status": "pass",
+  "source_sha256": "68ee06ae31701eb0081d7708ff73527b0fb205379c400fabf7f95022c0ee3bb7"
+}

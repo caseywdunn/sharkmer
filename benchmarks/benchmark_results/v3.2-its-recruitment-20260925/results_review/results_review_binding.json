@@ -1,0 +1,68 @@
+{
+  "checks": {
+    "command_output_hashes": 12,
+    "command_receipts": 3,
+    "distinct_ledger_ordinals": 117,
+    "fastq_records_bound": 1000000,
+    "frozen_snapshots": 36,
+    "frozen_sources": 36,
+    "ledger_entries_bound": 172,
+    "local_alignment_checks": {
+      "best_sets_checked": 234,
+      "cigars_checked": 5916,
+      "class_pair_distances_checked": 6058,
+      "context_minima_checked": 700,
+      "decoy_placements_checked": 2572,
+      "flank_matches_checked": 1910,
+      "observations": 117,
+      "pairs_checked": 6058
+    }
+  },
+  "critical_interpretation": [
+    "ITS1 has one lower-quality longer-class relationship and no Q20-qualified match.",
+    "ITS2 has two records with identical complete 150 bp sequences; one Q20 span is shorter because of a low-quality endpoint. These are one observed pattern, not two independent footprints.",
+    "Optimal ITS2 tracebacks are tied; deleted hypothesis bases have no observed quality.",
+    "Control modes reproduce 27 exact/28 one-substitution retained and 0 lost.",
+    "No evidence justifies production gate/threading changes or establishes repeat copy number/full-product phase."
+  ],
+  "files": [
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/results_review/RESULTS_REVIEW.md",
+      "sha256": "b6393d7049646654cfa3e840cce223a8255d87a1127d6cb731f496d465f2a3d8",
+      "size_bytes": 5961
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/results_review/local_alignment_review.json",
+      "sha256": "2173b420a13cfa31b878fb9588bb2e7be780e6c4a7dfa613a54a3c8e1e0f566f",
+      "size_bytes": 6269
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/results_review/provenance_ledger_review.json",
+      "sha256": "330f80c0efe87b316b49b793d193a075c8947a055c0e136ba63d476442a20d4b",
+      "size_bytes": 6149
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/results_review/verify_local_alignments.py",
+      "sha256": "aa32df70bbec85dd35a00b47773d7be1bb42d60f2ec76d939acc8a85ab376a3f",
+      "size_bytes": 12486
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/results_review/verify_provenance_and_ledgers.py",
+      "sha256": "db2f4f71abf15adf79e13a3a186042623f864fdb9d22bc18d48d9663539ca801",
+      "size_bytes": 18775
+    },
+    {
+      "path": "benchmarks/benchmark_results/v3.2-its-recruitment-20260925/freeze.json",
+      "sha256": "cb68a200f410a89980380cf7d4c290c3d825c7b501f43acf16736ec954abe600",
+      "size_bytes": 11133
+    }
+  ],
+  "freeze_sha256": "cb68a200f410a89980380cf7d4c290c3d825c7b501f43acf16736ec954abe600",
+  "limitations": [
+    "Verifiers check reported evidence and frozen seeded-scanner logic; they do not independently search all non-ledger biological reads for omitted matches.",
+    "Local and finite-context findings are calibration evidence, not held-out biological validation."
+  ],
+  "review_date": "2026-09-26",
+  "schema_version": 1,
+  "status": "independent_results_review_pass"
+}

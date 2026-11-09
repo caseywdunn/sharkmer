@@ -1,0 +1,21 @@
+{
+  "artifacts": {
+    "protocol-v1.json": "00f3261a9e9ad9a7d5cb4c5735fcbdc42be5e968081c948d8e14fa4b2e7588d2",
+    "protocol_preflight.json": "e1951e904dfd5fd74e74ea9bb2725bb92aba2bf931ca21d496d305a2d215abe1",
+    "run_human_diagnostic.py": "eaab27505c212fc7a90b3b57d6cbab04a5fae91998e8a6ad53cec801756c9e9b",
+    "run_human_diagnostic.sbatch": "2f601be37171d2f7a4102ea2f6d1589089045f15d5ecdd4e2eb56aa891ffa9cb"
+  },
+  "limitations": [
+    "Frozen release-versus-retention binaries precede current panel/dependency corrections; this is not the final corrected build or retention-only attribution.",
+    "No assembly warm-up; repeated source/input pre-reads do not guarantee resident pages. Three observations per cell remain descriptive.",
+    "Report absolute as well as percent Human timing differences. Traced metrics and overlapping syscall sums must not enter normal medians or be treated as critical-path time.",
+    "One current-environment output-location experiment cannot identify the cause of historical waits or close the other three runtime flags.",
+    "This is not collaborator performance acceptance or release authorization."
+  ],
+  "normal_runs": 12,
+  "protocol_sha256": "00f3261a9e9ad9a7d5cb4c5735fcbdc42be5e968081c948d8e14fa4b2e7588d2",
+  "review": "Source/output/input identities verified; alternating role/location order, dedicated two physical cores, local logs/time, before/after source checks, exact products/outcomes/counts and separate trace timing are adequate for this small output-location diagnostic.",
+  "source_receipts_verified": 20,
+  "status": "approved_for_bounded_diagnostic",
+  "traced_runs": 4
+}

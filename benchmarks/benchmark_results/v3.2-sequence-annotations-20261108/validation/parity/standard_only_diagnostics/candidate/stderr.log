@@ -1,0 +1,5 @@
+Only 8 FASTQ records read. sPCR typically needs many more reads to produce results.
+[repeat] Withholding 1 complete candidate path(s) because repeat length is unresolved at threshold 2.
+  - repeat (no products, repeat length unresolved for all complete candidate paths)
+  + clean (1 record: 1 without assembly warnings, 0 with assembly warnings; 160 bp)
+sharkmer complete: 8 reads, 1/2 targets with output (clean), 1 records (1 without assembly warnings, 0 with assembly warnings), allocator peak 92.8 KB, 0.0s

@@ -1,0 +1,638 @@
+{
+  "baseline_role": "pre_fix",
+  "failures": [],
+  "generated_at": "2026-09-11T13:20:08.983968+00:00",
+  "invocations": 6,
+  "limitations": [
+    "Local uncompressed fixed-prefix calibration, not held-out truth; network/gzip/BLAST excluded.",
+    "Whole unchanged panels are timed; recovery is assessed by target metadata and per-product evidence, not raw total products.",
+    "Small number of paired measurements supports descriptive comparisons, not portable statistical guarantees.",
+    "40 GiB virtual-address limit is not an RSS cap or 16 GB laptop validation."
+  ],
+  "pair_comparisons": [
+    {
+      "baseline_ingested_kmers_s": 1628935.4459031236,
+      "baseline_input_mbp_s": 2.036999275690358,
+      "baseline_peak_rss_bytes": 2287435776,
+      "baseline_wall_time_s": 44.18,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1627094.0085914538,
+      "candidate_input_mbp_s": 2.0346965408094055,
+      "candidate_peak_rss_bytes": 2287296512,
+      "candidate_speedup_ratio": 0.9988695455573141,
+      "candidate_wall_time_s": 44.23,
+      "cell": "insecta/SRR1057608/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 1343989.0744323388,
+      "baseline_input_mbp_s": 1.5273393748090824,
+      "baseline_peak_rss_bytes": 4569202688,
+      "baseline_wall_time_s": 98.21000000000001,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1341257.66690377,
+      "candidate_input_mbp_s": 1.524235341936795,
+      "candidate_peak_rss_bytes": 4569210880,
+      "candidate_speedup_ratio": 0.997967686210751,
+      "candidate_wall_time_s": 98.41,
+      "cell": "insecta/SRR27962769/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    },
+    {
+      "baseline_ingested_kmers_s": 1376973.8458983726,
+      "baseline_input_mbp_s": 1.67718365991365,
+      "baseline_peak_rss_bytes": 2287484928,
+      "baseline_wall_time_s": 60.22,
+      "both_complete": true,
+      "candidate_ingested_kmers_s": 1383867.9072096127,
+      "candidate_input_mbp_s": 1.685580774365821,
+      "candidate_peak_rss_bytes": 2287312896,
+      "candidate_speedup_ratio": 1.0050066755674232,
+      "candidate_wall_time_s": 59.92,
+      "cell": "insecta/SRR31887760/1000000",
+      "classifications_identical": true,
+      "counts_identical": true,
+      "pair_index": 1,
+      "products_identical": true
+    }
+  ],
+  "protocol": {
+    "baseline_role": "pre_fix",
+    "expected_commits": {
+      "candidate": "7b057dcde7594fd64cc0f23903f49c3fa1c23974",
+      "pre_fix": "47536207e4b7e6570fc1169436a7af47a51a9c99"
+    },
+    "limitations": [
+      "Local uncompressed fixed-prefix calibration, not held-out truth; network/gzip/BLAST excluded.",
+      "Whole unchanged panels are timed; recovery is assessed by target metadata and per-product evidence, not raw total products.",
+      "Small number of paired measurements supports descriptive comparisons, not portable statistical guarantees.",
+      "40 GiB virtual-address limit is not an RSS cap or 16 GB laptop validation."
+    ],
+    "priority": "2026-09-11 user: protect abundant organelle/ribosomal recovery and runtime/RAM; metagenomic and single-copy nuclear optimization deferred",
+    "purpose": "Bounded issue154 check before merge; three affected insect panels, pre-fix vs154",
+    "review_criteria": {
+      "deferred": "Metagenomic and single-copy nuclear diversity/recovery are not current release gates.",
+      "failures": "Any nonzero CLI exit, timeout, resource breach, count mismatch, invalid provenance/output or BLAST evaluation error invalidates that cell.",
+      "ram": "Report every increase; prioritize investigation of >2% per-cell paired median RSS increase.",
+      "recovery": "Flag every lost high-copy candidate; prioritize reference-supported and dominant products. Compare sequence membership independent of index, retain classification and median/minimum support. Do not require restoration of unsupported repeat-copy claims.",
+      "release": "Stop before release for user review, regardless of numeric thresholds.",
+      "runtime": "Report every increase; prioritize investigation of >5% per-cell paired median wall increase. Descriptive only; no automatic no-regression claim."
+    },
+    "samples": [
+      {
+        "depth": 1000000,
+        "input": "SRR31887760",
+        "pairs": 1,
+        "panel": "insecta",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR1057608",
+        "pairs": 1,
+        "panel": "insecta",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "depth": 1000000,
+        "input": "SRR27962769",
+        "pairs": 1,
+        "panel": "insecta",
+        "taxon": "Gryllus bimaculatus"
+      }
+    ],
+    "settings": {
+      "address_space_limit_bytes": 42949672960,
+      "chunks": 0,
+      "cpu_list": [
+        0,
+        1
+      ],
+      "input_format": "uncompressed_four_line_fastq",
+      "k": 19,
+      "paired": false,
+      "prewarm_each_invocation": true,
+      "read_threading": false,
+      "threads": 2,
+      "timeout_seconds": 1800
+    },
+    "target_metadata": {
+      "insecta": [
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "12S",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "16S_1",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO1_1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO2_1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CytB",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "ND1",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "ND4",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "ND5",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "16S_2",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO1_2",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "CO2_2",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": "mitochondrion",
+          "copy_number": "high_copy",
+          "gene": "NADH",
+          "gene_type": "protein_coding",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Fz4",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Gpdh",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Pgi",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "single_copy",
+          "gene": "Yp2",
+          "gene_type": "protein_coding",
+          "scope": "deferred_or_unclassified"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "18S_1",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "28S",
+          "gene_type": "rRNA_LSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "18S_2",
+          "gene_type": "rRNA_SSU",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS_1",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        },
+        {
+          "compartment": null,
+          "copy_number": "high_copy",
+          "gene": "ITS_2",
+          "gene_type": "ITS",
+          "scope": "high_copy_candidate"
+        }
+      ]
+    }
+  },
+  "references": {
+    "insecta": [
+      {
+        "accession": "EU494495",
+        "gene": "12S",
+        "length": 420,
+        "sha256": "f12440f362d8037c26ba2668a3e31999d2cb3d541a3d7bef0d25ed2682518485",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "NC_005780",
+        "gene": "16S_1",
+        "length": 380,
+        "sha256": "5b7f3b95703955fca084997b9a11f076aed461b78886cbb8848454b844379d43",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "KM252237",
+        "gene": "16S_1",
+        "length": 379,
+        "sha256": "44e23d689c95c641033baeeb25f0cb72e7bb9094ff3ac862e0b20c4f47ab0a95",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "NC_053546",
+        "gene": "16S_1",
+        "length": 376,
+        "sha256": "e5f5129691d3c5b0526cb4322c4e0566420f408d7090cca76a8ad146718b755c",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "KP073314",
+        "gene": "16S_1",
+        "length": 317,
+        "sha256": "67046e4cd6d2b658a60d77231d2361b324bf93925f8698bc1182d1f747f2d62c",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "OM754561",
+        "gene": "CO1_1",
+        "length": 352,
+        "sha256": "22b7811a5ddf8604ee945184885042ae3a3b9edeb8597ca08dcc781e0e189c35",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "PP230540",
+        "gene": "CO1_1",
+        "length": 304,
+        "sha256": "29d1091f50ad961c1e1a778a80930325f82f63b39b1b25e7e170d93ca599cb8d",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "KJ174812",
+        "gene": "CO1_1",
+        "length": 304,
+        "sha256": "8ba0cf4d35377c7ebbb54000f07053c99d16008cf3e79cb45d8441da95ec1f2f",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "AC254620",
+        "gene": "CO2_1",
+        "length": 325,
+        "sha256": "81018509b4a91b7c6ed8dd12acc7358b2b95015f019c20b07df5da5b496341c9",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "KM252505",
+        "gene": "CO2_1",
+        "length": 291,
+        "sha256": "06f3ffbb21d5f655befcd56a83d2241def842759b48dafda45bcd26cf73831f3",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "GQ398183",
+        "gene": "CO2_1",
+        "length": 288,
+        "sha256": "75a2f13657c465c52bb64e68bea7a87ee7602a32700e5905a346b6dab7692712",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "NC_005780",
+        "gene": "ND1",
+        "length": 240,
+        "sha256": "e1f30300b75f4ba9468d26bde07f925dad14115818211ea869501f46bc6718ab",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "MK659833",
+        "gene": "ND4",
+        "length": 241,
+        "sha256": "af6517445caf93924c95d4a8788083b78cf110408f9b3fd8805d502f1b23ada0",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "PP230540",
+        "gene": "ND4",
+        "length": 241,
+        "sha256": "36eba17e1bc0c8eada369c9d50bea98b464803b954d9d1a2701e0a1a89cecab8",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "NC_005780",
+        "gene": "16S_2",
+        "length": 541,
+        "sha256": "f94072650f22fc0904a71df38975045704212b21a8dcc68a1f48fc3f09d696b5",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "BK006341",
+        "gene": "16S_2",
+        "length": 540,
+        "sha256": "128895aff655a1bc92ad2e338db5fd92da30300a222e9f127e44a38edf45de43",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "PP230540",
+        "gene": "16S_2",
+        "length": 534,
+        "sha256": "66686929b8d17dfa5e1851e37d6a089bc385a664000b4f50bf5c1431a3c22db4",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "NC_026564",
+        "gene": "16S_2",
+        "length": 400,
+        "sha256": "c03f6174544b202af37048463ccb21b978e08f3029e35e62b3ec4c0b0fa3b2e6",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "PP764096",
+        "gene": "CO1_2",
+        "length": 859,
+        "sha256": "51bf43f54d090b6eabf16c53c6c873ee67be7eb506b52ff8e9f943bd6d117366",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "NC_005780",
+        "gene": "CO1_2",
+        "length": 859,
+        "sha256": "6531e505b7dd94b425eb8389223029f42599991f0d18b4bb3aff5ff5a8f116d0",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "KM252239",
+        "gene": "CO1_2",
+        "length": 859,
+        "sha256": "5061c15a94bd8fce86f9d4bc967bdf7fcd872d0fa5b7435e2e62a616a418b777",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "KP074829",
+        "gene": "CO1_2",
+        "length": 855,
+        "sha256": "017bd8b318b157bd0a3e287883fddac70be8f2e280202fe418c6251d412e0f82",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "MW376578",
+        "gene": "CO2_2",
+        "length": 777,
+        "sha256": "108adaa4993ac45ef33426c64df695f7759b03a64454e0906964efbcc0798edf",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "NC_005780",
+        "gene": "CO2_2",
+        "length": 777,
+        "sha256": "079a4e8eaaa2d7172dd2542326297449836dd75be16871ae1521389b52ea39c4",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "KM252494",
+        "gene": "CO2_2",
+        "length": 780,
+        "sha256": "bf44e9b94a9f69e2fff4aca79e082f44f4d53637cfc8dc95243237af0f1ea7cd",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "NC_005780",
+        "gene": "NADH",
+        "length": 550,
+        "sha256": "e582fd811cd01cb9d1561c01423b06de772236495d51b9da13b2740dc734c74b",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "KM252368",
+        "gene": "NADH",
+        "length": 550,
+        "sha256": "e92d453a2c581c33916f2fea577e9e63260745e23864c3ce1f53b92be785aee8",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "PP230540",
+        "gene": "NADH",
+        "length": 544,
+        "sha256": "f01e2075d7ef7a69567543a806fa8efeaf5e13deb7759deefecba8b8c681efe6",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "AC007928",
+        "gene": "Yp2",
+        "length": 685,
+        "sha256": "f45ac6fdf2210db72f9290e6261e07fa53dfd679256671df00689ef3a437d21a",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "NR_133558",
+        "gene": "18S_1",
+        "length": 661,
+        "sha256": "d9560d203e10a1dcbd87c480e049dc7f9b8396a419f38199d186c84c2364766c",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "XR_005544871",
+        "gene": "18S_1",
+        "length": 661,
+        "sha256": "fe0f828018cff69ec1e4dbbeda17b8cbd70f76c4d2ad13ea727bef55e01bcaa9",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "AY183920",
+        "gene": "28S",
+        "length": 829,
+        "sha256": "f878cec63dee7a045f90a49401df23a1482c6816118b83032d581064eefa9348",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "AK281049",
+        "gene": "28S",
+        "length": 636,
+        "sha256": "c34d3a7dda4b364f49af87467f2bf6dfc702788de729e0cb47e9eeb755629197",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "NR_133554",
+        "gene": "18S_2",
+        "length": 1977,
+        "sha256": "35d21bc51d980e58c64ec74ea7fc035b278e1fbeeb55caab5782cd45885268d0",
+        "taxon": "Drosophila melanogaster"
+      },
+      {
+        "accession": "XR_004459988",
+        "gene": "18S_2",
+        "length": 1977,
+        "sha256": "bba4bee9df8dc23cbc2e0d75f5100cd43faf4888d8aa84c0657f8d99d1935599",
+        "taxon": "Drosophila sechellia"
+      },
+      {
+        "accession": "XR_006246778",
+        "gene": "18S_2",
+        "length": 1947,
+        "sha256": "a544596cc915356770bc7bb6fc3d428206ac9707ed514fa16584f3f898169991",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "K01281",
+        "gene": "ITS_1",
+        "length": 774,
+        "sha256": "a5fe48d290dc4272bf46c6f3ad92b919eeb0c72363cacd17de6a047407906134",
+        "taxon": "Drosophila tanythrix"
+      },
+      {
+        "accession": "PP230540",
+        "gene": "CytB",
+        "length": 403,
+        "sha256": "7d75f8650e104c236b595fc0b12a5a8a74976b7aa3268fd0b5f5715bfff38f81",
+        "taxon": "Gryllus bimaculatus"
+      },
+      {
+        "accession": "NC_024741",
+        "gene": "CytB",
+        "length": 403,
+        "sha256": "f7944f2a336182246d3bbdffcf7d5b92912818cd61182a1de13d5fa745b92ec3",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "NC_024864",
+        "gene": "ND5",
+        "length": 301,
+        "sha256": "c09cf847c492455f94558517a37d8a454e2eeecaf438d6a9fc5c8a51d1a761d5",
+        "taxon": "Heliconius pachinus"
+      },
+      {
+        "accession": "AK281180",
+        "gene": "ITS_2",
+        "length": 978,
+        "sha256": "23163ca76f97f5d1685f0fcf4bda6ffc798bdf58c63953416833e78a480af68c",
+        "taxon": "Gryllus bimaculatus"
+      }
+    ]
+  },
+  "release_gate": "Not automatically decided: review scoped product evidence, runtime and RSS, including any losses or increases.",
+  "schema_version": 1,
+  "timings": [
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "maximum_s": 44.18,
+      "median_s": 44.18,
+      "minimum_s": 44.18,
+      "n": 1,
+      "values_s": [
+        44.18
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR1057608/1000000",
+      "maximum_s": 44.23,
+      "median_s": 44.23,
+      "minimum_s": 44.23,
+      "n": 1,
+      "values_s": [
+        44.23
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "maximum_s": 98.21000000000001,
+      "median_s": 98.21000000000001,
+      "minimum_s": 98.21000000000001,
+      "n": 1,
+      "values_s": [
+        98.21000000000001
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR27962769/1000000",
+      "maximum_s": 98.41,
+      "median_s": 98.41,
+      "minimum_s": 98.41,
+      "n": 1,
+      "values_s": [
+        98.41
+      ],
+      "version": "candidate"
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "maximum_s": 60.22,
+      "median_s": 60.22,
+      "minimum_s": 60.22,
+      "n": 1,
+      "values_s": [
+        60.22
+      ],
+      "version": "baseline"
+    },
+    {
+      "cell": "insecta/SRR31887760/1000000",
+      "maximum_s": 59.92,
+      "median_s": 59.92,
+      "minimum_s": 59.92,
+      "n": 1,
+      "values_s": [
+        59.92
+      ],
+      "version": "candidate"
+    }
+  ]
+}

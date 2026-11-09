@@ -1,0 +1,8 @@
+test_execution_cannot_replace_individual_receipt_record (independent_reporter_v2.IndependentReporterControls) ... ok
+test_source_bound_outputs_and_timing_logs_reject_postcapture_mutation (independent_reporter_v2.IndependentReporterControls) ... ok
+test_supplied_oracle_and_summary_must_match_execution_fingerprints (independent_reporter_v2.IndependentReporterControls) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.114s
+
+OK

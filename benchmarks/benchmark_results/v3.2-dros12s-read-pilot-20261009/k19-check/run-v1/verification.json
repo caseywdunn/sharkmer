@@ -1,0 +1,12 @@
+{
+  "archived_source_and_output_hashes_verified": true,
+  "candidate_rows_verified": 28,
+  "distinct_canonical_targets_by_group": {
+    "emitted_12S": 815,
+    "historical_control": 800
+  },
+  "independent_literal_reverse_complement_recount_of_reported_candidates": true,
+  "method": "Independently canonicalized literal19strings using string reversecomplement and checked all reported coverage/minimum/maximum/distinct counts against frozen rawcounts TSV; no FASTQ rescan.",
+  "source_execution_sha256": "17579e566ba09e7010d32a4ff0dce0eb6d1a0ae52d20d9e695d7cac3603618ba",
+  "status": "pass"
+}

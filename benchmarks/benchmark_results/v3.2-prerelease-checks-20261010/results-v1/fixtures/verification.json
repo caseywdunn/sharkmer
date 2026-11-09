@@ -1,0 +1,79 @@
+{
+  "fixture": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz",
+    "sha256": "3d554c9bad681c519c2c0f5a77e87bd6d7bd06a0ffff845a4b9cb22ced8e3eef",
+    "size_bytes": 10710465
+  },
+  "oracle": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/known_truth.yaml",
+    "sha256": "4bd32f3a5eb5205a06bf77eb31be172902386dfe1a6199d7b21fa3a4e2d045a3",
+    "size_bytes": 811
+  },
+  "runs": [
+    {
+      "all_records": [],
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "19",
+        "-t",
+        "2",
+        "--chunks",
+        "0",
+        "-s",
+        "fixture_k19",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/fixtures/fixture_k19",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz"
+      ],
+      "counts": {
+        "n_bases_ingested": 14999541,
+        "n_bases_read": 15000000,
+        "n_kmers": 13197385,
+        "n_reads_read": 100000,
+        "n_subreads_ingested": 100000
+      }
+    },
+    {
+      "all_records": [
+        {
+          "gene": "cnidaria_18S",
+          "header": "fixture_k31_cnidaria_18S_0 sample=fixture_k31 gene=cnidaria_18S product=0 length=1783 kmer_count_mean=7.05 kmer_count_median=7 kmer_count_min=2 kmer_count_max=13 score=7.00 assembly_status=standard",
+          "length": 1783,
+          "sha256": "dc5aaf114fe93ed446a6b262242adba9acfea9aca3f5877279fe5f1ae664aafb"
+        },
+        {
+          "gene": "cnidaria_28S_2",
+          "header": "fixture_k31_cnidaria_28S_2_0 sample=fixture_k31 gene=cnidaria_28S_2 product=0 length=430 kmer_count_mean=6.46 kmer_count_median=7 kmer_count_min=2 kmer_count_max=10 score=7.00 assembly_status=standard",
+          "length": 430,
+          "sha256": "4f1428f3822658991a58ef52d66033e7362de5a7effd442e0190ee0c76a96dcd"
+        }
+      ],
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+        "-k",
+        "31",
+        "-t",
+        "2",
+        "--chunks",
+        "0",
+        "-s",
+        "fixture_k31",
+        "-o",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/fixtures/fixture_k31",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz",
+        "--pcr-panel",
+        "cnidaria"
+      ],
+      "counts": {
+        "n_bases_ingested": 14999541,
+        "n_bases_read": 15000000,
+        "n_kmers": 11996833,
+        "n_reads_read": 100000,
+        "n_subreads_ingested": 100000
+      }
+    }
+  ],
+  "scope": "Regression count/full-standard-sequence oracle. Any uncertain records are listed separately, not used as biological truth.",
+  "status": "pass"
+}

@@ -1,0 +1,37 @@
+{
+  "affinity": [
+    32,
+    36
+  ],
+  "command": [
+    "/usr/bin/time",
+    "-o",
+    "/tmp/sharkmer-runtime-29012047-nqhkakk1/09_block3_nfs_retention/time.json",
+    "-f",
+    "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+    "--",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/checks-v3/sharkmer",
+    "-k",
+    "19",
+    "-t",
+    "2",
+    "--chunks",
+    "0",
+    "--max-reads",
+    "1000000",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-runtime-review-20261010/results-v1/09_block3_nfs_retention/outputs/",
+    "-s",
+    "human_SRR17535371_1000000",
+    "--pcr-panel-file",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/inputs/panels/human.yaml",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/inclusive-release-20260929/restore-v2/SRR17535371.fastq"
+  ],
+  "pid": 1498243,
+  "rlimit_as_soft_hard": [
+    12884901888,
+    12884901888
+  ],
+  "status": "pass",
+  "unix_time": 1791654510.5561864
+}

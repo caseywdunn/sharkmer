@@ -1,0 +1,261 @@
+{
+  "address_space_limit_bytes": 2147483648,
+  "blastn_version": "blastn: 2.17.0+\n Package: blast 2.17.0, build Aug 11 2025 09:46:06\n",
+  "commands": [
+    [
+      "/usr/bin/timeout",
+      "--kill-after=5s",
+      "599s",
+      "/usr/bin/time",
+      "-o",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/public_time.json",
+      "-f",
+      "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+      "/usr/bin/prlimit",
+      "--as=2147483648",
+      "--",
+      "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/blastn",
+      "-query",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/public_queries.fasta",
+      "-db",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db",
+      "-task",
+      "blastn",
+      "-dust",
+      "no",
+      "-evalue",
+      "1e-10",
+      "-max_target_seqs",
+      "121",
+      "-max_hsps",
+      "20",
+      "-num_threads",
+      "1",
+      "-outfmt",
+      "6 qseqid sseqid pident length qlen qstart qend slen sstart send evalue bitscore gaps qcovs",
+      "-out",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/public_hits.tsv"
+    ],
+    [
+      "/usr/bin/timeout",
+      "--kill-after=5s",
+      "596s",
+      "/usr/bin/time",
+      "-o",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/angiospermae_time.json",
+      "-f",
+      "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+      "/usr/bin/prlimit",
+      "--as=2147483648",
+      "--",
+      "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/blastn",
+      "-query",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/angiospermae_queries.fasta",
+      "-db",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db",
+      "-task",
+      "blastn",
+      "-dust",
+      "no",
+      "-evalue",
+      "1e-10",
+      "-max_target_seqs",
+      "121",
+      "-max_hsps",
+      "20",
+      "-num_threads",
+      "1",
+      "-outfmt",
+      "6 qseqid sseqid pident length qlen qstart qend slen sstart send evalue bitscore gaps qcovs",
+      "-out",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/angiospermae_hits.tsv"
+    ],
+    [
+      "/usr/bin/timeout",
+      "--kill-after=5s",
+      "595s",
+      "/usr/bin/time",
+      "-o",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/insecta_time.json",
+      "-f",
+      "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+      "/usr/bin/prlimit",
+      "--as=2147483648",
+      "--",
+      "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/blastn",
+      "-query",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/insecta_queries.fasta",
+      "-db",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db",
+      "-task",
+      "blastn",
+      "-dust",
+      "no",
+      "-evalue",
+      "1e-10",
+      "-max_target_seqs",
+      "121",
+      "-max_hsps",
+      "20",
+      "-num_threads",
+      "1",
+      "-outfmt",
+      "6 qseqid sseqid pident length qlen qstart qend slen sstart send evalue bitscore gaps qcovs",
+      "-out",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/insecta_hits.tsv"
+    ]
+  ],
+  "cpu_affinity": [
+    10
+  ],
+  "inventory_candidates": 154,
+  "new_queries": 41,
+  "outputs": {
+    "angiospermae_hits.tsv": {
+      "bytes": 131,
+      "sha256": "b7e6c19ac55b67c1e4d554a7bc7322df03865bc331730f9f2346365a5d984322"
+    },
+    "angiospermae_queries.fasta": {
+      "bytes": 11049,
+      "sha256": "63e04d2fb16efc81218919cb11da17cbbd06b7e47e0690cabc75a6ff3e0dda05"
+    },
+    "angiospermae_stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "angiospermae_stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "angiospermae_time.json": {
+      "bytes": 98,
+      "sha256": "b974d2a3fbdd37ff94654adaf67aa4c5c67a3585bd6c13b77231338618f01434"
+    },
+    "insecta_hits.tsv": {
+      "bytes": 1334,
+      "sha256": "82a0c9e0d92906c8af74459fd0b316d8212871ff8b4cad552dc04aaab4ee268c"
+    },
+    "insecta_queries.fasta": {
+      "bytes": 2839,
+      "sha256": "eebad691acaba7249e2079ff5ff3a3dc0c891b1569fc155f317646603f865e15"
+    },
+    "insecta_stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "insecta_stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "insecta_time.json": {
+      "bytes": 98,
+      "sha256": "a2170f64d1a06b80bdb1a2dc673327df5ce28b7d0b3d3bee230e88691e14aab2"
+    },
+    "public_hits.tsv": {
+      "bytes": 27204,
+      "sha256": "4cfd40ed3ad1d174fca1e6dabd64ec4c2f70fca885f8d3f18278ec952f09bbc9"
+    },
+    "public_queries.fasta": {
+      "bytes": 13888,
+      "sha256": "5f4ae672be40185e01d4a6c24ce335da4e92c52f4174e857a9d579db972c4564"
+    },
+    "public_stderr.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "public_stdout.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "public_time.json": {
+      "bytes": 98,
+      "sha256": "874b16103677e67cba364d80908503cf8dba747bd9d1890ef29db82dc78ec0b9"
+    },
+    "queries.json": {
+      "bytes": 70451,
+      "sha256": "48035c4e0f502de702451c09efb17880cd4a942e3931015303ffb15b00b0675b"
+    }
+  },
+  "returncodes": [
+    0,
+    0,
+    0
+  ],
+  "reused_queries": 113,
+  "slurm_job_id": "28875555",
+  "source_hashes_after": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.ndb": "51c6ad81d9db4914e6a979a378949383cc681b273f5cda66ceefead0b437b5af",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.nhr": "36d39bb0dca1c1a112ede709a778c59df29f923c031963a3159c32ae6bdcd3ee",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.nin": "523e2357d0d9bf8927c833b25f6bba2d0829697c6d340e14cbf3945388aed9c5",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.njs": "cc6e4523d71bd2a9f608e1815df01bf8046be293bbc5e3b8d0f3d8c72e6369b6",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.not": "f24a2175260a45334ad2deb1a18b8871ee47061c0e9e2369eaac7179bc2c060f",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.nsq": "434946a46d70e3767fe3b80a2db24882cb937cd451969323ed330a54adce4a84",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.ntf": "67982e4d7b1490b09cce06e7c29175c6bd011cd542cfacb1a1c310084a50821a",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.nto": "2ffb5c02cfa9e7e63d3ec7c6a30abcc2640053f6b3a6e0031ac67c4204ffa8a0",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.ndb": "af1471139c4be14362c8d0618507c678982b4e7061d3ec20eaad60328bfa30b9",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.nhr": "56958885b0cbb88ff85a595528391ea3d8df8feedd2155951dc8479830f09ebf",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.nin": "4e129da31c091eb257a1aff5c627282790992a5e8796e3ae1992c07307342db5",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.njs": "4d967c34428f003006a86cd5731e8791e4b3e59bd974246d23234ca17f0e80f4",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.not": "15c49c837a083d3f2d773e179fffe365a7699a831625385611c81c86a868a350",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.nsq": "328eafb1db906a9457e447ade3c423635b7d47780ff72589f830a3e6dd141f9e",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.ntf": "67982e4d7b1490b09cce06e7c29175c6bd011cd542cfacb1a1c310084a50821a",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.nto": "0a52cf5455966efa72218e09d35909d67045c76be44f9ea6d19dfe7c1c894075",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/per_sequence.json": "48c58d94713a33539617489c550510e8e23c14a08784d1557e87682c5a6b75d4",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.ndb": "442b180a54336327243235f1de7ad87da15088be955a6f273ee5b8a955f4e348",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.nhr": "07004eab5da89ece4861f876e17887eaf5e62f05cccae680452351810ba381e5",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.nin": "6d30743ad1755fa275a1084f3256a6fec14831d7fa423ecc5899f6b75839d9c5",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.njs": "4a3d75dbabb25509d7e2c0d1b98f56234b6ae084ab3672539dab427f8ce48889",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.not": "eec56d8f18b3e9bcbc58173eebfdf670887e8e7542c205a5c053bd9862e6b1f8",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.nsq": "ebc8d6b5d1dcb863c61e2e204de2738f4ccabc410db9b0eadd027a3f3f6151c3",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.ntf": "67982e4d7b1490b09cce06e7c29175c6bd011cd542cfacb1a1c310084a50821a",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.nto": "ec6d27bf3a24c3d945ee0f024f9537f6481b1d0896ee9f88f827bcb6bf147477",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_metadata.json": "59d47fb6de32b5dd0d081c8923834047bd3f07824a669842915ba7984fa70276",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/summary.json": "7fe38eb1fa06a46f0d0430f566a3565604617093abb4705ddd98180c29c1ad30",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/novel_target_inventory.json": "969e33eb3671156d1d79b4329480c4ac21c9c7e826ed9e2ec405bc7cd278cb0d",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/angiospermae_queries.fasta": "63e04d2fb16efc81218919cb11da17cbbd06b7e47e0690cabc75a6ff3e0dda05",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/insecta_queries.fasta": "eebad691acaba7249e2079ff5ff3a3dc0c891b1569fc155f317646603f865e15",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/public_queries.fasta": "5f4ae672be40185e01d4a6c24ce335da4e92c52f4174e857a9d579db972c4564",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/queries.json": "48035c4e0f502de702451c09efb17880cd4a942e3931015303ffb15b00b0675b",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/run_missing.py": "a0d2bbe0026e4019521e03f5ce422b32515f6db3c25b3973723fb818f2a5a9a7",
+    "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/blastn": "0b88d4a00cb7fa579c203653151175b24c83d27fe240d420abe7b5261a3083d1"
+  },
+  "source_hashes_before": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.ndb": "51c6ad81d9db4914e6a979a378949383cc681b273f5cda66ceefead0b437b5af",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.nhr": "36d39bb0dca1c1a112ede709a778c59df29f923c031963a3159c32ae6bdcd3ee",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.nin": "523e2357d0d9bf8927c833b25f6bba2d0829697c6d340e14cbf3945388aed9c5",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.njs": "cc6e4523d71bd2a9f608e1815df01bf8046be293bbc5e3b8d0f3d8c72e6369b6",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.not": "f24a2175260a45334ad2deb1a18b8871ee47061c0e9e2369eaac7179bc2c060f",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.nsq": "434946a46d70e3767fe3b80a2db24882cb937cd451969323ed330a54adce4a84",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.ntf": "67982e4d7b1490b09cce06e7c29175c6bd011cd542cfacb1a1c310084a50821a",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/angiospermae_references_db.nto": "2ffb5c02cfa9e7e63d3ec7c6a30abcc2640053f6b3a6e0031ac67c4204ffa8a0",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.ndb": "af1471139c4be14362c8d0618507c678982b4e7061d3ec20eaad60328bfa30b9",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.nhr": "56958885b0cbb88ff85a595528391ea3d8df8feedd2155951dc8479830f09ebf",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.nin": "4e129da31c091eb257a1aff5c627282790992a5e8796e3ae1992c07307342db5",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.njs": "4d967c34428f003006a86cd5731e8791e4b3e59bd974246d23234ca17f0e80f4",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.not": "15c49c837a083d3f2d773e179fffe365a7699a831625385611c81c86a868a350",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.nsq": "328eafb1db906a9457e447ade3c423635b7d47780ff72589f830a3e6dd141f9e",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.ntf": "67982e4d7b1490b09cce06e7c29175c6bd011cd542cfacb1a1c310084a50821a",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/insecta_references_db.nto": "0a52cf5455966efa72218e09d35909d67045c76be44f9ea6d19dfe7c1c894075",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/per_sequence.json": "48c58d94713a33539617489c550510e8e23c14a08784d1557e87682c5a6b75d4",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.ndb": "442b180a54336327243235f1de7ad87da15088be955a6f273ee5b8a955f4e348",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.nhr": "07004eab5da89ece4861f876e17887eaf5e62f05cccae680452351810ba381e5",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.nin": "6d30743ad1755fa275a1084f3256a6fec14831d7fa423ecc5899f6b75839d9c5",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.njs": "4a3d75dbabb25509d7e2c0d1b98f56234b6ae084ab3672539dab427f8ce48889",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.not": "eec56d8f18b3e9bcbc58173eebfdf670887e8e7542c205a5c053bd9862e6b1f8",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.nsq": "ebc8d6b5d1dcb863c61e2e204de2738f4ccabc410db9b0eadd027a3f3f6151c3",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.ntf": "67982e4d7b1490b09cce06e7c29175c6bd011cd542cfacb1a1c310084a50821a",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_db.nto": "ec6d27bf3a24c3d945ee0f024f9537f6481b1d0896ee9f88f827bcb6bf147477",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/public_sources_metadata.json": "59d47fb6de32b5dd0d081c8923834047bd3f07824a669842915ba7984fa70276",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/summary.json": "7fe38eb1fa06a46f0d0430f566a3565604617093abb4705ddd98180c29c1ad30",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/novel_target_inventory.json": "969e33eb3671156d1d79b4329480c4ac21c9c7e826ed9e2ec405bc7cd278cb0d",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/angiospermae_queries.fasta": "63e04d2fb16efc81218919cb11da17cbbd06b7e47e0690cabc75a6ff3e0dda05",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/insecta_queries.fasta": "eebad691acaba7249e2079ff5ff3a3dc0c891b1569fc155f317646603f865e15",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/public_queries.fasta": "5f4ae672be40185e01d4a6c24ce335da4e92c52f4174e857a9d579db972c4564",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/blast-missing-v1/queries.json": "48035c4e0f502de702451c09efb17880cd4a942e3931015303ffb15b00b0675b",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/run_missing.py": "a0d2bbe0026e4019521e03f5ce422b32515f6db3c25b3973723fb818f2a5a9a7",
+    "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/blastn": "0b88d4a00cb7fa579c203653151175b24c83d27fe240d420abe7b5261a3083d1"
+  },
+  "sources_unchanged": true,
+  "status": "pass",
+  "wall_budget_seconds": 600
+}

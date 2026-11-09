@@ -1,0 +1,38 @@
+{
+  "findings": [
+    "Final default-feature binary is copied and hashed immediately after locked offline build, before alternate-backend checks can replace target/release/sharkmer. The same copy feeds all eight plant jobs, panel checks and fixture runs.",
+    "Two distinct physical CPUs, Slurm16GiB/two hours, child12GiB address-space caps and finite per-gate/total timers are enforced. Plant runner retains its approved per-invocation one-CPU and synthetic2GiB/real12GiB bounds.",
+    "Both Rust backend tests and Clippy, formatting, Python suite with explicitly successful real BLAST integration and no skips, all158 references, ten explicit schema checks, nine exported embedded panels, nineteen loader checks and both pinned fixture oracles are required.",
+    "Fixture reads and expected count/sequence data are parsed from the frozen known_truth.yaml. The unbound extra k31 count assertion was removed. Uncertain fixture records remain reported separately.",
+    "All75 current consumed repository files and178 tool/helper files match their plan receipts; before/after code and helper verification will detect changes. Concurrent documentation edits are outside executable source freeze.",
+    "Plan-v1 is superseded without execution; plan-v2 is the reviewed launch plan."
+  ],
+  "gate_coverage": [
+    "build_default",
+    "plant_eight",
+    "test_default",
+    "test_fxhash",
+    "clippy_default",
+    "clippy_fxhash",
+    "fmt",
+    "python_all",
+    "references",
+    "panels",
+    "fixtures"
+  ],
+  "plan": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/plan-v2.json",
+    "sha256": "bda19fa8e6164ed689605713454663a18caa0fdb2f896770aafcc109c4dbf0c0",
+    "size_bytes": 65308
+  },
+  "release_authorized": false,
+  "remaining_after_execution": [
+    "Inspect raw final gate results and eight plant comparisons, including partial-reference assessment currently pending in the plant runner.",
+    "These checks do not replace all-panel biological validation, independent held-out truth registration, final macOS CI, or collaborator performance acceptance.",
+    "A16GiB Slurm allocation is not a real16GiB laptop performance demonstration."
+  ],
+  "review_method": "Read-only source/protocol inspection and complete receipt hash verification; no extra suite or assembly run.",
+  "status": "approved_for_bounded_execution",
+  "verified_source_files": 75,
+  "verified_tool_helper_bindings": 178
+}

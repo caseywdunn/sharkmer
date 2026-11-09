@@ -1,0 +1,10 @@
+test_ambiguous_base_resets (test_count_k19.CountingControls) ... ok
+test_no_cross_read_bridge (test_count_k19.CountingControls) ... ok
+test_randomized_brute_force (test_count_k19.CountingControls) ... ok
+test_repeated_occurrences_are_counted (test_count_k19.CountingControls) ... ok
+test_reverse_complements_share_counts (test_count_k19.CountingControls) ... ok
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.182s
+
+OK

@@ -1,0 +1,56 @@
+{
+  "created_utc": "2026-10-11T13:10:14.348801+00:00",
+  "targeted_changes": {
+    "rand": {
+      "before": "0.8.5",
+      "after": "0.8.6",
+      "manifest_minimum": "0.8.6"
+    },
+    "rustls-webpki": {
+      "before": "0.103.10",
+      "after": "0.103.13"
+    }
+  },
+  "alerts": [
+    {
+      "number": 7,
+      "ghsa": "GHSA-82j2-j2ch-gfr8",
+      "package": "rustls-webpki",
+      "patched": "0.103.13",
+      "url": "https://github.com/advisories/GHSA-82j2-j2ch-gfr8"
+    },
+    {
+      "number": 6,
+      "ghsa": "GHSA-cq8v-f236-94qc",
+      "package": "rand",
+      "patched": "0.8.6",
+      "url": "https://github.com/advisories/GHSA-cq8v-f236-94qc"
+    },
+    {
+      "number": 5,
+      "ghsa": "GHSA-xgp8-3hg3-c2mh",
+      "package": "rustls-webpki",
+      "patched": "0.103.12",
+      "url": "https://github.com/advisories/GHSA-xgp8-3hg3-c2mh"
+    },
+    {
+      "number": 4,
+      "ghsa": "GHSA-965h-392x-2mh5",
+      "package": "rustls-webpki",
+      "patched": "0.103.12",
+      "url": "https://github.com/advisories/GHSA-965h-392x-2mh5"
+    }
+  ],
+  "status": "patched_pending_final_validation",
+  "scope": "Four previously identified repository alerts; not a claim of comprehensive security audit. GitHub alerts remain open until branch integration and platform reevaluation.",
+  "files": {
+    "Cargo.toml": {
+      "sha256": "99d2b50c12c9928bb96ab7b113eb21d54917fd8b44905b3f39533374c4a4efba",
+      "bytes": 1582
+    },
+    "Cargo.lock": {
+      "sha256": "248d51af7c3121ba3387af71e9766b5e5c1bba01becc7a599212215981eb3558",
+      "bytes": 57390
+    }
+  }
+}

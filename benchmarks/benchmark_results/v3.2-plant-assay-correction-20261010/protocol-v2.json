@@ -1,0 +1,89 @@
+{
+  "amendment": {
+    "reason": "Independent review identified prior real full-panel RSS about4.26GiB Liriodendron and2.13GiB Acer. A2GiB AS cap applies only to synthetic; real AS cap increased to12GiB before execution.",
+    "sha256": "cce58429cb8cce112856e66abdffcd51976c8ac2e90be3adac5a7113170e78ce",
+    "supersedes": "protocol.json"
+  },
+  "execution": {
+    "binary_and_panel_hashes_before_after": true,
+    "chunks": 0,
+    "default_inclusive_output": true,
+    "fresh_output_directories": true,
+    "full_panel": true,
+    "kmer_length": 19,
+    "physical_cpus": 1,
+    "run_receipts_require": [
+      "exact_command",
+      "exit_status",
+      "wall_seconds",
+      "peak_rss",
+      "input_prefix_digest",
+      "output_file_digests",
+      "stats",
+      "manifest_completion_state"
+    ],
+    "same_binary_before_after": true,
+    "sequential_invocations": true,
+    "threads": 1,
+    "timeout_seconds_per_invocation": 600
+  },
+  "input_receipts": "proposal-v2/mapping.json",
+  "panel_after": "proposal-v2/angiospermae-after.yaml",
+  "panel_before": "proposal-v2/angiospermae-before.yaml",
+  "purpose": "Evaluate the versioned angiospermae trnV-atpE reverse-primer correction with unchanged assembly policy.",
+  "real": {
+    "address_space_limit_bytes": 12884901888,
+    "changed_target": "Enumerate all before/after trnV-atpE records; report exact and partial independent-reference matches separately. Output changes for this redesigned assay are not an unchanged-assay retention comparison.",
+    "claim_limits": [
+      "A matching public reference establishes independent sequence/target support, not full phasing in the sequenced sample.",
+      "Acer opalus references are related-species proxies for Acer monspessulanum.",
+      "No assembly admission gates, repeat policy, retention bounds or output inclusion policy change.",
+      "Runtime results from these bounded checks do not replace collaborator performance assessment before release."
+    ],
+    "controls": "Other nine primer definitions are identical; compare each by literal sequence SHA-256, multiplicity, assembly_status and search-limit diagnostics.",
+    "panel_variants": [
+      "before",
+      "after"
+    ],
+    "reads": "Same previously verified first 1000000 raw R1 FASTQ records for each accession.",
+    "sample_accessions": [
+      "SRR25378184",
+      "ERR14009273"
+    ]
+  },
+  "release_authorized": false,
+  "schema_version": 2,
+  "status": "planned_pending_review_and_frozen_binary",
+  "synthetic": {
+    "address_space_limit_bytes": 2147483648,
+    "assertions": [
+      "Search all emitted standard and uncertain records for the exact independently extracted corrected interval; report every discrepancy and status.",
+      "The legacy canonical source interval is above max_length1000 and cannot be admitted as an in-range product.",
+      "Do not assume the old panel emits zero shorter alternative graph paths; enumerate them if present.",
+      "Synthetic source reconstruction is an assembler diagnostic, not evidence for a real-sample haplotype."
+    ],
+    "expected_corrected_source_intervals": [
+      {
+        "accession": "NC_008326.1",
+        "end": 56434,
+        "length": 909,
+        "start": 55525
+      },
+      {
+        "accession": "NC_056221.1",
+        "end": 55105,
+        "length": 929,
+        "start": 54176
+      }
+    ],
+    "input_format": "All 151-base windows in both orientations from the old source interval plus 100 bp flanks; Phred40; no mutations.",
+    "panel_variants": [
+      "before",
+      "after"
+    ],
+    "source_accessions": [
+      "NC_008326.1",
+      "NC_056221.1"
+    ]
+  }
+}

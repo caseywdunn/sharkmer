@@ -4,7 +4,7 @@ Validate a sharkmer panel against its declared ENA/SRA samples.
 
 Reads the panel's `validation.samples` block, runs sharkmer against each
 sample at each declared read depth, BLASTs recovered amplicons against the
-panel's gold-standard reference sequences, and emits a markdown report plus
+panel's independently sourced reference regions, and emits a markdown report plus
 a detailed YAML result file to panels/validation_results/.
 
 With --genes, only runs the specified gene(s). Useful when iterating on
@@ -42,6 +42,7 @@ from ruamel.yaml import YAML
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from sharkmer_validate import runner, blast_references, results, report  # noqa: E402
+from sharkmer_validate.reference_targets import target_logical_genes  # noqa: E402
 
 REPORTS_DIR = runner.REPO_ROOT / "panels" / "validation_reports"
 RUNS_DIR = runner.REPO_ROOT / "panels" / "validation_runs"
@@ -178,6 +179,16 @@ def main():
         help="Skip BLAST validation against reference sequences.",
     )
     parser.add_argument(
+        "--reference-catalog",
+        type=Path,
+        help="Trusted public-record catalog for reference verification (default: panels/reference_sources.json.gz).",
+    )
+    parser.add_argument(
+        "--executable",
+        type=Path,
+        help="Use and fingerprint this executable instead of building target/release/sharkmer.",
+    )
+    parser.add_argument(
         "--output-dir",
         type=Path,
         default=REPORTS_DIR,
@@ -241,7 +252,8 @@ def main():
     if args.k != runner.K:
         runner.K = args.k
 
-    runner.build_sharkmer()
+    executable_provenance = runner.build_sharkmer(executable=args.executable)
+    executable = Path(executable_provenance["path"])
 
     # Load panel data (read-only copy for metadata).
     panel_data = runner.load_panel_yaml(panel_path)
@@ -268,9 +280,10 @@ def main():
         panel_path, gene_filter
     )
 
+    sample_results = []
     try:
         sharkmer_version = runner.clean_sharkmer_version(
-            runner.get_sharkmer_version()
+            runner.get_sharkmer_version(executable)
         )
         print(f"sharkmer version: {sharkmer_version}")
         print(
@@ -281,25 +294,31 @@ def main():
             print(f"gene filter: {', '.join(gene_filter)}")
         print()
 
-        stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        stamp = runner.unique_run_id()
         run_dir = RUNS_DIR / f"{panel_name}_{stamp}"
 
         # Build reference BLAST DB (if references exist in panel).
         tmpdir = Path(tempfile.mkdtemp(prefix="sharkmer_refs_"))
         ref_db = None
         if not args.no_blast:
-            ref_db = blast_references.build_reference_db(panel_data, tmpdir)
+            ref_db = blast_references.build_reference_db(panel_data, tmpdir, args.reference_catalog)
             if ref_db:
                 print(f"Reference BLAST DB built: {ref_db}")
             else:
-                refs = blast_references.extract_references(panel_data)
-                if not refs:
-                    print("No reference sequences in panel; skipping BLAST.")
+                audit = blast_references.reference_checksums(panel_data, args.reference_catalog)
+                if not audit["verified"]:
+                    print(
+                        "No verified external references; skipping BLAST. "
+                        f"Excluded: {audit['excluded_count']}; catalog: {audit['catalog']['status']}."
+                    )
                 # else: tool not available, warning already printed
         blast_mode = "references" if ref_db else "none"
+        reference_genes = blast_references.available_reference_targets(
+            panel_data, args.reference_catalog
+        )
+        target_mapping = target_logical_genes(panel_data)
 
         # Run sharkmer for each sample x max_reads.
-        sample_results = []
         for sample_block in samples:
             accession = sample_block["accession"]
             declared_reads = sorted(
@@ -324,13 +343,19 @@ def main():
                     run_dir,
                     extra_args=extra_args or None,
                     k=args.k,
+                    executable=executable,
                 )
                 runs.append(run)
 
             # BLAST this sample's amplicons against references.
             taxon = sample_block.get("taxon", "")
             blast_references.blast_all_products(
-                runs, ref_db, sample_taxon=taxon, skip_blast=args.no_blast
+                runs,
+                ref_db,
+                sample_taxon=taxon,
+                skip_blast=args.no_blast,
+                reference_genes=reference_genes,
+                target_mapping=target_mapping,
             )
 
             sample_results.append((sample_block, runs))
@@ -345,6 +370,12 @@ def main():
             blast_mode=blast_mode,
             extra_args=extra_args or None,
             sweep_label=args.label,
+            executable_provenance=executable_provenance,
+            evaluated_genes=runner.panel_gene_names(
+                runner.load_panel_yaml(panel_path_for_run)
+            ),
+            run_id=stamp,
+            reference_catalog_path=args.reference_catalog,
         )
         result_name = results.result_filename(
             panel_data, sharkmer_version, stamp, label=args.label
@@ -371,6 +402,8 @@ def main():
 
         if tmpdir.exists():
             shutil.rmtree(tmpdir, ignore_errors=True)
+    if runner.has_execution_failures(sample_results):
+        raise SystemExit("One or more sharkmer executions failed; reports and logs were preserved")
 
 
 if __name__ == "__main__":

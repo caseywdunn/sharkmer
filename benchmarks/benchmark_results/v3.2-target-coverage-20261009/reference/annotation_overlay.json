@@ -1,0 +1,81 @@
+{
+  "target_evidence": [
+    {
+      "accession": "SRR25378184",
+      "gene": "angiospermae_trnV-atpE",
+      "reference_evidence_details": {
+        "candidate_assessment": {
+          "HSPs_overlapping_mapped_physical_assay": 0,
+          "disposition": "None corroborated as the named locus or physical configured assay in the bounded pinned catalog.",
+          "emitted_Liriodendron_hypotheses": 41,
+          "full_sequence_reference_support": 0,
+          "same_taxon_public_HSPs": 0
+        },
+        "configured_forward": "GTGTAAACGAGTTGCTCTACCA",
+        "configured_reverse": "CGACATTTGCACATTTAGATGCTAC",
+        "effective_assay_results": [
+          {
+            "accession": "NC_008326.1",
+            "allowed_mismatches_each": 2,
+            "effective_15base_span": 1359,
+            "eligible_400_to_1000_pairs": 0,
+            "full_primer_span": 1376,
+            "organism": "Liriodendron tulipifera"
+          },
+          {
+            "accession": "NC_056221.1",
+            "allowed_mismatches_each": 2,
+            "effective_15base_span": 1379,
+            "eligible_400_to_1000_pairs": 0,
+            "full_primer_span": 1396,
+            "organism": "Acer opalus"
+          },
+          {
+            "accession": "MN990625.1",
+            "allowed_mismatches_each": 2,
+            "effective_15base_span": 1359,
+            "eligible_400_to_1000_pairs": 0,
+            "full_primer_span": 1376,
+            "organism": "Liriodendron tulipifera"
+          }
+        ],
+        "full_reference_evidence": "assessment-v2/report.json",
+        "future_assay_decision": "A separate versioned panel review must choose whether to retain S1022 and describe/size the trnV-to-atpB span including atpE, or redesign an atpE-bounded spacer assay. Do not silently rename, broaden bounds, or replace oligos in this frozen evaluation.",
+        "issue": "https://github.com/caseywdunn/sharkmer/issues/156",
+        "legacy_target_name": "trnV-atpE",
+        "limitations": [
+          "Circular public-source Hamming mapping is not a wet-lab binding prediction or a simulation of the graph assembler.",
+          "Negative results in this bounded catalog do not establish biological absence or prove every shorter hypothesis false.",
+          "Public plastomes represent independent reference individuals, not confirmed sample haplotypes."
+        ],
+        "literature": [
+          {
+            "access_note": "Primary article search extract inspected; direct PMC open returned browser check, so original supplemental oligo table was not verified.",
+            "citation": "Kress et al. 2005, Use of DNA barcodes to identify flowering plants, PNAS102:8369\u20138374",
+            "claim_supported": "The published locus list includes the name trnV-atpE; this alone does not place the configured reverse oligo within atpE.",
+            "doi": "10.1073/pnas.0503123102",
+            "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC1142120/"
+          },
+          {
+            "access_note": "PrimaryPDF inspected with web tools, parsed lines1538\u20131546 and1590\u20131595; no claim to original Kress supplemental table verification.",
+            "citation": "Tank and Donoghue2010, Systematic Botany35, Appendix2, page441",
+            "claim_supported": "Exact configured S1022 oligo CGACATTTGCACATTTAGATGCTAC is listed among atpB gene primers attributed to Hoot et al.1995. Separate atpE/trnV IGS reverse oligos are different sequences.",
+            "location": "Appendix2, PDFpage17/printedpage441, atpB gene and atpE/trnV IGS entries",
+            "primary_source": "Author laboratory hosted research article",
+            "url": "https://donoghuelab.yale.edu/sites/default/files/190_tank_systbot10.pdf"
+          }
+        ],
+        "mapping_evidence": "assay-v1/mapping.json",
+        "physical_assay_interpretation": "trnV-UAC to atpB, spanning the complete intervening atpE gene; configured reverse endpoint is within atpB, not atpE.",
+        "publication_interpretation": "The historical locus name and this configured primer combination are not a sufficient description of physical endpoints. Independent primer literature and three public feature tables agree on the atpB endpoint.",
+        "release_interpretation": "Retain the emitted records as uncertain hypotheses under the frozen interface. Do not count them as validated target recovery. The configured canonical-plastome assay lies outside the current length bound; a production graph can still produce shorter strings through other paths.",
+        "status": "annotation_and_length_conflict_characterized_implementation_frozen"
+      },
+      "reference_evidence_links": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/annotation_review.json",
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/assay-v1/mapping.json"
+      ],
+      "reference_evidence_status": "configured_assay_maps_trnV_to_atpB_across_atpE_outside_length_bound"
+    }
+  ]
+}

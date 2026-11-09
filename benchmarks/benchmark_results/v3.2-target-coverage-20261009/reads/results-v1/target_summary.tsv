@@ -1,0 +1,7 @@
+accession	gene	candidates	candidates_with_any_q20_local_string	candidates_with_any_q20_tile	candidates_with_all_tiles_q20_observed	candidates_with_q20_nearest_endpoint	candidates_without_any_raw_local_string	whole_product_validation
+ERR14009273	angiospermae_trnL-F	1	0	0	0	0	1	not_established
+SRR1057608	insecta_ND4	44	0	0	0	0	44	not_established
+SRR25378184	angiospermae_atpB-rbcL	1	1	1	1	0	0	not_established
+SRR25378184	angiospermae_psbA-trnH	49	0	0	0	0	49	not_established
+SRR25378184	angiospermae_trnV-atpE	41	0	0	0	0	41	not_established
+SRR27962769	insecta_18S_1	18	0	0	0	0	18	not_established

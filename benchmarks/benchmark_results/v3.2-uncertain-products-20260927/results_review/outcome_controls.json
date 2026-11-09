@@ -1,0 +1,20 @@
+{
+  "status": "pass",
+  "test_methods": 4,
+  "mutation_subcases": 4,
+  "biological_data_used": false,
+  "reviewed_sources": {
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/independent_outcome_review.py": {
+      "sha256": "0002514fe74af2cbf746c768db125d5fd5c1bd8ea0a35da198f9b147f01cc065",
+      "size_bytes": 16908
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/test_independent_outcome_review.py": {
+      "sha256": "a6e9d12e61cf43b9ee2ce279f185674a4e331d66de0778c957889d8431080947",
+      "size_bytes": 3520
+    },
+    "benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/outcome_controls.log": {
+      "sha256": "1f8dd3b8a08c8b1aecbc1efcff48d2d8367ff3975e4d4c652590d3f97e375b7c",
+      "size_bytes": 548
+    }
+  }
+}

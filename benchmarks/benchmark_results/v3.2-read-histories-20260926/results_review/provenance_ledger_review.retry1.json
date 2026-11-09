@@ -1,0 +1,423 @@
+{
+  "archived_comparison": {
+    "identity": {
+      "sha256": "9e9aca405e8fb8638970f1cfb033d16b267474e5ee5e118467ccf46a26b87249",
+      "size_bytes": 8889
+    },
+    "q20_exact_records": {
+      "region_1_class_1": 0,
+      "region_1_class_2": 0,
+      "region_2_class_1": 0,
+      "region_2_class_2": 0
+    },
+    "source": "archived read_summary.json, max_substitutions=0"
+  },
+  "checker": {
+    "sha256": "f22bfb7ce204318d60bde8368a533228bd2165e2503fe942bb4861034c645a29",
+    "size_bytes": 32754
+  },
+  "elapsed_seconds": 48.108818492037244,
+  "execution": {
+    "sha256": "db1c777d32f5f9e7a35296973f5202cfb9d350d88855c0a4d1a44431a2c82104",
+    "size_bytes": 5286
+  },
+  "freeze": {
+    "sha256": "337e27452472e6bbe99371b0ee12e3d41709a0079c1677ead72ff249180c45e9",
+    "size_bytes": 7924
+  },
+  "graphs": [
+    {
+      "classes": [
+        {
+          "ambiguous_exact_records": 0,
+          "archived_q20_compatible": true,
+          "archived_q20_exact_records": 0,
+          "canonical_sequence_groups": 0,
+          "distinct_footprints": 0,
+          "distinct_read_ids": 0,
+          "exact_records": 0,
+          "experimental_local_eligibility": false,
+          "id": "region_1_class_1",
+          "q20_exact_records": 0,
+          "qualifying_records": 0,
+          "region_id": "region_1",
+          "represented_orientations": [
+            "-"
+          ],
+          "witness_size": 0
+        },
+        {
+          "ambiguous_exact_records": 0,
+          "archived_q20_compatible": true,
+          "archived_q20_exact_records": 0,
+          "canonical_sequence_groups": 0,
+          "distinct_footprints": 0,
+          "distinct_read_ids": 0,
+          "exact_records": 0,
+          "experimental_local_eligibility": false,
+          "id": "region_1_class_2",
+          "q20_exact_records": 0,
+          "qualifying_records": 0,
+          "region_id": "region_1",
+          "represented_orientations": [
+            "-"
+          ],
+          "witness_size": 0
+        },
+        {
+          "ambiguous_exact_records": 0,
+          "archived_q20_compatible": true,
+          "archived_q20_exact_records": 0,
+          "canonical_sequence_groups": 0,
+          "distinct_footprints": 0,
+          "distinct_read_ids": 0,
+          "exact_records": 0,
+          "experimental_local_eligibility": false,
+          "id": "region_2_class_1",
+          "q20_exact_records": 0,
+          "qualifying_records": 0,
+          "region_id": "region_2",
+          "represented_orientations": [
+            "+"
+          ],
+          "witness_size": 0
+        },
+        {
+          "ambiguous_exact_records": 0,
+          "archived_q20_compatible": true,
+          "archived_q20_exact_records": 0,
+          "canonical_sequence_groups": 0,
+          "distinct_footprints": 0,
+          "distinct_read_ids": 0,
+          "exact_records": 0,
+          "experimental_local_eligibility": false,
+          "id": "region_2_class_2",
+          "q20_exact_records": 0,
+          "qualifying_records": 0,
+          "region_id": "region_2",
+          "represented_orientations": [
+            "+"
+          ],
+          "witness_size": 0
+        }
+      ],
+      "command_id": "histories_pre",
+      "edge_visits_validated": 79608,
+      "layer_counts": {
+        "+": {
+          "q20": {
+            "branch_events": 444,
+            "break_intervals": 2323,
+            "broken_windows_low_quality": 27076,
+            "broken_windows_missing_graph_kmer": 77742,
+            "cyclic_node_visits": 1010,
+            "edge_visits": 17884,
+            "records_with_runs": 372,
+            "repeated_edge_occurrences": 1,
+            "runs": 550,
+            "runs_touching_cyclic_scc": 40
+          },
+          "unfiltered": {
+            "branch_events": 620,
+            "break_intervals": 888,
+            "broken_windows_missing_graph_kmer": 77742,
+            "cyclic_node_visits": 1416,
+            "edge_visits": 24294,
+            "records_with_runs": 396,
+            "repeated_edge_occurrences": 6,
+            "runs": 469,
+            "runs_touching_cyclic_scc": 33
+          }
+        },
+        "-": {
+          "q20": {
+            "branch_events": 461,
+            "break_intervals": 2346,
+            "broken_windows_low_quality": 27076,
+            "broken_windows_missing_graph_kmer": 80596,
+            "cyclic_node_visits": 659,
+            "edge_visits": 15990,
+            "records_with_runs": 349,
+            "repeated_edge_occurrences": 5,
+            "runs": 508,
+            "runs_touching_cyclic_scc": 17
+          },
+          "unfiltered": {
+            "branch_events": 591,
+            "break_intervals": 903,
+            "broken_windows_missing_graph_kmer": 80596,
+            "cyclic_node_visits": 818,
+            "edge_visits": 21440,
+            "records_with_runs": 377,
+            "repeated_edge_occurrences": 8,
+            "runs": 448,
+            "runs_touching_cyclic_scc": 19
+          }
+        }
+      },
+      "limits": {
+        "MAX_CLASSES": 64,
+        "MAX_EDGES": 200000,
+        "MAX_GRAPH_BYTES": 67108864,
+        "MAX_HISTORY_RECORDS": 100000,
+        "MAX_LINE_BYTES": 4096,
+        "MAX_MANIFEST_BYTES": 1048576,
+        "MAX_NODES": 100000,
+        "MAX_OUTPUT_BYTES": 1073741824,
+        "MAX_PLACEMENTS_PER_READ": 4096,
+        "MAX_PREFIX_RECORDS": 1000000,
+        "MAX_READ_LENGTH": 1000,
+        "MAX_REGIONS": 16,
+        "MAX_TOTAL_EDGE_VISITS": 10000000
+      },
+      "output": {
+        "sha256": "4a15d7618ae3b9de753bd5786876c3ae3e0dd54165b51c83a2370735440df6a7",
+        "size_bytes": 4256829
+      },
+      "retained_records_validated": 773
+    },
+    {
+      "classes": [
+        {
+          "ambiguous_exact_records": 0,
+          "archived_q20_compatible": true,
+          "archived_q20_exact_records": 0,
+          "canonical_sequence_groups": 0,
+          "distinct_footprints": 0,
+          "distinct_read_ids": 0,
+          "exact_records": 0,
+          "experimental_local_eligibility": false,
+          "id": "region_1_class_1",
+          "q20_exact_records": 0,
+          "qualifying_records": 0,
+          "region_id": "region_1",
+          "represented_orientations": [
+            "-"
+          ],
+          "witness_size": 0
+        },
+        {
+          "ambiguous_exact_records": 0,
+          "archived_q20_compatible": true,
+          "archived_q20_exact_records": 0,
+          "canonical_sequence_groups": 0,
+          "distinct_footprints": 0,
+          "distinct_read_ids": 0,
+          "exact_records": 0,
+          "experimental_local_eligibility": false,
+          "id": "region_1_class_2",
+          "q20_exact_records": 0,
+          "qualifying_records": 0,
+          "region_id": "region_1",
+          "represented_orientations": [
+            "-"
+          ],
+          "witness_size": 0
+        },
+        {
+          "ambiguous_exact_records": 0,
+          "archived_q20_compatible": true,
+          "archived_q20_exact_records": 0,
+          "canonical_sequence_groups": 0,
+          "distinct_footprints": 0,
+          "distinct_read_ids": 0,
+          "exact_records": 0,
+          "experimental_local_eligibility": false,
+          "id": "region_2_class_1",
+          "q20_exact_records": 0,
+          "qualifying_records": 0,
+          "region_id": "region_2",
+          "represented_orientations": [
+            "+"
+          ],
+          "witness_size": 0
+        },
+        {
+          "ambiguous_exact_records": 0,
+          "archived_q20_compatible": true,
+          "archived_q20_exact_records": 0,
+          "canonical_sequence_groups": 0,
+          "distinct_footprints": 0,
+          "distinct_read_ids": 0,
+          "exact_records": 0,
+          "experimental_local_eligibility": false,
+          "id": "region_2_class_2",
+          "q20_exact_records": 0,
+          "qualifying_records": 0,
+          "region_id": "region_2",
+          "represented_orientations": [
+            "+"
+          ],
+          "witness_size": 0
+        }
+      ],
+      "command_id": "histories_post",
+      "edge_visits_validated": 49022,
+      "layer_counts": {
+        "+": {
+          "q20": {
+            "branch_events": 216,
+            "break_intervals": 791,
+            "broken_windows_low_quality": 11761,
+            "broken_windows_missing_graph_kmer": 20656,
+            "cyclic_node_visits": 1010,
+            "edge_visits": 12571,
+            "records_with_runs": 153,
+            "repeated_edge_occurrences": 1,
+            "runs": 266,
+            "runs_touching_cyclic_scc": 40
+          },
+          "unfiltered": {
+            "branch_events": 309,
+            "break_intervals": 235,
+            "broken_windows_missing_graph_kmer": 20656,
+            "cyclic_node_visits": 1416,
+            "edge_visits": 16832,
+            "records_with_runs": 158,
+            "repeated_edge_occurrences": 6,
+            "runs": 185,
+            "runs_touching_cyclic_scc": 33
+          }
+        },
+        "-": {
+          "q20": {
+            "branch_events": 191,
+            "break_intervals": 836,
+            "broken_windows_low_quality": 11761,
+            "broken_windows_missing_graph_kmer": 26087,
+            "cyclic_node_visits": 659,
+            "edge_visits": 8218,
+            "records_with_runs": 123,
+            "repeated_edge_occurrences": 5,
+            "runs": 199,
+            "runs_touching_cyclic_scc": 17
+          },
+          "unfiltered": {
+            "branch_events": 244,
+            "break_intervals": 253,
+            "broken_windows_missing_graph_kmer": 26087,
+            "cyclic_node_visits": 818,
+            "edge_visits": 11401,
+            "records_with_runs": 126,
+            "repeated_edge_occurrences": 8,
+            "runs": 146,
+            "runs_touching_cyclic_scc": 19
+          }
+        }
+      },
+      "limits": {
+        "MAX_CLASSES": 64,
+        "MAX_EDGES": 200000,
+        "MAX_GRAPH_BYTES": 67108864,
+        "MAX_HISTORY_RECORDS": 100000,
+        "MAX_LINE_BYTES": 4096,
+        "MAX_MANIFEST_BYTES": 1048576,
+        "MAX_NODES": 100000,
+        "MAX_OUTPUT_BYTES": 1073741824,
+        "MAX_PLACEMENTS_PER_READ": 4096,
+        "MAX_PREFIX_RECORDS": 1000000,
+        "MAX_READ_LENGTH": 1000,
+        "MAX_REGIONS": 16,
+        "MAX_TOTAL_EDGE_VISITS": 10000000
+      },
+      "output": {
+        "sha256": "5e6d8c09f984a0abf83d0d2dd608dec21d7f16bc89b72876d9884d1a82d176b2",
+        "size_bytes": 2437134
+      },
+      "retained_records_validated": 284
+    }
+  ],
+  "limitations": [
+    "Exact local compatibility is not biological absence, repeat copy number, independent molecules, or full-product phase",
+    "Archived counts are Q20 exact comparisons; unfiltered exact counts are reported separately",
+    "No production admission or reference change"
+  ],
+  "prefix_binding": {
+    "all_prefix_records_checked_for_ledger_completeness": 1000000,
+    "consumed_prefix": {
+      "bases": 150000000,
+      "records": 1000000,
+      "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+      "size_bytes": 365356898
+    },
+    "full_staged_file": {
+      "sha256": "6aef48e6ed467e7f1ff25a3cd2a21d51dc2378985bdd855e796b539f0fc0c794",
+      "size_bytes": 365356898
+    },
+    "literal_class_counts": {
+      "region_1_class_1": {
+        "exact_records": 0,
+        "q20_exact_records": 0
+      },
+      "region_1_class_2": {
+        "exact_records": 0,
+        "q20_exact_records": 0
+      },
+      "region_2_class_1": {
+        "exact_records": 0,
+        "q20_exact_records": 0
+      },
+      "region_2_class_2": {
+        "exact_records": 0,
+        "q20_exact_records": 0
+      }
+    }
+  },
+  "reviewed_artifacts": {
+    "benchmarks/benchmark_results/v3.2-read-histories-20260926/freeze.json": {
+      "sha256": "337e27452472e6bbe99371b0ee12e3d41709a0079c1677ead72ff249180c45e9",
+      "size_bytes": 7924
+    },
+    "tmp/read-histories-20260926/run-v1/execution.json": {
+      "sha256": "db1c777d32f5f9e7a35296973f5202cfb9d350d88855c0a4d1a44431a2c82104",
+      "size_bytes": 5286
+    },
+    "tmp/read-histories-20260926/run-v1/histories_post.json": {
+      "sha256": "5e6d8c09f984a0abf83d0d2dd608dec21d7f16bc89b72876d9884d1a82d176b2",
+      "size_bytes": 2437134
+    },
+    "tmp/read-histories-20260926/run-v1/histories_post.receipt.json": {
+      "sha256": "727a2ee63a1ae9f13bb011b67ec4e23a21ac755a52418551324102b1df185397",
+      "size_bytes": 2266
+    },
+    "tmp/read-histories-20260926/run-v1/histories_post.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/read-histories-20260926/run-v1/histories_post.stdout.txt": {
+      "sha256": "1a3f0ddd90196721f2e65e3b1421a932b974141aec117d4823181870e1acb7f2",
+      "size_bytes": 260
+    },
+    "tmp/read-histories-20260926/run-v1/histories_post.time.txt": {
+      "sha256": "0d49283ae6eccffc3f82f372a74853ef4358c3b5d0ebb8a0a467f34a4902aff5",
+      "size_bytes": 1456
+    },
+    "tmp/read-histories-20260926/run-v1/histories_pre.json": {
+      "sha256": "4a15d7618ae3b9de753bd5786876c3ae3e0dd54165b51c83a2370735440df6a7",
+      "size_bytes": 4256829
+    },
+    "tmp/read-histories-20260926/run-v1/histories_pre.receipt.json": {
+      "sha256": "3cc9668c17dcc103770c163e67ab75a4fcf9ae19ddd7ab4fde2e682ed3c1b1a2",
+      "size_bytes": 2258
+    },
+    "tmp/read-histories-20260926/run-v1/histories_pre.stderr.txt": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    "tmp/read-histories-20260926/run-v1/histories_pre.stdout.txt": {
+      "sha256": "29238832b94bd48d29a1a5758de2867a64185d078683171b699221f40b935815",
+      "size_bytes": 259
+    },
+    "tmp/read-histories-20260926/run-v1/histories_pre.time.txt": {
+      "sha256": "d74ba8b7afba07bffb255d79264b7045b686610f9d5e863cc86493af273cf2e6",
+      "size_bytes": 1452
+    },
+    "tmp/read-histories-20260926/run-v1/started.json": {
+      "sha256": "ee0d9d24cdbfc916aff5c1f658d7891f25b15b1283e6fcb44121c43fd08e0540",
+      "size_bytes": 305
+    }
+  },
+  "reviewed_utc": "2026-09-27T12:31:16.600076+00:00",
+  "scope": "All retained histories and all raw prefix ordinals independently audited; no prototype helpers imported",
+  "status": "pass"
+}

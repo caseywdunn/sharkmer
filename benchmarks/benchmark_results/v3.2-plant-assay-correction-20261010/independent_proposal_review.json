@@ -1,0 +1,159 @@
+{
+  "artifacts": {
+    "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v1/angiospermae-after.yaml": "17405ffa82fd8c24f792920a62a1c2118da2385046960a8e4d2ec6985cb15382",
+    "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v1/checksums.json": "0abb75a123c91e32f76a033b996686cfe9add2b1b6d61f3eaa10934f4906032d",
+    "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v1/mapping.json": "50c19c42a226b9719eac0ed062e461c2c88d6cb2b2d90eb6576e11c39523674e",
+    "benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/review_proposal.py": "95bb35315fba64dc656bdb00171a433fa128a329a1026481b9908ee69346ea5a",
+    "benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/check_references.py": "07c3b76d854608ea921a409d6d7a65ff63423fd36c099e915203ff494a5440a0"
+  },
+  "conditions": [
+    "Compare emitted corrected synthetic sequences literally to frozen909/929bp expected references; standard vs uncertain outcomes must be explicit.",
+    "Legacy/no-template negatives do not authorize suppressing any bounded uncertainty; classify unexpected standard products rather than treating process success as target validation.",
+    "Compare both real plant samples before/after with full panels; preserve every other target identity/status/count and distinguish intentional assay-boundary changes from retention regression.",
+    "Use legacy locus citation wording for Kress2005 unless original supplemental primer table is independently verified."
+  ],
+  "interpretation": "The corrected published6R primer has one eligible public-source pair per plastome; full physical endpoints include complete trnM and atpE. Its3-prime terminal3bp overlap atpE; all21bp overlap atpB, including18bp exclusively atpB. LegacyS1022 and rejected4R have no eligible400\u20131000bp pair.",
+  "mapping_checks": [
+    {
+      "accession": "NC_008326.1",
+      "all_pairs": 1,
+      "assay": "corrected_6R",
+      "eligible_lengths": [
+        922
+      ],
+      "primer_mode": "full"
+    },
+    {
+      "accession": "NC_008326.1",
+      "all_pairs": 2,
+      "assay": "corrected_6R",
+      "eligible_lengths": [
+        909
+      ],
+      "primer_mode": "effective"
+    },
+    {
+      "accession": "NC_008326.1",
+      "all_pairs": 1,
+      "assay": "legacy_S1022",
+      "eligible_lengths": [],
+      "primer_mode": "full"
+    },
+    {
+      "accession": "NC_008326.1",
+      "all_pairs": 1,
+      "assay": "legacy_S1022",
+      "eligible_lengths": [],
+      "primer_mode": "effective"
+    },
+    {
+      "accession": "NC_008326.1",
+      "all_pairs": 1,
+      "assay": "rejected_internal_4R",
+      "eligible_lengths": [],
+      "primer_mode": "full"
+    },
+    {
+      "accession": "NC_008326.1",
+      "all_pairs": 1,
+      "assay": "rejected_internal_4R",
+      "eligible_lengths": [],
+      "primer_mode": "effective"
+    },
+    {
+      "accession": "NC_056221.1",
+      "all_pairs": 1,
+      "assay": "corrected_6R",
+      "eligible_lengths": [
+        942
+      ],
+      "primer_mode": "full"
+    },
+    {
+      "accession": "NC_056221.1",
+      "all_pairs": 6,
+      "assay": "corrected_6R",
+      "eligible_lengths": [
+        929
+      ],
+      "primer_mode": "effective"
+    },
+    {
+      "accession": "NC_056221.1",
+      "all_pairs": 1,
+      "assay": "legacy_S1022",
+      "eligible_lengths": [],
+      "primer_mode": "full"
+    },
+    {
+      "accession": "NC_056221.1",
+      "all_pairs": 1,
+      "assay": "legacy_S1022",
+      "eligible_lengths": [],
+      "primer_mode": "effective"
+    },
+    {
+      "accession": "NC_056221.1",
+      "all_pairs": 1,
+      "assay": "rejected_internal_4R",
+      "eligible_lengths": [],
+      "primer_mode": "full"
+    },
+    {
+      "accession": "NC_056221.1",
+      "all_pairs": 1,
+      "assay": "rejected_internal_4R",
+      "eligible_lengths": [],
+      "primer_mode": "effective"
+    },
+    {
+      "accession": "MN990625.1",
+      "all_pairs": 1,
+      "assay": "corrected_6R",
+      "eligible_lengths": [
+        922
+      ],
+      "primer_mode": "full"
+    },
+    {
+      "accession": "MN990625.1",
+      "all_pairs": 2,
+      "assay": "corrected_6R",
+      "eligible_lengths": [
+        909
+      ],
+      "primer_mode": "effective"
+    },
+    {
+      "accession": "MN990625.1",
+      "all_pairs": 1,
+      "assay": "legacy_S1022",
+      "eligible_lengths": [],
+      "primer_mode": "full"
+    },
+    {
+      "accession": "MN990625.1",
+      "all_pairs": 1,
+      "assay": "legacy_S1022",
+      "eligible_lengths": [],
+      "primer_mode": "effective"
+    },
+    {
+      "accession": "MN990625.1",
+      "all_pairs": 1,
+      "assay": "rejected_internal_4R",
+      "eligible_lengths": [],
+      "primer_mode": "full"
+    },
+    {
+      "accession": "MN990625.1",
+      "all_pairs": 1,
+      "assay": "rejected_internal_4R",
+      "eligible_lengths": [],
+      "primer_mode": "effective"
+    }
+  ],
+  "status": "approved_for_bounded_validation",
+  "synthetic_inputs_verified": 2,
+  "unique_references_verified": 2
+}

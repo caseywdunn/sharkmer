@@ -1,0 +1,779 @@
+{
+  "address_space_bytes": 2147483648,
+  "available_path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_056221.1.synthetic.fastq",
+  "command": [
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+    "-k",
+    "19",
+    "-t",
+    "1",
+    "--chunks",
+    "0",
+    "--max-reads",
+    "1000000",
+    "-o",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/outputs/",
+    "-s",
+    "synthetic_NC_056221_1_after",
+    "--pcr-panel-file",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-after.yaml",
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_056221.1.synthetic.fastq"
+  ],
+  "directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after",
+  "execution": {
+    "command": [
+      "/usr/bin/prlimit",
+      "--as=2147483648",
+      "--",
+      "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python3.14",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+      "--receipt",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/process_constraints.json",
+      "--expected-cpus",
+      "25",
+      "--expected-as",
+      "2147483648",
+      "--",
+      "/usr/bin/time",
+      "-o",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/time.json",
+      "-f",
+      "{\"wall_seconds\":%e,\"user_seconds\":%U,\"system_seconds\":%S,\"max_rss_kib\":%M,\"exit_code\":%x}",
+      "--",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer",
+      "-k",
+      "19",
+      "-t",
+      "1",
+      "--chunks",
+      "0",
+      "--max-reads",
+      "1000000",
+      "-o",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/outputs/",
+      "-s",
+      "synthetic_NC_056221_1_after",
+      "--pcr-panel-file",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-after.yaml",
+      "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_056221.1.synthetic.fastq"
+    ],
+    "files": {
+      "process_constraints.json": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/process_constraints.json",
+        "sha256": "2debe3c350186da19dad567e7dd2d48277ea5fd0aa006e52bb74ec17023bb26c",
+        "size_bytes": 1293
+      },
+      "stderr.log": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/stderr.log",
+        "sha256": "058d660ee411763bcbdf3a6cefe4437bb633e10e6459e887fe12a7436104b78b",
+        "size_bytes": 1027
+      },
+      "stdout.log": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/stdout.log",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      "time.json": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/time.json",
+        "sha256": "7c1dfb3aba90a192186f992746cd8d7d72a03debc567b9f5b767b6e8916a9a9e",
+        "size_bytes": 97
+      }
+    },
+    "metrics": {
+      "exit_code": 0,
+      "max_rss_kib": 6144,
+      "peak_rss_bytes": 6291456,
+      "system_seconds": 0.0,
+      "user_seconds": 0.05,
+      "wall_seconds": 0.2
+    },
+    "observer_wall_seconds": 0.39494012435898185,
+    "returncode": 0,
+    "status": "pass",
+    "timing_boundary": "GNU time directly measures Sharkmer; constraint observer executes before timing"
+  },
+  "expected_corrected_sha256": "60a67ee9a9fac06519b8aff377abc4f2ab9e252b12121adf28ff37421e9dfc9a",
+  "expected_prefix": {
+    "bases": 436692,
+    "records": 2892,
+    "sha256": "d110be1cf4f0cbceba775d6fd11fd0c97c57e407fc7278d17f9dff9b66adbeab",
+    "size_bytes": 945684
+  },
+  "input_file": {
+    "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_056221.1.synthetic.fastq",
+    "sha256": "d110be1cf4f0cbceba775d6fd11fd0c97c57e407fc7278d17f9dff9b66adbeab",
+    "size_bytes": 945684
+  },
+  "outputs": {
+    "allocator_peak_bytes": 651231,
+    "counts": {
+      "n_bases_ingested": 436692,
+      "n_bases_read": 436692,
+      "n_kmers": 384636,
+      "n_reads_read": 2892,
+      "n_subreads_ingested": 2892
+    },
+    "files": {
+      "synthetic_NC_056221_1_after.lock": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/outputs/synthetic_NC_056221_1_after.lock",
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "size_bytes": 0
+      },
+      "synthetic_NC_056221_1_after.manifest.yaml": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/outputs/synthetic_NC_056221_1_after.manifest.yaml",
+        "sha256": "0cdfe6ec15c0a579849c2c839da2912de8e7c1e82405fd0dd3f7b990b5b0c8ce",
+        "size_bytes": 407
+      },
+      "synthetic_NC_056221_1_after.stats.yaml": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/outputs/synthetic_NC_056221_1_after.stats.yaml",
+        "sha256": "5b0c3ff1e3ce931b3cb5341a301e1e3ab3ddc44c93c80c81ffe7a679d34e8340",
+        "size_bytes": 19697
+      },
+      "synthetic_NC_056221_1_after_angiospermae_trnV-atpE.fasta": {
+        "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/outputs/synthetic_NC_056221_1_after_angiospermae_trnV-atpE.fasta",
+        "sha256": "75d916126517a5bb5aad00e25a4dd32015fa42eeac14e66e7b1e3798b15bfca7",
+        "size_bytes": 1200
+      }
+    },
+    "pcr_results": [
+      {
+        "failure_reason": "forward and reverse primers not found",
+        "gene_name": "angiospermae_psbA-trnH",
+        "n_products": 0,
+        "n_standard_products": 0,
+        "n_uncertain_products": 0,
+        "status": "fail",
+        "uncertain_products": {
+          "coordinate_system": "zero_based_half_open_in_emitted_oriented_sequence",
+          "deduplication_policy": "exact_oriented_sequence_only_reverse_complements_retained_as_separate_hypotheses",
+          "exact_duplicate_path_records": 0,
+          "excluded_standard_equivalent_path_records": 0,
+          "limits": {
+            "allocated_run_share_for_gene": {
+              "marker_occurrences": 3277,
+              "paths": 90,
+              "sequence_bases": 838862
+            },
+            "gene": {
+              "marker_occurrences": 8192,
+              "paths": 128,
+              "sequence_bases": 2097152
+            },
+            "run": {
+              "marker_occurrences": 32768,
+              "paths": 1024,
+              "sequence_bases": 8388608
+            },
+            "threshold": {
+              "marker_occurrences": 4096,
+              "paths": 64,
+              "sequence_bases": 1048576
+            },
+            "unused_share_is_not_redistributed": true
+          },
+          "marker_detail_truncated": false,
+          "marker_span_scope": "marker_covered_positions_only_for_complete_detail_sources",
+          "n_products": 0,
+          "path_search_evaluated": false,
+          "product_lengths": [],
+          "products": [],
+          "purpose": "uncertain_repeat_structure_graph_path_hypotheses",
+          "read_support_evaluation": "not_evaluated",
+          "repeat_length_evaluation": "unresolved",
+          "retained_path_records": 0,
+          "retention_truncated": false,
+          "schema_version": 2,
+          "search_limit_scope": "all_attempted_thresholds_for_gene",
+          "search_limits_reached": false,
+          "standard_equivalence_policy": "exact_sequence_or_reverse_complement_of_final_standard_output",
+          "thresholds": [],
+          "unique_products": 0
+        }
+      },
+      {
+        "failure_reason": "forward and reverse primers not found",
+        "gene_name": "angiospermae_rpl36-infA-rps8",
+        "n_products": 0,
+        "n_standard_products": 0,
+        "n_uncertain_products": 0,
+        "status": "fail",
+        "uncertain_products": {
+          "coordinate_system": "zero_based_half_open_in_emitted_oriented_sequence",
+          "deduplication_policy": "exact_oriented_sequence_only_reverse_complements_retained_as_separate_hypotheses",
+          "exact_duplicate_path_records": 0,
+          "excluded_standard_equivalent_path_records": 0,
+          "limits": {
+            "allocated_run_share_for_gene": {
+              "marker_occurrences": 3277,
+              "paths": 90,
+              "sequence_bases": 838862
+            },
+            "gene": {
+              "marker_occurrences": 8192,
+              "paths": 128,
+              "sequence_bases": 2097152
+            },
+            "run": {
+              "marker_occurrences": 32768,
+              "paths": 1024,
+              "sequence_bases": 8388608
+            },
+            "threshold": {
+              "marker_occurrences": 4096,
+              "paths": 64,
+              "sequence_bases": 1048576
+            },
+            "unused_share_is_not_redistributed": true
+          },
+          "marker_detail_truncated": false,
+          "marker_span_scope": "marker_covered_positions_only_for_complete_detail_sources",
+          "n_products": 0,
+          "path_search_evaluated": false,
+          "product_lengths": [],
+          "products": [],
+          "purpose": "uncertain_repeat_structure_graph_path_hypotheses",
+          "read_support_evaluation": "not_evaluated",
+          "repeat_length_evaluation": "unresolved",
+          "retained_path_records": 0,
+          "retention_truncated": false,
+          "schema_version": 2,
+          "search_limit_scope": "all_attempted_thresholds_for_gene",
+          "search_limits_reached": false,
+          "standard_equivalence_policy": "exact_sequence_or_reverse_complement_of_final_standard_output",
+          "thresholds": [],
+          "unique_products": 0
+        }
+      },
+      {
+        "failure_reason": "forward and reverse primers not found",
+        "gene_name": "angiospermae_trnK-rps16",
+        "n_products": 0,
+        "n_standard_products": 0,
+        "n_uncertain_products": 0,
+        "status": "fail",
+        "uncertain_products": {
+          "coordinate_system": "zero_based_half_open_in_emitted_oriented_sequence",
+          "deduplication_policy": "exact_oriented_sequence_only_reverse_complements_retained_as_separate_hypotheses",
+          "exact_duplicate_path_records": 0,
+          "excluded_standard_equivalent_path_records": 0,
+          "limits": {
+            "allocated_run_share_for_gene": {
+              "marker_occurrences": 3277,
+              "paths": 90,
+              "sequence_bases": 838862
+            },
+            "gene": {
+              "marker_occurrences": 8192,
+              "paths": 128,
+              "sequence_bases": 2097152
+            },
+            "run": {
+              "marker_occurrences": 32768,
+              "paths": 1024,
+              "sequence_bases": 8388608
+            },
+            "threshold": {
+              "marker_occurrences": 4096,
+              "paths": 64,
+              "sequence_bases": 1048576
+            },
+            "unused_share_is_not_redistributed": true
+          },
+          "marker_detail_truncated": false,
+          "marker_span_scope": "marker_covered_positions_only_for_complete_detail_sources",
+          "n_products": 0,
+          "path_search_evaluated": false,
+          "product_lengths": [],
+          "products": [],
+          "purpose": "uncertain_repeat_structure_graph_path_hypotheses",
+          "read_support_evaluation": "not_evaluated",
+          "repeat_length_evaluation": "unresolved",
+          "retained_path_records": 0,
+          "retention_truncated": false,
+          "schema_version": 2,
+          "search_limit_scope": "all_attempted_thresholds_for_gene",
+          "search_limits_reached": false,
+          "standard_equivalence_policy": "exact_sequence_or_reverse_complement_of_final_standard_output",
+          "thresholds": [],
+          "unique_products": 0
+        }
+      },
+      {
+        "gene_name": "angiospermae_trnV-atpE",
+        "n_products": 1,
+        "n_standard_products": 1,
+        "n_uncertain_products": 0,
+        "output_file": "synthetic_NC_056221_1_after_angiospermae_trnV-atpE.fasta",
+        "product_lengths": [
+          929
+        ],
+        "status": "success",
+        "threshold_diagnostics": [
+          {
+            "completed_candidate_paths": 1,
+            "connectivity_found": true,
+            "dfs_limit_reached": false,
+            "eligible_candidate_paths": 1,
+            "end_below_min_length": false,
+            "failure_reason": null,
+            "generated_products": 1,
+            "max_length_reached": false,
+            "node_budget_reached": false,
+            "omitted_self_loop_nodes": 0,
+            "path_quota_reached": false,
+            "path_search_evaluated": true,
+            "pre_prune_scc_nodes": 0,
+            "repeat_tainted_out_of_range_paths": 0,
+            "retained_collision_edges": 0,
+            "scc_evaluated": true,
+            "threshold": 108,
+            "withheld_by_collision_edge_paths": 0,
+            "withheld_by_scc_node_paths": 0,
+            "withheld_by_self_loop_node_paths": 0,
+            "withheld_candidate_paths": 0
+          }
+        ],
+        "uncertain_products": {
+          "coordinate_system": "zero_based_half_open_in_emitted_oriented_sequence",
+          "deduplication_policy": "exact_oriented_sequence_only_reverse_complements_retained_as_separate_hypotheses",
+          "exact_duplicate_path_records": 0,
+          "excluded_standard_equivalent_path_records": 0,
+          "limits": {
+            "allocated_run_share_for_gene": {
+              "marker_occurrences": 3277,
+              "paths": 90,
+              "sequence_bases": 838862
+            },
+            "gene": {
+              "marker_occurrences": 8192,
+              "paths": 128,
+              "sequence_bases": 2097152
+            },
+            "run": {
+              "marker_occurrences": 32768,
+              "paths": 1024,
+              "sequence_bases": 8388608
+            },
+            "threshold": {
+              "marker_occurrences": 4096,
+              "paths": 64,
+              "sequence_bases": 1048576
+            },
+            "unused_share_is_not_redistributed": true
+          },
+          "marker_detail_truncated": false,
+          "marker_span_scope": "marker_covered_positions_only_for_complete_detail_sources",
+          "n_products": 0,
+          "path_search_evaluated": true,
+          "product_lengths": [],
+          "products": [],
+          "purpose": "uncertain_repeat_structure_graph_path_hypotheses",
+          "read_support_evaluation": "not_evaluated",
+          "repeat_length_evaluation": "unresolved",
+          "retained_path_records": 0,
+          "retention_truncated": false,
+          "schema_version": 2,
+          "search_limit_scope": "all_attempted_thresholds_for_gene",
+          "search_limits_reached": false,
+          "standard_equivalence_policy": "exact_sequence_or_reverse_complement_of_final_standard_output",
+          "thresholds": [
+            {
+              "completed_candidate_paths": 1,
+              "connectivity_found": true,
+              "dfs_limit_reached": false,
+              "eligible_candidate_paths": 1,
+              "end_below_min_length": false,
+              "failure_reason": null,
+              "generated_products": 1,
+              "max_length_reached": false,
+              "node_budget_reached": false,
+              "omitted_self_loop_nodes": 0,
+              "path_quota_reached": false,
+              "path_search_evaluated": true,
+              "pre_prune_scc_nodes": 0,
+              "repeat_tainted_out_of_range_paths": 0,
+              "retained_collision_edges": 0,
+              "retention": {
+                "dropped_marker_cap": 0,
+                "dropped_oversize_marker_set": 0,
+                "dropped_oversize_sequence": 0,
+                "dropped_path_cap": 0,
+                "dropped_sequence_base_cap": 0,
+                "gene_usage_after_threshold": {
+                  "marker_occurrences": 0,
+                  "paths": 0,
+                  "sequence_bases": 0
+                },
+                "gene_usage_before_threshold": {
+                  "marker_occurrences": 0,
+                  "paths": 0,
+                  "sequence_bases": 0
+                },
+                "marker_detail_truncated": false,
+                "node_visit_limit": 2,
+                "node_visit_skips": 0,
+                "observed_not_retained_paths": 0,
+                "observed_withheld_paths": 0,
+                "omitted_detailed_marker_occurrences": 0,
+                "retained_marker_occurrences": 0,
+                "retained_paths": 0,
+                "retained_sequence_bases": 0,
+                "retained_summary_only_paths": 0,
+                "retention_truncated": false
+              },
+              "scc_evaluated": true,
+              "threshold": 108,
+              "withheld_by_collision_edge_paths": 0,
+              "withheld_by_scc_node_paths": 0,
+              "withheld_by_self_loop_node_paths": 0,
+              "withheld_candidate_paths": 0
+            }
+          ],
+          "unique_products": 0
+        }
+      },
+      {
+        "failure_reason": "forward and reverse primers not found",
+        "gene_name": "angiospermae_trnC-ycf6",
+        "n_products": 0,
+        "n_standard_products": 0,
+        "n_uncertain_products": 0,
+        "status": "fail",
+        "uncertain_products": {
+          "coordinate_system": "zero_based_half_open_in_emitted_oriented_sequence",
+          "deduplication_policy": "exact_oriented_sequence_only_reverse_complements_retained_as_separate_hypotheses",
+          "exact_duplicate_path_records": 0,
+          "excluded_standard_equivalent_path_records": 0,
+          "limits": {
+            "allocated_run_share_for_gene": {
+              "marker_occurrences": 3277,
+              "paths": 90,
+              "sequence_bases": 838860
+            },
+            "gene": {
+              "marker_occurrences": 8192,
+              "paths": 128,
+              "sequence_bases": 2097152
+            },
+            "run": {
+              "marker_occurrences": 32768,
+              "paths": 1024,
+              "sequence_bases": 8388608
+            },
+            "threshold": {
+              "marker_occurrences": 4096,
+              "paths": 64,
+              "sequence_bases": 1048576
+            },
+            "unused_share_is_not_redistributed": true
+          },
+          "marker_detail_truncated": false,
+          "marker_span_scope": "marker_covered_positions_only_for_complete_detail_sources",
+          "n_products": 0,
+          "path_search_evaluated": false,
+          "product_lengths": [],
+          "products": [],
+          "purpose": "uncertain_repeat_structure_graph_path_hypotheses",
+          "read_support_evaluation": "not_evaluated",
+          "repeat_length_evaluation": "unresolved",
+          "retained_path_records": 0,
+          "retention_truncated": false,
+          "schema_version": 2,
+          "search_limit_scope": "all_attempted_thresholds_for_gene",
+          "search_limits_reached": false,
+          "standard_equivalence_policy": "exact_sequence_or_reverse_complement_of_final_standard_output",
+          "thresholds": [],
+          "unique_products": 0
+        }
+      },
+      {
+        "failure_reason": "forward and reverse primers not found",
+        "gene_name": "angiospermae_ycf6-psbM",
+        "n_products": 0,
+        "n_standard_products": 0,
+        "n_uncertain_products": 0,
+        "status": "fail",
+        "uncertain_products": {
+          "coordinate_system": "zero_based_half_open_in_emitted_oriented_sequence",
+          "deduplication_policy": "exact_oriented_sequence_only_reverse_complements_retained_as_separate_hypotheses",
+          "exact_duplicate_path_records": 0,
+          "excluded_standard_equivalent_path_records": 0,
+          "limits": {
+            "allocated_run_share_for_gene": {
+              "marker_occurrences": 3277,
+              "paths": 90,
+              "sequence_bases": 838860
+            },
+            "gene": {
+              "marker_occurrences": 8192,
+              "paths": 128,
+              "sequence_bases": 2097152
+            },
+            "run": {
+              "marker_occurrences": 32768,
+              "paths": 1024,
+              "sequence_bases": 8388608
+            },
+            "threshold": {
+              "marker_occurrences": 4096,
+              "paths": 64,
+              "sequence_bases": 1048576
+            },
+            "unused_share_is_not_redistributed": true
+          },
+          "marker_detail_truncated": false,
+          "marker_span_scope": "marker_covered_positions_only_for_complete_detail_sources",
+          "n_products": 0,
+          "path_search_evaluated": false,
+          "product_lengths": [],
+          "products": [],
+          "purpose": "uncertain_repeat_structure_graph_path_hypotheses",
+          "read_support_evaluation": "not_evaluated",
+          "repeat_length_evaluation": "unresolved",
+          "retained_path_records": 0,
+          "retention_truncated": false,
+          "schema_version": 2,
+          "search_limit_scope": "all_attempted_thresholds_for_gene",
+          "search_limits_reached": false,
+          "standard_equivalence_policy": "exact_sequence_or_reverse_complement_of_final_standard_output",
+          "thresholds": [],
+          "unique_products": 0
+        }
+      },
+      {
+        "failure_reason": "forward and reverse primers not found",
+        "gene_name": "angiospermae_psbM-trnD",
+        "n_products": 0,
+        "n_standard_products": 0,
+        "n_uncertain_products": 0,
+        "status": "fail",
+        "uncertain_products": {
+          "coordinate_system": "zero_based_half_open_in_emitted_oriented_sequence",
+          "deduplication_policy": "exact_oriented_sequence_only_reverse_complements_retained_as_separate_hypotheses",
+          "exact_duplicate_path_records": 0,
+          "excluded_standard_equivalent_path_records": 0,
+          "limits": {
+            "allocated_run_share_for_gene": {
+              "marker_occurrences": 3277,
+              "paths": 89,
+              "sequence_bases": 838860
+            },
+            "gene": {
+              "marker_occurrences": 8192,
+              "paths": 128,
+              "sequence_bases": 2097152
+            },
+            "run": {
+              "marker_occurrences": 32768,
+              "paths": 1024,
+              "sequence_bases": 8388608
+            },
+            "threshold": {
+              "marker_occurrences": 4096,
+              "paths": 64,
+              "sequence_bases": 1048576
+            },
+            "unused_share_is_not_redistributed": true
+          },
+          "marker_detail_truncated": false,
+          "marker_span_scope": "marker_covered_positions_only_for_complete_detail_sources",
+          "n_products": 0,
+          "path_search_evaluated": false,
+          "product_lengths": [],
+          "products": [],
+          "purpose": "uncertain_repeat_structure_graph_path_hypotheses",
+          "read_support_evaluation": "not_evaluated",
+          "repeat_length_evaluation": "unresolved",
+          "retained_path_records": 0,
+          "retention_truncated": false,
+          "schema_version": 2,
+          "search_limit_scope": "all_attempted_thresholds_for_gene",
+          "search_limits_reached": false,
+          "standard_equivalence_policy": "exact_sequence_or_reverse_complement_of_final_standard_output",
+          "thresholds": [],
+          "unique_products": 0
+        }
+      },
+      {
+        "failure_reason": "forward and reverse primers not found",
+        "gene_name": "angiospermae_atpB-rbcL",
+        "n_products": 0,
+        "n_standard_products": 0,
+        "n_uncertain_products": 0,
+        "status": "fail",
+        "uncertain_products": {
+          "coordinate_system": "zero_based_half_open_in_emitted_oriented_sequence",
+          "deduplication_policy": "exact_oriented_sequence_only_reverse_complements_retained_as_separate_hypotheses",
+          "exact_duplicate_path_records": 0,
+          "excluded_standard_equivalent_path_records": 0,
+          "limits": {
+            "allocated_run_share_for_gene": {
+              "marker_occurrences": 3277,
+              "paths": 89,
+              "sequence_bases": 838860
+            },
+            "gene": {
+              "marker_occurrences": 8192,
+              "paths": 128,
+              "sequence_bases": 2097152
+            },
+            "run": {
+              "marker_occurrences": 32768,
+              "paths": 1024,
+              "sequence_bases": 8388608
+            },
+            "threshold": {
+              "marker_occurrences": 4096,
+              "paths": 64,
+              "sequence_bases": 1048576
+            },
+            "unused_share_is_not_redistributed": true
+          },
+          "marker_detail_truncated": false,
+          "marker_span_scope": "marker_covered_positions_only_for_complete_detail_sources",
+          "n_products": 0,
+          "path_search_evaluated": false,
+          "product_lengths": [],
+          "products": [],
+          "purpose": "uncertain_repeat_structure_graph_path_hypotheses",
+          "read_support_evaluation": "not_evaluated",
+          "repeat_length_evaluation": "unresolved",
+          "retained_path_records": 0,
+          "retention_truncated": false,
+          "schema_version": 2,
+          "search_limit_scope": "all_attempted_thresholds_for_gene",
+          "search_limits_reached": false,
+          "standard_equivalence_policy": "exact_sequence_or_reverse_complement_of_final_standard_output",
+          "thresholds": [],
+          "unique_products": 0
+        }
+      },
+      {
+        "failure_reason": "forward and reverse primers not found",
+        "gene_name": "angiospermae_trnL-F",
+        "n_products": 0,
+        "n_standard_products": 0,
+        "n_uncertain_products": 0,
+        "status": "fail",
+        "uncertain_products": {
+          "coordinate_system": "zero_based_half_open_in_emitted_oriented_sequence",
+          "deduplication_policy": "exact_oriented_sequence_only_reverse_complements_retained_as_separate_hypotheses",
+          "exact_duplicate_path_records": 0,
+          "excluded_standard_equivalent_path_records": 0,
+          "limits": {
+            "allocated_run_share_for_gene": {
+              "marker_occurrences": 3276,
+              "paths": 89,
+              "sequence_bases": 838860
+            },
+            "gene": {
+              "marker_occurrences": 8192,
+              "paths": 128,
+              "sequence_bases": 2097152
+            },
+            "run": {
+              "marker_occurrences": 32768,
+              "paths": 1024,
+              "sequence_bases": 8388608
+            },
+            "threshold": {
+              "marker_occurrences": 4096,
+              "paths": 64,
+              "sequence_bases": 1048576
+            },
+            "unused_share_is_not_redistributed": true
+          },
+          "marker_detail_truncated": false,
+          "marker_span_scope": "marker_covered_positions_only_for_complete_detail_sources",
+          "n_products": 0,
+          "path_search_evaluated": false,
+          "product_lengths": [],
+          "products": [],
+          "purpose": "uncertain_repeat_structure_graph_path_hypotheses",
+          "read_support_evaluation": "not_evaluated",
+          "repeat_length_evaluation": "unresolved",
+          "retained_path_records": 0,
+          "retention_truncated": false,
+          "schema_version": 2,
+          "search_limit_scope": "all_attempted_thresholds_for_gene",
+          "search_limits_reached": false,
+          "standard_equivalence_policy": "exact_sequence_or_reverse_complement_of_final_standard_output",
+          "thresholds": [],
+          "unique_products": 0
+        }
+      },
+      {
+        "failure_reason": "forward and reverse primers not found",
+        "gene_name": "angiospermae_ITS",
+        "n_products": 0,
+        "n_standard_products": 0,
+        "n_uncertain_products": 0,
+        "status": "fail",
+        "uncertain_products": {
+          "coordinate_system": "zero_based_half_open_in_emitted_oriented_sequence",
+          "deduplication_policy": "exact_oriented_sequence_only_reverse_complements_retained_as_separate_hypotheses",
+          "exact_duplicate_path_records": 0,
+          "excluded_standard_equivalent_path_records": 0,
+          "limits": {
+            "allocated_run_share_for_gene": {
+              "marker_occurrences": 3276,
+              "paths": 89,
+              "sequence_bases": 838860
+            },
+            "gene": {
+              "marker_occurrences": 8192,
+              "paths": 128,
+              "sequence_bases": 2097152
+            },
+            "run": {
+              "marker_occurrences": 32768,
+              "paths": 1024,
+              "sequence_bases": 8388608
+            },
+            "threshold": {
+              "marker_occurrences": 4096,
+              "paths": 64,
+              "sequence_bases": 1048576
+            },
+            "unused_share_is_not_redistributed": true
+          },
+          "marker_detail_truncated": false,
+          "marker_span_scope": "marker_covered_positions_only_for_complete_detail_sources",
+          "n_products": 0,
+          "path_search_evaluated": false,
+          "product_lengths": [],
+          "products": [],
+          "purpose": "uncertain_repeat_structure_graph_path_hypotheses",
+          "read_support_evaluation": "not_evaluated",
+          "repeat_length_evaluation": "unresolved",
+          "retained_path_records": 0,
+          "retention_truncated": false,
+          "schema_version": 2,
+          "search_limit_scope": "all_attempted_thresholds_for_gene",
+          "search_limits_reached": false,
+          "standard_equivalence_policy": "exact_sequence_or_reverse_complement_of_final_standard_output",
+          "thresholds": [],
+          "unique_products": 0
+        }
+      }
+    ],
+    "records": [
+      {
+        "assembly_status": "standard",
+        "gene": "angiospermae_trnV-atpE",
+        "header": "synthetic_NC_056221_1_after_angiospermae_trnV-atpE_0 sample=synthetic_NC_056221_1_after gene=angiospermae_trnV-atpE product=0 length=929 kmer_count_mean=265.29 kmer_count_median=266 kmer_count_min=216 kmer_count_max=266 score=266.00 assembly_status=standard",
+        "length": 929,
+        "reverse_complement_sha256": "c283dad3f462cde3f7a2682b182ac1392ee8dcbc6bf294d753ec5c8c3233c20b",
+        "scope": "assay_correction_evaluation",
+        "sequence": "CGAGGTGCTCTACCTAACTGAGCTATAGCCCTTGTGCTTGTGATACATATTTTATCATATTATGTAGATAATTTCTTGTCAAGATGAATATTCCATGATCCAACATCGTATCTCTTTGATCTTTTTGATTGGTATTGCTTCGAAGTCTTATTGCATTTATAATCCATCAATGGGAGGGGTCCTTTTTTTTTCTCCTTATAATGATAAATGACCTACTTAACTCAGTGGTTAGAGTATTGCTTTCATACGGCGGGAGTCATTGGTTCAAATCCAATAGTAGGTAGAACTTATTAGATACCATGGTCAATGGTATCTAATAAGTTTTTCTACTTACTGATTTTGTATCTTTTCTATCCTATTCGATTTGATTTTCGAATTGAAACTAAAACTTTTTTCCTTACATCAGAATCCGATTCCACTTGATTGTATTTGATTGGATTCAATCGGAAGAATCCATATGTGTATAAACAAAAATTCTTTGGATTAGGATTATTCGATTCGGGCGCACCGACTAGTTACGAAATCACATTGAGAACCTCTACTCGTGTCCTAGCTCGTCTGAGAGCTAGATTTGCCTCAATTGTTTGTCTCTTACTTTCAGCTTTCCTCAAGCCGGCTTCCGCTATTTCAAGAGTTTGCTGAGCTTCTTGGGGATCAATGTCACTACTCTTCTCCGCATCATTTACTAAAACGGTGATCTCATTATTACCTATTCTAGCAAAACCGCCCATCAGAGCCATCGTTAACCATTGGTCATTAAAGCGTATTCTCAAAATACCTATATCTACAGCTGTGGCAATAGGCGCGTGATTTGGTAATACGCCAATTTGTCCACTATTAGTAGATAAAATGATTTCTTTCACTTCTGAATCCCAAACAATTCGATTAGGGGTCAGTACACAAAGATTTAAGGTCATTTCTTCAAATTG",
+        "sha256": "60a67ee9a9fac06519b8aff377abc4f2ab9e252b12121adf28ff37421e9dfc9a"
+      }
+    ]
+  },
+  "outputs_directory": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/synthetic_NC_056221_1_after/outputs",
+  "sample_id": "NC_056221.1",
+  "sample_prefix": "synthetic_NC_056221_1_after",
+  "scope": "synthetic",
+  "status": "pass",
+  "variant": "after"
+}

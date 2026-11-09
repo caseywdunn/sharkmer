@@ -1,0 +1,1300 @@
+{
+  "bindings": [
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/build_pair.py",
+      "sha256": "1505db5f897da1176a61d5349ccf43c6ae4ad7dd364f85393dba0cd55b2b5763",
+      "size_bytes": 4663
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/run_release_comparison.py",
+      "sha256": "e477ae4fd356b17ea71de0f5c8da18feefc4c548f29cabc612a53aebc07a3512",
+      "size_bytes": 27287
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/test_release_comparison.py",
+      "sha256": "6276b341cc3a60efc0c176ce24ee19f45e1d2bc977dba842d7d8d686a8baa7a7",
+      "size_bytes": 10576
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_008326.1.expected-corrected.fasta",
+      "sha256": "95af541c076d7379a653a985dfb4cc4088fd8e1d16187fd59f05ca683c5c722f",
+      "size_bytes": 954
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_008326.1.synthetic.fastq",
+      "sha256": "ab4cfa3709bfe02b296e39c121ae95c42cc3d1af467939eeb24f9bd1902eb3c4",
+      "size_bytes": 932604
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_056221.1.expected-corrected.fasta",
+      "sha256": "d032e1186b1bcd737f40df919f1b3be3dd37b6483f803675375862983e5b36fb",
+      "size_bytes": 974
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/NC_056221.1.synthetic.fastq",
+      "sha256": "d110be1cf4f0cbceba775d6fd11fd0c97c57e407fc7278d17f9dff9b66adbeab",
+      "size_bytes": 945684
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-after.yaml",
+      "sha256": "99d1c629953a0d0a9e70f4c0414047c7d7b9e0a69d07d88bedff1c47b107b14e",
+      "size_bytes": 31657
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-before.yaml",
+      "sha256": "9ff46bf3d343920c33a2a5c41b0858f0d8401f67729d737f17e73350dae365de",
+      "size_bytes": 27946
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/checksums.json",
+      "sha256": "7d2eead2cfd58163dfc7389789c17aad23b5d9df6ec77db3dcada71d6b783aa9",
+      "size_bytes": 706
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/mapping.json",
+      "sha256": "7ccd70d1d4e1aee6905bd3b17dfca2c5b125370dbf82555de61cffbdbfade612",
+      "size_bytes": 55099
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/protocol-v3.json",
+      "sha256": "ed1692acc8631ee204dc8ccc5c255b8fa4d534e2bf96692a45c3cd7840a67265",
+      "size_bytes": 4548
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/run_comparison.py",
+      "sha256": "e27eb6161061ee059a0feff8b3aa572b1f58188177c3dd77555f42bd7703ef51",
+      "size_bytes": 14707
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/run_final_checks.py",
+      "sha256": "e1c74e9aaa994475f751874d95bf664a23ef9bd5bb66f5dc532faa5ca1cc751a",
+      "size_bytes": 21016
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/run_final_checks.sbatch",
+      "sha256": "b28fc7f1fc316e93cf15038fe5c4ce14b0aec0ac5dc960a8890295145fc98237",
+      "size_bytes": 783
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-release-comparison-20260909/tools/postprocess_legacy.py",
+      "sha256": "f9e58a665c530b71c96ad7fb79508ba1598df7119feb7c52ee403aeb3e790aef",
+      "size_bytes": 27915
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build_snapshot.py",
+      "sha256": "edb077d170f8e485bcc19647ce8ab231be1abbff377e77595951d52d02110ff8",
+      "size_bytes": 10292
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py",
+      "sha256": "33ae477d0684c2618384993c80b1c92730414b47094168b3b5c26645774182e7",
+      "size_bytes": 1438
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/prepare_inputs.py",
+      "sha256": "8dd9c85628a8b274f30999f9683a2497d45584623aac728d73ff9255ac4a5561",
+      "size_bytes": 7672
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/restore_prefix.py",
+      "sha256": "d49717be97a53db7c2501f92e129e0226ee649d8c95cc12566c1b0d3836198d1",
+      "size_bytes": 5841
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_allocated_comparison.py",
+      "sha256": "a79d38030fde747012595b337eb69777956b3b1081c643b381a5213d3ba71df2",
+      "size_bytes": 7492
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_comparison.py",
+      "sha256": "87bee0cdfb912dd583c940c13c61d4887ce6cde847930059fbd0bcb7fc2b178c",
+      "size_bytes": 27558
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_compiled_checks.py",
+      "sha256": "65e407f0867c5af36bb1d4279f049557190c8f06c94d84eef48810d7b636314c",
+      "size_bytes": 9437
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/test_orchestration.py",
+      "sha256": "e8976a9413683289bd346f1546b6fef813c02881992a469f74a630b691064504",
+      "size_bytes": 4856
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/test_run_comparison.py",
+      "sha256": "78207e75da313688d61d4a786c864947480cbed10a2855e6f9e4b82e8f3a4cde",
+      "size_bytes": 16898
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/__init__.py",
+      "sha256": "7ce608bedd5e192a90adee2e092dec256299d26c00b82f140faa9b6b9392f7f5",
+      "size_bytes": 2057
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/__init__.pyi",
+      "sha256": "a55188980515a2fab6fd3625febfc72189c697239aa02b84871a3e12fb279d27",
+      "size_bytes": 11325
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/_cmp.py",
+      "sha256": "dcd9f54e3c659546225ff9c9a159c4917a0393484cd4360a8f90c4ec665ee22d",
+      "size_bytes": 4117
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/_cmp.pyi",
+      "sha256": "53efd153f5193b23d4110cd713a44c61041c8e4651636e704c7f7db0dd2cecc3",
+      "size_bytes": 368
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/_compat.py",
+      "sha256": "c7483b88450e9c15490bbdb3c850a06f578aab2c52fbb7f62c69cdc99febf79b",
+      "size_bytes": 2829
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/_config.py",
+      "sha256": "746ab7c51e9f819105e9406dfcbd13f9e507201e22e37911987d0fdbcb09570f",
+      "size_bytes": 843
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/_funcs.py",
+      "sha256": "231e481134dfcf9174d45fb5d8c17f0921689889f687c6faec4555cf6802b411",
+      "size_bytes": 16479
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/_make.py",
+      "sha256": "1fb387d9e592e429c1ccb5233451355b299f3eb985d6bf1fbf644f76df4cb980",
+      "size_bytes": 106129
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/_next_gen.py",
+      "sha256": "050b42525cf08368161d3617050beb118067cc152b0ef3b9eeed0fcba5023e17",
+      "size_bytes": 26274
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/_typing_compat.pyi",
+      "sha256": "5c33f9e13527f992a10fad9339079b9b3af0172a268540a8191a5c95be9a9510",
+      "size_bytes": 469
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/_version_info.py",
+      "sha256": "c3847e1580b734afe43241945899583f87150251fd1d1682fae9b77dc8d89073",
+      "size_bytes": 2222
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/_version_info.pyi",
+      "sha256": "c7f3372f75ae07baff50b5c05a3c7de7db9d290e072c1f25fa1b1cd450c636f9",
+      "size_bytes": 209
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/converters.py",
+      "sha256": "1a50de3b33de4c581e0412db8fd1b9ec4cf994093af2e85200b45827f7b17bce",
+      "size_bytes": 3861
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/converters.pyi",
+      "sha256": "a2b5366df7fe56341ada4303caf9cc415ef7a094f6591c90bb0e19475ca6d5b1",
+      "size_bytes": 643
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/exceptions.py",
+      "sha256": "6f8bcc6e7a10dd5a7059986aad88bfb2c5d508af28d9ce074124b4f5c49433da",
+      "size_bytes": 1990
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/exceptions.pyi",
+      "sha256": "cd9abc6c2527280cbd983b41130e366613e1014207a1329e7434089c90fcf373",
+      "size_bytes": 539
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/filters.py",
+      "sha256": "64188a58ba774742df099b2aed7d75a67f565fc36c952db05cce23b272ce19cf",
+      "size_bytes": 1795
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/filters.pyi",
+      "sha256": "dc9e411be753c65b41935ffe46e351507aefdaabb5bfcbf868334043bfe689f0",
+      "size_bytes": 208
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/py.typed",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/setters.py",
+      "sha256": "e7e75c4fadc640adf938d1334a07d70a46c1ee93e4691faabf5e669b83d54b34",
+      "size_bytes": 1617
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/setters.pyi",
+      "sha256": "367564685535041e0907c13826e5f2af34d482fb4ca63f29df005d258eee8b1e",
+      "size_bytes": 584
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/validators.py",
+      "sha256": "9b7411cd94c036be1fd82e1e55d528160d753605d66a4f166ade2a4131a1bdcb",
+      "size_bytes": 21553
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attr/validators.pyi",
+      "sha256": "80cd59987681724c98588d848aba51373aa6dc1d7d730e48aba0782a7a3d6023",
+      "size_bytes": 4087
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attrs/__init__.py",
+      "sha256": "47168064dc1888487e7dcbc72d936943f0d62a78bbdccfe3c443c47ed8aad597",
+      "size_bytes": 1183
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attrs/__init__.pyi",
+      "sha256": "da057bf60f54c49a69192338f2101927a87f3076fbd1d66824bdf564d25e6582",
+      "size_bytes": 9416
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attrs/converters.py",
+      "sha256": "f244258eb5707d24d1bbc20dc0493c488d1e1abce659fb6c4fbaccd04ab2a213",
+      "size_bytes": 76
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attrs/exceptions.py",
+      "sha256": "0020829a0d7dfaf0c56833d8f6f165d7df523d709030dfdb10db380c02e3ce6b",
+      "size_bytes": 76
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attrs/filters.py",
+      "sha256": "54e50c66e83db8453a754b80d1d1758c89d42b43cbddf2e03f45414b977e0831",
+      "size_bytes": 73
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attrs/py.typed",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attrs/setters.py",
+      "sha256": "78bd5889d6105774f687dfd2608652651d4501c1c66f54ee093cb41342efd925",
+      "size_bytes": 73
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attrs/validators.py",
+      "sha256": "c5ccbac03e53b5391d086d5fe1759ba1c3d23b47da06393921f5497cfe92523d",
+      "size_bytes": 76
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attrs-26.1.0.dist-info/INSTALLER",
+      "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508",
+      "size_bytes": 4
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attrs-26.1.0.dist-info/METADATA",
+      "sha256": "4cd40e690f23bf37cbcad34efd6758e062df1df07c86833f7e3ce95bf1fa38cc",
+      "size_bytes": 8754
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attrs-26.1.0.dist-info/RECORD",
+      "sha256": "3cc123d895d29f6371d82bc6743c0dea82c79123d9421837517c6b6777345a77",
+      "size_bytes": 3556
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attrs-26.1.0.dist-info/WHEEL",
+      "sha256": "41c708c5adba6e097513ab8ccb9f1d7865a2fb469e22491a9e01dcc64da459fc",
+      "size_bytes": 87
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/attrs-26.1.0.dist-info/licenses/LICENSE",
+      "sha256": "882115c95dfc2af1eeb6714f8ec6d5cbcabf667caff8729f42420da63f714e9f",
+      "size_bytes": 1109
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/bin/jsonschema",
+      "sha256": "9a65fc9b889cf57df500c8b8534d7ae9335630b93183910fbf98ae023df94be4",
+      "size_bytes": 220
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/__init__.py",
+      "sha256": "a7e470e134bfd0e3c76482722260d6b1d5a099de823d61cc5cbabb06e4314c67",
+      "size_bytes": 3941
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/__main__.py",
+      "sha256": "88bb197f6ba9501de294129394c9f22be1c7b760a79df930c318bf73a80bbd20",
+      "size_bytes": 115
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/_format.py",
+      "sha256": "96bb3553b892076657f59d846a5b113987909b577d91e7f0d822e8d3c1bc3f8b",
+      "size_bytes": 15568
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/_keywords.py",
+      "sha256": "afcfc3aea01f9fa40bc109e65c4820bde89253e51a20bda9da7b8f20d7a57c57",
+      "size_bytes": 14949
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/_legacy_keywords.py",
+      "sha256": "dad5aec113d66d84bb10097cc01202feb69b1aebf527875f60ba8d10fa528610",
+      "size_bytes": 15191
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/_types.py",
+      "sha256": "7ff9e44c36eb8dadc4ddfb083530bbdf2fe03174d4db5d08fc7eea2b434ddf47",
+      "size_bytes": 5456
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/_typing.py",
+      "sha256": "a572e71b2de336d2144ead37ee451fab4c1ed7bd3ce5e1ed2700c9dadfbe9901",
+      "size_bytes": 617
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/_utils.py",
+      "sha256": "5efebfc0a2ac941265c328fdfa3d9cf090c5c3ee33e1a5859d57b6a57f21ed4e",
+      "size_bytes": 10659
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/benchmarks/__init__.py",
+      "sha256": "034b10af10c15474b243ef2bbb72f5d613177f7abd815b81f71fd88076f847d3",
+      "size_bytes": 70
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/benchmarks/const_vs_enum.py",
+      "sha256": "0d5162dd60ea05a95914e89b9e3a57d6e4d2af74716b670f805728c1ded492bb",
+      "size_bytes": 830
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/benchmarks/contains.py",
+      "sha256": "81ec50a14ac23b0102a1f6edd7d05ea2c419ed614be8f0dd917e3d0d6c0194e8",
+      "size_bytes": 786
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/benchmarks/import_benchmark.py",
+      "sha256": "d834483954baa7e6ea2e7ffcdb607f5f9164211bec2765750989d5d9daeecc3b",
+      "size_bytes": 779
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/benchmarks/issue232/issue.json",
+      "sha256": "79a3ce663311bb9bbc4692abb00f6e93bb9c3d94b9b64286e03fe190e4d0dc79",
+      "size_bytes": 117105
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/benchmarks/issue232.py",
+      "sha256": "dcb2d82c89411909d5bb2ca8da202ffb1932e4fe8f4451c0371e3ecc82103a81",
+      "size_bytes": 521
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/benchmarks/json_schema_test_suite.py",
+      "sha256": "3ef7da6e9518705e3fedcb180d37136ae103f2b9c510661b758e51a935c3d3cb",
+      "size_bytes": 320
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/benchmarks/nested_schemas.py",
+      "sha256": "9a8d3b771f82220992388eb608db38839c6ed45cc79252c1a644280f159870ab",
+      "size_bytes": 1892
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/benchmarks/subcomponents.py",
+      "sha256": "7c4ca2333b1678ada977b0c4182bae63ebf31ae9f08477334415849c144b288a",
+      "size_bytes": 1113
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/benchmarks/unused_registry.py",
+      "sha256": "87047038d73d71e7cfb58ce4a17fd36113b71b25288eb8afd3e61068adef9e3d",
+      "size_bytes": 940
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/benchmarks/useless_applicator_schemas.py",
+      "sha256": "1159b9f84b4e105a0b3ff56dda3e12ac2c25c74e4d84fa8db9943a2c830fd437",
+      "size_bytes": 3342
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/benchmarks/useless_keywords.py",
+      "sha256": "6e3ff32abd6855cb4596ac9968e6c2b184e01638a23603f30b486bd58f3af261",
+      "size_bytes": 867
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/benchmarks/validator_creation.py",
+      "sha256": "52451094b027bacb27aff29d08875a77ac71da95f140b998b6c5e88a2aca7964",
+      "size_bytes": 285
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/cli.py",
+      "sha256": "6aff743ada52c6e8a4a37140c841edc6923e352b97dd632da10a48c74f686c96",
+      "size_bytes": 8445
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/exceptions.py",
+      "sha256": "6f8da150339f3c5729ac8e1994da630de2cabfc93dbce86059cb768f20e5c739",
+      "size_bytes": 15256
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/protocols.py",
+      "sha256": "960cabc951ea1628d2151033f79721dd5376173fa84c5ca18fd39b732e4ffc22",
+      "size_bytes": 7198
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/tests/_suite.py",
+      "sha256": "da4d17f7537b74e1e141ce66ad8bf8d0e29fd707a2a23e91301a9680b4faf8f2",
+      "size_bytes": 8374
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/tests/fuzz_validate.py",
+      "sha256": "7d403bc932488a1682c09a659147a165ec81f381dc5c472ab58e683c95c83bb2",
+      "size_bytes": 1114
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/tests/test_cli.py",
+      "sha256": "03cf6be4b387cbea5e2cf640e580e439a3135aacd03bfc364eef16173fefa613",
+      "size_bytes": 28544
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/tests/test_deprecations.py",
+      "sha256": "c86ea6911247a531db5a8c692c2e72e47edf93c7ab18eb3c7fff55e2d081121f",
+      "size_bytes": 15754
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/tests/test_exceptions.py",
+      "sha256": "aec12a763927533ddd13225bebf0e232874f1d7b094c45b30ebc54b1c83c1b9a",
+      "size_bytes": 24301
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/tests/test_format.py",
+      "sha256": "7959b948c69617694e3cedbc6cf03036f92242f1c240acbe327b808047217c47",
+      "size_bytes": 3188
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/tests/test_jsonschema_test_suite.py",
+      "sha256": "b407f192733ae4e47d2f20cf1eed699046a899b2e08d12e727a14f8963ddc638",
+      "size_bytes": 8461
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/tests/test_types.py",
+      "sha256": "705e752930e676cc74e8cac87387d72add17f5f22c560c39ba14fc09a9956bc5",
+      "size_bytes": 6977
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/tests/test_utils.py",
+      "sha256": "b1aa3be28d4fc9833105fab07a8910378f021524baca1264e459027cc2793ec2",
+      "size_bytes": 4163
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/tests/test_validators.py",
+      "sha256": "bb397e6a0c8ba193d3b9fa2e2074b114f7cf62b7487633708c7703ff93725381",
+      "size_bytes": 87949
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/tests/typing/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/tests/typing/test_all_concrete_validators_match_protocol.py",
+      "sha256": "2395d4979658512668dc03e4175d25f0c9df934f685caaaf5d6b6d186777b039",
+      "size_bytes": 1238
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema/validators.py",
+      "sha256": "97f171b995b4b0ca05530a9366a1252fb1753f99f3cb7b1068b6d9aab1096fa5",
+      "size_bytes": 47159
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema-4.26.0.dist-info/INSTALLER",
+      "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508",
+      "size_bytes": 4
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema-4.26.0.dist-info/METADATA",
+      "sha256": "05b189866ca98a96da3934bf6b83687ced3ff85325273b77e16b705f6d8b26d2",
+      "size_bytes": 7592
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema-4.26.0.dist-info/RECORD",
+      "sha256": "8569c1edb75d85870133261d18e7ef1a658597ec1513757128e165e5e82d1780",
+      "size_bytes": 6412
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema-4.26.0.dist-info/REQUESTED",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema-4.26.0.dist-info/WHEEL",
+      "sha256": "58b82a17209f9bf2804afe161f2632d0fde933f9bb2792fd936b2474a2e2ac2f",
+      "size_bytes": 87
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema-4.26.0.dist-info/entry_points.txt",
+      "sha256": "bceeeb5f816cff1215272da99c0b4a8134b17e99e8cc0550d038c29a93319d61",
+      "size_bytes": 51
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema-4.26.0.dist-info/licenses/COPYING",
+      "sha256": "4f92a015a13c4d1a040bef018aa13430b4f1bc73b41b16bb846c346766de7439",
+      "size_bytes": 1057
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/__init__.py",
+      "sha256": "aa84c1d83298eeabcdac684c3c7ea0b6600944b8a599543e7c56704faaf2ab0d",
+      "size_bytes": 386
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/_core.py",
+      "sha256": "b4585cd42325789dc024e2bf6e3c4ea4541376bb140a51467c5c4f054fc279b3",
+      "size_bytes": 1140
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft201909/metaschema.json",
+      "sha256": "7b761b3e121f0a0ca1ea2a0b8e2cc856bcf801604b8268d71bacaa202bc0c13b",
+      "size_bytes": 1785
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft201909/vocabularies/applicator",
+      "sha256": "6895100e99726fbb107058512bbec3ecfd4b24e8fd2facee3e505ee72b0d4c31",
+      "size_bytes": 1860
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft201909/vocabularies/content",
+      "sha256": "9b7d4f55a4e2fdb02c430068fdffabc732addce238da3f1df2690249c3353274",
+      "size_bytes": 517
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft201909/vocabularies/core",
+      "sha256": "b5a2c4957f6495d0a5081f0409ebe8a14e4139acb203fc748471f8ede2af5b2c",
+      "size_bytes": 1531
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft201909/vocabularies/format",
+      "sha256": "50ebbfe790611a849b8cc400a09c1d0e0fb6ab5c0d43a0f22201fd3625056bf4",
+      "size_bytes": 403
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft201909/vocabularies/meta-data",
+      "sha256": "d47e2445dd6a82271a298d83cc6c6cb8d4ae1e15e0dc56becd37a163ecf01286",
+      "size_bytes": 892
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft201909/vocabularies/validation",
+      "sha256": "1e526c1d335a734805fc82cf5798c12b960ad7da2517c66cda5a1b09359c3c1c",
+      "size_bytes": 2834
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft202012/metaschema.json",
+      "sha256": "41da76f5afb7ce062d248f762463a92f7ca47e4e0f905b224ba6afeef91ded0f",
+      "size_bytes": 2452
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft202012/vocabularies/applicator",
+      "sha256": "c4a6e4147b91fef7fea6dc058cb1bf93402f7414b76578a8b16aaf1dad6aacef",
+      "size_bytes": 1659
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft202012/vocabularies/content",
+      "sha256": "08343747764e4a5814262793cf4d652057a7913863c5950d43297e8e1fdac5b6",
+      "size_bytes": 519
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft202012/vocabularies/core",
+      "sha256": "c2d12a8e4dd11d336dfc83a3f663aa4c69f0b49b3beb094ffeb25b5316f4803d",
+      "size_bytes": 1564
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft202012/vocabularies/format-annotation",
+      "sha256": "abc775adfefd89d22358170d9bf93f4ebd2349563bbbedd60f02bef7c812bcc0",
+      "size_bytes": 448
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft202012/vocabularies/format-assertion",
+      "sha256": "c52242b9a1bb786b26c3e82c7add428c31f9c96e575dce99e56ea5feaa6da20c",
+      "size_bytes": 445
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft202012/vocabularies/meta-data",
+      "sha256": "8f76d6e14f41b9b92ef933b708cdc5144c8b5268651ad11918485fb1754f1c76",
+      "size_bytes": 892
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft202012/vocabularies/unevaluated",
+      "sha256": "2dbfbcb73994b670b0976492adee1fffb46c21682784d2f5a4ca561f9e2d0cb4",
+      "size_bytes": 506
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft202012/vocabularies/validation",
+      "sha256": "7010a31e541f32d2be721e2de348df75c9b36876a3ed304877fc0abda1d37a58",
+      "size_bytes": 2834
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft3/metaschema.json",
+      "sha256": "2cf75f64436fb5be374a2eaa27ab8b7e1fd651c9b46daea6c67b02fd64e2458b",
+      "size_bytes": 2600
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft4/metaschema.json",
+      "sha256": "e1489d0b4755f02793302591d3fcb8f07b6893a82a94f24895f8e4edf11b82e2",
+      "size_bytes": 4357
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft6/metaschema.json",
+      "sha256": "c29dfce9f54835c3a06c03b3c5d5ec0eda77706568f9c4df7cfbc7566a51006d",
+      "size_bytes": 4437
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/schemas/draft7/metaschema.json",
+      "sha256": "3d5392088261606c559b603f385329c9f1ab45b5d667eb990687453b055d405e",
+      "size_bytes": 4819
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications/tests/test_jsonschema_specifications.py",
+      "sha256": "5a46d8456e80e85a19d2b8af4a17ea54b482b00887276c7c4f1a840894d73d36",
+      "size_bytes": 1106
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications-2025.9.1.dist-info/INSTALLER",
+      "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508",
+      "size_bytes": 4
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications-2025.9.1.dist-info/METADATA",
+      "sha256": "35abd41757f32b4ea24756920ded47b70173d77cbc052a5a6d3ab583b2e8d89d",
+      "size_bytes": 2907
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications-2025.9.1.dist-info/RECORD",
+      "sha256": "423669f278797615b7df8c63a3716753437e921c9bf0b579ef237c1fa9c94439",
+      "size_bytes": 3656
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications-2025.9.1.dist-info/WHEEL",
+      "sha256": "aad0b0a12256807936d52d4a6f88a1773236ae527564a688bab4e3fe780e8724",
+      "size_bytes": 87
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/jsonschema_specifications-2025.9.1.dist-info/licenses/COPYING",
+      "sha256": "42dcd63495f87b4eb7c7757afa379bb55a53f94afd7a5f657d9adf57236e515c",
+      "size_bytes": 1057
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/__init__.py",
+      "sha256": "e4864a5da007fc55b20894646939f55dca6d2df83d72f78b6fdbb99d853124ab",
+      "size_bytes": 207
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/_attrs.py",
+      "sha256": "6e04fe28c84354b786b56c4cfd218a61e2da6411734f691454574090e7178bc8",
+      "size_bytes": 791
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/_attrs.pyi",
+      "sha256": "836c17f9a2c4a9002f594facd2a20dd8e30602a8ce03447bd91fee49f7cef3f3",
+      "size_bytes": 573
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/_core.py",
+      "sha256": "d923c67da4efcc0dec46a6e3ff8476c02fbe7e25e8942515a4b14b249eb3759f",
+      "size_bytes": 24732
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/exceptions.py",
+      "sha256": "cc581a120e9688a793e7c310b8a36c8060e71ecce9dba738a11782eac17d8073",
+      "size_bytes": 4176
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/jsonschema.py",
+      "sha256": "8d767ab7ac7da13bd31cc202d2d4726858d6e6bdaa78739b62ebbb52149f2b74",
+      "size_bytes": 18615
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/py.typed",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/retrieval.py",
+      "sha256": "727f4478075a6936e7303742e094488621295c38df95174708e2c5af0d5984b0",
+      "size_bytes": 2729
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/tests/__init__.py",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/tests/test_core.py",
+      "sha256": "79aa74080688db7be33086d5c848fddaa2dd769de21c7dc0c42e7908a50de0b5",
+      "size_bytes": 37854
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/tests/test_exceptions.py",
+      "sha256": "ede39d1f2a1b5ccb7bfa1e409e71fbbbc8b0dae1cf687ed4e01b3d2612e08d6a",
+      "size_bytes": 934
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/tests/test_jsonschema.py",
+      "sha256": "e109e35163803009f9c9e03c66d95d264848e78bf02962560742c3ccd771e717",
+      "size_bytes": 11687
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/tests/test_referencing_suite.py",
+      "sha256": "c03eaf78c7cbb14bb4b3830b8e6ee94bc720e1c21f2fb14c044367824ef7cc22",
+      "size_bytes": 2335
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/tests/test_retrieval.py",
+      "sha256": "bdc6e77c0e13a957aa5335b4ef7c0efa72dea9522fd2b41958d5afd33f649b8f",
+      "size_bytes": 3719
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing/typing.py",
+      "sha256": "5a351b9d9ea33c0777d5c9c214069e588544373c87b47749c8e95e96fd4663bd",
+      "size_bytes": 1445
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing-0.37.0.dist-info/INSTALLER",
+      "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508",
+      "size_bytes": 4
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing-0.37.0.dist-info/METADATA",
+      "sha256": "c93b00e6ab1524fd60848376604c189a114374776475c25a31d57be47b29de6a",
+      "size_bytes": 2845
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing-0.37.0.dist-info/RECORD",
+      "sha256": "49bff17ca45686bef72bafa5668a4426f3f106ae0454c677f8b426c7814b72f5",
+      "size_bytes": 2439
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing-0.37.0.dist-info/WHEEL",
+      "sha256": "aad0b0a12256807936d52d4a6f88a1773236ae527564a688bab4e3fe780e8724",
+      "size_bytes": 87
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/referencing-0.37.0.dist-info/licenses/COPYING",
+      "sha256": "42dcd63495f87b4eb7c7757afa379bb55a53f94afd7a5f657d9adf57236e515c",
+      "size_bytes": 1057
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/rpds/__init__.py",
+      "sha256": "c373205d6ee5a530880b0d0a5dbc36d105f9ef7fe46ec12758878cb0202e82f3",
+      "size_bytes": 99
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/rpds/__init__.pyi",
+      "sha256": "6a6ef1ea831afe9bbf92fd4d96896a25b3ebebf52f0afa32c462ab0c648c2849",
+      "size_bytes": 2602
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/rpds/py.typed",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size_bytes": 0
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/rpds/rpds.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "6ccfc934fe55ba4e5fe23334a0ee537d2197b60931198746ba83ae07b94d735e",
+      "size_bytes": 1044952
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/rpds_py-2026.9.1.dist-info/INSTALLER",
+      "sha256": "ceebae7b8927a3227e5303cf5e0f1f7b34bb542ad7250ac03fbcde36ec2f1508",
+      "size_bytes": 4
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/rpds_py-2026.9.1.dist-info/METADATA",
+      "sha256": "5d72dca2e387c8d2b4180b68ee87c15b64751e059100a6db58891ec9995445c3",
+      "size_bytes": 4147
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/rpds_py-2026.9.1.dist-info/RECORD",
+      "sha256": "ec0d9a30811e753b542856ae4e816af6a0a3c655b75ae96e7d358bd2ee5fcb71",
+      "size_bytes": 887
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/rpds_py-2026.9.1.dist-info/WHEEL",
+      "sha256": "a74b13b0da0238bae641c0f82943f6e33f56f519f79077cbdd8c56e1140b8c69",
+      "size_bytes": 147
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/rpds_py-2026.9.1.dist-info/licenses/LICENSE",
+      "sha256": "314e4e91be3baa93c0fb4bccc9e4e97cd643eb839b065af921782c2175fe9909",
+      "size_bytes": 1057
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/prerelease-checks-20261010/python-deps/rpds_py-2026.9.1.dist-info/sboms/rpds-py.cyclonedx.json",
+      "sha256": "0c8885a9d45f3c9280aeb1e06701077036748b22bd6e3a4201fe09e6b73f99b5",
+      "size_bytes": 20594
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/activate.sh",
+      "sha256": "897f8c0eccb1e626c657e9afa27c4e374c878dd4ff62350b0e691c275eeb41e2",
+      "size_bytes": 400
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": "da77c8b33849312255ccde3179198ada4c8deb370488d050286146b1d1b27e14",
+      "size_bytes": 40680304
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo-clippy",
+      "sha256": "56478e37c2bc0a09b7442cb975bad0f00cd16a9c80463daca022756a12ef1b93",
+      "size_bytes": 1266040
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo-fmt",
+      "sha256": "565dd9620e543887d4b955f6985a903a9ef30ef85b9efeac6c233ccf7aee9b6c",
+      "size_bytes": 2066368
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/clippy-driver",
+      "sha256": "ac4a71be2cb2df0f3947419e757a76dabb6110ce4196e1b0bde43296f702287b",
+      "size_bytes": 17059040
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "859254978c0a0402c32f949f6de0d99aee73be8d15f45aac00ae1448aac51e74",
+      "size_bytes": 645952
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/uncertain-products-20260927/toolchain/rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustfmt",
+      "sha256": "99e625e0640b50d773a0f54b93a7e66a0e89afd5351a4de9a17abe7087c11ac4",
+      "size_bytes": 5254488
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/blastn",
+      "sha256": "0b88d4a00cb7fa579c203653151175b24c83d27fe240d420abe7b5261a3083d1",
+      "size_bytes": 256536
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/makeblastdb",
+      "sha256": "407bf59ec36ee6444104a90f28eab282e374a0dfe4c7ffee89a65d82dc51c4bf",
+      "size_bytes": 207384
+    },
+    {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python3.14",
+      "sha256": "5e80a7071ef0f278eb0bb1178ed2c44bf7f8d9a83fbd0c079f0aa8d3ef490f9f",
+      "size_bytes": 36097456
+    },
+    {
+      "path": "/usr/bin/prlimit",
+      "sha256": "af62a89422db260b4c387d760a5468f4702229837863334cc6334b7eb209ba28",
+      "size_bytes": 28592
+    },
+    {
+      "path": "/usr/bin/time",
+      "sha256": "0a8deedbc7dc226bc287f38ff0a522398bfc9bfc150f521306907995f768054b",
+      "size_bytes": 28712
+    }
+  ],
+  "dependency_versions": {
+    "jsonschema": "4.26.0",
+    "rand": "0.8.6",
+    "rustls-webpki": "0.103.13"
+  },
+  "fixture_scope": "k19 count and k31 counts/full standard hashes from benchmarks/known_truth.yaml; Rust integration also tests independent Jellyfish histogram oracle on both backends.",
+  "gate_order": [
+    "build_default",
+    "plant_eight",
+    "test_default",
+    "test_fxhash",
+    "clippy_default",
+    "clippy_fxhash",
+    "fmt",
+    "python_all",
+    "references",
+    "panels",
+    "fixtures"
+  ],
+  "plant_output": "results-v1/plant",
+  "resources": {
+    "child_address_space_bytes": 12884901888,
+    "cpus": 2,
+    "physical_cores": 2,
+    "slurm_memory_gib": 16,
+    "slurm_seconds": 7200
+  },
+  "scope": "Finite local quality and assay checks; does not authorize release or establish held-out truth/performance acceptance.",
+  "source_files": {
+    "Cargo.lock": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/Cargo.lock",
+      "sha256": "248d51af7c3121ba3387af71e9766b5e5c1bba01becc7a599212215981eb3558",
+      "size_bytes": 57390
+    },
+    "Cargo.toml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/Cargo.toml",
+      "sha256": "99d2b50c12c9928bb96ab7b113eb21d54917fd8b44905b3f39533374c4a4efba",
+      "size_bytes": 1582
+    },
+    "benchmarks/known_truth.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/known_truth.yaml",
+      "sha256": "4bd32f3a5eb5205a06bf77eb31be172902386dfe1a6199d7b21fa3a4e2d045a3",
+      "size_bytes": 811
+    },
+    "panels/angiospermae.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/angiospermae.yaml",
+      "sha256": "99d1c629953a0d0a9e70f4c0414047c7d7b9e0a69d07d88bedff1c47b107b14e",
+      "size_bytes": 31657
+    },
+    "panels/bacteria.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/bacteria.yaml",
+      "sha256": "3a3a9df11359cd1736f2edd52279d2ddb4c6a819dbf797fab59ba55ceae842ae",
+      "size_bytes": 2618
+    },
+    "panels/c_elegans.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/c_elegans.yaml",
+      "sha256": "08127fcf98cf374b07dcbfffc321bb2c179c413019d0c23f7e4fb33421125dc0",
+      "size_bytes": 32377
+    },
+    "panels/cnidaria.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/cnidaria.yaml",
+      "sha256": "95e8e3c4c4285c3e00767714af6b4ab34cc782af08cd0ef6c13c65794c5f58f8",
+      "size_bytes": 66332
+    },
+    "panels/examples/reference.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/examples/reference.yaml",
+      "sha256": "2441a7ea422c8f45b912a432191f84bb5cd4b8930af6755ba53a9b2ac6b5b44d",
+      "size_bytes": 11382
+    },
+    "panels/human.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/human.yaml",
+      "sha256": "5219c2ae2a44a1ca0416f4fefe46fbe4d116c8cb64d31fc5805e23c900e95fd3",
+      "size_bytes": 32626
+    },
+    "panels/hydrozoa.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/hydrozoa.yaml",
+      "sha256": "69eded39844fc460c96ea2636b10b720551cd3dfb6690e3e4ed7c5417019d879",
+      "size_bytes": 72868
+    },
+    "panels/insecta.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/insecta.yaml",
+      "sha256": "a28cd3b2d045270b3f6bf3e2e6f9362a4dfb6d55c6adb42d445461ec95a64160",
+      "size_bytes": 72108
+    },
+    "panels/metazoa.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/metazoa.yaml",
+      "sha256": "a024b2b9ee3b41495028fba53291236f8c576165459a6b5819f51bead4853314",
+      "size_bytes": 3265
+    },
+    "panels/reference_sources.json.gz": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/reference_sources.json.gz",
+      "sha256": "bc277321831258c00b6794a51b0289445c837f99b2399e54aa43fe5e60b0f49a",
+      "size_bytes": 643168
+    },
+    "panels/teleostei.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/teleostei.yaml",
+      "sha256": "ad077a381996f6d50cd548a88aa683464fefb409d6686e51cc2a49e033aba67c",
+      "size_bytes": 16053
+    },
+    "schemas/panel/v2.json": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/schemas/panel/v2.json",
+      "sha256": "b11f5e0cbd5293ab7af39e3dd0d757f5b9e7527eabd35e09541c254a0ca5f284",
+      "size_bytes": 15160
+    },
+    "scripts/audit_its_recruitment.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_its_recruitment.py",
+      "sha256": "5c6268e840a626eb980713da8b0a1992030c50bad0e258241dcce703b3f0a75d",
+      "size_bytes": 33328
+    },
+    "scripts/audit_panel_references.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_panel_references.py",
+      "sha256": "198f772ec327a237d30f2cdb7117832f0cccb0591ec92cde0018c79c32d947ae",
+      "size_bytes": 21875
+    },
+    "scripts/audit_read_bridges.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_bridges.py",
+      "sha256": "f6f1371bb4884c2a8e9475e5c56b99a30b8c429267a294cdeba19905db411983",
+      "size_bytes": 14031
+    },
+    "scripts/audit_read_histories.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/audit_read_histories.py",
+      "sha256": "feb61bdb227a14fa51ff5a3b5c2faa789ae4ff92e15a4eedb9f5413befee0c27",
+      "size_bytes": 27608
+    },
+    "scripts/bootstrap_from_runs.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/bootstrap_from_runs.py",
+      "sha256": "a6dc1fd82f9284b9d79dd8d21be01b107822717cd84a122a903ee37fbd1b7e15",
+      "size_bytes": 15047
+    },
+    "scripts/bootstrap_references.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/bootstrap_references.py",
+      "sha256": "e2b46f8f95cdb77aab5beef930dcb91acf17df502eab163268ac2871ece1db0b",
+      "size_bytes": 14189
+    },
+    "scripts/compare_jellyfish.sh": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/compare_jellyfish.sh",
+      "sha256": "7f26f1f0d6d4f32c88504401dd79c50051718aac550ef7da3ce8f68a29c5869c",
+      "size_bytes": 3933
+    },
+    "scripts/pre-commit": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/pre-commit",
+      "sha256": "b552ebde89f338d46b763b5802f8fed846a10a36d35bc59a72013fe7e497948a",
+      "size_bytes": 498
+    },
+    "scripts/sharkmer_validate/__init__.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/__init__.py",
+      "sha256": "74055f81f13c98598121d62b30817d1c999959a803900c61da926b5e214d5d7c",
+      "size_bytes": 77
+    },
+    "scripts/sharkmer_validate/blast_references.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/blast_references.py",
+      "sha256": "010ff7ed543bc30e0b28392e615c95d95fa672bae2246766bd03d36d91368aa0",
+      "size_bytes": 43601
+    },
+    "scripts/sharkmer_validate/primer_analysis.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/primer_analysis.py",
+      "sha256": "cd856bfaa355297405dc5512511141087cd8f7930ee59980291139a67c7cc41f",
+      "size_bytes": 6944
+    },
+    "scripts/sharkmer_validate/reference_provenance.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/reference_provenance.py",
+      "sha256": "00a5dafd0b02d37290ea122687cce8f07ce47f3098ec2e8de3860d8e9526732a",
+      "size_bytes": 10813
+    },
+    "scripts/sharkmer_validate/reference_targets.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/reference_targets.py",
+      "sha256": "62c1871cc284ec4891f244acaa2f6ce44ab280fbf3e7ef724c3ab107bb401956",
+      "size_bytes": 3373
+    },
+    "scripts/sharkmer_validate/report.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/report.py",
+      "sha256": "84f62833807e05190712e863b7048a0af1d1405228bc9dfe20a0f6e94942662c",
+      "size_bytes": 35095
+    },
+    "scripts/sharkmer_validate/results.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/results.py",
+      "sha256": "96b3e6beb633fc33646cfa62989361f16ec4120ea59da7a028438e7850e10929",
+      "size_bytes": 9832
+    },
+    "scripts/sharkmer_validate/runner.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/runner.py",
+      "sha256": "3c2446757e7020c96699d5b9b9ee74114027f1ab44aa957f5d9dc787ce1124fc",
+      "size_bytes": 37696
+    },
+    "scripts/sharkmer_validate/uncertain.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/uncertain.py",
+      "sha256": "bfaaa44e69ef1d6ba776d5d83961ccd638508f8424bc8e6e295fb7299d5ccd38",
+      "size_bytes": 15412
+    },
+    "scripts/sweep_summary.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sweep_summary.py",
+      "sha256": "54fd3248286d591dacdf48f83730cd92dc94fdd5f9fe6c511b601ed1caa63f3f",
+      "size_bytes": 20451
+    },
+    "scripts/validate_all_panels.sh": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/validate_all_panels.sh",
+      "sha256": "cf5e1631c9468de360259936cf1bea2f417c1e73c492885165e10e09afe1c878",
+      "size_bytes": 1215
+    },
+    "scripts/validate_all_panels_slurm.sh": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/validate_all_panels_slurm.sh",
+      "sha256": "9be6e3e2f7d4d979e554a5169815fcf7561e1cc9060fb36dead3d481e29b8567",
+      "size_bytes": 8922
+    },
+    "scripts/validate_panel.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/validate_panel.py",
+      "sha256": "9a7deefd14a03fb178b92ccf6d71919b27ce69f85e046eb2d41f0bd16e1cd422",
+      "size_bytes": 14692
+    },
+    "src/cache.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/cache.rs",
+      "sha256": "eedee1f06177c339305a15d74a2bab136f67e710ff103937241915a1a4a50fda",
+      "size_bytes": 43295
+    },
+    "src/cli.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/cli.rs",
+      "sha256": "453b8d52521f4c8e9a3ce7b957983a6179b295c8b631fecf44b455f5ba55e8f6",
+      "size_bytes": 37457
+    },
+    "src/format.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/format.rs",
+      "sha256": "85e1e708eadf78d84019a940e2f4ece5eec45a3d0e7094710c773a5dbb4d7dd1",
+      "size_bytes": 2805
+    },
+    "src/io.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/io.rs",
+      "sha256": "86daf8b13f2ea8e75fe4a3c10d30da5a135d0d5358866804a919afbf4a0f79a1",
+      "size_bytes": 47378
+    },
+    "src/kmer/chunk.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/kmer/chunk.rs",
+      "sha256": "05c4c4548025234ec42960b1373874d14da469d5230dbf974e6ac9502e6e7b4a",
+      "size_bytes": 1020
+    },
+    "src/kmer/counting.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/kmer/counting.rs",
+      "sha256": "f01851c7d2824b5ff068a6cd3ff665596926067d271b0c4783ab1073545e4f68",
+      "size_bytes": 17373
+    },
+    "src/kmer/encoding.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/kmer/encoding.rs",
+      "sha256": "64411d1730f59054b0cc2b52ac3ff00525172ba5253ee059c8c8f8bc6dbd246f",
+      "size_bytes": 13158
+    },
+    "src/kmer/histogram.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/kmer/histogram.rs",
+      "sha256": "b42a5223c2bfc749e4c2f15f2a304e84fc6f7f2a48bfe5fedcfef9cf55493d0a",
+      "size_bytes": 4557
+    },
+    "src/kmer/mod.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/kmer/mod.rs",
+      "sha256": "440eb7d0e80fcb8e10bc6cb1e52feda15f25925149bc39cb0e83af8ff816304e",
+      "size_bytes": 9913
+    },
+    "src/main.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/main.rs",
+      "sha256": "e6f857b52ef0dfd8f3fb2e79847c94d5122f7186d7ff6c4ea000a9af431cb838",
+      "size_bytes": 8778
+    },
+    "src/output.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/output.rs",
+      "sha256": "df610ba8dcdc82cca0f54530206cbe8d024a7dc246f97e00faf8336e41fbd349",
+      "size_bytes": 32198
+    },
+    "src/pcr/bubble.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/bubble.rs",
+      "sha256": "dd825744243a004318cbae2810cad68e5c001197a2a5cdb0d69c271e5599336f",
+      "size_bytes": 17906
+    },
+    "src/pcr/graph.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/graph.rs",
+      "sha256": "c2290a54585c21f4a71f7728d888ac5153e3370ab1f7083ca87f16d933e92e4e",
+      "size_bytes": 34614
+    },
+    "src/pcr/mod.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/mod.rs",
+      "sha256": "d095ce5e1e0490ffcde4b97e9d4c1283740435fa7f203cf7e25e75640cd5084e",
+      "size_bytes": 68885
+    },
+    "src/pcr/paths.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/paths.rs",
+      "sha256": "d95e67418b7956b7601b2b382b0f2a5729700a38409801c81c36c18c37d19e53",
+      "size_bytes": 82936
+    },
+    "src/pcr/preconfigured.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/preconfigured.rs",
+      "sha256": "1fbe095161c63a75f2ee93cd2e863430b2e35df9acb4bfd5f30f9eac86cd4ed1",
+      "size_bytes": 25543
+    },
+    "src/pcr/primers.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/primers.rs",
+      "sha256": "77040755dbd78ac8e9cfb173b069dc4c52740ac18784caede5f2a1a21f5770b2",
+      "size_bytes": 37559
+    },
+    "src/pcr/pruning.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/pruning.rs",
+      "sha256": "af7bd0d8dfada14f52521eb6661cd46fa8b56577a5116bb6525f95387d4713fd",
+      "size_bytes": 12232
+    },
+    "src/pcr/repeat_tests.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/repeat_tests.rs",
+      "sha256": "d03b972f1755cbe324ffc53f7fa3bc04d0bb6c6c2b8a264251397ea65c555d0d",
+      "size_bytes": 25718
+    },
+    "src/pcr/threading.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/threading.rs",
+      "sha256": "850acaacafca0be3d7737fe12d7cf2c408072cae714fe97c5266eb65b6be6185",
+      "size_bytes": 21650
+    },
+    "src/pcr/threshold_tests.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/threshold_tests.rs",
+      "sha256": "a1fcfaf37f0b3ffa1044d676bdc53519d848498e5909cfef4b1ac404753953a0",
+      "size_bytes": 9386
+    },
+    "src/pcr/uncertain.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/pcr/uncertain.rs",
+      "sha256": "610301ccf6e4e65b7d101ae465d2936d5934f4187ca4e30bc66289cb767c3578",
+      "size_bytes": 21264
+    },
+    "src/stats.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/src/stats.rs",
+      "sha256": "810501d20d637c5df84e3f21ffb1eee84028288d05cfb76cec69f17212b77ef7",
+      "size_bytes": 13887
+    },
+    "tests/fixtures/ERR571460_100k_R1.fastq.gz": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz",
+      "sha256": "3d554c9bad681c519c2c0f5a77e87bd6d7bd06a0ffff845a4b9cb22ced8e3eef",
+      "size_bytes": 10710465
+    },
+    "tests/fixtures/test_panel.yaml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/test_panel.yaml",
+      "sha256": "6bb5785c055666c0c58cd440315e8d98711310da20f47774ea3aa9f74ac983cb",
+      "size_bytes": 328
+    },
+    "tests/fixtures/validation/same_gene_split.xml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/validation/same_gene_split.xml",
+      "sha256": "616e3c7f59c0f0d2d90b8057725e804bb5fb118390f5d73c87a83f35c7634b5e",
+      "size_bytes": 733
+    },
+    "tests/fixtures/validation/short_fragment.xml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/validation/short_fragment.xml",
+      "sha256": "9d7d964d1f27e972d45684c62c897287e2fa0cb5c130463b77c2037db539b292",
+      "size_bytes": 449
+    },
+    "tests/fixtures/validation/wrong_gene.xml": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/validation/wrong_gene.xml",
+      "sha256": "13227159125dd41a46fb19634630880fb350f355560ac3954dfc03755654e1e2",
+      "size_bytes": 456
+    },
+    "tests/spcr_18s.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/spcr_18s.rs",
+      "sha256": "a829b11a0f208ad588ab17287f51f138dbbfaff5306ea0f20bed0751149e5e4c",
+      "size_bytes": 27582
+    },
+    "tests/test_its_recruitment.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_its_recruitment.py",
+      "sha256": "0e3f8392659385c970fea136db716dfa52fc9f169976c8bc8738d2a4ce5c6a2e",
+      "size_bytes": 26237
+    },
+    "tests/test_public_reference_replacements.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_public_reference_replacements.py",
+      "sha256": "df14684e6b94ef0cc3d21c2ef85f16f8451ef943510f83f9998390fe17613259",
+      "size_bytes": 6296
+    },
+    "tests/test_read_bridges.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_read_bridges.py",
+      "sha256": "7011db475b149cf92fc07660fba91dc660406a2be5af4e95a81a55302499b2ab",
+      "size_bytes": 11165
+    },
+    "tests/test_read_histories.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_read_histories.py",
+      "sha256": "f4c93d0fa546512f4e39c1d8ed0ebc91c07c2fe68255f36b2a7255576b454afa",
+      "size_bytes": 20514
+    },
+    "tests/test_reference_catalog.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_reference_catalog.py",
+      "sha256": "2e1128520d2171f94ba8799e054352df8069073f0d67eb9850cb1478cd3e4297",
+      "size_bytes": 9990
+    },
+    "tests/test_reference_provenance.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_reference_provenance.py",
+      "sha256": "9cdce0856e754670816e482d85ff97ca49fbcee6c41fc4187256e9d82e54bc3b",
+      "size_bytes": 8616
+    },
+    "tests/test_reference_targets.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_reference_targets.py",
+      "sha256": "34e71637364c3d55687d7e457eff80ab476c1a4dcacb6f6cf306deb2a6232de4",
+      "size_bytes": 16821
+    },
+    "tests/test_uncertain_output.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_uncertain_output.py",
+      "sha256": "9ecd859dc41f2ad13983806fa469c9157f86ba8b7f438ca4bc286074564ef370",
+      "size_bytes": 36173
+    },
+    "tests/test_validation_harness.py": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/test_validation_harness.py",
+      "sha256": "f511814d7174389a53b0292c56e04cc7ea4e27dc11bd4e7584efc2cdb175502d",
+      "size_bytes": 48060
+    },
+    "tests/uncertain_products.rs": {
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/uncertain_products.rs",
+      "sha256": "62fd2817a512cdeee39390b54dbc6832823cc23d71e0c16b878e7d82b4da5989",
+      "size_bytes": 21003
+    }
+  },
+  "status": "frozen_for_review"
+}

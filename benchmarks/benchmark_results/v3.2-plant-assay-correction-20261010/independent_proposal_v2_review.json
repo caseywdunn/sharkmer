@@ -1,0 +1,10 @@
+{
+  "artifacts": {
+    "independent_proposal_review.json": "483bbcbc6bec99edf7f6d83d6450194ab2e3b32d077d920dffae1b1754318b60",
+    "proposal-v2/angiospermae-after.yaml": "99d1c629953a0d0a9e70f4c0414047c7d7b9e0a69d07d88bedff1c47b107b14e",
+    "proposal-v2/checksums.json": "7d2eead2cfd58163dfc7389789c17aad23b5d9df6ec77db3dcada71d6b783aa9",
+    "proposal-v2/mapping.json": "7ccd70d1d4e1aee6905bd3b17dfca2c5b125370dbf82555de61cffbdbfade612"
+  },
+  "scope": "proposal-v2 is the reviewed proposal-v1 with only Kress citation changed to legacy locus citation; mapping, assay behavior, two references and synthetic inputs are byte-for-byte unchanged.",
+  "status": "approved_for_bounded_validation"
+}

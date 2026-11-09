@@ -1,0 +1,118 @@
+{
+  "limitations": [
+    "Bounded development checks only; not wet-lab validation, whole-sample phase, runtime acceptance, or release authorization."
+  ],
+  "protocol_sha256": "ed1692acc8631ee204dc8ccc5c255b8fa4d534e2bf96692a45c3cd7840a67265",
+  "release_authorized": false,
+  "remaining_post_execution_work": [
+    "Review all eight receipts and exact source reconstruction; report any control changes or failures.",
+    "Complete explicitly pending partial-reference assessment and interpret all real changed-target output.",
+    "Bind final binary in plan and verify source/binary/panel/input hashes before and after each invocation."
+  ],
+  "review_findings": [
+    "Protocol-v3 changes only explicit original input prefix binding and accurate mixed R1/R2 Liriodendron wording relative to approved v2; scientific comparisons and process bounds are unchanged.",
+    "Each of eight jobs uses the same frozen binary, one CPU/thread, k19, chunks0, default inclusive output, ten-target panel, fresh output, 600-second process bound. Synthetic cap2GiB and real cap12GiB.",
+    "Strict capture authenticates manifest schema/completion, input counts, all target rows, class labels, record counts and full output sequence hashes.",
+    "Other nine targets compare full oriented sequence SHA, assembly class, multiplicity, outcome/failure/threshold diagnostics and nested uncertainty-limit flags. All five aggregate ingestion/count fields must match.",
+    "Ten assessment controls catch count-only, zero-product diagnostic-only, nested limit, status and multiplicity changes, while ignoring run-specific output filenames.",
+    "Exact source match may be standard or uncertain and remains distinct from full sample phase. Changed-assay differences are not unchanged-assay retention losses."
+  ],
+  "runner_sha256": "e27eb6161061ee059a0feff8b3aa572b1f58188177c3dd77555f42bd7703ef51",
+  "runtime_requirement": "Use the documented sharkmer-bench Python or Python>=3.10; system Python3.9 cannot import an existing typed validation helper.",
+  "source_receipts": {
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/build_pair.py": {
+      "sha256": "1505db5f897da1176a61d5349ccf43c6ae4ad7dd364f85393dba0cd55b2b5763",
+      "size_bytes": 4663
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/run_release_comparison.py": {
+      "sha256": "e477ae4fd356b17ea71de0f5c8da18feefc4c548f29cabc612a53aebc07a3512",
+      "size_bytes": 27287
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_execution_protocol_review.json": {
+      "sha256": "780f51f615749de869239429e3f4f5b9149b678d526fd8f4ac2bd3313764d375",
+      "size_bytes": 1043
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_proposal_v2_review.json": {
+      "sha256": "90e2d6c6b068a602a7da413be6cab32974c35da016427dec62a1d2cde76bd9eb",
+      "size_bytes": 695
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-after.yaml": {
+      "sha256": "99d1c629953a0d0a9e70f4c0414047c7d7b9e0a69d07d88bedff1c47b107b14e",
+      "size_bytes": 31657
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/angiospermae-before.yaml": {
+      "sha256": "9ff46bf3d343920c33a2a5c41b0858f0d8401f67729d737f17e73350dae365de",
+      "size_bytes": 27946
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/checksums.json": {
+      "sha256": "7d2eead2cfd58163dfc7389789c17aad23b5d9df6ec77db3dcada71d6b783aa9",
+      "size_bytes": 706
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/proposal-v2/mapping.json": {
+      "sha256": "7ccd70d1d4e1aee6905bd3b17dfca2c5b125370dbf82555de61cffbdbfade612",
+      "size_bytes": 55099
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/protocol-v2.json": {
+      "sha256": "80f5f935e0fde11bea7f0937e8e86350ca85c9151ad0c68e665e6d370e63d222",
+      "size_bytes": 3635
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/protocol-v3.json": {
+      "sha256": "ed1692acc8631ee204dc8ccc5c255b8fa4d534e2bf96692a45c3cd7840a67265",
+      "size_bytes": 4548
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/run_comparison.py": {
+      "sha256": "e27eb6161061ee059a0feff8b3aa572b1f58188177c3dd77555f42bd7703ef51",
+      "size_bytes": 14707
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/runner-preflight-v1/tests.log": {
+      "sha256": "b6aa259128e54209e800069c39c1aea1491e5dbbed53f1f34a1e63c79506a26f",
+      "size_bytes": 1745
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/runner-preflight-v1/verification.json": {
+      "sha256": "40a32adc5ba0cd30401f01849a72e1bf8fd0cf8a7862acc3daac24defc5c5982",
+      "size_bytes": 1109
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/test_assessment.py": {
+      "sha256": "cb67b96e98852d72b3d69621795f26b9ddbc5462c7b89bff2963e48b4249d63a",
+      "size_bytes": 6282
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-release-comparison-20260909/tools/postprocess_legacy.py": {
+      "sha256": "f9e58a665c530b71c96ad7fb79508ba1598df7119feb7c52ee403aeb3e790aef",
+      "size_bytes": 27915
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/build_snapshot.py": {
+      "sha256": "edb077d170f8e485bcc19647ce8ab231be1abbff377e77595951d52d02110ff8",
+      "size_bytes": 10292
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/launch_bounded.py": {
+      "sha256": "33ae477d0684c2618384993c80b1c92730414b47094168b3b5c26645774182e7",
+      "size_bytes": 1438
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_comparison.py": {
+      "sha256": "87bee0cdfb912dd583c940c13c61d4887ce6cde847930059fbd0bcb7fc2b178c",
+      "size_bytes": 27558
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/run_compiled_checks.py": {
+      "sha256": "65e407f0867c5af36bb1d4279f049557190c8f06c94d84eef48810d7b636314c",
+      "size_bytes": 9437
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/angiospermae.yaml": {
+      "sha256": "99d1c629953a0d0a9e70f4c0414047c7d7b9e0a69d07d88bedff1c47b107b14e",
+      "size_bytes": 31657
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/__init__.py": {
+      "sha256": "74055f81f13c98598121d62b30817d1c999959a803900c61da926b5e214d5d7c",
+      "size_bytes": 77
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/runner.py": {
+      "sha256": "3c2446757e7020c96699d5b9b9ee74114027f1ab44aa957f5d9dc787ce1124fc",
+      "size_bytes": 37696
+    },
+    "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/scripts/sharkmer_validate/uncertain.py": {
+      "sha256": "bfaaa44e69ef1d6ba776d5d83961ccd638508f8424bc8e6e295fb7299d5ccd38",
+      "size_bytes": 15412
+    }
+  },
+  "status": "approved_for_bounded_execution",
+  "test_methods_verified": 10
+}

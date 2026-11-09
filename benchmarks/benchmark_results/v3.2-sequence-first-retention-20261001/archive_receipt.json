@@ -1,0 +1,9 @@
+{
+  "archive": "evidence.tar.gz",
+  "member_bytes": 190629261,
+  "member_count": 1743,
+  "schema_version": 1,
+  "sha256": "ea8f3d4722d706c1fd8bfea0be0bb6621a825132a17ec4d3167ca07c0d48b30e",
+  "size_bytes": 24623843,
+  "status": "pass"
+}

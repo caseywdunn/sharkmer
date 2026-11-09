@@ -1,0 +1,74 @@
+{
+  "artifacts": {
+    "count_k19.py": {
+      "bytes": 6553,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/count_k19.py",
+      "sha256": "14c0165fe6cc0b40a5e90562c37dea4e4164a6926661aedae6d2bd70ce2918cb"
+    },
+    "independent_review.py": {
+      "bytes": 5746,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/independent_review.py",
+      "sha256": "a69b0650598db441e7c870f4a081619327b435ee0a2f3d9aeb6ddd059dee6636"
+    },
+    "run-v1/execution.json": {
+      "bytes": 4921,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run-v1/execution.json",
+      "sha256": "17579e566ba09e7010d32a4ff0dce0eb6d1a0ae52d20d9e695d7cac3603618ba"
+    },
+    "run-v1/results/per_candidate.tsv": {
+      "bytes": 3434,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run-v1/results/per_candidate.tsv",
+      "sha256": "9756678994bd8dbfd9873864d49158aeee1deea3c21de128c4fd91f38da79ef7"
+    },
+    "run-v1/results/raw_counts.tsv": {
+      "bytes": 37451,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run-v1/results/raw_counts.tsv",
+      "sha256": "75eebf83d7c639b0ea97fb4034c4646f3322839df9d82255346cd964687a7823"
+    },
+    "run-v1/results/report.json": {
+      "bytes": 13463,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run-v1/results/report.json",
+      "sha256": "63e8e6c0df1c61dc70915308cd6718bff8fc378a2f46aa055c350855fcbda990"
+    },
+    "run-v1/tests.log": {
+      "bytes": 460,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run-v1/tests.log",
+      "sha256": "71efaa4a09c2202772678fe6715d5ab1f87c0a3e3c5781fe06856b9f47364aa4"
+    },
+    "run-v1/time.json": {
+      "bytes": 100,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run-v1/time.json",
+      "sha256": "3c40da99e2d1ae630a572d990261c7e35e7ab33fb9ac53d41783a74f44a02703"
+    },
+    "run_check.py": {
+      "bytes": 2946,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run_check.py",
+      "sha256": "c18fc61ed833fdc64cbc2273345210aaf4630b3974dea894fad44ac992449633"
+    },
+    "test_count_k19.py": {
+      "bytes": 1623,
+      "path": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/test_count_k19.py",
+      "sha256": "6781abb7dc3c7764d10a36cc1af18ce53dd61a012b39ec3a5c1128d6d77cbf14"
+    }
+  },
+  "conclusion": "Every emitted Drosophila12S 19-base word is observed at least twice in the frozen prefix. This satisfies the tested observed-word invariant and does not expose a sequence-spelling failure. Combined with unobserved longer assay windows, the evidence supports short-word availability while leaving longer combinations uncorroborated.",
+  "current_12s_candidates": 26,
+  "current_12s_candidates_with_every_19mer_observed": 26,
+  "current_12s_raw_count_range": [
+    2,
+    392
+  ],
+  "distinct_canonical_19mers_all_contexts": 1600,
+  "distinct_canonical_19mers_current_12s": 815,
+  "historical_context_candidates": 2,
+  "limits": [
+    "This review verifies the frozen scan algorithm, input receipt and reported count-table aggregation; it does not perform another full-prefix scan.",
+    "Raw canonical-word counts cannot validate longer adjacency, target identity, repeat copy number, independent molecules or whole products.",
+    "A spelling error that recombines observed words would not necessarily fail this invariant; no claim is made that all possible assembly bugs are excluded."
+  ],
+  "missing_target_words": 0,
+  "scope": "Independent string-based reconstruction of all candidate canonical-word inventories and reported count summaries; frozen source and execution review",
+  "source_review": "Rolling forward and reverse complement encodings represent the same19-base window; invalid bases reset both states, and each read begins with empty state. Counts include each valid occurrence without quality filtering. The consumed input hash and record/base/byte totals bind the full first-million prefix.",
+  "status": "pass",
+  "test_review": "Five passing controls include400independent string-based comparisons at k1/3/7/19, reverse complements, ambiguity reset, repeated occurrence counts and no cross-read joining."
+}

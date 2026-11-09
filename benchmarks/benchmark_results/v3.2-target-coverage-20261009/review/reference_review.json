@@ -1,0 +1,147 @@
+{
+  "annotated_exact_target_support": [
+    {
+      "accession": "SRR25378184",
+      "gene": "angiospermae_atpB-rbcL",
+      "placements": [
+        {
+          "accession": "MN990625.1",
+          "annotated_target_boundaries_agree": true,
+          "left_endpoint_genes": [
+            {
+              "end": 57994,
+              "genbank_location": "complement(56498..57994)",
+              "gene": "atpB",
+              "start": 56497,
+              "strand": "-"
+            }
+          ],
+          "right_endpoint_genes": [
+            {
+              "end": 60194,
+              "genbank_location": "58764..60194",
+              "gene": "rbcL",
+              "start": 58763,
+              "strand": "+"
+            }
+          ],
+          "source_end": 58792,
+          "source_start": 57980,
+          "strand": "+"
+        },
+        {
+          "accession": "NC_008326.1",
+          "annotated_target_boundaries_agree": true,
+          "left_endpoint_genes": [
+            {
+              "end": 57915,
+              "genbank_location": "complement(56419..57915)",
+              "gene": "atpB",
+              "start": 56418,
+              "strand": "-"
+            }
+          ],
+          "right_endpoint_genes": [
+            {
+              "end": 60115,
+              "genbank_location": "58685..60115",
+              "gene": "rbcL",
+              "start": 58684,
+              "strand": "+"
+            }
+          ],
+          "source_end": 58713,
+          "source_start": 57901,
+          "strand": "+"
+        }
+      ],
+      "sha256": "915b01f36648fff32748111033cd6a9e987fa2f64cc6a362bf6f75798452a7de"
+    }
+  ],
+  "artifacts": {
+    "reference/assay-v1/mapping.json": {
+      "bytes": 12285,
+      "sha256": "86039a815b633f92fa25625362cad7426f95eb0c19cf82e45905f410283ae8b5"
+    },
+    "reference/assessment-v2/reference_overlay.json": {
+      "bytes": 159533,
+      "sha256": "0813409c1c3a34f9f845d3036f18cf35e4d10258119a998d1a322a70f3c0619d"
+    },
+    "reference/assessment-v2/report.json": {
+      "bytes": 286752,
+      "sha256": "b45609ca830b99c7eca49d84a32feaf6a571b9ecd154c2474e2eddb25f2f0008"
+    },
+    "reference/blast-missing-v1/execution.json": {
+      "bytes": 21985,
+      "sha256": "d467b2ccf1ebd5d988fd6571b5b617299a13d1af764b2918d03b81b85a080b37"
+    }
+  },
+  "candidate_scope": 154,
+  "conclusions": [
+    "One 812 bp Liriodendron atpB-rbcL candidate matches two same-species public plastomes exactly with independently checked atpB/rbcL endpoint annotations.",
+    "All other 153 candidates lack a qualifying 90%-identity/90%-query-coverage public or expected-target panel HSP in the bounded frozen searches; absence of a hit is not a false-sequence classification.",
+    "The three mapped plastomes each have exactly one effective primer pair, at 1359/1379/1359 bp, outside configured 400\u20131000 bp. Reverse primer is inside annotated atpB; atpE lies within the interval.",
+    "Zero strong expected-target panel HSPs for the positive atpB-rbcL sequence coexist with exact full annotated genomic support; these are distinct evidence routes."
+  ],
+  "limitations": [
+    "Pinned public sources and panel regions are bounded. Reference matches establish sequence relationship, not sample whole-product linkage or biological truth.",
+    "Effective-primer coordinate mapping is a reference assay-configuration concern; it does not demonstrate a production assembly invariant failure or justify deleting any emitted hypothesis."
+  ],
+  "mapping_checks": [
+    {
+      "accession": "NC_008326.1",
+      "lengths": [
+        1376
+      ],
+      "pairs": 1,
+      "primer_mode": "full"
+    },
+    {
+      "accession": "NC_008326.1",
+      "lengths": [
+        1359
+      ],
+      "pairs": 1,
+      "primer_mode": "effective"
+    },
+    {
+      "accession": "NC_056221.1",
+      "lengths": [
+        1396
+      ],
+      "pairs": 1,
+      "primer_mode": "full"
+    },
+    {
+      "accession": "NC_056221.1",
+      "lengths": [
+        1379
+      ],
+      "pairs": 1,
+      "primer_mode": "effective"
+    },
+    {
+      "accession": "MN990625.1",
+      "lengths": [
+        1376
+      ],
+      "pairs": 1,
+      "primer_mode": "full"
+    },
+    {
+      "accession": "MN990625.1",
+      "lengths": [
+        1359
+      ],
+      "pairs": 1,
+      "primer_mode": "effective"
+    }
+  ],
+  "query_reuse": {
+    "new": 41,
+    "saved": 113
+  },
+  "reviewer_source_sha256": "07c3b76d854608ea921a409d6d7a65ff63423fd36c099e915203ff494a5440a0",
+  "source_review": "Production src/pcr/primers.rs:191 and :218 retain the last min(trim,k-1) bases; k19 and trim15 use the checked 15-base primers. Coordinate mapping uses substitutions only and does not re-run graph search.",
+  "status": "pass"
+}

@@ -1,0 +1,15 @@
+{
+  "artifacts": {
+    "reference/annotation_overlay.json": "94d7cdec2348e918ec0ee7331d4d0daa19f3c1545313830d3244e2605f0af871",
+    "reference/annotation_review.json": "c32734680b2b17b350c79829edc138c1d379720d855e705920604771ffbafb7a",
+    "reference/assessment-v2/verification.json": "34a0f5714ccf3aa0f9e3e95759088e28aa640ca010b58f6411303396a9f240e4"
+  },
+  "primary_literature_review": {
+    "independently_verified_claim": "Configured reverse oligo CGACATTTGCACATTTAGATGCTAC exactly equals S1022 listed under atpB gene, attributed to Hoot et al.1995. Separate atpE/trnV IGS reverse oligos differ. Primer forward/reverse designations in the paper refer to the atpB gene and need not equal their role in this configured amplicon.",
+    "location": "Appendix2, printedpage441/PDFpage17, parsedlines1538\u20131546 and1590\u20131595",
+    "scope": "Kress2005 supplemental oligo table was not independently verified; no conclusion depends on it.",
+    "url": "https://donoghuelab.yale.edu/sites/default/files/190_tank_systbot10.pdf"
+  },
+  "source_annotation_semantics": "Independent coordinate/feature audit confirms configured reverse endpoint is in atpB, with the full atpE gene intervening; all three effective reference spans exceed1000bp. Existing 41 hypotheses remain uncorroborated in the bounded reference/read assays, not proven false.",
+  "status": "pass"
+}
