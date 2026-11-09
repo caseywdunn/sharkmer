@@ -6,7 +6,8 @@ the October collaborator-performance prerequisite. The user subsequently
 approved deferring the new held-out dataset and full nine-panel biological
 campaign from v3.2, keeping them before further assembly tuning or broad
 accuracy claims. They are deferred, not passed. The approved focused final-build
-check is in progress; results and performance acceptance remain pending.
+check is complete and independently verified; the scoped technical assessment
+supports release. Explicit user authorization to publish remains separate.
 [PLAN.md](PLAN.md#release-gate) holds the current criteria.
 
 The reviewed candidate and warning-header revision are integrated into **`dev`**
@@ -27,17 +28,23 @@ Acer opalus reference. Both synthetic positives pass; all nine other targets
 retain their sequences, statuses and diagnostics. Assembly, admission,
 retention and inclusive output policy are unchanged.
 
-The derived inventory combining these two corrected plant runs with eight
-saved samples contains 287 records (66 standard, 221 uncertain), with all 86
-release identities retained, zero lost and 201 new. It represents 75/118
-targets. This combines different run dates and a changed plant assay; it is
-not a fresh ten-sample final-build benchmark. The original unchanged-assay
-comparison remains 326 records and 240 new identities.
+The October derived inventory combined those two corrected plant runs with
+eight saved samples. The November
+[final check](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+now freshly reproduces both inventories with the exact tested candidate:
+326 records with historical panels and 287 (66 ordinary, 221 with warnings)
+with corrected panels. All 86 historical identities remain, with zero lost
+and 22 carrying warnings. Source, input, and output receipts are unchanged
+and independently verified across all 32 invocations.
 
 The four-flag runtime investigation and bounded Human output-location check
 are complete and independently reviewed. The Human diagnostic shows a
 release-to-retention wall increase of 0.43 s with NFS output and 0.04 s locally;
-historical causality and final-build performance acceptance remain open.
+historical causality remains unresolved. The new matched final check finds
+Human +0.04 s on NFS, Rhopilema +0.06 s, Liriodendron +0.43 s, and Heliconius
++0.40 s. The three longer workloads increase 0.21–1.45%; all four median RSS
+changes are below 0.15%. These scoped costs are acceptable for release;
+there is no all-platform or statistical-equivalence claim.
 Minimum rand/webpki security patches are applied. All 11 October local gates
 pass: 280 Rust tests per backend, 200 Python tests with no skips, 158 public
 references, panel/schema/fixture checks and all eight plant runs. The
@@ -46,18 +53,17 @@ confirms results and unchanged source bindings.
 
 Start with [the current decision ownership](REVIEW_v3.2.md#decision-ownership-2026-11-08)
 and [remaining acceptance boundaries](REVIEW_v3.2.md#remaining-acceptance-boundaries).
-The current task binds the final executable to the saved sequence inventory
-and warning classifications and repeats the four flagged performance comparisons
-under matched conditions. Keep the intentional plant-assay change separate.
-Record unexpected changes and acceptance of measured costs before the release
-decision. Held-out registration
+The focused check is complete; no unexpected sequence changes occurred, and
+the independent review supports accepting the measured costs. The next step
+is the user's release decision and normal release preparation/publication.
+Held-out registration
 means fixing independent biological inputs/truth unused in development; all-panel
 validation means evaluating actual products and negative controls across nine
 panels, beyond schema/loader checks. Those two campaigns are deferred from
 v3.2; the work and the independent Agalma ITS reference remain outstanding
 under #129. The [October source archive](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz)
-preserves its earlier tested state. No final-check result or unconditional
-release acceptance is implied by the deferral.
+preserves its earlier tested state. Final-check results are now retained
+separately; no biological study is represented as completed by the deferral.
 
 ## Earlier checkpoints
 

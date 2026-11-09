@@ -17,8 +17,10 @@ release approval are decisions made here by the user with agent analysis;
 external collaborator review is not required (#153). The user approved deferring
 the new held-out dataset and full nine-panel biological campaign from v3.2;
 they remain unfinished work before further assembly tuning or broad accuracy
-claims (#129). A focused final-build sequence/performance check is in progress,
-with results and acceptance pending. See
+claims (#129). The focused final-build check passes all 32 invocations: all
+86 historical identities remain available, and matched runtime increases are
+0.21–1.45% on the three longer workloads and 0.04 s on Human, with median RSS
+changes below 0.15%. The scoped technical assessment supports release (#153). See
 `dev_docs/REVIEW_v3.2.md` and `dev_docs/SEQUENCE_RETENTION_RESULTS.md`.
 Incremental k-mer counting remains supported. Faster bounded-memory counting
 and new nuclear/metagenomic inference policies belong to later releases.

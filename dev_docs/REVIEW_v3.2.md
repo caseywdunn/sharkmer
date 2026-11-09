@@ -11,11 +11,15 @@ remaining limitations are recorded against the [release gates](PLAN.md#release-g
 The user subsequently approved deferring the new held-out dataset and full
 nine-panel biological campaign from v3.2, while retaining both before further
 assembly tuning or broad accuracy claims. This is a scope deferral, not
-completed biological validation. The approved focused final-build check is
-in progress: verify the saved sequence inventory and warning classifications,
-repeat the four flagged performance comparisons under matched conditions, and
-evaluate the intentional plant-assay change separately. Performance acceptance
-and the outcome of this check remain pending.
+completed biological validation. The approved
+[focused final-build check](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+now passes all 32 invocations. Independent review verifies all 86 historical
+identities, expected warnings, exact 326-record historical and 287-record
+corrected-panel inventories, 444 raw artifacts, and 141 unchanged source/tool
+bindings. The three longer runtime comparisons increase 0.21–1.45%; Human
+increases 0.04 s, and median RSS changes in all four stay below 0.15%.
+The technical assessment accepts these scoped costs and supports release.
+Final user authorization to publish remains separate.
 
 The warning-header revision is merged into `dev` at `7dd8e7f` via
 [#161](https://github.com/caseywdunn/sharkmer/pull/161). Its
@@ -178,12 +182,15 @@ passes; it does not close performance acceptance.
 
 ### Remaining acceptance boundaries
 
-- **Performance acceptance: not met.** The user and coding agent assess the
-  approved focused check of final-build sequences, warning classifications,
-  and the four flagged runtime/RSS comparisons. Keep the intentional plant
-  assay change separate. Record any unexpected changes, accepted costs, and
-  corrections needed before the release decision. No collaborator review is
-  required; no result or performance acceptance is recorded yet.
+- **Focused recovery/performance review: met 2026-11-08.** All 32 invocations
+  and independent result checks pass. The measured costs are acceptable for
+  the agreed scope: Human's percentage flag is a 40 ms median increase with
+  overlapping ranges; the longer workloads increase 0.21–1.45%, and all four
+  median RSS increases stay below 0.15%. The
+  [results and disposition](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+  preserve every pair and the separate corrected-plant checks. These results
+  do not prove statistical equivalence or explain the older timing flags.
+  Final user release authorization remains separate.
 - **Held-out registration: deferred from v3.2 by the user, 2026-11-08.**
   The work is not completed. Register biological inputs and independent
   truth that were not used to develop or tune the assembly rules, with fixed
