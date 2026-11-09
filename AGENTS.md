@@ -19,6 +19,14 @@ analysis produces, with clear annotations that let users choose what to keep.
 
 Apply this preference when making future interface and output decisions.
 
+## Development documentation
+
+Start with [the developer index](dev_docs/README.md),
+[the active plan](dev_docs/PLAN.md), and
+[the architecture overview](dev_docs/OVERVIEW.md).
+Use [CONTRIBUTING.md](CONTRIBUTING.md) for builds, checks, and releases.
+Historical protocols and results preserve their dated evidence scope.
+
 ## Sequence annotations
 
 Follow [semantic conventions for sequence annotations](dev_docs/SEQUENCE_ANNOTATIONS.md)

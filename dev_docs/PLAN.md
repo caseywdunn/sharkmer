@@ -6,7 +6,7 @@ This plan tracks unfinished v4.0 and later work. The
 [v3.2 release plan and gate history](https://github.com/caseywdunn/sharkmer/blob/v3.2.0/dev_docs/PLAN.md),
 [v3.2 review](REVIEW_v3.2.md), and
 [final comparison](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
-preserve the completed release's evidence and decisions. [PLAN_v3.md](PLAN_v3.md)
+preserve the completed release's evidence and decisions. [The v3.0 plan/session log](https://github.com/caseywdunn/sharkmer/blob/v3.2.1/dev_docs/PLAN_v3.md)
 retains the earlier v3 plan; [ROADMAP.md](../ROADMAP.md) describes the release sequence.
 Tracking issue: [#152](https://github.com/caseywdunn/sharkmer/issues/152).
 
@@ -110,6 +110,8 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
    Fingerprint tested binaries and record actual parameters.
 
 ## v4.0 — Scalable exact counting and replay
+
+- [x] [#171](https://github.com/caseywdunn/sharkmer/issues/171) — Clarify current developer guidance and preserve historical entry points. **Documentation gate: met 2026-11-09.** [Index](README.md), source-checked [overview](OVERVIEW.md), and relative-link/archive-target validation are complete.
 
 - [ ] [#159](https://github.com/caseywdunn/sharkmer/issues/159) — Complete the
   [deferred sequence-annotation interface cleanup](SEQUENCE_ANNOTATIONS.md#v40-interface-cleanup-deferred).
