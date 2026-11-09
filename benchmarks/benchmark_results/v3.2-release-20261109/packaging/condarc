@@ -1,0 +1,9 @@
+channels:
+  - conda-forge
+  - bioconda
+channel_priority: strict
+solver: libmamba
+auto_activate_base: false
+register_envs: false
+number_channel_notices: 0
+anaconda_upload: false
