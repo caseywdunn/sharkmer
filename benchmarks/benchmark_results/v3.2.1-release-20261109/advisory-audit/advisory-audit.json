@@ -1,0 +1,42 @@
+{
+  "queried_at": "2026-11-09T15:44:32.018098+00:00",
+  "database": "GitHub global security advisories REST API",
+  "rustls": "0.23.46",
+  "rustls_webpki": "0.103.14",
+  "matching_reviewed_advisories": 0,
+  "matching_unreviewed_advisories": 0,
+  "broad_package_advisories_reviewed": {
+    "rustls": 7,
+    "rustls-webpki": 5
+  },
+  "rustls_tagged_manifest": "https://github.com/rustls/rustls/blob/v/0.23.46/Cargo.toml",
+  "rustls_webpki_requirement": "^0.103.14",
+  "rustls_declared_msrv": "1.71",
+  "conclusion": "The selected pair does not match any current reviewed or unreviewed GitHub advisory. This is a point-in-time database check, not a guarantee against unknown vulnerabilities.",
+  "source_files": {
+    "advisories-rustls-0.23.46-unreviewed.json": {
+      "records": 0,
+      "sha256": "cf1cbb66a638b4860a516671fb74850e6ccf787fe6c4c8d29e9c04efe880bd05"
+    },
+    "advisories-rustls-0.23.46.json": {
+      "records": 0,
+      "sha256": "cf1cbb66a638b4860a516671fb74850e6ccf787fe6c4c8d29e9c04efe880bd05"
+    },
+    "advisories-rustls-all.json": {
+      "records": 7,
+      "sha256": "d71d1e6e20eec81186559593505c60f70dae97ae4cc61dc3aa1a1457fa0dc285"
+    },
+    "advisories-webpki-0.103.14-unreviewed.json": {
+      "records": 0,
+      "sha256": "cf1cbb66a638b4860a516671fb74850e6ccf787fe6c4c8d29e9c04efe880bd05"
+    },
+    "advisories-webpki-0.103.14.json": {
+      "records": 0,
+      "sha256": "cf1cbb66a638b4860a516671fb74850e6ccf787fe6c4c8d29e9c04efe880bd05"
+    },
+    "advisories-webpki-all.json": {
+      "records": 5,
+      "sha256": "538b44d47232c58534f298a5f2b859c5e305ee8074c8cf19daf2905263e104c2"
+    }
+  }
+}

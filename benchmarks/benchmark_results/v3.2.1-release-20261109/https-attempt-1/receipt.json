@@ -1,0 +1,26 @@
+{
+  "status": "failed",
+  "started_at_utc": "2026-11-09T15:27:29.719984+00:00",
+  "binary": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer",
+  "binary_sha256": "0d57521d5c6060df3e954d366b72fdccb0b3e40f9532162b400d62b14a59109c",
+  "script_sha256": "f14064e82e3d41aa45f4acf9272aea87fce830d4df4e5a9dade04aca5b9e2ba1",
+  "panel_url": "https://raw.githubusercontent.com/caseywdunn/sharkmer/e914ea728fc5ffc253273560e3de2cfc9395893b/tests/fixtures/test_panel.yaml",
+  "panel_sha256": "6bb5785c055666c0c58cd440315e8d98711310da20f47774ea3aa9f74ac983cb",
+  "read_limit": 3,
+  "commands": [
+    {
+      "label": "version",
+      "command": [
+        "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer",
+        "--version"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.008157732896506786,
+      "stdout_sha256": "f698cd2ab170d7b552c65e2cb1b83e9677c7564f31c2f1395142880ac49c12fb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope": "HTTPS panel loading, bounded local ingestion, and untrusted-certificate rejection; no ENA FASTQ/cache or biological validation",
+  "error": "Unexpected binary version",
+  "finished_at_utc": "2026-11-09T15:27:29.735551+00:00"
+}

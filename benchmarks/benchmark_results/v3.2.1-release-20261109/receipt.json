@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-11-09T15:27:50.051558+00:00",
+  "release_version": "3.2.1",
+  "base_git_commit": "e914ea728fc5ffc253273560e3de2cfc9395893b",
+  "working_tree_snapshot": true,
+  "changed_lockfile_packages": [
+    "rustls",
+    "rustls-webpki",
+    "sharkmer"
+  ],
+  "dependency_updates": {
+    "rustls": [
+      "0.23.37",
+      "0.23.46"
+    ],
+    "rustls-webpki": [
+      "0.103.13",
+      "0.103.14"
+    ]
+  },
+  "production_source_changes": false,
+  "source_file_count": 77,
+  "source_hash_timing": "after job; Cargo.toml, Cargo.lock and checker hashes also match before/after log receipts",
+  "job_id": 32671325,
+  "job_state": "COMPLETED",
+  "exit_code": "0:0",
+  "elapsed": "00:01:49",
+  "cpus": 2,
+  "requested_memory_gib": 16,
+  "batch_max_rss_kib": 859676,
+  "rustc": "1.98.1 (48a229cea 2026-09-01)",
+  "python": "3.14.3",
+  "release_check_groups": [
+    "metadata",
+    "fmt",
+    "clippy",
+    "rust",
+    "python",
+    "references",
+    "panels",
+    "fixtures"
+  ],
+  "rust_tests_per_backend": 283,
+  "python_tests": 213,
+  "python_skips": 0,
+  "verified_references": 158,
+  "schemas": 10,
+  "exports": 9,
+  "loader_dry_runs": 19,
+  "binary_sha256": "0d57521d5c6060df3e954d366b72fdccb0b3e40f9532162b400d62b14a59109c",
+  "checker_sha256": "b80b4ada711e355fa141cf4c8291489276b146f4b12fcdc32e5998bd3f6c50fc",
+  "raw_log_sha256": "6b6d9493fd3d3347b3040a4d4436b341c5ea94028fa7e7840f8d79499e398ee5",
+  "raw_log_bytes": 88673,
+  "https_check": "passed",
+  "package_validation": "pending",
+  "publication": "pending",
+  "biological_comparison_rerun": false,
+  "https_job": {
+    "job_id": 32674065,
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed": "00:00:02",
+    "cpus": 2,
+    "requested_memory_gib": 16,
+    "batch_max_rss_kib": 27160,
+    "receipt": "https-v2/receipt.json",
+    "binary_sha256": "0d57521d5c6060df3e954d366b72fdccb0b3e40f9532162b400d62b14a59109c",
+    "script_sha256": "831f498eaf0fb14a8952e13588d1929ba73c180de070ce4ea544080b49d56c6d",
+    "tls13_observed": true,
+    "untrusted_certificate_rejected": true,
+    "scope": "HTTPS panel loading, bounded local ingestion, and untrusted-certificate rejection; no ENA FASTQ/cache or biological validation"
+  },
+  "https_first_attempt": {
+    "job_id": 32671996,
+    "outcome": "failed_harness_version_assertion_before_network",
+    "receipt": "https-attempt-1/receipt.json",
+    "exact_executed_script_retained": false
+  },
+  "advisory_audit": "advisory-audit/advisory-audit.json"
+}

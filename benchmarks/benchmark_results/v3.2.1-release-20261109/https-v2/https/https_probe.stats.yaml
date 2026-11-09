@@ -1,0 +1,76 @@
+sharkmer_version: 3.2.1
+command: /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -vv --color never -k 19 -t 1 --chunks 0 --max-reads 3 -s https_probe --cache-dir /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/https-v2/read-cache -o /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/https-v2/https --pcr-panel-file https://raw.githubusercontent.com/caseywdunn/sharkmer/e914ea728fc5ffc253273560e3de2cfc9395893b/tests/fixtures/test_panel.yaml /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/https-v2/four-reads.fastq
+sample: https_probe
+run_id: 18e66b2ae3a255a5-ce1d5-c7d459d16ab26c4b
+output_manifest: https_probe.manifest.yaml
+run_status: complete
+product_output_schema_version: 3
+product_output_layout: combined_warnings
+input_source:
+  kind: local_files
+  inputs:
+  - /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/release-3.2.1-20261109/https-v2/four-reads.fastq
+  paired: false
+  max_reads: 3
+kmer_length: 19
+chunks: 0
+n_reads_read: 3
+n_bases_read: 300
+n_subreads_ingested: 3
+n_bases_ingested: 300
+n_kmers: 246
+count_table_capacity: 112
+peak_memory_bytes: 349988
+stage_timings:
+  read_ingest_s: 0.000222232
+  count_finalize_s: 0.000012807
+  read_threading_input_s: null
+  pcr_s: 0.002012493
+  pipeline_total_s: 0.121343411
+pcr_results:
+- gene_name: test_panel_18S
+  status: fail
+  n_products: 0
+  n_standard_products: 0
+  n_uncertain_products: 0
+  failure_reason: forward and reverse primers not found
+  uncertain_products:
+    n_products: 0
+    product_lengths: []
+    schema_version: 3
+    purpose: uncertain_repeat_structure_graph_path_hypotheses
+    coordinate_system: zero_based_half_open_in_emitted_oriented_sequence
+    marker_span_scope: marker_covered_positions_only_for_complete_detail_sources
+    read_support_evaluation: not_evaluated
+    repeat_length_evaluation: unresolved
+    deduplication_policy: exact_oriented_sequence_only_reverse_complements_retained_as_separate_hypotheses
+    standard_equivalence_policy: exact_sequence_or_reverse_complement_of_final_standard_output
+    limits:
+      threshold:
+        paths: 64
+        sequence_bases: 1048576
+        marker_occurrences: 4096
+      gene:
+        paths: 128
+        sequence_bases: 2097152
+        marker_occurrences: 8192
+      run:
+        paths: 1024
+        sequence_bases: 8388608
+        marker_occurrences: 32768
+      allocated_run_share_for_gene:
+        paths: 128
+        sequence_bases: 2097152
+        marker_occurrences: 8192
+      unused_share_is_not_redistributed: true
+    path_search_evaluated: false
+    search_limit_scope: all_attempted_thresholds_for_gene
+    search_limits_reached: false
+    retention_truncated: false
+    marker_detail_truncated: false
+    thresholds: []
+    retained_path_records: 0
+    excluded_standard_equivalent_path_records: 0
+    exact_duplicate_path_records: 0
+    unique_products: 0
+    products: []
