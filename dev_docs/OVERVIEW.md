@@ -1,316 +1,141 @@
-# Sharkmer Architecture Overview
+# Sharkmer architecture overview
 
-High-level overview of how sharkmer works, from FASTQ input to amplicon
-output.
+This describes the implementation released in **v3.2.1**, which is the starting
+point for v4. Checked against the source on 2026-11-09. Update this overview
+when implementation changes; [PLAN.md](PLAN.md) holds proposed work and gates.
+[CONTRIBUTING.md](../CONTRIBUTING.md) describes builds, checks, and releases.
 
 ## Pipeline
 
-```
- FASTQ files / ENA stream / stdin
-              |
-              v
-    +--------------------+
-    |   Read ingestion   |   io.rs: read_fastq()
-    |  Parse & validate  |   Batches of 1000 reads
-    +--------------------+
-              |
-              v
-    +--------------------+
-    |  Chunk distribution |   Round-robin across N chunks
-    |  (kmer extraction)  |   encoding.rs: kmers_from_ascii()
-    +--------------------+   counting.rs: KmerCounts (u64 -> u32)
-              |
-              v
-    +--------------------+
-    |   Consolidation    |   io.rs: consolidate_and_histogram()
-    |  Merge all chunks  |   Incremental histogram updates
-    |  into one table    |   Write .histo files (if chunks > 0)
-    +--------------------+
-              |
-              v
-    +--------------------+
-    |  Filtered view     |   counting.rs: FilteredKmerCounts
-    | (lazy, no copy)    |   Threshold checked at lookup time
-    +--------------------+
-              |
-              v
-    +--------------------+
-    |   In silico PCR    |   stats.rs: run_pcr() via rayon
-    |  (per gene, parallel)   pcr/mod.rs: do_pcr()
-    +--------------------+
-              |
-              v
-       FASTA amplicons
-       .stats.yaml
-       .histo files
+```mermaid
+flowchart TD
+    A[CLI and primer validation] --> B[Acquire per-sample output lease]
+    B --> C[Read FASTQ and count k-mers in chunks]
+    C --> D[Consolidate counts; optional incremental histograms]
+    D --> E[Optional read replay for threading]
+    E --> F[Assemble targets in parallel]
+    F --> G[Stage per-target FASTA and run statistics]
+    G --> H[Publish files and checksummed completion manifest]
 ```
 
-## Modules
+[`main.rs`](../src/main.rs) orchestrates these stages. Early-exit operations,
+including the dry run, finish before creating the output directory. Primer
+expansion limits are checked before read ingestion. A shared Rayon pool runs
+per-target assembly; FASTA records are written sequentially afterward.
 
-### main.rs
+## Code map
 
-Entry point. Orchestrates the pipeline in order:
+| Module | Responsibility |
+| --- | --- |
+| [`cli.rs`](../src/cli.rs) | Parse arguments, collect panels/primers, validate limits, apply runtime overrides, resolve sample identity, and handle early exits. |
+| [`io.rs`](../src/io.rs) | Read local files, stdin, or ENA sources; count selected FASTQ records; finalize chunks; replay reads for optional threading. |
+| [`cache.rs`](../src/cache.rs) | Manage owned, checksummed remote-read cache entries and cooperating-user leases. |
+| [`kmer/encoding.rs`](../src/kmer/encoding.rs) | Two-bit DNA encoding, canonical k-mers, and invalid-base window breaks. |
+| [`kmer/counting.rs`](../src/kmer/counting.rs) | Hash-map count storage, lookup, merging, medians, and lazy filtered views. |
+| [`kmer/chunk.rs`](../src/kmer/chunk.rs), [`histogram.rs`](../src/kmer/histogram.rs) | Per-chunk counts and incremental frequency distributions. |
+| [`pcr/mod.rs`](../src/pcr/mod.rs) | Per-target threshold sweep, admission, diagnostics, and assembly coordination. |
+| [`pcr/primers.rs`](../src/pcr/primers.rs), [`preconfigured.rs`](../src/pcr/preconfigured.rs) | Primer matching and panel loading from embedded YAML, local files, or URLs. |
+| [`pcr/graph.rs`](../src/pcr/graph.rs), [`pruning.rs`](../src/pcr/pruning.rs) | Seed/extend target graphs, record repeat markers, remove low-coverage tips and unreachable regions, and annotate coverage ratios. |
+| [`pcr/paths.rs`](../src/pcr/paths.rs), [`uncertain.rs`](../src/pcr/uncertain.rs) | Bounded path search, sequence generation/retention, and warning-bearing hypotheses. |
+| [`pcr/threading.rs`](../src/pcr/threading.rs), [`bubble.rs`](../src/pcr/bubble.rs) | Optional local read/fragment support and branch preferences. |
+| [`stats.rs`](../src/stats.rs) | Parallel target execution, combined FASTA staging, run/target statistics, and summaries. |
+| [`output.rs`](../src/output.rs) | Per-sample lease, owned-output verification, staging, completion/failure manifests, and publication. |
 
-1. Parse CLI, init logging
-2. Collect primer params from panels, files, and inline `--pcr-primers`
-3. Validate arguments, handle early exits (`--list-panels`, `--dry-run`, etc.)
-4. Ingest reads into chunks
-5. Consolidate chunks, write histograms
-6. Run in silico PCR
-7. Write stats YAML, print summary
+## Input and count storage
 
-### cli.rs
+`io::ingest_reads()` validates FASTQ records and batches sequences into
+`Chunk` counters. Local gzip input and remote gzip streams support concatenated
+members. Invalid bases break k-mer windows within a read. The source plan
+records the selected input sources, paired mode, and read limit for replay.
 
-`Args` struct (clap-derived). Handles input sources (files, `--ena`,
-stdin), PCR configuration, k-mer parameters, output options. Validates
-arguments and clamps PCR min-count to `--min-kmer-count`.
+The read counter uses `u64` keys and `u32` counts. DNA bases use two bits each;
+supported k is at most 31. Ingested count keys use the smaller of forward and
+reverse-complement encodings. Counts use saturating addition at `u32::MAX`.
+The default hash-map backend is ahash; FxHashMap is a separate build feature.
+`FilteredKmerCounts` applies minimum-count thresholds during lookup without
+copying the underlying table.
 
-### io.rs
+**Canonical count keys and oriented identities require care.** `KmerCounts`
+also stores directional primer matches through its generic insertion API.
+Canonical identity is therefore not a universal invariant of every instance.
+Inspect the caller and lookup method before using one as an exact count store.
+Separating these roles is part of [#139](https://github.com/caseywdunn/sharkmer/issues/139).
 
-Two main functions:
+`--chunks 0` currently allocates one internal chunk and still merges it into a
+new count table in `consolidate_and_histogram()`. It skips histogram output.
+For `--chunks > 0`, counts are merged while updating a running histogram;
+snapshots produce `.histo` and `.final.histo` files. Removing redundant
+consolidation and per-read allocation from normal sPCR is planned in
+[#140](https://github.com/caseywdunn/sharkmer/issues/140). The existing global
+count store is in memory; bounded external counting/lookup remains future work.
 
-- **`ingest_reads()`** -- creates chunks, reads FASTQ from all sources
-  (ENA/files/stdin), distributes sequences to chunks in round-robin
-  batches of 1000. Auto-detects gzip.
-- **`consolidate_and_histogram()`** -- merges chunk kmer tables into one
-  `KmerCounts`. If `chunks > 0`, writes incremental histograms and
-  validates count consistency.
+## Optional read replay
 
-### kmer/
+`--read-threading` enables `io::reread_sequences()` after counting when PCR
+targets are present. Replay uses the saved source plan. Stdin has no replay
+source and falls back to k-mer-only scoring. Remote input can use verified
+cache files or require another download.
 
-```
-encoding.rs    2-bit DNA encoding, kmer extraction
-  |
-  +-- kmers_from_ascii(seq, k) -> Vec<u64>   [hot path]
-  |     Single-pass extraction, splits on N, returns canonical kmers
-  |
-  +-- revcomp_kmer(), kmer_to_seq()          [utility]
-  +-- Read struct                             [legacy, used in tests]
+The current implementation collects replayed `ReadRecord` values in a vector
+and shares them across target assemblies. Each target graph maps reads to
+contiguous oriented walks and derives edge support, branch links, and paired
+links. This is local evidence; whole-product phase and biological repeat count
+remain unresolved. Threading alone does not emit `read_support=evaluated`.
+Bounded replay and streamed evidence are planned under #145 and #116 in
+[PLAN.md](PLAN.md).
 
-counting.rs    Hash table: u64 kmer -> u32 count
-  |
-  +-- KmerCounts          Insert, merge, iterate, filtered view
-  +-- FilteredKmerCounts  Lazy view with min_count threshold
+## Target assembly and retention
 
-chunk.rs       Groups reads for incremental counting
-  |
-  +-- Chunk { kmer_counts, n_reads, n_bases }
+1. Expand supported primer alternatives within checked work limits, find
+   matching directional primer k-mers, and seed a target graph. Nodes represent
+   oriented `(k-1)`-mers; edges carry observed k-mers and counts.
+2. Evaluate decreasing coverage thresholds using fresh seed-graph clones.
+   Extend, prune, and evaluate each clone. A connected graph or an invalid
+   candidate does not end the sweep; ordinary admission stops at the first
+   threshold producing a valid product.
+3. Preserve repeat evidence from extension and before pruning, including
+   omitted self-loops, cyclic components, and retained collision edges.
+   Apply coverage-ratio filtering, node budgets, tip pruning, reachability,
+   and path/length/repeat checks. Optional threading supplies branch preferences
+   and local support for scoring.
+4. Search paths within configured DFS-state, retained-path, length, and
+   node-visit limits. Generate sequences, score ordinary candidates, and apply
+   their existing edit-distance deduplication. Repeat-rejected candidates
+   do not consume the ordinary-product path quota.
+5. Retain bounded repeat-uncertain hypotheses with their evidence. This path
+   preserves exact distinct sequence identities within its retention limits.
+   Search exhaustion, retention truncation, and diagnostic-detail limits are
+   reported separately in target statistics.
 
-histogram.rs   Frequency distribution of kmer counts
-  |
-  +-- Histogram { histo: Vec<u64>, histo_large: FxHashMap }
-  +-- move_count()  -- atomic bin transition for incremental merging
-```
+Normal per-target FASTA combines ordinary records and warning-bearing
+hypotheses. `--no-emit-uncertain` excludes the latter. See
+[sequence annotations](SEQUENCE_ANNOTATIONS.md) for field meanings, omission
+rules, and the v4 interface cleanup. An emitted graph path is an assembly
+hypothesis; biological validity requires independent evidence. The
+[retention assessment](SEQUENCE_RETENTION_RESULTS.md) records the tested scope
+and unresolved questions.
 
-**Kmer encoding**: Each base is 2 bits (A=00, C=01, G=10, T=11). A kmer
-of length k fits in a `u64` (max k=31). Canonical form = min(forward,
-reverse complement).
+## Publication and measurements
 
-`KmerCounts::get_median_count()` returns the integer floor of the median,
-including the average of the middle two counts for even-sized sets (zero for
-an empty table). Graph and per-product coverage medians remain floating-point
-and retain half-count values. The integer primer-count median is diagnostic;
-extension thresholds use the maximum primer count.
+`OutputTransaction::begin()` obtains a per-sample file lease and verifies
+previous owned outputs before replacement. FASTA and stats are staged, then
+published with a run identity and checksummed manifest. Interrupted or failed
+runs cannot present a valid completed transaction. Modified, unowned, and
+symlink collisions are preserved and refused. Histogram and graph-dump files
+are outside this FASTA/stats transaction.
 
-**Count type**: `u32` with `saturating_add`. Saves ~25% memory per hash
-table entry vs `u64`. Counts exceeding 4 billion are capped at
-`u32::MAX`. The `get_n_kmers()` method returns `u64` (sum can overflow
-u32).
+`stats::RunStats` records source selection, stage timings, count-table capacity,
+run completion, and per-target results. Interpret measurements using their
+actual scope:
 
-### pcr/
+- `n_reads_read` counts FASTQ records read; `n_subreads_ingested` is the legacy
+  name for records submitted to counting, rather than invalid-base segments.
+- `n_kmers` counts accepted k-mer occurrences, rather than distinct keys.
+- `peak_memory_bytes` measures allocator heap usage. Benchmark process RSS is
+  a separate measurement when available.
+- The integer count-table median is floored for even-sized sets; graph and
+  product coverage medians can retain half-count values.
 
-In silico PCR reconstructs amplicon sequences from kmer counts using
-De Bruijn graphs.
-
-#### Data structures
-
-```
-DBNode {
-    sub_kmer: u64,      (k-1)-mer, the overlap between adjacent kmers
-    is_start: bool,     forward primer binding site
-    is_end: bool,       reverse primer binding site
-    is_terminal: bool,  no further extension possible
-    visited: bool,      has been processed during extension
-}
-
-DBEdge {
-    _kmer: u64,           the full kmer connecting two nodes
-    count: u32,           observed frequency in the data
-    coverage_ratio: f64,  count / current-graph edge-count median (post-pruning)
-}
-
-PathScore {
-    median_count: f64,        robust central tendency of edge counts
-    coverage_cv: f64,         coefficient of variation across edge counts
-    max_coverage_ratio: f64,  highest edge coverage_ratio on the path
-}
-    composite() = median * cv_penalty * repeat_penalty
-
-Graph: petgraph::StableDiGraph<DBNode, DBEdge>
-```
-
-#### Pipeline (per gene)
-
-```
- Primer sequences (may contain IUPAC ambiguity codes)
-              |
-              v
- +---------------------------+
- | 1. Primer preprocessing   |   primers.rs
- |    Resolve ambiguities    |   Expand R->AG, Y->CT, N->ACGT, etc.
- |    Generate mismatches    |   Up to `mismatches` substitutions
- |    Retain `trim` 3' bases |   Shorter oligos for binding search
- +---------------------------+
-              |
-              v
- +---------------------------+
- | 2. Find primer kmers      |   primers.rs: find_oligos_in_kmers()
- |    Scan kmer table for    |   Check both orientations
- |    kmers containing       |   Retain up to 40 by count
- |    primer binding sites   |
- +---------------------------+
-              |
-              v
- +---------------------------+
- | 3. Seed graph             |   graph.rs: create_seed_graph()
- |    All forward primer     |   Single graph per gene seeded with
- |    kmers -> start nodes   |   all forward kmers simultaneously
- |    All reverse primer     |
- |    kmers -> end nodes     |
- +---------------------------+
-              |
-              v
- +---------------------------+
- | 4. Extend graph           |   graph.rs: extend_graph()
- |    For each unvisited     |   Try 4 possible extensions per node
- |    node, find extending   |   Check kmer exists above threshold
- |    kmers in the data      |   Mark terminal if no extensions
- +---------------------------+
- |    Fresh seed-graph clone at each threshold
- |    (high -> min_count, in COVERAGE_STEPS steps)
- |    Extend, prune, and search each clone completely
- |    Retry lower thresholds after invalid candidates
- |
- |    Coverage-ratio filtering:
- |      - Skip high-count edges above max(graph median × ratio, primer floor)
- |      - Abandon at the per-gene/threshold node budget
- |      - Stop standard search at the first valid threshold product
-              |
-              v
- +---------------------------+
- | 5. Prune graph            |   pruning.rs (post-extension, on clone)
- |  remove_low_coverage_tips |   Dead-end tips < k with count
- |                           |     < 0.1x current-graph edge-count median
- |  reachability_pruning()   |   Bidirectional BFS from start/end
- |                           |     nodes; remove unreachable nodes
- +---------------------------+
-              |
-              v
- +---------------------------+
- | 5b. Annotate edges        |   graph.rs: annotate_coverage_ratios()
- |    coverage_ratio =       |   count / current-graph median per edge
- |    count / graph median   |   Feeds into path scoring
- +---------------------------+
-              |
-              v
- +---------------------------+
- | 6. Find paths             |   paths.rs: get_assembly_paths()
- |    Coverage-weighted DFS  |   Explores highest-count edges first
- |    from start to end      |   Max 20 paths per start node
- |    nodes                  |   Bounded revisitation: MAX_NODE_VISITS=2
- +---------------------------+
-              |
-              v
- +---------------------------+
- | 7. Generate sequences     |   paths.rs: generate_sequences_from_paths()
- |    Chain node sub_kmers   |   PathScore: median, CV, coverage ratio
- |    Deduplicate by edit    |   Greedy clustering (O(N) memory)
- |    distance               |   Max 20 amplicons per gene
- +---------------------------+
-              |
-              v
-       FASTA records with kmer count statistics in headers
-```
-
-#### Coverage threshold stepping
-
-The graph is evaluated at decreasing minimum-kmer-count thresholds, starting
-from `primer_count / 2` and stepping down to `min_count` in 4 steps
-(`COVERAGE_STEPS`). Each step clones the seed graph, extends it, then runs
-pruning and path/length/repeat evaluation independently. Connectivity or an
-invalid candidate does not stop the sweep: lower thresholds are tried. Standard
-search stops only when a threshold yields a valid product, so it is not an
-exhaustive rare-template search.
-
-#### Primer panels
-
-Preconfigured panels are YAML files in `panels/`, embedded at compile
-time via `include_str!()`. Users can also load panels from local files
-(`--pcr-panel-file`) or URLs. Each panel defines a set of primer pairs
-with gene names, sequences, length constraints, and mismatch tolerance.
-
-### stats.rs
-
-- **`run_pcr()`** -- runs `do_pcr()` in parallel (rayon) across all
-  primer pairs. Writes per-gene FASTA files sequentially for
-  deterministic output.
-- **`write_stats()`** -- serializes `RunStats` to YAML.
-- **`print_summary()`** -- human-readable table of results.
-
-`n_reads_read` is FASTQ records read, while `n_subreads_ingested` is a
-legacy-named count of records submitted to the kmer counter rather than
-N-split segments; N only breaks kmer windows within a record. `n_kmers` is
-accepted kmer occurrences rather than distinct keys. `peak_memory_bytes` is
-allocator heap usage; a benchmark process-RSS measurement is separate when
-available.
-
-### format.rs
-
-Small utility module: `format_count()`, `format_bytes()`,
-`format_duration()`.
-
-## Key design choices
-
-- **Lazy filtering**: `FilteredKmerCounts` wraps `KmerCounts` without
-  copying. The min_count threshold is checked at each lookup. This
-  allows the full kmer table to be shared across parallel PCR runs
-  while each gene uses its own effective threshold.
-
-- **Canonical kmers**: Only the lexicographically smaller of a kmer and
-  its reverse complement is stored. Lookups check both orientations.
-  This halves memory usage.
-
-- **Incremental histograms**: When `chunks > 0`, histograms are updated
-  incrementally during chunk merging using `move_count()` rather than
-  rebuilding from scratch. This enables genome size estimation from
-  progressively larger data subsets.
-
-- **Deterministic output**: Forward primer kmers are sorted before
-  iteration. FASTA files are written sequentially (not in parallel).
-  Products are re-numbered after deduplication.
-
-- **Single graph per gene**: All forward primer kmers seed a single
-  graph simultaneously (Phase 3, #94). This avoids redundant graph
-  construction and ensures shared structure is discovered once.
-
-- **Annotation-only model**: Graph structure (bubbles, variants) is
-  preserved through pruning. Only dead-end tips with low coverage and
-  unreachable nodes are removed. Path selection uses coverage-based
-  scoring (`PathScore` composite) rather than destructive pruning to
-  choose the best sequences. This preserves information for future
-  read-threading phases.
-
-- **Evidence boundary**: A product is an assembled kmer path, not direct proof
-  that one observed read or molecule spans a complete haplotype. Read threading
-  provides local support and does not establish long-range phase or repeat copy
-  count.
-
-- **Coverage-weighted path finding**: DFS explores highest-count edges
-  first, so the first paths found are highest quality. Bounded
-  revisitation (`MAX_NODE_VISITS = 2`) bounds cycle traversal without
-  exponential blowup. Repeat-touched candidates remain uncertain. Replaces
-  exhaustive `all_simple_paths` enumeration.
-
-- **O(N) deduplication**: Greedy clustering computes bounded Levenshtein
-  distance on-the-fly against kept records only, replacing the previous
-  O(N^2) pairwise distance matrix.
+See the [documentation index](README.md) for the release baseline, validation
+provenance, and historical investigations. [DESIGN_DECISIONS.md](DESIGN_DECISIONS.md)
+preserves earlier reasoning; current v4 requirements live in [PLAN.md](PLAN.md).

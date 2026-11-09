@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Clarify developer documentation for v4: add an index, refresh the architecture
+  overview, and link superseded plans and session history to preserved snapshots
+  (#171).
+
 ## [3.2.1] - 2026-11-09
 
 ### Security
