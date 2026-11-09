@@ -1,0 +1,929 @@
+Running "module reset". Resetting modules to system default. The following $MODULEPATH directories have been removed: None
+2026-11-09T07:54:17-05:00
+95f5390535690f0a9add083f48a5077590096e40
+2e185f445a171d6a030330725cd61e8d7b6874399a12eb8237914d101857d04b  Cargo.toml
+9568713ff6db97d9a52afbffdd049595ab4e85e6c3be6dbfb986b0070688d620  Cargo.lock
+b80b4ada711e355fa141cf4c8291489276b146f4b12fcdc32e5998bd3f6c50fc  scripts/release_check.py
+rustc 1.98.1 (48a229cea 2026-09-01)
+Python 3.14.3
+
+== metadata ==
+Metadata agrees: sharkmer 3.2.0
+
+== fmt ==
++ cargo fmt --all --check
+
+== clippy ==
++ cargo clippy --all-targets --locked --offline -- -D warnings
+    Checking sharkmer v3.2.0 (/nfs/roberts/project/pi_cwd7/cwd7/sharkmer)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 3.87s
++ cargo clippy --all-targets --locked --offline --no-default-features --features fxhashmap -- -D warnings
+    Checking sharkmer v3.2.0 (/nfs/roberts/project/pi_cwd7/cwd7/sharkmer)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2.72s
+
+== rust ==
++ cargo test --release --locked --offline
+   Compiling sharkmer v3.2.0 (/nfs/roberts/project/pi_cwd7/cwd7/sharkmer)
+    Finished `release` profile [optimized] target(s) in 22.49s
+     Running unittests src/main.rs (tmp/sequence-retention-20261001/target/release/deps/sharkmer-99c70a0f7233b91d)
+
+running 253 tests
+test cache::tests::cache_aliases_share_the_same_lock ... ok
+test cache::tests::cache_download_limit_does_not_read_an_unneeded_corrupt_member ... ok
+test cache::tests::cache_lease_blocks_a_second_configuration_until_drop ... ok
+test cache::tests::cache_lease_stays_live_for_replay ... ok
+test cache::tests::clear_accepts_legacy_verified_metadata_without_read_count ... ok
+test cache::tests::clear_preserves_modified_and_orphaned_entries ... ok
+test cache::tests::clear_removes_only_verified_entries_and_preserves_foreign_paths ... ok
+test cache::tests::clear_waits_for_the_active_cache_lease ... ok
+test cache::tests::corrupt_second_gzip_member_is_not_published_to_cache ... ok
+test cache::tests::failed_replacement_keeps_the_previous_verified_generation ... ok
+test cache::tests::fresh_entry_metadata_publish_failure_removes_new_data ... ok
+test cache::tests::mismatched_metadata_url_is_preserved_and_refused ... ok
+test cache::tests::successful_replacement_updates_a_valid_insufficient_entry ... ok
+test cache::tests::symlinked_cache_entry_is_preserved_and_refused ... ok
+test cache::tests::test_cache_key_deterministic ... ok
+test cache::tests::test_cache_key_different_urls ... ok
+test cache::tests::test_cache_key_is_hex_sha256 ... ok
+test cache::tests::test_clear_nonexistent_dir ... ok
+test cache::tests::test_compute_sha256 ... ok
+test cache::tests::test_lookup_hit_complete_any_max_reads ... ok
+test cache::tests::test_lookup_hit_sufficient_reads ... ok
+test cache::tests::test_lookup_hit_valid_checksum ... ok
+test cache::tests::test_lookup_miss_bad_checksum ... ok
+test cache::tests::test_lookup_miss_insufficient_reads ... ok
+test cache::tests::test_lookup_miss_no_file ... ok
+test cache::tests::test_lookup_miss_partial_unlimited ... ok
+test cache::tests::test_meta_backward_compat ... ok
+test cache::tests::test_meta_round_trip ... ok
+test cache::tests::test_read_meta_missing_file ... ok
+test cli::tests::combined_output_allows_legacy_gene_names_ending_in_uncertain ... ok
+test cli::tests::test_builtin_panel_passes_primer_budget_validation ... ok
+test cli::tests::test_counting_only_kmer_length_one_remains_valid ... ok
+test cli::tests::test_parse_pcr_primers_duplicate_key_rejected ... ok
+test cli::tests::test_parse_pcr_primers_unique_keys_ok ... ok
+test cli::tests::test_parse_pcr_primers_value_with_equals ... ok
+test cli::tests::test_primer_budget_fails_during_collection_before_input_resolution ... ok
+test cli::tests::test_withheld_path_diagnostics_flag_is_hidden_but_parseable ... ok
+test cli::tests::uncertain_delivery_defaults_on_with_explicit_opt_out_and_legacy_opt_in ... ok
+test format::tests::test_format_bytes_small ... ok
+test format::tests::test_format_bytes_units ... ok
+test format::tests::test_format_count_no_commas ... ok
+test format::tests::test_format_count_with_commas ... ok
+test format::tests::test_format_count_zero ... ok
+test format::tests::test_format_duration_hours ... ok
+test format::tests::test_format_duration_minutes ... ok
+test format::tests::test_format_duration_seconds ... ok
+test io::tests::concatenated_gzip_members_ingest_all_records ... ok
+test io::tests::corrupt_second_gzip_member_returns_an_error ... ok
+test io::tests::gzip_magic_detection_matches_plain_fastq ... ok
+test io::tests::max_reads_stops_within_a_concatenated_member ... ok
+test io::tests::paired_readers_continue_across_concatenated_members ... ok
+test io::tests::replay_matches_initial_ingestion_for_concatenated_members ... ok
+test kmer::counting::tests::test_extend_different_k_fails ... ok
+test kmer::counting::tests::test_extend_merges ... ok
+test kmer::counting::tests::test_extend_with_histogram ... ok
+test kmer::counting::tests::test_filtered_view_hides_low_counts ... ok
+test kmer::counting::tests::test_get_max_count ... ok
+test kmer::counting::tests::test_ingest_seq ... ok
+test kmer::counting::tests::test_insert_accumulates ... ok
+test kmer::counting::tests::test_insert_and_get ... ok
+test kmer::counting::tests::test_median_empty ... ok
+test kmer::counting::tests::test_median_even ... ok
+test kmer::counting::tests::test_median_matches_wide_average_for_small_pairs ... ok
+test kmer::counting::tests::test_median_odd ... ok
+test kmer::counting::tests::test_median_rounding_boundaries ... ok
+test kmer::counting::tests::test_new_and_basic_ops ... ok
+test kmer::counting::tests::test_remove_low_count_kmers ... ok
+test kmer::counting::tests::test_saturating_add ... ok
+test kmer::tests::test_count_valid_bases ... ok
+test kmer::tests::test_from_str ... ok
+test kmer::tests::test_get_kmers ... ok
+test kmer::tests::test_histogram ... ok
+test kmer::tests::test_kmer_to_seq ... ok
+test kmer::tests::test_kmers_from_ascii_matches_read_pipeline ... ok
+test kmer::tests::test_kmers_from_ascii_short_sequences ... ok
+test kmer::tests::test_read_parsing ... ok
+test kmer::tests::test_read_validate ... ok
+test kmer::tests::test_revcomp_kmer ... ok
+test kmer::tests::test_seq_to_reads ... ok
+test kmer::tests::test_seq_to_reads_n ... ok
+test kmer::tests::test_tests ... ok
+test output::tests::changed_output_set_removes_only_receipted_prior_files ... ok
+test output::tests::legacy_collision_is_not_overwritten ... ok
+test output::tests::malformed_complete_manifest_is_refused ... ok
+test output::tests::modified_owned_file_is_preserved_and_refused ... ok
+test output::tests::overlapping_sample_and_gene_names_cannot_clobber_outputs ... ok
+test output::tests::publishing_transaction_with_partial_files_is_invalidated_on_restart ... ok
+test output::tests::sample_lock_is_held_for_transaction_lifetime ... ok
+test output::tests::schema_one_split_outputs_migrate_and_modified_owned_sidecars_are_protected ... ok
+test output::tests::schema_two_combined_outputs_migrate_without_touching_unowned_files ... ok
+test output::tests::success_followed_by_no_products_removes_prior_fasta ... ok
+test output::tests::symlink_collision_is_preserved_and_refused ... ok
+test output::tests::symlink_lock_and_manifest_are_refused ... ok
+test output::tests::tampered_receipt_cannot_claim_unrelated_or_lock_files ... ok
+test pcr::bubble::tests::test_bubble_tiebreak_is_deterministic ... ok
+test pcr::bubble::tests::test_depth_limited_branches_not_a_bubble ... ok
+test pcr::bubble::tests::test_detect_simple_bubble ... ok
+test pcr::bubble::tests::test_no_bubble_linear ... ok
+test pcr::bubble::tests::test_resolve_with_read_support ... ok
+test pcr::graph::tests::retained_high_coverage_collision_marks_already_present_edge ... ok
+test pcr::graph::tests::retained_high_coverage_collision_marks_new_edge_not_endpoints ... ok
+test pcr::graph::tests::test_compute_median_edge_count_empty ... ok
+test pcr::graph::tests::test_compute_median_edge_count_values ... ok
+test pcr::graph::tests::test_compute_median_matches_helper ... ok
+test pcr::graph::tests::test_compute_node_budget_high ... ok
+test pcr::graph::tests::test_compute_node_budget_interpolates ... ok
+test pcr::graph::tests::test_compute_node_budget_low ... ok
+test pcr::graph::tests::test_get_suffix_mask_values ... ok
+test pcr::graph::tests::test_high_coverage_limit_uses_absolute_floor ... ok
+test pcr::graph::tests::test_median_u32_f64_empty ... ok
+test pcr::graph::tests::test_median_u32_f64_even ... ok
+test pcr::graph::tests::test_median_u32_f64_even_two ... ok
+test pcr::graph::tests::test_median_u32_f64_large_values_no_overflow ... ok
+test pcr::graph::tests::test_median_u32_f64_odd ... ok
+test pcr::graph::tests::test_median_u32_f64_single ... ok
+test pcr::graph::tests::test_median_u64_f64_smoke ... ok
+test pcr::graph::tests::test_repeat_scan_handles_deep_graph_on_small_stack ... ok
+test pcr::paths::tests::deterministic_gene_allocations_stay_within_gene_and_run_caps ... ok
+test pcr::paths::tests::diagnostic_drop_reasons_are_exclusive_and_preserve_observed_identity ... ok
+test pcr::paths::tests::diagnostic_gene_budget_carries_across_thresholds ... ok
+test pcr::paths::tests::diagnostic_sequence_and_marker_budgets_never_emit_partial_records ... ok
+test pcr::paths::tests::extra_paths_cannot_displace_a_later_legacy_detail_path ... ok
+test pcr::paths::tests::inclusive_retention_keeps_sequence_when_marker_budget_is_full ... ok
+test pcr::paths::tests::inclusive_sequence_shares_are_bounded_and_fit_full_panel_12s ... ok
+test pcr::paths::tests::pre_prune_scc_marker_identity_survives_cycle_pruning ... ok
+test pcr::paths::tests::repeated_node_marker_occurrences_keep_each_oriented_coordinate ... ok
+test pcr::paths::tests::test_dfs_budget_limits_exploration ... ok
+test pcr::paths::tests::test_diamond_finds_both_paths ... ok
+test pcr::paths::tests::test_end_above_max_is_not_returned_by_search ... ok
+test pcr::paths::tests::test_end_below_min_does_not_stop_longer_valid_path ... ok
+test pcr::paths::tests::test_length_search_diagnostics ... ok
+test pcr::paths::tests::test_linear_path ... ok
+test pcr::paths::tests::test_max_length_caps_paths ... ok
+test pcr::paths::tests::test_no_start_nodes_gives_empty ... ok
+test pcr::paths::tests::test_path_budget_limits_exploration ... ok
+test pcr::paths::tests::test_sequence_generation_rejects_length_above_max ... ok
+test pcr::paths::tests::test_sequence_lengths_at_k_boundary_are_valid ... ok
+test pcr::paths::tests::test_sorted_children_order ... ok
+test pcr::paths::tests::withheld_diagnostic_sequences_preserve_graph_orientation ... ok
+test pcr::paths::tests::withheld_diagnostics_preserve_clean_path_order_and_quota ... ok
+test pcr::paths::tests::withheld_diagnostics_preserve_search_and_record_stable_marker_spans ... ok
+test pcr::preconfigured::tests::test_builtin_panels_load_and_are_versioned ... ok
+test pcr::preconfigured::tests::test_deny_unknown_panel_field ... ok
+test pcr::preconfigured::tests::test_deny_unknown_primer_field ... ok
+test pcr::preconfigured::tests::test_derive_gene_name ... ok
+test pcr::preconfigured::tests::test_is_url ... ok
+test pcr::preconfigured::tests::test_load_panel_file_from_fixture ... ok
+test pcr::preconfigured::tests::test_load_panel_source_bad_url ... ok
+test pcr::preconfigured::tests::test_load_panel_source_local_file ... ok
+test pcr::preconfigured::tests::test_primer_uniqueness_conflict ... ok
+test pcr::preconfigured::tests::test_reference_provenance_is_optional_for_assembly ... ok
+test pcr::preconfigured::tests::test_reference_provenance_schema ... ok
+test pcr::preconfigured::tests::test_v2_panel_missing_clade_is_rejected ... ok
+test pcr::preconfigured::tests::test_validate_gene_chars_accepts_valid ... ok
+test pcr::preconfigured::tests::test_validate_gene_chars_allows_dash_without_region ... ok
+test pcr::preconfigured::tests::test_validate_gene_chars_rejects_dash_with_region ... ok
+test pcr::preconfigured::tests::test_validate_gene_chars_rejects_underscore ... ok
+test pcr::preconfigured::tests::test_validate_region_chars_accepts_dash ... ok
+test pcr::preconfigured::tests::test_validate_region_chars_rejects_underscore ... ok
+test pcr::primers::tests::test_combinations_basic ... ok
+test pcr::primers::tests::test_combinations_r_exceeds_n ... ok
+test pcr::primers::tests::test_expansion_plan_matches_normal_and_iupac_variants ... ok
+test pcr::primers::tests::test_expansion_plan_rejects_excessive_ambiguity_before_resolution ... ok
+test pcr::primers::tests::test_expansion_plan_rejects_generation_work_before_permutation ... ok
+test pcr::primers::tests::test_expansion_plan_rejects_zero_effective_trim_without_panicking ... ok
+test pcr::primers::tests::test_filter_primer_kmers_cap ... ok
+test pcr::primers::tests::test_filter_primer_kmers_empty ... ok
+test pcr::primers::tests::test_filter_primer_kmers_hard_cap_with_ties ... ok
+test pcr::primers::tests::test_filter_primer_kmers_under_cap ... ok
+test pcr::primers::tests::test_find_oligos_exact_match_forward ... ok
+test pcr::primers::tests::test_find_oligos_min_count_filter ... ok
+test pcr::primers::tests::test_find_oligos_no_match ... ok
+test pcr::primers::tests::test_find_oligos_oligo_equals_k_minus_1 ... ok
+test pcr::primers::tests::test_find_oligos_rc_match ... ok
+test pcr::primers::tests::test_intermediate_peak_accounts_for_post_extend_growth ... ok
+test pcr::primers::tests::test_permute_one_mismatch ... ok
+test pcr::primers::tests::test_permute_zero_mismatches ... ok
+test pcr::primers::tests::test_preprocess_primer_by_mismatch_levels ... ok
+test pcr::primers::tests::test_resolve_primer_multiple_ambiguities ... ok
+test pcr::primers::tests::test_resolve_primer_n_gives_four ... ok
+test pcr::primers::tests::test_resolve_primer_no_ambiguity ... ok
+test pcr::primers::tests::test_resolve_primer_single_ambiguity ... ok
+test pcr::primers::tests::test_string_to_oligo_empty ... ok
+test pcr::primers::tests::test_string_to_oligo_encoding ... ok
+test pcr::primers::tests::test_string_to_oligo_invalid_base ... ok
+test pcr::primers::tests::test_string_to_oligo_single_base ... ok
+test pcr::primers::tests::test_valid_nucleotides ... ok
+test pcr::pruning::tests::test_global_median_edge_count_empty ... ok
+test pcr::pruning::tests::test_global_median_edge_count_odd ... ok
+test pcr::pruning::tests::test_preserve_high_coverage_tip ... ok
+test pcr::pruning::tests::test_reachability_pruning_empty_graph ... ok
+test pcr::pruning::tests::test_reachability_pruning_removes_dead_branch ... ok
+test pcr::pruning::tests::test_reachability_pruning_removes_orphan ... ok
+test pcr::pruning::tests::test_remove_low_coverage_tip_forward ... ok
+test pcr::repeat_tests::acyclic_merge_taints_only_the_collision_edge ... ok
+test pcr::repeat_tests::all_repetitive_search_remains_bounded_by_dfs_budget ... ok
+test pcr::repeat_tests::clean_candidates_still_consume_path_quota ... ok
+test pcr::repeat_tests::forty_base_homopolymer_never_emits_collapsed_product ... ok
+test pcr::repeat_tests::homopolymers_at_or_above_k_are_withheld_in_every_orientation ... ok
+test pcr::repeat_tests::read_threading_does_not_guess_repeat_copy_count ... ok
+test pcr::repeat_tests::repeat_branch_does_not_suppress_disjoint_clean_path ... ok
+test pcr::repeat_tests::repeat_evidence_without_candidate_path_is_not_generic_repeat_failure ... ok
+test pcr::repeat_tests::repeat_rejected_paths_do_not_consume_clean_path_quota ... ok
+test pcr::repeat_tests::repeat_uncertainty_precedes_collapsed_length_rejection ... ok
+test pcr::repeat_tests::tandem_repeat_cycle_and_first_visit_shortcut_are_withheld ... ok
+test pcr::repeat_tests::uncertain_early_outcomes_report_zero_without_search_or_fabricated_candidates ... ok
+test pcr::repeat_tests::uncertain_emission_does_not_include_out_of_range_collapsed_paths ... ok
+test pcr::repeat_tests::uncertain_emission_preserves_standard_outcome_and_keeps_diagnostics_independent ... ok
+test pcr::repeat_tests::withheld_path_diagnostics_do_not_change_repeat_outcome_or_threshold_counters ... ok
+test pcr::repeat_tests::zero_uncertain_run_share_preserves_search_and_reports_dropped_candidates ... ok
+test pcr::tests::test_combinations ... ok
+test pcr::tests::test_expected_permutations ... ok
+test pcr::tests::test_extension_steps ... ok
+test pcr::tests::test_get_end_nodes ... ok
+test pcr::tests::test_get_start_nodes ... ok
+test pcr::tests::test_get_suffix_mask ... ok
+test pcr::tests::test_integration ... ok
+test pcr::tests::test_n_combinations ... ok
+test pcr::tests::test_n_descendants ... ok
+test pcr::tests::test_permute_sequences ... ok
+test pcr::tests::test_primer_preprocessing_steps ... ok
+test pcr::tests::test_resolve_primers ... ok
+test pcr::tests::test_string_to_oligo ... ok
+test pcr::threading::tests::directional_primer_edge_maps_from_both_read_strands ... ok
+test pcr::threading::tests::forward_and_reverse_reads_produce_equal_graph_evidence ... ok
+test pcr::threading::tests::gaps_split_directional_runs ... ok
+test pcr::threading::tests::interior_read_without_primer_kmer_contributes_support ... ok
+test pcr::threading::tests::longest_directional_mapping_beats_incidental_opposite_hit ... ok
+test pcr::threading::tests::paired_background_reads_produce_no_fragment_evidence ... ok
+test pcr::threading::tests::paired_mates_count_support_once_per_fragment ... ok
+test pcr::threading::tests::positioned_windows_preserve_primer_orientation_and_gap_offsets ... ok
+test pcr::threading::tests::repeated_edge_and_branch_evidence_count_once_per_read ... ok
+test pcr::threading::tests::tied_opposite_paths_do_not_choose_an_arbitrary_arm ... ok
+test pcr::threading::tests::tied_opposite_paths_retain_only_common_local_evidence ... ok
+test pcr::threading::tests::unique_flanks_resolve_a_read_spanning_an_inverted_motif ... ok
+test pcr::threshold_tests::disconnected_graph_after_pruning_has_explicit_failure ... ok
+test pcr::threshold_tests::earlier_threshold_limits_are_not_erased_by_later_no_connectivity ... ok
+test pcr::threshold_tests::exact_length_boundaries_are_valid ... ok
+test pcr::threshold_tests::lower_threshold_is_tried_after_connected_path_is_too_long ... ok
+test pcr::threshold_tests::max_length_shorter_than_k_is_explicitly_unsupported ... ok
+test pcr::threshold_tests::node_budget_failure_remains_explicit ... ok
+test pcr::threshold_tests::out_of_range_products_report_length_failure ... ok
+test pcr::threshold_tests::search_limits_have_explicit_failures ... ok
+test pcr::threshold_tests::standard_mode_stops_at_first_threshold_with_a_valid_product ... ok
+test pcr::threshold_tests::threshold_diagnostics_serialization_is_bounded_and_contains_no_graph_ids ... ok
+test pcr::uncertain::tests::caps_and_search_limits_remain_visible_when_no_records_were_retained ... ok
+test pcr::uncertain::tests::diagnostic_flag_keeps_original_payload_but_does_not_multiply_collection ... ok
+test pcr::uncertain::tests::empty_collection_records_explicit_not_evaluated_status_and_limits ... ok
+test pcr::uncertain::tests::exact_duplicates_merge_threshold_provenance_without_collapsing_repeat_lengths ... ok
+test pcr::uncertain::tests::only_exact_or_reverse_complement_standard_sequences_are_excluded ... ok
+test pcr::uncertain::tests::reverse_complement_uncertain_records_keep_their_own_orientation_and_coordinates ... ok
+test pcr::uncertain::tests::summary_provenance_preserves_sequence_without_exposing_internal_detail_in_header ... ok
+test pcr::uncertain::tests::warning_causes_merge_across_sources_with_stable_readable_names ... ok
+
+test result: ok. 253 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.08s
+
+     Running tests/spcr_18s.rs (tmp/sequence-retention-20261001/target/release/deps/spcr_18s-22671c472c817187)
+
+running 23 tests
+test test_18s_recovery_from_err571460 ... ok
+test test_cite_flag ... ok
+test test_dry_run_no_output ... ok
+test test_error_empty_input ... ok
+test test_error_fasta_input ... ok
+test test_error_invalid_fastq_header ... ok
+test test_error_mismatched_quality_length ... ok
+test test_error_missing_sample ... ok
+test test_error_nonexistent_input ... ok
+test test_export_panel ... ok
+test test_gene_name_panel_prefix ... ok
+test test_histogram_correctness ... ok
+test test_histogram_output_with_chunks ... ok
+test test_incremental_histogram_consistency ... ok
+test test_list_panels ... ok
+test test_no_histogram_with_chunks_zero ... ok
+test test_stats_yaml_output ... ok
+test test_validate_panel_invalid_nucleotide ... ok
+test test_validate_panel_malformed_yaml ... ok
+test test_validate_panel_min_exceeds_max ... ok
+test test_validate_panel_missing_fields ... ok
+test test_validate_panel_valid ... ok
+test test_withheld_path_diagnostics_are_stats_only_and_default_off ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 10.39s
+
+     Running tests/uncertain_products.rs (tmp/sequence-retention-20261001/target/release/deps/uncertain_products-c28749200af151d1)
+
+running 7 tests
+test inclusive_console_reports_uncertain_only_output_and_zero_targets_remain_explicit ... ok
+test legacy_gene_name_suffix_cannot_collide_with_uncertain_record_ids ... ok
+test mixed_target_emits_standard_then_uncertain_and_opt_out_preserves_standard ... ok
+test modified_owned_uncertain_output_refuses_rerun_and_preserves_prior_generation ... ok
+test target_search_limits_are_reported_even_without_emitted_records ... ok
+test turning_uncertain_emission_off_removes_only_receipted_uncertain_output ... ok
+test uncertain_cli_preserves_standard_outputs_and_agrees_with_stats_and_manifest ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
++ cargo test --release --locked --offline --no-default-features --features fxhashmap
+   Compiling sharkmer v3.2.0 (/nfs/roberts/project/pi_cwd7/cwd7/sharkmer)
+    Finished `release` profile [optimized] target(s) in 22.16s
+     Running unittests src/main.rs (tmp/sequence-retention-20261001/target/release/deps/sharkmer-de9aecd1dfce933e)
+
+running 253 tests
+test cache::tests::cache_aliases_share_the_same_lock ... ok
+test cache::tests::cache_download_limit_does_not_read_an_unneeded_corrupt_member ... ok
+test cache::tests::cache_lease_blocks_a_second_configuration_until_drop ... ok
+test cache::tests::cache_lease_stays_live_for_replay ... ok
+test cache::tests::clear_accepts_legacy_verified_metadata_without_read_count ... ok
+test cache::tests::clear_preserves_modified_and_orphaned_entries ... ok
+test cache::tests::clear_removes_only_verified_entries_and_preserves_foreign_paths ... ok
+test cache::tests::clear_waits_for_the_active_cache_lease ... ok
+test cache::tests::corrupt_second_gzip_member_is_not_published_to_cache ... ok
+test cache::tests::failed_replacement_keeps_the_previous_verified_generation ... ok
+test cache::tests::fresh_entry_metadata_publish_failure_removes_new_data ... ok
+test cache::tests::mismatched_metadata_url_is_preserved_and_refused ... ok
+test cache::tests::successful_replacement_updates_a_valid_insufficient_entry ... ok
+test cache::tests::symlinked_cache_entry_is_preserved_and_refused ... ok
+test cache::tests::test_cache_key_deterministic ... ok
+test cache::tests::test_cache_key_different_urls ... ok
+test cache::tests::test_cache_key_is_hex_sha256 ... ok
+test cache::tests::test_clear_nonexistent_dir ... ok
+test cache::tests::test_compute_sha256 ... ok
+test cache::tests::test_lookup_hit_complete_any_max_reads ... ok
+test cache::tests::test_lookup_hit_sufficient_reads ... ok
+test cache::tests::test_lookup_hit_valid_checksum ... ok
+test cache::tests::test_lookup_miss_bad_checksum ... ok
+test cache::tests::test_lookup_miss_insufficient_reads ... ok
+test cache::tests::test_lookup_miss_no_file ... ok
+test cache::tests::test_lookup_miss_partial_unlimited ... ok
+test cache::tests::test_meta_backward_compat ... ok
+test cache::tests::test_meta_round_trip ... ok
+test cache::tests::test_read_meta_missing_file ... ok
+test cli::tests::combined_output_allows_legacy_gene_names_ending_in_uncertain ... ok
+test cli::tests::test_builtin_panel_passes_primer_budget_validation ... ok
+test cli::tests::test_counting_only_kmer_length_one_remains_valid ... ok
+test cli::tests::test_parse_pcr_primers_duplicate_key_rejected ... ok
+test cli::tests::test_parse_pcr_primers_unique_keys_ok ... ok
+test cli::tests::test_parse_pcr_primers_value_with_equals ... ok
+test cli::tests::test_primer_budget_fails_during_collection_before_input_resolution ... ok
+test cli::tests::test_withheld_path_diagnostics_flag_is_hidden_but_parseable ... ok
+test cli::tests::uncertain_delivery_defaults_on_with_explicit_opt_out_and_legacy_opt_in ... ok
+test format::tests::test_format_bytes_small ... ok
+test format::tests::test_format_bytes_units ... ok
+test format::tests::test_format_count_no_commas ... ok
+test format::tests::test_format_count_with_commas ... ok
+test format::tests::test_format_count_zero ... ok
+test format::tests::test_format_duration_hours ... ok
+test format::tests::test_format_duration_minutes ... ok
+test format::tests::test_format_duration_seconds ... ok
+test io::tests::concatenated_gzip_members_ingest_all_records ... ok
+test io::tests::corrupt_second_gzip_member_returns_an_error ... ok
+test io::tests::gzip_magic_detection_matches_plain_fastq ... ok
+test io::tests::max_reads_stops_within_a_concatenated_member ... ok
+test io::tests::paired_readers_continue_across_concatenated_members ... ok
+test io::tests::replay_matches_initial_ingestion_for_concatenated_members ... ok
+test kmer::counting::tests::test_extend_different_k_fails ... ok
+test kmer::counting::tests::test_extend_merges ... ok
+test kmer::counting::tests::test_extend_with_histogram ... ok
+test kmer::counting::tests::test_filtered_view_hides_low_counts ... ok
+test kmer::counting::tests::test_get_max_count ... ok
+test kmer::counting::tests::test_ingest_seq ... ok
+test kmer::counting::tests::test_insert_accumulates ... ok
+test kmer::counting::tests::test_insert_and_get ... ok
+test kmer::counting::tests::test_median_empty ... ok
+test kmer::counting::tests::test_median_even ... ok
+test kmer::counting::tests::test_median_matches_wide_average_for_small_pairs ... ok
+test kmer::counting::tests::test_median_odd ... ok
+test kmer::counting::tests::test_median_rounding_boundaries ... ok
+test kmer::counting::tests::test_new_and_basic_ops ... ok
+test kmer::counting::tests::test_remove_low_count_kmers ... ok
+test kmer::counting::tests::test_saturating_add ... ok
+test kmer::tests::test_count_valid_bases ... ok
+test kmer::tests::test_from_str ... ok
+test kmer::tests::test_get_kmers ... ok
+test kmer::tests::test_histogram ... ok
+test kmer::tests::test_kmer_to_seq ... ok
+test kmer::tests::test_kmers_from_ascii_matches_read_pipeline ... ok
+test kmer::tests::test_kmers_from_ascii_short_sequences ... ok
+test kmer::tests::test_read_parsing ... ok
+test kmer::tests::test_read_validate ... ok
+test kmer::tests::test_revcomp_kmer ... ok
+test kmer::tests::test_seq_to_reads ... ok
+test kmer::tests::test_seq_to_reads_n ... ok
+test kmer::tests::test_tests ... ok
+test output::tests::changed_output_set_removes_only_receipted_prior_files ... ok
+test output::tests::legacy_collision_is_not_overwritten ... ok
+test output::tests::malformed_complete_manifest_is_refused ... ok
+test output::tests::modified_owned_file_is_preserved_and_refused ... ok
+test output::tests::overlapping_sample_and_gene_names_cannot_clobber_outputs ... ok
+test output::tests::publishing_transaction_with_partial_files_is_invalidated_on_restart ... ok
+test output::tests::sample_lock_is_held_for_transaction_lifetime ... ok
+test output::tests::schema_one_split_outputs_migrate_and_modified_owned_sidecars_are_protected ... ok
+test output::tests::schema_two_combined_outputs_migrate_without_touching_unowned_files ... ok
+test output::tests::success_followed_by_no_products_removes_prior_fasta ... ok
+test output::tests::symlink_collision_is_preserved_and_refused ... ok
+test output::tests::symlink_lock_and_manifest_are_refused ... ok
+test output::tests::tampered_receipt_cannot_claim_unrelated_or_lock_files ... ok
+test pcr::bubble::tests::test_bubble_tiebreak_is_deterministic ... ok
+test pcr::bubble::tests::test_depth_limited_branches_not_a_bubble ... ok
+test pcr::bubble::tests::test_detect_simple_bubble ... ok
+test pcr::bubble::tests::test_no_bubble_linear ... ok
+test pcr::bubble::tests::test_resolve_with_read_support ... ok
+test pcr::graph::tests::retained_high_coverage_collision_marks_already_present_edge ... ok
+test pcr::graph::tests::retained_high_coverage_collision_marks_new_edge_not_endpoints ... ok
+test pcr::graph::tests::test_compute_median_edge_count_empty ... ok
+test pcr::graph::tests::test_compute_median_edge_count_values ... ok
+test pcr::graph::tests::test_compute_median_matches_helper ... ok
+test pcr::graph::tests::test_compute_node_budget_high ... ok
+test pcr::graph::tests::test_compute_node_budget_interpolates ... ok
+test pcr::graph::tests::test_compute_node_budget_low ... ok
+test pcr::graph::tests::test_get_suffix_mask_values ... ok
+test pcr::graph::tests::test_high_coverage_limit_uses_absolute_floor ... ok
+test pcr::graph::tests::test_median_u32_f64_empty ... ok
+test pcr::graph::tests::test_median_u32_f64_even ... ok
+test pcr::graph::tests::test_median_u32_f64_even_two ... ok
+test pcr::graph::tests::test_median_u32_f64_large_values_no_overflow ... ok
+test pcr::graph::tests::test_median_u32_f64_odd ... ok
+test pcr::graph::tests::test_median_u32_f64_single ... ok
+test pcr::graph::tests::test_median_u64_f64_smoke ... ok
+test pcr::graph::tests::test_repeat_scan_handles_deep_graph_on_small_stack ... ok
+test pcr::paths::tests::deterministic_gene_allocations_stay_within_gene_and_run_caps ... ok
+test pcr::paths::tests::diagnostic_drop_reasons_are_exclusive_and_preserve_observed_identity ... ok
+test pcr::paths::tests::diagnostic_gene_budget_carries_across_thresholds ... ok
+test pcr::paths::tests::diagnostic_sequence_and_marker_budgets_never_emit_partial_records ... ok
+test pcr::paths::tests::extra_paths_cannot_displace_a_later_legacy_detail_path ... ok
+test pcr::paths::tests::inclusive_retention_keeps_sequence_when_marker_budget_is_full ... ok
+test pcr::paths::tests::inclusive_sequence_shares_are_bounded_and_fit_full_panel_12s ... ok
+test pcr::paths::tests::pre_prune_scc_marker_identity_survives_cycle_pruning ... ok
+test pcr::paths::tests::repeated_node_marker_occurrences_keep_each_oriented_coordinate ... ok
+test pcr::paths::tests::test_dfs_budget_limits_exploration ... ok
+test pcr::paths::tests::test_diamond_finds_both_paths ... ok
+test pcr::paths::tests::test_end_above_max_is_not_returned_by_search ... ok
+test pcr::paths::tests::test_end_below_min_does_not_stop_longer_valid_path ... ok
+test pcr::paths::tests::test_length_search_diagnostics ... ok
+test pcr::paths::tests::test_linear_path ... ok
+test pcr::paths::tests::test_max_length_caps_paths ... ok
+test pcr::paths::tests::test_no_start_nodes_gives_empty ... ok
+test pcr::paths::tests::test_path_budget_limits_exploration ... ok
+test pcr::paths::tests::test_sequence_generation_rejects_length_above_max ... ok
+test pcr::paths::tests::test_sequence_lengths_at_k_boundary_are_valid ... ok
+test pcr::paths::tests::test_sorted_children_order ... ok
+test pcr::paths::tests::withheld_diagnostic_sequences_preserve_graph_orientation ... ok
+test pcr::paths::tests::withheld_diagnostics_preserve_clean_path_order_and_quota ... ok
+test pcr::paths::tests::withheld_diagnostics_preserve_search_and_record_stable_marker_spans ... ok
+test pcr::preconfigured::tests::test_builtin_panels_load_and_are_versioned ... ok
+test pcr::preconfigured::tests::test_deny_unknown_panel_field ... ok
+test pcr::preconfigured::tests::test_deny_unknown_primer_field ... ok
+test pcr::preconfigured::tests::test_derive_gene_name ... ok
+test pcr::preconfigured::tests::test_is_url ... ok
+test pcr::preconfigured::tests::test_load_panel_file_from_fixture ... ok
+test pcr::preconfigured::tests::test_load_panel_source_bad_url ... ok
+test pcr::preconfigured::tests::test_load_panel_source_local_file ... ok
+test pcr::preconfigured::tests::test_primer_uniqueness_conflict ... ok
+test pcr::preconfigured::tests::test_reference_provenance_is_optional_for_assembly ... ok
+test pcr::preconfigured::tests::test_reference_provenance_schema ... ok
+test pcr::preconfigured::tests::test_v2_panel_missing_clade_is_rejected ... ok
+test pcr::preconfigured::tests::test_validate_gene_chars_accepts_valid ... ok
+test pcr::preconfigured::tests::test_validate_gene_chars_allows_dash_without_region ... ok
+test pcr::preconfigured::tests::test_validate_gene_chars_rejects_dash_with_region ... ok
+test pcr::preconfigured::tests::test_validate_gene_chars_rejects_underscore ... ok
+test pcr::preconfigured::tests::test_validate_region_chars_accepts_dash ... ok
+test pcr::preconfigured::tests::test_validate_region_chars_rejects_underscore ... ok
+test pcr::primers::tests::test_combinations_basic ... ok
+test pcr::primers::tests::test_combinations_r_exceeds_n ... ok
+test pcr::primers::tests::test_expansion_plan_matches_normal_and_iupac_variants ... ok
+test pcr::primers::tests::test_expansion_plan_rejects_excessive_ambiguity_before_resolution ... ok
+test pcr::primers::tests::test_expansion_plan_rejects_generation_work_before_permutation ... ok
+test pcr::primers::tests::test_expansion_plan_rejects_zero_effective_trim_without_panicking ... ok
+test pcr::primers::tests::test_filter_primer_kmers_cap ... ok
+test pcr::primers::tests::test_filter_primer_kmers_empty ... ok
+test pcr::primers::tests::test_filter_primer_kmers_hard_cap_with_ties ... ok
+test pcr::primers::tests::test_filter_primer_kmers_under_cap ... ok
+test pcr::primers::tests::test_find_oligos_exact_match_forward ... ok
+test pcr::primers::tests::test_find_oligos_min_count_filter ... ok
+test pcr::primers::tests::test_find_oligos_no_match ... ok
+test pcr::primers::tests::test_find_oligos_oligo_equals_k_minus_1 ... ok
+test pcr::primers::tests::test_find_oligos_rc_match ... ok
+test pcr::primers::tests::test_intermediate_peak_accounts_for_post_extend_growth ... ok
+test pcr::primers::tests::test_permute_one_mismatch ... ok
+test pcr::primers::tests::test_permute_zero_mismatches ... ok
+test pcr::primers::tests::test_preprocess_primer_by_mismatch_levels ... ok
+test pcr::primers::tests::test_resolve_primer_multiple_ambiguities ... ok
+test pcr::primers::tests::test_resolve_primer_n_gives_four ... ok
+test pcr::primers::tests::test_resolve_primer_no_ambiguity ... ok
+test pcr::primers::tests::test_resolve_primer_single_ambiguity ... ok
+test pcr::primers::tests::test_string_to_oligo_empty ... ok
+test pcr::primers::tests::test_string_to_oligo_encoding ... ok
+test pcr::primers::tests::test_string_to_oligo_invalid_base ... ok
+test pcr::primers::tests::test_string_to_oligo_single_base ... ok
+test pcr::primers::tests::test_valid_nucleotides ... ok
+test pcr::pruning::tests::test_global_median_edge_count_empty ... ok
+test pcr::pruning::tests::test_global_median_edge_count_odd ... ok
+test pcr::pruning::tests::test_preserve_high_coverage_tip ... ok
+test pcr::pruning::tests::test_reachability_pruning_empty_graph ... ok
+test pcr::pruning::tests::test_reachability_pruning_removes_dead_branch ... ok
+test pcr::pruning::tests::test_reachability_pruning_removes_orphan ... ok
+test pcr::pruning::tests::test_remove_low_coverage_tip_forward ... ok
+test pcr::repeat_tests::acyclic_merge_taints_only_the_collision_edge ... ok
+test pcr::repeat_tests::all_repetitive_search_remains_bounded_by_dfs_budget ... ok
+test pcr::repeat_tests::clean_candidates_still_consume_path_quota ... ok
+test pcr::repeat_tests::forty_base_homopolymer_never_emits_collapsed_product ... ok
+test pcr::repeat_tests::homopolymers_at_or_above_k_are_withheld_in_every_orientation ... ok
+test pcr::repeat_tests::read_threading_does_not_guess_repeat_copy_count ... ok
+test pcr::repeat_tests::repeat_branch_does_not_suppress_disjoint_clean_path ... ok
+test pcr::repeat_tests::repeat_evidence_without_candidate_path_is_not_generic_repeat_failure ... ok
+test pcr::repeat_tests::repeat_rejected_paths_do_not_consume_clean_path_quota ... ok
+test pcr::repeat_tests::repeat_uncertainty_precedes_collapsed_length_rejection ... ok
+test pcr::repeat_tests::tandem_repeat_cycle_and_first_visit_shortcut_are_withheld ... ok
+test pcr::repeat_tests::uncertain_early_outcomes_report_zero_without_search_or_fabricated_candidates ... ok
+test pcr::repeat_tests::uncertain_emission_does_not_include_out_of_range_collapsed_paths ... ok
+test pcr::repeat_tests::uncertain_emission_preserves_standard_outcome_and_keeps_diagnostics_independent ... ok
+test pcr::repeat_tests::withheld_path_diagnostics_do_not_change_repeat_outcome_or_threshold_counters ... ok
+test pcr::repeat_tests::zero_uncertain_run_share_preserves_search_and_reports_dropped_candidates ... ok
+test pcr::tests::test_combinations ... ok
+test pcr::tests::test_expected_permutations ... ok
+test pcr::tests::test_extension_steps ... ok
+test pcr::tests::test_get_end_nodes ... ok
+test pcr::tests::test_get_start_nodes ... ok
+test pcr::tests::test_get_suffix_mask ... ok
+test pcr::tests::test_integration ... ok
+test pcr::tests::test_n_combinations ... ok
+test pcr::tests::test_n_descendants ... ok
+test pcr::tests::test_permute_sequences ... ok
+test pcr::tests::test_primer_preprocessing_steps ... ok
+test pcr::tests::test_resolve_primers ... ok
+test pcr::tests::test_string_to_oligo ... ok
+test pcr::threading::tests::directional_primer_edge_maps_from_both_read_strands ... ok
+test pcr::threading::tests::forward_and_reverse_reads_produce_equal_graph_evidence ... ok
+test pcr::threading::tests::gaps_split_directional_runs ... ok
+test pcr::threading::tests::interior_read_without_primer_kmer_contributes_support ... ok
+test pcr::threading::tests::longest_directional_mapping_beats_incidental_opposite_hit ... ok
+test pcr::threading::tests::paired_background_reads_produce_no_fragment_evidence ... ok
+test pcr::threading::tests::paired_mates_count_support_once_per_fragment ... ok
+test pcr::threading::tests::positioned_windows_preserve_primer_orientation_and_gap_offsets ... ok
+test pcr::threading::tests::repeated_edge_and_branch_evidence_count_once_per_read ... ok
+test pcr::threading::tests::tied_opposite_paths_do_not_choose_an_arbitrary_arm ... ok
+test pcr::threading::tests::tied_opposite_paths_retain_only_common_local_evidence ... ok
+test pcr::threading::tests::unique_flanks_resolve_a_read_spanning_an_inverted_motif ... ok
+test pcr::threshold_tests::disconnected_graph_after_pruning_has_explicit_failure ... ok
+test pcr::threshold_tests::earlier_threshold_limits_are_not_erased_by_later_no_connectivity ... ok
+test pcr::threshold_tests::exact_length_boundaries_are_valid ... ok
+test pcr::threshold_tests::lower_threshold_is_tried_after_connected_path_is_too_long ... ok
+test pcr::threshold_tests::max_length_shorter_than_k_is_explicitly_unsupported ... ok
+test pcr::threshold_tests::node_budget_failure_remains_explicit ... ok
+test pcr::threshold_tests::out_of_range_products_report_length_failure ... ok
+test pcr::threshold_tests::search_limits_have_explicit_failures ... ok
+test pcr::threshold_tests::standard_mode_stops_at_first_threshold_with_a_valid_product ... ok
+test pcr::threshold_tests::threshold_diagnostics_serialization_is_bounded_and_contains_no_graph_ids ... ok
+test pcr::uncertain::tests::caps_and_search_limits_remain_visible_when_no_records_were_retained ... ok
+test pcr::uncertain::tests::diagnostic_flag_keeps_original_payload_but_does_not_multiply_collection ... ok
+test pcr::uncertain::tests::empty_collection_records_explicit_not_evaluated_status_and_limits ... ok
+test pcr::uncertain::tests::exact_duplicates_merge_threshold_provenance_without_collapsing_repeat_lengths ... ok
+test pcr::uncertain::tests::only_exact_or_reverse_complement_standard_sequences_are_excluded ... ok
+test pcr::uncertain::tests::reverse_complement_uncertain_records_keep_their_own_orientation_and_coordinates ... ok
+test pcr::uncertain::tests::summary_provenance_preserves_sequence_without_exposing_internal_detail_in_header ... ok
+test pcr::uncertain::tests::warning_causes_merge_across_sources_with_stable_readable_names ... ok
+
+test result: ok. 253 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running tests/spcr_18s.rs (tmp/sequence-retention-20261001/target/release/deps/spcr_18s-842593e35a928183)
+
+running 23 tests
+test test_18s_recovery_from_err571460 ... ok
+test test_cite_flag ... ok
+test test_dry_run_no_output ... ok
+test test_error_empty_input ... ok
+test test_error_fasta_input ... ok
+test test_error_invalid_fastq_header ... ok
+test test_error_mismatched_quality_length ... ok
+test test_error_missing_sample ... ok
+test test_error_nonexistent_input ... ok
+test test_export_panel ... ok
+test test_gene_name_panel_prefix ... ok
+test test_histogram_correctness ... ok
+test test_histogram_output_with_chunks ... ok
+test test_incremental_histogram_consistency ... ok
+test test_list_panels ... ok
+test test_no_histogram_with_chunks_zero ... ok
+test test_stats_yaml_output ... ok
+test test_validate_panel_invalid_nucleotide ... ok
+test test_validate_panel_malformed_yaml ... ok
+test test_validate_panel_min_exceeds_max ... ok
+test test_validate_panel_missing_fields ... ok
+test test_validate_panel_valid ... ok
+test test_withheld_path_diagnostics_are_stats_only_and_default_off ... ok
+
+test result: ok. 23 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 21.75s
+
+     Running tests/uncertain_products.rs (tmp/sequence-retention-20261001/target/release/deps/uncertain_products-a4b4aa27e3487e6d)
+
+running 7 tests
+test inclusive_console_reports_uncertain_only_output_and_zero_targets_remain_explicit ... ok
+test legacy_gene_name_suffix_cannot_collide_with_uncertain_record_ids ... ok
+test mixed_target_emits_standard_then_uncertain_and_opt_out_preserves_standard ... ok
+test modified_owned_uncertain_output_refuses_rerun_and_preserves_prior_generation ... ok
+test target_search_limits_are_reported_even_without_emitted_records ... ok
+test turning_uncertain_emission_off_removes_only_receipted_uncertain_output ... ok
+test uncertain_cli_preserves_standard_outputs_and_agrees_with_stats_and_manifest ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+
+== python ==
++ /nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python3 -m unittest discover -s tests -p 'test_*.py' -v
+test_all_declared_evidence_bounds_fail_closed (test_its_recruitment.RecruitmentTests.test_all_declared_evidence_bounds_fail_closed) ... ok
+test_atomic_publication_and_output_bound (test_its_recruitment.RecruitmentTests.test_atomic_publication_and_output_bound) ... ok
+test_class_tie_is_ambiguous (test_its_recruitment.RecruitmentTests.test_class_tie_is_ambiguous) ... ok
+test_cli_provenance_no_clobber_and_failure_receipt (test_its_recruitment.RecruitmentTests.test_cli_provenance_no_clobber_and_failure_receipt) ... ok
+test_decoy_both_strands_self_and_other_contexts (test_its_recruitment.RecruitmentTests.test_decoy_both_strands_self_and_other_contexts) ... ok
+test_disconnected_support_and_wrong_flank_order (test_its_recruitment.RecruitmentTests.test_disconnected_support_and_wrong_flank_order) ... ok
+test_distance_and_traceback (test_its_recruitment.RecruitmentTests.test_distance_and_traceback) ... ok
+test_exact_wins_over_approximate_flank_shifts (test_its_recruitment.RecruitmentTests.test_exact_wins_over_approximate_flank_shifts) ... ok
+test_flank_and_span_edit_limits_and_flank_indels (test_its_recruitment.RecruitmentTests.test_flank_and_span_edit_limits_and_flank_indels) ... ok
+test_four_edit_context_seeds_against_exhaustive_oracle (test_its_recruitment.RecruitmentTests.test_four_edit_context_seeds_against_exhaustive_oracle) ... ok
+test_independent_distance_oracle (test_its_recruitment.RecruitmentTests.test_independent_distance_oracle) ... ok
+test_invalid_low_quality_and_outside_distance_summaries (test_its_recruitment.RecruitmentTests.test_invalid_low_quality_and_outside_distance_summaries) ... ok
+test_low_quality_retained_but_not_qualified (test_its_recruitment.RecruitmentTests.test_low_quality_retained_but_not_qualified) ... ok
+test_malformed_fastq_and_input_mutation (test_its_recruitment.RecruitmentTests.test_malformed_fastq_and_input_mutation) ... ok
+test_manifest_validation (test_its_recruitment.RecruitmentTests.test_manifest_validation) ... ok
+test_multiple_substitutions_and_indels (test_its_recruitment.RecruitmentTests.test_multiple_substitutions_and_indels) ... ok
+test_non_acgt_inner_does_not_discard_flanks (test_its_recruitment.RecruitmentTests.test_non_acgt_inner_does_not_discard_flanks) ... ok
+test_palindrome_keeps_both_orientations (test_its_recruitment.RecruitmentTests.test_palindrome_keeps_both_orientations) ... ok
+test_prefix_identity_counts_and_recruited_cap (test_its_recruitment.RecruitmentTests.test_prefix_identity_counts_and_recruited_cap) ... ok
+test_quality_boundary_reverse_and_qualified_competitor (test_its_recruitment.RecruitmentTests.test_quality_boundary_reverse_and_qualified_competitor) ... ok
+test_repeat_copy_classes_do_not_collapse (test_its_recruitment.RecruitmentTests.test_repeat_copy_classes_do_not_collapse) ... ok
+test_repeat_placement_tie_and_pair_cap (test_its_recruitment.RecruitmentTests.test_repeat_placement_tie_and_pair_cap) ... ok
+test_reverse_orientation (test_its_recruitment.RecruitmentTests.test_reverse_orientation) ... ok
+test_seed_hits_match_exhaustive_oracle (test_its_recruitment.RecruitmentTests.test_seed_hits_match_exhaustive_oracle) ... ok
+test_shared_cross_locus_string_remains_descriptive (test_its_recruitment.RecruitmentTests.test_shared_cross_locus_string_remains_descriptive) ... ok
+test_single_flank_and_nonspanning_distance_retained (test_its_recruitment.RecruitmentTests.test_single_flank_and_nonspanning_distance_retained) ... ok
+test_source_change_blocks_publication (test_its_recruitment.RecruitmentTests.test_source_change_blocks_publication) ... ok
+test_staged_identity_includes_unconsumed_suffix (test_its_recruitment.RecruitmentTests.test_staged_identity_includes_unconsumed_suffix) ... ok
+test_unequal_mixture_and_duplicate_identifiers (test_its_recruitment.RecruitmentTests.test_unequal_mixture_and_duplicate_identifiers) ... ok
+test_all_active_references_reconstruct_from_pinned_sources (test_public_reference_replacements.PublicReplacementTests.test_all_active_references_reconstruct_from_pinned_sources) ... ok
+test_corrected_plant_assay_has_in_range_exact_public_references (test_public_reference_replacements.PublicReplacementTests.test_corrected_plant_assay_has_in_range_exact_public_references) ... ok
+test_full_public_genes_replace_short_benchmark_comparators (test_public_reference_replacements.PublicReplacementTests.test_full_public_genes_replace_short_benchmark_comparators) ... ok
+test_genomic_h3_replacement_is_shared_not_fabricated_alleles (test_public_reference_replacements.PublicReplacementTests.test_genomic_h3_replacement_is_shared_not_fabricated_alleles) ... ok
+test_legacy_plant_reverse_endpoint_is_outside_current_length_bounds (test_public_reference_replacements.PublicReplacementTests.test_legacy_plant_reverse_endpoint_is_outside_current_length_bounds) ... ok
+test_public_16s_replacements_do_not_reintroduce_muts (test_public_reference_replacements.PublicReplacementTests.test_public_16s_replacements_do_not_reintroduce_muts) ... ok
+test_rhopilema_cox1_uses_reverse_origin_spanning_gene (test_public_reference_replacements.PublicReplacementTests.test_rhopilema_cox1_uses_reverse_origin_spanning_gene) ... ok
+test_unresolved_cnidarian_gene_conflicts_remain_unfilled (test_public_reference_replacements.PublicReplacementTests.test_unresolved_cnidarian_gene_conflicts_remain_unfilled) ... ok
+test_alternative_or_repeated_template_placements_stay_ambiguous (test_read_bridges.ReadBridgeTests.test_alternative_or_repeated_template_placements_stay_ambiguous) ... ok
+test_changed_candidate_or_prefix_and_malformed_fastq_fail_closed (test_read_bridges.ReadBridgeTests.test_changed_candidate_or_prefix_and_malformed_fastq_fail_closed) ... ok
+test_clean_short_repeat_and_unequal_mixture_remain_visible (test_read_bridges.ReadBridgeTests.test_clean_short_repeat_and_unequal_mixture_remain_visible) ... ok
+test_complete_flanks_are_required_individually (test_read_bridges.ReadBridgeTests.test_complete_flanks_are_required_individually) ... ok
+test_disconnected_reads_do_not_bridge_a_repeat (test_read_bridges.ReadBridgeTests.test_disconnected_reads_do_not_bridge_a_repeat) ... ok
+test_distinct_ids_and_footprints_require_a_distinct_matching_witness (test_read_bridges.ReadBridgeTests.test_distinct_ids_and_footprints_require_a_distinct_matching_witness) ... ok
+test_identical_copies_and_reverse_complements_do_not_multiply_footprints (test_read_bridges.ReadBridgeTests.test_identical_copies_and_reverse_complements_do_not_multiply_footprints) ... ok
+test_long_repeat_bridge_does_not_support_collapsed_template (test_read_bridges.ReadBridgeTests.test_long_repeat_bridge_does_not_support_collapsed_template) ... ok
+test_low_quality_inside_bridge_is_not_joined_around (test_read_bridges.ReadBridgeTests.test_low_quality_inside_bridge_is_not_joined_around) ... ok
+test_one_substitution_is_separate_and_never_accepts_n_or_an_indel (test_read_bridges.ReadBridgeTests.test_one_substitution_is_separate_and_never_accepts_n_or_an_indel) ... ok
+test_one_substitution_observed_window_competes_with_unassayed_alternative (test_read_bridges.ReadBridgeTests.test_one_substitution_observed_window_competes_with_unassayed_alternative) ... ok
+test_palindromic_window_and_repeated_read_occurrences_are_not_unique (test_read_bridges.ReadBridgeTests.test_palindromic_window_and_repeated_read_occurrences_are_not_unique) ... ok
+test_recombinant_with_only_marginal_support_is_unresolved (test_read_bridges.ReadBridgeTests.test_recombinant_with_only_marginal_support_is_unresolved) ... ok
+test_reused_identifier_cannot_supply_corroboration (test_read_bridges.ReadBridgeTests.test_reused_identifier_cannot_supply_corroboration) ... ok
+test_tied_patterns_on_one_read_never_depend_on_event_order (test_read_bridges.ReadBridgeTests.test_tied_patterns_on_one_read_never_depend_on_event_order) ... ok
+test_caps_and_identity_fail_without_partial_success (test_read_histories.Histories.test_caps_and_identity_fail_without_partial_success) ... ok
+test_class_tie_and_palindrome_remain_ambiguous (test_read_histories.Histories.test_class_tie_and_palindrome_remain_ambiguous) ... ok
+test_completely_unrepresented_class_is_still_reported (test_read_histories.Histories.test_completely_unrepresented_class_is_still_reported) ... ok
+test_duplicate_rc_and_quality_variants_do_not_multiply (test_read_histories.Histories.test_duplicate_rc_and_quality_variants_do_not_multiply) ... ok
+test_graph_change_during_scan_fails_before_publication (test_read_histories.Histories.test_graph_change_during_scan_fails_before_publication) ... ok
+test_graph_labels_degrees_and_endpoints_fail_closed (test_read_histories.Histories.test_graph_labels_degrees_and_endpoints_fail_closed) ... ok
+test_input_change_during_scan_fails (test_read_histories.Histories.test_input_change_during_scan_fails) ... ok
+test_invalid_base_and_low_quality_split_runs (test_read_histories.Histories.test_invalid_base_and_low_quality_split_runs) ... ok
+test_iupac_outside_class_preserves_rc_sequence_group (test_read_histories.Histories.test_iupac_outside_class_preserves_rc_sequence_group) ... ok
+test_low_quality_competing_placement_remains_ambiguous (test_read_histories.Histories.test_low_quality_competing_placement_remains_ambiguous) ... ok
+test_low_quality_endpoint_never_clipped (test_read_histories.Histories.test_low_quality_endpoint_never_clipped) ... ok
+test_malformed_quality_and_sequence_rejected (test_read_histories.Histories.test_malformed_quality_and_sequence_rejected) ... ok
+test_manifest_checksum_and_bounds_fail_closed (test_read_histories.Histories.test_manifest_checksum_and_bounds_fail_closed) ... ok
+test_missing_graph_kmer_splits_without_stitching (test_read_histories.Histories.test_missing_graph_kmer_splits_without_stitching) ... ok
+test_more_than_two_cycle_visits_preserve_occurrences (test_read_histories.Histories.test_more_than_two_cycle_visits_preserve_occurrences) ... ok
+test_omitted_self_loop_and_partial_repeat_have_no_witness (test_read_histories.Histories.test_omitted_self_loop_and_partial_repeat_have_no_witness) ... ok
+test_publish_is_no_clobber_and_byte_bounded (test_read_histories.Histories.test_publish_is_no_clobber_and_byte_bounded) ... ok
+test_reused_ids_and_uncoupled_sets_fail (test_read_histories.Histories.test_reused_ids_and_uncoupled_sets_fail) ... ok
+test_reverse_complement_normalizes_footprints (test_read_histories.Histories.test_reverse_complement_normalizes_footprints) ... ok
+test_shuffled_records_preserve_class_summary (test_read_histories.Histories.test_shuffled_records_preserve_class_summary) ... ok
+test_streaming_prefix_and_ledger_identity (test_read_histories.Histories.test_streaming_prefix_and_ledger_identity) ... ok
+test_substitution_and_indel_do_not_repair_path (test_read_histories.Histories.test_substitution_and_indel_do_not_repair_path) ... ok
+test_three_positioned_ids_and_sequence_groups_pass (test_read_histories.Histories.test_three_positioned_ids_and_sequence_groups_pass) ... ok
+test_two_region_phase_histories_separate_equal_marginals (test_read_histories.Histories.test_two_region_phase_histories_separate_equal_marginals) ... ok
+test_unequal_repeat_mixture_preserves_both_classes (test_read_histories.Histories.test_unequal_repeat_mixture_preserves_both_classes) ... ok
+test_bootstrap_candidates_are_not_published_as_references (test_reference_catalog.ReferenceCatalogTests.test_bootstrap_candidates_are_not_published_as_references) ... ok
+test_bootstrap_write_fails_before_input_or_network_work (test_reference_catalog.ReferenceCatalogTests.test_bootstrap_write_fails_before_input_or_network_work) ... ok
+test_circular_origin_requires_topology_and_at_most_one_traversal (test_reference_catalog.ReferenceCatalogTests.test_circular_origin_requires_topology_and_at_most_one_traversal) ... ok
+test_corrupt_gzip_is_reported_as_unavailable (test_reference_catalog.ReferenceCatalogTests.test_corrupt_gzip_is_reported_as_unavailable) ... ok
+test_corrupt_source_checksum_excludes_catalog (test_reference_catalog.ReferenceCatalogTests.test_corrupt_source_checksum_excludes_catalog) ... ok
+test_duplicate_catalog_keys_are_rejected (test_reference_catalog.ReferenceCatalogTests.test_duplicate_catalog_keys_are_rejected) ... ok
+test_empty_reference_collection_still_records_catalog_receipt (test_reference_catalog.ReferenceCatalogTests.test_empty_reference_collection_still_records_catalog_receipt) ... ok
+test_exact_public_region_is_verified_without_imputing_iupac (test_reference_catalog.ReferenceCatalogTests.test_exact_public_region_is_verified_without_imputing_iupac) ... ok
+test_iupac_compatible_substitution_is_not_literal_provenance (test_reference_catalog.ReferenceCatalogTests.test_iupac_compatible_substitution_is_not_literal_provenance) ... ok
+test_known_annotation_conflict_cannot_be_promoted_by_exact_source_match (test_reference_catalog.ReferenceCatalogTests.test_known_annotation_conflict_cannot_be_promoted_by_exact_source_match) ... ok
+test_malformed_annotation_conflicts_are_reported (test_reference_catalog.ReferenceCatalogTests.test_malformed_annotation_conflicts_are_reported) ... ok
+test_malformed_topology_is_reported_as_unavailable (test_reference_catalog.ReferenceCatalogTests.test_malformed_topology_is_reported_as_unavailable) ... ok
+test_missing_catalog_never_falls_back_to_embedded_sequence (test_reference_catalog.ReferenceCatalogTests.test_missing_catalog_never_falls_back_to_embedded_sequence) ... ok
+test_oversize_compressed_catalog_is_bounded (test_reference_catalog.ReferenceCatalogTests.test_oversize_compressed_catalog_is_bounded) ... ok
+test_provenance_failures_are_excluded_not_treated_as_alleles (test_reference_catalog.ReferenceCatalogTests.test_provenance_failures_are_excluded_not_treated_as_alleles) ... ok
+test_reverse_complement_and_coordinates_are_exact (test_reference_catalog.ReferenceCatalogTests.test_reverse_complement_and_coordinates_are_exact) ... ok
+test_source_catalog_symlink_is_not_trusted (test_reference_catalog.ReferenceCatalogTests.test_source_catalog_symlink_is_not_trusted) ... ok
+test_unverified_source_and_taxon_mismatch_are_explicit (test_reference_catalog.ReferenceCatalogTests.test_unverified_source_and_taxon_mismatch_are_explicit) ... ok
+test_circular_wrap_is_explicit (test_reference_provenance.ReferenceProvenanceTests.test_circular_wrap_is_explicit) ... ok
+test_exact_subsequence_records_one_based_coordinates (test_reference_provenance.ReferenceProvenanceTests.test_exact_subsequence_records_one_based_coordinates) ... ok
+test_iupac_is_literal_not_wildcard (test_reference_provenance.ReferenceProvenanceTests.test_iupac_is_literal_not_wildcard) ... ok
+test_nonunique_coordinates_preserve_alternatives (test_reference_provenance.ReferenceProvenanceTests.test_nonunique_coordinates_preserve_alternatives) ... ok
+test_oversize_sources_are_not_read (test_reference_provenance.ReferenceProvenanceTests.test_oversize_sources_are_not_read) ... ok
+test_shared_extractor_rebuilds_recorded_region (test_reference_provenance.ReferenceProvenanceTests.test_shared_extractor_rebuilds_recorded_region) ... ok
+test_verify_existing_accepts_complete_catalog (test_reference_provenance.ReferenceProvenanceTests.test_verify_existing_accepts_complete_catalog) ... ok
+test_verify_existing_cli_accepts_complete_catalog (test_reference_provenance.ReferenceProvenanceTests.test_verify_existing_cli_accepts_complete_catalog) ... ok
+test_context_receipt_changes_after_primer_mutation (test_reference_targets.ReferenceTargetTests.test_context_receipt_changes_after_primer_mutation) ... ok
+test_distinct_genes_and_regions_are_not_merged (test_reference_targets.ReferenceTargetTests.test_distinct_genes_and_regions_are_not_merged) ... ok
+test_gene_equivalence_is_case_insensitive_and_explicit (test_reference_targets.ReferenceTargetTests.test_gene_equivalence_is_case_insensitive_and_explicit) ... ok
+test_its_grouping_requires_reviewed_panel_and_exact_primer_context (test_reference_targets.ReferenceTargetTests.test_its_grouping_requires_reviewed_panel_and_exact_primer_context) ... ok
+test_metadata_audit_rejects_logical_target_inconsistent_with_context (test_reference_targets.ReferenceTargetTests.test_metadata_audit_rejects_logical_target_inconsistent_with_context) ... ok
+test_panel_mapping_preserves_region_identity (test_reference_targets.ReferenceTargetTests.test_panel_mapping_preserves_region_identity) ... ok
+test_product_evaluation_uses_logical_gene_availability (test_reference_targets.ReferenceTargetTests.test_product_evaluation_uses_logical_gene_availability) ... ok
+test_real_database_build_and_query_binds_logical_gene_metadata (test_reference_targets.ReferenceTargetTests.test_real_database_build_and_query_binds_logical_gene_metadata) ... ok
+test_registered_its_signatures_match_repository_panels (test_reference_targets.ReferenceTargetTests.test_registered_its_signatures_match_repository_panels) ... ok
+test_report_scores_gene_support_from_another_reviewed_primer_index (test_reference_targets.ReferenceTargetTests.test_report_scores_gene_support_from_another_reviewed_primer_index) ... ok
+test_report_uses_bound_logical_target_without_claiming_primer_support (test_reference_targets.ReferenceTargetTests.test_report_uses_bound_logical_target_without_claiming_primer_support) ... ok
+test_reviewed_panel_its_targets_share_only_logical_gene_support (test_reference_targets.ReferenceTargetTests.test_reviewed_panel_its_targets_share_only_logical_gene_support) ... ok
+test_reviewed_same_gene_indices_share_support_not_primer_region_truth (test_reference_targets.ReferenceTargetTests.test_reviewed_same_gene_indices_share_support_not_primer_region_truth) ... ok
+test_stale_database_mapping_is_not_used_after_primer_mutation (test_reference_targets.ReferenceTargetTests.test_stale_database_mapping_is_not_used_after_primer_mutation) ... ok
+test_assessment_and_manifest_versions_must_match_output_contract (test_sequence_annotations.SequenceAnnotationTests.test_assessment_and_manifest_versions_must_match_output_contract) ... ok
+test_bootstrap_excludes_warning_records (test_sequence_annotations.SequenceAnnotationTests.test_bootstrap_excludes_warning_records) ... ok
+test_current_run_recovery_and_bootstrap_use_only_unflagged_partition (test_sequence_annotations.SequenceAnnotationTests.test_current_run_recovery_and_bootstrap_use_only_unflagged_partition) ... ok
+test_legacy_and_new_formats_preserve_standard_recovery (test_sequence_annotations.SequenceAnnotationTests.test_legacy_and_new_formats_preserve_standard_recovery) ... ok
+test_legacy_identifier_with_equals_is_not_an_annotation (test_sequence_annotations.SequenceAnnotationTests.test_legacy_identifier_with_equals_is_not_an_annotation) ... ok
+test_missing_or_invalid_status_does_not_fall_back_between_schemas (test_sequence_annotations.SequenceAnnotationTests.test_missing_or_invalid_status_does_not_fall_back_between_schemas) ... ok
+test_new_mixed_warning_only_empty_and_opt_out_outputs (test_sequence_annotations.SequenceAnnotationTests.test_new_mixed_warning_only_empty_and_opt_out_outputs) ... ok
+test_read_support_cannot_be_claimed_on_unassessed_ordinary_record (test_sequence_annotations.SequenceAnnotationTests.test_read_support_cannot_be_claimed_on_unassessed_ordinary_record) ... ok
+test_semantic_causes_are_bound_to_internal_source_evidence (test_sequence_annotations.SequenceAnnotationTests.test_semantic_causes_are_bound_to_internal_source_evidence) ... ok
+test_standalone_renamed_warning_records_are_never_promoted (test_sequence_annotations.SequenceAnnotationTests.test_standalone_renamed_warning_records_are_never_promoted) ... ok
+test_standalone_unknown_duplicate_and_orphaned_metadata_rejected (test_sequence_annotations.SequenceAnnotationTests.test_standalone_unknown_duplicate_and_orphaned_metadata_rejected) ... ok
+test_warning_annotation_in_identifier_position_is_rejected (test_sequence_annotations.SequenceAnnotationTests.test_warning_annotation_in_identifier_position_is_rejected) ... ok
+test_warning_header_tampering_rejected_with_recomputed_receipts (test_sequence_annotations.SequenceAnnotationTests.test_warning_header_tampering_rejected_with_recomputed_receipts) ... ok
+test_bootstrap_only_collects_standard_records (test_uncertain_output.CombinedOutputTests.test_bootstrap_only_collects_standard_records) ... ok
+test_enabled_empty_disabled_and_zero_output (test_uncertain_output.CombinedOutputTests.test_enabled_empty_disabled_and_zero_output) ... ok
+test_inclusive_metadata_invariants (test_uncertain_output.CombinedOutputTests.test_inclusive_metadata_invariants) ... ok
+test_malformed_classification_rejected_even_with_recomputed_receipts (test_uncertain_output.CombinedOutputTests.test_malformed_classification_rejected_even_with_recomputed_receipts) ... ok
+test_manifest_version_must_agree_with_explicit_schema (test_uncertain_output.CombinedOutputTests.test_manifest_version_must_agree_with_explicit_schema) ... ok
+test_missing_or_surplus_receipt_rejected (test_uncertain_output.CombinedOutputTests.test_missing_or_surplus_receipt_rejected) ... ok
+test_mixed_file_validates_all_records_but_returns_only_standard (test_uncertain_output.CombinedOutputTests.test_mixed_file_validates_all_records_but_returns_only_standard) ... ok
+test_partition_order_length_and_metadata_binding_rejected (test_uncertain_output.CombinedOutputTests.test_partition_order_length_and_metadata_binding_rejected) ... ok
+test_run_result_uses_standard_partition_for_recovery_and_bootstrap (test_uncertain_output.CombinedOutputTests.test_run_result_uses_standard_partition_for_recovery_and_bootstrap) ... ok
+test_sequence_first_detail_and_summary_sources_validate (test_uncertain_output.CombinedOutputTests.test_sequence_first_detail_and_summary_sources_validate) ... ok
+test_shared_file_does_not_allow_cross_gene_alias (test_uncertain_output.CombinedOutputTests.test_shared_file_does_not_allow_cross_gene_alias) ... ok
+test_uncertain_gene_suffix_and_identifiers_do_not_change_classification (test_uncertain_output.CombinedOutputTests.test_uncertain_gene_suffix_and_identifiers_do_not_change_classification) ... ok
+test_uncertain_only_file_is_valid_and_not_a_standard_recovery (test_uncertain_output.CombinedOutputTests.test_uncertain_only_file_is_valid_and_not_a_standard_recovery) ... ok
+test_uncertain_only_requires_standard_failure_reason (test_uncertain_output.CombinedOutputTests.test_uncertain_only_requires_standard_failure_reason) ... ok
+test_changed_uncertain_sequence_invalidates_entire_transaction (test_uncertain_output.UncertainIsolationTests.test_changed_uncertain_sequence_invalidates_entire_transaction) ... ok
+test_each_cause_has_its_expected_identity_kind (test_uncertain_output.UncertainIsolationTests.test_each_cause_has_its_expected_identity_kind) ... ok
+test_enabled_empty_has_no_uncertain_fasta_receipt (test_uncertain_output.UncertainIsolationTests.test_enabled_empty_has_no_uncertain_fasta_receipt) ... ok
+test_extra_uncertain_receipt_rejected (test_uncertain_output.UncertainIsolationTests.test_extra_uncertain_receipt_rejected) ... ok
+test_header_cannot_overclaim_or_erase_uncertainty (test_uncertain_output.UncertainIsolationTests.test_header_cannot_overclaim_or_erase_uncertainty) ... ok
+test_invalid_scalar_metadata_is_rejected (test_uncertain_output.UncertainIsolationTests.test_invalid_scalar_metadata_is_rejected) ... ok
+test_invalid_source_local_metadata_is_rejected (test_uncertain_output.UncertainIsolationTests.test_invalid_source_local_metadata_is_rejected) ... ok
+test_legacy_standard_gene_with_uncertain_suffix_remains_standard (test_uncertain_output.UncertainIsolationTests.test_legacy_standard_gene_with_uncertain_suffix_remains_standard) ... ok
+test_manifest_does_not_override_uncertain_header_guard (test_uncertain_output.UncertainIsolationTests.test_manifest_does_not_override_uncertain_header_guard) ... ok
+test_manifest_standard_and_uncertain_are_separate (test_uncertain_output.UncertainIsolationTests.test_manifest_standard_and_uncertain_are_separate) ... ok
+test_marker_union_covers_overlap_adjacency_disjoint_and_duplicates (test_uncertain_output.UncertainIsolationTests.test_marker_union_covers_overlap_adjacency_disjoint_and_duplicates) ... ok
+test_missing_uncertain_receipt_rejected (test_uncertain_output.UncertainIsolationTests.test_missing_uncertain_receipt_rejected) ... ok
+test_quoted_and_duplicate_uncertainty_labels_cannot_be_promoted (test_uncertain_output.UncertainIsolationTests.test_quoted_and_duplicate_uncertainty_labels_cannot_be_promoted) ... ok
+test_renamed_or_mixed_uncertain_headers_are_never_promoted (test_uncertain_output.UncertainIsolationTests.test_renamed_or_mixed_uncertain_headers_are_never_promoted) ... ok
+test_uncertain_only_is_zero_standard_products (test_uncertain_output.UncertainIsolationTests.test_uncertain_only_is_zero_standard_products) ... ok
+test_uncertain_output_cannot_be_explicitly_requested_as_standard (test_uncertain_output.UncertainIsolationTests.test_uncertain_output_cannot_be_explicitly_requested_as_standard) ... ok
+test_valid_hash_receipt_does_not_replace_fasta_metadata_binding (test_uncertain_output.UncertainIsolationTests.test_valid_hash_receipt_does_not_replace_fasta_metadata_binding) ... ok
+test_wrong_gene_uncertain_path_rejected_even_with_valid_receipt (test_uncertain_output.UncertainIsolationTests.test_wrong_gene_uncertain_path_rejected_even_with_valid_receipt) ... ok
+test_conflicting_benchmark_taxon_is_rejected (test_validation_harness.BenchmarkMetadataTests.test_conflicting_benchmark_taxon_is_rejected) ... ok
+test_end_to_end_benchmark_without_taxon_is_rejected (test_validation_harness.BenchmarkMetadataTests.test_end_to_end_benchmark_without_taxon_is_rejected) ... ok
+test_explicit_benchmark_taxon_overrides_missing_panel_sample (test_validation_harness.BenchmarkMetadataTests.test_explicit_benchmark_taxon_overrides_missing_panel_sample) ... ok
+test_nonstring_panel_taxon_is_rejected (test_validation_harness.BenchmarkMetadataTests.test_nonstring_panel_taxon_is_rejected) ... ok
+test_panel_schema_matches_runtime_primer_bounds (test_validation_harness.BenchmarkMetadataTests.test_panel_schema_matches_runtime_primer_bounds) ... ok
+test_whitespace_benchmark_taxon_is_rejected (test_validation_harness.BenchmarkMetadataTests.test_whitespace_benchmark_taxon_is_rejected) ... ok
+test_blast_requests_every_reference (test_validation_harness.BlastClassificationTests.test_blast_requests_every_reference) ... ok
+test_collinear_split_hsps_support_gene_without_chimera_claim (test_validation_harness.BlastClassificationTests.test_collinear_split_hsps_support_gene_without_chimera_claim) ... ok
+test_complementary_same_gene_references_are_unresolved_not_structurally_conflicting (test_validation_harness.BlastClassificationTests.test_complementary_same_gene_references_are_unresolved_not_structurally_conflicting) ... ok
+test_direct_xml_without_explicit_fixture_or_verified_metadata_fails_closed (test_validation_harness.BlastClassificationTests.test_direct_xml_without_explicit_fixture_or_verified_metadata_fails_closed) ... ok
+test_every_product_is_evaluated (test_validation_harness.BlastClassificationTests.test_every_product_is_evaluated) ... ok
+test_exact_reference_alignment_records_support_without_haplotype_truth (test_validation_harness.BlastClassificationTests.test_exact_reference_alignment_records_support_without_haplotype_truth) ... ok
+test_historic_confirmation_label_is_not_upgraded_to_current_support (test_validation_harness.BlastClassificationTests.test_historic_confirmation_label_is_not_upgraded_to_current_support) ... ok
+test_missing_verified_reference_is_explicit_not_a_biological_failure (test_validation_harness.BlastClassificationTests.test_missing_verified_reference_is_explicit_not_a_biological_failure) ... ok
+test_noncollinear_within_reference_hsps_are_structurally_conflicting (test_validation_harness.BlastClassificationTests.test_noncollinear_within_reference_hsps_are_structurally_conflicting) ... ok
+test_normal_snp_and_indel_alignment_retains_gene_support (test_validation_harness.BlastClassificationTests.test_normal_snp_and_indel_alignment_retains_gene_support) ... ok
+test_opaque_subject_metadata_preserves_duplicate_labels_and_accession_underscores (test_validation_harness.BlastClassificationTests.test_opaque_subject_metadata_preserves_duplicate_labels_and_accession_underscores) ... ok
+test_overlapping_hsps_do_not_sum_to_full_coverage (test_validation_harness.BlastClassificationTests.test_overlapping_hsps_do_not_sum_to_full_coverage) ... ok
+test_short_fragment_cannot_confirm_product (test_validation_harness.BlastClassificationTests.test_short_fragment_cannot_confirm_product) ... ok
+test_stronger_wrong_gene_beats_qualifying_expected_homolog (test_validation_harness.BlastClassificationTests.test_stronger_wrong_gene_beats_qualifying_expected_homolog) ... ok
+test_swapped_database_artifact_fails_before_alignment_classification (test_validation_harness.BlastClassificationTests.test_swapped_database_artifact_fails_before_alignment_classification) ... ok
+test_sweep_summary_uses_alignment_support_language (test_validation_harness.BlastClassificationTests.test_sweep_summary_uses_alignment_support_language) ... ok
+test_tied_taxa_are_not_species_confirmation (test_validation_harness.BlastClassificationTests.test_tied_taxa_are_not_species_confirmation) ... ok
+test_wrong_gene_is_never_same_gene_success (test_validation_harness.BlastClassificationTests.test_wrong_gene_is_never_same_gene_success) ... ok
+test_counting_manifest_may_omit_pcr_results (test_validation_harness.CurrentRunManifestTests.test_counting_manifest_may_omit_pcr_results) ... ok
+test_execution_failures_are_detectable_after_artifact_generation (test_validation_harness.CurrentRunManifestTests.test_execution_failures_are_detectable_after_artifact_generation) ... ok
+test_extra_args_cannot_add_unfingerprinted_input (test_validation_harness.CurrentRunManifestTests.test_extra_args_cannot_add_unfingerprinted_input) ... ok
+test_failed_execution_preserves_stdout_and_stderr (test_validation_harness.CurrentRunManifestTests.test_failed_execution_preserves_stdout_and_stderr) ... ok
+test_manifest_file_list_excludes_stale_fasta_and_parses_each_header (test_validation_harness.CurrentRunManifestTests.test_manifest_file_list_excludes_stale_fasta_and_parses_each_header) ... ok
+test_parameter_mismatch_is_rejected (test_validation_harness.CurrentRunManifestTests.test_parameter_mismatch_is_rejected) ... ok
+test_remote_run_requires_checksummed_consumed_source_plan (test_validation_harness.CurrentRunManifestTests.test_remote_run_requires_checksummed_consumed_source_plan) ... ok
+test_success_without_current_stats_rejects_stale_fasta (test_validation_harness.CurrentRunManifestTests.test_success_without_current_stats_rejects_stale_fasta) ... ok
+test_default_executable_is_built_even_when_it_exists (test_validation_harness.ExecutableProvenanceTests.test_default_executable_is_built_even_when_it_exists) ... ok
+test_explicit_executable_is_fingerprinted_without_build (test_validation_harness.ExecutableProvenanceTests.test_explicit_executable_is_fingerprinted_without_build) ... ok
+test_same_second_runs_get_distinct_report_names (test_validation_harness.ExecutableProvenanceTests.test_same_second_runs_get_distinct_report_names) ... ok
+test_bootstrap_does_not_prefer_old_root_fasta_over_interrupted_invocation (test_validation_harness.OutputTransactionTests.test_bootstrap_does_not_prefer_old_root_fasta_over_interrupted_invocation) ... ok
+test_complete_transaction_excludes_unrelated_stale_products (test_validation_harness.OutputTransactionTests.test_complete_transaction_excludes_unrelated_stale_products) ... ok
+test_counting_only_transaction_has_only_stats_receipt (test_validation_harness.OutputTransactionTests.test_counting_only_transaction_has_only_stats_receipt) ... ok
+test_current_stats_and_products_are_checksummed (test_validation_harness.OutputTransactionTests.test_current_stats_and_products_are_checksummed) ... ok
+test_interrupted_and_failed_transactions_are_not_success (test_validation_harness.OutputTransactionTests.test_interrupted_and_failed_transactions_are_not_success) ... ok
+test_matching_completed_run_identity_is_required (test_validation_harness.OutputTransactionTests.test_matching_completed_run_identity_is_required) ... ok
+test_new_versions_require_a_transaction_and_old_snapshots_remain_readable (test_validation_harness.OutputTransactionTests.test_new_versions_require_a_transaction_and_old_snapshots_remain_readable) ... ok
+test_non_mapping_stats_are_rejected_cleanly (test_validation_harness.OutputTransactionTests.test_non_mapping_stats_are_rejected_cleanly) ... ok
+test_receipt_set_must_match_current_stats_exactly (test_validation_harness.OutputTransactionTests.test_receipt_set_must_match_current_stats_exactly) ... ok
+test_successful_output_path_must_belong_to_its_sample_and_gene (test_validation_harness.OutputTransactionTests.test_successful_output_path_must_belong_to_its_sample_and_gene) ... ok
+test_symlinks_are_not_owned_output_files (test_validation_harness.OutputTransactionTests.test_symlinks_are_not_owned_output_files) ... ok
+test_transaction_change_during_product_reading_is_rejected (test_validation_harness.OutputTransactionTests.test_transaction_change_during_product_reading_is_rejected) ... ok
+test_performance_table_keeps_distinct_record_and_memory_metrics (test_validation_harness.PerformanceReportTests.test_performance_table_keeps_distinct_record_and_memory_metrics) ... ok
+test_reference_table_keeps_relationship_regions_gaps_and_truth_limits (test_validation_harness.ReferenceReportTests.test_reference_table_keeps_relationship_regions_gaps_and_truth_limits) ... ok
+test_failed_and_filtered_genes_are_distinct (test_validation_harness.ResultStatusTests.test_failed_and_filtered_genes_are_distinct) ... ok
+test_result_records_excluded_reference_provenance_without_claiming_support (test_validation_harness.ResultStatusTests.test_result_records_excluded_reference_provenance_without_claiming_support) ... ok
+
+----------------------------------------------------------------------
+Ran 213 tests in 4.755s
+
+OK
+{"output": "/tmp/tmpc1lluflx/result.json", "recruited_records": 1}
+  18S_2 product ?: gene_supported_expected_taxon
+  ITS_2 product 0: failed_run
+  [local] running sharkmer for A @ 1k reads...
+  completed in 0.0s, 0 genes amplified
+  [local] running sharkmer for A @ 1k reads...
+  completed in 0.0s, 1 genes amplified
+  [local] running sharkmer for A @ 1k reads...
+  completed in 0.0s, 1 genes amplified
+  [local] running sharkmer for A @ 1k reads...
+  completed in 0.0s, 0 genes amplified
+  [local] running sharkmer for A @ 1k reads...
+  completed in 0.0s, 0 genes amplified
+  [local] running sharkmer for A @ 1k reads...
+  completed in 0.0s, 1 genes amplified
+  target product 0: gene_supported_expected_taxon
+  target product 1: wrong_gene
+  target product 0: no_verified_reference
+  [local] running sharkmer for sample @ 0k reads...
+  ERROR: sharkmer failed (0.0s)
+  stderr tail: useful stderr
+  [ena] running sharkmer for remote-sample @ 0k reads...
+  ERROR: sharkmer output manifest invalid: Stats manifest lacks actual input-source provenance
+  [local] running sharkmer for sample @ 0k reads...
+  ERROR: sharkmer output manifest invalid: Current-run stats manifest is missing or not a regular file: /tmp/tmp6h3_n0gy/runs/panel_sample_0k_c92fcc83a9dd/panel_sample_0k.stats.yaml
+Building sharkmer (release)...
+Results written to: /tmp/tmp1m7om50p/panel_1_3.2.0_20260908_162116_000000_87a565a3.yaml
+Results written to: /tmp/tmp1m7om50p/panel_1_3.2.0_20260908_162116_000000_bfce3efd.yaml
+
+== references ==
++ /nfs/roberts/project/pi_cwd7/cwd7/ycrc_conda/envs/sharkmer-bench/bin/python3 scripts/audit_panel_references.py --verify-existing
+{"excluded_references": 0, "failure_count": 0, "panel_count": 10, "panels": [{"catalog_status": "verified_local_snapshot", "excluded": [], "excluded_count": 0, "panel_kind": "built_in", "panel_path": "panels/angiospermae.yaml", "total_count": 21, "verified_count": 21}, {"catalog_status": "verified_local_snapshot", "excluded": [], "excluded_count": 0, "panel_kind": "built_in", "panel_path": "panels/bacteria.yaml", "total_count": 0, "verified_count": 0}, {"catalog_status": "verified_local_snapshot", "excluded": [], "excluded_count": 0, "panel_kind": "built_in", "panel_path": "panels/c_elegans.yaml", "total_count": 15, "verified_count": 15}, {"catalog_status": "verified_local_snapshot", "excluded": [], "excluded_count": 0, "panel_kind": "built_in", "panel_path": "panels/cnidaria.yaml", "total_count": 30, "verified_count": 30}, {"catalog_status": "verified_local_snapshot", "excluded": [], "excluded_count": 0, "panel_kind": "built_in", "panel_path": "panels/human.yaml", "total_count": 9, "verified_count": 9}, {"catalog_status": "verified_local_snapshot", "excluded": [], "excluded_count": 0, "panel_kind": "built_in", "panel_path": "panels/hydrozoa.yaml", "total_count": 29, "verified_count": 29}, {"catalog_status": "verified_local_snapshot", "excluded": [], "excluded_count": 0, "panel_kind": "built_in", "panel_path": "panels/insecta.yaml", "total_count": 42, "verified_count": 42}, {"catalog_status": "verified_local_snapshot", "excluded": [], "excluded_count": 0, "panel_kind": "built_in", "panel_path": "panels/metazoa.yaml", "total_count": 0, "verified_count": 0}, {"catalog_status": "verified_local_snapshot", "excluded": [], "excluded_count": 0, "panel_kind": "built_in", "panel_path": "panels/teleostei.yaml", "total_count": 11, "verified_count": 11}, {"catalog_status": "verified_local_snapshot", "excluded": [], "excluded_count": 0, "panel_kind": "example", "panel_path": "panels/examples/reference.yaml", "total_count": 1, "verified_count": 1}], "total_references": 158, "verified_references": 158}
+
+== panels ==
++ cargo build --release --bin sharkmer --message-format=json --locked --offline
+    Finished `release` profile [optimized] target(s) in 0.56s
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer --export-panel angiospermae
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/angiospermae-0 --dry-run --pcr-panel-file /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/angiospermae.yaml /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/angiospermae-1 --dry-run --pcr-panel angiospermae /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer --export-panel bacteria
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/bacteria-0 --dry-run --pcr-panel-file /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/bacteria.yaml /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/bacteria-1 --dry-run --pcr-panel bacteria /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer --export-panel c_elegans
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/c_elegans-0 --dry-run --pcr-panel-file /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/c_elegans.yaml /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/c_elegans-1 --dry-run --pcr-panel c_elegans /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer --export-panel cnidaria
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/cnidaria-0 --dry-run --pcr-panel-file /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/cnidaria.yaml /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/cnidaria-1 --dry-run --pcr-panel cnidaria /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer --export-panel human
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/human-0 --dry-run --pcr-panel-file /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/human.yaml /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/human-1 --dry-run --pcr-panel human /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer --export-panel hydrozoa
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/hydrozoa-0 --dry-run --pcr-panel-file /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/hydrozoa.yaml /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/hydrozoa-1 --dry-run --pcr-panel hydrozoa /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer --export-panel insecta
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/insecta-0 --dry-run --pcr-panel-file /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/insecta.yaml /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/insecta-1 --dry-run --pcr-panel insecta /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer --export-panel metazoa
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/metazoa-0 --dry-run --pcr-panel-file /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/metazoa.yaml /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/metazoa-1 --dry-run --pcr-panel metazoa /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer --export-panel teleostei
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/teleostei-0 --dry-run --pcr-panel-file /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/teleostei.yaml /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/teleostei-1 --dry-run --pcr-panel teleostei /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 19 -t 2 --chunks 0 -s schema_probe -o /tmp/sharkmer-panels-ejkcob9t/reference-0 --dry-run --pcr-panel-file /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/panels/examples/reference.yaml /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+Panels passed: 10 schemas, 9 embedded exports, 19 loader dry runs
+
+== fixtures ==
++ /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer -k 31 -t 2 --chunks 0 -s fixture -o /tmp/sharkmer-fixture-51v41vqk --pcr-panel cnidaria /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tests/fixtures/ERR571460_100k_R1.fastq.gz
+Fixture passed: complete ordinary 18S and 28S_2 sequence hashes; Rust tests cover the counting oracle
+
+Release checks passed: metadata, fmt, clippy, rust, python, references, panels, fixtures
+2026-11-09T07:55:50-05:00
+2e185f445a171d6a030330725cd61e8d7b6874399a12eb8237914d101857d04b  Cargo.toml
+9568713ff6db97d9a52afbffdd049595ab4e85e6c3be6dbfb986b0070688d620  Cargo.lock
+b80b4ada711e355fa141cf4c8291489276b146f4b12fcdc32e5998bd3f6c50fc  scripts/release_check.py
+cf4d8f4edf28fddd06e064d6c8d77a8450189a2710c159e584d0a34ebe59652d  /nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer
