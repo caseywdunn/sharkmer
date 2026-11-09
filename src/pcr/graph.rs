@@ -449,11 +449,11 @@ pub(super) fn extend_graph(
                 ExtDir::Forward => (sub_kmer << 2) | base,
                 ExtDir::Reverse => (base << prefix_shift) | sub_kmer,
             };
-            if let Some(count) = kmer_counts.get_canonical(&kmer) {
-                if count >= *min_count {
-                    candidate_kmers[n_candidates] = Some(kmer);
-                    n_candidates += 1;
-                }
+            if let Some(count) = kmer_counts.get_canonical(&kmer)
+                && count >= *min_count
+            {
+                candidate_kmers[n_candidates] = Some(kmer);
+                n_candidates += 1;
             }
         }
 

@@ -1,0 +1,155 @@
+{
+  "schema_version": 1,
+  "captured_at_utc": "2026-11-09T12:58:38.447719+00:00",
+  "release_version": "3.2.0",
+  "base_git_commit": "95f5390535690f0a9add083f48a5077590096e40",
+  "working_tree_snapshot": true,
+  "production_changes_from_base": [
+    "Cargo.lock",
+    "Cargo.toml",
+    "src/pcr/graph.rs"
+  ],
+  "source_hash_scope": [
+    "src",
+    "panels",
+    "schemas",
+    "tests",
+    "scripts",
+    "Cargo.toml",
+    "Cargo.lock",
+    "build.rs",
+    ".github/workflows",
+    "meta.yaml"
+  ],
+  "source_file_count": 80,
+  "source_snapshot_timing": "after final completed job; Cargo.toml, Cargo.lock and runner hashes also appear before/after successful jobs",
+  "release_check_groups": [
+    "metadata",
+    "fmt",
+    "clippy",
+    "rust",
+    "python",
+    "references",
+    "panels",
+    "fixtures"
+  ],
+  "rust_tests_per_backend": 283,
+  "python_tests": 213,
+  "python_skips": 0,
+  "verified_public_references": 158,
+  "schemas_checked": 10,
+  "embedded_exports": 9,
+  "loader_dry_runs": 19,
+  "baseline_binary_sha256": "7ef94fedafec49300146c0acf52086915fa78a82a8786dc11413e399a339dd9a",
+  "stable_binary_sha256": "cf4d8f4edf28fddd06e064d6c8d77a8450189a2710c159e584d0a34ebe59652d",
+  "binary_path_at_execution": "/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/sequence-retention-20261001/target/release/sharkmer",
+  "runner_sha256": "b80b4ada711e355fa141cf4c8291489276b146f4b12fcdc32e5998bd3f6c50fc",
+  "graph_sha256": "1c50c4659d776d50eec497bd49505806dbed9639f66eb1d1e94dae1126839fcf",
+  "rustc": "1.98.1 (48a229cea 2026-09-01)",
+  "python": "3.14.3",
+  "declared_msrv": "1.88",
+  "msrv_toolchain_tested_here": false,
+  "jobs": [
+    {
+      "job_id": 32654564,
+      "version": "3.2.0-dev",
+      "outcome": "passed",
+      "receipt": [
+        {
+          "JobID": "32654564",
+          "JobName": "sharkmer-release",
+          "State": "COMPLETED",
+          "ExitCode": "0:0",
+          "Elapsed": "00:01:37",
+          "AllocCPUS": "2",
+          "ReqMem": "16G",
+          "MaxRSS": "",
+          "Start": "2026-11-09T06:48:54",
+          "End": "2026-11-09T06:50:31"
+        },
+        {
+          "JobID": "32654564.batch",
+          "JobName": "batch",
+          "State": "COMPLETED",
+          "ExitCode": "0:0",
+          "Elapsed": "00:01:37",
+          "AllocCPUS": "2",
+          "ReqMem": "",
+          "MaxRSS": "1534548K",
+          "Start": "2026-11-09T06:48:54",
+          "End": "2026-11-09T06:50:31"
+        }
+      ],
+      "log": "logs/slurm-32654564.out",
+      "log_sha256": "8cc8443ffb41c322805a076a60c44d703ca32be1b349dd527b8c62bc318f9ad7"
+    },
+    {
+      "job_id": 32657614,
+      "version": "3.2.0",
+      "outcome": "failed_clippy_collapsible_if",
+      "receipt": [
+        {
+          "JobID": "32657614",
+          "JobName": "sharkmer-release",
+          "State": "FAILED",
+          "ExitCode": "1:0",
+          "Elapsed": "00:00:08",
+          "AllocCPUS": "2",
+          "ReqMem": "16G",
+          "MaxRSS": "",
+          "Start": "2026-11-09T07:35:15",
+          "End": "2026-11-09T07:35:23"
+        },
+        {
+          "JobID": "32657614.batch",
+          "JobName": "batch",
+          "State": "FAILED",
+          "ExitCode": "1:0",
+          "Elapsed": "00:00:08",
+          "AllocCPUS": "2",
+          "ReqMem": "",
+          "MaxRSS": "870120K",
+          "Start": "2026-11-09T07:35:15",
+          "End": "2026-11-09T07:35:23"
+        }
+      ],
+      "log": "logs/slurm-32657614.out",
+      "log_sha256": "5dbad3eba5dc14f60b56b0096ce4886599b548e22ebb9afe8116952864249af8"
+    },
+    {
+      "job_id": 32659082,
+      "version": "3.2.0",
+      "outcome": "passed",
+      "receipt": [
+        {
+          "JobID": "32659082",
+          "JobName": "sharkmer-release",
+          "State": "COMPLETED",
+          "ExitCode": "0:0",
+          "Elapsed": "00:01:33",
+          "AllocCPUS": "2",
+          "ReqMem": "16G",
+          "MaxRSS": "",
+          "Start": "2026-11-09T07:54:17",
+          "End": "2026-11-09T07:55:50"
+        },
+        {
+          "JobID": "32659082.batch",
+          "JobName": "batch",
+          "State": "COMPLETED",
+          "ExitCode": "0:0",
+          "Elapsed": "00:01:33",
+          "AllocCPUS": "2",
+          "ReqMem": "",
+          "MaxRSS": "897796K",
+          "Start": "2026-11-09T07:54:17",
+          "End": "2026-11-09T07:55:50"
+        }
+      ],
+      "log": "logs/slurm-32659082.out",
+      "log_sha256": "f4fe1f823ea0b1d0d78fa14668b9854fef620ddaea961311eac6224215f4f058"
+    }
+  ],
+  "biological_campaign_rerun": false,
+  "package_and_publication_status": "pending"
+}

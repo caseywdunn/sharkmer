@@ -5,7 +5,7 @@ and deferred v4.0 interface cleanup are tracked in [#159](https://github.com/cas
 and [the implementation plan below](#sequence-annotation-revision-159).
 Assembly, search, retention, and sequence delivery are unchanged by this revision.
 
-**Updated 2026-11-08; release assessment is owned by the user and coding agent.**
+**Updated 2026-11-09; release assessment is owned by the user and coding agent.**
 The user has removed the requirement for collaborator review. We assess the
 evidence here, and the user makes the final release decision. See the
 [current release gates](#release-gate) and [HANDOFF.md](HANDOFF.md).
@@ -14,7 +14,9 @@ nine-panel biological campaign from v3.2. These remain unfinished follow-up
 work before further assembly tuning or broad accuracy claims. The
 [focused final check](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
 passes all 32 invocations and independently verifies the saved sequence
-inventory and four matched performance comparisons.
+inventory and four matched performance comparisons. The user explicitly
+authorized the release ritual on 2026-11-08. The [stable-version release checks](../benchmarks/benchmark_results/v3.2-release-20261109/README.md)
+pass all eight groups on 2026-11-09; packaging and publication remain in progress.
 Dated checkpoints below preserve their original code and validation scope.
 
 Status: inclusive delivery, [sequence-first retention](SEQUENCE_RETENTION_RESULTS.md),
@@ -48,7 +50,8 @@ The October validation passed all 11 gates
 after minimal rand/webpki dependency updates. The November annotation revision
 passes all eight local gates and merged CI; see [its verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md).
 The focused final-build check and technical release assessment are complete.
-Explicit authorization to publish the release remains separate.
+The user explicitly authorized publication through the release ritual on
+2026-11-08; the packaging and publication gate below remains pending.
 The two broader biological studies are deferred from this release by the
 2026-11-08 user decision, not marked passed. No outside reviewer is required.
 See [BENCHMARK_v3.2_vs_v3.1.md](BENCHMARK_v3.2_vs_v3.1.md)
@@ -153,7 +156,7 @@ released ordinary-header fields and sequence identifiers. The agreed causes
 are `homopolymer_length_unresolved`, `repeat_structure_unresolved`, and
 `high_coverage_repeat_suspected`. [#159](https://github.com/caseywdunn/sharkmer/issues/159)
 remains open for the v4.0 breaking interface cleanup even after this subset
-is complete. No release is authorized.
+is complete. The user authorized the release ritual on 2026-11-08.
 
 1. Apply the agreed cause vocabulary to the unreleased warning annotations.
 2. Version the new output contract while preserving interpretation of older outputs.
@@ -205,7 +208,7 @@ stats or identifiers are deferred to v4.0; #159 remains open for that work.
   - [x] Reclassify 60 immutable saved invocations against provenance-verified public regions after the full reference audit: both versions retain the same 30 gene-supported product identities. The seven known high-copy losses remain unresolved with limited references; even retained CO1 fails the query-coverage gate against a short 304 bp region. Four fresh k19/k31 before/after smoke runs preserve all counts and sequences. Independent Astra artifact review approved; no new timing or biological-truth claim, and no repeat-gate changes. See [the variation-aware assessment](REFERENCE_PROVENANCE.md#reclassification-and-unchanged-assembly-checks).
   - [x] Repeat saved-output assessment after independent public replacements and scoped gene-index handling: the same 51 gene-supported identities in each version (38 expected-taxon, 13 other-taxon), including retained Gryllus CO1. Seven high-copy losses remain unresolved, with partial CO1/ND1 support; no evidence that all losses were wrong sequences. This is better evaluation coverage, not new assembly recovery or timing. See [the expanded-reference assessment](PUBLIC_REFERENCE_REPLACEMENTS.md#reassessment-of-saved-products).
   - [x] Complete the [preregistered read-backed audit](READ_BACKED_AUDIT_PROTOCOL.md): six unchanged-assay replication commands pass with frozen sources and exact consumed R1 prefixes. Retained Gryllus CO1 has 27 exact / 28 sensitivity bridge records over 15 footprints; the lost 373 bp structure has zero. ITS/ND1 have substantial marginal read evidence but unlocalized graph intervals; Drosophila losses have no qualifying diagnostic windows and unresolved longer structural intervals. These are not seven proven incorrect products or full-haplotype truth. See [the read-backed findings](READ_BACKED_AUDIT_RESULTS.md); no assembly gate or performance claim changes.
-  - [x] Verify the seven historical high-copy identities under the user-approved inclusive warning policy: all seven are emitted with warnings in the final check. This does not restore unsupported confidence or prove their biological correctness. Further read-supported reconstruction remains under #148 with #145/#116 prerequisites; it is separate from v3.2 sequence delivery. The broader #129 studies are explicitly deferred; release authorization remains separate.
+  - [x] Verify the seven historical high-copy identities under the user-approved inclusive warning policy: all seven are emitted with warnings in the final check. This does not restore unsupported confidence or prove their biological correctness. Further read-supported reconstruction remains under #148 with #145/#116 prerequisites; it is separate from v3.2 sequence delivery. The broader #129 studies are explicitly deferred; the user authorized the release ritual on 2026-11-08.
   - [x] Implement the user-approved diagnostic-only slice of #148: hidden opt-in bounded retention of actual withheld sequences and marker positions, without changing gates or FASTA recovery. Sol implementation and Astra review pass; all [twelve preregistered compatibility/localization runs](WITHHELD_PATH_DIAGNOSTICS_RESULTS.md) preserve products, counts, and existing gene/threshold diagnostics. Five of seven historical losses are exactly localized; two Drosophila 12S identities remain unobserved under retention/search bounds. Gryllus ITS is a priority for complete SCC-interval/read-evidence analysis, not an authorized gate exception. This does not implement read-backed reconstruction or close #148/#153.
   - [x] Complete the user-approved [Gryllus ITS SCC/read audit](ITS_SCC_AUDIT_PROTOCOL.md): scratch pre/post graphs preserve production outputs and retain both relevant cyclic components. Both historical local traversals and both read-length extra-cycle alternatives have zero exact/one-substitution Q20 bridges; an independent exact recount also finds zero before quality filtering. Retained CO1 reproduces 27/28 records. [Findings](ITS_SCC_AUDIT_RESULTS.md) do not establish incorrectness or justify relaxing gates. A separately frozen variation-aware read-recruitment diagnostic is the next investigation, not an admission exception; #148/#153/#129 and release review remain open.
   - [x] Complete the [frozen variation-aware recruitment diagnostic](ITS_READ_RECRUITMENT_PROTOCOL.md) on an isolated branch from `956e771`: 27/28 ITS1/ITS2 recruited records, one low-quality ITS1 extra-cycle alignment, and two Q20 ITS2 extra-cycle alignments whose complete read sequences/placements are identical. The latter are one observed sequence pattern with tied indel tracebacks; one Q20 span also excludes a low-quality endpoint through a terminal deletion. Both historical classes remain unobserved. Original CO1 controls reproduce 27/28 retained and zero lost records. [Findings](ITS_READ_RECRUITMENT_RESULTS.md) do not justify gate relaxation or full-product claims. Standalone diagnostic only; actual production threading/reconstruction remains a separate proposal and comparison, and #148/#153/#129 stay open.
@@ -248,9 +251,10 @@ Metagenomic diversity and single-copy nuclear recovery regressions are deferred
 to v4.1/v4.2 and are not additional v3.2 release blockers. This does not waive
 the independent held-out registration or all-panel biological-validation gates.
 
-The development package is `3.2.0-dev`, not a published release. Stop before
-merging to `master`, tagging, or publishing. Independent held-out registration
-under #129 remains open; calibration results do not close that gate.
+At this checkpoint the package was `3.2.0-dev`; merging to `master`, tagging,
+and publication were not authorized. The 2026-11-08 release instruction
+supersedes that hold. Independent held-out registration under #129 remains
+open; calibration results do not complete the deferred biological work.
 
 Earlier implementation checkpoint: `03c0fc6`. Both hash backends pass 213 unit and 22
 integration tests, with 39 Python regressions. All 13 historical samples at a
@@ -295,24 +299,26 @@ agent assess the evidence here. The user makes acceptance and release decisions;
 no external collaborator review is required. The user subsequently approved
 deferring the two broad biological studies from v3.2 and proceeding with the
 focused final-build check. Deferral is a release-scope decision, not a passing
-biological result.
+biological result. After the focused check and review, the user explicitly
+authorized the release ritual on 2026-11-08.
 
 | Gate | Type and current status | Required evidence or decision |
 | --- | --- | --- |
-| Engineering and interface verification | Agent-checkable: **met 2026-11-08** for `7dd8e7f`. | [Local checks](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md) and [merged CI](https://github.com/caseywdunn/sharkmer/actions/runs/42512601101) pass. Reproduced correctness failures have regressions; CLI, annotations, stats, failure reasons, cache ownership, and rerun behavior agree with the executable. Recheck relevant gates if code changes. |
-| Release-baseline recovery and performance review | **Met 2026-11-08** under the user-approved focused scope; measured costs recommended for release acceptance. | [All 32 runs and independent review pass](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md): exact inventories, all 86 historical identities, expected warnings, and separate corrected-plant checks. The three longer runtime deltas are 0.21–1.45%; Human is +0.04 s. All four median RSS deltas are below 0.15%. The technical assessment accepts these scoped costs; final user release authorization remains below. |
+| Engineering and interface verification | Agent-checkable: **met 2026-11-09** for the `3.2.0` working-tree candidate. | [Release checks](../benchmarks/benchmark_results/v3.2-release-20261109/README.md) pass all eight groups: 283 Rust tests per backend, 213 Python tests without skips, formatting/Clippy, 158 references, panel/export/loader checks, and fixture oracles. The unchanged development baseline also passes; the stable candidate changes package metadata and one equivalent nested-`if` spelling. Earlier [merged CI](https://github.com/caseywdunn/sharkmer/actions/runs/42512601101) passes; release-commit/tag CI remains part of publication verification. |
+| Release-baseline recovery and performance review | **Met 2026-11-08** under the user-approved focused scope; measured costs recommended for release acceptance. | [All 32 runs and independent review pass](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md): exact inventories, all 86 historical identities, expected warnings, and separate corrected-plant checks. The three longer runtime deltas are 0.21–1.45%; Human is +0.04 s. All four median RSS deltas are below 0.15%. The technical assessment accepts these scoped costs; the user has authorized the release ritual. |
 | Independent held-out biological data | **Deferred from v3.2 by the user, 2026-11-08; not completed.** | Register inputs not used to develop/tune the method, checksums/subsets, callable targets, independent truth, and tolerances under #129 before further assembly-policy tuning or broad accuracy claims. Historical samples and synthetic regression fixtures do not satisfy this criterion. |
 | Biological validation across all nine panels | **Deferred from v3.2 by the user, 2026-11-08; not completed.** | Retain a bounded evaluation of every emitted product, negative controls, gene identity, and whole-product alignment coverage as follow-up before further assembly tuning or broad accuracy claims. Schema, export, and loader checks do not establish this biological coverage. Preserve unavailable truth and unassessed outcomes explicitly. |
-| Release authorization | User decision: **not met**. | Record the user's decision to release after the gates are met or an explicit user-approved scope change/deferral is documented with its limitations. A scope change is not a passing biological result. Then follow the release procedure. |
+| Release authorization | User decision: **met 2026-11-08**. | The user explicitly instructed the agent to proceed with the release ritual after accepting the scoped assessment and deferring the two broader biological studies. Publication is authorized; no further release confirmation is required. |
+| Final packaging checks and publication | Agent-checkable: **pending**. | Complete the release procedure, record checks against the release version, and verify the merge, tag, release assets, and package publication state. User authorization does not stand in for these checks. |
 
 The focused check and technical performance disposition under #153 are complete. The
 [frozen comparison protocol](../benchmarks/benchmark_results/v3.2-final-check-20261108/README.md)
 defines the 32 invocations, source/input bindings, and review thresholds.
 No unexpected sequence changes occurred, and the measured costs are acceptable
-for the scoped release. The next step is the user's release decision and the
-release procedure. The
-broader biological work remains open under #129; v3.2 makes no general precision,
-recall, or repeat-correctness claim from the additional warning-bearing records.
+for the scoped release. The user has authorized the release ritual; final
+packaging checks and publication are in progress. The broader biological work
+remains open under #129; v3.2 makes no general precision, recall, or
+repeat-correctness claim from the additional warning-bearing records.
 
 ## v4.0 — Scalable exact counting and replay
 
