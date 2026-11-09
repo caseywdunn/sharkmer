@@ -1,0 +1,32 @@
+diff --git a/Cargo.lock b/Cargo.lock
+index 13e292f..48376a8 100644
+--- a/Cargo.lock
++++ b/Cargo.lock
+@@ -1476 +1476 @@ name = "sharkmer"
+-version = "3.2.0-dev"
++version = "3.2.0"
+diff --git a/Cargo.toml b/Cargo.toml
+index 6b1473f..c374ec3 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -3 +3 @@ name = "sharkmer"
+-version = "3.2.0-dev"
++version = "3.2.0"
+@@ -7 +7 @@ edition = "2024"
+-rust-version = "1.85"
++rust-version = "1.88"
+diff --git a/src/pcr/graph.rs b/src/pcr/graph.rs
+index e66d903..1049338 100644
+--- a/src/pcr/graph.rs
++++ b/src/pcr/graph.rs
+@@ -452,5 +452,5 @@ pub(super) fn extend_graph(
+-            if let Some(count) = kmer_counts.get_canonical(&kmer) {
+-                if count >= *min_count {
+-                    candidate_kmers[n_candidates] = Some(kmer);
+-                    n_candidates += 1;
+-                }
++            if let Some(count) = kmer_counts.get_canonical(&kmer)
++                && count >= *min_count
++            {
++                candidate_kmers[n_candidates] = Some(kmer);
++                n_candidates += 1;

@@ -176,7 +176,7 @@ record. `n_kmers` counts accepted kmer occurrences, not distinct kmer keys.
 `peak_memory_bytes` is the allocator heap peak; process RSS is measured
 separately by the benchmark harness when available.
 
-The unreleased v3.2 development version also writes `{sample}.manifest.yaml`.
+Sharkmer also writes `{sample}.manifest.yaml`.
 Only a manifest with `status: complete`, a matching stats `run_id`, and valid
 SHA-256 receipts identifies a completed current run. A completed run can still
 report failed genes. Do not infer success by globbing FASTA files after an
@@ -195,8 +195,8 @@ previous results untouched; always check the command's exit status.
 
 Reads downloaded via `--ena` are cached (SHA-256 verified) under a shared cache directory so repeated runs on the same accession do not re-download. Use `--cache-dir` to override the location, `--no-cache` to stream directly without touching the cache, or `--clear-cache` to remove verified cached reads.
 
-In the v3.2 development version, cooperating processes sharing a cache are
-serialized for the lifetime of a run, including read-threading replay.
+Cooperating processes sharing a cache are serialized for the lifetime of a run,
+including read-threading replay.
 `--clear-cache` waits for that lease and removes only verified data/metadata
 pairs. It preserves the cache directory, `.sharkmer-cache.lock`, unrelated
 files, subdirectories, symlinks, and entries with ambiguous ownership or
@@ -292,8 +292,9 @@ Keep in mind that a reported product requires an assembled kmer path meeting the
 
 ### Repeat-length uncertainty
 
-The unreleased v3.2 development version attaches assembly warnings to bounded
-candidate sequences that cross unresolved homopolymer or tandem-repeat regions.
+Sharkmer attaches assembly warnings to bounded candidate sequences with
+unresolved homopolymer length, unresolved repeat structure, or suspected
+high-coverage repeats.
 They are included in the normal FASTA by default and remain excluded from
 standard admission and validation.
 A shortened repeat-containing hypothesis is not a resolved complete amplicon.

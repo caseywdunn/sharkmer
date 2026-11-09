@@ -1,10 +1,10 @@
 [package]
 name = "sharkmer"
-version = "3.2.0-dev"
+version = "3.2.0"
 authors = ["Casey Dunn <casey.dunn@yale.edu>"]
 description = "In silico PCR (sPCR) and incremental kmer counting from whole-genome shotgun reads"
 edition = "2024"
-rust-version = "1.85"
+rust-version = "1.88"
 license = "MIT"
 repository = "https://github.com/caseywdunn/sharkmer"
 

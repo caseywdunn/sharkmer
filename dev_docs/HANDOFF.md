@@ -1,22 +1,35 @@
 # Pause/resume handoff
 
-Updated 2026-11-08. **The user and coding agent assess release readiness here;
+Updated 2026-11-09. **The user and coding agent assess release readiness here;
 no external collaborator review is required.** This user decision supersedes
 the October collaborator-performance prerequisite. The user subsequently
 approved deferring the new held-out dataset and full nine-panel biological
 campaign from v3.2, keeping them before further assembly tuning or broad
 accuracy claims. They are deferred, not passed. The approved focused final-build
 check is complete and independently verified; the scoped technical assessment
-supports release. Explicit user authorization to publish remains separate.
+supports release. The user explicitly authorized the release ritual on
+2026-11-08. Final packaging checks and publication are in progress.
 [PLAN.md](PLAN.md#release-gate) holds the current criteria.
 
+The [2026-11-09 release-check bundle](../benchmarks/benchmark_results/v3.2-release-20261109/README.md)
+records passing unchanged-development and stable-version checks. Stable job
+32659082 passes all eight groups with 283 Rust tests per backend, 213 Python
+tests without skips, 158 references, panel/export/loader checks, and fixture
+oracles. Job 32657614 stopped only at a Clippy suggestion enabled by the corrected
+Rust minimum; the stable rerun uses an equivalent combined `if` condition.
+All three logs and source/tool receipts are retained. This is engineering
+verification, not a rerun of the broader biological comparison. Packaging,
+release-commit/tag CI, and publication remain pending.
+
 The reviewed candidate and warning-header revision are integrated into **`dev`**
-at `7dd8e7f`. Record `git rev-parse HEAD` with any further evaluation results.
+at `7dd8e7f`; the final-check evidence is merged at `95f5390`. Record
+`git rev-parse HEAD` with any further evaluation results.
 The [annotation verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
 passes 283 Rust tests per backend, 213 Python tests, formatting/Clippy,
 158 references, and four baseline/candidate mode comparisons. All five
 [merged-commit CI checks](https://github.com/caseywdunn/sharkmer/actions/runs/42512601101)
-pass. No release was initiated. The October tested source originated on
+pass. Release preparation is now authorized and in progress. The October
+tested source originated on
 `experiment/sequence-first-retention`, base `1ea21c9`; its earlier freezes and
 completion receipts describe that pre-integration state.
 
@@ -54,8 +67,9 @@ confirms results and unchanged source bindings.
 Start with [the current decision ownership](REVIEW_v3.2.md#decision-ownership-2026-11-08)
 and [remaining acceptance boundaries](REVIEW_v3.2.md#remaining-acceptance-boundaries).
 The focused check is complete; no unexpected sequence changes occurred, and
-the independent review supports accepting the measured costs. The next step
-is the user's release decision and normal release preparation/publication.
+the independent review supports accepting the measured costs. The user has
+authorized normal release preparation and publication; complete and record the
+final packaging checks before publishing.
 Held-out registration
 means fixing independent biological inputs/truth unused in development; all-panel
 validation means evaluating actual products and negative controls across nine

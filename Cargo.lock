@@ -1473,7 +1473,7 @@ dependencies = [
 
 [[package]]
 name = "sharkmer"
-version = "3.2.0-dev"
+version = "3.2.0"
 dependencies = [
  "ahash",
  "anyhow",

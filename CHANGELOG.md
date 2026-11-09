@@ -5,25 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.2.0] - 2026-11-09
 
-Development target: **3.2.0**. This is not a release. Inclusive uncertainty
-output and sequence-first retention are integrated into `dev`. Under the frozen
-historical panels, it retains all 86 scoped v3.1 sequences and emits 240 additional
-uncertain hypotheses (64 standard + 262 uncertain total). Sequence availability
-is separate from biological validation. The plant panel correction below
-changes one assay and is evaluated separately. Performance acceptance and
-release approval are decisions made here by the user with agent analysis;
-external collaborator review is not required (#153). The user approved deferring
-the new held-out dataset and full nine-panel biological campaign from v3.2;
-they remain unfinished work before further assembly tuning or broad accuracy
-claims (#129). The focused final-build check passes all 32 invocations: all
-86 historical identities remain available, and matched runtime increases are
-0.21–1.45% on the three longer workloads and 0.04 s on Human, with median RSS
-changes below 0.15%. The scoped technical assessment supports release (#153). See
-`dev_docs/REVIEW_v3.2.md` and `dev_docs/SEQUENCE_RETENTION_RESULTS.md`.
-Incremental k-mer counting remains supported. Faster bounded-memory counting
-and new nuclear/metagenomic inference policies belong to later releases.
+Sharkmer 3.2 includes bounded repeat-uncertain hypotheses in the normal FASTA
+output, with readable warnings and an option to exclude them. Ordinary headers
+omit warning fields. Recovery, repeat handling, cache ownership, and interrupted
+output handling are corrected; the `angiospermae` panel also receives an assay
+correction with changed sequence boundaries.
+
+The scoped historical-panel comparison retains all 86 v3.1 sequence identities;
+22 now carry warnings. Additional records are hypotheses, not validated loci or
+haplotypes. Independent held-out data and biological validation across all nine
+panels remain future work, so these results do not establish general precision,
+recall, or repeat correctness. The focused performance comparison finds runtime
+increases of 0.21–1.45% on three longer workloads and 0.04 s on Human, with median
+RSS changes below 0.15%. See [the review](dev_docs/REVIEW_v3.2.md) and
+[sequence-retention results](dev_docs/SEQUENCE_RETENTION_RESULTS.md).
 
 ### Added
 
@@ -57,6 +54,8 @@ and new nuclear/metagenomic inference policies belong to later releases.
 
 ### Fixed
 
+- Correct the declared minimum Rust version to 1.88, matching the let-chain
+  syntax already used by the source (#164).
 - Update locked `rand` to 0.8.6 and `rustls-webpki` to 0.103.13 for the four
   reviewed dependency alerts; require at least rand 0.8.6 in the manifest.
 - Correct the `angiospermae` `trnV-atpE` reverse primer from atpB S1022 to
@@ -65,7 +64,7 @@ and new nuclear/metagenomic inference policies belong to later releases.
   boundaries incompatibly with panel 1.x. This extended marker includes
   the complete atpE gene and ends at the overlapping atpE/atpB boundary;
   it is not a pure intergenic spacer. Other primers and assay limits are
-  unchanged. This development correction is not a release.
+  unchanged.
 - Read every member of concatenated gzip inputs during ingestion, caching,
   and read-threading replay (#130).
 - Retry lower coverage thresholds until a valid in-range amplicon is found,
@@ -92,7 +91,10 @@ and new nuclear/metagenomic inference policies belong to later releases.
 
 ### Changed
 
-- Clarify sequence annotations before the v3.2 release (#159). Warning causes
+- Share local and CI release checks through `scripts/release-check`, including
+  release metadata, both Rust backends, panel loaders, and pinned sequence
+  fixtures; verify tag/version agreement automatically (#164).
+- Clarify sequence annotations (#159). Warning causes
   identify unresolved homopolymer length, unresolved repeat structure, or a
   suspected high-coverage repeat. Omit unevaluated read-support fields and keep
   detailed diagnostic provenance and target-wide limits in stats. Preserve
@@ -387,6 +389,7 @@ details.
 - Bioconda recipe for binary distribution
 - sharkmer_viewer Python tool for histogram visualization
 
+[3.2.0]: https://github.com/caseywdunn/sharkmer/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/caseywdunn/sharkmer/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/caseywdunn/sharkmer/compare/v2.0.0...v3.0.0
 [2.0.0]: https://github.com/caseywdunn/sharkmer/compare/v1.0.1...v2.0.0

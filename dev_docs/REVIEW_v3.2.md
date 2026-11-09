@@ -1,6 +1,7 @@
 # v3.2 pre-release review
 
-Prepared 2026-09-09. **Development work only: awaiting user review, not release approval.**
+Prepared 2026-09-09; status updated 2026-11-09. **Release authorized by the user;
+final packaging checks and publication are in progress.**
 
 ## Decision ownership (2026-11-08)
 
@@ -19,7 +20,9 @@ corrected-panel inventories, 444 raw artifacts, and 141 unchanged source/tool
 bindings. The three longer runtime comparisons increase 0.21–1.45%; Human
 increases 0.04 s, and median RSS changes in all four stay below 0.15%.
 The technical assessment accepts these scoped costs and supports release.
-Final user authorization to publish remains separate.
+The user explicitly authorized the release ritual on 2026-11-08. Final packaging
+checks and publication remain to be completed and recorded; no further release
+confirmation is required.
 
 The warning-header revision is merged into `dev` at `7dd8e7f` via
 [#161](https://github.com/caseywdunn/sharkmer/pull/161). Its
@@ -28,6 +31,24 @@ passes all eight local gates, and [CI on the merged commit](https://github.com/c
 passes Linux/macOS tests, formatting, Clippy, and Python/reference checks.
 The October evidence below retains its original source and assay scope.
 
+## Stable-version engineering checks (2026-11-09)
+
+The [release-check bundle](../benchmarks/benchmark_results/v3.2-release-20261109/README.md) preserves
+all three jobs. Job 32654564 passes all eight groups with the unchanged
+`3.2.0-dev` binary; job 32659082 passes all eight groups on `3.2.0` after an
+equivalent nested-`if` rewrite. The intervening job 32657614 stops at the Clippy
+suggestion exposed by correcting the declared Rust minimum to 1.88. Both
+successful runs pass 283 Rust tests per backend, 213 Python tests without skips,
+158 reference checks, ten schemas, nine exports, 19 loader dry runs, and fixture
+sequence oracles. They run Rust 1.98.1, not the declared minimum toolchain.
+
+The logs bind Cargo metadata and the check runner before/after execution; the
+bundle records production and tooling hashes after the final run. The stable
+binary is `cf4d8f4edf28fddd06e064d6c8d77a8450189a2710c159e584d0a34ebe59652d`.
+Only package metadata and the equivalent guard spelling change from the
+accepted production candidate. This does not rerun or expand the biological
+comparison. Packaging, release-commit/tag CI, and publication remain pending.
+
 ## Current assessment (2026-10-11)
 
 The user authorized the plant assay correction, runtime investigation and
@@ -35,8 +56,9 @@ remaining local validation. The October requirement for collaborator performance
 assessment is superseded by the November decision above. The candidate was prepared on
 `experiment/sequence-first-retention`; the user subsequently authorized committing
 the reviewed work and integrating it into **`dev`** for release assessment.
-Record the exact `dev` commit with evaluation results. No merge to `master`,
-tag, GitHub release or package publication is authorized.
+Record the exact `dev` commit with evaluation results. At that October
+checkpoint, release publication was not authorized; the November release
+decision above supersedes that hold.
 Earlier dated checkpoints below describe their own source versions and scopes.
 
 The [complete historical-panel comparison](SEQUENCE_RETENTION_RESULTS.md#complete-target-comparison-and-six-new-targets-2026-10-10)
@@ -190,7 +212,8 @@ passes; it does not close performance acceptance.
   [results and disposition](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
   preserve every pair and the separate corrected-plant checks. These results
   do not prove statistical equivalence or explain the older timing flags.
-  Final user release authorization remains separate.
+  The user authorized the release ritual on 2026-11-08; final packaging checks
+  and publication remain pending.
 - **Held-out registration: deferred from v3.2 by the user, 2026-11-08.**
   The work is not completed. Register biological inputs and independent
   truth that were not used to develop or tune the assembly rules, with fixed
@@ -461,10 +484,13 @@ patches and local checks. The user and coding agent own the current acceptance
 decisions; the 2026-11-08 user-approved deferral removes held-out registration
 and the full all-panel biological campaign from v3.2 release prerequisites.
 They remain unfinished scientific work. This historical inventory does not
-reinstate those superseded prerequisites or collaborator review.
+reinstate those superseded prerequisites, collaborator review, or the former
+publication hold. The user authorized the release ritual on 2026-11-08.
 
-1. **User review and release authorization.** Do not merge to `master`, tag,
-   create a GitHub release, or publish the Bioconda recipe in this task.
+1. **User review and release authorization (historical hold, now superseded).**
+   Publication was not authorized at this checkpoint. The explicit 2026-11-08
+   release instruction satisfies this decision gate; final packaging checks
+   remain required.
 2. **Independent held-out registration (#129).** No held-out biological inputs
    or truth have been supplied. Freeze accessions, checksums, subsets, callable
    targets, truth, and tolerances before further assembly-policy tuning. Existing

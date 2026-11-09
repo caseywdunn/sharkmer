@@ -1,0 +1,3 @@
+#!/bin/sh
+# Keep local and CI release gates on the same implementation.
+exec "${PYTHON:-python3}" "$(dirname "$0")/release_check.py" "$@"
