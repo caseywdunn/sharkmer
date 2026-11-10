@@ -1,0 +1,112 @@
+[
+  {
+    "accession": "SRR9278435",
+    "panel": "cnidaria",
+    "records": 7,
+    "wall_median_s": 40.98,
+    "wall_range_s": [
+      40.82,
+      41.05
+    ],
+    "rss_median_kib": 4461868
+  },
+  {
+    "accession": "SRR25099394",
+    "panel": "cnidaria",
+    "records": 5,
+    "wall_median_s": 36.45,
+    "wall_range_s": [
+      36.27,
+      37.13
+    ],
+    "rss_median_kib": 4461868
+  },
+  {
+    "accession": "SRR8617500",
+    "panel": "cnidaria",
+    "records": 5,
+    "wall_median_s": 42.86,
+    "wall_range_s": [
+      42.74,
+      43.2
+    ],
+    "rss_median_kib": 4461868
+  },
+  {
+    "accession": "SRR17535371",
+    "panel": "human",
+    "records": 5,
+    "wall_median_s": 0.63,
+    "wall_range_s": [
+      0.59,
+      0.64
+    ],
+    "rss_median_kib": 22620
+  },
+  {
+    "accession": "SRR22396603",
+    "panel": "teleostei",
+    "records": 4,
+    "wall_median_s": 33.41,
+    "wall_range_s": [
+      33.29,
+      33.47
+    ],
+    "rss_median_kib": 4461696
+  },
+  {
+    "accession": "SRR31887760",
+    "panel": "insecta",
+    "records": 36,
+    "wall_median_s": 60.58,
+    "wall_range_s": [
+      60.57,
+      60.59
+    ],
+    "rss_median_kib": 2233892
+  },
+  {
+    "accession": "SRR1057608",
+    "panel": "insecta",
+    "records": 51,
+    "wall_median_s": 42.26,
+    "wall_range_s": [
+      42.17,
+      42.33
+    ],
+    "rss_median_kib": 2233892
+  },
+  {
+    "accession": "SRR27962769",
+    "panel": "insecta",
+    "records": 109,
+    "wall_median_s": 97.05,
+    "wall_range_s": [
+      96.48,
+      97.11
+    ],
+    "rss_median_kib": 4462144
+  },
+  {
+    "accession": "SRR25378184",
+    "panel": "angiospermae",
+    "records": 57,
+    "wall_median_s": 52.93,
+    "wall_range_s": [
+      52.84,
+      52.95
+    ],
+    "rss_median_kib": 4461716
+  },
+  {
+    "accession": "ERR14009273",
+    "panel": "angiospermae",
+    "records": 8,
+    "wall_median_s": 25.14,
+    "wall_range_s": [
+      25.14,
+      25.2
+    ],
+    "rss_median_kib": 2233452
+  }
+]

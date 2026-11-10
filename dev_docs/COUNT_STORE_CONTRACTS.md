@@ -2,7 +2,8 @@
 
 Implementation under [#139](https://github.com/caseywdunn/sharkmer/issues/139).
 This document defines the interfaces required by #140–#145. The current branch
-implements typed identities and positioned rolling extraction; the existing
+implements typed identities and positioned rolling extraction. An exact in-memory
+store candidate and shared-ledger conformance API now pass their focused tests; the existing
 counter, replay vector, and graph consumers are still being migrated. The
 [active plan](PLAN.md) records verification and completion.
 
@@ -132,5 +133,23 @@ snapshots.
   baseline. The broader biological studies remain deferred under #129; this
   interface work does not satisfy or waive those studies.
 
+The `kmer::store` candidate implements exact lookup/iteration, bounded batches,
+non-copying filtered views, checked per-key/total overflow, move finalization,
+and slot-buffer limits including resize peaks. These are owned table-buffer
+measurements, not complete process budgets. The shared `kmer::budget` ledger
+now enforces simultaneous stage reservations plus declared process overhead,
+with separate temporary-disk guards. It uses explicit `reserved_*` names to
+distinguish logical reservations from allocator heap and RSS. The candidate
+store holds reservation guards through allocation, resizing, finalization and
+destruction; actual graph/input/replay producer migration remains open. Production dispatch, global resource
+reservations, persistence, and replay integration remain open. The candidate is
+not selected as the default backend before the
+[frozen performance gates](../benchmarks/benchmark_results/v4-performance-baseline-20261109/README.md)
+are measured.
+
 The [identity/extraction verification](../benchmarks/benchmark_results/v4-identity-contracts-20261109/README.md) establishes the first item. Store/replay and
 budget integration remain open until exercised by their actual implementations.
+
+[Exact-store/ledger verification](../benchmarks/benchmark_results/v4-exact-store-contracts-20261110/README.md)
+records the tested candidate. Production dispatch, persisted corruption/I/O
+checks, and replay/producer integration remain required before closing #139.

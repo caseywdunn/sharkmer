@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Add an exact u64 count-store candidate and read-only conformance interface,
+  including checked overflow, exact membership, bounded batch queries and
+  resize-buffer accounting through a shared memory/temporary-disk reservation
+  ledger. Production counter integration remains in progress
+  (#139).
+
 - Establish typed canonical/oriented k-mer identities and positioned extraction
   for the v4 count-store interfaces, preserving the existing ingestion policy
   and collecting API (#139).

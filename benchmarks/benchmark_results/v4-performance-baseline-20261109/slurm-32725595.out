@@ -1,0 +1,227 @@
+Running "module reset". Resetting modules to system default. The following $MODULEPATH directories have been removed: None
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.24
+   Compiling quote v1.0.45
+   Compiling libc v0.2.183
+   Compiling syn v2.0.117
+   Compiling cfg-if v1.0.4
+   Compiling autocfg v1.5.0
+   Compiling libm v0.2.16
+   Compiling num-traits v0.2.19
+   Compiling stable_deref_trait v1.2.1
+   Compiling synstructure v0.13.2
+   Compiling zerovec-derive v0.11.2
+   Compiling zerofrom-derive v0.1.6
+   Compiling yoke-derive v0.8.1
+   Compiling zerofrom v0.1.6
+   Compiling yoke v0.8.1
+   Compiling zerovec v0.11.5
+   Compiling displaydoc v0.2.5
+   Compiling getrandom v0.2.17
+   Compiling version_check v0.9.5
+   Compiling typenum v1.19.0
+   Compiling zerocopy v0.8.47
+   Compiling serde_core v1.0.228
+   Compiling memchr v2.8.0
+   Compiling tinystr v0.8.2
+   Compiling litemap v0.8.1
+   Compiling writeable v0.6.2
+   Compiling shlex v1.3.0
+   Compiling find-msvc-tools v0.1.9
+   Compiling utf8parse v0.2.2
+   Compiling cc v1.2.57
+   Compiling icu_locale_core v2.1.1
+   Compiling zerotrie v0.2.3
+   Compiling potential_utf v0.1.4
+   Compiling icu_normalizer_data v2.1.1
+   Compiling serde v1.0.228
+   Compiling icu_properties_data v2.1.2
+   Compiling icu_collections v2.1.1
+   Compiling icu_provider v2.1.1
+   Compiling ring v0.17.14
+   Compiling ppv-lite86 v0.2.21
+   Compiling aho-corasick v1.1.4
+   Compiling generic-array v0.14.7
+   Compiling rand_core v0.6.4
+   Compiling serde_derive v1.0.228
+   Compiling matrixmultiply v0.3.10
+   Compiling crossbeam-utils v0.8.21
+   Compiling paste v1.0.15
+   Compiling bytemuck v1.25.0
+   Compiling anstyle v1.0.14
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling regex-syntax v0.8.10
+   Compiling anstyle-query v1.1.5
+   Compiling syn v1.0.109
+   Compiling zeroize v1.8.2
+   Compiling rustversion v1.0.22
+   Compiling once_cell v1.21.4
+   Compiling colorchoice v1.0.5
+   Compiling heck v0.5.0
+   Compiling regex-automata v0.4.14
+   Compiling rustls-pki-types v1.14.0
+   Compiling safe_arch v0.7.4
+   Compiling rand_chacha v0.3.1
+   Compiling num-integer v0.1.46
+   Compiling num-complex v0.4.6
+   Compiling smallvec v1.15.1
+   Compiling semver v0.1.20
+   Compiling rawpointer v0.2.1
+   Compiling rustc_version v0.1.7
+   Compiling icu_normalizer v2.1.1
+   Compiling icu_properties v2.1.2
+   Compiling rand v0.8.6
+   Compiling wide v0.7.33
+   Compiling regex v1.12.3
+   Compiling anstyle-parse v1.0.0
+   Compiling approx v0.5.1
+   Compiling log v0.4.29
+   Compiling feature-probe v0.1.1
+   Compiling hashbrown v0.16.1
+   Compiling equivalent v1.0.2
+   Compiling thiserror v1.0.69
+   Compiling crc32fast v1.5.0
+   Compiling untrusted v0.9.0
+   Compiling indexmap v2.13.0
+   Compiling bv v0.11.1
+   Compiling simba v0.6.0
+   Compiling anstream v1.0.0
+   Compiling nalgebra-macros v0.1.0
+   Compiling crossbeam-epoch v0.9.18
+   Compiling rand_distr v0.4.3
+   Compiling idna_adapter v1.2.1
+   Compiling newtype_derive v0.1.6
+   Compiling num-rational v0.4.2
+   Compiling thiserror-impl v1.0.69
+   Compiling either v1.15.0
+   Compiling utf8_iter v1.0.4
+   Compiling simd-adler32 v0.3.8
+   Compiling rustix v1.1.4
+   Compiling strsim v0.11.1
+   Compiling getrandom v0.4.2
+   Compiling ryu v1.0.23
+   Compiling lazy_static v1.5.0
+   Compiling clap_lex v1.1.0
+   Compiling anyhow v1.0.102
+   Compiling getrandom v0.3.4
+   Compiling portable-atomic v1.13.1
+   Compiling rustls v0.23.46
+   Compiling adler2 v2.0.1
+   Compiling itoa v1.0.18
+   Compiling percent-encoding v2.3.2
+   Compiling rayon-core v1.13.0
+   Compiling form_urlencoded v1.2.2
+   Compiling miniz_oxide v0.8.9
+   Compiling clap_builder v4.6.0
+   Compiling idna v1.1.0
+   Compiling nalgebra v0.29.0
+   Compiling crossbeam-deque v0.8.6
+   Compiling rustls-webpki v0.103.14
+   Compiling strum_macros v0.26.4
+   Compiling crypto-common v0.1.7
+   Compiling block-buffer v0.10.4
+   Compiling webpki-roots v1.0.6
+   Compiling clap_derive v4.6.0
+   Compiling anstyle-parse v0.2.7
+   Compiling csv-core v0.1.13
+   Compiling ahash v0.8.12
+   Compiling derive-new v0.6.0
+   Compiling enum-map-derive v0.17.0
+   Compiling byteorder v1.5.0
+   Compiling linux-raw-sys v0.12.1
+   Compiling fixedbitset v0.4.2
+   Compiling heck v0.4.1
+   Compiling option-ext v0.2.0
+   Compiling bitflags v2.11.0
+   Compiling unicode-width v0.2.2
+   Compiling bit-vec v0.6.3
+   Compiling subtle v2.6.1
+   Compiling bit-set v0.5.3
+   Compiling console v0.15.11
+   Compiling strum_macros v0.25.3
+   Compiling dirs-sys v0.5.0
+   Compiling petgraph v0.6.5
+   Compiling fxhash v0.2.1
+   Compiling enum-map v2.7.3
+   Compiling clap v4.6.0
+   Compiling bio-types v1.0.4
+   Compiling csv v1.4.0
+   Compiling anstream v0.6.21
+   Compiling digest v0.10.7
+   Compiling webpki-roots v0.26.11
+   Compiling flate2 v1.1.9
+   Compiling statrs v0.16.1
+   Compiling url v2.5.8
+   Compiling itertools v0.11.0
+   Compiling env_filter v1.0.0
+   Compiling ndarray v0.15.6
+   Compiling vec_map v0.8.2
+   Compiling multimap v0.9.1
+   Compiling ordered-float v3.9.2
+   Compiling itertools-num v0.1.3
+   Compiling jiff v0.2.23
+   Compiling editdistancek v1.0.2
+   Compiling cpufeatures v0.2.17
+   Compiling unsafe-libyaml v0.2.11
+   Compiling bytecount v0.6.9
+   Compiling fastrand v2.3.0
+   Compiling triple_accel v0.4.0
+   Compiling custom_derive v0.1.7
+   Compiling strum v0.25.0
+   Compiling number_prefix v0.4.0
+   Compiling base64 v0.22.1
+   Compiling ureq v2.12.1
+   Compiling indicatif v0.17.11
+   Compiling bio v1.6.0
+   Compiling tempfile v3.27.0
+   Compiling serde_yaml_ng v0.10.0
+   Compiling env_logger v0.11.9
+   Compiling sha2 v0.10.9
+   Compiling rayon v1.11.0
+   Compiling clap_complete v4.6.0
+   Compiling dirs v6.0.0
+   Compiling fs2 v0.4.3
+   Compiling peak_alloc v0.3.0
+   Compiling sharkmer v3.2.1 (/nfs/roberts/project/pi_cwd7/cwd7/sharkmer/tmp/v4-performance-baseline-20261109/source)
+    Finished `release` profile [optimized] target(s) in 2m 21s
+0d57521d5c6060df3e954d366b72fdccb0b3e40f9532162b400d62b14a59109c  tmp/v4-performance-baseline-20261109/bin/sharkmer-v3.2.1
+SRR9278435 0 {'wall_s': 41.01, 'user_s': 58.64, 'system_s': 1.26, 'rss_kib': 4461872}
+SRR9278435 1 {'wall_s': 41.05, 'user_s': 58.47, 'system_s': 1.26, 'rss_kib': 4461868}
+SRR9278435 2 {'wall_s': 40.98, 'user_s': 58.61, 'system_s': 1.24, 'rss_kib': 4461868}
+SRR9278435 3 {'wall_s': 40.82, 'user_s': 58.31, 'system_s': 1.26, 'rss_kib': 4461872}
+SRR25099394 0 {'wall_s': 36.23, 'user_s': 49.71, 'system_s': 1.24, 'rss_kib': 4461872}
+SRR25099394 1 {'wall_s': 37.13, 'user_s': 49.73, 'system_s': 1.27, 'rss_kib': 4461868}
+SRR25099394 2 {'wall_s': 36.45, 'user_s': 49.8, 'system_s': 1.25, 'rss_kib': 4461664}
+SRR25099394 3 {'wall_s': 36.27, 'user_s': 49.86, 'system_s': 1.26, 'rss_kib': 4461868}
+SRR8617500 0 {'wall_s': 42.8, 'user_s': 61.83, 'system_s': 1.24, 'rss_kib': 4461868}
+SRR8617500 1 {'wall_s': 43.2, 'user_s': 62.32, 'system_s': 1.26, 'rss_kib': 4461868}
+SRR8617500 2 {'wall_s': 42.86, 'user_s': 61.9, 'system_s': 1.26, 'rss_kib': 4461864}
+SRR8617500 3 {'wall_s': 42.74, 'user_s': 61.82, 'system_s': 1.26, 'rss_kib': 4462248}
+SRR17535371 0 {'wall_s': 0.59, 'user_s': 0.66, 'system_s': 0.02, 'rss_kib': 22116}
+SRR17535371 1 {'wall_s': 0.64, 'user_s': 0.66, 'system_s': 0.02, 'rss_kib': 22620}
+SRR17535371 2 {'wall_s': 0.63, 'user_s': 0.66, 'system_s': 0.01, 'rss_kib': 22720}
+SRR17535371 3 {'wall_s': 0.59, 'user_s': 0.66, 'system_s': 0.02, 'rss_kib': 22392}
+SRR22396603 0 {'wall_s': 33.56, 'user_s': 43.68, 'system_s': 1.24, 'rss_kib': 4462080}
+SRR22396603 1 {'wall_s': 33.29, 'user_s': 43.4, 'system_s': 1.24, 'rss_kib': 4461696}
+SRR22396603 2 {'wall_s': 33.47, 'user_s': 43.52, 'system_s': 1.24, 'rss_kib': 4461696}
+SRR22396603 3 {'wall_s': 33.41, 'user_s': 43.56, 'system_s': 1.25, 'rss_kib': 4461696}
+SRR31887760 0 {'wall_s': 60.58, 'user_s': 108.78, 'system_s': 0.65, 'rss_kib': 2233892}
+SRR31887760 1 {'wall_s': 60.59, 'user_s': 108.73, 'system_s': 0.67, 'rss_kib': 2234276}
+SRR31887760 2 {'wall_s': 60.57, 'user_s': 108.83, 'system_s': 0.64, 'rss_kib': 2233892}
+SRR31887760 3 {'wall_s': 60.58, 'user_s': 108.94, 'system_s': 0.66, 'rss_kib': 2233892}
+SRR1057608 0 {'wall_s': 42.34, 'user_s': 72.35, 'system_s': 0.65, 'rss_kib': 2234276}
+SRR1057608 1 {'wall_s': 42.26, 'user_s': 72.38, 'system_s': 0.65, 'rss_kib': 2233896}
+SRR1057608 2 {'wall_s': 42.33, 'user_s': 72.46, 'system_s': 0.65, 'rss_kib': 2233892}
+SRR1057608 3 {'wall_s': 42.17, 'user_s': 72.17, 'system_s': 0.66, 'rss_kib': 2233892}
+SRR27962769 0 {'wall_s': 96.95, 'user_s': 168.84, 'system_s': 1.26, 'rss_kib': 4462144}
+SRR27962769 1 {'wall_s': 97.11, 'user_s': 168.65, 'system_s': 1.24, 'rss_kib': 4462144}
+SRR27962769 2 {'wall_s': 97.05, 'user_s': 168.85, 'system_s': 1.28, 'rss_kib': 4462148}
+SRR27962769 3 {'wall_s': 96.48, 'user_s': 168.24, 'system_s': 1.26, 'rss_kib': 4462144}
+SRR25378184 0 {'wall_s': 52.81, 'user_s': 86.88, 'system_s': 1.29, 'rss_kib': 4461724}
+SRR25378184 1 {'wall_s': 52.84, 'user_s': 86.94, 'system_s': 1.25, 'rss_kib': 4461724}
+SRR25378184 2 {'wall_s': 52.95, 'user_s': 87.06, 'system_s': 1.29, 'rss_kib': 4461576}
+SRR25378184 3 {'wall_s': 52.93, 'user_s': 87.07, 'system_s': 1.27, 'rss_kib': 4461716}
+ERR14009273 0 {'wall_s': 25.02, 'user_s': 38.72, 'system_s': 0.66, 'rss_kib': 2233448}
+ERR14009273 1 {'wall_s': 25.14, 'user_s': 38.68, 'system_s': 0.67, 'rss_kib': 2233452}
+ERR14009273 2 {'wall_s': 25.2, 'user_s': 38.76, 'system_s': 0.65, 'rss_kib': 2233452}
+ERR14009273 3 {'wall_s': 25.14, 'user_s': 38.77, 'system_s': 0.65, 'rss_kib': 2233448}
