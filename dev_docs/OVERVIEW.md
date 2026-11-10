@@ -1,14 +1,15 @@
 # Sharkmer architecture overview
 
-This describes the implementation released in **v3.2.1**, which is the starting
-point for v4. Checked against the source on 2026-11-09. Update this overview
+This describes current **v4 development**, based on the v3.2.1 implementation.
+Checked against the source on 2026-11-10. Update this overview
 when implementation changes; [PLAN.md](PLAN.md) holds proposed work and gates.
 [CONTRIBUTING.md](../CONTRIBUTING.md) describes builds, checks, and releases.
 
 V4 development now adds typed canonical/oriented keys and positioned rolling
-extraction in [`kmer/identity.rs`](../src/kmer/identity.rs). The existing encoder
-collects those windows under the released validation policy. The counter and
-replay descriptions below remain the baseline; their replacement is tracked in
+extraction in [`kmer/identity.rs`](../src/kmer/identity.rs), an exact-store candidate,
+shared resource reservations and fallible assembly access. The existing encoder
+collects those windows under the released validation policy. The normal ingestion
+and replay paths below still use the baseline implementation; migration is tracked in
 [COUNT_STORE_CONTRACTS.md](COUNT_STORE_CONTRACTS.md).
 
 ## Pipeline
@@ -37,7 +38,9 @@ per-target assembly; FASTA records are written sequentially afterward.
 | [`io.rs`](../src/io.rs) | Read local files, stdin, or ENA sources; count selected FASTQ records; finalize chunks; replay reads for optional threading. |
 | [`cache.rs`](../src/cache.rs) | Manage owned, checksummed remote-read cache entries and cooperating-user leases. |
 | [`kmer/encoding.rs`](../src/kmer/encoding.rs) | Two-bit DNA encoding, canonical k-mers, and invalid-base window breaks. |
-| [`kmer/counting.rs`](../src/kmer/counting.rs) | Hash-map count storage, lookup, merging, medians, and lazy filtered views. |
+| [`kmer/counting.rs`](../src/kmer/counting.rs) | Legacy u32 hash-map storage, lookup and incremental merging. |
+| [`kmer/access.rs`](../src/kmer/access.rs), [`primers.rs`](../src/kmer/primers.rs) | Borrowed fallible assembly access and separate directional u64 primer candidates. |
+| [`kmer/store.rs`](../src/kmer/store.rs), [`budget.rs`](../src/kmer/budget.rs) | Exact u64 store candidate and shared logical RAM/disk reservations; frontend integration remains open. |
 | [`kmer/chunk.rs`](../src/kmer/chunk.rs), [`histogram.rs`](../src/kmer/histogram.rs) | Per-chunk counts and incremental frequency distributions. |
 | [`pcr/mod.rs`](../src/pcr/mod.rs) | Per-target threshold sweep, admission, diagnostics, and assembly coordination. |
 | [`pcr/primers.rs`](../src/pcr/primers.rs), [`preconfigured.rs`](../src/pcr/preconfigured.rs) | Primer matching and panel loading from embedded YAML, local files, or URLs. |
@@ -58,14 +61,15 @@ The read counter uses `u64` keys and `u32` counts. DNA bases use two bits each;
 supported k is at most 31. Ingested count keys use the smaller of forward and
 reverse-complement encodings. Counts use saturating addition at `u32::MAX`.
 The default hash-map backend is ahash; FxHashMap is a separate build feature.
-`FilteredKmerCounts` applies minimum-count thresholds during lookup without
-copying the underlying table.
-
-**Canonical count keys and oriented identities require care.** `KmerCounts`
-also stores directional primer matches through its generic insertion API.
-Canonical identity is therefore not a universal invariant of every instance.
-Inspect the caller and lookup method before using one as an exact count store.
-Separating these roles is part of [#139](https://github.com/caseywdunn/sharkmer/issues/139).
+`FilteredKmerCounts` borrows either this legacy table or a finalized exact store.
+It applies thresholds without copying global counts, visits entries with
+propagated errors and provides fallible lookup to graph construction. The legacy
+adapter retains its original count precision; it does not make saturated counts
+exact. Primer matches use a separate `PrimerKmers` collection with directional
+identities and checked u64 abundance. Graph edges, thresholds and path count
+metrics also retain u64 values. CLI ingestion still uses the legacy counter;
+the exact store is exercised through assembly conformance tests before frontend
+selection under [#140](https://github.com/caseywdunn/sharkmer/issues/140).
 
 `--chunks 0` currently allocates one internal chunk and still merges it into a
 new count table in `consolidate_and_histogram()`. It skips histogram output.

@@ -3,8 +3,9 @@
 Implementation under [#139](https://github.com/caseywdunn/sharkmer/issues/139).
 This document defines the interfaces required by #140–#145. The current branch
 implements typed identities and positioned rolling extraction. An exact in-memory
-store candidate and shared-ledger conformance API now pass their focused tests; the existing
-counter, replay vector, and graph consumers are still being migrated. The
+store candidate and shared-ledger conformance API now pass their focused tests.
+Assembly consumers now use fallible borrowed count access and retain u64 values;
+the normal ingestion counter and replay vector are still being migrated. The
 [active plan](PLAN.md) records verification and completion.
 
 ## Identity and preprocessing
@@ -141,7 +142,7 @@ now enforces simultaneous stage reservations plus declared process overhead,
 with separate temporary-disk guards. It uses explicit `reserved_*` names to
 distinguish logical reservations from allocator heap and RSS. The candidate
 store holds reservation guards through allocation, resizing, finalization and
-destruction; actual graph/input/replay producer migration remains open. Production dispatch, global resource
+destruction; actual graph/input/replay resource ownership remains open. Production dispatch, global resource
 reservations, persistence, and replay integration remain open. The candidate is
 not selected as the default backend before the
 [frozen performance gates](../benchmarks/benchmark_results/v4-performance-baseline-20261109/README.md)
@@ -153,3 +154,20 @@ budget integration remain open until exercised by their actual implementations.
 [Exact-store/ledger verification](../benchmarks/benchmark_results/v4-exact-store-contracts-20261110/README.md)
 records the tested candidate. Production dispatch, persisted corruption/I/O
 checks, and replay/producer integration remain required before closing #139.
+
+`kmer::access::FilteredKmerCounts` is the assembly boundary for a borrowed exact
+store or an explicit legacy adapter. Primer scans use a fallible visit operation;
+graph membership/count queries propagate errors to the PCR caller. Neither
+access path materializes a second global table. The legacy adapter widens its
+already-saturated u32 values and does not claim exactness. `kmer::primers::PrimerKmers`
+holds local directional candidates separately, with checked u64 addition.
+Thresholds, graph edges, path minima and warning-source thresholds retain u64
+counts; floating-point ranking statistics retain their existing interpretation.
+The CLI still selects the existing ingestion implementation pending #140 and
+the measured promotion gates. Persisted I/O integrity and whole-run resource
+enforcement are still required when those producers are integrated.
+
+[Assembly-access verification](../benchmarks/benchmark_results/v4-assembly-access-20261110/README.md)
+records exact/legacy product and repeat-warning agreement, large-count PCR and
+injected scan/lookup failures. This does not close the remaining frontend,
+replay, persisted-integrity or combined-resource gates.

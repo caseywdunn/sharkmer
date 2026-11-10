@@ -1,6 +1,6 @@
 use crate::format::{format_bytes, format_count, format_duration};
 use crate::io::write_fasta_record;
-use crate::kmer::KmerCounts;
+use crate::kmer::FilteredKmerCounts;
 use crate::output::OutputTransaction;
 use crate::pcr;
 use anyhow::{Context, Result};
@@ -90,7 +90,7 @@ pub(crate) struct RunStats {
 /// Run in silico PCR for all primer pairs, write FASTA output files, and print results.
 #[allow(clippy::too_many_arguments)]
 pub(crate) fn run_pcr(
-    kmer_counts: &KmerCounts,
+    kmer_counts: &FilteredKmerCounts,
     pcr_runs: &[pcr::PCRParams],
     sample: &str,
     directory: &str,
@@ -122,7 +122,7 @@ pub(crate) fn run_pcr(
 
     // Create a filtered view of kmer counts for PCR (no data copied)
     info!("Filtering kmers with count < {} before PCR", min_kmer_count);
-    let kmer_counts_pcr = kmer_counts.filtered_view(min_kmer_count);
+    let kmer_counts_pcr = kmer_counts.with_minimum(u64::from(min_kmer_count));
 
     // Run PCR for each gene in parallel; kmer_counts_pcr and reads are read-only and shared
     let pcr_fasta_results: Vec<_> = pcr_runs

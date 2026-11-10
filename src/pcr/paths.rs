@@ -581,7 +581,7 @@ fn sorted_children(
         })
         .collect();
     // total_cmp gives a total order on f64 (NaN sorts to the end) instead of
-    // partial_cmp's Option<Ordering>. Inputs here are u32 → f64 multiplied by
+    // partial_cmp's Option<Ordering>. Inputs here are u64 → f64 multiplied by
     // a finite preference, so NaN is impossible — total_cmp simply removes
     // the unwrap_or(Equal) papering over an "impossible" case.
     outgoing.sort_by(|a, b| a.2.total_cmp(&b.2));
@@ -871,7 +871,7 @@ pub(super) fn generate_sequences_from_paths(
                 let edge_data = graph
                     .edge_weight(edge_idx)
                     .context("Edge weight not found")?;
-                edge_counts.push(edge_data.count as u64);
+                edge_counts.push(edge_data.count);
                 path_edges.push(edge_idx);
             }
         }
@@ -968,7 +968,7 @@ pub(super) fn generate_sequences_from_paths(
             };
 
         let score = super::PathScore {
-            kmer_min_count: *count_min as u32,
+            kmer_min_count: *count_min,
             kmer_median_count: count_median,
             coverage_cv,
             max_coverage_ratio,
@@ -1094,7 +1094,7 @@ mod tests {
         }
     }
 
-    fn mk_edge(count: u32) -> DBEdge {
+    fn mk_edge(count: u64) -> DBEdge {
         DBEdge {
             count,
             coverage_ratio: 1.0,

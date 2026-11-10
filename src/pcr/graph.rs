@@ -8,7 +8,9 @@ use petgraph::stable_graph::StableDiGraph;
 use std::collections::VecDeque;
 
 use crate::kmer::FilteredKmerCounts;
+#[cfg(test)]
 use crate::kmer::KmerCounts;
+use crate::kmer::PrimerKmers;
 
 use super::{DBEdge, DBNode, PCRParams};
 
@@ -102,6 +104,7 @@ where
     }
 }
 
+#[cfg(test)]
 pub(super) fn median_u32_f64(counts: Vec<u32>) -> Option<f64> {
     median_via_select(counts, |x| x as f64)
 }
@@ -111,23 +114,23 @@ pub(super) fn median_u64_f64(counts: Vec<u64>) -> Option<f64> {
 }
 
 fn compute_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>, default: f64) -> f64 {
-    let counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
-    median_u32_f64(counts).unwrap_or(default)
+    let counts: Vec<u64> = graph.edge_indices().map(|e| graph[e].count).collect();
+    median_u64_f64(counts).unwrap_or(default)
 }
 
 fn high_coverage_limit(
     median_edge_count: f64,
     high_coverage_ratio: f64,
-    coverage_count_floor: u32,
+    coverage_count_floor: u64,
 ) -> f64 {
     (median_edge_count * high_coverage_ratio).max(coverage_count_floor as f64)
 }
 
-pub fn get_dbedge(kmer: &u64, kmer_counts: &FilteredKmerCounts) -> DBEdge {
-    DBEdge {
-        count: kmer_counts.get_canonical_count(kmer),
+pub fn get_dbedge(kmer: &u64, kmer_counts: &FilteredKmerCounts) -> Result<DBEdge> {
+    Ok(DBEdge {
+        count: kmer_counts.get_canonical_count(kmer)?,
         coverage_ratio: 0.0, // set during annotation pass
-    }
+    })
 }
 
 /// Reconstruct the full kmer for an edge from its source and target node sub_kmers.
@@ -190,7 +193,7 @@ pub fn compute_mean(numbers: &[u64]) -> f64 {
     if numbers.is_empty() {
         return 0.0;
     }
-    let sum: u64 = numbers.iter().sum();
+    let sum: u128 = numbers.iter().map(|&number| u128::from(number)).sum();
     sum as f64 / numbers.len() as f64
 }
 
@@ -202,8 +205,8 @@ pub fn compute_median(numbers: &[u64]) -> f64 {
 }
 
 pub(super) fn create_seed_graph(
-    forward_primer_kmers: &KmerCounts,
-    reverse_primer_kmers: &KmerCounts,
+    forward_primer_kmers: &PrimerKmers,
+    reverse_primer_kmers: &PrimerKmers,
     kmer_counts: &FilteredKmerCounts,
 ) -> (StableDiGraph<DBNode, DBEdge>, AHashMap<u64, NodeIndex>) {
     let mut seed_graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
@@ -344,9 +347,9 @@ pub(super) fn extend_graph(
     mut graph: StableDiGraph<DBNode, DBEdge>,
     mut node_lookup: AHashMap<u64, NodeIndex>,
     kmer_counts: &FilteredKmerCounts,
-    min_count: &u32,
+    min_count: &u64,
     params: &PCRParams,
-    coverage_count_floor: u32,
+    coverage_count_floor: u64,
     max_num_nodes: usize,
 ) -> Result<(
     StableDiGraph<DBNode, DBEdge>,
@@ -449,7 +452,7 @@ pub(super) fn extend_graph(
                 ExtDir::Forward => (sub_kmer << 2) | base,
                 ExtDir::Reverse => (base << prefix_shift) | sub_kmer,
             };
-            if let Some(count) = kmer_counts.get_canonical(&kmer)
+            if let Some(count) = kmer_counts.get_canonical(&kmer)?
                 && count >= *min_count
             {
                 candidate_kmers[n_candidates] = Some(kmer);
@@ -477,7 +480,7 @@ pub(super) fn extend_graph(
                 continue;
             }
 
-            let edge = get_dbedge(kmer, kmer_counts);
+            let edge = get_dbedge(kmer, kmer_counts)?;
             let exceeds_coverage_limit = (edge.count as f64)
                 > high_coverage_limit(
                     median_edge_count,
@@ -610,8 +613,8 @@ fn cyclic_scc_sub_kmers(graph: &StableDiGraph<DBNode, DBEdge>) -> AHashSet<u64> 
 /// High ratios (>> 1.0) indicate potentially repetitive edges.
 /// Low ratios (<< 1.0) indicate potential sequencing errors.
 pub(super) fn annotate_coverage_ratios(graph: &mut StableDiGraph<DBNode, DBEdge>) {
-    let counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
-    let Some(median) = median_u32_f64(counts) else {
+    let counts: Vec<u64> = graph.edge_indices().map(|e| graph[e].count).collect();
+    let Some(median) = median_u64_f64(counts) else {
         return;
     };
     if median <= 0.0 {
@@ -661,10 +664,7 @@ pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
     );
 
     // Print the mean, median, and max count of edges
-    let counts: Vec<u64> = graph
-        .edge_indices()
-        .map(|e| graph[e].count as u64)
-        .collect();
+    let counts: Vec<u64> = graph.edge_indices().map(|e| graph[e].count).collect();
 
     if counts.is_empty() {
         debug!(
@@ -721,7 +721,7 @@ mod tests {
         }
     }
 
-    fn mk_edge(count: u32) -> DBEdge {
+    fn mk_edge(count: u64) -> DBEdge {
         DBEdge {
             count,
             coverage_ratio: 1.0,

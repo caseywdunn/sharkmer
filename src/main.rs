@@ -201,7 +201,7 @@ fn main() -> Result<()> {
     // Run in silico PCR
     let pcr_start = std::time::Instant::now();
     let pcr_results = stats::run_pcr(
-        &kmer_counts,
+        &kmer_counts.filtered_view(0),
         &pcr_runs,
         &sample,
         &directory,
