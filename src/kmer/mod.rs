@@ -1,11 +1,17 @@
 // kmer/mod.rs
 //! This module provides kmer functions.
 
+// V4 reservations are wired into candidate stores before production migration.
+#[allow(dead_code)]
+pub mod budget;
 pub mod chunk;
 pub mod counting;
 pub mod encoding;
 pub mod histogram;
 pub mod identity;
+// Exact backend conformance layer; production dispatch migrates under #140.
+#[allow(dead_code)]
+pub mod store;
 
 // Re-export public items so that `crate::kmer::X` continues to work.
 pub use chunk::Chunk;

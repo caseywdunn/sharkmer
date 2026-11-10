@@ -1,0 +1,13 @@
+{
+  "base_commit": "65d79547aeb3ccfddf259765afdbced90dae5588",
+  "status": "passed",
+  "job_id": 32765482,
+  "rust_tests_per_backend": 296,
+  "python_tests": 213,
+  "references": 158,
+  "schemas": 10,
+  "exports": 9,
+  "loader_checks": 19,
+  "source_files": 81,
+  "scope": "exact count-store candidate and shared logical reservations; production counter, persisted store and replay migration remain open"
+}
