@@ -149,8 +149,8 @@ fn tip_length_forward(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex) ->
 }
 
 fn global_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64> {
-    let counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
-    super::graph::median_u32_f64(counts)
+    let counts: Vec<u64> = graph.edge_indices().map(|e| graph[e].count).collect();
+    super::graph::median_u64_f64(counts)
 }
 
 /// Remove nodes that cannot be part of any start-to-end path.
@@ -226,7 +226,7 @@ mod tests {
         }
     }
 
-    fn mk_edge(count: u32) -> DBEdge {
+    fn mk_edge(count: u64) -> DBEdge {
         DBEdge {
             count,
             coverage_ratio: 1.0,

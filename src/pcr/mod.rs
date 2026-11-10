@@ -49,10 +49,10 @@ pub(crate) mod threading;
 
 /// The multiplier for establishing when a kmer is considered to have high coverage,
 /// relative to the min_count threshold. It is then used to also adjust the threshold.
-const COVERAGE_MULTIPLIER: u32 = 2;
+const COVERAGE_MULTIPLIER: u64 = 2;
 
 /// A multiplier for adjusting the threshold as it is applied.
-const COVERAGE_STEPS: u32 = 4;
+const COVERAGE_STEPS: u64 = 4;
 
 // MAX_NUM_PRIMER_KMERS is now read from params.max_primer_kmers
 
@@ -64,7 +64,7 @@ pub const DEFAULT_DEDUP_EDIT_THRESHOLD: u32 = 10;
 #[derive(Debug, Clone, PartialEq)]
 struct PathScore {
     /// Minimum kmer count along the path
-    kmer_min_count: u32,
+    kmer_min_count: u64,
     /// Median kmer count along the path
     kmer_median_count: f64,
     /// Coverage consistency: coefficient of variation of edge counts
@@ -147,7 +147,7 @@ pub struct DBNode {
 
 #[derive(Debug, Clone)]
 pub struct DBEdge {
-    pub count: u32,          // Number of times this kmer was observed
+    pub count: u64,          // Number of times this kmer was observed
     pub coverage_ratio: f64, // count / local median (set during annotation)
 }
 
@@ -429,7 +429,7 @@ pub(crate) struct WithheldPathDiagnostics {
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
 pub struct PcrThresholdDiagnostic {
-    pub threshold: u32,
+    pub threshold: u64,
     pub connectivity_found: bool,
     pub node_budget_reached: bool,
     pub scc_evaluated: bool,
@@ -632,9 +632,9 @@ pub fn validate_pcr_params(params: &PCRParams) -> Vec<(String, String)> {
 
 /// Compute a sequence of coverage thresholds for graph extension, stepping down
 /// from a high threshold (derived from observed primer coverage) to `min_count`.
-fn compute_coverage_thresholds(primer_count: u32, min_count: u32) -> Vec<u32> {
+fn compute_coverage_thresholds(primer_count: u64, min_count: u64) -> Vec<u64> {
     let coverage_high_threshold = primer_count / COVERAGE_MULTIPLIER;
-    let mut thresholds: Vec<u32> = Vec::new();
+    let mut thresholds: Vec<u64> = Vec::new();
 
     if coverage_high_threshold <= min_count {
         thresholds.push(min_count);
@@ -712,7 +712,7 @@ struct ThresholdEvaluation {
 fn evaluate_threshold_graph(
     mut pruned_graph: petgraph::stable_graph::StableDiGraph<DBNode, DBEdge>,
     extension_repeat_markers: graph::ExtensionRepeatMarkers,
-    min_count: u32,
+    min_count: u64,
     kmer_counts: &FilteredKmerCounts,
     sample_name: &str,
     params: &PCRParams,
@@ -982,7 +982,7 @@ pub fn do_pcr(
     }
 
     // Log forward primer kmers for diagnostics
-    let mut sorted_forward: Vec<(u64, u32)> =
+    let mut sorted_forward: Vec<(u64, u64)> =
         forward_primer_kmers.iter().map(|(&k, &v)| (k, v)).collect();
     sorted_forward.sort();
     for (kmer, count) in sorted_forward.iter() {
@@ -995,7 +995,7 @@ pub fn do_pcr(
     }
 
     // Log reverse primer kmers for diagnostics
-    let mut sorted_reverse: Vec<(u64, u32)> =
+    let mut sorted_reverse: Vec<(u64, u64)> =
         reverse_primer_kmers.iter().map(|(&k, &v)| (k, v)).collect();
     sorted_reverse.sort();
     for (kmer, count) in sorted_reverse.iter() {
@@ -1056,7 +1056,8 @@ pub fn do_pcr(
     // Graph extension thresholds: derived from max primer kmer count.
     // Starting high ensures the graph is built from confident kmers first,
     // then steps down to include lower-coverage regions.
-    let coverage_thresholds = compute_coverage_thresholds(max_primer_count, params.min_count);
+    let coverage_thresholds =
+        compute_coverage_thresholds(max_primer_count, u64::from(params.min_count));
     debug!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
     let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
@@ -1195,7 +1196,7 @@ pub fn do_pcr(
         max_forward_count, max_reverse_count
     );
 
-    let count_threshold: u32 = 5;
+    let count_threshold: u64 = 5;
     if (max_forward_count < count_threshold) || (max_reverse_count < count_threshold) {
         gene_info!(
             params.gene_name,
@@ -1757,6 +1758,156 @@ mod tests {
         (read_string, k, replicates, kmer_counts, params)
     }
 
+    /// Exercise the exact store through actual primer discovery and graph PCR,
+    /// rather than converting it back to the legacy global table.
+    #[test]
+    fn exact_store_pcr_matches_legacy_and_preserves_large_counts() {
+        use crate::kmer::identity::{CanonicalKey, KmerSize};
+        use crate::kmer::store::MemoryCountBuilder;
+        use std::num::NonZeroU64;
+
+        let (_, k, _, counts, mut params) = build_test_case();
+        params.emit_uncertain = true;
+        let run = |view: &FilteredKmerCounts| {
+            do_pcr(
+                view,
+                "count_store",
+                &params,
+                false,
+                "",
+                None,
+                100_000,
+                withheld_diagnostic_limits_for_gene(0, 1),
+            )
+            .unwrap()
+        };
+        let baseline = run(&counts.filtered_view(1));
+        assert!(!baseline.records.is_empty());
+        let size = KmerSize::new(k).unwrap();
+        let mut builder = MemoryCountBuilder::new(size, 1 << 20, 16).unwrap();
+        for (&bits, &count) in counts.iter() {
+            builder
+                .add(
+                    CanonicalKey::new(bits, size).unwrap(),
+                    NonZeroU64::new(u64::from(count)).unwrap(),
+                )
+                .unwrap();
+        }
+        let store = builder.finalize([0; 32]);
+        let exact = run(&FilteredKmerCounts::from_store(&store, 1));
+        let inventory = |outcome: &PcrOutcome| {
+            outcome
+                .records
+                .iter()
+                .map(|r| {
+                    (
+                        r.id().to_owned(),
+                        r.desc().map(str::to_owned),
+                        r.seq().to_vec(),
+                    )
+                })
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(inventory(&exact), inventory(&baseline));
+        assert_eq!(exact.threshold_diagnostics, baseline.threshold_diagnostics);
+        assert_eq!(exact.failure_reason, baseline.failure_reason);
+        assert_eq!(
+            serde_yaml_ng::to_value(&exact.uncertain_products).unwrap(),
+            serde_yaml_ng::to_value(&baseline.uncertain_products).unwrap()
+        );
+
+        let multiplier = u64::from(u32::MAX) + 1;
+        let mut builder = MemoryCountBuilder::new(size, 1 << 20, 16).unwrap();
+        for (&bits, &count) in counts.iter() {
+            builder
+                .add(
+                    CanonicalKey::new(bits, size).unwrap(),
+                    NonZeroU64::new(u64::from(count) * multiplier).unwrap(),
+                )
+                .unwrap();
+        }
+        let store = builder.finalize([0; 32]);
+        let large = run(&FilteredKmerCounts::from_store(&store, 1));
+        assert_eq!(large.records.len(), baseline.records.len());
+        for (record, expected) in large.records.iter().zip(&baseline.records) {
+            assert_eq!(record.seq(), expected.seq());
+            assert!(
+                record
+                    .desc()
+                    .unwrap()
+                    .contains(&format!("kmer_count_min={}", 10 * multiplier))
+            );
+        }
+        assert!(large.threshold_diagnostics[0].threshold > u64::from(u32::MAX));
+        assert_eq!(compute_coverage_thresholds(u64::MAX, 3).last(), Some(&3));
+        assert_eq!(graph::compute_mean(&[u64::MAX, u64::MAX]), u64::MAX as f64);
+    }
+
+    #[test]
+    fn count_store_failures_propagate_from_primer_scan_and_graph_lookup() {
+        use crate::kmer::identity::{CanonicalKey, KmerSize};
+        use crate::kmer::store::{CountMetadata, CountStore, MemoryCountBuilder, MemoryCountStore};
+        use std::num::NonZeroU64;
+
+        struct FailingStore {
+            store: MemoryCountStore,
+            fail_visit: bool,
+        }
+        impl CountStore for FailingStore {
+            fn metadata(&self) -> &CountMetadata {
+                self.store.metadata()
+            }
+            fn lookup(&self, _: CanonicalKey) -> Result<Option<NonZeroU64>> {
+                anyhow::bail!("injected exact lookup failure")
+            }
+            fn visit(
+                &self,
+                visitor: &mut dyn FnMut(CanonicalKey, NonZeroU64) -> Result<()>,
+            ) -> Result<()> {
+                if self.fail_visit {
+                    anyhow::bail!("injected exact scan failure");
+                }
+                self.store.visit(visitor)
+            }
+        }
+        let (_, k, _, counts, params) = build_test_case();
+        for fail_visit in [true, false] {
+            let size = KmerSize::new(k).unwrap();
+            let mut builder = MemoryCountBuilder::new(size, 1 << 20, 16).unwrap();
+            for (&bits, &count) in counts.iter() {
+                builder
+                    .add(
+                        CanonicalKey::new(bits, size).unwrap(),
+                        NonZeroU64::new(u64::from(count)).unwrap(),
+                    )
+                    .unwrap();
+            }
+            let store = FailingStore {
+                store: builder.finalize([0; 32]),
+                fail_visit,
+            };
+            let result = do_pcr(
+                &FilteredKmerCounts::from_store(&store, 1),
+                "failure",
+                &params,
+                false,
+                "",
+                None,
+                100_000,
+                withheld_diagnostic_limits_for_gene(0, 1),
+            );
+            let error = match result {
+                Ok(_) => panic!("store failure became a PCR outcome"),
+                Err(error) => error,
+            };
+            assert!(error.to_string().contains(if fail_visit {
+                "scan failure"
+            } else {
+                "lookup failure"
+            }));
+        }
+    }
+
     #[test]
     fn test_primer_preprocessing_steps() {
         let (_, _, _, kmer_counts, params) = build_test_case();
@@ -1785,7 +1936,7 @@ mod tests {
         assert_eq!(reverse_primer_kmers.len(), 1);
 
         reverse_primer_kmers =
-            filter_primer_kmers(reverse_primer_kmers, DEFAULT_MAX_NUM_PRIMER_KMERS);
+            filter_primer_kmers(reverse_primer_kmers, DEFAULT_MAX_NUM_PRIMER_KMERS).unwrap();
 
         // Check for kmer after filtering
         assert_eq!(reverse_primer_kmers.len(), 1);
@@ -1798,7 +1949,7 @@ mod tests {
 
         let seq = "TGATCCTGCCAGTATCATATG".to_string();
         let kmer: u64 = seq_to_kmer(&seq).unwrap();
-        assert!(kmer_counts.get_canonical(&kmer).is_some());
+        assert!(kmer_counts.get_canonical(&kmer).unwrap().is_some());
     }
 
     #[test]

@@ -12,6 +12,7 @@ use rustc_hash::FxHashMap;
 #[cfg(feature = "ahashmap")]
 use std::collections::HashMap as StdHashMap;
 
+use super::access::FilteredKmerCounts;
 use super::encoding::{Read, kmers_from_ascii, revcomp_kmer};
 use super::histogram::Histogram;
 
@@ -156,6 +157,7 @@ impl KmerCounts {
     }
 
     /// Adds a kmer and its count to the KmerCounts object.
+    #[cfg(test)]
     pub fn insert(&mut self, kmer: &u64, count: &u32) {
         self.kmers.insert_or_add(*kmer, *count);
     }
@@ -275,14 +277,12 @@ impl KmerCounts {
         self.kmers.values().copied().collect()
     }
 
-    pub fn kmers(&self) -> Vec<u64> {
-        self.kmers.keys().copied().collect()
-    }
-
+    #[cfg(test)]
     pub fn get_max_count(&self) -> u32 {
         *self.kmers.values().max().unwrap_or(&0)
     }
 
+    #[cfg(test)]
     pub fn get_median_count(&self) -> u32 {
         let mut counts: Vec<u32> = self.kmers.values().copied().collect();
         if counts.is_empty() {
@@ -308,6 +308,7 @@ impl KmerCounts {
         }
     }
 
+    #[cfg(test)]
     pub fn is_empty(&self) -> bool {
         self.kmers.is_empty()
     }
@@ -315,48 +316,7 @@ impl KmerCounts {
     /// Create a filtered view of this KmerCounts that lazily excludes entries
     /// below `min_count`. No data is copied — lookups check the threshold on the fly.
     pub fn filtered_view(&self, min_count: u32) -> FilteredKmerCounts<'_> {
-        FilteredKmerCounts {
-            inner: self,
-            min_count,
-        }
-    }
-}
-
-/// A read-only view of a `KmerCounts` that filters out entries below a minimum count.
-/// No data is copied — the threshold is checked at lookup time.
-pub struct FilteredKmerCounts<'a> {
-    inner: &'a KmerCounts,
-    min_count: u32,
-}
-
-impl<'a> FilteredKmerCounts<'a> {
-    pub fn get_k(&self) -> usize {
-        self.inner.k
-    }
-
-    /// Look up a kmer by checking both orientations, returning the count
-    /// only if it meets the minimum threshold.
-    pub fn get_canonical(&self, kmer: &u64) -> Option<u32> {
-        self.inner.get_canonical(kmer).and_then(|&count| {
-            if count >= self.min_count {
-                Some(count)
-            } else {
-                None
-            }
-        })
-    }
-
-    /// Get the count of the canonical form of a kmer, returning 0 if below threshold.
-    pub fn get_canonical_count(&self, kmer: &u64) -> u32 {
-        let count = self.inner.get_canonical_count(kmer);
-        if count >= self.min_count { count } else { 0 }
-    }
-
-    /// Iterate over all entries, including those below threshold.
-    /// Callers that need filtering should check counts themselves
-    /// (as find_oligos_in_kmers already does).
-    pub fn iter(&self) -> impl Iterator<Item = (&u64, &u32)> {
-        self.inner.iter()
+        FilteredKmerCounts::legacy(self, min_count)
     }
 }
 
@@ -525,10 +485,10 @@ mod tests {
         kc.insert(&2, &10);
 
         let fv = kc.filtered_view(5);
-        assert!(fv.get_canonical(&1).is_none());
-        assert_eq!(fv.get_canonical(&2), Some(10));
-        assert_eq!(fv.get_canonical_count(&1), 0);
-        assert_eq!(fv.get_canonical_count(&2), 10);
+        assert!(fv.get_canonical(&1).unwrap().is_none());
+        assert_eq!(fv.get_canonical(&2).unwrap(), Some(10));
+        assert_eq!(fv.get_canonical_count(&1).unwrap(), 0);
+        assert_eq!(fv.get_canonical_count(&2).unwrap(), 10);
     }
 
     #[test]

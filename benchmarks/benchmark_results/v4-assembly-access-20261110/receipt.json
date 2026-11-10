@@ -1,0 +1,13 @@
+{
+  "base_commit": "f45ef7e14d261680953097efd155acd689f7d2b5",
+  "job_id": 32789222,
+  "status": "passed",
+  "rust_tests_per_backend": 300,
+  "python_tests": 213,
+  "references": 158,
+  "schemas": 10,
+  "exports": 9,
+  "loader_checks": 19,
+  "source_files": 82,
+  "scope": "fallible assembly access; directional primer separation and u64 abundance through graph/path/diagnostics; normal ingestion and replay migration remain open"
+}

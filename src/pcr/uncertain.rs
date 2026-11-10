@@ -22,7 +22,7 @@ pub(crate) enum MarkerDetail {
 
 #[derive(Clone, Debug, PartialEq, Eq, Serialize)]
 pub(crate) struct UncertainProductSource {
-    pub(crate) threshold: u32,
+    pub(crate) threshold: u64,
     pub(crate) marker_detail: MarkerDetail,
     pub(crate) node_visit_limit: usize,
     pub(crate) max_observed_node_visits: usize,
@@ -166,7 +166,7 @@ fn canonical_sequence(sequence: &[u8]) -> Vec<u8> {
     }
 }
 
-fn source(threshold: u32, path: WithheldPathRecord) -> UncertainProductSource {
+fn source(threshold: u64, path: WithheldPathRecord) -> UncertainProductSource {
     let marker_detail = if path.marker_occurrences.is_empty() {
         MarkerDetail::SummaryOnly
     } else {
@@ -323,7 +323,7 @@ mod tests {
         }
     }
 
-    fn threshold(threshold: u32, paths: Vec<WithheldPathRecord>) -> PcrThresholdDiagnostic {
+    fn threshold(threshold: u64, paths: Vec<WithheldPathRecord>) -> PcrThresholdDiagnostic {
         PcrThresholdDiagnostic {
             threshold,
             connectivity_found: true,

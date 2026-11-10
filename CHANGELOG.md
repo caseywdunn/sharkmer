@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Separate directional primer candidates from global counts and carry exact
+  u64 abundance through assembly thresholds, graph edges and sequence metrics.
+  Assembly access now propagates count-store failures rather than treating
+  them as missing sequence. The normal ingestion backend is still being
+  migrated (#139).
+
 - Add an exact u64 count-store candidate and read-only conformance interface,
   including checked overflow, exact membership, bounded batch queries and
   resize-buffer accounting through a shared memory/temporary-disk reservation

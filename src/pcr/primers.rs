@@ -4,7 +4,9 @@ use anyhow::{Result, bail, ensure};
 use log::debug;
 use std::collections::HashSet;
 
-use crate::kmer::{FilteredKmerCounts, KmerCounts};
+#[cfg(test)]
+use crate::kmer::KmerCounts;
+use crate::kmer::{FilteredKmerCounts, PrimerKmers};
 
 use super::{Oligo, PCRParams, PrimerDirection};
 
@@ -418,7 +420,7 @@ fn find_oligos_in_kmers(
     oligos: &[Oligo],
     kmers: &FilteredKmerCounts,
     min_count: &u32,
-) -> KmerCounts {
+) -> Result<PrimerKmers> {
     assert!(
         !oligos.is_empty(),
         "find_oligos_in_kmers called with no oligos"
@@ -452,7 +454,7 @@ fn find_oligos_in_kmers(
     }
     mask <<= 2 * k - 2 * oligo_length;
 
-    let mut kmers_match: KmerCounts = KmerCounts::new(&k);
+    let mut kmers_match = PrimerKmers::new(&k)?;
 
     // RC mask covers low bits (reverse complement of a start-matching kmer has primer in low bits)
     let rc_mask = (1u64 << (2 * oligo_length)) - 1;
@@ -463,20 +465,21 @@ fn find_oligos_in_kmers(
         .map(|oligo| crate::kmer::revcomp_kmer(&oligo.kmer, &oligo_length))
         .collect();
 
-    for (kmer, count) in kmers.iter() {
-        if count >= min_count {
+    kmers.visit(&mut |kmer, count| {
+        if count >= u64::from(*min_count) {
             if oligo_set.contains(&(kmer & mask)) {
-                kmers_match.insert(kmer, count);
+                kmers_match.insert(&kmer, &count)?;
             } else if rc_oligo_set.contains(&(kmer & rc_mask)) {
                 // The primer matches the reverse complement orientation of this kmer,
                 // so insert the revcomp form for correct graph construction
-                let rc_kmer = crate::kmer::revcomp_kmer(kmer, &k);
-                kmers_match.insert(&rc_kmer, count);
+                let rc_kmer = crate::kmer::revcomp_kmer(&kmer, &k);
+                kmers_match.insert(&rc_kmer, &count)?;
             }
         }
-    }
+        Ok(())
+    })?;
 
-    kmers_match
+    Ok(kmers_match)
 }
 
 // Individual steps in the PCR process
@@ -567,32 +570,35 @@ pub(super) fn get_kmers_from_primers(
     primer_variants: &HashSet<String>,
     kmer_counts: &FilteredKmerCounts,
     min_count: &u32,
-) -> Result<KmerCounts> {
+) -> Result<PrimerKmers> {
     // Get the kmers that contain the primers
     let mut oligos: Vec<Oligo> = Vec::new();
     for variant in primer_variants.iter() {
         oligos.push(string_to_oligo(variant)?);
     }
 
-    Ok(find_oligos_in_kmers(&oligos, kmer_counts, min_count))
+    find_oligos_in_kmers(&oligos, kmer_counts, min_count)
 }
 
-/// Hard-cap a KmerCounts to at most `max_primer_kmers` entries.
+/// Hard-cap directional primer candidates to at most `max_primer_kmers` entries.
 /// Sorts by count descending, then by kmer value ascending (deterministic
 /// tiebreaker). Keeps exactly `min(len, max_primer_kmers)` entries.
 #[cfg(test)]
-pub(super) fn filter_primer_kmers(matches: KmerCounts, max_primer_kmers: usize) -> KmerCounts {
+pub(super) fn filter_primer_kmers(
+    matches: PrimerKmers,
+    max_primer_kmers: usize,
+) -> Result<PrimerKmers> {
     if matches.len() <= max_primer_kmers {
-        return matches;
+        return Ok(matches);
     }
 
     // Collect (kmer, count) pairs and sort: count DESC, kmer ASC
-    let mut entries: Vec<(u64, u32)> = matches.iter().map(|(k, c)| (*k, *c)).collect();
+    let mut entries: Vec<(u64, u64)> = matches.iter().map(|(k, c)| (*k, *c)).collect();
     entries.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
 
-    let mut result = KmerCounts::new(&matches.get_k());
+    let mut result = PrimerKmers::new(&matches.get_k())?;
     for &(kmer, count) in entries.iter().take(max_primer_kmers) {
-        result.insert(&kmer, &count);
+        result.insert(&kmer, &count)?;
     }
 
     debug!(
@@ -602,7 +608,7 @@ pub(super) fn filter_primer_kmers(matches: KmerCounts, max_primer_kmers: usize) 
         entries[max_primer_kmers - 1].1
     );
 
-    result
+    Ok(result)
 }
 
 /// Discover primer kmers round by round, one mismatch level at a time.
@@ -615,8 +621,8 @@ fn discover_primer_kmers_by_round(
     min_count: &u32,
     max_primer_kmers: usize,
     gene_name: &str,
-) -> Result<KmerCounts> {
-    let mut result = KmerCounts::new(&kmer_counts.get_k());
+) -> Result<PrimerKmers> {
+    let mut result = PrimerKmers::new(&kmer_counts.get_k())?;
 
     for (mismatch_level, variants) in variant_levels.iter().enumerate() {
         if result.len() >= max_primer_kmers {
@@ -630,7 +636,7 @@ fn discover_primer_kmers_by_round(
         let round_kmers = get_kmers_from_primers(variants, kmer_counts, min_count)?;
 
         // Filter out kmers already found at lower mismatch levels
-        let mut new_entries: Vec<(u64, u32)> = Vec::new();
+        let mut new_entries: Vec<(u64, u64)> = Vec::new();
         for (kmer, count) in round_kmers.iter() {
             if result.get(kmer).is_none() {
                 new_entries.push((*kmer, *count));
@@ -649,7 +655,7 @@ fn discover_primer_kmers_by_round(
         let take = new_entries.len().min(remaining);
 
         for &(kmer, count) in new_entries.iter().take(take) {
-            result.insert(&kmer, &count);
+            result.insert(&kmer, &count)?;
         }
 
         gene_info!(
@@ -677,7 +683,7 @@ fn discover_primer_kmers_by_round(
 pub(super) fn get_primer_kmers(
     params: &PCRParams,
     kmer_counts: &FilteredKmerCounts,
-) -> Result<(KmerCounts, KmerCounts)> {
+) -> Result<(PrimerKmers, PrimerKmers)> {
     // Preprocess the primers into mismatch-level groups
     let forward_levels =
         preprocess_primer_by_mismatch(params, PrimerDirection::Forward, &kmer_counts.get_k())?;
@@ -846,7 +852,7 @@ mod tests {
         let filtered = kmer_counts.filtered_view(1);
 
         let oligo = string_to_oligo("ACG").unwrap();
-        let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &1).unwrap();
 
         // Kmers in ACGTACGT: ACGTA, CGTAC, GTACG, TACGT
         // Forward match (starts with ACG): ACGTA
@@ -865,7 +871,7 @@ mod tests {
         let filtered = kmer_counts.filtered_view(1);
 
         let oligo = string_to_oligo("GGG").unwrap();
-        let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &1).unwrap();
 
         assert_eq!(result.len(), 0, "Should find no matching kmers");
     }
@@ -880,7 +886,7 @@ mod tests {
         let filtered = kmer_counts.filtered_view(1);
 
         let oligo = string_to_oligo("AAC").unwrap();
-        let result = find_oligos_in_kmers(&[oligo], &filtered, &2);
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &2).unwrap();
 
         assert_eq!(
             result.len(),
@@ -900,7 +906,7 @@ mod tests {
         let filtered = kmer_counts.filtered_view(1);
 
         let oligo = string_to_oligo("AAA").unwrap();
-        let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &1).unwrap();
 
         assert!(
             !result.is_empty(),
@@ -924,7 +930,7 @@ mod tests {
         // oligo length = k-1 = 4: matches any kmer starting with "ACGT"
         let oligo = string_to_oligo("ACGT").unwrap();
         assert_eq!(oligo.length, k - 1);
-        let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &1).unwrap();
 
         assert!(
             !result.is_empty(),
@@ -936,8 +942,8 @@ mod tests {
 
     #[test]
     fn test_filter_primer_kmers_empty() {
-        let empty = KmerCounts::new(&5);
-        let result = filter_primer_kmers(empty, 10);
+        let empty = PrimerKmers::new(&5).unwrap();
+        let result = filter_primer_kmers(empty, 10).unwrap();
         assert_eq!(result.len(), 0);
     }
 
@@ -945,16 +951,16 @@ mod tests {
     fn test_filter_primer_kmers_cap() {
         // Insert 5 kmers with different counts, cap at 3
         let k = 5;
-        let mut counts = KmerCounts::new(&k);
+        let mut counts = PrimerKmers::new(&k).unwrap();
         for (i, seq) in ["AAAAA", "AAAAC", "AAACG", "AACGT", "ACGTA"]
             .iter()
             .enumerate()
         {
             let kmer = crate::kmer::seq_to_kmer(seq).unwrap();
-            let count = (i + 1) as u32; // counts: 1, 2, 3, 4, 5
-            counts.insert(&kmer, &count);
+            let count = (i + 1) as u64; // counts: 1, 2, 3, 4, 5
+            counts.insert(&kmer, &count).unwrap();
         }
-        let result = filter_primer_kmers(counts, 3);
+        let result = filter_primer_kmers(counts, 3).unwrap();
         // Top 3 by count: 5, 4, 3 → 3 kmers retained
         assert_eq!(result.len(), 3);
     }
@@ -965,13 +971,13 @@ mod tests {
         // Old implementation would keep all 5 (leaky cap).
         // New implementation must keep exactly 3, breaking ties by kmer value.
         let k = 5;
-        let mut counts = KmerCounts::new(&k);
+        let mut counts = PrimerKmers::new(&k).unwrap();
         for seq in ["AAAAA", "AAAAC", "AAACG", "AACGT", "ACGTA"] {
             let kmer = crate::kmer::seq_to_kmer(seq).unwrap();
-            let count = 2u32; // all same count
-            counts.insert(&kmer, &count);
+            let count = 2u64; // all same count
+            counts.insert(&kmer, &count).unwrap();
         }
-        let result = filter_primer_kmers(counts, 3);
+        let result = filter_primer_kmers(counts, 3).unwrap();
         assert_eq!(
             result.len(),
             3,
@@ -983,12 +989,12 @@ mod tests {
     fn test_filter_primer_kmers_under_cap() {
         // Insert 2 kmers, cap at 5 — should keep all
         let k = 5;
-        let mut counts = KmerCounts::new(&k);
+        let mut counts = PrimerKmers::new(&k).unwrap();
         for seq in ["AAAAA", "AAAAC"] {
             let kmer = crate::kmer::seq_to_kmer(seq).unwrap();
-            counts.insert(&kmer, &3);
+            counts.insert(&kmer, &3).unwrap();
         }
-        let result = filter_primer_kmers(counts, 5);
+        let result = filter_primer_kmers(counts, 5).unwrap();
         assert_eq!(result.len(), 2, "Should keep all when under cap");
     }
 

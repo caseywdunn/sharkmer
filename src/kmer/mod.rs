@@ -2,6 +2,7 @@
 //! This module provides kmer functions.
 
 // V4 reservations are wired into candidate stores before production migration.
+pub mod access;
 #[allow(dead_code)]
 pub mod budget;
 pub mod chunk;
@@ -9,19 +10,22 @@ pub mod counting;
 pub mod encoding;
 pub mod histogram;
 pub mod identity;
+pub mod primers;
 // Exact backend conformance layer; production dispatch migrates under #140.
 #[allow(dead_code)]
 pub mod store;
 
 // Re-export public items so that `crate::kmer::X` continues to work.
+pub use access::FilteredKmerCounts;
 pub use chunk::Chunk;
-pub use counting::{FilteredKmerCounts, KmerCounts};
+pub use counting::KmerCounts;
 #[allow(unused_imports)]
 pub use encoding::{
     Read, count_valid_bases, kmer_last_base, kmer_to_seq, kmers_from_ascii, revcomp_kmer,
     seq_to_kmer, seq_to_reads,
 };
 pub use histogram::Histogram;
+pub use primers::PrimerKmers;
 
 #[cfg(test)]
 mod tests {
