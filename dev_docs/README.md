@@ -8,6 +8,7 @@ implementation descriptions, and dated evidence have different roles.
 | Document | Use |
 | --- | --- |
 | [PLAN.md](PLAN.md) | Active v4+ work, dependencies, resource contracts, acceptance gates, and outstanding distribution follow-up. |
+| [COUNT_STORE_CONTRACTS.md](COUNT_STORE_CONTRACTS.md) | v4 identity, exact-count, replay, and resource contracts; implementation status is explicit. |
 | [OVERVIEW.md](OVERVIEW.md) | Architecture checked against the v3.2.1 implementation; update with code changes. |
 | [SEQUENCE_ANNOTATIONS.md](SEQUENCE_ANNOTATIONS.md) | Canonical annotation meanings, omission rules, compatibility, and deferred v4 cleanup. |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Build, quality checks, branches, and release procedure. |
