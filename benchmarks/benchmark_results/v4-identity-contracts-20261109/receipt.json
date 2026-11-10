@@ -1,0 +1,13 @@
+{
+  "base_commit": "58e27d3432e06ad813903d701aeee8653c15c8fe",
+  "job_id": 32722125,
+  "status": "passed",
+  "rust_tests_per_backend": 286,
+  "python_tests": 213,
+  "public_references": 158,
+  "schemas": 10,
+  "panel_exports": 9,
+  "loader_checks": 19,
+  "default_binary_sha256": "57e5afd74849519d53487bb1e1c4891ea5b556eb176e84d9d4c3733c43d31240",
+  "scope": "typed identity/positioned extraction correctness and collecting-wrapper compatibility; no counting-backend performance or biological accuracy claim"
+}

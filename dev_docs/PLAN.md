@@ -121,7 +121,7 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
   consumers. **Compatibility gate (agent-checkable): not met.** The v3.2 warning
   revision does not implement or waive this work; default read-support
   assessment and new biological claims remain separate inference scope.
-- [ ] [#139](https://github.com/caseywdunn/sharkmer/issues/139) — Define exact count-store, replay-source, and assembly evidence interfaces.
+- [ ] [#139](https://github.com/caseywdunn/sharkmer/issues/139) — Define exact count-store, replay-source, and assembly evidence interfaces. [Contracts and implementation status](COUNT_STORE_CONTRACTS.md). Typed identity/extraction gate: **met 2026-11-09**, [correctness evidence](../benchmarks/benchmark_results/v4-identity-contracts-20261109/README.md). Store/replay and combined-budget integration remain open.
 - [ ] [#140](https://github.com/caseywdunn/sharkmer/issues/140) — Remove redundant table consolidation and per-read allocations from sPCR counting.
 - [ ] [#141](https://github.com/caseywdunn/sharkmer/issues/141) — Parallelize ingestion with bounded queues and measured shard ownership.
 - [ ] [#142](https://github.com/caseywdunn/sharkmer/issues/142) — Benchmark packed k-mer tables while retaining exact abundance.

@@ -5,6 +5,12 @@ point for v4. Checked against the source on 2026-11-09. Update this overview
 when implementation changes; [PLAN.md](PLAN.md) holds proposed work and gates.
 [CONTRIBUTING.md](../CONTRIBUTING.md) describes builds, checks, and releases.
 
+V4 development now adds typed canonical/oriented keys and positioned rolling
+extraction in [`kmer/identity.rs`](../src/kmer/identity.rs). The existing encoder
+collects those windows under the released validation policy. The counter and
+replay descriptions below remain the baseline; their replacement is tracked in
+[COUNT_STORE_CONTRACTS.md](COUNT_STORE_CONTRACTS.md).
+
 ## Pipeline
 
 ```mermaid

@@ -5,6 +5,7 @@ pub mod chunk;
 pub mod counting;
 pub mod encoding;
 pub mod histogram;
+pub mod identity;
 
 // Re-export public items so that `crate::kmer::X` continues to work.
 pub use chunk::Chunk;
