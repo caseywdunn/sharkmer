@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Add a development comparison path for direct exact counting from reusable,
+  bounded FASTQ buffers. It preserves selected-record identity and moves its
+  final table into assembly without consolidation. Backend selection remains
+  pending measured performance gates; incremental counting retains its existing
+  implementation (#139, #140).
+
 - Separate directional primer candidates from global counts and carry exact
   u64 abundance through assembly thresholds, graph edges and sequence metrics.
   Assembly access now propagates count-store failures rather than treating

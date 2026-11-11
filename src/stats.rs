@@ -57,6 +57,34 @@ pub(crate) struct InputSourceStats {
     pub(crate) max_reads: u64,
 }
 
+/// Count identity and owned buffer measurements; these are not process RSS.
+#[derive(Serialize)]
+pub(crate) struct CountStoreSummary {
+    pub(crate) format_version: u32,
+    pub(crate) backend: &'static str,
+    pub(crate) hash_algorithm: &'static str,
+    pub(crate) count_width_bits: u8,
+    pub(crate) overflow_policy: &'static str,
+    pub(crate) preprocessing: &'static str,
+    pub(crate) canonicalization: &'static str,
+    pub(crate) selected_input_sha256: String,
+    pub(crate) distinct_keys: u64,
+    pub(crate) occurrences: u64,
+    pub(crate) owned_slot_bytes: usize,
+    pub(crate) peak_slot_bytes: usize,
+    pub(crate) peak_record_buffer_bytes: u64,
+    pub(crate) peak_count_input_reserved_bytes: u64,
+}
+
+/// Optional all-entry equivalence evidence; absent unless explicitly requested.
+#[derive(Serialize)]
+pub(crate) struct CountFingerprint {
+    pub(crate) algorithm: &'static str,
+    pub(crate) distinct_keys: u64,
+    pub(crate) occurrences: u64,
+    pub(crate) pair_digest: String,
+}
+
 /// Structured run statistics, serialized as YAML.
 #[derive(Serialize)]
 pub(crate) struct RunStats {
@@ -81,6 +109,10 @@ pub(crate) struct RunStats {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) n_singleton_kmers: Option<u64>,
     pub(crate) count_table_capacity: usize,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) count_store: Option<CountStoreSummary>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) count_fingerprint: Option<CountFingerprint>,
     pub(crate) peak_memory_bytes: u64,
     pub(crate) stage_timings: StageTimings,
     #[serde(skip_serializing_if = "Vec::is_empty")]

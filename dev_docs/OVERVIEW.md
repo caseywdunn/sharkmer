@@ -9,7 +9,7 @@ V4 development now adds typed canonical/oriented keys and positioned rolling
 extraction in [`kmer/identity.rs`](../src/kmer/identity.rs), an exact-store candidate,
 shared resource reservations and fallible assembly access. The existing encoder
 collects those windows under the released validation policy. The normal ingestion
-and replay paths below still use the baseline implementation; migration is tracked in
+and replay defaults below still use the baseline implementation; migration is tracked in
 [COUNT_STORE_CONTRACTS.md](COUNT_STORE_CONTRACTS.md).
 
 ## Pipeline
@@ -35,7 +35,7 @@ per-target assembly; FASTA records are written sequentially afterward.
 | Module | Responsibility |
 | --- | --- |
 | [`cli.rs`](../src/cli.rs) | Parse arguments, collect panels/primers, validate limits, apply runtime overrides, resolve sample identity, and handle early exits. |
-| [`io.rs`](../src/io.rs) | Read local files, stdin, or ENA sources; count selected FASTQ records; finalize chunks; replay reads for optional threading. |
+| [`io.rs`](../src/io.rs), [`fastq.rs`](../src/fastq.rs) | Acquire selected FASTQ records; retain legacy chunking or exercise direct exact counting and bounded reusable parsing; replay reads for optional threading. |
 | [`cache.rs`](../src/cache.rs) | Manage owned, checksummed remote-read cache entries and cooperating-user leases. |
 | [`kmer/encoding.rs`](../src/kmer/encoding.rs) | Two-bit DNA encoding, canonical k-mers, and invalid-base window breaks. |
 | [`kmer/counting.rs`](../src/kmer/counting.rs) | Legacy u32 hash-map storage, lookup and incremental merging. |
@@ -78,6 +78,15 @@ snapshots produce `.histo` and `.final.histo` files. Removing redundant
 consolidation and per-read allocation from normal sPCR is planned in
 [#140](https://github.com/caseywdunn/sharkmer/issues/140). The existing global
 count store is in memory; bounded external counting/lookup remains future work.
+
+A hidden development selector, `--count-backend memory`, exercises the direct
+exact path for `--chunks 0`. It uses one reusable bounded FASTQ arena per reader,
+streams windows into the exact u64 builder, records selected-read identity, and
+moves the finalized table into assembly without chunk consolidation. Separate
+slot/arena limits account for owned buffers; they are not a complete process
+RAM bound. Default selection waits for the frozen paired performance gates.
+See [COUNT_STORE_CONTRACTS.md](COUNT_STORE_CONTRACTS.md) for the precise current
+scope, verification fingerprints and remaining resource/replay requirements.
 
 ## Optional read replay
 

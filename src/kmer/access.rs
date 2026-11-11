@@ -27,7 +27,6 @@ impl<'a> FilteredKmerCounts<'a> {
     }
 
     /// Borrow a finalized exact store without collecting another global table.
-    #[allow(dead_code)] // Production counter selection follows under #140.
     pub fn from_store(store: &'a dyn CountStore, minimum: u64) -> Self {
         Self {
             source: Source::Exact(store),

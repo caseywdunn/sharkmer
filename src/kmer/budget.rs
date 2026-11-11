@@ -37,6 +37,7 @@ pub struct ResourceSnapshot {
     pub reserved_memory_bytes: u64,
     pub peak_reserved_memory_bytes: u64,
     pub reserved_by_class: [u64; CLASSES],
+    pub peak_reserved_by_class: [u64; CLASSES],
     pub reserved_temporary_disk_bytes: u64,
     pub peak_reserved_temporary_disk_bytes: u64,
     pub valid: bool,
@@ -73,6 +74,7 @@ impl ResourceBudget {
                 reserved_memory_bytes: memory_bytes,
                 peak_reserved_memory_bytes: memory_bytes,
                 reserved_by_class: [0; CLASSES],
+                peak_reserved_by_class: [0; CLASSES],
                 reserved_temporary_disk_bytes: 0,
                 peak_reserved_temporary_disk_bytes: 0,
                 valid: true,
@@ -120,6 +122,7 @@ impl ResourceBudget {
             "Combined live memory reservations exceed the run limit"
         );
         state.reserved_by_class[index] = class_bytes;
+        state.peak_reserved_by_class[index] = state.peak_reserved_by_class[index].max(class_bytes);
         state.reserved_memory_bytes = memory_bytes;
         state.peak_reserved_memory_bytes = state.peak_reserved_memory_bytes.max(memory_bytes);
         Ok(())

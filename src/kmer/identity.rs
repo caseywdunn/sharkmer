@@ -131,6 +131,7 @@ pub struct KmerWindows<'a> {
     forward: u64,
     reverse: u64,
     valid: usize,
+    valid_bases_seen: usize,
 }
 
 impl<'a> KmerWindows<'a> {
@@ -145,7 +146,13 @@ impl<'a> KmerWindows<'a> {
             forward: 0,
             reverse: 0,
             valid: 0,
+            valid_bases_seen: 0,
         })
+    }
+
+    /// Number of ACGT bytes processed so far, including runs shorter than k.
+    pub fn valid_bases_seen(&self) -> usize {
+        self.valid_bases_seen
     }
 }
 
@@ -175,6 +182,7 @@ impl Iterator for KmerWindows<'_> {
             self.forward = ((self.forward << 2) | base) & self.mask;
             self.reverse = (self.reverse >> 2) | ((3 - base) << (2 * (self.size.get() - 1)));
             self.valid += 1;
+            self.valid_bases_seen += 1;
             if self.valid >= self.size.get() {
                 return Some(Ok(KmerWindow {
                     start: position + 1 - self.size.get(),

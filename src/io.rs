@@ -1,10 +1,16 @@
+use crate::kmer::budget::{MemoryClass, ResourceBudget, ResourceLimits};
+use crate::kmer::identity::{KmerSize, KmerWindows};
+use crate::kmer::store::{CountStore, MemoryCountBuilder, MemoryCountStore};
 use anyhow::{Context, Result, bail, ensure};
 use indicatif::{ProgressBar, ProgressStyle};
 use log::{debug, info, warn};
+use sha2::{Digest, Sha256};
 use std::io::BufRead;
 use std::io::IsTerminal;
 use std::io::Write;
+use std::num::NonZeroU64;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use crate::cli::Args;
 use crate::format::{format_bytes, format_count, format_duration};
@@ -204,13 +210,185 @@ pub(crate) struct FastqReadState {
     pub(crate) seqs: Vec<String>,
     pub(crate) n_reads_read: u64,
     pub(crate) n_bases_read: u64,
+    direct: Option<DirectCounter>,
+}
+
+struct DirectCounter {
+    builder: MemoryCountBuilder,
+    budget: Arc<ResourceBudget>,
+    record_bytes: usize,
+    k: usize,
+    valid_bases: u64,
+    occurrences: u64,
+    selected_digest: Sha256,
+}
+
+impl DirectCounter {
+    fn new(k: usize, slot_bytes: u64, record_bytes: usize) -> Result<Self> {
+        let input_bytes = u64::try_from(record_bytes)?
+            .checked_mul(4)
+            .context("FASTQ buffer budget overflow")?;
+        let mut classes = [0; 8];
+        classes[MemoryClass::CountSlots as usize] = slot_bytes;
+        classes[MemoryClass::InputBuffer as usize] = input_bytes;
+        let budget = ResourceBudget::new(ResourceLimits {
+            memory_bytes: slot_bytes
+                .checked_add(input_bytes)
+                .context("Count/input reservation overflow")?,
+            process_overhead_bytes: 0,
+            class_bytes: classes,
+            temporary_disk_bytes: 0,
+        })?;
+        let builder =
+            MemoryCountBuilder::with_budget(KmerSize::new(k)?, Arc::clone(&budget), 1024)?;
+        let mut selected_digest = Sha256::new();
+        selected_digest.update(b"sharkmer-selected-fastq-v1\0");
+        Ok(Self {
+            builder,
+            budget,
+            record_bytes,
+            k,
+            valid_bases: 0,
+            occurrences: 0,
+            selected_digest,
+        })
+    }
+
+    fn ingest(&mut self, fields: [&[u8]; 4], source: &str, index: u64, mate: Mate) -> Result<()> {
+        let mut windows = KmerWindows::new(fields[1], self.k)?;
+        let one = NonZeroU64::new(1).context("Positive count increment is zero")?;
+        let mut occurrences = 0u64;
+        for window in windows.by_ref() {
+            self.builder.add(window?.canonical, one)?;
+            occurrences = occurrences
+                .checked_add(1)
+                .context("Read k-mer count overflow")?;
+        }
+        self.occurrences = self
+            .occurrences
+            .checked_add(occurrences)
+            .context("Input k-mer count overflow")?;
+        self.valid_bases = self
+            .valid_bases
+            .checked_add(u64::try_from(windows.valid_bases_seen())?)
+            .context("Input valid-base count overflow")?;
+        self.selected_digest.update(index.to_le_bytes());
+        self.selected_digest.update([match mate {
+            Mate::Unpaired => 0,
+            Mate::R1 => 1,
+            Mate::R2 => 2,
+        }]);
+        // Length framing prevents ambiguous concatenations; delimiters are not
+        // part of logical identity, so LF and CRLF describe the same records.
+        for value in std::iter::once(source.as_bytes()).chain(fields) {
+            self.selected_digest
+                .update(u64::try_from(value.len())?.to_le_bytes());
+            self.selected_digest.update(value);
+        }
+        Ok(())
+    }
+}
+
+/// Finalized global counts; the legacy path retains its released precision.
+pub(crate) enum FinalCounts {
+    Legacy(KmerCounts),
+    Exact {
+        store: Box<MemoryCountStore>,
+        peak_record_buffer_bytes: u64,
+        peak_count_input_reserved_bytes: u64,
+    },
+}
+
+impl FinalCounts {
+    /// Borrow an assembly view without copying global counts.
+    pub(crate) fn filtered_view(&self, minimum: u32) -> kmer::FilteredKmerCounts<'_> {
+        match self {
+            Self::Legacy(counts) => counts.filtered_view(minimum),
+            Self::Exact { store, .. } => {
+                kmer::FilteredKmerCounts::from_store(store.as_ref(), u64::from(minimum))
+            }
+        }
+    }
+
+    /// Report owned count slots, not a distinct-key count.
+    pub(crate) fn capacity(&self) -> usize {
+        match self {
+            Self::Legacy(counts) => counts.capacity(),
+            Self::Exact { store, .. } => store.capacity(),
+        }
+    }
+
+    /// Describe actual exact counting when that backend was used.
+    pub(crate) fn summary(&self) -> Option<crate::stats::CountStoreSummary> {
+        let Self::Exact {
+            store,
+            peak_record_buffer_bytes,
+            peak_count_input_reserved_bytes,
+        } = self
+        else {
+            return None;
+        };
+        let metadata = store.metadata();
+        Some(crate::stats::CountStoreSummary {
+            format_version: metadata.format_version,
+            backend: metadata.backend,
+            hash_algorithm: metadata.hash_algorithm,
+            count_width_bits: metadata.count_width_bits,
+            overflow_policy: metadata.overflow_policy,
+            preprocessing: metadata.preprocessing,
+            canonicalization: metadata.canonicalization,
+            selected_input_sha256: metadata
+                .selected_input_sha256
+                .iter()
+                .map(|byte| format!("{byte:02x}"))
+                .collect(),
+            distinct_keys: metadata.distinct_keys,
+            occurrences: metadata.occurrences,
+            owned_slot_bytes: store.slot_bytes(),
+            peak_slot_bytes: store.peak_slot_bytes(),
+            peak_record_buffer_bytes: *peak_record_buffer_bytes,
+            peak_count_input_reserved_bytes: *peak_count_input_reserved_bytes,
+        })
+    }
+
+    /// Order-independent fingerprint of all full key/count pairs. This opt-in
+    /// verification scan is excluded from ordinary counting/timing runs.
+    pub(crate) fn fingerprint(&self) -> Result<crate::stats::CountFingerprint> {
+        let view = self.filtered_view(0);
+        let mut xor = [0u8; 32];
+        let mut distinct = 0u64;
+        let mut occurrences = 0u64;
+        view.visit(&mut |bits, count| {
+            let mut hash = Sha256::new();
+            hash.update(b"sharkmer-count-pair-v1\0");
+            hash.update(u64::try_from(view.get_k())?.to_le_bytes());
+            hash.update(bits.to_le_bytes());
+            hash.update(count.to_le_bytes());
+            for (destination, byte) in xor.iter_mut().zip(hash.finalize()) {
+                *destination ^= byte;
+            }
+            distinct = distinct
+                .checked_add(1)
+                .context("Fingerprint cardinality overflow")?;
+            occurrences = occurrences
+                .checked_add(count)
+                .context("Fingerprint occurrence overflow")?;
+            Ok(())
+        })?;
+        Ok(crate::stats::CountFingerprint {
+            algorithm: "sha256_pair_xor_v1",
+            distinct_keys: distinct,
+            occurrences,
+            pair_digest: xor.iter().map(|byte| format!("{byte:02x}")).collect(),
+        })
+    }
 }
 
 /// Build a context-rich error message for an I/O error that occurred mid-stream
 /// during FASTQ reading. Distinguishes abrupt connection drops (the common ENA
 /// failure mode) from actual FASTQ parse issues, and suggests the cache as a
 /// workaround when streaming fails.
-fn stream_io_error(
+pub(crate) fn stream_io_error(
     line_role: &str,
     err: &std::io::Error,
     source_name: &str,
@@ -276,6 +454,16 @@ fn read_fastq<R: BufRead>(
     source_name: &str,
     progress: &ProgressBar,
 ) -> Result<bool> {
+    if state.direct.is_some() {
+        return read_fastq_direct(
+            reader,
+            state,
+            max_reads,
+            validate_every,
+            source_name,
+            progress,
+        );
+    }
     let mut lines = reader.lines();
     let n_chunks = state.chunks.len();
 
@@ -351,8 +539,138 @@ fn read_fastq<R: BufRead>(
     Ok(false) // did not reach max reads (EOF)
 }
 
+fn direct_reader<R: BufRead>(
+    reader: R,
+    state: &FastqReadState,
+) -> Result<crate::fastq::FastqReader<R>> {
+    let counter = state.direct.as_ref().context("Missing direct counter")?;
+    crate::fastq::FastqReader::new(reader, counter.record_bytes, Arc::clone(&counter.budget))
+}
+
+fn ingest_direct_record(
+    fields: [&[u8]; 4],
+    state: &mut FastqReadState,
+    validate_every: u64,
+    source: &str,
+    mate: Mate,
+) -> Result<()> {
+    let should_validate =
+        state.n_reads_read == 0 || (validate_every > 0 && state.n_reads_read % validate_every == 0);
+    if should_validate {
+        validate_fastq_record(
+            std::str::from_utf8(fields[0])?,
+            std::str::from_utf8(fields[1])?,
+            std::str::from_utf8(fields[2])?,
+            std::str::from_utf8(fields[3])?,
+            fields[1].len(),
+            state.n_reads_read,
+        )?;
+    }
+    let records = state
+        .n_reads_read
+        .checked_add(1)
+        .context("FASTQ record count overflow")?;
+    let bases = state
+        .n_bases_read
+        .checked_add(u64::try_from(fields[1].len())?)
+        .context("FASTQ base count overflow")?;
+    state
+        .direct
+        .as_mut()
+        .context("Missing direct counter")?
+        .ingest(fields, source, state.n_reads_read, mate)?;
+    state.n_reads_read = records;
+    state.n_bases_read = bases;
+    Ok(())
+}
+
+fn read_fastq_direct<R: BufRead>(
+    reader: R,
+    state: &mut FastqReadState,
+    max_reads: u64,
+    validate_every: u64,
+    source: &str,
+    progress: &ProgressBar,
+) -> Result<bool> {
+    let mut reader = direct_reader(reader, state)?;
+    while reader.next(source, state.n_reads_read)? {
+        ingest_direct_record(
+            reader.fields(),
+            state,
+            validate_every,
+            source,
+            Mate::Unpaired,
+        )?;
+        if state.n_reads_read % N_READS_PER_BATCH == 0 {
+            progress.set_position(state.n_reads_read);
+        }
+        if max_reads > 0 && state.n_reads_read >= max_reads {
+            progress.set_position(state.n_reads_read);
+            return Ok(true);
+        }
+    }
+    Ok(false)
+}
+
+#[allow(clippy::too_many_arguments)]
+fn read_fastq_paired_direct<R1: BufRead, R2: BufRead>(
+    reader1: R1,
+    reader2: R2,
+    state: &mut FastqReadState,
+    max_reads: u64,
+    validate_every: u64,
+    source1: &str,
+    source2: &str,
+    progress: &ProgressBar,
+) -> Result<bool> {
+    let mut reader1 = direct_reader(reader1, state)?;
+    let mut reader2 = direct_reader(reader2, state)?;
+    let mut counts = [0u64; 2];
+    loop {
+        if !reader1.next(source1, state.n_reads_read)? {
+            // Preserve the released selection at uneven EOF: the first extra
+            // record from the longer file is included before the warning.
+            if reader2.next(source2, state.n_reads_read)? {
+                ingest_direct_record(reader2.fields(), state, validate_every, source2, Mate::R2)?;
+                counts[1] += 1;
+            }
+            break;
+        }
+        ingest_direct_record(reader1.fields(), state, validate_every, source1, Mate::R1)?;
+        counts[0] += 1;
+        if state.n_reads_read % N_READS_PER_BATCH == 0 {
+            progress.set_position(state.n_reads_read);
+        }
+        if max_reads > 0 && state.n_reads_read >= max_reads {
+            return Ok(true);
+        }
+        if !reader2.next(source2, state.n_reads_read)? {
+            break;
+        }
+        ingest_direct_record(reader2.fields(), state, validate_every, source2, Mate::R2)?;
+        counts[1] += 1;
+        if state.n_reads_read % N_READS_PER_BATCH == 0 {
+            progress.set_position(state.n_reads_read);
+        }
+        if max_reads > 0 && state.n_reads_read >= max_reads {
+            return Ok(true);
+        }
+    }
+    progress.set_position(state.n_reads_read);
+    if counts[0] != counts[1] {
+        warn!(
+            "Paired-end input length mismatch: {} has {} reads, {} has {} reads. The first unmatched read was included; later unmatched reads were not selected.",
+            source1, counts[0], source2, counts[1]
+        );
+    }
+    Ok(false)
+}
+
 /// Drain accumulated sequences into the current chunk.
 fn drain_batch(state: &mut FastqReadState, n_chunks: usize) -> Result<()> {
+    if state.direct.is_some() {
+        return Ok(());
+    }
     for seq in state.seqs.drain(..) {
         state.chunks[state.chunk_index].ingest_seq(&seq)?;
     }
@@ -370,12 +688,17 @@ pub(crate) fn ingest_reads(
     cache_config: Option<&crate::cache::CacheConfig>,
     show_progress: bool,
 ) -> Result<(FastqReadState, u64, u64, u64, ReadPlan)> {
-    let _ = k;
     let start = std::time::Instant::now();
     info!("Ingesting reads...");
 
     // When chunks == 0, allocate 1 internal chunk for kmer storage (needed for sPCR)
-    let n_chunks = if args.chunks == 0 { 1 } else { args.chunks };
+    let n_chunks = if args.count_backend == "memory" {
+        0
+    } else if args.chunks == 0 {
+        1
+    } else {
+        args.chunks
+    };
     let chunks: Vec<kmer::Chunk> = (0..n_chunks).map(|_| Chunk::new(&k)).collect();
 
     let mut state = FastqReadState {
@@ -384,6 +707,17 @@ pub(crate) fn ingest_reads(
         seqs: Vec::new(),
         n_reads_read: 0,
         n_bases_read: 0,
+        direct: if args.count_backend == "memory" {
+            Some(DirectCounter::new(
+                k,
+                args.count_slot_budget_mib
+                    .checked_mul(1 << 20)
+                    .context("Count slot budget overflow")?,
+                args.fastq_record_bytes,
+            )?)
+        } else {
+            None
+        },
     };
 
     let mut max_reads = args.max_reads.unwrap_or(0);
@@ -552,6 +886,11 @@ pub(crate) fn ingest_reads(
         n_bases_ingested += chunk.get_n_bases();
         n_kmers_ingested += chunk.get_n_kmers();
     }
+    if let Some(counter) = &state.direct {
+        n_reads_ingested = state.n_reads_read;
+        n_bases_ingested = counter.valid_bases;
+        n_kmers_ingested = counter.occurrences;
+    }
 
     info!(
         "Read {} reads, {} bases",
@@ -639,6 +978,18 @@ fn read_fastq_paired<R1: BufRead, R2: BufRead>(
     source2_name: &str,
     progress: &ProgressBar,
 ) -> Result<bool> {
+    if state.direct.is_some() {
+        return read_fastq_paired_direct(
+            reader1,
+            reader2,
+            state,
+            max_reads,
+            validate_every,
+            source1_name,
+            source2_name,
+            progress,
+        );
+    }
     let mut lines1 = reader1.lines();
     let mut lines2 = reader2.lines();
     let n_chunks = state.chunks.len();
@@ -984,7 +1335,37 @@ pub(crate) fn consolidate_and_histogram(
     directory: &str,
     n_kmers_ingested: u64,
     show_progress: bool,
-) -> Result<(KmerCounts, Option<u64>)> {
+) -> Result<(FinalCounts, Option<u64>)> {
+    if let Some(counter) = state.direct.take() {
+        ensure!(
+            args.chunks == 0 && state.chunks.is_empty(),
+            "Exact counter cannot finalize legacy chunks"
+        );
+        let snapshot = counter.budget.snapshot();
+        // Input arenas have been dropped; only the moved count buffer remains.
+        let peak_record_buffer_bytes =
+            snapshot.peak_reserved_by_class[MemoryClass::InputBuffer as usize];
+        let store = counter
+            .builder
+            .finalize(counter.selected_digest.finalize().into());
+        ensure!(
+            store.metadata().occurrences == n_kmers_ingested,
+            "Exact count total differs from selected windows"
+        );
+        info!(
+            "Finalized {} exact unique kmers with a total count of {} without consolidation",
+            store.metadata().distinct_keys,
+            n_kmers_ingested
+        );
+        return Ok((
+            FinalCounts::Exact {
+                store: Box::new(store),
+                peak_record_buffer_bytes,
+                peak_count_input_reserved_bytes: snapshot.peak_reserved_memory_bytes,
+            },
+            None,
+        ));
+    }
     let spinner_msg = if args.chunks > 0 {
         "Consolidating kmer counts..."
     } else {
@@ -1159,7 +1540,7 @@ pub(crate) fn consolidate_and_histogram(
         );
     }
 
-    Ok((kmer_counts, n_singleton_kmers))
+    Ok((FinalCounts::Legacy(kmer_counts), n_singleton_kmers))
 }
 
 #[cfg(test)]
@@ -1192,6 +1573,7 @@ mod tests {
             seqs: Vec::new(),
             n_reads_read: 0,
             n_bases_read: 0,
+            direct: None,
         }
     }
 
@@ -1356,3 +1738,6 @@ mod tests {
         );
     }
 }
+
+#[cfg(test)]
+mod direct_tests;

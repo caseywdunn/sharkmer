@@ -8,6 +8,7 @@ use std::io::IsTerminal;
 
 mod cache;
 mod cli;
+mod fastq;
 mod format;
 mod io;
 mod kmer;
@@ -236,6 +237,12 @@ fn main() -> Result<()> {
         n_multi_kmers: n_singleton_kmers.map(|s| n_kmers_ingested.saturating_sub(s)),
         n_singleton_kmers,
         count_table_capacity,
+        count_store: kmer_counts.summary(),
+        count_fingerprint: if args.count_fingerprint {
+            Some(kmer_counts.fingerprint()?)
+        } else {
+            None
+        },
         peak_memory_bytes: PEAK_ALLOC.peak_usage() as u64,
         stage_timings: StageTimings {
             read_ingest_s,

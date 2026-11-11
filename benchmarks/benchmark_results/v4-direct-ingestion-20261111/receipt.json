@@ -1,0 +1,14 @@
+{
+  "status": "passed",
+  "base_commit": "86bd93f0d68bb2e24bd65317ab66649ee7b30552",
+  "job_id": 32945384,
+  "rust_tests_per_backend": 310,
+  "python_tests": 213,
+  "references": 158,
+  "schemas": 10,
+  "exports": 9,
+  "loader_checks": 19,
+  "candidate_binary_sha256": "2e050adbc3018058711d5e992090c78faa880401f2392df975332525b558f255",
+  "source_files": 86,
+  "scope": "direct-ingestion comparison path; default selection, whole-process resource ownership, external storage and replay remain open"
+}

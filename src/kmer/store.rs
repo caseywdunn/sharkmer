@@ -329,6 +329,16 @@ pub struct MemoryCountStore {
 }
 
 impl MemoryCountStore {
+    /// Number of owned hash slots (including vacant slots).
+    pub fn capacity(&self) -> usize {
+        self.table.slots.len()
+    }
+
+    /// Bytes currently owned by the finalized slot buffer, excluding overhead.
+    pub fn slot_bytes(&self) -> usize {
+        self.table.slots.capacity() * std::mem::size_of::<Slot>()
+    }
+
     /// Peak owned slot bytes, including simultaneous old/new resize buffers.
     /// This excludes allocator/process overhead and is not an RSS measurement.
     pub fn peak_slot_bytes(&self) -> usize {
