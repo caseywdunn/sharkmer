@@ -35,6 +35,22 @@ def save(path: Path, value: dict[str, Any]) -> None:
     temporary.replace(path)
 
 
+def warning_status(value: str) -> str:
+    """Use the released warning label for historical uncertainty inventories."""
+    return "warning" if value in ("uncertain", "warning") else value
+
+
+def expected_records(sample: dict[str, Any]) -> list[dict[str, Any]]:
+    """Normalize historical labels without changing identities or sequences."""
+    return sorted(
+        [
+            {**row, "assembly_status": warning_status(row["assembly_status"])}
+            for row in sample["expected_records"]
+        ],
+        key=lambda row: row["id"],
+    )
+
+
 def records(directory: Path) -> list[dict[str, Any]]:
     """Read complete record identities and warning reasons from FASTA outputs."""
     observed = []
@@ -49,7 +65,9 @@ def records(directory: Path) -> list[dict[str, Any]]:
                     "gene": fields.get("target", fields.get("gene")),
                     "length": len(sequence),
                     "sha256": hashlib.sha256(sequence.encode()).hexdigest(),
-                    "assembly_status": fields.get("assembly_status", "standard"),
+                    "assembly_status": warning_status(
+                        fields.get("assembly_status", "standard")
+                    ),
                     "assembly_status_causes": sorted(
                         fields.get("assembly_status_causes", "").split(",")
                     )
@@ -215,7 +233,7 @@ def main() -> None:
         verify_inputs(protocol)
         for sample in protocol["samples"]:
             accession = sample["accession"]
-            expected = sorted(sample["expected_records"], key=lambda row: row["id"])
+            expected = expected_records(sample)
             inventory = None
             fingerprints = []
             schedule = [
