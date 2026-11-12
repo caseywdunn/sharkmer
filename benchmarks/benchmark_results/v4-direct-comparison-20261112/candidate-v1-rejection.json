@@ -1,0 +1,130 @@
+{
+  "status": "rejected",
+  "reason": "Completed sample medians violate the unchanged per-sample wall gate; the run also stopped on a missing historical warning-label normalization in the harness.",
+  "completed_samples": 5,
+  "completed_invocations": 50,
+  "partial_diagnostic_summary": {
+    "samples": [
+      {
+        "accession": "SRR9278435",
+        "medians": {
+          "baseline": {
+            "wall_s": 51.05,
+            "rss_bytes": 4568735744,
+            "allocator_peak_bytes": 4563459119,
+            "finalize_s": 4.906088775
+          },
+          "candidate": {
+            "wall_s": 69.89,
+            "rss_bytes": 3226550272,
+            "allocator_peak_bytes": 3221264584,
+            "finalize_s": 1.405e-06
+          }
+        },
+        "wall_ratio": 1.3690499510284035,
+        "wall_limit_s": 53.6025,
+        "rss_limit_bytes": 4660110458.88,
+        "wall_passed": false,
+        "rss_passed": true
+      },
+      {
+        "accession": "SRR25099394",
+        "medians": {
+          "baseline": {
+            "wall_s": 35.68,
+            "rss_bytes": 4568948736,
+            "allocator_peak_bytes": 4563459135,
+            "finalize_s": 5.103189536
+          },
+          "candidate": {
+            "wall_s": 60.64,
+            "rss_bytes": 3226550272,
+            "allocator_peak_bytes": 3221264598,
+            "finalize_s": 1.373e-06
+          }
+        },
+        "wall_ratio": 1.6995515695067265,
+        "wall_limit_s": 37.464,
+        "rss_limit_bytes": 4660327710.72,
+        "wall_passed": false,
+        "rss_passed": true
+      },
+      {
+        "accession": "SRR8617500",
+        "medians": {
+          "baseline": {
+            "wall_s": 42.17,
+            "rss_bytes": 4568928256,
+            "allocator_peak_bytes": 4563459119,
+            "finalize_s": 4.999848396
+          },
+          "candidate": {
+            "wall_s": 67.0,
+            "rss_bytes": 3226554368,
+            "allocator_peak_bytes": 3221264584,
+            "finalize_s": 1.389e-06
+          }
+        },
+        "wall_ratio": 1.5888072089162912,
+        "wall_limit_s": 44.2785,
+        "rss_limit_bytes": 4660306821.12,
+        "wall_passed": false,
+        "rss_passed": true
+      },
+      {
+        "accession": "SRR17535371",
+        "medians": {
+          "baseline": {
+            "wall_s": 1.68,
+            "rss_bytes": 22949888,
+            "allocator_peak_bytes": 17883528,
+            "finalize_s": 0.009181126
+          },
+          "candidate": {
+            "wall_s": 2.53,
+            "rss_bytes": 17776640,
+            "allocator_peak_bytes": 12623903,
+            "finalize_s": 1.274e-06
+          }
+        },
+        "wall_ratio": 1.505952380952381,
+        "wall_limit_s": 1.764,
+        "rss_limit_bytes": 39727104,
+        "wall_passed": false,
+        "rss_passed": true
+      },
+      {
+        "accession": "SRR22396603",
+        "medians": {
+          "baseline": {
+            "wall_s": 37.13,
+            "rss_bytes": 4568248320,
+            "allocator_peak_bytes": 4563456806,
+            "finalize_s": 5.201859702
+          },
+          "candidate": {
+            "wall_s": 58.65,
+            "rss_bytes": 3226411008,
+            "allocator_peak_bytes": 3221262269,
+            "finalize_s": 1.288e-06
+          }
+        },
+        "wall_ratio": 1.5795852410449769,
+        "wall_limit_s": 38.98650000000001,
+        "rss_limit_bytes": 4659613286.4,
+        "wall_passed": false,
+        "rss_passed": true
+      }
+    ],
+    "geomean_wall_ratio": 1.544670419487565,
+    "performance_gates_passed": false,
+    "scope": "paired two-thread performance and all-entry count fingerprints; thread/build agreement is a separate gate"
+  },
+  "scope": "partial diagnostics only; not a completed ten-input promotion evaluation",
+  "source_commit": "27ea351",
+  "candidate_binary_sha256": "2e050adbc3018058711d5e992090c78faa880401f2392df975332525b558f255",
+  "baseline_binary_sha256": "0d57521d5c6060df3e954d366b72fdccb0b3e40f9532162b400d62b14a59109c",
+  "protocol_sha256": "95d4b27b2e3aa5f8f2382b4b005ea27fcae25d32f4e60d2ae7c525b8cc6a0bfa",
+  "terminal_job_id": 32947879,
+  "terminal_job_state": "FAILED"
+}

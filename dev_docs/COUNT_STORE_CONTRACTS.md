@@ -212,3 +212,11 @@ XOR digest, distinct cardinality and checked occurrence total support
 order-independent backend comparisons. This scan is excluded from normal
 operation and timed promotion runs. The paired comparison harness checks it
 separately before timing each input against the immutable v3.2.1 binary.
+
+The [independent paired audit](../benchmarks/benchmark_results/v4-direct-comparison-20261112/README.md)
+verifies all 100 revised-candidate invocations, but rejects the custom table on
+the unchanged performance gates. The [compatibility refinement](../benchmarks/benchmark_results/v4-direct-refinement-20261112/README.md)
+preserves the released separation of primer and graph thresholds: primer
+scans use the target's minimum on unfiltered entries; graph lookups use the
+global view threshold. A production table must pass these same semantics and
+the frozen quantitative gates before default selection.

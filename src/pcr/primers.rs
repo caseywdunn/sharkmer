@@ -465,7 +465,9 @@ fn find_oligos_in_kmers(
         .map(|oligo| crate::kmer::revcomp_kmer(&oligo.kmer, &oligo_length))
         .collect();
 
-    kmers.visit(&mut |kmer, count| {
+    // The released primer scan used all underlying entries and its target's
+    // min_count; the global graph-view threshold must not change seed choice.
+    kmers.visit_unfiltered(&mut |kmer, count| {
         if count >= u64::from(*min_count) {
             if oligo_set.contains(&(kmer & mask)) {
                 kmers_match.insert(&kmer, &count)?;
@@ -861,6 +863,37 @@ mod tests {
             !result.is_empty(),
             "Should find at least one kmer matching oligo ACG"
         );
+    }
+
+    #[test]
+    fn primer_scan_preserves_target_threshold_when_graph_filter_is_stricter() {
+        use crate::kmer::identity::{CanonicalKey, KmerSize};
+        use crate::kmer::store::MemoryCountBuilder;
+        use std::num::NonZeroU64;
+        let counts = build_kmer_counts("AACCCAACC", 5);
+        let size = KmerSize::new(5).unwrap();
+        let mut builder = MemoryCountBuilder::new(size, 4096, 8).unwrap();
+        for (&bits, &count) in counts.iter() {
+            builder
+                .add(
+                    CanonicalKey::new(bits, size).unwrap(),
+                    NonZeroU64::new(u64::from(count)).unwrap(),
+                )
+                .unwrap();
+        }
+        let store = builder.finalize([0; 32]);
+        for view in [
+            counts.filtered_view(2),
+            FilteredKmerCounts::from_store(&store, 2),
+        ] {
+            let oligo = string_to_oligo("AAC").unwrap();
+            let matches = find_oligos_in_kmers(&[oligo], &view, &1).unwrap();
+            assert!(!matches.is_empty());
+            for (&bits, &count) in matches.iter() {
+                assert_eq!(count, 1);
+                assert_eq!(view.get_canonical(&bits).unwrap(), None);
+            }
+        }
     }
 
     #[test]

@@ -1,0 +1,73 @@
+Running "module reset". Resetting modules to system default. The following $MODULEPATH directories have been removed: None
+{
+  "verification": "passed",
+  "invocations": 100,
+  "samples": 10,
+  "records": 287,
+  "all_count_fingerprints_agree": true,
+  "geomean_wall_ratio": 1.2846253579067939,
+  "promotion_gates_passed": false,
+  "sample_performance": [
+    {
+      "accession": "SRR9278435",
+      "wall_ratio": 1.2097422558524473,
+      "wall_passed": false,
+      "rss_passed": true
+    },
+    {
+      "accession": "SRR25099394",
+      "wall_ratio": 1.1454269065112745,
+      "wall_passed": false,
+      "rss_passed": true
+    },
+    {
+      "accession": "SRR8617500",
+      "wall_ratio": 1.1881298992161253,
+      "wall_passed": false,
+      "rss_passed": true
+    },
+    {
+      "accession": "SRR17535371",
+      "wall_ratio": 1.427947598253275,
+      "wall_passed": false,
+      "rss_passed": true
+    },
+    {
+      "accession": "SRR22396603",
+      "wall_ratio": 1.1966726084373145,
+      "wall_passed": false,
+      "rss_passed": true
+    },
+    {
+      "accession": "SRR31887760",
+      "wall_ratio": 1.3533244483933067,
+      "wall_passed": false,
+      "rss_passed": false
+    },
+    {
+      "accession": "SRR1057608",
+      "wall_ratio": 1.5481220657276997,
+      "wall_passed": false,
+      "rss_passed": false
+    },
+    {
+      "accession": "SRR27962769",
+      "wall_ratio": 1.1608955223880597,
+      "wall_passed": false,
+      "rss_passed": true
+    },
+    {
+      "accession": "SRR25378184",
+      "wall_ratio": 1.1913427561837457,
+      "wall_passed": false,
+      "rss_passed": true
+    },
+    {
+      "accession": "ERR14009273",
+      "wall_ratio": 1.501468189233279,
+      "wall_passed": false,
+      "rss_passed": true
+    }
+  ],
+  "scope": "independent raw-artifact/count/record/gate audit; a rejected candidate remains rejected"
+}
