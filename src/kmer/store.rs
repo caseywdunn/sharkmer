@@ -1,6 +1,6 @@
 //! Exact v4 count-store interface and in-memory conformance candidate.
 //!
-//! The slot budget covers owned table buffers, including both sides of a
+//! The table budget covers owned table buffers, including both sides of a
 //! resize. Callers must separately reserve process/allocator overhead, input
 //! buffers, graphs and evidence before using this as a production backend.
 
@@ -168,29 +168,30 @@ impl Table {
             "Count table resize needs {peak} table bytes; budget is {}",
             self.table_budget_bytes
         );
-        let mut reservation = self
+        let reservation = self
             .budget
             .reserve(MemoryClass::CountSlots, u64::try_from(bound)?)?;
-        let mut replacement = CountMap::with_hasher(self.map.hasher().clone());
-        replacement
-            .try_reserve(capacity)
+        let additional = capacity
+            .checked_sub(self.map.len())
+            .context("Invalid count table capacity")?;
+        // The library reserves a replacement before moving existing entries;
+        // failure preserves its contents. Keep both ownership charges live
+        // through that operation, without a second insertion pass of our own.
+        self.map
+            .try_reserve(additional)
             .map_err(|error| anyhow::anyhow!("Unable to reserve exact count table: {error:?}"))?;
-        let allocated = replacement.allocation_size();
+        let allocated = self.map.allocation_size();
+        // The old allocation is now freed. Attach the new guard before any
+        // subsequent invariant/accounting error can leave this table uncharged.
+        self.table_reservation = Some(reservation);
         ensure!(
-            allocated <= bound && replacement.capacity() >= capacity,
+            allocated <= bound && self.map.capacity() >= capacity,
             "Count table allocation differs from its pinned reservation bound"
         );
-        reservation.resize(u64::try_from(allocated)?)?;
-        // Every fallible allocation/check precedes mutation of accepted counts.
-        // This pre-sized destination has room for all old entries plus the new
-        // key. Built-in integer hashing invokes no user code and cannot fail.
-        for (key, count) in self.map.drain() {
-            replacement.insert(key, count);
+        if let Some(reservation) = &mut self.table_reservation {
+            reservation.resize(u64::try_from(allocated)?)?;
         }
-        debug_assert_eq!(replacement.allocation_size(), allocated);
         self.peak_table_bytes = self.peak_table_bytes.max(old_bytes + allocated);
-        self.map = replacement;
-        self.table_reservation = Some(reservation);
         Ok(())
     }
 
@@ -206,7 +207,7 @@ pub struct MemoryCountBuilder {
 }
 
 impl MemoryCountBuilder {
-    /// Reserve table buffers within a caller-provided slot budget.
+    /// Reserve table buffers within a caller-provided table budget.
     pub fn new(k: KmerSize, table_budget_bytes: usize, max_lookup_batch: usize) -> Result<Self> {
         let bytes = u64::try_from(table_budget_bytes)?;
         let mut classes = [0; 8];
@@ -247,6 +248,7 @@ impl MemoryCountBuilder {
 
     /// Add a positive exact count. Validation/overflow/capacity errors preserve
     /// previously accepted counts and totals; the caller must fail publication.
+    #[inline]
     pub fn add(&mut self, key: CanonicalKey, increment: NonZeroU64) -> Result<()> {
         self.table.check_key(key)?;
         let total = self
@@ -322,7 +324,7 @@ impl MemoryCountStore {
         self.table.map.allocation_size()
     }
 
-    /// Peak owned slot bytes, including simultaneous old/new resize buffers.
+    /// Peak owned table bytes, including simultaneous old/new resize buffers.
     /// This excludes allocator/process overhead and is not an RSS measurement.
     pub fn peak_table_bytes(&self) -> usize {
         self.table.peak_table_bytes

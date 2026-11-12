@@ -226,9 +226,11 @@ hasher and full u64 keys/counts. The exact dependency pin protects the audited
 pre-allocation bound: `(u64,u64)` buckets require 16 bytes plus a control byte
 per bucket and at most sixteen trailing control bytes. Capacity starts at
 fourteen entries and doubles at the library's 7/8 load factor. Reserve the
-old allocation plus the new conservative bound before calling `try_reserve`
-on an empty destination; check its public `allocation_size()` before moving
-accepted entries. All fallible operations precede draining the old table.
+old allocation plus the new conservative bound before calling `try_reserve`.
+The library reserves replacement storage before moving entries and preserves
+accepted contents on allocation failure. Keep both guards live through that
+operation, then replace the freed allocation's guard and check the public
+`allocation_size()`. This avoids a second key-insertion pass during growth.
 An existing key can still be updated at full capacity without reserving growth.
 Layout tests exercise the bound over multiple growth sizes; a dependency update
 must recheck this layout and the actual resource/performance gates.

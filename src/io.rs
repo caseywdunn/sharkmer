@@ -224,15 +224,15 @@ struct DirectCounter {
 }
 
 impl DirectCounter {
-    fn new(k: usize, slot_bytes: u64, record_bytes: usize) -> Result<Self> {
+    fn new(k: usize, table_bytes: u64, record_bytes: usize) -> Result<Self> {
         let input_bytes = u64::try_from(record_bytes)?
             .checked_mul(4)
             .context("FASTQ buffer budget overflow")?;
         let mut classes = [0; 8];
-        classes[MemoryClass::CountSlots as usize] = slot_bytes;
+        classes[MemoryClass::CountSlots as usize] = table_bytes;
         classes[MemoryClass::InputBuffer as usize] = input_bytes;
         let budget = ResourceBudget::new(ResourceLimits {
-            memory_bytes: slot_bytes
+            memory_bytes: table_bytes
                 .checked_add(input_bytes)
                 .context("Count/input reservation overflow")?,
             process_overhead_bytes: 0,
@@ -310,7 +310,7 @@ impl FinalCounts {
         }
     }
 
-    /// Report owned count slots, not a distinct-key count.
+    /// Report usable entry capacity, not a distinct-key count.
     pub(crate) fn capacity(&self) -> usize {
         match self {
             Self::Legacy(counts) => counts.capacity(),
@@ -712,7 +712,7 @@ pub(crate) fn ingest_reads(
                 k,
                 args.count_table_budget_mib
                     .checked_mul(1 << 20)
-                    .context("Count slot budget overflow")?,
+                    .context("Count table budget overflow")?,
                 args.fastq_record_bytes,
             )?)
         } else {
