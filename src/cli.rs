@@ -213,6 +213,22 @@ pub(crate) struct Args {
     #[arg(long, default_value_t = 0, help_heading = "Incremental counting")]
     pub(crate) chunks: usize,
 
+    /// Development comparison only; default selection waits for measured gates.
+    #[arg(long, hide = true, value_parser = ["legacy", "memory"], default_value = "legacy")]
+    pub(crate) count_backend: String,
+
+    /// Verify every count pair in a separate, opt-in scan; excluded from timing.
+    #[arg(long, hide = true)]
+    pub(crate) count_fingerprint: bool,
+
+    /// Owned count-slot bytes, including resize buffers; not a process RAM cap.
+    #[arg(long, hide = true, default_value_t = 8192)]
+    pub(crate) count_slot_budget_mib: u64,
+
+    /// Maximum four-line FASTQ record size, including line delimiters.
+    #[arg(long, hide = true, default_value_t = 16777216)]
+    pub(crate) fastq_record_bytes: usize,
+
     /// Maximum histogram count value
     #[arg(long, default_value_t = 10000, help_heading = "Incremental counting")]
     pub(crate) histo_max: u64,
@@ -700,6 +716,22 @@ pub(crate) fn validate_args(args: &Args, pcr_runs: &[pcr::PCRParams]) -> Result<
     ensure!(k % 2 == 1, "k must be odd");
     ensure!(args.histo_max > 0, "histo_max must be greater than 0");
     ensure!(
+        args.fastq_record_bytes > 0,
+        "FASTQ record byte limit must be positive"
+    );
+    ensure!(
+        args.count_slot_budget_mib > 0,
+        "Count slot budget must be positive"
+    );
+    ensure!(
+        args.count_backend != "memory" || args.chunks == 0,
+        "The exact memory backend requires --chunks 0; incremental histograms use the legacy counter"
+    );
+    ensure!(
+        !args.paired || args.max_reads != Some(u64::MAX),
+        "Paired --max-reads cannot be rounded above u64::MAX"
+    );
+    ensure!(
         args.histo_max <= 1_000_000,
         "histo_max must not exceed 1000000, got {}",
         args.histo_max
@@ -924,6 +956,35 @@ mod tests {
         let params = collect_pcr_params(&args).unwrap();
 
         assert!(!params.is_empty());
+    }
+
+    #[test]
+    fn direct_counter_controls_are_hidden_and_reject_incompatible_legacy_mode() {
+        let help = Args::try_parse_from(["sharkmer", "--help"])
+            .unwrap_err()
+            .to_string();
+        assert!(!help.contains("--count-backend"));
+        let args = Args::try_parse_from(["sharkmer", "--count-backend", "memory", "--chunks", "2"])
+            .unwrap();
+        assert!(
+            validate_args(&args, &[])
+                .unwrap_err()
+                .to_string()
+                .contains("requires --chunks 0")
+        );
+        let args = Args::try_parse_from([
+            "sharkmer",
+            "--paired",
+            "--max-reads",
+            "18446744073709551615",
+        ])
+        .unwrap();
+        assert!(
+            validate_args(&args, &[])
+                .unwrap_err()
+                .to_string()
+                .contains("rounded above u64::MAX")
+        );
     }
 
     #[test]

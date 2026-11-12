@@ -63,14 +63,13 @@ impl OrientedKey {
 
     /// Reverse-complement this identity while preserving its k.
     pub fn reverse_complement(self) -> Self {
-        let mut remaining = self.bits;
-        let mut bits = 0;
-        for _ in 0..self.size.get() {
-            bits = (bits << 2) | (3 - (remaining & 3));
-            remaining >>= 2;
-        }
+        // Reverse two-bit groups within each byte, then reverse byte order.
+        // Complementing before reversal maps each ACGT code to its partner.
+        let mut bits = !self.bits;
+        bits = ((bits & 0x3333_3333_3333_3333) << 2) | ((bits >> 2) & 0x3333_3333_3333_3333);
+        bits = ((bits & 0x0f0f_0f0f_0f0f_0f0f) << 4) | ((bits >> 4) & 0x0f0f_0f0f_0f0f_0f0f);
         Self {
-            bits,
+            bits: bits.swap_bytes() >> (64 - 2 * self.size.get()),
             size: self.size,
         }
     }
@@ -96,6 +95,14 @@ impl CanonicalKey {
     #[allow(dead_code)]
     pub fn new(bits: u64, size: KmerSize) -> Result<Self> {
         Ok(OrientedKey::new(bits, size)?.canonical())
+    }
+
+    /// Reconstruct an immutable memory-table key already validated by its
+    /// builder. Persisted unvalidated bytes must use checked constructors.
+    pub(super) fn from_stored(bits: u64, size: KmerSize) -> Self {
+        debug_assert_eq!(bits & !size.mask(), 0);
+        debug_assert!(bits <= (OrientedKey { bits, size }).reverse_complement().bits);
+        Self { bits, size }
     }
 
     /// Return the canonical encoding for internal packed storage.
@@ -131,6 +138,7 @@ pub struct KmerWindows<'a> {
     forward: u64,
     reverse: u64,
     valid: usize,
+    valid_bases_seen: usize,
 }
 
 impl<'a> KmerWindows<'a> {
@@ -145,7 +153,13 @@ impl<'a> KmerWindows<'a> {
             forward: 0,
             reverse: 0,
             valid: 0,
+            valid_bases_seen: 0,
         })
+    }
+
+    /// Number of ACGT bytes processed so far, including runs shorter than k.
+    pub fn valid_bases_seen(&self) -> usize {
+        self.valid_bases_seen
     }
 }
 
@@ -175,6 +189,7 @@ impl Iterator for KmerWindows<'_> {
             self.forward = ((self.forward << 2) | base) & self.mask;
             self.reverse = (self.reverse >> 2) | ((3 - base) << (2 * (self.size.get() - 1)));
             self.valid += 1;
+            self.valid_bases_seen += 1;
             if self.valid >= self.size.get() {
                 return Some(Ok(KmerWindow {
                     start: position + 1 - self.size.get(),
@@ -205,6 +220,38 @@ fn invalid_base(byte: u8) -> Result<KmerWindow> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn constant_work_reverse_complement_matches_scalar_at_every_supported_k() {
+        let mut state = 132_u64;
+        for k in 1..=31 {
+            let size = KmerSize::new(k).unwrap();
+            let mask = (1u64 << (2 * k)) - 1;
+            for _ in 0..1024 {
+                state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+                let bits = state & mask;
+                let mut remaining = bits;
+                let mut expected = 0;
+                for _ in 0..k {
+                    expected = (expected << 2) | (3 - (remaining & 3));
+                    remaining >>= 2;
+                }
+                let key = OrientedKey::new(bits, size).unwrap();
+                assert_eq!(key.reverse_complement().bits(), expected);
+                assert_eq!(key.reverse_complement().reverse_complement(), key);
+                assert_eq!(key.canonical().bits(), bits.min(expected));
+            }
+            for bits in [
+                0,
+                mask,
+                mask & 0x5555_5555_5555_5555,
+                mask & 0xaaaa_aaaa_aaaa_aaaa,
+            ] {
+                let key = OrientedKey::new(bits, size).unwrap();
+                assert_eq!(key.reverse_complement().reverse_complement(), key);
+            }
+        }
+    }
 
     // Deliberately scalar: re-encode each literal window independently rather
     // than sharing rolling state or the production reverse-complement routine.

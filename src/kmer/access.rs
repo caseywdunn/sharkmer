@@ -27,7 +27,6 @@ impl<'a> FilteredKmerCounts<'a> {
     }
 
     /// Borrow a finalized exact store without collecting another global table.
-    #[allow(dead_code)] // Production counter selection follows under #140.
     pub fn from_store(store: &'a dyn CountStore, minimum: u64) -> Self {
         Self {
             source: Source::Exact(store),
@@ -79,22 +78,25 @@ impl<'a> FilteredKmerCounts<'a> {
 
     /// Visit threshold-admitted entries once, propagating visitor/store errors.
     pub fn visit(&self, visitor: &mut dyn FnMut(u64, u64) -> Result<()>) -> Result<()> {
-        let mut admitted = |bits, count| {
+        self.visit_unfiltered(&mut |bits, count| {
             if count >= self.minimum {
                 visitor(bits, count)?;
             }
             Ok(())
-        };
+        })
+    }
+
+    /// Visit the underlying counts before the graph threshold is applied.
+    /// Primer seeding uses its own target threshold, as in released outputs.
+    pub fn visit_unfiltered(&self, visitor: &mut dyn FnMut(u64, u64) -> Result<()>) -> Result<()> {
         match self.source {
             Source::Legacy(counts) => {
                 for (&bits, &count) in counts.iter() {
-                    admitted(bits, u64::from(count))?;
+                    visitor(bits, u64::from(count))?;
                 }
                 Ok(())
             }
-            Source::Exact(store) => {
-                store.visit(&mut |key, count| admitted(key.bits(), count.get()))
-            }
+            Source::Exact(store) => store.visit(&mut |key, count| visitor(key.bits(), count.get())),
         }
     }
 }

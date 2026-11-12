@@ -329,6 +329,16 @@ pub struct MemoryCountStore {
 }
 
 impl MemoryCountStore {
+    /// Number of owned hash slots (including vacant slots).
+    pub fn capacity(&self) -> usize {
+        self.table.slots.len()
+    }
+
+    /// Bytes currently owned by the finalized slot buffer, excluding overhead.
+    pub fn slot_bytes(&self) -> usize {
+        self.table.slots.capacity() * std::mem::size_of::<Slot>()
+    }
+
     /// Peak owned slot bytes, including simultaneous old/new resize buffers.
     /// This excludes allocator/process overhead and is not an RSS measurement.
     pub fn peak_slot_bytes(&self) -> usize {
@@ -349,23 +359,17 @@ impl CountStore for MemoryCountStore {
     }
 
     fn lookup_oriented(&self, key: OrientedKey) -> Result<Option<NonZeroU64>> {
-        ensure!(
-            key.size() == self.metadata.k,
-            "Count key k differs from store k"
-        );
-        let first = self.table.slots[self.table.find(key.bits())?].count;
-        if let Some(count) = NonZeroU64::new(first) {
-            return Ok(Some(count));
-        }
-        Ok(NonZeroU64::new(
-            self.table.slots[self.table.find(key.reverse_complement().bits())?].count,
-        ))
+        // A single canonical probe avoids an extra random miss for reverse
+        // orientations; typed reverse complementation uses constant work.
+        self.lookup(key.canonical())
     }
 
     fn visit(&self, visitor: &mut dyn FnMut(CanonicalKey, NonZeroU64) -> Result<()>) -> Result<()> {
         for slot in &self.table.slots {
             if let Some(count) = NonZeroU64::new(slot.count) {
-                visitor(CanonicalKey::new(slot.key, self.metadata.k)?, count)?;
+                // Insertion accepts only validated CanonicalKey identities;
+                // visiting these immutable slots need not canonicalize again.
+                visitor(CanonicalKey::from_stored(slot.key, self.metadata.k), count)?;
             }
         }
         Ok(())

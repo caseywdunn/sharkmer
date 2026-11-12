@@ -1,0 +1,16 @@
+{
+  "v1": {
+    "source_commit": "27ea35171147fecaf757bb269eaefd3a244f43c9",
+    "members": 629,
+    "raw_bytes": 3538019,
+    "archive_bytes": 434330,
+    "archive_sha256": "9f97e12d327665be3e2e82d75707688c22d08fcbf01bdc62051c7ea5df63be32"
+  },
+  "v2": {
+    "source_commit": "724db896d66b9d17f5c27cd92aeef3c32e0191a8",
+    "members": 1451,
+    "raw_bytes": 38198891,
+    "archive_bytes": 4896591,
+    "archive_sha256": "43f6667dcf9278686b8e18125c935600637c0e9926b4164d5539e8dd220c4992"
+  }
+}

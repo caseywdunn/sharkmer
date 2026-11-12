@@ -5,7 +5,8 @@ This document defines the interfaces required by #140–#145. The current branch
 implements typed identities and positioned rolling extraction. An exact in-memory
 store candidate and shared-ledger conformance API now pass their focused tests.
 Assembly consumers now use fallible borrowed count access and retain u64 values;
-the normal ingestion counter and replay vector are still being migrated. The
+normal exact ingestion is now available through a hidden development selector,
+while default selection and the replay vector are still being migrated. The
 [active plan](PLAN.md) records verification and completion.
 
 ## Identity and preprocessing
@@ -163,7 +164,7 @@ already-saturated u32 values and does not claim exactness. `kmer::primers::Prime
 holds local directional candidates separately, with checked u64 addition.
 Thresholds, graph edges, path minima and warning-source thresholds retain u64
 counts; floating-point ranking statistics retain their existing interpretation.
-The CLI still selects the existing ingestion implementation pending #140 and
+The CLI defaults to the existing ingestion implementation pending #140 and
 the measured promotion gates. Persisted I/O integrity and whole-run resource
 enforcement are still required when those producers are integrated.
 
@@ -171,3 +172,51 @@ enforcement are still required when those producers are integrated.
 records exact/legacy product and repeat-warning agreement, large-count PCR and
 injected scan/lookup failures. This does not close the remaining frontend,
 replay, persisted-integrity or combined-resource gates.
+
+## Direct-ingestion comparison under #140
+
+`--count-backend memory` is a hidden development control until the frozen
+performance gates have been evaluated. It requires `--chunks 0`; explicit
+incremental counting stays on the released implementation. The direct path
+owns one logical builder, emits rolling canonical windows without a per-read
+vector, and finalizes by moving its allocation into the borrowed assembly path.
+Valid-base totals are gathered during rolling extraction, avoiding another
+sequence scan or a post-ingestion global count scan.
+
+`fastq::FastqReader` reuses one byte arena per source reader. Original header,
+sequence, separator and quality fields remain available until the next record.
+LF and CRLF delimiters are removed equivalently; other original bytes are
+retained. The parser preserves the released UTF-8 rejection and sampled
+structural-validation policy. Length/quality consistency is therefore only
+guaranteed at the configured validation points in this counting path; the
+quality-preserving replay producer still requires its own per-record validation.
+The record limit applies before allocation, including line delimiters. Shared
+reservations charge old and new arenas during growth and are released on EOF
+or failure. The selected-record digest uses a versioned domain, global index,
+mate tag, then length-framed source/header/sequence/separator/quality bytes.
+Effective caps remain in run metadata. Paired cap rounding and the released
+inclusion of the first unmatched record at uneven EOF remain explicit.
+
+The hidden `--count-slot-budget-mib` bounds owned count slots, including resize
+peaks. `--fastq-record-bytes` bounds each complete FASTQ arena. These controls
+are not whole-process RAM limits: allocator overhead, decompression/transport
+buffers, graphs and evidence still require migration. Exact runs report count
+precision, input identity and owned slot/record-buffer measurements under
+`count_store`. `peak_count_input_reserved_bytes` is logical shared reservation
+accounting; use allocator/RSS metrics separately. Default/legacy runs do not
+emit an unperformed exact-store assessment.
+
+The hidden `--count-fingerprint` performs an opt-in verification scan over all
+full key/count pairs, with k included in each pair hash. Its versioned SHA-256
+XOR digest, distinct cardinality and checked occurrence total support
+order-independent backend comparisons. This scan is excluded from normal
+operation and timed promotion runs. The paired comparison harness checks it
+separately before timing each input against the immutable v3.2.1 binary.
+
+The [independent paired audit](../benchmarks/benchmark_results/v4-direct-comparison-20261112/README.md)
+verifies all 100 revised-candidate invocations, but rejects the custom table on
+the unchanged performance gates. The [compatibility refinement](../benchmarks/benchmark_results/v4-direct-refinement-20261112/README.md)
+preserves the released separation of primer and graph thresholds: primer
+scans use the target's minimum on unfiltered entries; graph lookups use the
+global view threshold. A production table must pass these same semantics and
+the frozen quantitative gates before default selection.
