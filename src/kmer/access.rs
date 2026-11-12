@@ -2,11 +2,12 @@
 
 use super::counting::KmerCounts;
 use super::identity::{CanonicalKey, KmerSize, OrientedKey};
-use super::store::CountStore;
+use super::store::{CountStore, MemoryCountStore};
 use anyhow::Result;
 
 enum Source<'a> {
     Legacy(&'a KmerCounts),
+    Memory(&'a MemoryCountStore),
     Exact(&'a dyn CountStore),
 }
 
@@ -27,9 +28,18 @@ impl<'a> FilteredKmerCounts<'a> {
     }
 
     /// Borrow a finalized exact store without collecting another global table.
+    #[allow(dead_code)] // Opaque failure/disk adapters retain the shared boundary.
     pub fn from_store(store: &'a dyn CountStore, minimum: u64) -> Self {
         Self {
             source: Source::Exact(store),
+            minimum,
+        }
+    }
+
+    /// Borrow concrete memory storage so scans can inline their visitor.
+    pub fn from_memory(store: &'a MemoryCountStore, minimum: u64) -> Self {
+        Self {
+            source: Source::Memory(store),
             minimum,
         }
     }
@@ -39,6 +49,7 @@ impl<'a> FilteredKmerCounts<'a> {
         Self {
             source: match self.source {
                 Source::Legacy(counts) => Source::Legacy(counts),
+                Source::Memory(store) => Source::Memory(store),
                 Source::Exact(store) => Source::Exact(store),
             },
             minimum: self.minimum.max(minimum),
@@ -49,6 +60,7 @@ impl<'a> FilteredKmerCounts<'a> {
     pub fn get_k(&self) -> usize {
         match self.source {
             Source::Legacy(counts) => counts.get_k(),
+            Source::Memory(store) => store.metadata().k.get(),
             Source::Exact(store) => store.metadata().k.get(),
         }
     }
@@ -57,6 +69,9 @@ impl<'a> FilteredKmerCounts<'a> {
     pub fn get_canonical(&self, bits: &u64) -> Result<Option<u64>> {
         let count = match self.source {
             Source::Legacy(counts) => counts.get_canonical(bits).copied().map(u64::from),
+            Source::Memory(store) => store
+                .lookup_oriented(OrientedKey::new(*bits, store.metadata().k)?)?
+                .map(|count| count.get()),
             Source::Exact(store) => store
                 .lookup_oriented(OrientedKey::new(*bits, KmerSize::new(self.get_k())?)?)?
                 .map(|count| count.get()),
@@ -69,6 +84,9 @@ impl<'a> FilteredKmerCounts<'a> {
     pub fn get_canonical_count(&self, bits: &u64) -> Result<u64> {
         let count = match self.source {
             Source::Legacy(counts) => u64::from(counts.get_canonical_count(bits)),
+            Source::Memory(store) => store
+                .lookup(CanonicalKey::new(*bits, store.metadata().k)?)?
+                .map_or(0, |count| count.get()),
             Source::Exact(store) => store
                 .lookup(CanonicalKey::new(*bits, KmerSize::new(self.get_k())?)?)?
                 .map_or(0, |count| count.get()),
@@ -77,7 +95,7 @@ impl<'a> FilteredKmerCounts<'a> {
     }
 
     /// Visit threshold-admitted entries once, propagating visitor/store errors.
-    pub fn visit(&self, visitor: &mut dyn FnMut(u64, u64) -> Result<()>) -> Result<()> {
+    pub fn visit(&self, visitor: &mut impl FnMut(u64, u64) -> Result<()>) -> Result<()> {
         self.visit_unfiltered(&mut |bits, count| {
             if count >= self.minimum {
                 visitor(bits, count)?;
@@ -88,13 +106,16 @@ impl<'a> FilteredKmerCounts<'a> {
 
     /// Visit the underlying counts before the graph threshold is applied.
     /// Primer seeding uses its own target threshold, as in released outputs.
-    pub fn visit_unfiltered(&self, visitor: &mut dyn FnMut(u64, u64) -> Result<()>) -> Result<()> {
+    pub fn visit_unfiltered(&self, visitor: &mut impl FnMut(u64, u64) -> Result<()>) -> Result<()> {
         match self.source {
             Source::Legacy(counts) => {
                 for (&bits, &count) in counts.iter() {
                     visitor(bits, u64::from(count))?;
                 }
                 Ok(())
+            }
+            Source::Memory(store) => {
+                store.visit_entries(&mut |key, count| visitor(key.bits(), count.get()))
             }
             Source::Exact(store) => store.visit(&mut |key, count| visitor(key.bits(), count.get())),
         }

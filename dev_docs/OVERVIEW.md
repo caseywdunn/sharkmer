@@ -83,10 +83,14 @@ A hidden development selector, `--count-backend memory`, exercises the direct
 exact path for `--chunks 0`. It uses one reusable bounded FASTQ arena per reader,
 streams windows into the exact u64 builder, records selected-read identity, and
 moves the finalized table into assembly without chunk consolidation. Separate
-slot/arena limits account for owned buffers; they are not a complete process
+table/arena limits account for owned buffers; they are not a complete process
 RAM bound. Default selection waits for the frozen paired performance gates.
 See [COUNT_STORE_CONTRACTS.md](COUNT_STORE_CONTRACTS.md) for the precise current
 scope, verification fingerprints and remaining resource/replay requirements.
+After the custom linear-probing table failed the frozen performance gates,
+the development candidate uses a pinned Hashbrown table with full key/count
+precision, control-byte accounting and concrete memory-scan dispatch. Default
+selection remains pending a new paired measurement.
 
 ## Optional read replay
 

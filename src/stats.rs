@@ -70,8 +70,8 @@ pub(crate) struct CountStoreSummary {
     pub(crate) selected_input_sha256: String,
     pub(crate) distinct_keys: u64,
     pub(crate) occurrences: u64,
-    pub(crate) owned_slot_bytes: usize,
-    pub(crate) peak_slot_bytes: usize,
+    pub(crate) owned_table_bytes: usize,
+    pub(crate) peak_table_bytes: usize,
     pub(crate) peak_record_buffer_bytes: u64,
     pub(crate) peak_count_input_reserved_bytes: u64,
 }

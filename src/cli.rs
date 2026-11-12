@@ -221,9 +221,9 @@ pub(crate) struct Args {
     #[arg(long, hide = true)]
     pub(crate) count_fingerprint: bool,
 
-    /// Owned count-slot bytes, including resize buffers; not a process RAM cap.
+    /// Owned count-table bytes, including controls/resize; not a process RAM cap.
     #[arg(long, hide = true, default_value_t = 8192)]
-    pub(crate) count_slot_budget_mib: u64,
+    pub(crate) count_table_budget_mib: u64,
 
     /// Maximum four-line FASTQ record size, including line delimiters.
     #[arg(long, hide = true, default_value_t = 16777216)]
@@ -720,8 +720,8 @@ pub(crate) fn validate_args(args: &Args, pcr_runs: &[pcr::PCRParams]) -> Result<
         "FASTQ record byte limit must be positive"
     );
     ensure!(
-        args.count_slot_budget_mib > 0,
-        "Count slot budget must be positive"
+        args.count_table_budget_mib > 0,
+        "Count table budget must be positive"
     );
     ensure!(
         args.count_backend != "memory" || args.chunks == 0,

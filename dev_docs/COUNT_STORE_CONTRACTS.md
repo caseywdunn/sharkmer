@@ -137,7 +137,7 @@ snapshots.
 
 The `kmer::store` candidate implements exact lookup/iteration, bounded batches,
 non-copying filtered views, checked per-key/total overflow, move finalization,
-and slot-buffer limits including resize peaks. These are owned table-buffer
+and owned-table limits including resize peaks. These are owned table-buffer
 measurements, not complete process budgets. The shared `kmer::budget` ledger
 now enforces simultaneous stage reservations plus declared process overhead,
 with separate temporary-disk guards. It uses explicit `reserved_*` names to
@@ -197,11 +197,11 @@ mate tag, then length-framed source/header/sequence/separator/quality bytes.
 Effective caps remain in run metadata. Paired cap rounding and the released
 inclusion of the first unmatched record at uneven EOF remain explicit.
 
-The hidden `--count-slot-budget-mib` bounds owned count slots, including resize
+The hidden `--count-table-budget-mib` bounds owned count storage, including resize
 peaks. `--fastq-record-bytes` bounds each complete FASTQ arena. These controls
 are not whole-process RAM limits: allocator overhead, decompression/transport
 buffers, graphs and evidence still require migration. Exact runs report count
-precision, input identity and owned slot/record-buffer measurements under
+precision, input identity and owned table/record-buffer measurements under
 `count_store`. `peak_count_input_reserved_bytes` is logical shared reservation
 accounting; use allocator/RSS metrics separately. Default/legacy runs do not
 emit an unperformed exact-store assessment.
@@ -220,3 +220,24 @@ preserves the released separation of primer and graph thresholds: primer
 scans use the target's minimum on unfiltered entries; graph lookups use the
 global view threshold. A production table must pass these same semantics and
 the frozen quantitative gates before default selection.
+
+The replacement candidate uses Hashbrown 0.16.1 with the selected ahash/Fx
+hasher and full u64 keys/counts. The exact dependency pin protects the audited
+pre-allocation bound: `(u64,u64)` buckets require 16 bytes plus a control byte
+per bucket and at most sixteen trailing control bytes. Capacity starts at
+fourteen entries and doubles at the library's 7/8 load factor. Reserve the
+old allocation plus the new conservative bound before calling `try_reserve`
+on an empty destination; check its public `allocation_size()` before moving
+accepted entries. All fallible operations precede draining the old table.
+An existing key can still be updated at full capacity without reserving growth.
+Layout tests exercise the bound over multiple growth sizes; a dependency update
+must recheck this layout and the actual resource/performance gates.
+
+`count_store.owned_table_bytes` and `peak_table_bytes` include bucket/control
+allocation, unlike allocator overhead or process RSS. Earlier rejected
+prototype receipts retain their original `*_slot_bytes` names and meanings.
+Concrete memory access and visitors retain their types through assembly so
+the inner scan can inline its callback. Opaque stores retain the fallible
+trait interface, including injected I/O-error tests. This candidate still
+requires fresh measured promotion; the earlier table's correctness evidence
+does not establish its performance.

@@ -305,7 +305,7 @@ impl FinalCounts {
         match self {
             Self::Legacy(counts) => counts.filtered_view(minimum),
             Self::Exact { store, .. } => {
-                kmer::FilteredKmerCounts::from_store(store.as_ref(), u64::from(minimum))
+                kmer::FilteredKmerCounts::from_memory(store.as_ref(), u64::from(minimum))
             }
         }
     }
@@ -344,8 +344,8 @@ impl FinalCounts {
                 .collect(),
             distinct_keys: metadata.distinct_keys,
             occurrences: metadata.occurrences,
-            owned_slot_bytes: store.slot_bytes(),
-            peak_slot_bytes: store.peak_slot_bytes(),
+            owned_table_bytes: store.table_bytes(),
+            peak_table_bytes: store.peak_table_bytes(),
             peak_record_buffer_bytes: *peak_record_buffer_bytes,
             peak_count_input_reserved_bytes: *peak_count_input_reserved_bytes,
         })
@@ -710,7 +710,7 @@ pub(crate) fn ingest_reads(
         direct: if args.count_backend == "memory" {
             Some(DirectCounter::new(
                 k,
-                args.count_slot_budget_mib
+                args.count_table_budget_mib
                     .checked_mul(1 << 20)
                     .context("Count slot budget overflow")?,
                 args.fastq_record_bytes,

@@ -6,7 +6,7 @@
 
 use super::budget::{MemoryClass, MemoryReservation, ResourceBudget, ResourceLimits};
 use super::identity::{CanonicalKey, KmerSize, OrientedKey};
-use anyhow::{Context, Result, bail, ensure};
+use anyhow::{Context, Result, ensure};
 use std::num::NonZeroU64;
 use std::sync::Arc;
 
@@ -116,99 +116,81 @@ impl<'a> CountView<'a> {
     }
 }
 
-#[derive(Clone, Copy, Default)]
-struct Slot {
-    key: u64,
-    // Zero means vacant. An all-A key is valid because vacancy uses count.
-    count: u64,
-}
+type CountMap = hashbrown::HashMap<u64, u64, TableHasher>;
 
 struct Table {
     k: KmerSize,
-    slots: Vec<Slot>,
-    hasher: TableHasher,
-    len: usize,
+    map: CountMap,
     occurrences: u64,
-    slot_budget_bytes: usize,
+    table_budget_bytes: usize,
     budget: Arc<ResourceBudget>,
-    slot_reservation: Option<MemoryReservation>,
-    peak_slot_bytes: usize,
+    table_reservation: Option<MemoryReservation>,
+    peak_table_bytes: usize,
     max_lookup_batch: usize,
 }
 
 impl Table {
-    fn bytes(capacity: usize) -> Result<usize> {
+    // hashbrown 0.16.1, (u64,u64): 16 bytes per bucket, one control byte
+    // per bucket and at most 16 trailing control bytes. Normal growth starts
+    // with 14 entries and doubles, giving power-of-two bucket arrays at 7/8
+    // load. The pin and layout tests protect this pre-allocation bound.
+    fn allocation_bound(capacity: usize) -> Result<usize> {
+        ensure!(capacity >= 14, "Count table reservation is too small");
         capacity
-            .checked_mul(std::mem::size_of::<Slot>())
-            .context("Count slot byte size overflow")
-    }
-
-    fn home(&self, bits: u64, capacity: usize) -> usize {
-        std::hash::BuildHasher::hash_one(&self.hasher, bits) as usize & (capacity - 1)
-    }
-
-    fn find(&self, bits: u64) -> Result<usize> {
-        let capacity = self.slots.len();
-        ensure!(capacity.is_power_of_two(), "Invalid count table capacity");
-        let mut index = self.home(bits, capacity);
-        for _ in 0..capacity {
-            let slot = self.slots[index];
-            if slot.count == 0 || slot.key == bits {
-                return Ok(index);
-            }
-            index = (index + 1) & (capacity - 1);
-        }
-        bail!("Count table has no vacant slot")
+            .checked_mul(8)
+            .context("Count capacity overflow")?
+            .checked_div(7)
+            .context("Invalid count load factor")?
+            .checked_next_power_of_two()
+            .context("Count bucket overflow")?
+            .checked_mul(17)
+            .and_then(|bytes| bytes.checked_add(16))
+            .filter(|bytes| *bytes <= isize::MAX as usize - 15)
+            .context("Count table byte size overflow")
     }
 
     fn grow(&mut self) -> Result<()> {
-        let capacity = if self.slots.is_empty() {
-            16
+        let capacity = if self.map.capacity() == 0 {
+            14
         } else {
-            self.slots
-                .len()
+            self.map
+                .capacity()
                 .checked_mul(2)
                 .context("Count capacity overflow")?
         };
-        let old_bytes = Self::bytes(self.slots.capacity())?;
+        let bound = Self::allocation_bound(capacity)?;
+        let old_bytes = self.map.allocation_size();
         let peak = old_bytes
-            .checked_add(Self::bytes(capacity)?)
+            .checked_add(bound)
             .context("Count resize byte size overflow")?;
         ensure!(
-            peak <= self.slot_budget_bytes,
-            "Count table resize needs {peak} slot bytes; budget is {}",
-            self.slot_budget_bytes
+            peak <= self.table_budget_bytes,
+            "Count table resize needs {peak} table bytes; budget is {}",
+            self.table_budget_bytes
         );
-        let mut reservation = self.budget.reserve(
-            MemoryClass::CountSlots,
-            u64::try_from(Self::bytes(capacity)?)?,
-        )?;
-        let mut slots = Vec::new();
-        slots
-            .try_reserve_exact(capacity)
-            .context("Unable to reserve count table slots")?;
-        let actual_peak = old_bytes
-            .checked_add(Self::bytes(slots.capacity())?)
-            .context("Allocated count resize byte size overflow")?;
+        let mut reservation = self
+            .budget
+            .reserve(MemoryClass::CountSlots, u64::try_from(bound)?)?;
+        let mut replacement = CountMap::with_hasher(self.map.hasher().clone());
+        replacement
+            .try_reserve(capacity)
+            .map_err(|error| anyhow::anyhow!("Unable to reserve exact count table: {error:?}"))?;
+        let allocated = replacement.allocation_size();
         ensure!(
-            actual_peak <= self.slot_budget_bytes,
-            "Allocated count slots exceed their reservation"
+            allocated <= bound && replacement.capacity() >= capacity,
+            "Count table allocation differs from its pinned reservation bound"
         );
-        reservation.resize(u64::try_from(Self::bytes(slots.capacity())?)?)?;
-        slots.resize(capacity, Slot::default());
-        for slot in &self.slots {
-            if slot.count == 0 {
-                continue;
-            }
-            let mut index = self.home(slot.key, capacity);
-            while slots[index].count != 0 {
-                index = (index + 1) & (capacity - 1);
-            }
-            slots[index] = *slot;
+        reservation.resize(u64::try_from(allocated)?)?;
+        // Every fallible allocation/check precedes mutation of accepted counts.
+        // This pre-sized destination has room for all old entries plus the new
+        // key. Built-in integer hashing invokes no user code and cannot fail.
+        for (key, count) in self.map.drain() {
+            replacement.insert(key, count);
         }
-        self.peak_slot_bytes = self.peak_slot_bytes.max(actual_peak);
-        self.slots = slots;
-        self.slot_reservation = Some(reservation);
+        debug_assert_eq!(replacement.allocation_size(), allocated);
+        self.peak_table_bytes = self.peak_table_bytes.max(old_bytes + allocated);
+        self.map = replacement;
+        self.table_reservation = Some(reservation);
         Ok(())
     }
 
@@ -225,8 +207,8 @@ pub struct MemoryCountBuilder {
 
 impl MemoryCountBuilder {
     /// Reserve table buffers within a caller-provided slot budget.
-    pub fn new(k: KmerSize, slot_budget_bytes: usize, max_lookup_batch: usize) -> Result<Self> {
-        let bytes = u64::try_from(slot_budget_bytes)?;
+    pub fn new(k: KmerSize, table_budget_bytes: usize, max_lookup_batch: usize) -> Result<Self> {
+        let bytes = u64::try_from(table_budget_bytes)?;
         let mut classes = [0; 8];
         classes[MemoryClass::CountSlots as usize] = bytes;
         let budget = ResourceBudget::new(ResourceLimits {
@@ -248,17 +230,15 @@ impl MemoryCountBuilder {
             max_lookup_batch > 0,
             "Count lookup batch reservation must be positive"
         );
-        let slot_budget_bytes = usize::try_from(budget.class_limit(MemoryClass::CountSlots))?;
+        let table_budget_bytes = usize::try_from(budget.class_limit(MemoryClass::CountSlots))?;
         let mut table = Table {
             k,
-            slots: Vec::new(),
-            hasher: TableHasher::default(),
-            len: 0,
+            map: CountMap::with_hasher(TableHasher::default()),
             occurrences: 0,
-            slot_budget_bytes,
+            table_budget_bytes,
             budget,
-            slot_reservation: None,
-            peak_slot_bytes: 0,
+            table_reservation: None,
+            peak_table_bytes: 0,
             max_lookup_batch,
         };
         table.grow()?;
@@ -269,32 +249,35 @@ impl MemoryCountBuilder {
     /// previously accepted counts and totals; the caller must fail publication.
     pub fn add(&mut self, key: CanonicalKey, increment: NonZeroU64) -> Result<()> {
         self.table.check_key(key)?;
-        let mut index = self.table.find(key.bits())?;
-        let old = self.table.slots[index].count;
-        let count = old
-            .checked_add(increment.get())
-            .context("Exact k-mer count overflow")?;
         let total = self
             .table
             .occurrences
             .checked_add(increment.get())
             .context("Exact k-mer occurrence total overflow")?;
-        if old == 0 {
-            let length = self
-                .table
-                .len
-                .checked_add(1)
-                .context("Distinct k-mer cardinality overflow")?;
-            if length > self.table.slots.len() / 4 * 3 {
-                self.table.grow()?;
-                index = self.table.find(key.bits())?;
+        // At capacity, an existing count must remain updatable without a new
+        // allocation. Otherwise reserve before entry() could grow implicitly.
+        if self.table.map.len() == self.table.map.capacity() {
+            if let Some(count) = self.table.map.get_mut(&key.bits()) {
+                *count = count
+                    .checked_add(increment.get())
+                    .context("Exact k-mer count overflow")?;
+                self.table.occurrences = total;
+                return Ok(());
             }
-            self.table.len = length;
+            self.table.grow()?;
         }
-        self.table.slots[index] = Slot {
-            key: key.bits(),
-            count,
-        };
+        match self.table.map.entry(key.bits()) {
+            hashbrown::hash_map::Entry::Occupied(mut entry) => {
+                let count = entry
+                    .get()
+                    .checked_add(increment.get())
+                    .context("Exact k-mer count overflow")?;
+                *entry.get_mut() = count;
+            }
+            hashbrown::hash_map::Entry::Vacant(entry) => {
+                entry.insert(increment.get());
+            }
+        }
         self.table.occurrences = total;
         Ok(())
     }
@@ -305,13 +288,13 @@ impl MemoryCountBuilder {
             format_version: 1,
             k: self.table.k,
             count_width_bits: 64,
-            backend: "open_addressed_memory",
+            backend: "hashbrown_memory",
             hash_algorithm: TABLE_HASHER_NAME,
             canonicalization: "min_forward_reverse_complement",
             preprocessing: "uppercase_acgtn_n_breaks_windows",
             overflow_policy: "error_preserve_previous_counts",
             selected_input_sha256,
-            distinct_keys: self.table.len as u64,
+            distinct_keys: self.table.map.len() as u64,
             occurrences: self.table.occurrences,
             max_lookup_batch: self.table.max_lookup_batch,
         };
@@ -329,20 +312,20 @@ pub struct MemoryCountStore {
 }
 
 impl MemoryCountStore {
-    /// Number of owned hash slots (including vacant slots).
+    /// Current entry capacity, excluding control bytes and vacant-bucket slack.
     pub fn capacity(&self) -> usize {
-        self.table.slots.len()
+        self.table.map.capacity()
     }
 
-    /// Bytes currently owned by the finalized slot buffer, excluding overhead.
-    pub fn slot_bytes(&self) -> usize {
-        self.table.slots.capacity() * std::mem::size_of::<Slot>()
+    /// Owned table allocation bytes, including control bytes and bucket slack.
+    pub fn table_bytes(&self) -> usize {
+        self.table.map.allocation_size()
     }
 
     /// Peak owned slot bytes, including simultaneous old/new resize buffers.
     /// This excludes allocator/process overhead and is not an RSS measurement.
-    pub fn peak_slot_bytes(&self) -> usize {
-        self.table.peak_slot_bytes
+    pub fn peak_table_bytes(&self) -> usize {
+        self.table.peak_table_bytes
     }
 }
 
@@ -353,9 +336,12 @@ impl CountStore for MemoryCountStore {
 
     fn lookup(&self, key: CanonicalKey) -> Result<Option<NonZeroU64>> {
         self.table.check_key(key)?;
-        Ok(NonZeroU64::new(
-            self.table.slots[self.table.find(key.bits())?].count,
-        ))
+        Ok(self
+            .table
+            .map
+            .get(&key.bits())
+            .copied()
+            .and_then(NonZeroU64::new))
     }
 
     fn lookup_oriented(&self, key: OrientedKey) -> Result<Option<NonZeroU64>> {
@@ -365,12 +351,20 @@ impl CountStore for MemoryCountStore {
     }
 
     fn visit(&self, visitor: &mut dyn FnMut(CanonicalKey, NonZeroU64) -> Result<()>) -> Result<()> {
-        for slot in &self.table.slots {
-            if let Some(count) = NonZeroU64::new(slot.count) {
-                // Insertion accepts only validated CanonicalKey identities;
-                // visiting these immutable slots need not canonicalize again.
-                visitor(CanonicalKey::from_stored(slot.key, self.metadata.k), count)?;
-            }
+        self.visit_entries(visitor)
+    }
+}
+
+impl MemoryCountStore {
+    /// Visit a concrete in-memory store with an inlineable visitor. The shared
+    /// fallible trait boundary remains available for opaque and disk backends.
+    pub fn visit_entries<F: FnMut(CanonicalKey, NonZeroU64) -> Result<()> + ?Sized>(
+        &self,
+        visitor: &mut F,
+    ) -> Result<()> {
+        for (&bits, &count) in &self.table.map {
+            let count = NonZeroU64::new(count).context("Exact count table contains zero")?;
+            visitor(CanonicalKey::from_stored(bits, self.metadata.k), count)?;
         }
         Ok(())
     }
@@ -380,6 +374,7 @@ impl CountStore for MemoryCountStore {
 mod tests {
     use super::*;
     use crate::kmer::identity::KmerWindows;
+    use anyhow::bail;
     use std::collections::BTreeMap;
 
     fn positive(n: u64) -> NonZeroU64 {
@@ -387,6 +382,19 @@ mod tests {
     }
     fn key(bits: u64, k: usize) -> CanonicalKey {
         CanonicalKey::new(bits, KmerSize::new(k).unwrap()).unwrap()
+    }
+
+    #[test]
+    fn pinned_allocation_bounds_cover_control_bytes_and_all_growth_sizes() {
+        let mut map = CountMap::with_hasher(TableHasher::default());
+        for capacity in [14, 28, 56, 112, 224, 448, 896, 1792, 3584, 7168] {
+            map.try_reserve(capacity).unwrap();
+            assert!(map.capacity() >= capacity);
+            assert!(map.allocation_size() <= Table::allocation_bound(capacity).unwrap());
+            assert!(map.allocation_size() >= map.capacity() * 16);
+            map.clear();
+        }
+        assert!(Table::allocation_bound(usize::MAX).is_err());
     }
 
     #[test]
@@ -404,28 +412,36 @@ mod tests {
         let mut builder =
             MemoryCountBuilder::with_budget(KmerSize::new(6).unwrap(), Arc::clone(&budget), 8)
                 .unwrap();
+        let initial_bytes = builder.table.map.allocation_size() as u64;
+        let next_bound = Table::allocation_bound(builder.table.map.capacity() * 2).unwrap() as u64;
         let graph = budget.reserve(MemoryClass::TargetGraphs, 500).unwrap();
         let mut keys = std::collections::BTreeSet::new();
         for bits in 0..4096 {
             keys.insert(key(bits, 6));
-            if keys.len() == 13 {
+            if keys.len() == 15 {
                 break;
             }
         }
         let keys = keys.into_iter().collect::<Vec<_>>();
-        for key in &keys[..12] {
+        for key in &keys[..14] {
             builder.add(*key, positive(1)).unwrap();
         }
-        assert!(builder.add(keys[12], positive(1)).is_err());
-        assert_eq!(builder.table.occurrences, 12);
-        assert_eq!(budget.snapshot().reserved_memory_bytes, 856);
+        assert!(builder.add(keys[14], positive(1)).is_err());
+        assert_eq!(builder.table.occurrences, 14);
+        assert_eq!(budget.snapshot().reserved_memory_bytes, 600 + initial_bytes);
         drop(graph);
-        builder.add(keys[12], positive(1)).unwrap();
+        builder.add(keys[14], positive(1)).unwrap();
         let store = builder.finalize([0; 32]);
-        assert_eq!(store.lookup(keys[12]).unwrap(), Some(positive(1)));
-        assert_eq!(store.metadata().occurrences, 13);
-        assert_eq!(budget.snapshot().reserved_memory_bytes, 612);
-        assert_eq!(budget.snapshot().peak_reserved_memory_bytes, 868);
+        assert_eq!(store.lookup(keys[14]).unwrap(), Some(positive(1)));
+        assert_eq!(store.metadata().occurrences, 15);
+        assert_eq!(
+            budget.snapshot().reserved_memory_bytes,
+            100 + store.table_bytes() as u64
+        );
+        assert_eq!(
+            budget.snapshot().peak_reserved_memory_bytes,
+            100 + initial_bytes + next_bound
+        );
         drop(store);
         assert_eq!(budget.snapshot().reserved_memory_bytes, 100);
     }
@@ -439,7 +455,7 @@ mod tests {
         assert_eq!(store.metadata().occurrences, 0);
         assert_eq!(store.metadata().count_width_bits, 64);
         assert_eq!(store.metadata().hash_algorithm, TABLE_HASHER_NAME);
-        assert_eq!(store.metadata().backend, "open_addressed_memory");
+        assert_eq!(store.metadata().backend, "hashbrown_memory");
         assert_eq!(
             store.metadata().overflow_policy,
             "error_preserve_previous_counts"
@@ -505,18 +521,23 @@ mod tests {
         assert_eq!(store.metadata().occurrences, expected.values().sum());
         assert_eq!(store.metadata().distinct_keys, expected.len() as u64);
         assert_eq!(store.metadata().selected_input_sha256, [3; 32]);
-        assert!(store.peak_slot_bytes() <= 1 << 20);
+        assert!(store.peak_table_bytes() <= 1 << 20);
     }
 
     #[test]
     fn hash_collisions_never_create_false_membership_and_zero_key_is_valid() {
-        let mut builder = MemoryCountBuilder::new(KmerSize::new(6).unwrap(), 4096, 8).unwrap();
-        let target = builder.table.home(0, 16);
+        let mut builder = MemoryCountBuilder::new(KmerSize::new(8).unwrap(), 4096, 8).unwrap();
+        // Same initial bucket and seven-bit control fingerprint: full key
+        // comparison must still distinguish every inserted and absent key.
+        let home = |bits| {
+            let hash = std::hash::BuildHasher::hash_one(builder.table.map.hasher(), bits);
+            (hash & 15, hash >> 57)
+        };
+        let target = home(0u64);
         let mut colliders = Vec::new();
-        for bits in 0..4096 {
-            let candidate = key(bits, 6);
-            if !colliders.contains(&candidate) && builder.table.home(candidate.bits(), 16) == target
-            {
+        for bits in 0..65536 {
+            let candidate = key(bits, 8);
+            if !colliders.contains(&candidate) && home(candidate.bits()) == target {
                 colliders.push(candidate);
             }
             if colliders.len() == 4 {
@@ -524,7 +545,7 @@ mod tests {
             }
         }
         assert_eq!(colliders.len(), 4);
-        assert_eq!(colliders[0], key(0, 6));
+        assert_eq!(colliders[0], key(0, 8));
         for (i, k) in colliders[..3].iter().enumerate() {
             builder.add(*k, positive(i as u64 + 1)).unwrap();
         }
@@ -576,30 +597,39 @@ mod tests {
 
     #[test]
     fn resize_budget_includes_old_and_new_allocation_and_failed_growth_preserves_data() {
-        // 32 slots would fit alone, but 16+32 during growth would exceed512.
-        let mut builder = MemoryCountBuilder::new(KmerSize::new(6).unwrap(), 512, 8).unwrap();
+        // The next 560-byte table fits alone; the old+new allocation does not.
+        let mut builder = MemoryCountBuilder::new(KmerSize::new(6).unwrap(), 600, 8).unwrap();
+        let initial_bytes = builder.table.map.allocation_size();
         let mut accepted = Vec::new();
         for bits in 0..4096 {
             let k = key(bits, 6);
             if accepted.contains(&k) {
                 continue;
             }
-            if accepted.len() == 12 {
+            if accepted.len() == 14 {
                 assert!(builder.add(k, positive(1)).is_err());
                 break;
             }
             builder.add(k, positive(1)).unwrap();
             accepted.push(k);
         }
-        let pointer = builder.table.slots.as_ptr();
+        // A full table can update an existing key without reserving growth.
+        builder.add(accepted[0], positive(1)).unwrap();
+        let pointer = builder.table.map.get(&accepted[0].bits()).unwrap() as *const u64;
         let store = builder.finalize([0; 32]);
-        assert_eq!(store.table.slots.as_ptr(), pointer);
-        assert_eq!(store.metadata().distinct_keys, 12);
-        assert_eq!(store.metadata().occurrences, 12);
-        for k in accepted {
-            assert_eq!(store.lookup(k).unwrap(), Some(positive(1)));
+        assert_eq!(
+            store.table.map.get(&accepted[0].bits()).unwrap() as *const u64,
+            pointer
+        );
+        assert_eq!(store.metadata().distinct_keys, 14);
+        assert_eq!(store.metadata().occurrences, 15);
+        for (i, k) in accepted.into_iter().enumerate() {
+            assert_eq!(
+                store.lookup(k).unwrap(),
+                Some(positive(if i == 0 { 2 } else { 1 }))
+            );
         }
-        assert_eq!(store.peak_slot_bytes(), 256);
+        assert_eq!(store.peak_table_bytes(), initial_bytes);
         assert!(MemoryCountBuilder::new(KmerSize::new(3).unwrap(), 255, 4).is_err());
         assert!(MemoryCountBuilder::new(KmerSize::new(3).unwrap(), 1024, 0).is_err());
     }

@@ -147,7 +147,7 @@ fn exact_counter_limits_fail_without_publishing_partial_sequences() {
     let input =
         Path::new(env!("CARGO_MANIFEST_DIR")).join("tests/fixtures/ERR571460_100k_R1.fastq.gz");
     for extra in [
-        ["--count-slot-budget-mib", "1"],
+        ["--count-table-budget-mib", "1"],
         ["--fastq-record-bytes", "16"],
     ] {
         let directory = tempfile::tempdir().unwrap();
