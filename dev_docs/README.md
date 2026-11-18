@@ -3,14 +3,22 @@
 Start here when joining development or resuming work. Current requirements,
 implementation descriptions, and dated evidence have different roles.
 
+New analysis results and experiment archives are kept outside version control
+to keep production downloads small. References marked "local evidence" identify
+paths relative to the repository root in the development workspace; those files
+are not included in a source checkout. Already tracked historical evidence stays
+at its existing paths. Archive local evidence before deleting working data.
+
 ## Current guidance
 
 | Document | Use |
 | --- | --- |
 | [PLAN.md](PLAN.md) | Active v4+ work, dependencies, resource contracts, acceptance gates, and outstanding distribution follow-up. |
 | [COUNT_STORE_CONTRACTS.md](COUNT_STORE_CONTRACTS.md) | v4 identity, exact-count, replay, and resource contracts; implementation status is explicit. |
-| [OVERVIEW.md](OVERVIEW.md) | Architecture checked against the v3.2.1 implementation; update with code changes. |
-| [SEQUENCE_ANNOTATIONS.md](SEQUENCE_ANNOTATIONS.md) | Canonical annotation meanings, omission rules, compatibility, and deferred v4 cleanup. |
+| [OVERVIEW.md](OVERVIEW.md) | Architecture of the released default and current v4 development paths; update with code changes. |
+| [SEQUENCE_ANNOTATIONS.md](SEQUENCE_ANNOTATIONS.md) | Canonical annotation meanings, omission rules, and the schema-4 interface and migration. |
+| [YAML_WORKSPACE.md](YAML_WORKSPACE.md) | Pinned YAML serializer/loader workspace, historical input/model owners, conservative bounds and audit requirements. |
+| [HTTP_WORKSPACE.md](HTTP_WORKSPACE.md) | Current HTTP/library scope, ordinary failure handling, the minimal chunk-framing fix, and historical accounting evidence. |
 | [CONTRIBUTING.md](../CONTRIBUTING.md) | Build, quality checks, branches, and release procedure. |
 | [ROADMAP.md](../ROADMAP.md) | Release goals and longer-term scope. |
 | [HANDOFF.md](HANDOFF.md) | Short resumption entry point and access to the former session history. |
@@ -51,6 +59,14 @@ Protocol/result pairs and frozen artifacts retain their existing paths.
 The [benchmark artifact directories](../benchmarks/benchmark_results/) hold
 frozen protocols, raw results, manifests, hashes, and execution/review receipts.
 Preserve their contents when changing navigation or current guidance.
+
+The v4 annotation prototype (local evidence: `benchmarks/benchmark_results/v4-sequence-annotations-20261112/README.md`)
+retains a tested schema-4 migration patch, source bindings and native comparisons.
+The migration is now applied to the working tree alongside the counter changes;
+combined local verification (local evidence: `benchmarks/benchmark_results/v4-integrated-checks-20261112/README.md`)
+passes. Git integration and CI remain open under #159. Use the active plan for
+completion status and the canonical annotation document for the current
+development interface.
 
 ## Historical planning and design
 

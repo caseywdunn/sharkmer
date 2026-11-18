@@ -2,12 +2,16 @@
 
 use super::counting::KmerCounts;
 use super::identity::{CanonicalKey, KmerSize, OrientedKey};
+use super::packed::PackedCountStore;
+use super::parallel::ShardedCountStore;
 use super::store::{CountStore, MemoryCountStore};
 use anyhow::Result;
 
 enum Source<'a> {
     Legacy(&'a KmerCounts),
     Memory(&'a MemoryCountStore),
+    Packed(&'a PackedCountStore),
+    Sharded(&'a ShardedCountStore),
     Exact(&'a dyn CountStore),
 }
 
@@ -44,12 +48,30 @@ impl<'a> FilteredKmerCounts<'a> {
         }
     }
 
+    /// Borrow byte-packed columns while retaining concrete scan dispatch.
+    pub(crate) fn from_packed(store: &'a PackedCountStore, minimum: u64) -> Self {
+        Self {
+            source: Source::Packed(store),
+            minimum,
+        }
+    }
+
+    /// Borrow worker-owned shards without consolidating the global counts.
+    pub(crate) fn from_sharded(store: &'a ShardedCountStore, minimum: u64) -> Self {
+        Self {
+            source: Source::Sharded(store),
+            minimum,
+        }
+    }
+
     /// Tighten the existing view's threshold without copying count data.
     pub fn with_minimum(&self, minimum: u64) -> Self {
         Self {
             source: match self.source {
                 Source::Legacy(counts) => Source::Legacy(counts),
                 Source::Memory(store) => Source::Memory(store),
+                Source::Packed(store) => Source::Packed(store),
+                Source::Sharded(store) => Source::Sharded(store),
                 Source::Exact(store) => Source::Exact(store),
             },
             minimum: self.minimum.max(minimum),
@@ -61,6 +83,8 @@ impl<'a> FilteredKmerCounts<'a> {
         match self.source {
             Source::Legacy(counts) => counts.get_k(),
             Source::Memory(store) => store.metadata().k.get(),
+            Source::Packed(store) => store.metadata().k.get(),
+            Source::Sharded(store) => store.metadata().k.get(),
             Source::Exact(store) => store.metadata().k.get(),
         }
     }
@@ -70,6 +94,12 @@ impl<'a> FilteredKmerCounts<'a> {
         let count = match self.source {
             Source::Legacy(counts) => counts.get_canonical(bits).copied().map(u64::from),
             Source::Memory(store) => store
+                .lookup_oriented(OrientedKey::new(*bits, store.metadata().k)?)?
+                .map(|count| count.get()),
+            Source::Packed(store) => store
+                .lookup_oriented(OrientedKey::new(*bits, store.metadata().k)?)?
+                .map(|count| count.get()),
+            Source::Sharded(store) => store
                 .lookup_oriented(OrientedKey::new(*bits, store.metadata().k)?)?
                 .map(|count| count.get()),
             Source::Exact(store) => store
@@ -85,6 +115,12 @@ impl<'a> FilteredKmerCounts<'a> {
         let count = match self.source {
             Source::Legacy(counts) => u64::from(counts.get_canonical_count(bits)),
             Source::Memory(store) => store
+                .lookup(CanonicalKey::new(*bits, store.metadata().k)?)?
+                .map_or(0, |count| count.get()),
+            Source::Packed(store) => store
+                .lookup(CanonicalKey::new(*bits, store.metadata().k)?)?
+                .map_or(0, |count| count.get()),
+            Source::Sharded(store) => store
                 .lookup(CanonicalKey::new(*bits, store.metadata().k)?)?
                 .map_or(0, |count| count.get()),
             Source::Exact(store) => store
@@ -115,6 +151,12 @@ impl<'a> FilteredKmerCounts<'a> {
                 Ok(())
             }
             Source::Memory(store) => {
+                store.visit_entries(&mut |key, count| visitor(key.bits(), count.get()))
+            }
+            Source::Packed(store) => {
+                store.visit_entries(&mut |key, count| visitor(key.bits(), count.get()))
+            }
+            Source::Sharded(store) => {
                 store.visit_entries(&mut |key, count| visitor(key.bits(), count.get()))
             }
             Source::Exact(store) => store.visit(&mut |key, count| visitor(key.bits(), count.get())),

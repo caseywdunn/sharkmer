@@ -4,15 +4,22 @@ use clap_complete::Shell;
 use log::warn;
 use std::path::PathBuf;
 
+use crate::configuration::{Owned, Owner};
 use crate::io::EnaResult;
+use crate::kmer::budget::collections::{BudgetMap, BudgetVec};
+use crate::kmer::budget::text::BudgetString;
+use crate::kmer::budget::{MemoryClass, ResourceBudget};
 use crate::pcr;
 use crate::pcr::preconfigured;
+use std::sync::Arc;
 
 /// Parse an inline primer specification string (key=value,key=value,...) into PCRParams.
-pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
+fn parse_pcr_primers_owned(
+    pcr_string: &str,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<Owned<pcr::PCRParams>> {
+    let mut owner = Owner::new(budget)?;
     ensure!(!pcr_string.is_empty(), "Invalid empty primer specification");
-
-    let split: Vec<&str> = pcr_string.split(',').collect();
 
     let mut forward_seq = String::new();
     let mut reverse_seq = String::new();
@@ -25,9 +32,9 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
     let mut citation = String::new();
     let mut notes = String::new();
     let mut dedup_edit_threshold = pcr::DEFAULT_DEDUP_EDIT_THRESHOLD;
-    let mut seen_keys: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let mut seen_keys = BudgetMap::in_class(budget, MemoryClass::RetainedResults);
 
-    for item in split.iter() {
+    for item in pcr_string.split(',') {
         // split_once(|c| == '=') keeps everything after the first '=' as the
         // value. Values may legitimately contain '=' — citations include
         // URLs, notes may include equations — so we do not reject them.
@@ -43,8 +50,8 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
             ),
         };
 
-        let key_owned = raw_key.to_lowercase();
-        if !seen_keys.insert(key_owned.clone()) {
+        let key_owned = owner.case(raw_key, false)?;
+        if seen_keys.get(key_owned.as_str()).is_some() {
             bail!(
                 "Duplicate parameter '{}' in primer specification '{}'. Each key may appear at most once.",
                 key_owned,
@@ -55,13 +62,13 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
 
         match key {
             "name" => {
-                gene_name = value.to_string();
+                gene_name = owner.text(format_args!("{value}"))?;
             }
             "forward" => {
-                forward_seq = value.to_string().to_uppercase();
+                forward_seq = owner.case(value, true)?;
             }
             "reverse" => {
-                reverse_seq = value.to_string().to_uppercase();
+                reverse_seq = owner.case(value, true)?;
             }
             "max-length" => {
                 max_length = value
@@ -89,10 +96,10 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
                     .with_context(|| format!("Invalid value for {}: {}", key, value))?;
             }
             "citation" => {
-                citation = value.to_string();
+                citation = owner.text(format_args!("{value}"))?;
             }
             "notes" => {
-                notes = value.to_string();
+                notes = owner.text(format_args!("{value}"))?;
             }
             "dedup-edit-threshold" => {
                 dedup_edit_threshold = value
@@ -103,6 +110,7 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
                 bail!("Unexpected parameter: {}", key);
             }
         }
+        seen_keys.insert(key_owned, ())?;
     }
 
     let pcr_params = pcr::PCRParams {
@@ -127,7 +135,7 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
         citation,
         notes,
         dedup_edit_threshold,
-        source: format!("--pcr-primers \"{}\"", pcr_string),
+        source: owner.text(format_args!("--pcr-primers \"{}\"", pcr_string))?,
         max_dfs_states: pcr::DEFAULT_MAX_DFS_STATES,
         max_paths_per_pair: pcr::DEFAULT_MAX_PATHS_PER_PAIR,
         max_node_visits: pcr::DEFAULT_MAX_NODE_VISITS,
@@ -138,7 +146,14 @@ pub fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
         emit_uncertain: false,
     };
 
-    Ok(pcr_params)
+    drop(seen_keys);
+    owner.retain_bytes(pcr_params.configuration_bytes()?)?;
+    Ok(owner.finish(pcr_params))
+}
+
+#[cfg(test)]
+pub(crate) fn parse_pcr_primers_string(pcr_string: &str) -> Result<pcr::PCRParams> {
+    Ok(parse_pcr_primers_owned(pcr_string, None)?.into_parts().0)
 }
 
 /// A tool for kmer counting and in silico PCR (sPCR)
@@ -213,20 +228,44 @@ pub(crate) struct Args {
     #[arg(long, default_value_t = 0, help_heading = "Incremental counting")]
     pub(crate) chunks: usize,
 
-    /// Development comparison only; default selection waits for measured gates.
-    #[arg(long, hide = true, value_parser = ["legacy", "memory"], default_value = "legacy")]
-    pub(crate) count_backend: String,
+    /// Development override; normal sPCR uses the measured exact counter.
+    #[arg(long, hide = true, value_parser = ["legacy", "memory", "external", "parallel", "packed", "adaptive", "adaptive-parallel", "pipeline", "hybrid"])]
+    pub(crate) count_backend: Option<String>,
 
     /// Verify every count pair in a separate, opt-in scan; excluded from timing.
     #[arg(long, hide = true)]
     pub(crate) count_fingerprint: bool,
 
-    /// Owned count-table bytes, including controls/resize; not a process RAM cap.
-    #[arg(long, hide = true, default_value_t = 8192)]
+    /// Experimental two-thread worker transfer at this current table size.
+    #[arg(long, hide = true, default_value_t = 16)]
+    pub(crate) count_owner_threshold_mib: u64,
+
+    /// Count-table memory allowance in MiB; full tables spill to temporary storage
+    #[arg(long, help_heading = "Resources", default_value_t = 8192)]
     pub(crate) count_table_budget_mib: u64,
 
+    /// Memory allowance in MiB for sorting spilled counts
+    #[arg(long, help_heading = "Resources", default_value_t = 64)]
+    pub(crate) count_sort_buffer_mib: u64,
+
+    /// Shared PCR working-memory allowance in MiB (normal default: 1024; 0 disables)
+    #[arg(long, help_heading = "Resources")]
+    pub(crate) graph_buffer_budget_mib: Option<u64>,
+
+    /// PCR working-memory ceiling per target in MiB
+    #[arg(long, help_heading = "Resources", default_value_t = 256)]
+    pub(crate) graph_buffer_target_mib: u64,
+
+    /// Temporary-file allowance in MiB for counts, replay, staged output and recovery
+    #[arg(long, help_heading = "Resources", default_value_t = 65536)]
+    pub(crate) count_disk_budget_mib: u64,
+
+    /// Directory for temporary count/replay files (default: OS temporary directory)
+    #[arg(long, help_heading = "Resources")]
+    pub(crate) count_temp_dir: Option<PathBuf>,
+
     /// Maximum four-line FASTQ record size, including line delimiters.
-    #[arg(long, hide = true, default_value_t = 16777216)]
+    #[arg(long, help_heading = "Resources", default_value_t = 16777216)]
     pub(crate) fastq_record_bytes: usize,
 
     /// Maximum histogram count value
@@ -422,6 +461,30 @@ pub(crate) fn init_logging(verbose: u8, quiet: bool, color: &ColorMode) {
         .init();
 }
 
+impl Args {
+    /// Select exact counting for ordinary runs and legacy counting for histograms.
+    pub(crate) fn count_backend(&self) -> &str {
+        self.count_backend
+            .as_deref()
+            .unwrap_or(if self.chunks == 0 { "hybrid" } else { "legacy" })
+    }
+
+    /// Explicit development backend selectors retain their independent controls.
+    pub(crate) fn uses_production_defaults(&self) -> bool {
+        self.count_backend.is_none() && self.chunks == 0
+    }
+
+    /// Explicit zero disables graph accounting; omission enables normal defaults.
+    pub(crate) fn graph_buffer_budget_mib(&self) -> u64 {
+        self.graph_buffer_budget_mib
+            .unwrap_or(if self.uses_production_defaults() {
+                1024
+            } else {
+                0
+            })
+    }
+}
+
 /// Handle early-exit flags (--completions, --cite, --list-panels, --export-panel, --help-pcr).
 /// Each prints output and calls process::exit(0).
 pub(crate) fn handle_early_exits(args: &Args) -> Result<()> {
@@ -528,71 +591,123 @@ pub(crate) fn handle_early_exits(args: &Args) -> Result<()> {
 
 /// Collect PCR primer specifications from all sources (--pcr-panel, --pcr-panel-file,
 /// --pcr-primers), validate them, check for duplicates, and clamp min-count.
-pub(crate) fn collect_pcr_params(args: &Args) -> Result<Vec<pcr::PCRParams>> {
-    let mut pcr_runs: Vec<pcr::PCRParams> = Vec::new();
-
-    // Load preconfigured panels by name
-    for panel_name in args.pcr_panel.iter() {
-        let mut pcr_params = preconfigured::get_panel(panel_name)
-            .map_err(|e| anyhow::anyhow!(e))
-            .with_context(|| format!("Failed to load panel: {}", panel_name))?;
-        for p in pcr_params.iter_mut() {
-            p.source = format!("built-in panel '{}'", panel_name);
-        }
-        pcr_runs.extend(pcr_params);
+/// Flat primers and their separate metadata owners, all on the original ledger.
+/// The parameter values drop before owners for parsed strings and arrays.
+pub(crate) struct CollectedPrimers {
+    values: BudgetVec<pcr::PCRParams>,
+    owners: BudgetVec<Owner>,
+}
+impl std::ops::Deref for CollectedPrimers {
+    type Target = [pcr::PCRParams];
+    fn deref(&self) -> &Self::Target {
+        &self.values
     }
-
-    // Load primer panels from YAML files or URLs
-    for panel_source in args.pcr_panel_file.iter() {
-        let mut pcr_params = preconfigured::load_panel_source(panel_source)
-            .with_context(|| format!("Failed to load panel: {}", panel_source))?;
-        let source_label = if preconfigured::is_url(panel_source) {
-            format!("panel URL '{}'", panel_source)
-        } else {
-            format!("panel file '{}'", panel_source)
-        };
-        for p in pcr_params.iter_mut() {
-            p.source = source_label.clone();
-        }
-        pcr_runs.extend(pcr_params);
+}
+impl std::fmt::Debug for CollectedPrimers {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.values.fmt(f)
     }
+}
+impl CollectedPrimers {
+    /// Runtime overrides change scalar tuning values, retaining metadata owners.
+    pub(crate) fn iter_mut(&mut self) -> std::slice::IterMut<'_, pcr::PCRParams> {
+        self.values.iter_mut()
+    }
+    fn append(&mut self, group: Owned<Vec<pcr::PCRParams>>) -> Result<()> {
+        self.owners.reserve_one()?;
+        let retained = group.iter().try_fold(0_u64, |total, value| {
+            total
+                .checked_add(value.configuration_bytes()?)
+                .context("Primer metadata size overflow")
+        })?;
+        let (values, owner) = group.into_parts();
+        self.owners.push(owner)?;
+        for value in values {
+            self.values.push(value)?;
+        }
+        self.owners
+            .last_mut()
+            .context("Missing primer metadata owner")?
+            .retain_bytes(retained)?;
+        Ok(())
+    }
+    fn push(&mut self, value: Owned<pcr::PCRParams>) -> Result<()> {
+        self.owners.reserve_one()?;
+        let (value, owner) = value.into_parts();
+        self.owners.push(owner)?;
+        self.values.push(value)
+    }
+}
 
-    // Parse inline primer specifications
-    for pcr_string in args.pcr_primers.iter() {
-        let pcr_params = parse_pcr_primers_string(pcr_string)
-            .with_context(|| format!("Could not parse primer specification: \"{}\"", pcr_string))?;
-        pcr_runs.push(pcr_params);
+pub(crate) fn collect_pcr_params(
+    args: &Args,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<CollectedPrimers> {
+    let groups = args
+        .pcr_panel
+        .len()
+        .checked_add(args.pcr_panel_file.len())
+        .and_then(|n| n.checked_add(args.pcr_primers.len()))
+        .context("Primer owner capacity overflow")?;
+    let mut pcr_runs = CollectedPrimers {
+        values: BudgetVec::in_class(budget, MemoryClass::RetainedResults),
+        owners: BudgetVec::with_capacity_in_class(groups, budget, MemoryClass::RetainedResults)?,
+    };
+    for panel_name in &args.pcr_panel {
+        pcr_runs.append(
+            preconfigured::bounded::builtin(panel_name, budget)
+                .with_context(|| format!("Failed to load panel: {panel_name}"))?,
+        )?;
+    }
+    for source in &args.pcr_panel_file {
+        pcr_runs.append(
+            preconfigured::bounded::source(source, budget)
+                .with_context(|| format!("Failed to load panel: {source}"))?,
+        )?;
+    }
+    for specification in &args.pcr_primers {
+        pcr_runs.push(
+            parse_pcr_primers_owned(specification, budget).with_context(|| {
+                format!("Could not parse primer specification: \"{specification}\"")
+            })?,
+        )?;
     }
 
     // Validate all primer parameters, collecting all errors
     let mut total_errors = 0usize;
-    let mut error_report = String::new();
+    let mut error_report = BudgetString::new(budget, MemoryClass::RetainedResults);
     for pcr_params in pcr_runs.iter() {
-        let errors = pcr::validate_pcr_params(pcr_params);
+        let errors = pcr::validate_pcr_params(pcr_params, budget)?;
         if !errors.is_empty() {
             total_errors += errors.len();
-            error_report.push_str(&format!(
-                "\n  {} ({}):\n",
-                pcr_params.gene_name, pcr_params.source
-            ));
-            for (err, suggestion) in &errors {
-                error_report.push_str(&format!(
-                    "    - {}\n      Suggestion: {}\n",
-                    err, suggestion
-                ));
+            error_report.push_str(&BudgetString::format(
+                format_args!("\n  {} ({}):\n", pcr_params.gene_name, pcr_params.source),
+                budget,
+                MemoryClass::RetainedResults,
+            )?)?;
+            for (err, suggestion) in errors.iter() {
+                error_report.push_str(&BudgetString::format(
+                    format_args!("    - {}\n      Suggestion: {}\n", err, suggestion),
+                    budget,
+                    MemoryClass::RetainedResults,
+                )?)?;
             }
         }
     }
     if total_errors > 0 {
-        bail!(
-            "Primer validation failed ({} error{}):\n{}",
-            total_errors,
-            if total_errors == 1 { "" } else { "s" },
-            error_report
-        );
+        return Err(anyhow::Error::msg(BudgetString::format(
+            format_args!(
+                "Primer validation failed ({} error{}):\n{}",
+                total_errors,
+                if total_errors == 1 { "" } else { "s" },
+                error_report
+            ),
+            budget,
+            MemoryClass::RetainedResults,
+        )?));
     }
 
-    for pcr_params in &pcr_runs {
+    for pcr_params in pcr_runs.iter() {
         pcr::validate_primer_expansion(pcr_params, args.k).map_err(|error| {
             anyhow::anyhow!(
                 "Primer expansion validation failed for {} ({}): {error:#}",
@@ -619,15 +734,17 @@ pub(crate) fn collect_pcr_params(args: &Args) -> Result<Vec<pcr::PCRParams>> {
     }
 
     // Check that there are no duplicate gene names
-    let mut gene_names: std::collections::HashSet<String> = std::collections::HashSet::new();
+    let mut gene_names = BudgetMap::in_class(budget, MemoryClass::RetainedResults);
     for pcr_params in pcr_runs.iter() {
         ensure!(
-            gene_names.insert(pcr_params.gene_name.clone()),
+            gene_names.get(pcr_params.gene_name.as_str()).is_none(),
             "Duplicate gene name '{}' (from {})",
             pcr_params.gene_name,
             pcr_params.source
         );
+        gene_names.insert(pcr_params.gene_name.as_str(), ())?;
     }
+    drop(gene_names);
 
     Ok(pcr_runs)
 }
@@ -665,42 +782,11 @@ pub(crate) fn handle_validate_panels(pcr_runs: &[pcr::PCRParams]) -> Result<()> 
 
 /// Derive the sample name from --sample or --ena ENA metadata.
 /// Returns (sample_name, optional_cached_ena_result).
-pub(crate) fn resolve_sample_name(args: &Args) -> Result<(String, Option<EnaResult>)> {
-    let mut cached_ena_result: Option<EnaResult> = None;
-    let sample = if let Some(ref s) = args.sample {
-        s.clone()
-    } else if let Some(ref accession) = args.ena {
-        let ena_result = crate::io::get_ena_fastq_urls(accession)?;
-        let derived = if let Some(ref sci_name) = ena_result.scientific_name {
-            let genus_species = sci_name.replace(' ', "_");
-            format!("{}_{}", genus_species, accession)
-        } else {
-            accession.clone()
-        };
-        warn!(
-            "No --sample provided, using '{}' derived from ENA metadata",
-            derived
-        );
-        cached_ena_result = Some(ena_result);
-        derived
-    } else {
-        anyhow::bail!(
-            "--sample is required. Provide a sample name as output file prefix.\n\
-             When using --ena, the sample name can be derived automatically from ENA metadata."
-        );
-    };
-
-    // Validate sample name for safe use in filenames
-    ensure!(
-        sample
-            .chars()
-            .all(|c| c.is_alphanumeric() || c == '_' || c == '-' || c == '.'),
-        "Sample name '{}' contains characters that are unsafe for filenames. \
-         Use only alphanumeric characters, hyphens, underscores, and periods.",
-        sample
-    );
-
-    Ok((sample, cached_ena_result))
+pub(crate) fn resolve_sample_name(
+    args: &Args,
+    budget: Option<&std::sync::Arc<crate::kmer::budget::ResourceBudget>>,
+) -> Result<(crate::kmer::budget::text::BudgetString, Option<EnaResult>)> {
+    crate::io::resolve_input_sample(args, budget)
 }
 
 /// Validate CLI arguments: k, histo_max, min_kmer_count, input file existence,
@@ -724,9 +810,52 @@ pub(crate) fn validate_args(args: &Args, pcr_runs: &[pcr::PCRParams]) -> Result<
         "Count table budget must be positive"
     );
     ensure!(
-        args.count_backend != "memory" || args.chunks == 0,
-        "The exact memory backend requires --chunks 0; incremental histograms use the legacy counter"
+        args.count_owner_threshold_mib > 0,
+        "Count owner transfer threshold must be positive"
     );
+    if args.graph_buffer_budget_mib() > 0 {
+        ensure!(
+            args.count_backend() != "legacy" && args.chunks == 0,
+            "Graph-buffer budgeting requires an exact counter and --chunks 0"
+        );
+        ensure!(
+            args.graph_buffer_target_mib > 0
+                && args.graph_buffer_target_mib <= args.graph_buffer_budget_mib(),
+            "Per-target graph-buffer limit must be positive and fit the shared graph-buffer budget"
+        );
+        args.graph_buffer_budget_mib()
+            .checked_mul(1 << 20)
+            .context("Graph-buffer budget overflow")?;
+        args.graph_buffer_target_mib
+            .checked_mul(1 << 20)
+            .context("Per-target graph-buffer budget overflow")?;
+    }
+    ensure!(
+        args.count_backend() == "legacy" || args.chunks == 0,
+        "An exact count backend requires --chunks 0; incremental histograms use the legacy counter"
+    );
+    ensure!(
+        args.count_sort_buffer_mib > 0,
+        "External sort budget must be positive"
+    );
+    ensure!(
+        args.count_disk_budget_mib > 0,
+        "External disk budget must be positive"
+    );
+    if matches!(
+        args.count_backend(),
+        "external" | "adaptive" | "adaptive-parallel" | "pipeline" | "hybrid"
+    ) {
+        let directory = args
+            .count_temp_dir
+            .clone()
+            .unwrap_or_else(std::env::temp_dir);
+        ensure!(
+            directory.is_dir(),
+            "External count temporary directory does not exist: {}",
+            directory.display()
+        );
+    }
     ensure!(
         !args.paired || args.max_reads != Some(u64::MAX),
         "Paired --max-reads cannot be rounded above u64::MAX"
@@ -899,6 +1028,34 @@ mod tests {
     use clap::Parser;
 
     #[test]
+    fn normal_defaults_preserve_incremental_and_explicit_development_paths() {
+        let normal = Args::parse_from(["sharkmer", "-s", "sample"]);
+        assert_eq!(normal.count_backend(), "hybrid");
+        assert!(normal.uses_production_defaults());
+        assert_eq!(normal.graph_buffer_budget_mib(), 1024);
+        assert_eq!(normal.graph_buffer_target_mib, 256);
+        validate_args(&normal, &[]).unwrap();
+
+        let incremental = Args::parse_from(["sharkmer", "-s", "sample", "--chunks", "2"]);
+        assert_eq!(incremental.count_backend(), "legacy");
+        assert!(!incremental.uses_production_defaults());
+        assert_eq!(incremental.graph_buffer_budget_mib(), 0);
+        validate_args(&incremental, &[]).unwrap();
+
+        for backend in ["legacy", "memory", "hybrid"] {
+            let explicit =
+                Args::parse_from(["sharkmer", "-s", "sample", "--count-backend", backend]);
+            assert_eq!(explicit.count_backend(), backend);
+            assert!(!explicit.uses_production_defaults());
+            assert_eq!(explicit.graph_buffer_budget_mib(), 0);
+            validate_args(&explicit, &[]).unwrap();
+        }
+        let zero = Args::parse_from(["sharkmer", "-s", "sample", "--graph-buffer-budget-mib", "0"]);
+        assert_eq!(zero.count_backend(), "hybrid");
+        assert_eq!(zero.graph_buffer_budget_mib(), 0);
+    }
+
+    #[test]
     fn test_parse_pcr_primers_duplicate_key_rejected() {
         let spec = "forward=AAAA,reverse=TTTT,forward=CCCC,name=X";
         let err = parse_pcr_primers_string(spec)
@@ -946,14 +1103,14 @@ mod tests {
         ])
         .unwrap();
 
-        let error = collect_pcr_params(&args).unwrap_err();
+        let error = collect_pcr_params(&args, None).unwrap_err();
         assert!(format!("{error:#}").contains("generated mismatch candidates"));
     }
 
     #[test]
     fn test_builtin_panel_passes_primer_budget_validation() {
         let args = Args::try_parse_from(["sharkmer", "--pcr-panel", "cnidaria"]).unwrap();
-        let params = collect_pcr_params(&args).unwrap();
+        let params = collect_pcr_params(&args, None).unwrap();
 
         assert!(!params.is_empty());
     }
@@ -990,7 +1147,7 @@ mod tests {
     #[test]
     fn test_counting_only_kmer_length_one_remains_valid() {
         let args = Args::try_parse_from(["sharkmer", "-k", "1"]).unwrap();
-        let params = collect_pcr_params(&args).unwrap();
+        let params = collect_pcr_params(&args, None).unwrap();
 
         validate_args(&args, &params).unwrap();
     }
@@ -1044,6 +1201,78 @@ mod tests {
             specifications[1],
         ])
         .unwrap();
-        assert_eq!(collect_pcr_params(&args).unwrap().len(), 2);
+        assert_eq!(collect_pcr_params(&args, None).unwrap().len(), 2);
+    }
+}
+
+#[cfg(test)]
+mod ownership_tests {
+    use super::*;
+    use crate::kmer::budget::{MEMORY_CLASSES, ResourceExhausted, ResourceLimits};
+    fn budget(bytes: u64) -> Arc<ResourceBudget> {
+        ResourceBudget::new(ResourceLimits {
+            memory_bytes: bytes,
+            process_overhead_bytes: 0,
+            class_bytes: [bytes; MEMORY_CLASSES],
+            temporary_disk_bytes: 0,
+            temporary_open_files: 0,
+        })
+        .unwrap()
+    }
+    #[test]
+    fn collected_inline_configuration_keeps_exact_live_owners_and_typed_refusal() {
+        let specification = "name=one,forward=TAACATATGCTTGTCTCAAAG,reverse=CCTGTATTGTTATTTTTCGTCAC,trim=15,mismatches=0";
+        let args =
+            Args::try_parse_from(["sharkmer", "-s", "sample", "--pcr-primers", specification])
+                .unwrap();
+        let ledger = budget(1 << 20);
+        let params = collect_pcr_params(&args, Some(&ledger)).unwrap();
+        assert_eq!(params.len(), 1);
+        let actual = params[0].configuration_bytes().unwrap()
+            + (params.values.capacity() * size_of::<pcr::PCRParams>()) as u64
+            + (params.owners.capacity() * size_of::<Owner>()) as u64;
+        assert_eq!(ledger.snapshot().reserved_memory_bytes, actual);
+        assert_eq!(
+            params[0].source,
+            format!("--pcr-primers \"{specification}\"")
+        );
+        drop(params);
+        assert_eq!(ledger.snapshot().reserved_memory_bytes, 0);
+        let small = budget(16);
+        let error = collect_pcr_params(&args, Some(&small)).unwrap_err();
+        assert!(error.downcast_ref::<ResourceExhausted>().is_some());
+        assert_eq!(small.snapshot().reserved_memory_bytes, 0);
+    }
+
+    #[test]
+    fn invalid_primer_diagnostics_keep_order_and_reservations_until_error_drop() {
+        let args = Args::try_parse_from([
+            "sharkmer",
+            "-s",
+            "sample",
+            "--pcr-primers",
+            "name=bad,forward=XZ,reverse=XZ,min-count=1",
+        ])
+        .unwrap();
+        let ledger = budget(1 << 20);
+        let error = collect_pcr_params(&args, Some(&ledger)).unwrap_err();
+        let text = error.to_string();
+        assert!(
+            text.contains("Primer validation failed (4 errors)"),
+            "{text}"
+        );
+        let forward = text
+            .find("Invalid nucleotide(s) X, Z in forward primer XZ")
+            .unwrap();
+        let reverse = text
+            .find("Invalid nucleotide(s) X, Z in reverse primer XZ")
+            .unwrap();
+        assert!(forward < reverse);
+        assert!(text.contains("min-count is 1, must be at least 2"));
+        assert!(text.contains("Forward and reverse primers are identical: XZ"));
+        assert!(ledger.snapshot().reserved_memory_bytes > 0);
+        drop(error);
+        assert_eq!(ledger.snapshot().reserved_memory_bytes, 0);
+        assert!(ledger.snapshot().valid);
     }
 }

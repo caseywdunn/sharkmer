@@ -9,6 +9,197 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Show the existing count/PCR memory, temporary-storage and FASTQ record-size
+  controls in `--help`, with their defaults and scope documented (#139).
+
+- Keep HTTP client internals outside the application memory ledger, using
+  process headroom and existing platform safeguards. Remove experimental
+  networking allocation hooks while preserving application buffer limits,
+  panel timeouts and normal failure handling (#139).
+
+- Parse chunked HTTP response framing without retaining an unbounded size
+  line, preserving accepted framing and returned-body limits (#139).
+
+- Admit primer-panel input, parsing, retained settings and validation reports
+  on the shared run allowance before output creation. Respect inherited Linux
+  limits in standalone previews and keep YAML decoder-error allowances alive
+  until disposal, preserving typed refusals and diagnostics (#139, #143).
+
+- Resume private-file cleanup after an interruption while recovering output
+  journals from earlier v4 development builds, preserving accepted sequences
+  and unrelated files (#139, #143).
+
+- Include temporary manifests and recovery journals in disk limits, retaining
+  journal charges through cleanup. Keep counting-disk measurements scoped to
+  counting and finalization, excluding completed startup metadata writes
+  (#139, #143).
+
+- Account for retained recovery files and planned restoration copies together
+  before restart changes outputs. Count Unix hard-link aliases once, credit
+  live in-process payload owners, and preserve interrupted files on disk
+  refusal (#139, #143).
+
+- Keep new restoration temporary files inside the staging directory recorded
+  by recovery, so a fresh run reclaims interrupted copies while preserving
+  prior outputs and unrelated public files (#139, #143).
+
+- Admit restoration copy bytes before rollback changes public files. Preserve
+  interrupted recovery data on disk refusal, verify copies before publication,
+  and close temporary files before removing their paths on failure
+  (#139, #143).
+
+- Include copies of prior accepted outputs and their manifest in the shared
+  temporary-disk allowance. Refuse an oversized backup before copying or
+  changing accepted files, retaining its charge until confirmed cleanup
+  (#139, #143). Verify accepted cleanup against retained receipts without
+  decoding the transaction's own YAML again.
+
+- Charge staged FASTA and stats bytes to the shared temporary-disk allowance
+  before writing. Preserve completed outputs on refusal, retain charges while
+  recovery is pending, and retry interrupted writes (#139, #143).
+
+- Bound remote cache-miss record buffers during exact sPCR ingestion, preserving
+  selected reads and prior verified cache entries on input or budget failure
+  (#139, #143).
+
+- Use exact adaptive counting and bounded stdin/file replay for normal sPCR,
+  enabling shared graph limits and a Linux address-space safeguard. Preserve
+  explicit incremental counting on its legacy path and refuse oversized normal
+  resource plans before output changes
+  (#139, #140, #141, #143).
+
+- Allow explicit Linux process address-space overrides before configuration
+  decoding, preserving stricter inherited limits and reporting the actual cap
+  (#139, #143).
+
+- Include the backup/restore copy buffer in the development run allowance.
+  Admit it before creating recovery backups or changing public files, and
+  preserve retry after a memory refusal (#139, #143).
+
+- Include historical YAML decoding workspace in the development run allowance,
+  including scanner/event buffers, anchors and reused tag prefixes. Reserve
+  before decoding and release after parser cleanup; the conservative bound can
+  refuse large manual metadata earlier than its measured heap would suggest
+  (#139, #143).
+
+- Include historical manifest/journal input and retained metadata in the
+  development run allowance. Reserve strings and receipt arrays before
+  decoding copies, including repeated YAML aliases, and preserve completed
+  outputs on refusal (#139, #143).
+
+- Include prior-output verification and recovery paths, duplicate tables and
+  receipt indexes in the development run allowance. Reserve the complete
+  restore plan before public file changes, preserving lexical recovery order
+  and retry after a memory refusal (#139, #143).
+
+- Include new output transaction paths, labels, staged receipts and digest text
+  in the development run allowance. Serialize borrowed manifest and recovery
+  metadata, reserving journal workspace before file creation and preserving
+  existing output formats and replacement recovery behavior (#139, #143).
+
+- Prepare the exact counter's shared resource ledger before output startup,
+  include manifest serialization workspace in the development allowance, and
+  keep count-phase memory peaks separate from completed startup work. Account
+  for the planned output lease without increasing the temporary-file cap
+  (#139, #143).
+
+- Include sequence-deduplication scratch arrays in the development run allowance.
+  Preserve edit thresholds, ranking and retained products; report allocation
+  refusal before library scratch is created (#139, #143).
+
+- Reserve temporary YAML emitter buffers, scalar copies and depth storage under
+  the development run allowance before staging stats. Preserve YAML fields and
+  values, and release workspace on success or writer failure (#139, #143).
+
+- Include stats metadata, failure reasons, digest text and aggregate result
+  buffers in the development run allowance. Reserve parallel result storage
+  before target work and keep its charges through stats serialization, with
+  unchanged output fields and values (#139, #143).
+
+- Bound diagnostic and warning sequence, marker and source buffers under the
+  development run allowance, including hidden diagnostic copies. Preserve full
+  sequence identity, provenance and stable warning-product numbering (#139, #143).
+
+- Charge ordinary sequence records and annotation identifiers to a separate
+  run-level development memory class, so collected products release target
+  admission slots. Move sequences when renumbering and write borrowed FASTA
+  fields to avoid extra sequence copies (#139, #143).
+
+- Include read-threading and bubble-resolution buffers in the development
+  assembly allowance, preserving read orientation, fragment grouping and
+  branch preferences. Report support-counter overflow as an error instead of
+  allowing wrapped support values (#139, #143).
+
+- Include DFS working paths, child frames, completed candidate paths and path
+  measurement buffers in the development assembly allowance. Preserve branch
+  ordering, search limits and emitted products, and release the extension
+  lookup before later assembly stages (#139, #143).
+
+- Bound primer variant, candidate and seed buffers under the development
+  assembly allowance. Keep the same mismatch priority, strand handling and
+  highest-count candidates while avoiding a full matching-table collection
+  before applying the primer cap (#139, #143).
+
+- Preserve a previous completed FASTA/stats generation while a rerun is being
+  analyzed. Use verified backup copies and a recovery receipt to roll back
+  incomplete publication on failure or restart, preserving conflicting edits
+  and retaining backups when recovery cannot finish (#139).
+
+- Add opt-in development limits for graph, node-lookup and traversal/pruning
+  workspace buffers and target concurrency. Share the count/graph ledger and
+  refuse growth before the configured allowance is exceeded (#139, #143).
+
+- Account for the OS soft limit and already open Linux descriptors when setting
+  the count/replay file allowance, and report performed preflight observations
+  in development stats (#139, #143, #145).
+
+- Reduce selected-input hashing overhead in exact development counters while
+  preserving SHA-256 identities, with explicit failure on unsupported input
+  lengths (#140, #141).
+
+- Add a development comparison that assigns counting and input hashing
+  according to table growth while preserving selected reads and exact counts.
+  Default selection still awaits measured performance gates (#140, #141).
+
+- Add a shared limit on simultaneously open count/replay files in development
+  counters. Refuse excess files before creation and prevent partial sequence
+  publication when that limit is reached (#139, #143, #145).
+
+- Add a development comparison for smaller in-memory k-mer tables that retain
+  full keys and exact u64 abundance. Correctness checks cover PCR and replay;
+  performance and storage measurements determine whether this design is useful
+  before production selection (#142).
+
+- Add original-pass replay to exact development counters so opt-in read threading
+  can consume stdin without retaining all reads or downloading the original
+  input again. Preserve identifiers, qualities, mate selection and N gaps, with
+  checked framing, completion identity and shared temporary-disk accounting.
+  Production dispatch and the legacy replay adapter remain in progress (#145).
+
+- Add a development comparison path for parallel exact counting with bounded,
+  reusable queues and disjoint worker-owned tables. It supplies assembly without
+  consolidating those tables; default selection awaits performance gates (#141).
+
+- Start PCR workers after counting finishes, and omit the assembly worker pool
+  for counting-only runs. Include the coordinator in assembly so total threads
+  stay within the requested count (#141, #143).
+
+- Add automatic memory-to-disk transfer to development serial and parallel
+  exact counters. When the count table reaches its budget, preserve accepted
+  counts and continue
+  the same input stream, including stdin and opt-in read threading (#143).
+
+- Add a development path for exact counting from streamed FASTQ and PCR using
+  bounded disk storage, with integrity checks and owned-resource measurements
+  (#143, #144).
+
+- Rename FASTA annotations `gene`, `product` and `length` to `target`,
+  `sequence_index` and `sequence_length`. Preserve sequence identifiers and
+  k-mer count fields. Store the existing ranking heuristic as
+  `assembly_rank_score` in per-record `sequence_annotations`, retaining reading
+  of historical outputs and excluding warning hypotheses from reference
+  bootstrap (#159).
+
 - Add a development comparison path for direct exact counting from reusable,
   bounded FASTQ buffers. It preserves selected-record identity and moves its
   final table into assembly without consolidation. Backend selection remains

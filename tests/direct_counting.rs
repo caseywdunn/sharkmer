@@ -184,3 +184,42 @@ fn exact_counter_limits_fail_without_publishing_partial_sequences() {
         );
     }
 }
+
+#[test]
+fn startup_resources_preserve_early_exits_and_refuse_overflow_before_output_creation() {
+    let directory = tempfile::tempdir().unwrap();
+    let output = directory.path().join("output");
+    let command = || {
+        let mut command = Command::new(env!("CARGO_BIN_EXE_sharkmer"));
+        command
+            .args([
+                "-k",
+                "19",
+                "--chunks",
+                "0",
+                "-s",
+                "startup",
+                "--count-backend",
+                "memory",
+                "--count-table-budget-mib",
+                "18446744073709551615",
+                "-o",
+            ])
+            .arg(&output)
+            .stdin(Stdio::null());
+        command
+    };
+    for flag in ["--dry-run", "--cite", "--list-panels"] {
+        let result = command().arg(flag).output().unwrap();
+        assert!(
+            result.status.success(),
+            "{flag}: {}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+        assert!(!output.exists(), "{flag} created output resources");
+    }
+    let result = command().output().unwrap();
+    assert!(!result.status.success());
+    assert!(String::from_utf8_lossy(&result.stderr).contains("Count table budget overflow"));
+    assert!(!output.exists());
+}

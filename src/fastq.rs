@@ -75,10 +75,7 @@ impl<R: BufRead> FastqReader<R> {
                 if block.is_empty() {
                     break;
                 }
-                let n = block
-                    .iter()
-                    .position(|byte| *byte == b'\n')
-                    .map_or(block.len(), |i| i + 1);
+                let n = memchr::memchr(b'\n', block).map_or(block.len(), |i| i + 1);
                 let needed = self
                     .bytes
                     .len()
@@ -148,13 +145,14 @@ mod tests {
     use std::io::{BufReader, Cursor};
 
     fn budget(bytes: u64) -> Arc<ResourceBudget> {
-        let mut classes = [0; 8];
+        let mut classes = [0; crate::kmer::budget::MEMORY_CLASSES];
         classes[MemoryClass::InputBuffer as usize] = bytes;
         ResourceBudget::new(ResourceLimits {
             memory_bytes: bytes,
             process_overhead_bytes: 0,
             class_bytes: classes,
             temporary_disk_bytes: 0,
+            temporary_open_files: 128,
         })
         .unwrap()
     }
@@ -222,6 +220,68 @@ mod tests {
             assert!(error.contains(role), "{error}");
             assert!(error.contains("record 8"), "{error}");
             assert!(error.contains("broken.fastq"), "{error}");
+        }
+    }
+    #[test]
+    fn records_agree_across_every_block_boundary() {
+        let data =
+            "@α original\r\nACNT\r\n+α\r\n!@+#\r\n@b\nTA\n+\nII\n@last\nACG\n+\nIII".as_bytes();
+        let expected = [
+            ["@α original", "ACNT", "+α", "!@+#"],
+            ["@b", "TA", "+", "II"],
+            ["@last", "ACG", "+", "III"],
+        ];
+        for width in 1..=data.len() + 1 {
+            let pool = budget(1024);
+            let mut reader = FastqReader::new(
+                BufReader::with_capacity(width, Cursor::new(data)),
+                128,
+                Arc::clone(&pool),
+            )
+            .unwrap();
+            for (index, fields) in expected.iter().enumerate() {
+                assert!(
+                    reader.next("source", index as u64).unwrap(),
+                    "width={width}"
+                );
+                assert_eq!(reader.fields(), fields.map(str::as_bytes), "width={width}");
+            }
+            assert!(!reader.next("source", 3).unwrap());
+            drop(reader);
+            assert_eq!(pool.snapshot().reserved_memory_bytes, 0);
+        }
+    }
+
+    #[test]
+    fn utf8_errors_keep_each_original_field_role() {
+        for (field, role) in ["header", "sequence", "separator", "quality"]
+            .iter()
+            .enumerate()
+        {
+            let mut fields = [
+                b"@id".to_vec(),
+                b"AC".to_vec(),
+                b"+".to_vec(),
+                b"II".to_vec(),
+            ];
+            fields[field].push(255);
+            let mut data = fields.join(&b'\n');
+            data.push(b'\n');
+            for width in [1, data.len()] {
+                let mut reader = FastqReader::new(
+                    BufReader::with_capacity(width, Cursor::new(&data)),
+                    128,
+                    budget(1024),
+                )
+                .unwrap();
+                let error = reader.next("broken.fastq", 7).unwrap_err().to_string();
+                assert!(
+                    error.contains(role)
+                        && error.contains("record 8")
+                        && error.contains("broken.fastq"),
+                    "{error}"
+                );
+            }
         }
     }
 }

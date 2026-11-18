@@ -1,3 +1,5 @@
+use crate::kmer::budget::ResourceBudget;
+use crate::output::MetadataTemporary as CacheTemporary;
 use anyhow::{Context, Result};
 use fs2::FileExt;
 use log::{info, warn};
@@ -6,10 +8,11 @@ use sha2::{Digest, Sha256};
 use std::fs::{self, File, OpenOptions};
 use std::io::{BufRead, Read, Write};
 use std::path::{Path, PathBuf};
+use std::sync::Arc;
 
 /// Sidecar metadata stored alongside each cached file.
 #[derive(Serialize, Deserialize, Debug)]
-struct CacheMeta {
+pub(crate) struct CacheMeta {
     /// The original URL this file was downloaded from.
     url: String,
     /// SHA-256 hex digest of the cached data file.
@@ -21,24 +24,8 @@ struct CacheMeta {
     n_reads: u64,
 }
 
-struct CacheBackup {
-    data_path: tempfile::TempPath,
-    meta_path: tempfile::TempPath,
-}
-
-impl CacheBackup {
-    fn restore(self, data_path: &Path, meta_path: &Path) -> Result<()> {
-        self.meta_path
-            .persist(meta_path)
-            .map_err(|error| error.error)
-            .with_context(|| format!("Failed to restore cache metadata {}", meta_path.display()))?;
-        self.data_path
-            .persist(data_path)
-            .map_err(|error| error.error)
-            .with_context(|| format!("Failed to restore cache data {}", data_path.display()))?;
-        Ok(())
-    }
-}
+mod metadata;
+mod transaction;
 
 /// Configuration and operations for the read cache.
 pub(crate) struct CacheConfig {
@@ -86,10 +73,30 @@ impl CacheConfig {
     /// lookup. Ambiguous entries are preserved rather than removed, because
     /// their contents cannot safely be attributed to sharkmer.
     pub(crate) fn lookup(&self, url: &str, max_reads: u64) -> Result<Option<PathBuf>> {
+        self.lookup_with_budget(url, max_reads, None)
+    }
+
+    /// Validate cached source metadata under the exact counter's shared ledger.
+    pub(crate) fn lookup_bounded(
+        &self,
+        url: &str,
+        max_reads: u64,
+        budget: &Arc<ResourceBudget>,
+    ) -> Result<Option<PathBuf>> {
+        self.lookup_with_budget(url, max_reads, Some(budget))
+    }
+
+    fn lookup_with_budget(
+        &self,
+        url: &str,
+        max_reads: u64,
+        budget: Option<&Arc<ResourceBudget>>,
+    ) -> Result<Option<PathBuf>> {
+        transaction::recover(&self.cache_dir, budget)?;
         let key = cache_key(url);
         let data_path = self.data_path(&key);
         let meta_path = self.meta_path(&key);
-        let meta = match validate_entry(&key, &data_path, &meta_path)? {
+        let meta = match validate_entry_with_budget(&key, &data_path, &meta_path, budget)? {
             Some(meta) => meta,
             None => return Ok(None),
         };
@@ -125,27 +132,33 @@ impl CacheConfig {
     /// fly, and only the retained reads are re-compressed into the cache file.
     /// Returns the path to the cached file.
     pub(crate) fn download_to_cache(&self, url: &str, max_reads: u64) -> Result<PathBuf> {
+        self.download(url, max_reads, None)
+    }
+
+    /// Bound remote cache-miss records under the exact counter's shared input
+    /// allowance before allocating a line or replacing a verified cache entry.
+    pub(crate) fn download_to_cache_bounded(
+        &self,
+        url: &str,
+        max_reads: u64,
+        record_bytes: usize,
+        budget: &Arc<ResourceBudget>,
+    ) -> Result<PathBuf> {
+        self.download(url, max_reads, Some((record_bytes, budget)))
+    }
+
+    fn download(
+        &self,
+        url: &str,
+        max_reads: u64,
+        resources: Option<(usize, &Arc<ResourceBudget>)>,
+    ) -> Result<PathBuf> {
         let key = cache_key(url);
         let data_path = self.data_path(&key);
         let meta_path = self.meta_path(&key);
-        validate_entry(&key, &data_path, &meta_path)?;
-
-        // Create a unique temp file in the cache directory. Using tempfile
-        // gives us a random-suffixed name (avoiding collisions between
-        // concurrent sharkmer invocations downloading the same URL) and
-        // auto-deletes on error paths. Keeping it in the cache dir ensures
-        // the final rename stays on the same filesystem and is atomic.
-        let temporary = tempfile::Builder::new()
-            .prefix(&format!("{}.", key))
-            .suffix(".gz.tmp")
-            .tempfile_in(&self.cache_dir)
-            .with_context(|| {
-                format!(
-                    "Failed to create temp file in cache directory: {}",
-                    self.cache_dir.display()
-                )
-            })?;
-        let (temporary_file, temporary_path) = temporary.into_parts();
+        let budget = resources.map(|(_, budget)| budget);
+        transaction::recover(&self.cache_dir, budget)?;
+        let previous = validate_entry_with_budget(&key, &data_path, &meta_path, budget)?.is_some();
 
         info!(
             "Downloading {} to cache (max_reads: {})...",
@@ -158,75 +171,25 @@ impl CacheConfig {
         );
 
         // Input pipeline: HTTP → MultiGzDecoder → BufReader
-        let response = ureq::get(url)
-            .call()
-            .with_context(|| format!("Failed to download {}", url))?;
-        let gz_reader = flate2::read::MultiGzDecoder::new(response.into_reader());
-        let buf_reader = std::io::BufReader::new(gz_reader);
-        let mut lines = buf_reader.lines();
+        let response =
+            crate::http::get(url).with_context(|| format!("Failed to download {}", url))?;
+        let transaction = transaction::Transaction::begin(&self.cache_dir, &key, previous, budget)?;
+        let mut temporary = CacheTemporary::create(transaction.directory(), ".new-data-", budget)?;
+        let buf_reader = crate::codec::Decoder::new(response, budget)?;
 
-        // Output pipeline: File → BufWriter → GzEncoder
-        let mut gz_writer = flate2::write::GzEncoder::new(
-            std::io::BufWriter::new(temporary_file),
-            flate2::Compression::fast(),
-        );
-
-        let mut n_reads: u64 = 0;
-        let mut complete = false;
-
-        loop {
-            // Read header line (first line of a FASTQ record)
-            let header = match lines.next() {
-                Some(Ok(line)) => line,
-                Some(Err(e)) => {
-                    return Err(e).with_context(|| format!("Failed reading FASTQ from {}", url));
-                }
-                None => {
-                    complete = true;
-                    break;
-                }
-            };
-
-            // Read remaining 3 lines of the FASTQ record
-            let sequence = lines
-                .next()
-                .ok_or_else(|| {
-                    anyhow::anyhow!("Truncated FASTQ at record {} in {}", n_reads + 1, url)
-                })?
-                .with_context(|| format!("Failed reading FASTQ from {}", url))?;
-            let separator = lines
-                .next()
-                .ok_or_else(|| {
-                    anyhow::anyhow!("Truncated FASTQ at record {} in {}", n_reads + 1, url)
-                })?
-                .with_context(|| format!("Failed reading FASTQ from {}", url))?;
-            let quality = lines
-                .next()
-                .ok_or_else(|| {
-                    anyhow::anyhow!("Truncated FASTQ at record {} in {}", n_reads + 1, url)
-                })?
-                .with_context(|| format!("Failed reading FASTQ from {}", url))?;
-
-            // Write the 4 lines to the cache file
-            writeln!(gz_writer, "{}", header)?;
-            writeln!(gz_writer, "{}", sequence)?;
-            writeln!(gz_writer, "{}", separator)?;
-            writeln!(gz_writer, "{}", quality)?;
-
-            n_reads += 1;
-
-            if max_reads > 0 && n_reads >= max_reads {
-                break;
-            }
-        }
-
-        // Finish gzip stream (writes trailer) and flush to disk
-        let buf_writer = gz_writer
-            .finish()
-            .context("Failed to finish gzip stream for cache file")?;
-        buf_writer
-            .into_inner()
-            .map_err(|e| anyhow::anyhow!("Failed to flush cache file: {}", e))?;
+        // Finalize the encoder and its buffer before consulting the owned
+        // writer. Its retained cause preserves a typed quota refusal even
+        // when compression or buffered I/O returns a generic io::Error.
+        let written = (|| {
+            let mut gz_writer = crate::codec::Encoder::new(temporary.writer(), budget)?;
+            let selection =
+                write_cache_records(buf_reader, &mut gz_writer, url, max_reads, resources)?;
+            gz_writer
+                .finish()
+                .context("Failed to finish and flush gzip cache file")?;
+            Ok(selection)
+        })();
+        let (n_reads, complete) = temporary.finish(written)?;
 
         info!(
             "Cached {} reads for {} (complete: {})",
@@ -234,27 +197,10 @@ impl CacheConfig {
         );
 
         // Compute SHA-256 of the cached file
-        let sha256 = compute_sha256(&temporary_path)?;
-        let meta = CacheMeta {
-            url: url.to_string(),
-            sha256,
-            complete,
-            n_reads,
-        };
-        let meta_temporary = write_meta_temporary(&self.cache_dir, &meta)?;
-        let existing_meta = validate_entry(&key, &data_path, &meta_path)?;
-        let backup = if existing_meta.is_some() {
-            Some(backup_entry(&self.cache_dir, &data_path, &meta_path)?)
-        } else {
-            None
-        };
-        publish_entry(
-            temporary_path,
-            meta_temporary,
-            &data_path,
-            &meta_path,
-            backup,
-        )?;
+        let sha256 = compute_sha256(temporary.path())?;
+        let meta = metadata::Owned::generated(url, sha256, complete, n_reads, budget)?;
+        let meta_temporary = metadata::temporary(transaction.directory(), &meta, budget)?;
+        transaction.publish(temporary, meta_temporary)?;
 
         Ok(data_path)
     }
@@ -280,6 +226,7 @@ impl CacheConfig {
             )
         })?;
         let _lock_file = acquire_cache_lock(&cache_dir)?;
+        transaction::recover(&cache_dir, None)?;
         let cleared = clear_owned_entries(&cache_dir)?;
         info!(
             "Cleared {} verified cache entr{}; preserving unowned, malformed, modified, and symlinked paths.",
@@ -296,6 +243,80 @@ impl CacheConfig {
     fn meta_path(&self, key: &str) -> PathBuf {
         self.cache_dir.join(format!("{}.meta.yaml", key))
     }
+}
+
+/// Preserve cache selection/normalization while bounding exact-run records.
+fn write_cache_records<R: BufRead, W: Write>(
+    reader: R,
+    output: &mut W,
+    url: &str,
+    max_reads: u64,
+    resources: Option<(usize, &Arc<ResourceBudget>)>,
+) -> Result<(u64, bool)> {
+    if let Some((limit, budget)) = resources {
+        let mut records = crate::fastq::FastqReader::new(reader, limit, Arc::clone(budget))?;
+        let mut n_reads = 0;
+        let complete = loop {
+            if !records.next(url, n_reads)? {
+                break true;
+            }
+            for field in records.fields() {
+                output.write_all(field)?;
+                output.write_all(b"\n")?;
+            }
+            n_reads = n_reads
+                .checked_add(1)
+                .context("Cache record count overflow")?;
+            if max_reads > 0 && n_reads >= max_reads {
+                break false;
+            }
+        };
+        return Ok((n_reads, complete));
+    }
+    let mut lines = reader.lines();
+    let mut n_reads: u64 = 0;
+    let mut complete = false;
+
+    loop {
+        // Read header line (first line of a FASTQ record)
+        let header = match lines.next() {
+            Some(Ok(line)) => line,
+            Some(Err(e)) => {
+                return Err(e).with_context(|| format!("Failed reading FASTQ from {}", url));
+            }
+            None => {
+                complete = true;
+                break;
+            }
+        };
+
+        // Read remaining 3 lines of the FASTQ record
+        let sequence = lines
+            .next()
+            .ok_or_else(|| anyhow::anyhow!("Truncated FASTQ at record {} in {}", n_reads + 1, url))?
+            .with_context(|| format!("Failed reading FASTQ from {}", url))?;
+        let separator = lines
+            .next()
+            .ok_or_else(|| anyhow::anyhow!("Truncated FASTQ at record {} in {}", n_reads + 1, url))?
+            .with_context(|| format!("Failed reading FASTQ from {}", url))?;
+        let quality = lines
+            .next()
+            .ok_or_else(|| anyhow::anyhow!("Truncated FASTQ at record {} in {}", n_reads + 1, url))?
+            .with_context(|| format!("Failed reading FASTQ from {}", url))?;
+
+        // Write the 4 lines to the cache file
+        writeln!(output, "{}", header)?;
+        writeln!(output, "{}", sequence)?;
+        writeln!(output, "{}", separator)?;
+        writeln!(output, "{}", quality)?;
+
+        n_reads += 1;
+
+        if max_reads > 0 && n_reads >= max_reads {
+            break;
+        }
+    }
+    Ok((n_reads, complete))
 }
 
 fn cache_key(url: &str) -> String {
@@ -320,18 +341,9 @@ fn compute_sha256(path: &Path) -> Result<String> {
     Ok(format!("{:x}", hasher.finalize()))
 }
 
-fn read_meta(path: &Path) -> Result<Option<CacheMeta>> {
-    let contents = match fs::read_to_string(path) {
-        Ok(contents) => contents,
-        Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-        Err(error) => {
-            return Err(error)
-                .with_context(|| format!("Failed to read sidecar {}", path.display()));
-        }
-    };
-    let meta: CacheMeta = serde_yaml_ng::from_str(&contents)
-        .map_err(|e| anyhow::anyhow!("Failed to parse sidecar {}: {}", path.display(), e))?;
-    Ok(Some(meta))
+#[cfg(test)]
+fn read_meta(path: &Path) -> Result<Option<metadata::Owned>> {
+    metadata::read(path, None)
 }
 
 #[cfg(test)]
@@ -340,93 +352,6 @@ fn write_meta(path: &Path, meta: &CacheMeta) -> Result<()> {
         .map_err(|e| anyhow::anyhow!("Failed to serialize cache sidecar: {}", e))?;
     fs::write(path, contents)
         .with_context(|| format!("Failed to write sidecar {}", path.display()))?;
-    Ok(())
-}
-
-fn write_meta_temporary(cache_dir: &Path, meta: &CacheMeta) -> Result<tempfile::NamedTempFile> {
-    let mut temporary = tempfile::Builder::new()
-        .prefix(".sharkmer-cache-meta-")
-        .suffix(".tmp")
-        .tempfile_in(cache_dir)
-        .with_context(|| {
-            format!(
-                "Failed to create temporary cache metadata in {}",
-                cache_dir.display()
-            )
-        })?;
-    serde_yaml_ng::to_writer(temporary.as_file_mut(), meta)
-        .context("Failed to write temporary cache metadata")?;
-    temporary
-        .as_file_mut()
-        .flush()
-        .context("Failed to flush temporary cache metadata")?;
-    temporary
-        .as_file_mut()
-        .sync_all()
-        .context("Failed to sync temporary cache metadata")?;
-    Ok(temporary)
-}
-
-fn backup_entry(cache_dir: &Path, data_path: &Path, meta_path: &Path) -> Result<CacheBackup> {
-    Ok(CacheBackup {
-        data_path: hard_link_temporary(cache_dir, data_path, ".sharkmer-cache-data-backup-")?,
-        meta_path: hard_link_temporary(cache_dir, meta_path, ".sharkmer-cache-meta-backup-")?,
-    })
-}
-
-fn hard_link_temporary(
-    cache_dir: &Path,
-    source_path: &Path,
-    prefix: &str,
-) -> Result<tempfile::TempPath> {
-    let temporary = tempfile::Builder::new()
-        .prefix(prefix)
-        .tempfile_in(cache_dir)
-        .with_context(|| format!("Failed to create cache backup in {}", cache_dir.display()))?;
-    let temporary_path = temporary.into_temp_path();
-    fs::remove_file(&temporary_path).with_context(|| {
-        format!(
-            "Failed to prepare cache backup {}",
-            temporary_path.display()
-        )
-    })?;
-    fs::hard_link(source_path, &temporary_path).with_context(|| {
-        format!(
-            "Failed to link cache backup from {} to {}",
-            source_path.display(),
-            temporary_path.display()
-        )
-    })?;
-    Ok(temporary_path)
-}
-
-fn publish_entry(
-    data_temporary: tempfile::TempPath,
-    meta_temporary: tempfile::NamedTempFile,
-    data_path: &Path,
-    meta_path: &Path,
-    backup: Option<CacheBackup>,
-) -> Result<()> {
-    data_temporary
-        .persist(data_path)
-        .with_context(|| format!("Failed to persist cache file to {}", data_path.display()))?;
-    if let Err(error) = meta_temporary
-        .persist(meta_path)
-        .map_err(|error| error.error)
-        .with_context(|| format!("Failed to persist cache sidecar to {}", meta_path.display()))
-    {
-        if let Some(backup) = backup {
-            backup.restore(data_path, meta_path)?;
-        } else {
-            fs::remove_file(data_path).with_context(|| {
-                format!(
-                    "Failed to remove newly published cache data after metadata failure {}",
-                    data_path.display()
-                )
-            })?;
-        }
-        return Err(error);
-    }
     Ok(())
 }
 
@@ -480,7 +405,20 @@ fn entry_file_state(path: &Path, label: &str) -> Result<bool> {
     }
 }
 
-fn validate_entry(key: &str, data_path: &Path, meta_path: &Path) -> Result<Option<CacheMeta>> {
+fn validate_entry(
+    key: &str,
+    data_path: &Path,
+    meta_path: &Path,
+) -> Result<Option<metadata::Owned>> {
+    validate_entry_with_budget(key, data_path, meta_path, None)
+}
+
+fn validate_entry_with_budget(
+    key: &str,
+    data_path: &Path,
+    meta_path: &Path,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<Option<metadata::Owned>> {
     let data_exists = entry_file_state(data_path, "data")?;
     let meta_exists = entry_file_state(meta_path, "metadata")?;
     if !data_exists && !meta_exists {
@@ -491,10 +429,10 @@ fn validate_entry(key: &str, data_path: &Path, meta_path: &Path) -> Result<Optio
         "Refusing ambiguous cache entry for {}. Use a fresh cache directory or --no-cache.",
         key
     );
-    let meta = read_meta(meta_path)
-        .map_err(|error| {
-            anyhow::anyhow!(
-                "Refusing malformed cache entry for {}. Use a fresh cache directory or --no-cache: {error:#}",
+    let meta = metadata::read(meta_path, budget)
+        .with_context(|| {
+            format!(
+                "Unable to validate cache metadata for {}; the cache entry is preserved",
                 key
             )
         })?
@@ -603,6 +541,268 @@ mod tests {
 
     const RECORD_ONE: &str = "@read-one\nACGT\n+\n!!!!\n";
     const RECORD_TWO: &str = "@read-two\nTGCA\n+\n####\n";
+
+    fn cache_read_budget(bytes: u64) -> Arc<ResourceBudget> {
+        use crate::kmer::budget::{MEMORY_CLASSES, MemoryClass, ResourceLimits};
+        let mut classes = [0; MEMORY_CLASSES];
+        classes[MemoryClass::InputBuffer as usize] = bytes;
+        ResourceBudget::new(ResourceLimits {
+            memory_bytes: bytes,
+            process_overhead_bytes: 0,
+            class_bytes: classes,
+            temporary_disk_bytes: 0,
+            temporary_open_files: 0,
+        })
+        .unwrap()
+    }
+
+    fn cache_metadata_budget(input_bytes: u64, disk: u64) -> Arc<ResourceBudget> {
+        cache_budget(input_bytes, disk)
+    }
+
+    fn cache_http_budget(input_bytes: u64, disk: u64) -> Arc<ResourceBudget> {
+        cache_metadata_budget(input_bytes, disk)
+    }
+
+    fn cache_budget(input_bytes: u64, disk: u64) -> Arc<ResourceBudget> {
+        use crate::kmer::budget::{MEMORY_CLASSES, MemoryClass, ResourceLimits};
+        let mut classes = [0; MEMORY_CLASSES];
+        classes[MemoryClass::InputBuffer as usize] = input_bytes;
+        classes[MemoryClass::RetainedResults as usize] = 8 << 20;
+        ResourceBudget::new(ResourceLimits {
+            memory_bytes: 8 << 20,
+            process_overhead_bytes: 0,
+            class_bytes: classes,
+            temporary_disk_bytes: disk,
+            temporary_open_files: 0,
+        })
+        .unwrap()
+    }
+
+    #[test]
+    fn bounded_cache_records_preserve_normalization_selection_and_completion() {
+        let input = b"@read-one\r\nACGT\r\n+\r\n!!!!\r\n@read-two\nTGCA\n+\n####";
+        for maximum in [0, 1, 2, 3] {
+            let budget = cache_read_budget(512);
+            let mut legacy = Vec::new();
+            let expected =
+                write_cache_records(&input[..], &mut legacy, "source", maximum, None).unwrap();
+            let mut bounded = Vec::new();
+            let actual = write_cache_records(
+                &input[..],
+                &mut bounded,
+                "source",
+                maximum,
+                Some((128, &budget)),
+            )
+            .unwrap();
+            assert_eq!(actual, expected);
+            assert_eq!(bounded, legacy);
+            assert_eq!(
+                actual,
+                (
+                    if maximum == 1 { 1 } else { 2 },
+                    maximum == 0 || maximum > 2
+                )
+            );
+            assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+            assert!(budget.snapshot().peak_reserved_memory_bytes > 0);
+        }
+        for input in [&b"@bad\nACGT\n+\n"[..], &b"@bad\nACGT\n+\n!\xff!!\n"[..]] {
+            let budget = cache_read_budget(512);
+            assert!(write_cache_records(input, &mut Vec::new(), "source", 0, None).is_err());
+            assert!(
+                write_cache_records(input, &mut Vec::new(), "source", 0, Some((128, &budget)))
+                    .is_err()
+            );
+            assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+        }
+    }
+
+    #[test]
+    fn bounded_http_cache_preserves_gzip_members_and_publishes_verified_records() {
+        let directory = tempfile::tempdir().unwrap();
+        let config = test_config(directory.path());
+        let mut body = gzip_member(&RECORD_ONE.replace('\n', "\r\n"));
+        body.extend(gzip_member(RECORD_TWO));
+        let (url, server) = serve_once(body);
+        let budget = cache_http_budget(512, 1 << 20);
+        let path = config
+            .download_to_cache_bounded(&url, 0, 128, &budget)
+            .unwrap();
+        server.join().unwrap().unwrap();
+        let mut actual = String::new();
+        flate2::read::MultiGzDecoder::new(File::open(&path).unwrap())
+            .read_to_string(&mut actual)
+            .unwrap();
+        assert_eq!(actual, format!("{RECORD_ONE}{RECORD_TWO}"));
+        let meta = read_meta(&config.meta_path(&cache_key(&url)))
+            .unwrap()
+            .unwrap();
+        assert_eq!(meta.n_reads, 2);
+        assert!(meta.complete);
+        assert_eq!(meta.sha256, compute_sha256(&path).unwrap());
+        assert_eq!(config.lookup(&url, 0).unwrap(), Some(path));
+        assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+        assert_eq!(budget.snapshot().reserved_temporary_disk_bytes, 0);
+        assert_eq!(
+            budget.snapshot().peak_reserved_temporary_disk_bytes,
+            fs::metadata(config.data_path(&cache_key(&url)))
+                .unwrap()
+                .len()
+                + fs::metadata(config.meta_path(&cache_key(&url)))
+                    .unwrap()
+                    .len()
+                + transaction::CONTROL_PEAK_BYTES
+        );
+    }
+
+    #[test]
+    fn compressed_cache_disk_refusal_preserves_prior_or_absent_entry() {
+        use crate::kmer::budget::{ResourceExhausted, ResourceKind};
+        let mut encoder = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::fast());
+        encoder.write_all(RECORD_ONE.as_bytes()).unwrap();
+        let compressed = encoder.finish().unwrap();
+        // Zero bytes and a missing gzip trailer refuse the compressed data;
+        // allowing exactly the data refuses metadata while it is still owned.
+        for prior in [false, true] {
+            for disk in [
+                0,
+                transaction::CONTEXT_DISK_BYTES,
+                transaction::CONTEXT_DISK_BYTES + compressed.len() as u64 - 1,
+                transaction::CONTEXT_DISK_BYTES + compressed.len() as u64,
+            ] {
+                let directory = tempfile::tempdir().unwrap();
+                let config = test_config(directory.path());
+                let (url, server) = serve_once(gzip_member(RECORD_ONE));
+                let data_path = config.data_path(&cache_key(&url));
+                let meta_path = config.meta_path(&cache_key(&url));
+                let previous = prior.then(|| {
+                    create_cache_entry(&config, &url, false, 1);
+                    (fs::read(&data_path).unwrap(), fs::read(&meta_path).unwrap())
+                });
+                let foreign = directory.path().join("foreign.txt");
+                fs::write(&foreign, b"unowned data\n").unwrap();
+                let budget = cache_http_budget(512, disk);
+                let error = config
+                    .download_to_cache_bounded(&url, 0, 128, &budget)
+                    .unwrap_err();
+                server.join().unwrap().unwrap();
+                assert_eq!(
+                    error.downcast_ref::<ResourceExhausted>().unwrap().resource,
+                    ResourceKind::TemporaryDisk,
+                    "{error:#}"
+                );
+                match previous {
+                    Some((data, meta)) => {
+                        assert_eq!(fs::read(&data_path).unwrap(), data);
+                        assert_eq!(fs::read(&meta_path).unwrap(), meta);
+                    }
+                    None => {
+                        assert!(!data_path.exists());
+                        assert!(!meta_path.exists());
+                    }
+                }
+                assert_eq!(fs::read(&foreign).unwrap(), b"unowned data\n");
+                assert_eq!(
+                    fs::read_dir(directory.path()).unwrap().count(),
+                    if prior { 4 } else { 2 }
+                );
+                assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+                assert_eq!(budget.snapshot().reserved_temporary_disk_bytes, 0);
+                assert!(budget.snapshot().peak_reserved_temporary_disk_bytes <= disk);
+                assert!(budget.snapshot().valid);
+            }
+        }
+    }
+
+    #[test]
+    fn cache_pair_acceptance_releases_both_closed_temporary_charges() {
+        let directory = tempfile::tempdir().unwrap();
+        let budget = cache_metadata_budget(512, 1 << 20);
+        let url = "http://example.com/reads.fastq.gz";
+        let key = cache_key(url);
+        let transaction =
+            transaction::Transaction::begin(directory.path(), &key, false, Some(&budget)).unwrap();
+        let mut data =
+            CacheTemporary::create(transaction.directory(), ".new-data-", Some(&budget)).unwrap();
+        data.writer().write_all(b"compressed cache bytes").unwrap();
+        let selection = data.finish(Ok((1_u64, true))).unwrap();
+        assert_eq!(selection, (1, true));
+        let meta = CacheMeta {
+            url: "http://example.com/reads.fastq.gz".to_owned(),
+            sha256: compute_sha256(data.path()).unwrap(),
+            complete: true,
+            n_reads: 1,
+        };
+        let metadata = metadata::temporary(transaction.directory(), &meta, Some(&budget)).unwrap();
+        let bytes =
+            fs::metadata(data.path()).unwrap().len() + fs::metadata(metadata.path()).unwrap().len();
+        assert_eq!(
+            budget.snapshot().reserved_temporary_disk_bytes,
+            bytes + transaction::CONTEXT_DISK_BYTES
+        );
+        #[cfg(target_os = "linux")]
+        for entry in fs::read_dir("/proc/self/fd").unwrap() {
+            if let Ok(open) = fs::read_link(entry.unwrap().path()) {
+                assert_ne!(open, data.path());
+                assert_ne!(open, metadata.path());
+            }
+        }
+        let data_path = directory.path().join(format!("{key}.fastq.gz"));
+        let meta_path = directory.path().join(format!("{key}.meta.yaml"));
+        transaction.publish(data, metadata).unwrap();
+        assert_eq!(fs::read(&data_path).unwrap(), b"compressed cache bytes");
+        assert_eq!(read_meta(&meta_path).unwrap().unwrap().sha256, meta.sha256);
+        assert_eq!(budget.snapshot().reserved_temporary_disk_bytes, 0);
+        assert_eq!(
+            budget.snapshot().peak_reserved_temporary_disk_bytes,
+            bytes + transaction::CONTROL_PEAK_BYTES
+        );
+        assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+    }
+
+    #[test]
+    fn bounded_http_cache_refusal_preserves_previous_generation_and_releases_input() {
+        use crate::kmer::budget::{MemoryClass, ResourceExhausted, ResourceKind};
+        for record_limit in [false, true] {
+            let directory = tempfile::tempdir().unwrap();
+            let config = test_config(directory.path());
+            let input = if record_limit {
+                format!("@{}\nACGT\n+\n!!!!\n", "x".repeat(4096))
+            } else {
+                RECORD_ONE.to_owned()
+            };
+            let (url, server) = serve_once(gzip_member(&input));
+            let path = create_cache_entry(&config, &url, false, 1);
+            let meta_path = config.meta_path(&cache_key(&url));
+            let data = fs::read(&path).unwrap();
+            let meta = fs::read(&meta_path).unwrap();
+            let foreign = directory.path().join("foreign.txt");
+            fs::write(&foreign, "unowned data\n").unwrap();
+            let budget = cache_http_budget(if record_limit { 512 } else { 8 }, 1 << 20);
+            let error = config
+                .download_to_cache_bounded(&url, 0, 128, &budget)
+                .unwrap_err();
+            server.join().unwrap().unwrap();
+            if record_limit {
+                assert!(
+                    error.to_string().contains("128 byte buffer limit"),
+                    "{error:#}"
+                );
+            } else {
+                assert_eq!(
+                    error.downcast_ref::<ResourceExhausted>().unwrap().resource,
+                    ResourceKind::StageMemory(MemoryClass::InputBuffer)
+                );
+            }
+            assert_eq!(fs::read(&path).unwrap(), data);
+            assert_eq!(fs::read(&meta_path).unwrap(), meta);
+            assert_eq!(fs::read_to_string(&foreign).unwrap(), "unowned data\n");
+            assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+            assert_eq!(fs::read_dir(directory.path()).unwrap().count(), 4);
+        }
+    }
 
     fn test_config(cache_directory: &Path) -> CacheConfig {
         CacheConfig::new(Some(cache_directory)).unwrap()
@@ -1101,34 +1301,31 @@ mod tests {
     }
 
     #[test]
-    fn fresh_entry_metadata_publish_failure_removes_new_data() {
+    fn foreign_metadata_destination_is_preserved_before_publication() {
         let directory = tempfile::tempdir().unwrap();
-        let cache_directory = directory.path().join("cache");
-        fs::create_dir(&cache_directory).unwrap();
-        let data_path = cache_directory.join("new.fastq.gz");
-        let meta_path = cache_directory.join("blocked.meta.yaml");
-        let mut data_temporary_file = tempfile::Builder::new()
-            .tempfile_in(&cache_directory)
-            .unwrap();
-        data_temporary_file.write_all(b"new cache data").unwrap();
-        data_temporary_file.flush().unwrap();
-        let data_temporary = data_temporary_file.into_temp_path();
-        let meta_temporary = write_meta_temporary(
-            &cache_directory,
+        let url = "http://example.com/new.fastq.gz";
+        let key = cache_key(url);
+        let transaction =
+            transaction::Transaction::begin(directory.path(), &key, false, None).unwrap();
+        let data_path = directory.path().join(format!("{key}.fastq.gz"));
+        let meta_path = directory.path().join(format!("{key}.meta.yaml"));
+        let mut data = CacheTemporary::create(transaction.directory(), ".new-data-", None).unwrap();
+        data.writer().write_all(b"new cache data").unwrap();
+        data.finish(Ok(())).unwrap();
+        let meta = metadata::temporary(
+            transaction.directory(),
             &CacheMeta {
-                url: "http://example.com/new.fastq.gz".to_string(),
-                sha256: "0".repeat(64),
+                url: url.to_owned(),
+                sha256: compute_sha256(data.path()).unwrap(),
                 complete: true,
                 n_reads: 1,
             },
+            None,
         )
         .unwrap();
         fs::create_dir(&meta_path).unwrap();
-
-        let error = publish_entry(data_temporary, meta_temporary, &data_path, &meta_path, None)
-            .unwrap_err();
-
-        assert!(error.to_string().contains("persist cache sidecar"));
+        let error = transaction.publish(data, meta).unwrap_err();
+        assert!(format!("{error:#}").contains("Non-regular"));
         assert!(!data_path.exists());
         assert!(meta_path.is_dir());
     }

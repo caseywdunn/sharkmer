@@ -4,20 +4,22 @@
 //! resize. Callers must separately reserve process/allocator overhead, input
 //! buffers, graphs and evidence before using this as a production backend.
 
-use super::budget::{MemoryClass, MemoryReservation, ResourceBudget, ResourceLimits};
+use super::budget::{
+    MemoryClass, MemoryReservation, ResourceBudget, ResourceExhausted, ResourceKind, ResourceLimits,
+};
 use super::identity::{CanonicalKey, KmerSize, OrientedKey};
-use anyhow::{Context, Result, ensure};
+use anyhow::{Context, Result, bail, ensure};
 use std::num::NonZeroU64;
 use std::sync::Arc;
 
 #[cfg(feature = "ahashmap")]
-type TableHasher = ahash::RandomState;
+pub(super) type TableHasher = ahash::RandomState;
 #[cfg(feature = "fxhashmap")]
-type TableHasher = std::hash::BuildHasherDefault<rustc_hash::FxHasher>;
+pub(super) type TableHasher = std::hash::BuildHasherDefault<rustc_hash::FxHasher>;
 #[cfg(feature = "ahashmap")]
-const TABLE_HASHER_NAME: &str = "ahash";
+pub(super) const TABLE_HASHER_NAME: &str = "ahash";
 #[cfg(feature = "fxhashmap")]
-const TABLE_HASHER_NAME: &str = "fxhash";
+pub(super) const TABLE_HASHER_NAME: &str = "fxhash";
 
 /// Identity and cardinality of a finalized exact count store.
 #[derive(Clone, Debug, PartialEq, Eq)]
@@ -163,11 +165,14 @@ impl Table {
         let peak = old_bytes
             .checked_add(bound)
             .context("Count resize byte size overflow")?;
-        ensure!(
-            peak <= self.table_budget_bytes,
-            "Count table resize needs {peak} table bytes; budget is {}",
-            self.table_budget_bytes
-        );
+        if peak > self.table_budget_bytes {
+            return Err(ResourceExhausted {
+                resource: ResourceKind::StageMemory(MemoryClass::CountSlots),
+                required_bytes: peak as u128,
+                limit_bytes: u64::try_from(self.table_budget_bytes)?,
+            }
+            .into());
+        }
         let reservation = self
             .budget
             .reserve(MemoryClass::CountSlots, u64::try_from(bound)?)?;
@@ -210,13 +215,14 @@ impl MemoryCountBuilder {
     /// Reserve table buffers within a caller-provided table budget.
     pub fn new(k: KmerSize, table_budget_bytes: usize, max_lookup_batch: usize) -> Result<Self> {
         let bytes = u64::try_from(table_budget_bytes)?;
-        let mut classes = [0; 8];
+        let mut classes = [0; crate::kmer::budget::MEMORY_CLASSES];
         classes[MemoryClass::CountSlots as usize] = bytes;
         let budget = ResourceBudget::new(ResourceLimits {
             memory_bytes: bytes,
             process_overhead_bytes: 0,
             class_bytes: classes,
             temporary_disk_bytes: 0,
+            temporary_open_files: 128,
         })?;
         Self::with_budget(k, budget, max_lookup_batch)
     }
@@ -251,18 +257,17 @@ impl MemoryCountBuilder {
     #[inline]
     pub fn add(&mut self, key: CanonicalKey, increment: NonZeroU64) -> Result<()> {
         self.table.check_key(key)?;
-        let total = self
-            .table
-            .occurrences
-            .checked_add(increment.get())
-            .context("Exact k-mer occurrence total overflow")?;
+        let Some(total) = self.table.occurrences.checked_add(increment.get()) else {
+            bail!("Exact k-mer occurrence total overflow");
+        };
         // At capacity, an existing count must remain updatable without a new
         // allocation. Otherwise reserve before entry() could grow implicitly.
         if self.table.map.len() == self.table.map.capacity() {
             if let Some(count) = self.table.map.get_mut(&key.bits()) {
-                *count = count
-                    .checked_add(increment.get())
-                    .context("Exact k-mer count overflow")?;
+                let Some(updated) = count.checked_add(increment.get()) else {
+                    bail!("Exact k-mer count overflow");
+                };
+                *count = updated;
                 self.table.occurrences = total;
                 return Ok(());
             }
@@ -270,10 +275,9 @@ impl MemoryCountBuilder {
         }
         match self.table.map.entry(key.bits()) {
             hashbrown::hash_map::Entry::Occupied(mut entry) => {
-                let count = entry
-                    .get()
-                    .checked_add(increment.get())
-                    .context("Exact k-mer count overflow")?;
+                let Some(count) = entry.get().checked_add(increment.get()) else {
+                    bail!("Exact k-mer count overflow");
+                };
                 *entry.get_mut() = count;
             }
             hashbrown::hash_map::Entry::Vacant(entry) => {
@@ -282,6 +286,16 @@ impl MemoryCountBuilder {
         }
         self.table.occurrences = total;
         Ok(())
+    }
+
+    /// Checked total of accepted occurrences, without scanning the table.
+    pub fn occurrences(&self) -> u64 {
+        self.table.occurrences
+    }
+
+    /// Current table allocation, excluding already-freed resize allocations.
+    pub(crate) fn table_bytes(&self) -> usize {
+        self.table.map.allocation_size()
     }
 
     /// Bind the counted input digest and move into a shared immutable store.
@@ -401,7 +415,7 @@ mod tests {
 
     #[test]
     fn live_graph_reservations_control_counter_resize_without_losing_counts() {
-        let mut classes = [0; 8];
+        let mut classes = [0; crate::kmer::budget::MEMORY_CLASSES];
         classes[MemoryClass::CountSlots as usize] = 900;
         classes[MemoryClass::TargetGraphs as usize] = 500;
         let budget = ResourceBudget::new(ResourceLimits {
@@ -409,6 +423,7 @@ mod tests {
             process_overhead_bytes: 100,
             class_bytes: classes,
             temporary_disk_bytes: 0,
+            temporary_open_files: 128,
         })
         .unwrap();
         let mut builder =
@@ -587,9 +602,10 @@ mod tests {
     fn exact_overflow_and_wrong_k_leave_counts_and_totals_intact() {
         let mut builder = MemoryCountBuilder::new(KmerSize::new(3).unwrap(), 4096, 4).unwrap();
         builder.add(key(0, 3), positive(u64::MAX)).unwrap();
-        assert!(builder.add(key(0, 3), positive(1)).is_err());
-        assert!(builder.add(key(1, 3), positive(1)).is_err());
-        assert!(builder.add(key(0, 2), positive(1)).is_err());
+        for candidate in [key(0, 3), key(1, 3), key(0, 2)] {
+            let error = builder.add(candidate, positive(1)).unwrap_err();
+            assert!(error.downcast_ref::<ResourceExhausted>().is_none());
+        }
         let store = builder.finalize([0; 32]);
         assert_eq!(store.lookup(key(0, 3)).unwrap(), Some(positive(u64::MAX)));
         assert_eq!(store.lookup(key(1, 3)).unwrap(), None);
@@ -609,7 +625,16 @@ mod tests {
                 continue;
             }
             if accepted.len() == 14 {
-                assert!(builder.add(k, positive(1)).is_err());
+                let error = builder.add(k, positive(1)).unwrap_err();
+                assert_eq!(
+                    error.downcast_ref::<ResourceExhausted>(),
+                    Some(&ResourceExhausted {
+                        resource: ResourceKind::StageMemory(MemoryClass::CountSlots),
+                        required_bytes: (initial_bytes + Table::allocation_bound(28).unwrap())
+                            as u128,
+                        limit_bytes: 600,
+                    })
+                );
                 break;
             }
             builder.add(k, positive(1)).unwrap();

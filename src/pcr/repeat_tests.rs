@@ -162,9 +162,9 @@ fn repeat_quota_graph(
     }
 
     let repeat_markers = graph::RepeatMarkers {
-        omitted_self_loop_sub_kmers: ahash::AHashSet::new(),
-        cyclic_scc_sub_kmers: ahash::AHashSet::from_iter([graph[repeat_root].sub_kmer]),
-        retained_collision_edges: ahash::AHashSet::new(),
+        omitted_self_loop_sub_kmers: ahash::AHashSet::new().into(),
+        cyclic_scc_sub_kmers: ahash::AHashSet::from_iter([graph[repeat_root].sub_kmer]).into(),
+        retained_collision_edges: ahash::AHashSet::new().into(),
     };
     (graph, repeat_markers, clean_ends)
 }
@@ -180,7 +180,7 @@ fn run_repeat_pcr(
         params,
         false,
         "/tmp/",
-        reads,
+        reads.map(crate::io::ThreadingSource::Memory),
         10_000,
         withheld_diagnostic_limits_for_gene(0, 1),
     )
@@ -207,7 +207,7 @@ fn run_repeat_pcr(
         params,
         false,
         "/tmp/",
-        reads,
+        reads.map(crate::io::ThreadingSource::Memory),
         10_000,
         withheld_diagnostic_limits_for_gene(0, 1),
     )
@@ -680,9 +680,9 @@ fn acyclic_merge_taints_only_the_collision_edge() {
         },
     );
     let markers = graph::RepeatMarkers {
-        omitted_self_loop_sub_kmers: ahash::AHashSet::new(),
-        cyclic_scc_sub_kmers: ahash::AHashSet::new(),
-        retained_collision_edges: ahash::AHashSet::from_iter([collision_edge]),
+        omitted_self_loop_sub_kmers: ahash::AHashSet::new().into(),
+        cyclic_scc_sub_kmers: ahash::AHashSet::new().into(),
+        retained_collision_edges: ahash::AHashSet::from_iter([collision_edge]).into(),
     };
     let counts = path_search_counts();
     let params = path_search_params();

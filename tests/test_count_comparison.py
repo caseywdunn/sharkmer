@@ -15,6 +15,15 @@ SPEC.loader.exec_module(comparison)
 
 
 class CountComparisonTests(unittest.TestCase):
+    def test_default_candidate_uses_ordinary_command_without_developer_selector(
+        self,
+    ) -> None:
+        self.assertEqual(comparison.backend_arguments("default"), [])
+        for backend in ["legacy", "memory", "hybrid"]:
+            self.assertEqual(
+                comparison.backend_arguments(backend), ["--count-backend", backend]
+            )
+
     def setUp(self) -> None:
         self.protocol = json.loads(
             (
@@ -95,6 +104,20 @@ class CountComparisonTests(unittest.TestCase):
         self.assertTrue(
             comparison.summarize(self.runs(), self.protocol)["performance_gates_passed"]
         )
+
+    def test_v4_header_names_preserve_the_frozen_record_comparison(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            old, new = root / "old", root / "new"
+            old.mkdir()
+            new.mkdir()
+            (old / "record.fasta").write_text(
+                ">id sample=s gene=g product=0 length=3 score=1.23\nAAA\n"
+            )
+            (new / "record.fasta").write_text(
+                ">id sample=s target=g sequence_index=0 sequence_length=3\nAAA\n"
+            )
+            self.assertEqual(comparison.records(old), comparison.records(new))
 
     def test_single_sample_wall_or_rss_regression_fails_despite_aggregate_improvement(
         self,

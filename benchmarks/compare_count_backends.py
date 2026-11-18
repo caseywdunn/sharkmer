@@ -192,12 +192,31 @@ def verify_inputs(protocol: dict[str, Any]) -> None:
         assert digest(Path(sample["panel_path"])) == sample["panel_sha256"]
 
 
+def backend_arguments(backend: str) -> list[str]:
+    """Exercise actual defaults by omitting the development selector entirely."""
+    return [] if backend == "default" else ["--count-backend", backend]
+
+
 def main() -> None:
     """Run each retained case with all attempted invocations preserved."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--protocol", type=Path, required=True)
     parser.add_argument("--baseline", type=Path, required=True)
     parser.add_argument("--candidate", type=Path, required=True)
+    parser.add_argument(
+        "--candidate-backend",
+        choices=(
+            "default",
+            "memory",
+            "parallel",
+            "packed",
+            "adaptive",
+            "adaptive-parallel",
+            "pipeline",
+            "hybrid",
+        ),
+        default="memory",
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     assert os.name == "posix", "Process-group cleanup requires POSIX"
@@ -217,6 +236,7 @@ def main() -> None:
         "status": "running",
         "protocol_sha256": protocol_sha,
         "harness_sha256": digest(Path(__file__)),
+        "candidate_backend": args.candidate_backend,
         "binaries": {
             name: {"path": str(path), "sha256": digest(path)}
             for name, path in binaries.items()
@@ -270,10 +290,11 @@ def main() -> None:
                     sample["panel_path"],
                 ]
                 if backend != "baseline":
-                    command += [
-                        "--count-backend",
-                        "legacy" if backend == "legacy-verify" else "memory",
-                    ]
+                    command += backend_arguments(
+                        "legacy"
+                        if backend == "legacy-verify"
+                        else args.candidate_backend
+                    )
                 if kind == "verify":
                     command += ["--count-fingerprint"]
                 command.append(sample["input"]["path"])

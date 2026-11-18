@@ -8,6 +8,7 @@ import os
 from pathlib import Path
 
 from compare_count_backends import (
+    backend_arguments,
     digest,
     expected_records,
     invoke,
@@ -17,6 +18,42 @@ from compare_count_backends import (
 )
 
 
+def verify_backend(metadata: dict, backend: str, threads: int, hasher: str) -> None:
+    """Check actual ownership rather than assuming every candidate is serial."""
+    assert metadata["hash_algorithm"] == hasher
+    if backend == "memory":
+        assert metadata["backend"] == "hashbrown_memory"
+        assert "parallel" not in metadata
+        assert "input_identity_worker" not in metadata
+        assert "count_owner_transfer" not in metadata
+        return
+    assert backend in ("hybrid", "default")
+    transfer = metadata.get("count_owner_transfer")
+    workers = threads - 2 if threads > 2 else int(transfer is not None)
+    assert ("input_identity_worker" in metadata) == (threads > 1)
+    if transfer is not None:
+        assert threads == 2
+        assert transfer["threshold_bytes"] == 16 << 20
+        assert transfer["current_table_bytes"] >= transfer["threshold_bytes"]
+        assert transfer["selected_records_before_transfer"] > 0
+        assert transfer["occurrences_before_transfer"] > 0
+        assert (
+            metadata["input_identity_worker"]["selected_records"]
+            == transfer["selected_records_before_transfer"]
+        )
+    if workers:
+        assert metadata["backend"] == "adaptive_sharded_exact"
+        assert metadata["parallel"]["counting_workers"] == workers
+        shards = metadata["adaptive_parallel"]["shards"]
+        # These fixed calibration inputs fit the unchanged default RAM budget.
+        # Native spill correctness is exercised by its separate input matrix.
+        assert shards["memory_shards"] == workers
+        assert shards["disk_shards"] == 0
+    else:
+        assert metadata["backend"] == "hashbrown_memory"
+        assert "parallel" not in metadata and "adaptive_parallel" not in metadata
+
+
 def main() -> None:
     """Run the frozen calibration inputs through every supported execution mode."""
     parser = argparse.ArgumentParser(description=__doc__)
@@ -24,6 +61,9 @@ def main() -> None:
     parser.add_argument("--reference", type=Path, required=True)
     parser.add_argument("--ahash", type=Path, required=True)
     parser.add_argument("--fxhash", type=Path, required=True)
+    parser.add_argument(
+        "--candidate-backend", choices=("memory", "hybrid", "default"), default="memory"
+    )
     parser.add_argument("--output", type=Path, required=True)
     args = parser.parse_args()
     protocol = json.loads(args.protocol.read_text())
@@ -53,6 +93,7 @@ def main() -> None:
         "comparison_helpers_sha256": digest(
             Path(__file__).with_name("compare_count_backends.py")
         ),
+        "candidate_backend": args.candidate_backend,
         "binaries": {
             name: {"path": str(path), "sha256": digest(path)}
             for name, path in binaries.items()
@@ -73,8 +114,7 @@ def main() -> None:
                     work = output / accession / f"{hasher}-{threads}"
                     command = [
                         str(binary),
-                        "--count-backend",
-                        "memory",
+                        *backend_arguments(args.candidate_backend),
                         "--count-fingerprint",
                         "-k",
                         str(protocol["k"]),
@@ -110,10 +150,7 @@ def main() -> None:
                         for row, target in zip(observed, targets, strict=True)
                     ] == targets
                     metadata = stats["count_store"]
-                    assert (
-                        metadata["backend"] == "hashbrown_memory"
-                        and metadata["hash_algorithm"] == hasher
-                    )
+                    verify_backend(metadata, args.candidate_backend, threads, hasher)
                     assert (
                         metadata["count_width_bits"] == 64
                         and metadata["occurrences"] == stats["n_kmers"]

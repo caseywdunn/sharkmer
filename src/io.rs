@@ -1,5 +1,18 @@
-use crate::kmer::budget::{MemoryClass, ResourceBudget, ResourceLimits};
-use crate::kmer::identity::{KmerSize, KmerWindows};
+use crate::input_identity::{IdentityWorkerSummary, IdentityWriter, SelectedDigest};
+use crate::kmer::adaptive::{AdaptiveCountBuilder, AdaptiveStore};
+use crate::kmer::budget::collections::BudgetVec;
+use crate::kmer::budget::text::BudgetString;
+use crate::kmer::budget::{
+    DiskPeak, MemoryClass, MemoryPeak, MemoryReservation, ResourceBudget, ResourceLimits,
+};
+use crate::kmer::external::{ExternalCountBuilder, ExternalMetrics};
+use crate::kmer::identity::{CanonicalKey, KmerSize, visit_canonical_windows};
+use crate::kmer::packed::{PackedCountBuilder, PackedCountStore};
+use crate::kmer::parallel::{
+    AdaptiveParallelCountBuilder, AdaptiveShardedCountStore, ParallelCountBuilder, ParallelMetrics,
+    ShardedCountStore,
+};
+use crate::kmer::sorted_file::DiskCountStore;
 use crate::kmer::store::{CountStore, MemoryCountBuilder, MemoryCountStore};
 use anyhow::{Context, Result, bail, ensure};
 use indicatif::{ProgressBar, ProgressStyle};
@@ -19,6 +32,17 @@ use crate::kmer::{Chunk, KmerCounts};
 
 pub(crate) const FASTA_LINE_WIDTH: usize = 80;
 pub(crate) const N_READS_PER_BATCH: u64 = 1000;
+const KMER_BATCH_CAPACITY: usize = 1024;
+
+mod ena;
+pub(crate) use ena::preview_budget as metadata_preview_budget;
+pub(crate) use ena::sample_name as resolve_input_sample;
+pub(crate) use ena::{EnaResult, get_ena_fastq_urls};
+
+mod resources;
+#[cfg(test)]
+use resources::{CounterLayout, CounterPlan};
+pub(crate) use resources::{PreparedIngestion, prepare_ingestion};
 
 /// Describes how to re-acquire read data for Pass 2 (read threading).
 pub(crate) enum ReadSourcePlan {
@@ -27,16 +51,79 @@ pub(crate) enum ReadSourcePlan {
     /// Remote files cached locally (paths to cached files)
     CachedRemote(Vec<PathBuf>),
     /// Remote files that must be re-downloaded (URLs)
-    UncachedRemote(Vec<String>),
+    UncachedRemote(BudgetVec<BudgetString>),
     /// Cannot re-read (stdin or replay otherwise unavailable)
     Unavailable,
 }
 
-/// Plan for Pass 2 re-reading of FASTQ data.
+/// Original-pass replay for exact ingestion, or a legacy source-reopen plan.
 pub(crate) struct ReadPlan {
     pub(crate) source: ReadSourcePlan,
     pub(crate) paired: bool,
     pub(crate) max_reads: u64,
+    pub(crate) replay: Option<ReplayInput>,
+}
+
+/// Replay ownership keeps its directory until the file has been removed.
+pub(crate) struct ReplayInput {
+    pub(crate) store: crate::replay::ReplayStore,
+    directory: tempfile::TempDir,
+}
+
+impl ReplayInput {
+    /// Close the replay file before removing its containing directory.
+    pub(crate) fn close(self) -> Result<()> {
+        self.store.close()?;
+        self.directory
+            .close()
+            .context("Unable to remove replay directory")
+    }
+}
+
+/// Production consumers borrow a replay source; legacy ingestion retains its adapter.
+pub(crate) enum ThreadingInput {
+    Memory(Vec<ReadRecord>),
+    Replay(Box<ReplayInput>),
+}
+
+/// A copyable borrowed view shared across target workers.
+#[derive(Clone, Copy)]
+pub(crate) enum ThreadingSource<'a> {
+    Memory(&'a [ReadRecord]),
+    Replay(&'a crate::replay::ReplayStore),
+}
+
+impl ThreadingSource<'_> {
+    pub(crate) fn is_empty(self) -> bool {
+        match self {
+            Self::Memory(reads) => reads.is_empty(),
+            Self::Replay(store) => store.record_count() == 0,
+        }
+    }
+}
+
+impl ThreadingInput {
+    pub(crate) fn summary(
+        &self,
+        budget: Option<&Arc<ResourceBudget>>,
+    ) -> Result<Option<crate::replay::ReplaySummary>> {
+        match self {
+            Self::Memory(_) => Ok(None),
+            Self::Replay(input) => input.store.summary(budget).map(Some),
+        }
+    }
+    pub(crate) fn source(&self) -> ThreadingSource<'_> {
+        match self {
+            Self::Memory(reads) => ThreadingSource::Memory(reads),
+            Self::Replay(input) => ThreadingSource::Replay(&input.store),
+        }
+    }
+    pub(crate) fn close(self) -> Result<()> {
+        if let Self::Replay(input) = self {
+            input.close()?;
+        }
+        Ok(())
+    }
 }
 
 /// A retained read for Pass 2 threading.
@@ -57,88 +144,6 @@ pub(crate) enum Mate {
     R2,
 }
 
-/// Result of querying ENA for an accession.
-pub(crate) struct EnaResult {
-    pub(crate) urls: Vec<String>,
-    pub(crate) scientific_name: Option<String>,
-}
-
-/// Query ENA filereport API to get FASTQ URLs and metadata for an accession.
-/// Returns URLs ordered by mate number (R1 first, then R2 if paired-end),
-/// plus the scientific_name if available.
-pub(crate) fn get_ena_fastq_urls(accession: &str) -> Result<EnaResult> {
-    let url = format!(
-        "https://www.ebi.ac.uk/ena/portal/api/filereport?accession={}&result=read_run&fields=run_accession,fastq_ftp,scientific_name",
-        accession
-    );
-
-    info!("Querying ENA for accession {}...", accession);
-    let response = ureq::get(&url)
-        .call()
-        .with_context(|| format!("Failed to query ENA API for accession {}", accession))?;
-
-    let body = response
-        .into_string()
-        .context("Failed to read ENA API response")?;
-
-    // Response is TSV: header row, then data rows
-    // Fields: run_accession\tfastq_ftp\tscientific_name
-    let lines: Vec<&str> = body.lines().collect();
-    ensure!(
-        lines.len() >= 2,
-        "ENA returned no results for accession '{}'. Check that the accession is valid.",
-        accession
-    );
-
-    // Parse header to find column indices
-    let headers: Vec<&str> = lines[0].split('\t').collect();
-    let ftp_idx = headers
-        .iter()
-        .position(|h| *h == "fastq_ftp")
-        .context("ENA response missing fastq_ftp column")?;
-    let sci_name_idx = headers.iter().position(|h| *h == "scientific_name");
-
-    let data_line = lines[1];
-    let fields: Vec<&str> = data_line.split('\t').collect();
-    ensure!(
-        fields.len() > ftp_idx && !fields[ftp_idx].is_empty(),
-        "ENA returned no FASTQ URLs for accession '{}'. The run may not have public FASTQ files.",
-        accession
-    );
-
-    let urls: Vec<String> = fields[ftp_idx]
-        .split(';')
-        .map(|u| {
-            if u.starts_with("ftp://") || u.starts_with("http") {
-                u.to_string()
-            } else {
-                format!("http://{}", u)
-            }
-        })
-        .collect();
-
-    let scientific_name = sci_name_idx
-        .and_then(|idx| fields.get(idx))
-        .map(|s| s.trim())
-        .filter(|s| !s.is_empty())
-        .map(|s| s.to_string());
-
-    info!(
-        "Found {} FASTQ file(s) for {}: {}",
-        urls.len(),
-        accession,
-        urls.join(", ")
-    );
-    if let Some(ref name) = scientific_name {
-        info!("Scientific name: {}", name);
-    }
-
-    Ok(EnaResult {
-        urls,
-        scientific_name,
-    })
-}
-
 /// Warn if an output file already exists (it will be overwritten).
 pub(crate) fn warn_if_exists(path: &str) {
     if std::path::Path::new(path).exists() {
@@ -147,16 +152,18 @@ pub(crate) fn warn_if_exists(path: &str) {
 }
 
 /// Write a FASTA record with sequence lines wrapped at FASTA_LINE_WIDTH characters.
-pub(crate) fn write_fasta_record(
+pub(crate) fn write_fasta_fields(
     writer: &mut impl Write,
-    record: &bio::io::fasta::Record,
+    id: &str,
+    description: Option<&str>,
+    sequence: &[u8],
 ) -> std::io::Result<()> {
-    write!(writer, ">{}", record.id())?;
-    if let Some(desc) = record.desc() {
+    write!(writer, ">{}", id)?;
+    if let Some(desc) = description {
         write!(writer, " {}", desc)?;
     }
     writeln!(writer)?;
-    for chunk in record.seq().chunks(FASTA_LINE_WIDTH) {
+    for chunk in sequence.chunks(FASTA_LINE_WIDTH) {
         writer.write_all(chunk)?;
         writeln!(writer)?;
     }
@@ -213,36 +220,284 @@ pub(crate) struct FastqReadState {
     direct: Option<DirectCounter>,
 }
 
+enum DirectBuilder {
+    Failed,
+    Memory(MemoryCountBuilder),
+    Adaptive(AdaptiveCountBuilder),
+    Packed(PackedCountBuilder),
+    External(ExternalCountBuilder),
+    Parallel(ParallelCountBuilder),
+    AdaptiveParallel(AdaptiveParallelCountBuilder),
+}
+
+impl DirectBuilder {
+    fn occurrences(&self) -> u64 {
+        match self {
+            Self::Failed => 0,
+            Self::Memory(builder) => builder.occurrences(),
+            Self::Adaptive(builder) => builder.occurrences(),
+            Self::Packed(builder) => builder.occurrences(),
+            Self::External(builder) => builder.occurrences(),
+            Self::Parallel(builder) => builder.occurrences(),
+            Self::AdaptiveParallel(builder) => builder.occurrences(),
+        }
+    }
+
+    fn finalize(self, digest: [u8; 32]) -> Result<ExactStore> {
+        Ok(match self {
+            Self::Failed => anyhow::bail!("Count producer failed during owner transfer"),
+            Self::Memory(builder) => ExactStore::Memory(Box::new(builder.finalize(digest))),
+            Self::Adaptive(builder) => match builder.finish(digest)? {
+                AdaptiveStore::Memory(store) => ExactStore::Memory(Box::new(store)),
+                AdaptiveStore::Disk(store, metrics) => ExactStore::Disk {
+                    store: Box::new(store),
+                    metrics,
+                    directory: None,
+                },
+            },
+            Self::Packed(builder) => ExactStore::Packed(Box::new(builder.finalize(digest))),
+            Self::External(builder) => {
+                let (store, metrics) = builder.finish(digest)?;
+                ExactStore::Disk {
+                    store: Box::new(store),
+                    metrics,
+                    directory: None,
+                }
+            }
+            Self::AdaptiveParallel(builder) => {
+                let (store, metrics) = builder.finish_adaptive(digest)?;
+                ExactStore::AdaptiveSharded {
+                    store: Box::new(store),
+                    metrics,
+                    directory: None,
+                }
+            }
+            Self::Parallel(builder) => {
+                let (store, metrics) = builder.finish(digest)?;
+                ExactStore::Sharded {
+                    store: Box::new(store),
+                    metrics,
+                }
+            }
+        })
+    }
+}
+
+pub(crate) enum ExactStore {
+    Memory(Box<MemoryCountStore>),
+    Packed(Box<PackedCountStore>),
+    Sharded {
+        store: Box<ShardedCountStore>,
+        metrics: ParallelMetrics,
+    },
+    AdaptiveSharded {
+        store: Box<AdaptiveShardedCountStore>,
+        metrics: ParallelMetrics,
+        directory: Option<tempfile::TempDir>,
+    },
+    Disk {
+        store: Box<DiskCountStore>,
+        metrics: ExternalMetrics,
+        directory: Option<tempfile::TempDir>,
+    },
+}
+
+impl ExactStore {
+    fn as_store(&self) -> &dyn CountStore {
+        match self {
+            Self::Memory(store) => store.as_ref(),
+            Self::Packed(store) => store.as_ref(),
+            Self::Sharded { store, .. } => store.as_ref(),
+            Self::Disk { store, .. } => store.as_ref(),
+            Self::AdaptiveSharded { store, .. } => store.as_ref(),
+        }
+    }
+}
+
+/// Actual phase boundary for a completed worker-role transfer.
+#[derive(Clone, Copy, Debug, serde::Serialize)]
+pub(crate) struct CountOwnerTransferSummary {
+    pub(crate) selected_records_before_transfer: u64,
+    pub(crate) occurrences_before_transfer: u64,
+    pub(crate) current_table_bytes: usize,
+    pub(crate) threshold_bytes: usize,
+}
+
 struct DirectCounter {
-    builder: MemoryCountBuilder,
+    builder: DirectBuilder,
     budget: Arc<ResourceBudget>,
     record_bytes: usize,
     k: usize,
     valid_bases: u64,
     occurrences: u64,
-    selected_digest: Sha256,
+    selected_digest: SelectedDigest,
+    identity_writer: Option<IdentityWriter>,
+    completed_input_digest: Option<[u8; 32]>,
+    identity_summary: Option<IdentityWorkerSummary>,
+    identity_failed: bool,
+    owner_transfer_threshold: Option<usize>,
+    owner_transfer_summary: Option<CountOwnerTransferSummary>,
+    key_batch: Vec<CanonicalKey>,
+    next_key: usize,
+    // Declared after the buffer so its charge outlives the owned allocation.
+    _key_batch_reservation: MemoryReservation,
+    replay: Option<crate::replay::ReplayWriter>,
+    owned_replay_directory: Option<tempfile::TempDir>,
+    // Last: file owners close before the containing directory is removed.
+    owned_count_directory: Option<tempfile::TempDir>,
+    memory_peak: Option<MemoryPeak>,
+    disk_peak: Option<DiskPeak>,
 }
 
 impl DirectCounter {
-    fn new(k: usize, table_bytes: u64, record_bytes: usize) -> Result<Self> {
-        let input_bytes = u64::try_from(record_bytes)?
-            .checked_mul(4)
-            .context("FASTQ buffer budget overflow")?;
-        let mut classes = [0; 8];
-        classes[MemoryClass::CountSlots as usize] = table_bytes;
-        classes[MemoryClass::InputBuffer as usize] = input_bytes;
-        let budget = ResourceBudget::new(ResourceLimits {
-            memory_bytes: table_bytes
-                .checked_add(input_bytes)
-                .context("Count/input reservation overflow")?,
-            process_overhead_bytes: 0,
-            class_bytes: classes,
-            temporary_disk_bytes: 0,
-        })?;
-        let builder =
-            MemoryCountBuilder::with_budget(KmerSize::new(k)?, Arc::clone(&budget), 1024)?;
-        let mut selected_digest = Sha256::new();
-        selected_digest.update(b"sharkmer-selected-fastq-v1\0");
+    #[cfg(test)]
+    fn resource_budget(
+        classes: [u64; crate::kmer::budget::MEMORY_CLASSES],
+        disk_bytes: u64,
+        graph_bytes: u64,
+    ) -> Result<Arc<ResourceBudget>> {
+        ResourceBudget::for_counting(
+            resources::resource_limits(classes, disk_bytes, graph_bytes)?,
+            0,
+        )
+    }
+
+    #[cfg(test)]
+    fn from_plan(plan: CounterPlan, directory: Option<&std::path::Path>) -> Result<Self> {
+        let budget = ResourceBudget::for_counting(plan.limits()?, 0)?;
+        plan.start(budget, directory)
+    }
+
+    #[cfg(test)]
+    fn new(
+        k: usize,
+        table_bytes: u64,
+        record_bytes: usize,
+        disk_bytes: u64,
+        replay_bytes: u64,
+        graph_buffer_bytes: u64,
+    ) -> Result<Self> {
+        Self::with_table_layout(
+            k,
+            table_bytes,
+            record_bytes,
+            disk_bytes,
+            replay_bytes,
+            false,
+            graph_buffer_bytes,
+        )
+    }
+
+    #[cfg(test)]
+    fn with_table_layout(
+        k: usize,
+        table_bytes: u64,
+        record_bytes: usize,
+        disk_bytes: u64,
+        replay_bytes: u64,
+        packed: bool,
+        graph_buffer_bytes: u64,
+    ) -> Result<Self> {
+        Self::from_plan(
+            CounterPlan {
+                k,
+                record_bytes,
+                disk_bytes,
+                replay_bytes,
+                graph_bytes: graph_buffer_bytes,
+                layout: CounterLayout::Table {
+                    table_bytes,
+                    packed,
+                },
+            },
+            None,
+        )
+    }
+
+    #[cfg(test)]
+    #[allow(clippy::too_many_arguments)]
+    fn spillable_with_workers(
+        k: usize,
+        table_bytes: u64,
+        sort_bytes: u64,
+        record_bytes: usize,
+        disk_bytes: u64,
+        directory: &std::path::Path,
+        replay_bytes: u64,
+        workers: usize,
+        identity_worker: bool,
+        graph_buffer_bytes: u64,
+    ) -> Result<Self> {
+        Self::spillable_with_policy(
+            k,
+            table_bytes,
+            sort_bytes,
+            record_bytes,
+            disk_bytes,
+            directory,
+            replay_bytes,
+            workers,
+            identity_worker,
+            None,
+            graph_buffer_bytes,
+        )
+    }
+
+    #[cfg(test)]
+    #[allow(clippy::too_many_arguments)]
+    fn spillable_with_policy(
+        k: usize,
+        table_bytes: u64,
+        sort_bytes: u64,
+        record_bytes: usize,
+        disk_bytes: u64,
+        directory: &std::path::Path,
+        replay_bytes: u64,
+        workers: usize,
+        identity_worker: bool,
+        owner_transfer_threshold: Option<usize>,
+        graph_buffer_bytes: u64,
+    ) -> Result<Self> {
+        Self::from_plan(
+            CounterPlan {
+                k,
+                record_bytes,
+                disk_bytes,
+                replay_bytes,
+                graph_bytes: graph_buffer_bytes,
+                layout: CounterLayout::Spill {
+                    table_bytes,
+                    sort_bytes,
+                    workers,
+                    identity_worker,
+                    owner_transfer_threshold,
+                },
+            },
+            Some(directory),
+        )
+    }
+
+    fn with_builder(
+        k: usize,
+        record_bytes: usize,
+        budget: Arc<ResourceBudget>,
+        builder: DirectBuilder,
+        memory_peak: MemoryPeak,
+        disk_peak: DiskPeak,
+    ) -> Result<Self> {
+        let key_bytes = u64::try_from(KMER_BATCH_CAPACITY * size_of::<CanonicalKey>())?;
+        let mut reservation = budget.reserve(MemoryClass::WorkerQueues, key_bytes)?;
+        let mut key_batch = Vec::new();
+        key_batch
+            .try_reserve_exact(KMER_BATCH_CAPACITY)
+            .context("Unable to reserve k-mer batch buffer")?;
+        let allocated = key_batch
+            .capacity()
+            .checked_mul(size_of::<CanonicalKey>())
+            .context("K-mer batch byte size overflow")?;
+        reservation.resize(u64::try_from(allocated)?)?;
+        let mut selected_digest = SelectedDigest::new();
+        selected_digest.update(b"sharkmer-selected-fastq-v1\0")?;
         Ok(Self {
             builder,
             budget,
@@ -251,39 +506,209 @@ impl DirectCounter {
             valid_bases: 0,
             occurrences: 0,
             selected_digest,
+            identity_writer: None,
+            completed_input_digest: None,
+            identity_summary: None,
+            identity_failed: false,
+            owner_transfer_threshold: None,
+            owner_transfer_summary: None,
+            key_batch,
+            next_key: 0,
+            _key_batch_reservation: reservation,
+            replay: None,
+            owned_replay_directory: None,
+            owned_count_directory: None,
+            memory_peak: Some(memory_peak),
+            disk_peak: Some(disk_peak),
         })
     }
 
-    fn ingest(&mut self, fields: [&[u8]; 4], source: &str, index: u64, mate: Mate) -> Result<()> {
-        let mut windows = KmerWindows::new(fields[1], self.k)?;
+    // Keep encoding and table updates in separate tight loops. The fixed
+    // buffer is reused across records; its cursor preserves accepted updates
+    // if allocation pressure interrupts a flush before the next key.
+    #[inline(never)]
+    fn flush_keys(&mut self) -> Result<()> {
         let one = NonZeroU64::new(1).context("Positive count increment is zero")?;
-        let mut occurrences = 0u64;
-        for window in windows.by_ref() {
-            self.builder.add(window?.canonical, one)?;
-            occurrences = occurrences
-                .checked_add(1)
-                .context("Read k-mer count overflow")?;
+        match &mut self.builder {
+            DirectBuilder::Failed => anyhow::bail!("Count producer failed during owner transfer"),
+            DirectBuilder::Memory(builder) => {
+                Self::flush_to(&mut self.key_batch, &mut self.next_key, |key| {
+                    builder.add(key, one)
+                })
+            }
+            DirectBuilder::Adaptive(builder) => {
+                Self::flush_to(&mut self.key_batch, &mut self.next_key, |key| {
+                    builder.add(key, one)
+                })
+            }
+            DirectBuilder::Packed(builder) => {
+                Self::flush_to(&mut self.key_batch, &mut self.next_key, |key| {
+                    builder.add(key, one)
+                })
+            }
+            DirectBuilder::External(builder) => {
+                Self::flush_to(&mut self.key_batch, &mut self.next_key, |key| {
+                    builder.add(key, one)
+                })
+            }
+            DirectBuilder::AdaptiveParallel(builder) => {
+                Self::flush_to(&mut self.key_batch, &mut self.next_key, |key| {
+                    builder.add(key)
+                })
+            }
+            DirectBuilder::Parallel(builder) => {
+                Self::flush_to(&mut self.key_batch, &mut self.next_key, |key| {
+                    builder.add(key)
+                })
+            }
         }
-        self.occurrences = self
-            .occurrences
-            .checked_add(occurrences)
-            .context("Input k-mer count overflow")?;
+    }
+
+    #[inline]
+    fn flush_to(
+        keys: &mut Vec<CanonicalKey>,
+        next: &mut usize,
+        mut add: impl FnMut(CanonicalKey) -> Result<()>,
+    ) -> Result<()> {
+        while *next < keys.len() {
+            add(keys[*next])?;
+            *next += 1;
+        }
+        keys.clear();
+        *next = 0;
+        Ok(())
+    }
+
+    fn input_digest(&mut self) -> Result<[u8; 32]> {
+        ensure!(
+            !self.identity_failed,
+            "Input identity producer previously failed"
+        );
+        if let Some(digest) = self.completed_input_digest {
+            return Ok(digest);
+        }
+        if let Some(writer) = self.identity_writer.take() {
+            let (digest, summary) = match writer.finish() {
+                Ok(completed) => completed,
+                Err(error) => {
+                    self.identity_failed = true;
+                    return Err(error);
+                }
+            };
+            self.completed_input_digest = Some(digest);
+            self.identity_summary = Some(summary);
+            return Ok(digest);
+        }
+        let digest = self.selected_digest.clone().finalize()?;
+        self.completed_input_digest = Some(digest);
+        Ok(digest)
+    }
+
+    fn maybe_transfer_owner(&mut self) -> Result<()> {
+        let Some(threshold) = self.owner_transfer_threshold else {
+            return Ok(());
+        };
+        let bytes = match &self.builder {
+            DirectBuilder::Adaptive(builder) => builder.memory_table_bytes(),
+            _ => None,
+        };
+        let Some(bytes) = bytes else {
+            self.owner_transfer_threshold = None;
+            return Ok(());
+        };
+        if bytes < threshold {
+            return Ok(());
+        }
+        self.flush_keys()?;
+        let writer = self
+            .identity_writer
+            .take()
+            .context("Identity worker missing during owner transfer")?;
+        let (state, summary) = writer.finish_state()?;
+        self.selected_digest = state;
+        self.identity_summary = Some(summary);
+        // The failed placeholder makes every later path reject publication if
+        // allocation or worker startup fails after moving the accepted prefix.
+        let DirectBuilder::Adaptive(prefix) =
+            std::mem::replace(&mut self.builder, DirectBuilder::Failed)
+        else {
+            anyhow::bail!("Owner transfer requires an adaptive memory prefix");
+        };
+        let owner = AdaptiveParallelCountBuilder::from_prefix(prefix)?;
+        ensure!(
+            owner.occurrences() == self.occurrences,
+            "Transferred owner prefix total differs"
+        );
+        self.builder = DirectBuilder::AdaptiveParallel(owner);
+        self.owner_transfer_summary = Some(CountOwnerTransferSummary {
+            selected_records_before_transfer: summary.selected_records,
+            occurrences_before_transfer: self.occurrences,
+            current_table_bytes: bytes,
+            threshold_bytes: threshold,
+        });
+        self.owner_transfer_threshold = None;
+        Ok(())
+    }
+
+    fn ingest(&mut self, fields: [&[u8]; 4], source: &str, index: u64, mate: Mate) -> Result<()> {
+        ensure!(
+            !self.identity_failed && self.completed_input_digest.is_none(),
+            "Input identity is already finished or failed"
+        );
+        ensure!(
+            self.key_batch.is_empty(),
+            "Previous k-mer batch is unfinished"
+        );
+        let valid_bases = visit_canonical_windows(fields[1], self.k, |key| {
+            self.key_batch.push(key);
+            if self.key_batch.len() == KMER_BATCH_CAPACITY {
+                self.flush_keys()?;
+            }
+            Ok(())
+        })?;
+        self.flush_keys()?;
+        // The builder already checks the global total on every accepted add.
+        self.occurrences = self.builder.occurrences();
         self.valid_bases = self
             .valid_bases
-            .checked_add(u64::try_from(windows.valid_bases_seen())?)
+            .checked_add(u64::try_from(valid_bases)?)
             .context("Input valid-base count overflow")?;
-        self.selected_digest.update(index.to_le_bytes());
-        self.selected_digest.update([match mate {
-            Mate::Unpaired => 0,
-            Mate::R1 => 1,
-            Mate::R2 => 2,
-        }]);
-        // Length framing prevents ambiguous concatenations; delimiters are not
-        // part of logical identity, so LF and CRLF describe the same records.
-        for value in std::iter::once(source.as_bytes()).chain(fields) {
-            self.selected_digest
-                .update(u64::try_from(value.len())?.to_le_bytes());
-            self.selected_digest.update(value);
+        if let Some(identity) = &mut self.identity_writer {
+            if let Err(error) = identity.record(index, mate, source, fields) {
+                self.identity_failed = true;
+                return Err(error);
+            }
+        } else {
+            self.selected_digest.update(index.to_le_bytes())?;
+            self.selected_digest.update([match mate {
+                Mate::Unpaired => 0,
+                Mate::R1 => 1,
+                Mate::R2 => 2,
+            }])?;
+            // Length framing prevents ambiguous concatenations; delimiters are not
+            // part of logical identity, so LF and CRLF describe the same records.
+            for value in std::iter::once(source.as_bytes()).chain(fields) {
+                self.selected_digest
+                    .update(u64::try_from(value.len())?.to_le_bytes())?;
+                self.selected_digest.update(value)?;
+            }
+        }
+        if let Some(replay) = &mut self.replay {
+            replay.add(crate::replay::ReplayRecord {
+                index,
+                fragment: if mate == Mate::Unpaired {
+                    index
+                } else {
+                    index / 2
+                },
+                mate,
+                source,
+                fields,
+            })?;
+        }
+        if let Err(error) = self.maybe_transfer_owner() {
+            self.identity_failed = true;
+            return Err(error);
         }
         Ok(())
     }
@@ -293,20 +718,52 @@ impl DirectCounter {
 pub(crate) enum FinalCounts {
     Legacy(KmerCounts),
     Exact {
-        store: Box<MemoryCountStore>,
+        store: ExactStore,
+        run_budget: Arc<ResourceBudget>,
         peak_record_buffer_bytes: u64,
+        peak_kmer_buffer_bytes: u64,
         peak_count_input_reserved_bytes: u64,
+        peak_sort_buffer_bytes: u64,
+        peak_temporary_disk_bytes: u64,
+        input_identity_worker: Option<IdentityWorkerSummary>,
+        count_owner_transfer: Option<CountOwnerTransferSummary>,
+        process_file_limits: Option<Box<crate::kmer::budget::ProcessFileLimits>>,
     },
 }
 
 impl FinalCounts {
+    /// Shared exact-run ledger, omitted by the legacy adapter.
+    pub(crate) fn resource_budget(&self) -> Option<&Arc<ResourceBudget>> {
+        match self {
+            Self::Exact { run_budget, .. } => Some(run_budget),
+            Self::Legacy(_) => None,
+        }
+    }
+
     /// Borrow an assembly view without copying global counts.
     pub(crate) fn filtered_view(&self, minimum: u32) -> kmer::FilteredKmerCounts<'_> {
         match self {
             Self::Legacy(counts) => counts.filtered_view(minimum),
-            Self::Exact { store, .. } => {
-                kmer::FilteredKmerCounts::from_memory(store.as_ref(), u64::from(minimum))
-            }
+            Self::Exact {
+                store: ExactStore::Memory(store),
+                ..
+            } => kmer::FilteredKmerCounts::from_memory(store.as_ref(), u64::from(minimum)),
+            Self::Exact {
+                store: ExactStore::Packed(store),
+                ..
+            } => kmer::FilteredKmerCounts::from_packed(store.as_ref(), u64::from(minimum)),
+            Self::Exact {
+                store: ExactStore::Sharded { store, .. },
+                ..
+            } => kmer::FilteredKmerCounts::from_sharded(store.as_ref(), u64::from(minimum)),
+            Self::Exact {
+                store: ExactStore::Disk { store, .. },
+                ..
+            } => kmer::FilteredKmerCounts::from_store(store.as_ref(), u64::from(minimum)),
+            Self::Exact {
+                store: ExactStore::AdaptiveSharded { store, .. },
+                ..
+            } => kmer::FilteredKmerCounts::from_store(store.as_ref(), u64::from(minimum)),
         }
     }
 
@@ -314,22 +771,107 @@ impl FinalCounts {
     pub(crate) fn capacity(&self) -> usize {
         match self {
             Self::Legacy(counts) => counts.capacity(),
-            Self::Exact { store, .. } => store.capacity(),
+            Self::Exact {
+                store: ExactStore::Memory(store),
+                ..
+            } => store.capacity(),
+            Self::Exact {
+                store: ExactStore::Packed(store),
+                ..
+            } => store.capacity(),
+            Self::Exact {
+                store: ExactStore::Sharded { store, .. },
+                ..
+            } => store.capacity(),
+            Self::Exact {
+                store: ExactStore::AdaptiveSharded { store, .. },
+                ..
+            } => store.capacity(),
+            Self::Exact {
+                store: ExactStore::Disk { .. },
+                ..
+            } => 0,
         }
     }
 
+    /// Confirm disk cleanup before publishing the final output transaction.
+    pub(crate) fn close(self) -> Result<()> {
+        let directory = match self {
+            Self::Exact {
+                store: ExactStore::Disk {
+                    store, directory, ..
+                },
+                ..
+            } => {
+                store.close()?;
+                directory
+            }
+            Self::Exact {
+                store:
+                    ExactStore::AdaptiveSharded {
+                        store, directory, ..
+                    },
+                ..
+            } => {
+                store.close()?;
+                directory
+            }
+            _ => None,
+        };
+        if let Some(directory) = directory {
+            directory
+                .close()
+                .context("Unable to remove external-count run directory")?;
+        }
+        Ok(())
+    }
+
     /// Describe actual exact counting when that backend was used.
-    pub(crate) fn summary(&self) -> Option<crate::stats::CountStoreSummary> {
+    pub(crate) fn summary(
+        &self,
+        budget: Option<&Arc<ResourceBudget>>,
+    ) -> Result<Option<crate::stats::CountStoreSummary>> {
         let Self::Exact {
             store,
             peak_record_buffer_bytes,
+            peak_kmer_buffer_bytes,
             peak_count_input_reserved_bytes,
+            peak_sort_buffer_bytes,
+            peak_temporary_disk_bytes,
+            input_identity_worker,
+            count_owner_transfer,
+            process_file_limits,
+            ..
         } = self
         else {
-            return None;
+            return Ok(None);
         };
-        let metadata = store.metadata();
-        Some(crate::stats::CountStoreSummary {
+        let metadata = store.as_store().metadata();
+        let (owned_table_bytes, peak_table_bytes, external) = match store {
+            ExactStore::Memory(store) => (store.table_bytes(), store.peak_table_bytes(), None),
+            ExactStore::Packed(store) => (store.table_bytes(), store.peak_table_bytes(), None),
+            ExactStore::Sharded { store, .. } => {
+                (store.table_bytes(), store.peak_table_bytes(), None)
+            }
+            ExactStore::AdaptiveSharded { store, .. } => {
+                (store.table_bytes(), store.peak_table_bytes(), None)
+            }
+            ExactStore::Disk { store, metrics, .. } => (
+                0,
+                metrics.peak_table_bytes,
+                Some(crate::stats::ExternalCountSummary {
+                    count_file_bytes: store.file_bytes(),
+                    lookup_cache_bytes: store.cache_bytes(),
+                    peak_count_page_bytes: store.peak_page_bytes(),
+                    peak_sort_buffer_bytes: *peak_sort_buffer_bytes,
+                    peak_temporary_disk_bytes: *peak_temporary_disk_bytes,
+                    sorted_run_count: metrics.sorted_runs,
+                    merge_count: metrics.merges,
+                }),
+            ),
+        };
+        Ok(Some(crate::stats::CountStoreSummary {
+            process_file_limits: process_file_limits.as_deref().copied(),
             format_version: metadata.format_version,
             backend: metadata.backend,
             hash_algorithm: metadata.hash_algorithm,
@@ -337,23 +879,49 @@ impl FinalCounts {
             overflow_policy: metadata.overflow_policy,
             preprocessing: metadata.preprocessing,
             canonicalization: metadata.canonicalization,
-            selected_input_sha256: metadata
-                .selected_input_sha256
-                .iter()
-                .map(|byte| format!("{byte:02x}"))
-                .collect(),
+            selected_input_sha256: crate::kmer::budget::text::BudgetString::hex(
+                &metadata.selected_input_sha256,
+                budget,
+                MemoryClass::RetainedResults,
+            )?,
             distinct_keys: metadata.distinct_keys,
             occurrences: metadata.occurrences,
-            owned_table_bytes: store.table_bytes(),
-            peak_table_bytes: store.peak_table_bytes(),
+            owned_table_bytes,
+            peak_table_bytes,
             peak_record_buffer_bytes: *peak_record_buffer_bytes,
+            peak_kmer_buffer_bytes: *peak_kmer_buffer_bytes,
             peak_count_input_reserved_bytes: *peak_count_input_reserved_bytes,
-        })
+            external,
+            input_identity_worker: *input_identity_worker,
+            count_owner_transfer: *count_owner_transfer,
+            adaptive_parallel: match store {
+                ExactStore::AdaptiveSharded { store, .. } => {
+                    Some(crate::stats::AdaptiveParallelSummary {
+                        shards: store.metrics(),
+                        peak_sort_buffer_bytes: *peak_sort_buffer_bytes,
+                        peak_temporary_disk_bytes: *peak_temporary_disk_bytes,
+                    })
+                }
+                _ => None,
+            },
+            packed: match store {
+                ExactStore::Packed(store) => Some(store.metrics()),
+                _ => None,
+            },
+            parallel: match store {
+                ExactStore::Sharded { metrics, .. }
+                | ExactStore::AdaptiveSharded { metrics, .. } => Some(*metrics),
+                _ => None,
+            },
+        }))
     }
 
     /// Order-independent fingerprint of all full key/count pairs. This opt-in
     /// verification scan is excluded from ordinary counting/timing runs.
-    pub(crate) fn fingerprint(&self) -> Result<crate::stats::CountFingerprint> {
+    pub(crate) fn fingerprint(
+        &self,
+        budget: Option<&Arc<ResourceBudget>>,
+    ) -> Result<crate::stats::CountFingerprint> {
         let view = self.filtered_view(0);
         let mut xor = [0u8; 32];
         let mut distinct = 0u64;
@@ -379,7 +947,11 @@ impl FinalCounts {
             algorithm: "sha256_pair_xor_v1",
             distinct_keys: distinct,
             occurrences,
-            pair_digest: xor.iter().map(|byte| format!("{byte:02x}")).collect(),
+            pair_digest: crate::kmer::budget::text::BudgetString::hex(
+                &xor,
+                budget,
+                MemoryClass::RetainedResults,
+            )?,
         })
     }
 }
@@ -682,45 +1254,67 @@ fn drain_batch(state: &mut FastqReadState, n_chunks: usize) -> Result<()> {
 /// Returns the read state with populated chunks, summary statistics, and a
 /// `ReadPlan` describing how to re-read the same data in Pass 2.
 pub(crate) fn ingest_reads(
-    args: &Args,
-    k: usize,
+    prepared: PreparedIngestion<'_>,
     mut cached_ena_result: Option<EnaResult>,
     cache_config: Option<&crate::cache::CacheConfig>,
     show_progress: bool,
 ) -> Result<(FastqReadState, u64, u64, u64, ReadPlan)> {
     let start = std::time::Instant::now();
     info!("Ingesting reads...");
-
-    // When chunks == 0, allocate 1 internal chunk for kmer storage (needed for sPCR)
-    let n_chunks = if args.count_backend == "memory" {
+    let (args, direct, replay_requested, workspace_root) = prepared.start()?;
+    let k = args.k;
+    // Legacy chunks retain their separate analysis path.
+    let n_chunks = if args.count_backend() != "legacy" {
         0
     } else if args.chunks == 0 {
         1
     } else {
         args.chunks
     };
-    let chunks: Vec<kmer::Chunk> = (0..n_chunks).map(|_| Chunk::new(&k)).collect();
-
+    let chunks = (0..n_chunks).map(|_| Chunk::new(&k)).collect();
     let mut state = FastqReadState {
         chunks,
         chunk_index: 0,
         seqs: Vec::new(),
         n_reads_read: 0,
         n_bases_read: 0,
-        direct: if args.count_backend == "memory" {
-            Some(DirectCounter::new(
-                k,
-                args.count_table_budget_mib
-                    .checked_mul(1 << 20)
-                    .context("Count table budget overflow")?,
-                args.fastq_record_bytes,
-            )?)
-        } else {
-            None
-        },
+        direct,
     };
 
     let mut max_reads = args.max_reads.unwrap_or(0);
+    if replay_requested && let Some(counter) = &mut state.direct {
+        let fallback;
+        let parent = match workspace_root.as_deref().or(args.count_temp_dir.as_deref()) {
+            Some(parent) => parent,
+            None => {
+                fallback = std::env::temp_dir();
+                &fallback
+            }
+        };
+        let directory = tempfile::Builder::new()
+            .prefix(".sharkmer-replay-run-")
+            .tempdir_in(parent)
+            .context("Unable to create replay directory")?;
+        let cap = if args.paired && max_reads % 2 != 0 {
+            max_reads
+                .checked_add(1)
+                .context("Paired read cap overflow")?
+        } else {
+            max_reads
+        };
+        let limit = args
+            .fastq_record_bytes
+            .checked_add(65536 + 96)
+            .context("Replay frame limit overflow")?;
+        counter.replay = Some(crate::replay::ReplayWriter::new(
+            directory.path(),
+            &counter.budget,
+            limit,
+            args.paired,
+            cap,
+        )?);
+        counter.owned_replay_directory = Some(directory);
+    }
 
     // Create progress indicator: bar with ETA if max_reads is known, spinner otherwise.
     let progress = if show_progress && max_reads > 0 {
@@ -750,21 +1344,38 @@ pub(crate) fn ingest_reads(
         // Stream reads from ENA (use cached result if available)
         let ena_result = match cached_ena_result.take() {
             Some(r) => r,
-            None => get_ena_fastq_urls(accession)?,
+            None => get_ena_fastq_urls(
+                accession,
+                state.direct.as_ref().map(|counter| &counter.budget),
+            )?,
         };
         let mut cached_paths: Vec<PathBuf> = Vec::new();
         let mut is_cached = false;
         for url in &ena_result.urls {
             let reader: Box<dyn BufRead> = if let Some(cache) = cache_config {
                 // Use cache: lookup or download
-                let local_path = match cache.lookup(url, max_reads)? {
+                let cached = if let Some(counter) = &state.direct {
+                    cache.lookup_bounded(url, max_reads, &counter.budget)?
+                } else {
+                    cache.lookup(url, max_reads)?
+                };
+                let local_path = match cached {
                     Some(path) => {
                         info!("Cache hit for {}", url);
                         path
                     }
                     None => {
                         info!("Cache miss for {}, downloading...", url);
-                        cache.download_to_cache(url, max_reads)?
+                        if let Some(counter) = &state.direct {
+                            cache.download_to_cache_bounded(
+                                url,
+                                max_reads,
+                                counter.record_bytes,
+                                &counter.budget,
+                            )?
+                        } else {
+                            cache.download_to_cache(url, max_reads)?
+                        }
                     }
                 };
                 cached_paths.push(local_path.clone());
@@ -772,18 +1383,19 @@ pub(crate) fn ingest_reads(
                 let file = std::fs::File::open(&local_path).with_context(|| {
                     format!("Failed to open cached file: {}", local_path.display())
                 })?;
-                Box::new(std::io::BufReader::new(flate2::read::MultiGzDecoder::new(
+                Box::new(crate::codec::Decoder::new(
                     file,
-                )))
+                    state.direct.as_ref().map(|counter| &counter.budget),
+                )?)
             } else {
                 // No cache: stream directly
                 info!("Streaming from {} (no cache)...", url);
-                let response = ureq::get(url)
-                    .call()
-                    .with_context(|| format!("Failed to download {}", url))?;
-                Box::new(std::io::BufReader::new(flate2::read::MultiGzDecoder::new(
-                    response.into_reader(),
-                )))
+                let response =
+                    crate::http::get(url).with_context(|| format!("Failed to download {}", url))?;
+                Box::new(crate::codec::Decoder::new(
+                    response,
+                    state.direct.as_ref().map(|counter| &counter.budget),
+                )?)
             };
             let reached_max = read_fastq(
                 reader,
@@ -806,8 +1418,9 @@ pub(crate) fn ingest_reads(
     } else if let Some(input_files) = &args.input {
         if args.paired {
             // Paired-end: alternate reads from R1 and R2
-            let reader1 = open_fastq_reader(&input_files[0])?;
-            let reader2 = open_fastq_reader(&input_files[1])?;
+            let budget = state.direct.as_ref().map(|counter| &counter.budget);
+            let reader1 = open_fastq_reader_bounded(&input_files[0], budget)?;
+            let reader2 = open_fastq_reader_bounded(&input_files[1], budget)?;
             let name1 = input_files[0].to_string_lossy().to_string();
             let name2 = input_files[1].to_string_lossy().to_string();
             // Round max_reads up to even so Pass 1 consumes balanced
@@ -832,7 +1445,10 @@ pub(crate) fn ingest_reads(
         } else {
             // Read from one or more files sequentially
             for file_path in input_files.iter() {
-                let reader = open_fastq_reader(file_path)?;
+                let reader = open_fastq_reader_bounded(
+                    file_path,
+                    state.direct.as_ref().map(|counter| &counter.budget),
+                )?;
                 let file_name = file_path.to_string_lossy();
                 let reached_max = read_fastq(
                     reader,
@@ -920,7 +1536,24 @@ pub(crate) fn ingest_reads(
         bail!("No reads were ingested. Check that input files contain valid FASTQ records.");
     }
 
+    let replay = if let Some(counter) = &mut state.direct {
+        if let Some(writer) = counter.replay.take() {
+            let digest = counter.input_digest()?;
+            Some(ReplayInput {
+                store: writer.finish(digest)?,
+                directory: counter
+                    .owned_replay_directory
+                    .take()
+                    .context("Missing replay directory")?,
+            })
+        } else {
+            None
+        }
+    } else {
+        None
+    };
     let read_plan = ReadPlan {
+        replay,
         source: read_source_plan,
         paired: args.paired,
         max_reads,
@@ -937,6 +1570,13 @@ pub(crate) fn ingest_reads(
 
 /// Open a FASTQ file as a buffered reader, with automatic gzip detection.
 fn open_fastq_reader(file_path: &std::path::Path) -> Result<Box<dyn BufRead>> {
+    open_fastq_reader_bounded(file_path, None)
+}
+
+fn open_fastq_reader_bounded(
+    file_path: &std::path::Path,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<Box<dyn BufRead>> {
     let file_name = file_path.to_string_lossy();
     let has_gz_ext = file_name.ends_with(".gz") || file_name.ends_with(".gzip");
 
@@ -947,7 +1587,7 @@ fn open_fastq_reader(file_path: &std::path::Path) -> Result<Box<dyn BufRead>> {
     // redundant second open that showed up as two syscalls per FASTQ file.
     let file = std::fs::File::open(file_path)
         .with_context(|| format!("Failed to open file: {}", file_path.display()))?;
-    let mut buf_reader = std::io::BufReader::new(file);
+    let mut buf_reader = crate::codec::Buffered::new(file, budget)?;
 
     let use_gzip = if has_gz_ext {
         true
@@ -957,9 +1597,7 @@ fn open_fastq_reader(file_path: &std::path::Path) -> Result<Box<dyn BufRead>> {
     };
 
     if use_gzip {
-        Ok(Box::new(std::io::BufReader::new(
-            flate2::read::MultiGzDecoder::new(buf_reader),
-        )))
+        Ok(Box::new(crate::codec::Decoder::new(buf_reader, budget)?))
     } else {
         Ok(Box::new(buf_reader))
     }
@@ -1336,32 +1974,68 @@ pub(crate) fn consolidate_and_histogram(
     n_kmers_ingested: u64,
     show_progress: bool,
 ) -> Result<(FinalCounts, Option<u64>)> {
-    if let Some(counter) = state.direct.take() {
+    if let Some(mut counter) = state.direct.take() {
         ensure!(
             args.chunks == 0 && state.chunks.is_empty(),
             "Exact counter cannot finalize legacy chunks"
         );
-        let snapshot = counter.budget.snapshot();
-        // Input arenas have been dropped; only the moved count buffer remains.
+        ensure!(
+            counter.key_batch.is_empty() && counter.next_key == 0,
+            "Exact counter has an unfinished k-mer batch"
+        );
+        let budget = Arc::clone(&counter.budget);
+        let key_buffer_bytes =
+            u64::try_from(counter.key_batch.capacity() * size_of::<CanonicalKey>())?;
+        // Input arenas are gone; the key buffer is still charged until this
+        // counter is consumed and its table moves into immutable storage.
+        let digest = counter.input_digest()?;
+        let input_identity_worker = counter.identity_summary;
+        let count_owner_transfer = counter.owner_transfer_summary;
+        let mut store = counter.builder.finalize(digest)?;
+        if let ExactStore::Disk { directory, .. } | ExactStore::AdaptiveSharded { directory, .. } =
+            &mut store
+        {
+            *directory = counter.owned_count_directory.take();
+        } else if let Some(directory) = counter.owned_count_directory.take() {
+            directory
+                .close()
+                .context("Unable to remove unused count run directory")?;
+        }
+        let peak_count_input_reserved_bytes = counter
+            .memory_peak
+            .take()
+            .context("Exact counter has no memory measurement")?
+            .finish()?;
+        let snapshot = budget.snapshot();
+        let peak_temporary_disk_bytes = counter
+            .disk_peak
+            .take()
+            .context("Exact counter has no disk measurement")?
+            .finish()?;
         let peak_record_buffer_bytes =
             snapshot.peak_reserved_by_class[MemoryClass::InputBuffer as usize];
-        let store = counter
-            .builder
-            .finalize(counter.selected_digest.finalize().into());
         ensure!(
-            store.metadata().occurrences == n_kmers_ingested,
+            store.as_store().metadata().occurrences == n_kmers_ingested,
             "Exact count total differs from selected windows"
         );
         info!(
-            "Finalized {} exact unique kmers with a total count of {} without consolidation",
-            store.metadata().distinct_keys,
+            "Finalized {} exact unique kmers with a total count of {}",
+            store.as_store().metadata().distinct_keys,
             n_kmers_ingested
         );
         return Ok((
             FinalCounts::Exact {
-                store: Box::new(store),
+                store,
+                run_budget: Arc::clone(&budget),
                 peak_record_buffer_bytes,
-                peak_count_input_reserved_bytes: snapshot.peak_reserved_memory_bytes,
+                peak_kmer_buffer_bytes: key_buffer_bytes,
+                peak_count_input_reserved_bytes,
+                peak_sort_buffer_bytes: snapshot.peak_reserved_by_class
+                    [MemoryClass::SortBuffer as usize],
+                peak_temporary_disk_bytes,
+                input_identity_worker,
+                count_owner_transfer,
+                process_file_limits: budget.process_file_limits().map(Box::new),
             },
             None,
         ));
@@ -1600,6 +2274,27 @@ mod tests {
     }
 
     #[test]
+    fn retained_result_ceiling_shares_the_existing_combined_budget() {
+        let mut classes = [0; crate::kmer::budget::MEMORY_CLASSES];
+        classes[MemoryClass::CountSlots as usize] = 200;
+        classes[MemoryClass::InputBuffer as usize] = 50;
+        classes[MemoryClass::RetainedResults as usize] = 999;
+        let budget = DirectCounter::resource_budget(classes, 0, 100).unwrap();
+        assert_eq!(budget.class_limit(MemoryClass::RetainedResults), 350);
+        let retained = budget.reserve(MemoryClass::RetainedResults, 350).unwrap();
+        let error = budget.reserve(MemoryClass::CountSlots, 1).err().unwrap();
+        assert_eq!(
+            error
+                .downcast_ref::<crate::kmer::budget::ResourceExhausted>()
+                .unwrap()
+                .resource,
+            crate::kmer::budget::ResourceKind::RunMemory
+        );
+        drop(retained);
+        assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+    }
+
+    #[test]
     fn gzip_magic_detection_matches_plain_fastq() {
         let directory = tempfile::tempdir().unwrap();
         let plain_path = directory.path().join("reads.fastq");
@@ -1713,6 +2408,7 @@ mod tests {
         let ingested_sequences = read_sequences(&path, 0).unwrap().0;
         let replayed = reread_sequences(
             &ReadPlan {
+                replay: None,
                 source: ReadSourcePlan::CachedRemote(vec![path]),
                 paired: false,
                 max_reads: 0,

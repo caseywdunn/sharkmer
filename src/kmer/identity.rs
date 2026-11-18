@@ -3,7 +3,7 @@
 //! Store implementations may pack raw bits internally, but identities crossing
 //! a store boundary retain their k so mismatched queries can be rejected.
 
-use anyhow::{Result, bail, ensure};
+use anyhow::{Result, ensure};
 use std::iter::FusedIterator;
 
 /// Validated length for the current two-bit, u64 k-mer representation.
@@ -97,8 +97,9 @@ impl CanonicalKey {
         Ok(OrientedKey::new(bits, size)?.canonical())
     }
 
-    /// Reconstruct an immutable memory-table key already validated by its
-    /// builder. Persisted unvalidated bytes must use checked constructors.
+    /// Reconstruct an in-memory key already validated by a typed producer.
+    /// Tables and owned worker pools retain k separately. Persisted unvalidated
+    /// bytes must use checked constructors.
     pub(super) fn from_stored(bits: u64, size: KmerSize) -> Self {
         debug_assert_eq!(bits & !size.mask(), 0);
         debug_assert!(bits <= (OrientedKey { bits, size }).reverse_complement().bits);
@@ -138,7 +139,6 @@ pub struct KmerWindows<'a> {
     forward: u64,
     reverse: u64,
     valid: usize,
-    valid_bases_seen: usize,
 }
 
 impl<'a> KmerWindows<'a> {
@@ -153,19 +153,14 @@ impl<'a> KmerWindows<'a> {
             forward: 0,
             reverse: 0,
             valid: 0,
-            valid_bases_seen: 0,
         })
-    }
-
-    /// Number of ACGT bytes processed so far, including runs shorter than k.
-    pub fn valid_bases_seen(&self) -> usize {
-        self.valid_bases_seen
     }
 }
 
 impl Iterator for KmerWindows<'_> {
     type Item = Result<KmerWindow>;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         while let Some(&byte) = self.sequence.get(self.next) {
             let position = self.next;
@@ -183,13 +178,12 @@ impl Iterator for KmerWindows<'_> {
                 }
                 _ => {
                     self.next = self.sequence.len();
-                    return Some(invalid_base(byte));
+                    return Some(Err(invalid_base(byte)));
                 }
             };
             self.forward = ((self.forward << 2) | base) & self.mask;
             self.reverse = (self.reverse >> 2) | ((3 - base) << (2 * (self.size.get() - 1)));
             self.valid += 1;
-            self.valid_bases_seen += 1;
             if self.valid >= self.size.get() {
                 return Some(Ok(KmerWindow {
                     start: position + 1 - self.size.get(),
@@ -210,11 +204,57 @@ impl Iterator for KmerWindows<'_> {
 
 impl FusedIterator for KmerWindows<'_> {}
 
-fn invalid_base(byte: u8) -> Result<KmerWindow> {
-    bail!(
+#[cold]
+fn invalid_base(byte: u8) -> anyhow::Error {
+    anyhow::anyhow!(
         "Invalid character '{}' in sequence. Only ACGTN allowed.",
         byte as char
     )
+}
+
+/// Count-oriented extraction without constructing unused positions/orientations.
+///
+/// This retains the positioned iterator's exact uppercase ACGTN policy and
+/// ordering. N breaks windows; any other byte or visitor failure stops the scan.
+/// The returned base total includes valid runs shorter than k. Consumers needing
+/// original positions and directional identities continue to use `KmerWindows`.
+#[inline]
+pub fn visit_canonical_windows(
+    sequence: &[u8],
+    k: usize,
+    mut visitor: impl FnMut(CanonicalKey) -> Result<()>,
+) -> Result<usize> {
+    let size = KmerSize::new(k)?;
+    let mask = size.mask();
+    let reverse_shift = 2 * (k - 1);
+    let (mut forward, mut reverse) = (0u64, 0u64);
+    let (mut run, mut valid_bases) = (0usize, 0usize);
+    for &byte in sequence {
+        let base = match byte {
+            b'A' => 0,
+            b'C' => 1,
+            b'G' => 2,
+            b'T' => 3,
+            b'N' => {
+                forward = 0;
+                reverse = 0;
+                run = 0;
+                continue;
+            }
+            _ => return Err(invalid_base(byte)),
+        };
+        forward = ((forward << 2) | base) & mask;
+        reverse = (reverse >> 2) | ((3 - base) << reverse_shift);
+        run += 1;
+        valid_bases += 1;
+        if run >= k {
+            visitor(CanonicalKey {
+                bits: forward.min(reverse),
+                size,
+            })?;
+        }
+    }
+    Ok(valid_bases)
 }
 
 #[cfg(test)]
@@ -365,5 +405,78 @@ mod tests {
             .map(|w| w.unwrap().start)
             .collect::<Vec<_>>();
         assert_eq!(starts, vec![0, 4]);
+    }
+
+    #[test]
+    fn canonical_visitor_matches_literal_windows_and_valid_base_totals_at_every_k() {
+        let mut state = 140u64;
+        for k in 1..=31 {
+            let mut sequence = Vec::new();
+            for index in 0..4096 {
+                state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+                sequence.push(if index % 97 < k || index % 13 == 0 {
+                    b'N'
+                } else {
+                    b"ACGT"[((state >> 32) & 3) as usize]
+                });
+            }
+            let expected = oracle(&sequence, k)
+                .into_iter()
+                .map(|(_, _, canonical)| canonical)
+                .collect::<Vec<_>>();
+            let mut observed = Vec::new();
+            let bases = visit_canonical_windows(&sequence, k, |key| {
+                assert_eq!(key.size().get(), k);
+                observed.push(key.bits());
+                Ok(())
+            })
+            .unwrap();
+            assert_eq!(observed, expected);
+            assert_eq!(bases, sequence.iter().filter(|&&base| base != b'N').count());
+            let positioned = KmerWindows::new(&sequence, k)
+                .unwrap()
+                .map(|value| value.unwrap().canonical.bits())
+                .collect::<Vec<_>>();
+            assert_eq!(observed, positioned);
+        }
+    }
+
+    #[test]
+    fn canonical_visitor_propagates_input_and_callback_failures_without_later_emission() {
+        let mut keys = Vec::new();
+        assert!(
+            visit_canonical_windows(b"ACGTNACXGTTAC", 2, |key| {
+                keys.push(key.bits());
+                Ok(())
+            })
+            .is_err()
+        );
+        assert_eq!(
+            keys,
+            oracle(b"ACGTNAC", 2)
+                .into_iter()
+                .map(|(_, _, bits)| bits)
+                .collect::<Vec<_>>()
+        );
+        keys.clear();
+        let error = visit_canonical_windows(b"ACGTACGTACGT", 3, |key| {
+            if keys.len() == 2 {
+                anyhow::bail!("visitor stopped");
+            }
+            keys.push(key.bits());
+            Ok(())
+        })
+        .unwrap_err();
+        assert_eq!(error.to_string(), "visitor stopped");
+        assert_eq!(
+            keys,
+            oracle(b"ACGTACGTACGT", 3)
+                .into_iter()
+                .take(2)
+                .map(|(_, _, bits)| bits)
+                .collect::<Vec<_>>()
+        );
+        assert!(visit_canonical_windows(b"AC", 0, |_| Ok(())).is_err());
+        assert!(visit_canonical_windows(b"AC", 32, |_| Ok(())).is_err());
     }
 }
