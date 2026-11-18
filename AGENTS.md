@@ -29,12 +29,16 @@ portable whole-process RAM bound. Keep fixes for demonstrated failures small.
 Preserve accepted outputs and reject incomplete work after errors/interruption.
 See [the resource boundary](dev_docs/COUNT_STORE_CONTRACTS.md#v4-resource-boundary).
 
-## Development documentation
+## Repository size
 
 Keep this production repository small. Do not commit new analysis results,
 benchmark outputs, logs, binaries or experiment archives. Retain that evidence
 outside version control; keep maintained code, documentation and small test
 fixtures in the repository. Preserve already tracked historical evidence.
+Inspect file sizes before staging. Do not force-add ignored analysis artifacts;
+source downloads should contain only what users and developers need.
+
+## Development documentation
 
 Start with [the developer index](dev_docs/README.md),
 [the active plan](dev_docs/PLAN.md), and
