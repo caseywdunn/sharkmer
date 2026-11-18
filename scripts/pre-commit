@@ -6,8 +6,9 @@
 
 set -e
 
-echo "pre-commit: cargo fmt --all --check"
-cargo fmt --all --check
+echo "pre-commit: format application and patched client source"
+cargo fmt --package sharkmer --check
+rustfmt --edition 2018 --config skip_children=true --check vendor/ureq-2.12.1/src/chunked/decoder.rs vendor/ureq-2.12.1/src/middleware.rs
 
 echo "pre-commit: cargo clippy -- -D warnings"
 cargo clippy -- -D warnings

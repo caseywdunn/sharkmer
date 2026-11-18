@@ -9,7 +9,6 @@ import json
 import os
 import platform
 import re
-import shlex
 import subprocess
 import time
 import uuid
@@ -284,11 +283,16 @@ def get_panel_version(panel_data: dict) -> str:
 
 
 def _parse_header_fields(header: str) -> dict:
-    fields = {}
-    for token in shlex.split(header):
-        if "=" in token:
-            key, value = token.split("=", 1)
-            fields[key] = value
+    fields = uncertain._header_fields(header)
+    for old, new in (
+        ("gene", "target"),
+        ("product", "sequence_index"),
+        ("length", "sequence_length"),
+    ):
+        if old in fields and new in fields:
+            raise ValueError(
+                f"FASTA header mixes historical and current fields: {old}, {new}"
+            )
     return fields
 
 
@@ -305,8 +309,10 @@ def parse_fasta_products(
     stats_path = output_dir / f"{sample_prefix}.stats.yaml"
     manifest_path = output_dir / f"{sample_prefix}.manifest.yaml"
     if (
-        stats_path.exists() or stats_path.is_symlink()
-        or manifest_path.exists() or manifest_path.is_symlink()
+        stats_path.exists()
+        or stats_path.is_symlink()
+        or manifest_path.exists()
+        or manifest_path.is_symlink()
     ):
         run_stats = _parse_stats_yaml(stats_path)
         if run_stats.get("sample") != sample_prefix:
@@ -316,7 +322,8 @@ def parse_fasta_products(
         current_files = [
             entry["output_file"]
             for entry in run_stats.get("pcr_results", [])
-            if entry.get("output_file") and (combined or entry.get("status") == "success")
+            if entry.get("output_file")
+            and (combined or entry.get("status") == "success")
         ]
         if output_files is None:
             output_files = current_files
@@ -333,7 +340,9 @@ def parse_fasta_products(
             or not fasta_path.is_file()
             or fasta_path.parent.resolve() != output_dir.resolve()
         ):
-            raise ValueError(f"Manifest FASTA is missing or outside run directory: {fasta_path}")
+            raise ValueError(
+                f"Manifest FASTA is missing or outside run directory: {fasta_path}"
+            )
         gene_name = fasta_path.stem.replace(f"{sample_prefix}_", "", 1)
         sequence_records = []
         current_header = None
@@ -351,8 +360,14 @@ def parse_fasta_products(
                                 "header": current_header,
                                 "sequence": sequence,
                                 "length": len(sequence),
-                                "product_index": int(fields["product"])
-                                if fields.get("product", "").isdigit()
+                                "product_index": int(
+                                    fields.get(
+                                        "sequence_index", fields.get("product", "")
+                                    )
+                                )
+                                if fields.get(
+                                    "sequence_index", fields.get("product", "")
+                                ).isdigit()
                                 else len(sequence_records),
                                 "kmer_count_median": int(fields["kmer_count_median"])
                                 if fields.get("kmer_count_median", "").isdigit()
@@ -371,8 +386,12 @@ def parse_fasta_products(
                         "header": current_header,
                         "sequence": sequence,
                         "length": len(sequence),
-                        "product_index": int(fields["product"])
-                        if fields.get("product", "").isdigit()
+                        "product_index": int(
+                            fields.get("sequence_index", fields.get("product", ""))
+                        )
+                        if fields.get(
+                            "sequence_index", fields.get("product", "")
+                        ).isdigit()
                         else len(sequence_records),
                         "kmer_count_median": int(fields["kmer_count_median"])
                         if fields.get("kmer_count_median", "").isdigit()
@@ -380,12 +399,21 @@ def parse_fasta_products(
                     }
                 )
 
-        labelled = [record for record in sequence_records if uncertain.uncertain_header(record["header"])]
+        labelled = [
+            record
+            for record in sequence_records
+            if uncertain.uncertain_header(record["header"])
+        ]
         if labelled:
             if output_files is not None and not combined:
-                raise ValueError("Uncertain candidate appears in a declared standard FASTA")
-            sequence_records = [record for record in sequence_records
-                                if not uncertain.uncertain_header(record["header"])]
+                raise ValueError(
+                    "Uncertain candidate appears in a declared standard FASTA"
+                )
+            sequence_records = [
+                record
+                for record in sequence_records
+                if not uncertain.uncertain_header(record["header"])
+            ]
             if not sequence_records:
                 continue
         products.append(
@@ -403,7 +431,10 @@ def parse_fasta_products(
         )
 
     if transaction is not None:
-        if _validate_output_manifest(run_stats, sample_prefix, output_dir) != transaction:
+        if (
+            _validate_output_manifest(run_stats, sample_prefix, output_dir)
+            != transaction
+        ):
             raise ValueError("Output transaction changed while products were read")
     return products
 

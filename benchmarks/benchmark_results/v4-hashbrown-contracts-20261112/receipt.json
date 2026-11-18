@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "job_id": 33123876,
+  "rust_tests_per_backend": 313,
+  "python_tests": 217,
+  "source_files": 88,
+  "binary_sha256": "e72355620a4dda08827b69289742866a92fea17c4e973d8a956d6e7ed9c3ca41",
+  "scope": "exact Hashbrown candidate with control-byte/resize accounting and statically dispatched memory scans; paired promotion and full calibration matrix remain pending"
+}

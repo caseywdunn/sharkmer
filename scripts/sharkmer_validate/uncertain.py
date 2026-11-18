@@ -1,10 +1,10 @@
 """Validate classified products while keeping uncertain hypotheses separate in consumers."""
 
 import hashlib
+import math
 import re
 import shlex
 from collections import Counter
-
 
 CAUSE_COUNTS = {
     "pre_prune_omitted_self_loop_node": "omitted_self_loop_marker_occurrences",
@@ -21,7 +21,7 @@ WARNING_CAUSES = {
     "pre_prune_cyclic_scc_node": "repeat_structure_unresolved",
     "retained_collision_edge": "high_coverage_repeat_suspected",
 }
-OUTPUT_LAYOUTS = {2: "combined_classified", 3: "combined_warnings"}
+OUTPUT_LAYOUTS = {2: "combined_classified", 3: "combined_warnings", 4: "combined_warnings"}
 
 
 def _require(condition, message):
@@ -110,10 +110,10 @@ def assembly_status(header, schema_version=2):
     fields = _header_fields(header)
     status = fields.get("assembly_status")
     is_uncertain = uncertain_header(header)
-    if schema_version == 3:
-        _require(status in {None, "warning"}, "invalid schema-3 assembly_status")
+    if schema_version in (3, 4):
+        _require(status in {None, "warning"}, "invalid warning-schema assembly_status")
         _require("read_support" not in fields,
-                 "read-support assessment is not implemented in schema 3")
+                 "read-support assessment is not implemented in this schema")
         return "uncertain" if is_uncertain else "standard"
     _require(schema_version == 2 and status in {"standard", "uncertain"},
              "record must have exactly one recognized assembly_status")
@@ -150,7 +150,46 @@ def validate_combined_metadata(entry, sample_prefix, schema_version=2):
     _require(lengths[standard:] == (value["product_lengths"] if value is not None else []),
              "uncertain lengths disagree with inclusive suffix")
     _require(uncertain_file == (filename if count else None), "uncertain output is not the shared file")
+    if schema_version == 4:
+        _validate_sequence_annotations(entry, sample_prefix)
     return filename
+
+
+def _validate_sequence_annotations(entry: dict, sample_prefix: str) -> None:
+    """Bind measurements to final IDs, including unscored warning sequences."""
+    rows = entry.get("sequence_annotations", [])
+    _require(
+        isinstance(rows, list) and len(rows) == entry["n_products"],
+        "sequence annotations do not cover emitted records",
+    )
+    standard = entry["n_standard_products"]
+    expected_keys = {"sequence_id", "sequence_index", "sequence_length"}
+    for position, row in enumerate(rows):
+        ordinary = position < standard
+        index = position if ordinary else position - standard
+        identifier = f"{sample_prefix}_{entry['gene_name']}_{index}"
+        if not ordinary:
+            identifier += ".uncertain"
+        _require(
+            isinstance(row, dict)
+            and set(row)
+            == expected_keys | ({"assembly_rank_score"} if ordinary else set()),
+            "invalid sequence annotation fields",
+        )
+        _require(
+            row["sequence_id"] == identifier
+            and _count(row["sequence_index"])
+            and row["sequence_index"] == index
+            and _count(row["sequence_length"])
+            and row["sequence_length"] == entry["product_lengths"][position],
+            "sequence annotation identity, index or length mismatch",
+        )
+        if ordinary:
+            score = row["assembly_rank_score"]
+            _require(
+                type(score) in (int, float) and math.isfinite(score) and score >= 0,
+                "invalid assembly ranking score",
+            )
 
 
 def validate_metadata(entry, sample_prefix, combined=False, schema_version=None):
@@ -159,14 +198,15 @@ def validate_metadata(entry, sample_prefix, combined=False, schema_version=None)
         return None
     value = entry["uncertain_products"]
     _require(isinstance(value, dict), "assessment must be a mapping")
-    _require(type(value.get("schema_version")) is int and value["schema_version"] in (1, 2, 3),
+    _require(type(value.get("schema_version")) is int and value["schema_version"] in (1, 2, 3, 4),
              "unsupported schema")
     output_version = schema_version if schema_version is not None else (2 if combined else 1)
     _require(type(output_version) is int
-             and output_version in ((2, 3) if combined else (1,)),
+             and output_version in ((2, 3, 4) if combined else (1,)),
              "unsupported product output schema")
-    warnings = value["schema_version"] == 3
-    _require(warnings == (output_version == 3) and (not warnings or combined),
+    warnings = value["schema_version"] >= 3
+    _require(warnings == (output_version >= 3)
+             and (not warnings or (combined and value["schema_version"] == output_version)),
              "assessment schema disagrees with output schema")
     sequence_first = value["schema_version"] >= 2
     if sequence_first:
@@ -301,6 +341,10 @@ def validate_metadata(entry, sample_prefix, combined=False, schema_version=None)
                 "length": str(length), "assembly_status": "warning",
                 "assembly_status_causes": ",".join(warning_causes),
             }
+            if output_version == 4:
+                expected_fields["target"] = expected_fields.pop("gene")
+                expected_fields["sequence_index"] = expected_fields.pop("product")
+                expected_fields["sequence_length"] = expected_fields.pop("length")
             _require(fields == expected_fields, "header disagrees with warning assessment")
         else:
             expected_fields = {
@@ -356,5 +400,23 @@ def validate_fasta(entry, output_dir, combined=False, schema_version=2):
                  "combined FASTA classification or order disagrees with stats")
         ids = [shlex.split(header)[0] for header, _ in observed]
         _require(len(ids) == len(set(ids)), "duplicate combined FASTA identifiers")
+        if schema_version == 4:
+            sample_prefix = filename.removesuffix(f"_{entry['gene_name']}.fasta")
+            _validate_sequence_annotations(entry, sample_prefix)
+            for position, ((header, sequence), annotation) in enumerate(
+                zip(observed, entry["sequence_annotations"])
+            ):
+                fields = _header_fields(header)
+                _require(ids[position] == annotation["sequence_id"]
+                         and fields.get("sample") == sample_prefix
+                         and fields.get("target") == entry["gene_name"]
+                         and fields.get("sequence_index") == str(annotation["sequence_index"])
+                         and fields.get("sequence_length") == str(len(sequence)),
+                         "FASTA annotations disagree with structured sequence annotations")
+                if position < count:
+                    _require(set(fields) == {
+                        "sample", "target", "sequence_index", "sequence_length",
+                        "kmer_count_mean", "kmer_count_median", "kmer_count_min", "kmer_count_max",
+                    }, "invalid ordinary sequence header fields")
         observed = observed[count:]
     _require(observed == expected, "FASTA records disagree with structured candidates")
