@@ -621,7 +621,13 @@ mod tests {
         let parent = base
             .path()
             .join(std::ffi::OsString::from_vec(b"parent-\xff".to_vec()));
-        fs::create_dir(&parent).unwrap();
+        if let Err(error) = fs::create_dir(&parent) {
+            if error.raw_os_error() == Some(rustix::io::Errno::ILSEQ.raw_os_error()) {
+                // Some filesystems require valid UTF-8 for directory names.
+                return;
+            }
+            panic!("could not create non-UTF-8 test directory: {error}");
+        }
         let mut transaction = OutputTransaction::begin(out.path(), "sample").unwrap();
         let root = transaction.workspace_root(Some(&parent)).unwrap();
         fs::write(root.join("counts"), b"payload").unwrap();

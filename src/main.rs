@@ -3,7 +3,6 @@
 use anyhow::{Context, Result};
 use clap::Parser;
 use log::{debug, info};
-use peak_alloc::PeakAlloc;
 use std::io::IsTerminal;
 
 mod cache;
@@ -21,12 +20,19 @@ mod pcr;
 mod process_memory;
 mod replay;
 mod stats;
+#[cfg(test)]
+mod test_alloc;
 
 use cli::Args;
 use stats::{InputSourceStats, RunStats, StageTimings};
 
 #[global_allocator]
-static PEAK_ALLOC: PeakAlloc = PeakAlloc;
+#[cfg(not(test))]
+static PEAK_ALLOC: peak_alloc::PeakAlloc = peak_alloc::PeakAlloc;
+
+#[global_allocator]
+#[cfg(test)]
+static PEAK_ALLOC: test_alloc::ThreadPeakAlloc = test_alloc::ThreadPeakAlloc;
 
 fn main() -> Result<()> {
     let start_run = std::time::Instant::now();
