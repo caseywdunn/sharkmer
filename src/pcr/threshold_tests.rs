@@ -171,7 +171,7 @@ fn disconnected_graph_after_pruning_has_explicit_failure() {
     params.max_length = 100;
 
     let evaluation = evaluate_threshold_graph(
-        graph,
+        graph.into(),
         graph::ExtensionRepeatMarkers::default(),
         1,
         &filtered,
@@ -179,6 +179,7 @@ fn disconnected_graph_after_pruning_has_explicit_failure() {
         &params,
         false,
         "/tmp/",
+        None,
         None,
         None,
     )
@@ -284,9 +285,7 @@ fn earlier_threshold_limits_are_not_erased_by_later_no_connectivity() {
     };
     let later_no_connectivity = PcrThresholdDiagnostic {
         threshold: 2,
-        failure_reason: Some(
-            "no start-to-end connectivity established at this threshold".to_string(),
-        ),
+        failure_reason: Some("no start-to-end connectivity established at this threshold".into()),
         ..PcrThresholdDiagnostic::default()
     };
 

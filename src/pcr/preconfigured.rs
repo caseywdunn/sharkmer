@@ -3,6 +3,8 @@ use std::collections::BTreeMap;
 
 use super::PCRParams;
 
+pub(crate) mod bounded;
+
 #[derive(serde::Deserialize)]
 #[serde(deny_unknown_fields)]
 struct PanelFile {
@@ -292,6 +294,7 @@ pub fn is_url(source: &str) -> bool {
 }
 
 /// Load a panel from a user-supplied YAML file path.
+#[cfg(test)]
 fn load_panel_file(path: &str) -> Result<Vec<PCRParams>> {
     let yaml_str = std::fs::read_to_string(path)
         .with_context(|| format!("Failed to read panel file: {}", path))?;
@@ -356,6 +359,7 @@ fn require_clade_for_v2(panel: &PanelFile, source: &str) -> Result<()> {
 /// Remove deprecated primers from the list, emitting a warning for each one
 /// skipped. Called after gene names are fully resolved and prefixed so that
 /// the warning message uses the final output name.
+#[cfg(test)]
 fn filter_deprecated_primers(primers: Vec<PCRParams>, panel_name: &str) -> Vec<PCRParams> {
     let mut active = Vec::with_capacity(primers.len());
     for p in primers {
@@ -384,6 +388,7 @@ fn filter_deprecated_primers(primers: Vec<PCRParams>, panel_name: &str) -> Vec<P
 const MAX_PANEL_YAML_BYTES: u64 = 10 * 1024 * 1024; // 10 MB
 
 /// Load a panel from a URL.
+#[cfg(test)]
 fn load_panel_url(url: &str) -> Result<Vec<PCRParams>> {
     use std::io::Read;
     use std::time::Duration;
@@ -441,6 +446,7 @@ fn load_panel_url(url: &str) -> Result<Vec<PCRParams>> {
 }
 
 /// Load a panel from a file path or URL.
+#[cfg(test)]
 pub fn load_panel_source(source: &str) -> Result<Vec<PCRParams>> {
     if is_url(source) {
         load_panel_url(source)
@@ -450,8 +456,8 @@ pub fn load_panel_source(source: &str) -> Result<Vec<PCRParams>> {
 }
 
 /// Returns (name, raw_yaml) pairs for all built-in panels.
-fn get_builtin_panel_sources() -> Vec<(&'static str, &'static str)> {
-    vec![
+fn get_builtin_panel_sources() -> [(&'static str, &'static str); 9] {
+    [
         (
             "angiospermae",
             include_str!("../../panels/angiospermae.yaml"),
@@ -497,6 +503,7 @@ fn get_preconfigured_panels() -> Vec<PanelFile> {
     panels
 }
 
+#[cfg(test)]
 pub fn get_panel(panel_name: &str) -> Result<Vec<PCRParams>, String> {
     let panels = get_preconfigured_panels();
 

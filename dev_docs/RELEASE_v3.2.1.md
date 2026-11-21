@@ -6,7 +6,7 @@ Updated 2026-11-09. **[v3.2.1 is released](https://github.com/caseywdunn/sharkme
 [Tag CI passes](https://github.com/caseywdunn/sharkmer/actions/runs/42652146001); `v3` has advanced. The user explicitly authorized
 this maintenance release under [#167](https://github.com/caseywdunn/sharkmer/issues/167).
 Postmerge 4.0.0-dev release checks and local package validation pass; the
-upstream recipe update is submitted, with channel delivery pending in the [publication receipts](../benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md).
+upstream recipe update is submitted, with channel delivery pending in the [publication receipts](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md).
 
 ## Scope
 
@@ -39,24 +39,24 @@ narrow dependency update.
 | Gate | Status | Required evidence |
 | --- | --- | --- |
 | User authorization | **Met, 2026-11-09** | The user's explicit instruction to proceed with v3.2.1 now. |
-| Final source and dependency review | **Met for the tested candidate, 2026-11-09** | [Source receipts](../benchmarks/benchmark_results/v3.2.1-release-20261109/README.md) confirm exactly two dependency updates plus root version metadata; no production-source, panel, schema, test, or check-script changes from v3.2.0. Preserve this scope through the release commit. |
-| Full engineering release check | **Met, 2026-11-09** | [Job 32671325](../benchmarks/benchmark_results/v3.2.1-release-20261109/README.md) passes all eight groups: 283 Rust tests per backend, 213 Python tests without skips, formatting/Clippy, 158 references, ten schemas, nine exports, 19 loader dry runs, and fixture sequence oracles. |
-| HTTPS download compatibility | **Met, 2026-11-09** | [Job 32674065](../benchmarks/benchmark_results/v3.2.1-release-20261109/https-v2/README.md) passes with the engineering-tested binary: pinned HTTPS panel over TLS 1.3, matching three-read local control, and untrusted-certificate rejection before any HTTP request. The earlier harness version assertion failed before network activity and is retained separately. |
-| Local package build and smoke tests | **Met, 2026-11-09** | [Job 32677573](../benchmarks/benchmark_results/v3.2.1-release-20261109/packaging/README.md) builds the published archive with Rust 1.99.1 and passes all four smoke tests. Independent package extraction verifies the exact 3.2.1 banner and package/binary hashes. |
+| Final source and dependency review | **Met for the tested candidate, 2026-11-09** | [Source receipts](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2.1-release-20261109/README.md) confirm exactly two dependency updates plus root version metadata; no production-source, panel, schema, test, or check-script changes from v3.2.0. Preserve this scope through the release commit. |
+| Full engineering release check | **Met, 2026-11-09** | [Job 32671325](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2.1-release-20261109/README.md) passes all eight groups: 283 Rust tests per backend, 213 Python tests without skips, formatting/Clippy, 158 references, ten schemas, nine exports, 19 loader dry runs, and fixture sequence oracles. |
+| HTTPS download compatibility | **Met, 2026-11-09** | [Job 32674065](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2.1-release-20261109/https-v2/README.md) passes with the engineering-tested binary: pinned HTTPS panel over TLS 1.3, matching three-read local control, and untrusted-certificate rejection before any HTTP request. The earlier harness version assertion failed before network activity and is retained separately. |
+| Local package build and smoke tests | **Met, 2026-11-09** | [Job 32677573](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2.1-release-20261109/packaging/README.md) builds the published archive with Rust 1.99.1 and passes all four smoke tests. Independent package extraction verifies the exact 3.2.1 banner and package/binary hashes. |
 | Source publication | **Met, 2026-11-09** | [v3.2.1](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1) published at `ca7fc4c9d35ae57c767186c475b029358af8c165`; [tag CI](https://github.com/caseywdunn/sharkmer/actions/runs/42652146001) passes and `v3` has advanced. |
-| Development integration and upstream package delivery | In progress | The restored 4.0.0-dev checkout passes all eight release checks in job 32677833. Local package validation also passes. Final integration verification and upstream delivery remain to be recorded in the [publication receipts](../benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md). |
+| Development integration and upstream package delivery | In progress | The restored 4.0.0-dev checkout passes all eight release checks in job 32677833. Local package validation also passes. Final integration verification and upstream delivery remain to be recorded in the [publication receipts](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md). |
 
-The [exact-version advisory audit](../benchmarks/benchmark_results/v3.2.1-release-20261109/advisory-audit/advisory-audit.json)
+The [exact-version advisory audit](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2.1-release-20261109/advisory-audit/advisory-audit.json`)
 finds no matching reviewed or unreviewed GitHub advisory for either selected
 dependency version at the recorded query time. Its raw responses are retained;
 this is a dated database check, not a guarantee against unknown vulnerabilities.
-The [post-publication repository receipt](../benchmarks/benchmark_results/v3.2.1-release-20261109/publication-security/security-status.json)
+The [post-publication repository receipt](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2.1-release-20261109/publication-security/security-status.json`)
 reports zero open Dependabot alerts and explicitly fixed alerts #8–#11.
 
 The full engineering check and bounded HTTPS check are the verification scope
 for this dependency patch. The user-accepted v3.2 biological scope and its
 limitations carry forward. The
-[32-invocation comparison](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+[32-invocation comparison](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
 and [v3.2 review](REVIEW_v3.2.md) retain the prior evidence; this patch does not
 repeat that comparison or add a broad biological accuracy or performance claim.
 Independent held-out registration and the full nine-panel biological campaign

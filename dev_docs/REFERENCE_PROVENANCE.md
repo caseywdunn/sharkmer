@@ -33,7 +33,7 @@ records** containing 2,123,261 unique-record bases. The raw FASTA transfer has
 111 records and 2,143,980 bases because two records occur twice; identical
 duplicates are consolidated, not counted as independent evidence. Records were retrieved independently
 from NCBI on 2026-09-13; the raw FASTA and metadata are preserved in the
-[audit evidence archive](../benchmarks/benchmark_results/v3.2-reference-provenance-20260913/README.md).
+[audit evidence archive](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-reference-provenance-20260913/README.md).
 
 | Panel | Old entries | Exact source candidates | No exact source match |
 | --- | ---: | ---: | ---: |

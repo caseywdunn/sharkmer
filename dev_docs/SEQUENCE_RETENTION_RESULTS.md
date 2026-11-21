@@ -96,7 +96,7 @@ and formatting. The Python suite passes 198 tests with one existing skip;
 all 156 active references pass the local audit. A second parser of raw FASTA
 and YAML confirms the full comparison independently of its summary. See the
 [protocol](SEQUENCE_RETENTION_PROTOCOL.md) and
-[evidence bundle](../benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/).
+[evidence bundle](https://github.com/caseywdunn/sharkmer-benchmarks/tree/main/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001).
 
 A separate real-input `--no-emit-uncertain --diagnose-withheld-paths` replay
 produces identical old/new standard FASTAs, counts, and per-target diagnostic
@@ -115,7 +115,7 @@ from the frozen paired comparison. The candidate FASTA sequences were bound to
 the gain table by full-length SHA-256 before query creation. An independent
 review then checked all 200 query hashes against the gain table, all 121 source
 sequences against the pinned catalog, saved file receipts, and every raw BLAST
-row. See the [review files](../benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/README.md).
+row. See the [review files](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-sequence-first-retention-20261001/blast-gains-v3/README.md).
 
 With BLASTN 2.17.0+ (`dust=no`, E-value at most `1e-10`, at most 121 targets
 and 20 HSPs per target), 168 queries have at least one public-source HSP and
@@ -148,9 +148,9 @@ prefixes. Full repeat reconstruction remains a separate task.
 
 ### Gryllus ITS: some nearby combinations occur on individual reads
 
-The [initial pilot](../benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/summary.json)
+The [initial pilot](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-its-gain-pilot-20261009/summary.json`)
 found all eight tested local strings among 25 saved ITS read records. The
-[linkage audit](../benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/summary.json)
+[linkage audit](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/summary.json`)
 reuses those reads, preserving both orientations, competing placements,
 intervening mismatches, and quality scores. It requires each linked interval
 to occur on one read with every base at Q20 or higher. It never joins separate
@@ -175,7 +175,7 @@ respectively; the third also matches the historical ITS assembly. Reads
 273451 and 427221 support `CTCGCCC / ACGGG / T` through the variable core,
 with 21 bases of left flank and zero or two bases of right flank. That supports
 four additional hypotheses locally, with the narrower flank limitation.
-The [per-candidate table](../benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/candidate_disposition.tsv)
+The [per-candidate table](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-its-linkage-20261009/run-v1/candidate_disposition.tsv`)
 retains the individual dispositions.
 
 One further Q20 flanked string, `CTCGCCC / TCGGG / T` in read 784113, is
@@ -192,14 +192,14 @@ combination here is not proven absent from the full prefix or sample.
 Observed records also do not establish independent molecules or target identity.
 
 Eleven synthetic controls pass, and a fresh-directory replay reproduces the
-reports byte for byte. The [independent review](../benchmarks/benchmark_results/v3.2-its-linkage-20261009/independent_review.json)
+reports byte for byte. The [independent review](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-its-linkage-20261009/independent_review.json`)
 recounts 231 segment assays, reconstructs 286 candidate placements, verifies
 the quality/coordinate evidence, and reproduces the original ITS and CO1
 controls. No new FASTQ scan was needed for this linkage analysis.
 
 ### Drosophila 12S: longer local strings remain uncorroborated
 
-The [Drosophila assay](../benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/summary.json)
+The [Drosophila assay](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/summary.json`)
 includes all 26 current 12S hypotheses: the three previously retained records
 and all 23 gains. Full hashes bind them to the saved assembly output,
 including the historical 475-, 487-, and 499-base sequences. Deterministic
@@ -223,7 +223,7 @@ contains its oriented prefix. It retains overlapping seed matches and both
 orientations, then delegates observations to the unchanged scanner. Controls
 pass 1,835 optimized/direct observation comparisons and 835 supplementary
 unfiltered-count comparisons; all 135 saved Q20 matching reads were also
-checked directly. The [independent review](../benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/independent_review.json)
+checked directly. The [independent review](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/independent_review.json`)
 verifies source identities, candidate membership, windows, placements,
 controls, and receipts. The scan completed in 96.64 seconds with 19.5 MiB peak
 RSS inside the existing one-CPU allocation, below 600-second/2-GiB bounds.
@@ -237,7 +237,7 @@ Counts from separate windows cannot establish full-product linkage.
 
 The absence of longer exact matches prompted a specific invariant check:
 does every canonical 19-mer in each emitted sequence occur in the same raw
-input? The [bounded recount](../benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run-v1/results/report.json)
+input? The [bounded recount](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/run-v1/results/report.json`)
 finds **every 19-mer start in all 26 hypotheses represented**, with a minimum
 raw occurrence count of two in every candidate, matching the assembly's
 threshold of two. The 26 hypotheses contain 815 distinct canonical words,
@@ -251,7 +251,7 @@ The scan verifies the same prefix hash while reading, completes in 60.60
 seconds with 16 MiB peak RSS, and stays within 600-second/2-GiB bounds. Five
 synthetic controls include direct randomized counting, reverse complements,
 ambiguity resets, repeats, and preventing cross-read words. The
-[independent check](../benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/independent_review.json)
+[independent check](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-dros12s-read-pilot-20261009/k19-check/independent_review.json`)
 reviews the source, raw-count table, candidate coordinates, and receipts.
 
 Source inspection also finds consistent sequence reconstruction: uncertain
@@ -283,19 +283,19 @@ tagging, publication, or closure of the wider biological-validation issues.
 The user-approved recommendations 1–3 freeze the implementation, assemble a
 complete comparison table, and assess the six sample–target combinations that
 had no output in v3.1.0. The
-[implementation freeze](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/implementation_freeze.json)
+[implementation freeze](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-target-coverage-20261009/implementation_freeze.json`)
 records branch HEAD `1ea21c9`, 74 source/panel/test file hashes, inclusive
 delivery, uncertainty labels, and current search/retention limits. This work
 adds diagnostic evidence and documentation; production behavior is unchanged.
 
 ### Complete comparison
 
-The [compact comparison CSV](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/final-v1/target_matrix_compact.csv)
+The [compact comparison CSV](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/final-v1/target_matrix_compact.csv`)
 contains **all 118 sample–target combinations**, including zero-output rows.
-The [full table](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/final-v1/target_matrix.tsv)
+The [full table](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/final-v1/target_matrix.tsv`)
 adds source receipts, actual assembly status, failure reasons, search and
 retention limits, and available reference/read evidence. The
-[sequence inventory](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/final-v1/sequence_inventory.tsv)
+[sequence inventory](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-target-coverage-20261009/matrix/final-v1/sequence_inventory.tsv`)
 retains individual sequence hashes and evidence links. Unassessed evidence
 is explicit; a search with no qualifying match is distinct from no assessment.
 Scoped read assessments are available for 228 of 326 current sequences and
@@ -338,7 +338,7 @@ does not establish biological absence.
 | Heliconius pachinus / SRR1057608 | ND4 | 44 | Partial hits to other loci/taxa, including ND5; no qualifying ND4 reference support or tested exact local read string. Recovery remains uncorroborated. |
 | Gryllus bimaculatus / SRR27962769 | 18S_1 | 18 | No qualifying full-query reference match or tested exact local read string. Recovery remains uncorroborated. |
 
-The [reference assessment](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/assessment-v2/report.json)
+The [reference assessment](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/assessment-v2/report.json`)
 reuses 113 existing sequence searches and adds 41 bounded searches against
 the same pinned 121 public records and 61 relevant panel references. Only
 the Liriodendron atpB-rbcL hypothesis has qualifying full-query support:
@@ -349,7 +349,7 @@ have no single public or expected-target panel HSP meeting both 90% query
 coverage and 90% identity. The preserved `assessment-v1` is a draft;
 `assessment-v2` is authoritative.
 
-The [read assessment](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/summary.json)
+The [read assessment](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-target-coverage-20261009/reads/results-v1/summary.json`)
 tests 61-base tiles across all 154 hypotheses, plus complete-flank local
 contrasts between nearest alternatives. All 37 tiles of the 812-base
 atpB-rbcL sequence occur in the original Liriodendron reads at Q20 or higher.
@@ -379,7 +379,7 @@ plant comparisons preserve this exact ordered input.
 
 ### trnV-atpE interpretation resolved; panel correction remains separate
 
-The [annotation review](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/annotation_review.json)
+The [annotation review](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/annotation_review.json`)
 maps the exact configured primers and the effective final 15 bases used with
 k=19, allowing up to two substitutions per primer. An exhaustive check on both orientations
 of three circular plastomes finds exactly one effective oriented pair per
@@ -403,14 +403,14 @@ production limits, or promote an unreviewed reference.
 ### Verification and next work
 
 Independent reviews cover the
-[complete base matrix](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/matrix_review.json),
-[read results](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/read_assay_review.json),
-and [reference/annotation results](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/reference_review.json).
+[complete base matrix](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/matrix_review.json`),
+[read results](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/read_assay_review.json`),
+and [reference/annotation results](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/reference_review.json`).
 They reproduce sequence identities, frozen inputs, local exact/Q20 evidence,
 full-reference placements, and exhaustive primer mapping. Source and result
 receipts preserve the distinction between current evidence and earlier drafts.
-The [final evidence-join review](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/final_matrix_review.json)
-also passes, and the [freeze verification](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/implementation_freeze_verification.json)
+The [final evidence-join review](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-target-coverage-20261009/review/final_matrix_review.json`)
+also passes, and the [freeze verification](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-target-coverage-20261009/implementation_freeze_verification.json`)
 confirms all 74 source hashes and an empty production diff from HEAD.
 
 Recommendations 1–3 establish a stable baseline and an evidence-backed target

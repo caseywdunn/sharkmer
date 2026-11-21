@@ -293,7 +293,12 @@ def main() -> int:
         if check == "metadata":
             check_metadata(args.tag)
         elif check == "fmt":
-            run(["cargo", "fmt", "--all", "--check"])
+            run(["cargo", "fmt", "--package", "sharkmer", "--check"])
+            run([
+                "rustfmt", "--edition", "2018", "--config", "skip_children=true", "--check",
+                str(ROOT / "vendor/ureq-2.12.1/src/chunked/decoder.rs"),
+                str(ROOT / "vendor/ureq-2.12.1/src/middleware.rs"),
+            ])
         elif check in ("clippy", "rust"):
             for backend in backends:
                 command = (

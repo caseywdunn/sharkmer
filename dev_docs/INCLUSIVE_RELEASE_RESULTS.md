@@ -112,7 +112,7 @@ equivalence, and a shared host does not eliminate filesystem or scheduling
 variation. These timings compare all intervening release changes together;
 they cannot attribute overhead specifically to inclusive emission.
 
-The [saved resource assessment](../benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/resource_assessment.json)
+The [saved resource assessment](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/resource_assessment.json`)
 finds Human's summed user/system CPU median changes from 0.65 to 0.71 seconds,
 while its wall median changes by 2.74 seconds; Human emits no uncertain
 records. Rhopilema also emits none. Publication and filesystem waits are
@@ -121,7 +121,7 @@ four runtime flags remain open investigation priorities.
 
 ## Evidence and next decisions
 
-The [evidence bundle](../benchmarks/benchmark_results/v3.2-inclusive-release-20260929/README.md)
+The [evidence bundle](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-inclusive-release-20260929/README.md)
 contains the frozen protocol, exact input identities, source/build bindings,
 all invocation receipts, class-aware tables, independent reviews and archive
 verification. Input restoration preserves its initial failed attempt: two

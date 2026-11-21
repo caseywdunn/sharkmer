@@ -105,7 +105,7 @@ distance/traceback comparisons, 100 exhaustive-versus-seeded searches,
 three synthetic repeated-class reads required 315 pairs; the evidence
 preserves that rationale and the independent review.
 
-See the [evidence bundle](../benchmarks/benchmark_results/v3.2-its-recruitment-20260925/README.md)
+See the [evidence bundle](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-its-recruitment-20260925/README.md)
 for complete ledgers, receipts, source snapshots, input verification, and
 independent result review.
 

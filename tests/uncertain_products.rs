@@ -111,6 +111,7 @@ fn standard_gene(value: &Value) -> Value {
         "n_uncertain_products",
         "product_lengths",
         "output_file",
+        "sequence_annotations",
     ] {
         normalized
             .as_mapping_mut()
@@ -138,8 +139,8 @@ fn sha256(contents: &[u8]) -> String {
 
 fn assert_manifest(directory: &Path, stats: &Value, expected_files: &[String]) {
     let manifest = read_yaml(&directory.join(format!("{SAMPLE}.manifest.yaml")));
-    assert_eq!(manifest["schema_version"].as_u64(), Some(3));
-    assert_eq!(stats["product_output_schema_version"].as_u64(), Some(3));
+    assert_eq!(manifest["schema_version"].as_u64(), Some(4));
+    assert_eq!(stats["product_output_schema_version"].as_u64(), Some(4));
     assert_eq!(
         stats["product_output_layout"].as_str(),
         Some("combined_warnings")
@@ -174,13 +175,64 @@ fn expected_files(emit: bool) -> Vec<String> {
     files
 }
 
+fn assert_sequence_annotations(directory: &Path, stats: &Value) {
+    for entry in stats["pcr_results"].as_sequence().unwrap() {
+        let total = entry["n_products"].as_u64().unwrap() as usize;
+        if total == 0 {
+            assert!(entry["sequence_annotations"].is_null());
+            continue;
+        }
+        let annotations = entry["sequence_annotations"].as_sequence().unwrap();
+        assert_eq!(annotations.len(), total);
+        let records =
+            fasta::Reader::from_file(directory.join(entry["output_file"].as_str().unwrap()))
+                .unwrap()
+                .records()
+                .collect::<Result<Vec<_>, _>>()
+                .unwrap();
+        let standard = entry["n_standard_products"].as_u64().unwrap() as usize;
+        for (position, (record, annotation)) in records.iter().zip(annotations).enumerate() {
+            assert_eq!(annotation["sequence_id"].as_str(), Some(record.id()));
+            assert_eq!(
+                annotation["sequence_length"].as_u64(),
+                Some(record.seq().len() as u64)
+            );
+            let index = if position < standard {
+                position
+            } else {
+                position - standard
+            };
+            assert_eq!(annotation["sequence_index"].as_u64(), Some(index as u64));
+            let has_score = annotation
+                .as_mapping()
+                .unwrap()
+                .contains_key(Value::String("assembly_rank_score".to_string()));
+            assert_eq!(has_score, position < standard);
+            if has_score {
+                let score = annotation["assembly_rank_score"].as_f64().unwrap();
+                assert!(score.is_finite() && score >= 0.0);
+            }
+            assert!(
+                !record
+                    .desc()
+                    .unwrap()
+                    .split_whitespace()
+                    .any(|field| field.starts_with("score="))
+            );
+        }
+        if entry["gene_name"].as_str() == Some("clean") {
+            assert_eq!(annotations[0]["assembly_rank_score"].as_f64(), Some(4.0));
+        }
+    }
+}
+
 fn assert_uncertain_agreement(directory: &Path, stats: &Value) {
     let repeat = gene(stats, "repeat");
     assert_eq!(repeat["status"].as_str(), Some("uncertain"));
     assert_eq!(repeat["n_standard_products"].as_u64(), Some(0));
     assert!(repeat["failure_reason"].as_str().is_some());
     let uncertainty = &repeat["uncertain_products"];
-    assert_eq!(uncertainty["schema_version"].as_u64(), Some(3));
+    assert_eq!(uncertainty["schema_version"].as_u64(), Some(4));
     assert_eq!(
         uncertainty["read_support_evaluation"].as_str(),
         Some("not_evaluated")
@@ -230,7 +282,7 @@ fn assert_uncertain_agreement(directory: &Path, stats: &Value) {
         assert_eq!(
             description,
             format!(
-                "sample={SAMPLE} gene=repeat product={index} length={} assembly_status=warning assembly_status_causes={}",
+                "sample={SAMPLE} target=repeat sequence_index={index} sequence_length={} assembly_status=warning assembly_status_causes={}",
                 record.seq().len(),
                 causes.join(",")
             )
@@ -346,7 +398,7 @@ fn uncertain_cli_preserves_standard_outputs_and_agrees_with_stats_and_manifest()
     assert_eq!(clean_records[0].seq(), fixture.clean_target.as_bytes());
     assert_eq!(
         clean_records[0].desc().unwrap(),
-        "sample=uncertain_test gene=clean product=0 length=160 kmer_count_mean=4.00 kmer_count_median=4 kmer_count_min=4 kmer_count_max=4 score=4.00"
+        "sample=uncertain_test target=clean sequence_index=0 sequence_length=160 kmer_count_mean=4.00 kmer_count_median=4 kmer_count_min=4 kmer_count_max=4"
     );
     for (directory, stats, emit, hidden) in [
         (off.path(), &default_stats, false, false),
@@ -389,6 +441,7 @@ fn uncertain_cli_preserves_standard_outputs_and_agrees_with_stats_and_manifest()
             hidden
         );
         assert_manifest(directory, stats, &expected_files(emit));
+        assert_sequence_annotations(directory, stats);
         if emit {
             assert_uncertain_agreement(directory, stats);
         } else {

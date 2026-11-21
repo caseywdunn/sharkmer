@@ -19,6 +19,24 @@ analysis produces, with clear annotations that let users choose what to keep.
 
 Apply this preference when making future interface and output decisions.
 
+## Resource scope and maintenance
+
+Keep v4 resource controls focused on Sharkmer-owned data buffers. Use established
+libraries for HTTP, URL handling, DNS, TLS and runtime services; allow failures
+to propagate rather than implementing per-allocation admission inside them.
+Use measured process headroom and existing OS safeguards, without claiming a
+portable whole-process RAM bound. Keep fixes for demonstrated failures small.
+Preserve accepted outputs and reject incomplete work after errors/interruption.
+See [the resource boundary](dev_docs/COUNT_STORE_CONTRACTS.md#v4-resource-boundary).
+
+## Repository size
+
+Keep this production repository small. Store benchmark reports and protocols in
+the [benchmark companion](https://github.com/caseywdunn/sharkmer-benchmarks).
+Store large outputs, logs, binaries and experiment archives outside Git.
+Keep maintained code, documentation and small test fixtures here. Inspect
+file sizes before staging and leave ignored analysis artifacts out of commits.
+
 ## Development documentation
 
 Start with [the developer index](dev_docs/README.md),

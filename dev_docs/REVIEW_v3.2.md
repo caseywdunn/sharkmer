@@ -4,7 +4,7 @@ Prepared 2026-09-09; status updated 2026-11-09. This review preserves the
 v3.2.0 biological and engineering evidence. **[v3.2.1](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1) now includes
 the Rustls security maintenance fix**, with [tag CI passing](https://github.com/caseywdunn/sharkmer/actions/runs/42652146001).
 See the [focused release checklist](RELEASE_v3.2.1.md) and
-[publication receipts](../benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md) for current package-delivery status.
+[publication receipts](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md) for current package-delivery status.
 The held-out and full nine-panel biological studies remain explicitly deferred;
 publication and dependency maintenance do not complete them.
 
@@ -18,7 +18,7 @@ The user subsequently approved deferring the new held-out dataset and full
 nine-panel biological campaign from v3.2, while retaining both before further
 assembly tuning or broad accuracy claims. This is a scope deferral, not
 completed biological validation. The approved
-[focused final-build check](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+[focused final-build check](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
 now passes all 32 invocations. Independent review verifies all 86 historical
 identities, expected warnings, exact 326-record historical and 287-record
 corrected-panel inventories, 444 raw artifacts, and 141 unchanged source/tool
@@ -35,14 +35,14 @@ does not change the biological evidence or interface reviewed here.
 
 The warning-header revision is merged into `dev` at `7dd8e7f` via
 [#161](https://github.com/caseywdunn/sharkmer/pull/161). Its
-[verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
+[verification](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
 passes all eight local gates, and [CI on the merged commit](https://github.com/caseywdunn/sharkmer/actions/runs/42512601101)
 passes Linux/macOS tests, formatting, Clippy, and Python/reference checks.
 The October evidence below retains its original source and assay scope.
 
 ## Stable-version engineering checks (2026-11-09)
 
-The [release-check bundle](../benchmarks/benchmark_results/v3.2-release-20261109/README.md) preserves
+The [release-check bundle](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-release-20261109/README.md) preserves
 all three jobs. Job 32654564 passes all eight groups with the unchanged
 `3.2.0-dev` binary; job 32659082 passes all eight groups on `3.2.0` after an
 equivalent nested-`if` rewrite. The intervening job 32657614 stops at the Clippy
@@ -89,16 +89,16 @@ unchanged. Two exact public-region references bring the audited catalog's
 active panel regions to 158; the Acer opalus reference remains an explicit
 proxy for the benchmark A. monspessulanum. The changed primer/coordinates are
 an intentional compatibility change from panel 1.x. See the
-[reviewed proposal](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_proposal_v2_review.json).
+[reviewed proposal](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_proposal_v2_review.json`).
 
 The lockfile updates only `rand` 0.8.5 → 0.8.6 and `rustls-webpki`
 0.103.10 → 0.103.13; the direct rand minimum is also 0.8.6. These versions
 cover the four previously recorded advisory targets. The
-[independent dependency review](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/dependency/independent_review.json)
+[independent dependency review](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/dependency/independent_review.json`)
 checks the exact diff and saved GitHub advisories. Default-branch alert closure
 is separate from local remediation; this is not a comprehensive security audit.
 
-All eight [before/after plant checks](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/summary.json)
+All eight [before/after plant checks](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/plant/summary.json`)
 pass using the same final binary and reviewed panel snapshots:
 
 | Input | Old trnV-atpE output | Corrected output | Full-panel total, before → after |
@@ -118,12 +118,12 @@ public sequence support also does not phase a full product in the sequenced
 sample. The Liriodendron input preserves its original ordered 656,431 R1 +
 343,569 R2 prefix; no paired-fragment inference is made.
 
-The [complete plant assessment](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/assessment-v1/report.json)
+The [complete plant assessment](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/assessment-v1/report.json`)
 verifies both old-assay inventories against the saved 118-row matrix and
 retains partial-reference evidence for all 41 replaced hypotheses. A
-[separate independent assessment review](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_assessment_review.json)
+[separate independent assessment review](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_assessment_review.json`)
 verifies the reference joins and combined inventory. The
-[derived combined inventory](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/assessment-v1/derived_combined_inventory.json)
+[derived combined inventory](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/assessment-v1/derived_combined_inventory.json`)
 uses eight saved samples plus these two fresh corrected-assay plant runs:
 **287 records = 66 standard + 221 uncertain; 86 release identities retained,
 zero lost, 201 new; 75/118 targets represented.** This is not a fresh ten-sample
@@ -139,13 +139,13 @@ silently excluded or called an established regression from one pair.
 
 Slurm job **29147703** completed successfully in 10m13s on two physical
 CPUs with a 16 GiB allocation. All **11 gates** in the
-[final result](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/result.json)
+[final result](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/result.json`)
 pass; 75 source/config/fixture files and 178 tool/helper bindings are
 unchanged before/after execution. The
-[independent terminal review](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/independent_results_review.json)
+[independent terminal review](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/independent_results_review.json`)
 passes all 492 receipt checks, including raw test and plant outputs.
 The frozen default-feature executable is
-[saved here](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer),
+[saved here](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/results-v1/bin/sharkmer`),
 SHA-256 `3a6505da2750982c333b077a065ad9e0cd0e6607c6963fa7140a0b44da71a899`.
 
 | Gate | Result |
@@ -166,15 +166,15 @@ production changes in this follow-up.
 
 ### Preserved candidate for assessment
 
-The [tested source snapshot](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz)
+The [tested source snapshot](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz`)
 contains the source and fixture inputs needed to build and test this development
 candidate, with an internal file manifest. Its
-[archive receipt](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2-receipt.json)
+[archive receipt](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2-receipt.json`)
 binds every member to the tested source, base commit, final plan and binary.
 Its three supplemental benchmark/environment helpers match the base commit;
 they were outside the 75-file pre/post validation inventory. This corrected
 v2 archive supersedes the preserved first archive, which omitted those helpers.
-The [production patch](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate.patch)
+The [production patch](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate.patch`)
 shows changes relative to `1ea21c9`. Extract into a fresh directory and use
 `cargo build --release --locked`; validation used Rust/Cargo 1.98.1 with the
 default hash backend. This is a local review snapshot, not a published release.
@@ -184,7 +184,7 @@ updates do not change that tested source.
 
 ### Runtime investigation completed; performance acceptance remains open
 
-The [saved-evidence investigation](../benchmarks/benchmark_results/v3.2-runtime-review-20261010/SAVED_FINDINGS.md)
+The [saved-evidence investigation](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-runtime-review-20261010/SAVED_FINDINGS.md)
 authenticates all 48 relevant invocations across the release → inclusive and
 inclusive → retention comparisons. The original four wall flags remain recorded:
 Human +2.74 s, Liriodendron +4.17 s, Rhopilema +2.66 s and Heliconius +2.48 s.
@@ -195,7 +195,7 @@ retained; more output alone cannot explain the unchanged-output Rhopilema case.
 
 The same inclusive binary's Human wall median varied 4.29 → 0.66 s between
 historical environments while CPU was 0.71 → 0.70 s. A
-[new bounded Human diagnostic](../benchmarks/benchmark_results/v3.2-runtime-review-20261010/HUMAN_FINDINGS.md)
+[new bounded Human diagnostic](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-runtime-review-20261010/HUMAN_FINDINGS.md)
 uses 12 untraced measurements plus four separate traces. Release → frozen
 retention wall medians are 0.71 → 1.14 s with NFS output and 0.47 → 0.51 s
 with node-local output. All 16 runs preserve five exact products and nine
@@ -209,7 +209,7 @@ or acceptable performance. The diagnostic uses frozen pre-correction binaries;
 the user and coding agent assess the final candidate on the intended storage and
 hardware, reporting absolute times, CPU, RSS, sequences/statuses, and exact
 input/panel/build identities. Keep traced timings separate and state cache
-conditions. The [independent outcome review](../benchmarks/benchmark_results/v3.2-runtime-review-20261010/independent_human_results_review.json)
+conditions. The [independent outcome review](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-runtime-review-20261010/independent_human_results_review.json`)
 passes; it does not close performance acceptance.
 
 ### Remaining acceptance boundaries
@@ -219,7 +219,7 @@ passes; it does not close performance acceptance.
   the agreed scope: Human's percentage flag is a 40 ms median increase with
   overlapping ranges; the longer workloads increase 0.21–1.45%, and all four
   median RSS increases stay below 0.15%. The
-  [results and disposition](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+  [results and disposition](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
   preserve every pair and the separate corrected-plant checks. These results
   do not prove statistical equivalence or explain the older timing flags.
   The user authorized the release ritual on 2026-11-08; publication and tag CI
@@ -452,8 +452,8 @@ those exact product hashes. The real-BLAST classifications for this fixture
 remain other-taxon for 18S and no-significant-hit for 28S_2, distinct from the
 exact-sequence regression oracle.
 
-See the [machine-readable comparison](../benchmarks/benchmark_results/v3.2-review-20260909/comparison.json)
-and [artifact index](../benchmarks/benchmark_results/v3.2-review-20260909/README.md)
+See the [machine-readable comparison](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-review-20260909/comparison.json`)
+and [artifact index](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-review-20260909/README.md)
 for raw baseline/final results, input/binary provenance, and reproduction
 commands. This is calibration/regression evidence only, not held-out validation.
 

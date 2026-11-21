@@ -1,23 +1,22 @@
 # Semantic conventions for sequence annotations
 
-**Status: implemented in v3.2.0, released 2026-11-09; v4.0 cleanup remains open.**
+**Status: implemented and locally verified in v4.0 development; not released.**
 This is the canonical design guide for sequence annotations in FASTA headers
 and their associated structured evidence. Apply it when adding or revising
 annotations. The [README](../README.md) describes implemented behavior;
 [inclusive output](INCLUSIVE_OUTPUT.md) records the existing output contract.
+The integrated verification (local evidence: `benchmarks/benchmark_results/v4-integrated-checks-20261112/README.md`)
+passes; Git integration and CI remain open under #159.
 
-The v3.2 revision applied these conventions to the new warning annotations
-before they were released. Previously released ordinary-record fields and all
-sequence identifiers remain unchanged. Breaking cleanup of released fields is
-explicitly scoped to v4.0 below. The annotation revision did not alter assembly or sequence
-delivery.
-
-Implementation is tracked in [#159](https://github.com/caseywdunn/sharkmer/issues/159)
-and the [archived v3.2 implementation plan](https://github.com/caseywdunn/sharkmer/blob/v3.2.0/dev_docs/PLAN.md#sequence-annotation-revision-159).
-[The active plan](PLAN.md#v40--scalable-exact-counting-and-replay) tracks the
-remaining interface cleanup.
-The [verification evidence](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
-records exact compatibility on the bounded fixture and passing local checks.
+The v3.2 revision introduced warning annotations while preserving previously
+released identity fields. The v4.0 revision renames those identity fields and
+moves the ranking score into structured per-record evidence. It preserves
+sequence bytes, identifiers, ordering, warning delivery and biological policy.
+Implementation and the outstanding verification gate are tracked in
+[#159](https://github.com/caseywdunn/sharkmer/issues/159) and the
+[active plan](PLAN.md#v40--scalable-exact-counting-and-replay).
+The [v3.2 verification](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
+retains the earlier warning-format checkpoint; it does not verify this migration.
 
 ## Principles
 
@@ -63,8 +62,8 @@ this convention. They must not be inferred from arbitrary or older FASTA.
 | `assembly_status_causes` | A nonempty comma-separated list of documented reasons for the assembly warning. | Required whenever `assembly_status=warning`; absent otherwise. | No warning reasons are reported. It must not be missing from a warning-bearing record. |
 | `read_support` | `evaluated`: a defined read-support assessment was performed for this particular sequence. It says nothing about whether support was found. | Only after that assessment has actually been performed and its method and results recorded. | No read-support assessment is reported. |
 
-`read_support=evaluated` is reserved for a future assessment feature. Schema 3
-does not emit or accept a read-support header field, since that assessment is
+`read_support=evaluated` is reserved for a future assessment feature. Schemas 3
+and 4 do not emit or accept a read-support header field, since that assessment is
 not implemented. Introducing it requires a defined assessment and compatible
 format handling, not simply enabling the existing threading option.
 
@@ -87,8 +86,8 @@ they are needed in the header; detailed methods and results belong in stats.
 Illustrative headers (ordinary measurements omitted here for clarity):
 
 ```text
->sample_gene_0 sample=sample gene=gene product=0 length=160
->sample_gene_0.uncertain sample=sample gene=gene product=0 length=137 assembly_status=warning assembly_status_causes=repeat_structure_unresolved
+>sample_gene_0 sample=sample target=gene sequence_index=0 sequence_length=160
+>sample_gene_0.uncertain sample=sample target=gene sequence_index=0 sequence_length=137 assembly_status=warning assembly_status_causes=repeat_structure_unresolved
 ```
 
 ## Warning causes
@@ -108,7 +107,7 @@ internal trigger separately in the evidence. A simpler name must not make
 a stronger biological claim. Do not invent a warning category for an
 assessment that the software does not perform.
 
-## v3.2 scope and compatibility
+## Historical v3.2 scope and compatibility
 
 Product output schema 3 uses `product_output_layout: combined_warnings`,
 manifest schema 3, and warning-assessment schema 3. Warning records contain
@@ -141,28 +140,68 @@ standard validation/bootstrap. Malformed or unsupported labels fail closed.
 Run metadata, receipts, and evidence bind the format to the particular output;
 do not interpret arbitrary unlabeled FASTA as biologically validated.
 
-## v4.0 interface cleanup (deferred)
+## v4.0 interface and migration
 
-The remaining recommendations change fields already released in v3.1 and
-could break scripts. They belong at the v4.0 major-version boundary, with an
-explicit migration guide and preserved reading of historical outputs.
-Exact replacement names remain proposals for that work.
+Product output schema 4 uses `combined_warnings`, manifest schema 4 and
+warning-assessment schema 4. These declarations distinguish the renamed fields
+from historical output. Header order is stable for readability; consumers use
+field names. `sample`, `target`, `sequence_index` and `sequence_length` are
+required on every emitted record. Warning records add the two warning fields;
+ordinary records retain the existing `kmer_count_*` measurements.
 
-| Current annotation | Recommended treatment |
-| --- | --- |
-| `length` | Consider `sequence_length` for the number of bases actually emitted. This is not a claim about biological repeat length. |
-| `gene` | Prefer `target`, since assays can target spacers or span several genes. This proposal concerns output annotations, not panel definitions. |
-| `product` | If the numeric index is retained, call it `sequence_index`. It does not count biological loci or haplotypes. |
-| `score` | Preserve in detailed stats as `assembly_rank_score`, an internal ranking heuristic without a calibrated confidence interpretation. |
-| Existing stats names and record identifiers | Review separately if user-facing names should align with warnings. Any change needs explicit compatibility treatment. |
+| Annotation | Meaning/type | Emission and omission |
+| --- | --- | --- |
+| `sample` | Sample name from this run; nonempty string. | Required on every record. |
+| `target` | Target identifier, including an existing panel prefix when present; nonempty string. The target can be a spacer or span several genes. | Required on every record; it does not rename panel-definition fields or output filenames. |
+| `sequence_index` | Nonnegative, zero-based ordinal within the target's ordinary or warning record class, after final selection. | Required; it is neither a locus count nor a haplotype identifier. Each class starts at zero. Use the FASTA identifier for joins. |
+| `sequence_length` | Positive number of bases actually emitted. | Required; it does not resolve biological repeat length. |
+| `kmer_count_mean`, `kmer_count_median`, `kmer_count_min`, `kmer_count_max` | Existing observed k-mer count summaries along the selected assembly path; same definitions and formatting as v3.2. | Retained on ordinary records. Absent on warning records, where these measurements are not fabricated. They are not independent read depth. |
+| `assembly_rank_score` | Nonnegative, unrounded assembly ranking heuristic; not calibrated confidence or biological support. | In structured stats for ordinary sequences only, not in FASTA. Omission means no such score is reported for this sequence. |
 
-Moving a released field out of a header must preserve its value in associated evidence.
-Some ordinary-record measurements currently exist only in the header; provide
-a structured home before removing them. Keep identifiers stable through this
-migration, including existing `.uncertain` suffixes; changing identifiers is a
-separate compatibility decision. Preserve the existing opt-out spelling for
-compatibility. A default read-support assessment is separate future inference
-work, not implied by a metadata cleanup.
+### Structured per-record annotations
+
+Each target result has `sequence_annotations` with one entry per emitted
+record, in the same order as the combined FASTA. Empty output omits the list.
+Entries have `sequence_id` (the exact FASTA identifier), `sequence_index` and
+`sequence_length`. An ordinary sequence also has `assembly_rank_score`; warning
+sequences omit that score. The exact score follows the retained typed assembly
+record through sorting, deduplication, truncation and final numbering. It is
+not reconstructed from a rounded header string.
+
+The run's `sample` and target's existing `gene_name` locate the result; the
+record ID joins the annotation to its FASTA. Warning sources and causes remain
+in `uncertain_products.products`, joined by the same ID. Warning cause names,
+source identities, bounded diagnostic detail, search and retention limits
+retain their meaning. No new confidence or read-support assessment is implied.
+
+### Mapping from released fields
+
+| v3.1–v3.2 header field | v4.0 home | Compatibility |
+| --- | --- | --- |
+| `sample` | `sample` | Same value. |
+| `gene` | `target` | Same identifier; panel definitions are unchanged. |
+| `product` | `sequence_index` | Same ordinal and class scope. |
+| `length` | `sequence_length` | Same emitted base count. |
+| `score` | `pcr_results[].sequence_annotations[].assembly_rank_score` | Same ranking calculation, retained at full precision. Historical headers rounded to two decimals. |
+| `kmer_count_*` | Same FASTA fields | Same values and formatting. |
+
+Sequence identifiers, including existing `.uncertain` suffixes, output filenames,
+`--no-emit-uncertain`, and existing stats count/status names are retained.
+Changing those is a separate compatibility decision. New consumers read saved
+schemas 1, 2 and 3 under their original rules and schema 4 under this dictionary.
+They reject conflicting old/new aliases in one header. Schema 4 requires
+complete, ordered annotation joins, valid score types and matching record
+identities/lengths. Unsupported versions do not fall back to an older format.
+Standalone FASTA readers recognize both index spellings and continue excluding
+warning hypotheses from standard validation and reference bootstrap.
+
+Update scripts to select fields by name and join stats by the FASTA identifier.
+For example, use `sequence_length` for emitted bases and read ranking scores
+from `sequence_annotations`, rather than expecting `score` in a header. The
+warning filter in the [README](../README.md) applies unchanged to schema 4;
+keep the schema-specific interpretation when reading historical output.
+
+A default read-support assessment remains separate future inference work.
 
 ## Maintaining the contract
 
