@@ -246,6 +246,7 @@ mod tests {
                 let tail = "δ".repeat(length);
                 let expected = Path::new(base).join(&tail);
                 let budget = budget(8 << 20);
+                let _ = budget.snapshot();
                 let baseline = crate::PEAK_ALLOC.current_usage();
                 crate::PEAK_ALLOC.reset_peak_usage();
                 let parent = BudgetPath::from_path(

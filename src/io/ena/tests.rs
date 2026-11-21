@@ -310,6 +310,7 @@ fn response_allocation_observations_release_body_and_surviving_model_storage() {
     ];
     for (index, bytes) in cases.iter().enumerate() {
         let ledger = budget(64 << 20);
+        let _ = ledger.snapshot();
         let baseline = crate::PEAK_ALLOC.current_usage();
         crate::PEAK_ALLOC.reset_peak_usage();
         let result = read_response(Cursor::new(bytes), "SRR1", Some(&ledger)).unwrap();

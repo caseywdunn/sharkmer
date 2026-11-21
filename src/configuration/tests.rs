@@ -101,6 +101,7 @@ fn owned_configuration_covers_isolated_allocator_peaks_and_releases() {
             vec!["*text"; copies].join(",")
         );
         let ledger = budget(128 << 20);
+        let _ = ledger.snapshot();
         let baseline = crate::PEAK_ALLOC.current_usage();
         crate::PEAK_ALLOC.reset_peak_usage();
         let parsed = yaml::<Model>(text.as_bytes(), Some(&ledger)).unwrap();

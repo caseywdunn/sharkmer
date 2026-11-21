@@ -270,6 +270,7 @@ fn codec_heap_observations_fit_the_audited_envelope_and_release_every_allocation
     ];
     for (index, bytes) in cases.iter().enumerate() {
         let ledger = budget(2 << 20);
+        let _ = ledger.snapshot();
         let baseline = crate::PEAK_ALLOC.current_usage();
         crate::PEAK_ALLOC.reset_peak_usage();
         let mut decoder = Decoder::new(Cursor::new(bytes), Some(&ledger)).unwrap();
@@ -289,6 +290,7 @@ fn codec_heap_observations_fit_the_audited_envelope_and_release_every_allocation
     }
     for bytes in [&b""[..], &b"reads\n"[..], &random[..]] {
         let ledger = budget(2 << 20);
+        let _ = ledger.snapshot();
         let baseline = crate::PEAK_ALLOC.current_usage();
         crate::PEAK_ALLOC.reset_peak_usage();
         let mut encoder = Encoder::new(io::sink(), Some(&ledger)).unwrap();

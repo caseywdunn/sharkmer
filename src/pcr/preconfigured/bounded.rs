@@ -395,6 +395,7 @@ mod allocator_tests {
                 temporary_open_files: 0,
             })
             .unwrap();
+            let _ = ledger.snapshot();
             let baseline = crate::PEAK_ALLOC.current_usage();
             crate::PEAK_ALLOC.reset_peak_usage();
             let params = decode(input.as_bytes(), "fixture", "panel file", Some(&ledger)).unwrap();

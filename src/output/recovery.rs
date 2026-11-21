@@ -964,6 +964,7 @@ mod tests {
                 })
                 .collect();
             let budget = index_budget(1 << 20);
+            let _ = budget.snapshot();
             let baseline = crate::PEAK_ALLOC.current_usage();
             crate::PEAK_ALLOC.reset_peak_usage();
             let index = receipt_map("sample", &receipts, Some(&budget)).unwrap();

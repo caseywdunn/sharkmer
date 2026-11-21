@@ -1,4 +1,6 @@
 //! Measure synchronous allocation audits without counting the libtest runner thread.
+//! Take a ledger snapshot before the baseline so any lazy platform mutex setup
+//! is included in fixture construction.
 
 use std::alloc::{GlobalAlloc, Layout, System};
 use std::cell::Cell;

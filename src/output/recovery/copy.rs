@@ -137,6 +137,7 @@ mod tests {
         for bytes in [0, 1, COPY_BYTES - 1, COPY_BYTES, COPY_BYTES + 1, 4 << 20] {
             let data = vec![b'A'; bytes];
             let budget = budget(COPY_BYTES as u64);
+            let _ = budget.snapshot();
             let baseline = crate::PEAK_ALLOC.current_usage();
             crate::PEAK_ALLOC.reset_peak_usage();
             let mut workspace = CopyWorkspace::new(Some(&budget)).unwrap();

@@ -362,6 +362,7 @@ mod tests {
         for (name, input) in cases {
             let bound = bytes(&input).unwrap();
             let budget = budget(bound + 4096);
+            let _ = budget.snapshot();
             let baseline = crate::PEAK_ALLOC.current_usage();
             crate::PEAK_ALLOC.reset_peak_usage();
             let shape = Shape::scan(&input).unwrap();
@@ -391,6 +392,7 @@ mod tests {
         let input = b"value: plain";
         let bound = bytes(input).unwrap();
         let small = budget(bound - 1);
+        let _ = small.snapshot();
         let baseline = crate::PEAK_ALLOC.current_usage();
         crate::PEAK_ALLOC.reset_peak_usage();
         let error = Workspace::new(input, Some(&small)).err().unwrap();

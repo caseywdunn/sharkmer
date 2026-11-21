@@ -246,6 +246,7 @@ mod tests {
             for threshold in [0, 1, 8, u32::MAX] {
                 let required = scratch_bytes((threshold as usize).min(length)).unwrap();
                 let budget = budget(required);
+                let _ = budget.snapshot();
                 let baseline = crate::PEAK_ALLOC.current_usage();
                 crate::PEAK_ALLOC.reset_peak_usage();
                 let result = bounded_levenshtein(
