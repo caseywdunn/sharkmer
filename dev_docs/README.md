@@ -3,11 +3,10 @@
 Start here when joining development or resuming work. Current requirements,
 implementation descriptions, and dated evidence have different roles.
 
-New analysis results and experiment archives are kept outside version control
-to keep production downloads small. References marked "local evidence" identify
-paths relative to the repository root in the development workspace; those files
-are not included in a source checkout. Already tracked historical evidence stays
-at its existing paths. Archive local evidence before deleting working data.
+The [benchmark companion](https://github.com/caseywdunn/sharkmer-benchmarks)
+holds released reports, protocols and historical result archives. References
+marked "local evidence" identify paths relative to the repository root in the
+development workspace. Archive that evidence before deleting working data.
 
 ## Current guidance
 
@@ -29,10 +28,10 @@ The user-facing [README](../README.md) and [PCR guide](../PCR.md) describe usage
 
 The v4 starting point is [v3.2.1](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1).
 The [maintenance checklist](RELEASE_v3.2.1.md) and
-[publication receipts](../benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md)
+[publication receipts](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md)
 record its scope and verification. [REVIEW_v3.2.md](REVIEW_v3.2.md) preserves the
 biological/performance assessment and the explicitly deferred studies under
-#129. The [final comparison](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+#129. The [final comparison](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
 and [sequence-retention assessment](SEQUENCE_RETENTION_RESULTS.md) are the main
 recovery evidence. Additional emitted hypotheses do not establish additional
 validated loci or haplotypes.
@@ -40,7 +39,7 @@ validated loci or haplotypes.
 The following reports retain the inputs, methods, limitations, and decisions
 from their dated investigation. Read them as evidence for those checkpoints;
 use the active plan for outstanding work and the current overview for code.
-Protocol/result pairs and frozen artifacts retain their existing paths.
+Downloaded archives restore the original paths for protocol and result files.
 
 | Investigation | Documents |
 | --- | --- |
@@ -56,7 +55,7 @@ Protocol/result pairs and frozen artifacts retain their existing paths.
 | Ordered read histories | [Experiment](READ_HISTORY_EXPERIMENT.md), [results](READ_HISTORY_RESULTS.md) |
 
 [primer_binding.yaml](primer_binding.yaml) retains historical primer-binding analysis for failed targets.
-The [benchmark artifact directories](../benchmarks/benchmark_results/) hold
+The [benchmark artifact directories](https://github.com/caseywdunn/sharkmer-benchmarks/tree/main/benchmarks/benchmark_results) hold
 frozen protocols, raw results, manifests, hashes, and execution/review receipts.
 Preserve their contents when changing navigation or current guidance.
 

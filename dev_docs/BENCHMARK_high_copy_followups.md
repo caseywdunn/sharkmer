@@ -70,7 +70,7 @@ remain necessary for the release gate in #153.
 
 ### Evidence
 
-The [archived evidence](../benchmarks/benchmark_results/v3.2-high-copy-issue154-20260911)
+The [archived evidence](https://github.com/caseywdunn/sharkmer-benchmarks/tree/main/benchmarks/benchmark_results/v3.2-high-copy-issue154-20260911)
 contains frozen protocol/build/validator/input receipts, raw logs, FASTA and
 stats, all per-product classifications, paired comparisons, and checksums.
 Inputs and binaries are not embedded; their exact identities and clean-build
@@ -210,7 +210,7 @@ publication is authorized.
 
 ### Final evidence
 
-The [final archive](../benchmarks/benchmark_results/v3.2-high-copy-final-20260911)
+The [final archive](https://github.com/caseywdunn/sharkmer-benchmarks/tree/main/benchmarks/benchmark_results/v3.2-high-copy-final-20260911)
 contains all 60 raw runs, controls, validation logs, clean-build receipts,
 per-product classifications, scoped losses, threshold diagnostics, and
 checksums. Independent Astra review verifies artifact/source/reference hashes
@@ -393,7 +393,7 @@ length/repeat checks, rather than assuming its own exact repeats cause failure.
 
 ### Sweep evidence and decision
 
-The [sweep archive](../benchmarks/benchmark_results/v3.2-k-sweep-20260911)
+The [sweep archive](https://github.com/caseywdunn/sharkmer-benchmarks/tree/main/benchmarks/benchmark_results/v3.2-k-sweep-20260911)
 preserves all 72 raw runs, immutable measurement results, per-product BLAST
 outputs, raw stats/manifests/FASTAs, interleaved schedule, reviewed protocol,
 analysis, summaries, reference probe, and tool/checksum receipts. Ten driver

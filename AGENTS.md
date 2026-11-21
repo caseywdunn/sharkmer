@@ -31,12 +31,11 @@ See [the resource boundary](dev_docs/COUNT_STORE_CONTRACTS.md#v4-resource-bounda
 
 ## Repository size
 
-Keep this production repository small. Do not commit new analysis results,
-benchmark outputs, logs, binaries or experiment archives. Retain that evidence
-outside version control; keep maintained code, documentation and small test
-fixtures in the repository. Preserve already tracked historical evidence.
-Inspect file sizes before staging. Do not force-add ignored analysis artifacts;
-source downloads should contain only what users and developers need.
+Keep this production repository small. Store benchmark reports and protocols in
+the [benchmark companion](https://github.com/caseywdunn/sharkmer-benchmarks).
+Store large outputs, logs, binaries and experiment archives outside Git.
+Keep maintained code, documentation and small test fixtures here. Inspect
+file sizes before staging and leave ignored analysis artifacts out of commits.
 
 ## Development documentation
 

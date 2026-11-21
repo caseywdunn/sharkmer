@@ -34,7 +34,7 @@ their dated evidence. See [HTTP scope](HTTP_WORKSPACE.md) and the
 
 **Final local verification: met 2026-11-18.** The existing resource controls
 are visible in `--help` and documented; defaults and calculations are unchanged.
-The final integration report (local evidence: `benchmarks/benchmark_results/v4-final-integration-20261117/README.md`)
+The [final integration report](https://github.com/caseywdunn/sharkmer-benchmarks/tree/main/benchmarks/benchmark_results/v4-final-integration-20261117)
 records 625 Rust tests per hasher, 225 Python tests, development metadata,
 36 default/refusal checks, 1,024 compatibility cases plus 16 references,
 160 publication/recovery fault cases, the 256-MiB beyond-budget count/replay/PCR
@@ -46,6 +46,39 @@ ritual has started, and explicit approval is still required. New analysis
 results remain outside version control to keep production downloads small.
 Exhaustive
 dependency allocation proofs remain outside scope. Biological #129 stays in v4.1.
+
+## Repository size and benchmark storage
+
+The [public companion repository](https://github.com/caseywdunn/sharkmer-benchmarks)
+holds browseable reports and protocols, including the final v4 verification.
+Its [historical archive](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11)
+preserves all 1,538 result files at `7bd1ac3` and a benchmark-only Git bundle
+covering both historical results directories. The downloaded archives matched
+their checksums. The original Git bundle and unpublished result files are
+backed up separately in the development workspace.
+
+The cleanup keeps the benchmark tools in production and gives their unit tests
+a small synthetic fixture. Removing the committed results reduces the tracked
+checkout from 252 MiB to about 21 MiB. The 32-ref rehearsal removed
+`benchmarks/benchmark_results/` and its earlier name, `benchmarks/results/`.
+Every other file matched at each branch and tag tip. The Git pack fell from
+187 MiB to 32.8 MiB. This measures branch and tag history in the rehearsal.
+
+The companion holds [the original source tarballs](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/original-sources-2026-11)
+for all seven existing release tags. Before applying the rewrite on GitHub,
+protect package source URLs. Bioconda
+3.2.1 shipped via [PR #71402](https://github.com/bioconda/bioconda-recipes/pull/71402).
+It pins the v3.2.1 generated tarball at SHA-256
+`e8031a7b346303f05e553886d473781b01a1a9c0dda0752d5b4573af6ad6061c`.
+The current recipe needs to point to a stable copy of those exact bytes
+before the v3.2.1 tag can move. Open PR #71407 is a separate recipe update.
+Review affected release tags, downstream pins and the ref map together before
+cutover. Developers will need to re-clone or transplant their work onto the
+rewritten history. The original Git bundle provides a rollback point.
+
+**History cutover gate: not met.** The rehearsal and archive checks are
+complete. The published tags and live package source pin still need the
+compatibility step before a coordinated remote rewrite.
 
 ## Previous resource checkpoints
 
@@ -318,7 +351,7 @@ Release ritual requires explicit user approval.
 This plan tracks unfinished v4.0 and later work. The
 [v3.2 release plan and gate history](https://github.com/caseywdunn/sharkmer/blob/v3.2.0/dev_docs/PLAN.md),
 [v3.2 review](REVIEW_v3.2.md), and
-[final comparison](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+[final comparison](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
 preserve the completed release's evidence and decisions. [The v3.0 plan/session log](https://github.com/caseywdunn/sharkmer/blob/v3.2.1/dev_docs/PLAN_v3.md)
 retains the earlier v3 plan; [ROADMAP.md](../ROADMAP.md) describes the release sequence.
 Tracking issue: [#152](https://github.com/caseywdunn/sharkmer/issues/152).
@@ -342,10 +375,9 @@ review is required.
 
 ## Maintenance and distribution follow-up
 
-- [ ] Follow [Bioconda PR #71407](https://github.com/bioconda/bioconda-recipes/pull/71407)
-  through upstream review/builds and channel
-  publication. The local package build and all four smoke tests pass;
-  upstream delivery remains pending. Record completion in the [publication receipts](../benchmarks/benchmark_results/v3.2.1-release-20261109/PUBLICATION.md).
+- [x] Bioconda 3.2.1 shipped through [PR #71402](https://github.com/bioconda/bioconda-recipes/pull/71402).
+  The [channel](https://anaconda.org/bioconda/sharkmer/files) lists Linux x86-64,
+  Linux ARM64 and macOS ARM64 builds. PR #71407 is a duplicate update.
 
 ## Release strategy
 
@@ -438,7 +470,7 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
   testing historical/new consumers. Git integration and CI remain open before
   closing the issue. The v3.2 warning revision did not implement or waive this work; default read-support
   assessment and new biological claims remain separate inference scope.
-- [ ] [#139](https://github.com/caseywdunn/sharkmer/issues/139) — Define exact count-store, replay-source, and assembly evidence interfaces. [Contracts and implementation status](COUNT_STORE_CONTRACTS.md). Typed identity/extraction gate: **met 2026-11-09**, [correctness evidence](../benchmarks/benchmark_results/v4-identity-contracts-20261109/README.md). Exact store/shared-ledger conformance gate: **met 2026-11-10**, [evidence](../benchmarks/benchmark_results/v4-exact-store-contracts-20261110/README.md); Assembly-access gate: **met 2026-11-10**, [exact-store PCR, u64 counts and propagated-error evidence](../benchmarks/benchmark_results/v4-assembly-access-20261110/README.md). Production counter dispatch, replay and combined-budget integration remain open. [Frozen baseline protocol and promotion criteria](../benchmarks/benchmark_results/v4-performance-baseline-20261109/README.md) precede backend selection.
+- [ ] [#139](https://github.com/caseywdunn/sharkmer/issues/139) — Define exact count-store, replay-source, and assembly evidence interfaces. [Contracts and implementation status](COUNT_STORE_CONTRACTS.md). Typed identity/extraction gate: **met 2026-11-09**, [correctness evidence](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-identity-contracts-20261109/README.md). Exact store/shared-ledger conformance gate: **met 2026-11-10**, [evidence](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-exact-store-contracts-20261110/README.md); Assembly-access gate: **met 2026-11-10**, [exact-store PCR, u64 counts and propagated-error evidence](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-assembly-access-20261110/README.md). Production counter dispatch, replay and combined-budget integration remain open. [Frozen baseline protocol and promotion criteria](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-performance-baseline-20261109/README.md) precede backend selection.
   Typed-exhaustion conformance (local evidence: `benchmarks/benchmark_results/v4-integrated-checks-20261112/README.md`)
   and real temporary-file ownership checks (local evidence: `benchmarks/benchmark_results/v4-owned-disk-file-20261112/README.md`)
   now pass under both hashers. They establish configured-limit error handling
@@ -682,9 +714,9 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
 - [ ] [#140](https://github.com/caseywdunn/sharkmer/issues/140) — Remove redundant
   table consolidation and per-read allocations from sPCR counting.
   Direct-ingestion correctness gate: **met 2026-11-12**,
-  [verification](../benchmarks/benchmark_results/v4-direct-refinement-20261112/README.md).
+  [verification](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-direct-refinement-20261112/README.md).
   Default selection and quantitative promotion gates remain **not met**.
-  [Custom-table trials](../benchmarks/benchmark_results/v4-direct-comparison-20261112/README.md)
+  [Custom-table trials](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-direct-comparison-20261112/README.md)
   and Hashbrown trials through V7 (local evidence: `benchmarks/benchmark_results/v4-hashbrown-comparison-20261112/README.md`)
   retain complete paired audits and their failed speed decisions. V7 agrees on
   all 100 invocations but misses the geometric-mean speed gate and the Human

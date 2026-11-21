@@ -15,7 +15,7 @@ sequence bytes, identifiers, ordering, warning delivery and biological policy.
 Implementation and the outstanding verification gate are tracked in
 [#159](https://github.com/caseywdunn/sharkmer/issues/159) and the
 [active plan](PLAN.md#v40--scalable-exact-counting-and-replay).
-The [v3.2 verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
+The [v3.2 verification](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
 retains the earlier warning-format checkpoint; it does not verify this migration.
 
 ## Principles

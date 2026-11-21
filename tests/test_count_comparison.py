@@ -1,7 +1,6 @@
 """Protect the frozen engineering comparison's label and performance semantics."""
 
 import importlib.util
-import json
 import tempfile
 import unittest
 from pathlib import Path
@@ -25,12 +24,17 @@ class CountComparisonTests(unittest.TestCase):
             )
 
     def setUp(self) -> None:
-        self.protocol = json.loads(
-            (
-                ROOT
-                / "benchmarks/benchmark_results/v4-performance-baseline-20261109/protocol.json"
-            ).read_text()
-        )
+        self.protocol = {
+            "timed_replicates": 3,
+            "performance_gates": {
+                "default_in_memory_geomean_wall_ratio_max": 0.95,
+                "per_sample_median_wall_ratio_max": 1.05,
+                "per_sample_wall_absolute_allowance_seconds": 0.05,
+                "per_sample_median_rss_ratio_max": 1.02,
+                "per_sample_rss_absolute_allowance_bytes": 16 << 20,
+            },
+            "samples": [{"accession": "sample-a"}, {"accession": "sample-b"}],
+        }
 
     def runs(self, ratio: float = 0.94, rss_ratio: float = 1.0) -> list[dict]:
         rows = []
@@ -57,9 +61,12 @@ class CountComparisonTests(unittest.TestCase):
     def test_historical_uncertainty_labels_normalize_without_erasing_warning_causes(
         self,
     ) -> None:
-        sample = next(
-            row for row in self.protocol["samples"] if row["accession"] == "SRR31887760"
-        )
+        sample = {
+            "expected_records": [
+                {"id": "b", "gene": "g", "length": 3, "assembly_status": "uncertain"},
+                {"id": "a", "gene": "g", "length": 4, "assembly_status": "standard"},
+            ]
+        }
         expected = comparison.expected_records(sample)
         self.assertTrue(
             any(

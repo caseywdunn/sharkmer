@@ -101,7 +101,7 @@ construction, search order, thresholds, repeat admission, accepted-path quota,
 or existing retention limits. Inclusive output remains bounded and is not an
 exhaustive enumeration of possible repeat structures.
 
-The historical [schema-3 verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
+The historical [schema-3 verification](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
 passes exact before/after agreement of sequence bytes, IDs, order, counts,
 warning membership, and source evidence on the bounded repeat/clean fixture,
 plus schema migration and consumer checks. The v3.2 subset of

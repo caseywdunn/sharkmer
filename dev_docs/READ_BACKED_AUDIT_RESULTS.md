@@ -16,7 +16,7 @@ The audited candidate strings are explicitly **hypotheses**, not references.
 
 The source comparison uses k=19, two threads, chunks=0, and read threading
 off. Its inputs and results are preserved in the
-[September 11 evidence](../benchmarks/benchmark_results/v3.2-high-copy-final-20260911/README.md).
+[September 11 evidence](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-high-copy-final-20260911/README.md).
 This audit reuses exactly the consumed first 1,000,000 records per sample:
 
 | Sample | Read accession | Consumed bases | Read length | Read evidence |
@@ -125,7 +125,7 @@ quality filtering, variation, and incomplete sampling are different criteria.
 
 ### Execution and validation
 
-The [evidence archive](../benchmarks/benchmark_results/v3.2-read-backed-audit-20260913/README.md)
+The [evidence archive](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-read-backed-audit-20260913/README.md)
 preserves manifests, scripts, source snapshots, complete matching-read ledgers,
 summary, controls, independent checks, and execution lineage.
 

@@ -92,7 +92,7 @@ bounds remain unchanged.
 Follow-up: [#156](https://github.com/caseywdunn/sharkmer/issues/156).
 
 **Follow-up, 2026-10-10:** the
-[annotation review](../benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/annotation_review.json)
+[annotation review](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-target-coverage-20261009/reference/annotation_review.json`)
 now also exhaustively checks the effective final 15 primer bases used at k=19,
 allowing up to two substitutions per primer, in both orientations of circular NC_008326.1,
 MN990625.1, and NC_056221.1. Each has exactly one oriented effective pair:
@@ -124,7 +124,7 @@ mapped corrected interval. The marker contains atpE and ends at its overlapping
 boundary with atpB; the reverse primer is not wholly inside atpE. Public
 reference labels preserve Liriodendron tulipifera and the Acer opalus proxy.
 
-The [independent proposal review](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_proposal_v2_review.json)
+The [independent proposal review](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/independent_proposal_v2_review.json`)
 checks exhaustive full/effective primer mapping, annotated endpoints, literal
 source extraction and synthetic input construction. The existing pinned
 source catalog supplies both new references and is unchanged. Panel 2.0.0
@@ -136,7 +136,7 @@ Liriodendron target changes from 41 uncertain hypotheses to one standard
 909 bp exact reference match; Acer changes from no output to one standard
 929 bp exact proxy-reference match. All nine other targets preserve sequences,
 class, multiplicity and diagnostics, and all five aggregate counts agree.
-The [complete assessment](../benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/assessment-v1/report.json)
+The [complete assessment](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-plant-assay-correction-20261010/assessment-v1/report.json`)
 also verifies that both old-assay inventories reproduce the saved matrix and
 reuses the exact prior queries for partial-reference assessment of the old 41
 hypotheses. These results concern the corrected assay; they do not establish
@@ -217,7 +217,7 @@ Coordinates are zero-based, half-open on the forward public source; reverse
 complement after extraction for `-`. A wrap traverses the circular origin.
 Legacy IDs refer to the frozen pre-audit inventory, **not current array indices**.
 Feature qualifiers, partial/predicted scope, source receipts, and per-entry
-decisions are in the [replacement evidence archive](../benchmarks/benchmark_results/v3.2-public-replacements-20260913/README.md).
+decisions are in the [replacement evidence archive](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-public-replacements-20260913/README.md).
 
 | Legacy ID / extra addition | Target | Public accession | Source organism | Coordinates; length | Source relation |
 | --- | --- | --- | --- | --- | --- |

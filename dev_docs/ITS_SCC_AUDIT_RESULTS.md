@@ -135,7 +135,7 @@ test and runs into fresh `graph_capture_v2` outputs. All three exported graph
 files are byte-identical between attempts. Failed receipts are not rewritten
 as successes; no outcome-driven assay relaxation or cap increase occurs.
 
-The [evidence archive](../benchmarks/benchmark_results/v3.2-its-scc-audit-20260913/README.md)
+The [evidence archive](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-its-scc-audit-20260913/README.md)
 contains frozen methods, source/build lineage, complete graphs, alternatives,
 raw outputs and read ledgers, receipts, and independent checks. Public input
 lineage remains in the preceding archives; raw FASTQ and compiled binaries

@@ -4,7 +4,7 @@ Completed 2026-09-27 on `experiment/its-read-threading`, starting from unchanged
 `dev` baseline `956e771437a2410a7bcbb1504b033c61dd1e11b6`. The experiment
 directory retains its 2026-09-26 start date. See the frozen
 [design and evaluation protocol](READ_HISTORY_EXPERIMENT.md) and
-[evidence bundle](../benchmarks/benchmark_results/v3.2-read-histories-20260926/README.md).
+[evidence bundle](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-read-histories-20260926/README.md).
 
 The standalone prototype preserves information that current aggregate
 threading evidence discards: repeated edge occurrences, positioned branch

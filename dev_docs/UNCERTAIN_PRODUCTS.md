@@ -108,7 +108,7 @@ the flag off, and the same new binary with the flag on. Use the frozen full
 prefixes of Gryllus SRR27962769, Drosophila SRR31887760, and Heliconius
 SRR1057608. Prefix hashes, the seven historical lost sequences, and source
 lineage are saved in the
-[comparison bundle](../benchmarks/benchmark_results/v3.2-uncertain-products-20260927/).
+[comparison bundle](https://github.com/caseywdunn/sharkmer-benchmarks/tree/main/benchmarks/benchmark_results/v3.2-uncertain-products-20260927).
 
 Run nine sequential invocations at k=19, two CPUs, chunks=0, and without read
 threading. Rotate order: Gryllus baseline/off/on; Drosophila on/baseline/off;

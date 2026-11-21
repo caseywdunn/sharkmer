@@ -66,7 +66,7 @@ The compiled checks passed on the same source snapshot used for all six runs:
 The run receipts record source/input/compiler identities, process constraints,
 before/after checks, transaction receipts, and exact sequence comparisons.
 Slurm job `27832506`, attempt `attempt-v1`, completed all checks and runs without
-a failed verification attempt. See the [evidence bundle](../benchmarks/benchmark_results/v3.2-inclusive-output-20260929/README.md)
+a failed verification attempt. See the [evidence bundle](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-inclusive-output-20260929/README.md)
 for the final independent outcome review and archive verification.
 
 This change is a local experiment-branch checkpoint. It does not integrate

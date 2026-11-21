@@ -101,7 +101,7 @@ regression benchmarks have been run.
 
 **v3.2 scope exception approved by the user, 2026-11-08:** follow the retained
 [release assessment](dev_docs/REVIEW_v3.2.md#decision-ownership-2026-11-08) and
-[final-build results](benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+[final-build results](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
 in place of the full benchmark and biological sample campaigns in steps 1–3.
 Use the retained release-baseline evidence and focused check of saved sequences,
 warning classifications, and the four flagged performance comparisons; keep
@@ -123,10 +123,10 @@ and retain the results outside version control:
 Review the results in `benchmarks/benchmark_results/` and compare the structured
 per-product YAML records, classifications, and performance fields with prior
 runs. There is no separate comparison script. Investigate regressions before
-proceeding. Record the conclusion and evidence location in the PR. New benchmark
-outputs, logs, binaries and experiment archives are ignored so production source
-downloads stay small. Preserve existing tracked historical evidence; archive
-local evidence before removing its working directory.
+proceeding. Save the report, protocol and evidence index in the
+[benchmark companion](https://github.com/caseywdunn/sharkmer-benchmarks).
+Archive large outputs outside Git and record the evidence location in the PR.
+Archive local evidence before removing its working directory.
 
 ### 2. Validate all built-in panels
 

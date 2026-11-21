@@ -778,7 +778,7 @@ store holds reservation guards through allocation, resizing, finalization and
 destruction; actual graph/input/replay resource ownership remains open. Production dispatch, global resource
 reservations, persistence, and replay integration remain open. The candidate is
 not selected as the default backend before the
-[frozen performance gates](../benchmarks/benchmark_results/v4-performance-baseline-20261109/README.md)
+[frozen performance gates](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-performance-baseline-20261109/README.md)
 are measured.
 
 Configured-limit failures now carry a downcastable `ResourceExhausted` error
@@ -1127,10 +1127,10 @@ manifest/output restoration and accepted replacements after completion.
 **Scoped publication failure/restart gate: met 2026-11-13.** Pre-journal orphan
 reclamation and resource accounting for output backups remain open.
 
-The [identity/extraction verification](../benchmarks/benchmark_results/v4-identity-contracts-20261109/README.md) establishes the first item. Store/replay and
+The [identity/extraction verification](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-identity-contracts-20261109/README.md) establishes the first item. Store/replay and
 budget integration remain open until exercised by their actual implementations.
 
-[Exact-store/ledger verification](../benchmarks/benchmark_results/v4-exact-store-contracts-20261110/README.md)
+[Exact-store/ledger verification](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-exact-store-contracts-20261110/README.md)
 records the tested candidate. Production dispatch, persisted corruption/I/O
 checks, and replay/producer integration remain required before closing #139.
 
@@ -1146,7 +1146,7 @@ The CLI defaults to the existing ingestion implementation pending #140 and
 the measured promotion gates. Persisted I/O integrity and whole-run resource
 enforcement are still required when those producers are integrated.
 
-[Assembly-access verification](../benchmarks/benchmark_results/v4-assembly-access-20261110/README.md)
+[Assembly-access verification](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-assembly-access-20261110/README.md)
 records exact/legacy product and repeat-warning agreement, large-count PCR and
 injected scan/lookup failures. This does not close the remaining frontend,
 replay, persisted-integrity or combined-resource gates.
@@ -1584,9 +1584,9 @@ order-independent backend comparisons. This scan is excluded from normal
 operation and timed promotion runs. The paired comparison harness checks it
 separately before timing each input against the immutable v3.2.1 binary.
 
-The [independent paired audit](../benchmarks/benchmark_results/v4-direct-comparison-20261112/README.md)
+The [independent paired audit](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-direct-comparison-20261112/README.md)
 verifies all 100 revised-candidate invocations, but rejects the custom table on
-the unchanged performance gates. The [compatibility refinement](../benchmarks/benchmark_results/v4-direct-refinement-20261112/README.md)
+the unchanged performance gates. The [compatibility refinement](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-direct-refinement-20261112/README.md)
 preserves the released separation of primer and graph thresholds: primer
 scans use the target's minimum on unfiltered entries; graph lookups use the
 global view threshold. A production table must pass these same semantics and

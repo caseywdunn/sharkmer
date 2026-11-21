@@ -51,7 +51,7 @@ the Drosophila matches also traverse retained collision-edge markers.
 All five targets reached at least one search limit across attempted thresholds.
 The header flags summarize the target, not just the matching source path.
 Full hashes, identifiers, source records, and classifications are preserved
-in [the seven-loss table](../benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/historical_losses.tsv)
+in [the seven-loss table](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/historical_losses.tsv`)
 and archived `comparison/runs/assessment.json`.
 
 Drosophila 12S emits three hypotheses of 495, 489, and 475 bp. Neither of the
@@ -87,7 +87,7 @@ These totals cover three full-panel samples. They do not replace the earlier
 71-to-64 high-copy release comparison, which had a different scope.
 The 34 hypotheses are oriented graph sequences, not counts of validated loci,
 molecules, or haplotypes. Per-target counts, lengths, and retention accounting
-are in [uncertain_genes.tsv](../benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/uncertain_genes.tsv).
+are in [uncertain_genes.tsv](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/uncertain_genes.tsv`).
 
 | Sample | Baseline seconds | Flag off seconds | Flag on seconds | Peak RSS GiB, baseline/off/on |
 | --- | ---: | ---: | ---: | --- |
@@ -98,7 +98,7 @@ are in [uncertain_genes.tsv](../benchmarks/benchmark_results/v3.2-uncertain-prod
 Each sample has one rotated trio, so these are descriptive observations.
 They do not establish statistical performance equivalence. Process peak RSS
 is distinct from allocator peak and the enforced 40 GiB address-space cap.
-The detailed [run table](../benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/sample_runs.tsv)
+The detailed [run table](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results/sample_runs.tsv`)
 retains unrounded values and receipt identities.
 
 ## Methods and validation
@@ -125,12 +125,12 @@ with one existing skip and no failures; all 156 active references verified
 across ten panels. Integration controls cover unchanged ordinary output,
 flag combinations, metadata/coordinates, and publication/cleanup protection.
 Independent parser controls, harness controls, execution clearance, and
-[results review](../benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/final_results_review.json)
+[results review](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-uncertain-products-20260927/results_review/final_results_review.json`)
 are preserved with the evidence. The first two compiled-check attempts exposed
 test-fixture argument errors, which were corrected before the successful
 full checks and candidate build; their failing logs remain archived.
 
-The [evidence bundle](../benchmarks/benchmark_results/v3.2-uncertain-products-20260927/README.md)
+The [evidence bundle](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-uncertain-products-20260927/README.md)
 describes source reconstruction, input restoration, complete outputs,
 member checksums, and intentional archive omissions. Raw million-read inputs,
 compiled binaries, and dependency/toolchain caches are not committed.
