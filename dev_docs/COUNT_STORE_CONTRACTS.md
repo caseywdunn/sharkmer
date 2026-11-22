@@ -679,7 +679,7 @@ present, its byte-valued fields mean:
 
 | Field | Meaning |
 | --- | --- |
-| `requested_limit_bytes` | Requested environment value converted from MiB, or the normal-run default. |
+| `requested_limit_bytes` | Requested limit from the environment, `--memory-budget`, or the normal-run default. |
 | `inherited_soft_limit_bytes`, `inherited_hard_limit_bytes` | Limits observed before installation; omission inside this object means unlimited. |
 | `effective_limit_bytes` | Actual installed, page-aligned soft and hard ceiling. |
 | `observed_address_space_bytes` | Virtual image size observed before installation, not a peak or an RSS measurement. |
@@ -718,11 +718,14 @@ graph controls select these allowances; explicit zero disables graph
 accounting. Explicit developer backend selectors preserve their opt-in controls,
 and `--chunks > 0` keeps the legacy path. Before creating output, normal-run
 preflight requires the entire shared-ledger ceiling plus 2 GiB planning
-headroom to fit the effective process ceiling (or the nominal 12 GiB envelope
-when no kernel cap is installed). This prevents planning 8 GiB tables under a
-smaller inherited process limit. It refuses an oversized plan without changing
-completed output. Headroom is a planning reserve, not a proof of every library's
-maximum allocation.
+headroom to fit the effective process ceiling. The public
+`--memory-budget` option uses the smaller of its value and any inherited
+Linux limit. After reserving headroom and fixed buffers, it divides the rest
+among the count table, sort buffer, and assembly graphs. The per-target
+allowance follows the shared graph budget. An explicit `12G` budget uses
+the established defaults when they fit. `--temp-disk-budget` sets the
+existing shared temporary disk allowance. An oversized plan fails before it
+can change completed output.
 
 The frozen integrated checkpoint (local evidence: `benchmarks/benchmark_results/v4-production-defaults-20261113/README.md`)
 passes both complete suites, actual normal-command cap/incremental/refusal

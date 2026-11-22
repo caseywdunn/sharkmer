@@ -8,11 +8,13 @@ mod candidate;
 #[allow(clippy::all)]
 #[path = "fixtures/ureq-2.12.1/decoder.rs"]
 mod legacy;
+#[path = "../src/test_alloc.rs"]
+mod test_alloc;
 
 use std::io::{self, Cursor, Read};
 
 #[global_allocator]
-static HEAP: peak_alloc::PeakAlloc = peak_alloc::PeakAlloc;
+static HEAP: test_alloc::ThreadPeakAlloc = test_alloc::ThreadPeakAlloc;
 
 #[derive(Debug, PartialEq)]
 struct Outcome {
@@ -98,21 +100,6 @@ fn unicode_whitespace_zeroes_signs_and_integer_boundaries_match() {
 
 #[test]
 fn long_size_and_extension_stream_without_retaining_input() {
-    const ENV: &str = "SHARKMER_TEST_CHUNK_FRAMING_ALLOCATIONS";
-    if std::env::var_os(ENV).is_none() {
-        let status = std::process::Command::new(std::env::current_exe().unwrap())
-            .args([
-                "--exact",
-                "long_size_and_extension_stream_without_retaining_input",
-                "--nocapture",
-                "--test-threads=1",
-            ])
-            .env(ENV, "1")
-            .status()
-            .unwrap();
-        assert!(status.success());
-        return;
-    }
     let baseline = HEAP.current_usage();
     HEAP.reset_peak_usage();
     let zeros = io::repeat(b'0').take(384 << 20);

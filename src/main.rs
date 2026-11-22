@@ -40,9 +40,17 @@ fn main() -> Result<()> {
     let process_address_space = process_memory::from_environment()?;
 
     // Parse CLI arguments
-    let args = Args::parse();
-    let process_address_space =
-        process_memory::for_normal_run(process_address_space, args.uses_production_defaults())?;
+    let mut args = Args::parse();
+    let requested_memory = args.resolve_resource_options()?;
+    let planned_memory = requested_memory.map(process_memory::inherited_ceiling);
+    if let Some(ceiling) = planned_memory {
+        io::fit_memory_budget(&mut args, ceiling)?;
+    }
+    let process_address_space = process_memory::for_normal_run(
+        process_address_space,
+        args.uses_production_defaults(),
+        requested_memory,
+    )?;
 
     // Initialize logging
     cli::init_logging(args.verbose, args.quiet, &args.color);
@@ -61,9 +69,9 @@ fn main() -> Result<()> {
         .as_ref()
         .is_none_or(|plan| plan.input_budget().is_none())
     {
-        Some(io::metadata_preview_budget(
-            process_memory::metadata_ceiling(process_address_space.as_ref()),
-        )?)
+        Some(io::metadata_preview_budget(planned_memory.unwrap_or_else(
+            || process_memory::metadata_ceiling(process_address_space.as_ref()),
+        ))?)
     } else {
         None
     };
@@ -73,11 +81,10 @@ fn main() -> Result<()> {
         && let Some(plan) = &ingestion
     {
         plan.check_memory_envelope(
-            process_address_space
-                .as_ref()
-                .map_or(process_memory::NORMAL_ADDRESS_SPACE_BYTES, |cap| {
-                    cap.effective_limit_bytes()
-                }),
+            process_address_space.as_ref().map_or(
+                planned_memory.unwrap_or(process_memory::NORMAL_ADDRESS_SPACE_BYTES),
+                process_memory::ProcessAddressSpace::effective_limit_bytes,
+            ),
             process_memory::NORMAL_PROCESS_HEADROOM_BYTES,
         )?;
     }

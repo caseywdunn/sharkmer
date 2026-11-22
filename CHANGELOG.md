@@ -9,8 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Show the existing count/PCR memory, temporary-storage and FASTQ record-size
-  controls in `--help`, with their defaults and scope documented (#139).
+- Set one memory budget and one temporary disk budget for normal runs with
+  `--memory-budget` and `--temp-disk-budget`. Sharkmer divides memory
+  among its working buffers and spills exact counts to disk as needed. Use
+  `--temp-dir` to select storage. Existing defaults apply when the options
+  are omitted (#139).
 
 - Keep HTTP client internals outside the application memory ledger, using
   process headroom and existing platform safeguards. Remove experimental

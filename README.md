@@ -185,13 +185,8 @@ record. `n_kmers` counts accepted kmer occurrences, not distinct kmer keys.
 `peak_memory_bytes` is the allocator heap peak; process RSS is measured
 separately by the benchmark harness when available.
 
-V4 development builds target a 16 GB machine for normal sPCR. Exact counting
-spills to temporary disk when its 8 GiB table allowance is reached; target
-graphs share a separate 1 GiB allowance. On Linux, the normal path also applies
-a 12 GiB virtual-address-space ceiling and preserves stricter inherited limits.
-Virtual address space includes mappings and thread stacks; it is different
-from the heap peak reported above. Integrated performance/resource validation
-is still in progress; see the [active development plan](dev_docs/PLAN.md).
+See [Memory and temporary storage](#memory-and-temporary-storage) for how to
+fit a run to the resources available on your machine or cluster.
 
 Sharkmer also writes `{sample}.manifest.yaml`.
 Only a manifest with `status: complete`, a matching stats `run_id`, and valid
@@ -248,36 +243,34 @@ See [PCR.md](PCR.md) for the full panel file schema (versioning, maintainers, ch
 
 ### Memory and temporary storage
 
-Normal sPCR counts exactly and can spill counts to temporary storage when its
-count-table allowance fills. The defaults allow 8192 MiB for count tables,
-64 MiB for sorting spilled counts, and 1024 MiB shared by PCR targets, with a
-256 MiB ceiling per target. These cover Sharkmer's working buffers; libraries,
-thread stacks and the rest of the process need additional memory.
-
-Use `--count-table-budget-mib`, `--count-sort-buffer-mib`,
-`--graph-buffer-budget-mib` and `--graph-buffer-target-mib` to adjust those
-allowances. For example:
+Normal runs use a 12 GiB memory budget and a 64 GiB temporary disk budget
+by default. Set `--memory-budget` and `--temp-disk-budget` to fit your
+machine or job. Set `--temp-dir` if you want to keep temporary count and replay
+files on a different drive. For example:
 
 ```bash
 sharkmer -s sample --pcr-panel cnidaria \
-  --count-table-budget-mib 2048 --graph-buffer-budget-mib 512 \
-  --graph-buffer-target-mib 128 reads.fastq.gz
+  --memory-budget 8G --temp-disk-budget 32G \
+  --temp-dir /path/to/scratch reads.fastq.gz
 ```
 
-`--count-temp-dir` selects storage for temporary count/replay files.
-`--count-disk-budget-mib` limits owned temporary-file bytes, including staged
-output and recovery copies (default: 65536 MiB). It does not measure filesystem
-overhead or other programs' disk use. Smaller memory allowances may require
-more temporary storage. `--fastq-record-bytes` limits the size of one four-line
-FASTQ record, including line delimiters (default: 16777216 bytes).
+Use a positive whole number with `M` (MiB) or `G` (GiB). For example,
+`1G` equals `1024M`. The options also accept `MiB` and `GiB`, and suffixes
+are case-insensitive.
 
-Normal Linux runs also install a 12 GiB process address-space ceiling, respecting
-smaller inherited limits. Set `SHARKMER_PROCESS_ADDRESS_SPACE_LIMIT_MIB` to a
-positive MiB value to change that ceiling, or `0` to preserve inherited limits.
-The planned allowances must leave process headroom. A process limit is separate
-from the buffer allowances and is not a portable RAM guarantee. Network, input
-and resource failures stop the operation; previously accepted output is kept.
-Explicit incremental counting (`--chunks > 0`) retains its separate behavior.
+Sharkmer splits the memory budget among its working buffers and leaves headroom
+for libraries and threads. Smaller memory budgets may cause exact counts to
+spill to disk sooner. On Linux, Sharkmer also applies a virtual address-space
+limit and respects stricter inherited limits. The memory budget does not set a
+portable peak RAM ceiling.
+
+The disk budget covers Sharkmer's temporary files, including staged output and
+recovery copies. Ensure that the temporary and output drives have enough free
+space. Increase the relevant budget if a run hits its limit. Sharkmer preserves
+any previously completed output on a failed rerun.
+
+The two budget options apply to normal runs (`--chunks 0`). Explicit incremental
+counting (`--chunks > 0`) uses its existing separate workflow.
 
 ### Optimizing *in silico* PCR (sPCR)
 

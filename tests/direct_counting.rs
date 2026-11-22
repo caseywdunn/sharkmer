@@ -223,3 +223,60 @@ fn startup_resources_preserve_early_exits_and_refuse_overflow_before_output_crea
     assert!(String::from_utf8_lossy(&result.stderr).contains("Count table budget overflow"));
     assert!(!output.exists());
 }
+
+#[test]
+fn public_resource_options_hide_tuning_and_reject_unsupported_plans() {
+    let command = || Command::new(env!("CARGO_BIN_EXE_sharkmer"));
+    let help = command().arg("--help").output().unwrap();
+    assert!(help.status.success());
+    let help = String::from_utf8(help.stdout).unwrap();
+    for option in ["--memory-budget", "--temp-disk-budget", "--temp-dir"] {
+        assert!(help.contains(option), "{option}");
+    }
+    for option in [
+        "--count-table-budget-mib",
+        "--count-sort-buffer-mib",
+        "--graph-buffer-budget-mib",
+        "--graph-buffer-target-mib",
+        "--count-disk-budget-mib",
+        "--count-temp-dir",
+        "--fastq-record-bytes",
+    ] {
+        assert!(!help.contains(option), "{option}");
+    }
+
+    let directory = tempfile::tempdir().unwrap();
+    let output = directory.path().join("output");
+    for (options, message) in [
+        (
+            ["--memory-budget", "2G", "--chunks", "0"],
+            "Memory budget is too small",
+        ),
+        (
+            ["--temp-disk-budget", "32M", "--chunks", "1"],
+            "require normal counting",
+        ),
+        (
+            ["--memory-budget", "4GiB", "--count-table-budget-mib", "32"],
+            "cannot be used with",
+        ),
+        (["--memory-budget", "8", "--chunks", "0"], "for example, 8G"),
+        (
+            ["--temp-disk-budget", "64", "--chunks", "0"],
+            "for example, 8G",
+        ),
+    ] {
+        let result = command()
+            .env_remove("SHARKMER_PROCESS_ADDRESS_SPACE_LIMIT_MIB")
+            .args(["-s", "test", "-o"])
+            .arg(&output)
+            .args(options)
+            .stdin(Stdio::null())
+            .output()
+            .unwrap();
+        assert!(!result.status.success());
+        let error = String::from_utf8_lossy(&result.stderr);
+        assert!(error.contains(message), "{error}");
+        assert!(!output.exists());
+    }
+}

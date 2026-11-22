@@ -77,7 +77,16 @@ impl std::fmt::Display for ResourceExhausted {
             output,
             "{} reservation requires {} bytes; configured budget is {} bytes",
             self.resource, self.required_bytes, self.limit_bytes
-        )
+        )?;
+        match self.resource {
+            ResourceKind::TemporaryDisk => {
+                output.write_str(". Raise --temp-disk-budget if more storage is available")
+            }
+            ResourceKind::StageMemory(MemoryClass::TargetGraphs) | ResourceKind::RunMemory => {
+                output.write_str(". Raise --memory-budget if more memory is available")
+            }
+            _ => Ok(()),
+        }
     }
 }
 

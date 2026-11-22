@@ -84,6 +84,11 @@ pub(crate) fn metadata_ceiling(existing: Option<&ProcessAddressSpace>) -> u64 {
         NORMAL_ADDRESS_SPACE_BYTES,
         ProcessAddressSpace::effective_limit_bytes,
     );
+    inherited_ceiling(ceiling)
+}
+
+/// Use a lower inherited Linux limit when planning an explicit memory budget.
+pub(crate) fn inherited_ceiling(ceiling: u64) -> u64 {
     #[cfg(target_os = "linux")]
     {
         let inherited = rustix::process::getrlimit(rustix::process::Resource::As);
@@ -107,18 +112,27 @@ pub(crate) fn from_environment() -> Result<Option<ProcessAddressSpace>> {
     apply(bytes).map(Some)
 }
 
-/// Apply the measured Linux default before panel/ENA decoding. Explicit zero
-/// preserves inherited limits; explicit positive caps were installed before CLI.
+/// Apply the normal Linux safeguard before panel/ENA decoding. An explicitly
+/// disabled safeguard preserves inherited limits. An explicit CLI budget can
+/// lower a cap already installed from the environment.
 pub(crate) fn for_normal_run(
     existing: Option<ProcessAddressSpace>,
     normal_run: bool,
+    requested: Option<u64>,
 ) -> Result<Option<ProcessAddressSpace>> {
-    if existing.is_some() || !normal_run || std::env::var_os(ENV).is_some() {
+    if !normal_run {
         return Ok(existing);
+    }
+    if let Some(cap) = existing {
+        if requested.is_none_or(|bytes| bytes >= cap.effective_limit_bytes()) {
+            return Ok(existing);
+        }
+    } else if std::env::var_os(ENV).is_some() {
+        return Ok(None);
     }
     #[cfg(target_os = "linux")]
     {
-        apply(NORMAL_ADDRESS_SPACE_BYTES).map(Some)
+        apply(requested.unwrap_or(NORMAL_ADDRESS_SPACE_BYTES)).map(Some)
     }
     #[cfg(not(target_os = "linux"))]
     {
