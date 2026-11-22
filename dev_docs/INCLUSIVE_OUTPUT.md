@@ -1,9 +1,10 @@
 # Inclusive sequence delivery
 
 The [sequence annotation conventions](SEQUENCE_ANNOTATIONS.md) define the
-current schema-3 header names, values, and omission rules. The focused v3.2
-revision preserves assembly, retention, and released ordinary-header fields;
-breaking interface cleanup is deferred to v4.0 under #159.
+current development schema-4 header names, values, and omission rules. V4.0
+renames identity/length annotations and moves the ranking score into structured
+stats under #159. The released v3.2 format is schema 3; assembly and retention
+policy remain unchanged by this interface migration.
 
 User-approved direction, 2026-09-29: default behavior should deliver standard
 products and bounded repeat-uncertain hypotheses together in the normal
@@ -22,8 +23,8 @@ hypotheses. The former omit `assembly_status`; the latter have exactly one
 No warning means no warning was reported by the checks performed; it does
 not mean independent biological validation.
 
-Warning headers also carry `sample`, `gene`, `product`, and `length`, using
-the existing ordinary-header field names. Causes are a sorted unique list of
+Warning headers also carry `sample`, `target`, `sequence_index`, and
+`sequence_length`, shared with ordinary headers. Causes are a sorted unique list of
 `homopolymer_length_unresolved`, `repeat_structure_unresolved`, and/or
 `high_coverage_repeat_suspected`. Detailed markers, hashes, source thresholds,
 path counts, and search/retention observations remain in stats. No read-support
@@ -36,7 +37,7 @@ Emission is enabled by default. `--no-emit-uncertain` requests records without
 assembly warnings only. The existing `--emit-uncertain` spelling remains accepted as an explicit
 request for inclusive output; specifying both flags is an error.
 
-To select records without warnings in schema-3 output while preserving
+To select records without warnings in schema-3 or schema-4 output while preserving
 complete FASTA records, including wrapped sequences:
 
 ```sh
@@ -54,8 +55,8 @@ remain protected.
 
 ## Counts, statuses, and consumers
 
-Output manifests use schema version 3. Stats identify
-`product_output_schema_version: 3` and
+Development output manifests use schema version 4. Stats identify
+`product_output_schema_version: 4` and
 `product_output_layout: combined_warnings`. Within each target, existing stats
 names and status values remain for compatibility:
 
@@ -67,7 +68,13 @@ names and status values remain for compatibility:
   ordinary assembly failure reason remains available.
 - `status: fail` means no sequence was emitted and no target FASTA is created.
 
-The optional `uncertain_products` assessment uses schema 3 and retains its own
+Each target's `sequence_annotations` provides an ordered join to every emitted
+FASTA record by its full identifier, with index and emitted length. Ordinary
+records also retain the unrounded ranking heuristic as `assembly_rank_score`;
+warning records omit it. The score is not a confidence probability. Existing
+ordinary `kmer_count_*` header measurements retain their values and formatting.
+
+The optional `uncertain_products` assessment uses schema 4 and retains its own
 count, lengths, source metadata, and limits. Each record's structured
 `assembly_status_causes` must agree with its internal source evidence and FASTA
 description. Its `output_file` points to the shared target FASTA when warning
@@ -79,26 +86,32 @@ Updated validation first verifies the complete mixed FASTA against stats,
 warning annotations, uncertainty evidence, and the transaction manifest. Standard
 validation and reference bootstrap then use only the standard subset.
 They do not count uncertain-only targets as standard recovery. Previous
-schema-1 separate-file output, schema-2 combined output, and legacy files
+schema-1 separate-file output, schema-2/schema-3 combined output, and legacy files
 remain readable according to their own contracts. Missing status in schema 2
-is invalid. Older current-run consumers reject unsupported schema 3 rather
-than silently counting all hypotheses as standard products. Standalone and
+is invalid. Missing status in schemas 3 and 4 means no warning was reported.
+Current-run consumers reject unsupported schemas rather than silently counting
+all hypotheses as standard products. Standalone and
 renamed FASTA readers exclude both legacy uncertain labels and new warnings
 from standard/reference-bootstrap products; malformed labels fail closed.
 
 ## Assembly and verification scope
 
-The schema-3 revision changes annotations and format dispatch. It does not change graph
+The schema-4 revision changes annotations and format dispatch. It does not change graph
 construction, search order, thresholds, repeat admission, accepted-path quota,
 or existing retention limits. Inclusive output remains bounded and is not an
 exhaustive enumeration of possible repeat structures.
 
-The [schema-3 verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
+The historical [schema-3 verification](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
 passes exact before/after agreement of sequence bytes, IDs, order, counts,
 warning membership, and source evidence on the bounded repeat/clean fixture,
 plus schema migration and consumer checks. The v3.2 subset of
 [#159](https://github.com/caseywdunn/sharkmer/issues/159) is implemented;
 the issue remains open for the v4.0 cleanup of released interface fields.
+The schema-4 prototype verification (local evidence: `benchmarks/benchmark_results/v4-sequence-annotations-20261112/README.md`)
+retains both-hasher native comparisons, consumer migration checks and the
+original patch. That patch is now applied to the working tree;
+combined counter/header verification (local evidence: `benchmarks/benchmark_results/v4-integrated-checks-20261112/README.md`)
+passes, with Git integration and CI still open in [PLAN.md](PLAN.md).
 
 ### Historical schema-2 verification protocol (2026-09-29)
 

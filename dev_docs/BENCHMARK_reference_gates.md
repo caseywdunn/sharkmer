@@ -259,7 +259,7 @@ for user review before revising assembly policy or releasing.
 
 ## Evidence
 
-The [reference-gate archive](../benchmarks/benchmark_results/v3.2-reference-gates-20260913)
+The [reference-gate archive](https://github.com/caseywdunn/sharkmer-benchmarks/tree/main/benchmarks/benchmark_results/v3.2-reference-gates-20260913)
 preserves the 150 synthetic and three real-data invocations, all raw outputs
 and inputs for synthetic cases, public-record responses and provenance audits,
 frozen protocols/helpers/build receipts, and per-file checksums. Original

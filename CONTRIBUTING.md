@@ -22,7 +22,8 @@ After cloning the repo, install the pre-commit hook:
 
     ln -sf ../../scripts/pre-commit .git/hooks/pre-commit
 
-This runs the baseline Rust checks before every commit: `cargo fmt --all --check`,
+This runs the baseline Rust checks before every commit: `cargo fmt --package sharkmer --check`,
+format checking for the patched client source,
 `cargo clippy -- -D warnings`, and `cargo test --release`. The complete
 release check below also covers both backends, Python, panels, and metadata.
 
@@ -83,7 +84,15 @@ A branch is considered passing when:
 
 - `cargo test --release` passes
 - `cargo clippy -- -D warnings` reports no warnings
-- `cargo fmt --all --check` reports no changes needed
+- `cargo fmt --package sharkmer --check` reports no changes needed
+- `rustfmt --edition 2018 --config skip_children=true --check vendor/ureq-2.12.1/src/chunked/decoder.rs vendor/ureq-2.12.1/src/middleware.rs` reports no changes needed
+
+The pinned HTTP client is included under `vendor/ureq-2.12.1` for a bounded
+chunk-framing patch. Format the application and the changed client source
+explicitly; `cargo fmt --all` would also rewrite untouched upstream files.
+Keep the vendored directory in Git/source builds and preserve its license and
+origin files. Its patch and audit are described in
+[HTTP workspace](dev_docs/HTTP_WORKSPACE.md).
 
 ## Releasing
 
@@ -92,7 +101,7 @@ regression benchmarks have been run.
 
 **v3.2 scope exception approved by the user, 2026-11-08:** follow the retained
 [release assessment](dev_docs/REVIEW_v3.2.md#decision-ownership-2026-11-08) and
-[final-build results](benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+[final-build results](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
 in place of the full benchmark and biological sample campaigns in steps 1–3.
 Use the retained release-baseline evidence and focused check of saved sequences,
 warning classifications, and the four flagged performance comparisons; keep
@@ -103,10 +112,10 @@ panels and the reference example remain required. Retain the deferred biological
 work before further assembly tuning or broad accuracy claims. The general
 procedure below continues to apply to other releases.
 
-### 1. Run and commit benchmarks
+### 1. Run benchmarks and retain evidence
 
 Before preparing the release, run the full regression benchmark suite on `dev`
-and commit the results:
+and retain the results outside version control:
 
     conda activate sharkmer-bench
     python benchmarks/run_benchmark.py
@@ -114,10 +123,10 @@ and commit the results:
 Review the results in `benchmarks/benchmark_results/` and compare the structured
 per-product YAML records, classifications, and performance fields with prior
 runs. There is no separate comparison script. Investigate regressions before
-proceeding. Commit the benchmark results to `dev`:
-
-    git add benchmarks/benchmark_results/
-    git commit -m "Add benchmark results for vX.Y.Z release"
+proceeding. Save the report, protocol and evidence index in the
+[benchmark companion](https://github.com/caseywdunn/sharkmer-benchmarks).
+Archive large outputs outside Git and record the evidence location in the PR.
+Archive local evidence before removing its working directory.
 
 ### 2. Validate all built-in panels
 
@@ -181,7 +190,8 @@ Prepare a release branch from the checked `dev` (the examples use v3.2.0):
 Set the package version in `Cargo.toml` and `Cargo.lock` to `${VERSION}` without
 `-dev`. Rename the changelog's `[Unreleased]` heading to
 `[3.2.0] - YYYY-MM-DD` with the actual release date. Set `meta.yaml` to the same
-version and use `PLACEHOLDER` for its checksum until the tagged archive exists.
+version, set its URL to the source asset attached to the release, and use
+`PLACEHOLDER` for the checksum until the asset exists.
 Run `scripts/release-check` again, then commit these changes. Save the release
 changelog section for the pull requests and GitHub release:
 
@@ -211,7 +221,15 @@ in the retained release assessment linked above.
 
 ### 7. Create the GitHub release
 
-    gh release create "v${VERSION}" --verify-tag --title "${VERSION}" --notes-file /tmp/sharkmer-release-notes.md
+Attach a source archive from the tagged tree and its SHA-256 checksum. The
+attached asset gives Bioconda a stable source URL.
+
+    release_assets=$(mktemp -d)
+    source_asset="sharkmer-${VERSION}.tar.gz"
+    git archive --format=tar.gz --prefix="sharkmer-${VERSION}/" "v${VERSION}" > "${release_assets}/${source_asset}"
+    (cd "${release_assets}" && sha256sum "${source_asset}" > "${source_asset}.sha256")
+    gh release create "v${VERSION}" --verify-tag --title "${VERSION}" --notes-file /tmp/sharkmer-release-notes.md \
+        "${release_assets}/${source_asset}" "${release_assets}/${source_asset}.sha256"
 
 ### 8. Advance the release maintenance branch
 
@@ -232,7 +250,7 @@ history; do not recreate or force-push the existing branch.
 Download the exact URL used by `meta.yaml`. Hash the saved archive only after
 the HTTP request succeeds:
 
-    curl --fail --location --output "/tmp/sharkmer-${VERSION}.tar.gz" "https://github.com/caseywdunn/sharkmer/archive/refs/tags/v${VERSION}.tar.gz" &&
+    curl --fail --location --output "/tmp/sharkmer-${VERSION}.tar.gz" "https://github.com/caseywdunn/sharkmer/releases/download/v${VERSION}/sharkmer-${VERSION}.tar.gz" &&
         sha256sum "/tmp/sharkmer-${VERSION}.tar.gz"
 
 Replace `PLACEHOLDER` in `meta.yaml` with this checksum on the post-release

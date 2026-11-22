@@ -32,7 +32,7 @@ marker cap. Exact matches are:
 
 Ordinals are one-based search encounters within each target/threshold, not
 FASTA ranking. Matches are full-length, same-orientation hash identities,
-not merely equal lengths. The [independent outcome review](../benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/dros12s_outcome_review.json)
+not merely equal lengths. The [independent outcome review](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/dros12s_outcome_review.json`)
 passes and records complete identities and evidence fingerprints. The
 [local scratch assessment](../tmp/inclusive-release-20260929/dros12s/replay-v1/assessment.json)
 contains the detailed ledger inventory.
@@ -87,8 +87,8 @@ The scratch default-backend build passes formatting, Clippy, **250 unit and
 29 integration tests**, including three observer controls. Eight author and
 two independent Python controls pass; they cover retention omissions, exact/RC
 identity, duplicates, overflow, missing/extra ledgers and retained-source
-binding. See the [execution review](../benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/dros12s_execution_review.json)
-and [independent controls](../benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/independent_dros_controls-v1.json).
+binding. See the [execution review](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/dros12s_execution_review.json`)
+and [independent controls](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11) (archive path `benchmarks/benchmark_results/v3.2-inclusive-release-20260929/review/independent_dros_controls-v1.json`).
 
 The sequences remain repeat-uncertain hypotheses. This experiment evaluates
 neither independent read support nor correct biological repeat length. Other

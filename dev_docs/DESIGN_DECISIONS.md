@@ -1,6 +1,9 @@
 # Design Decisions
 
-> **Historical record.** This document preserves design exploration and
+> **Historical record; current architecture is in [OVERVIEW.md](OVERVIEW.md).**
+> [PLAN.md](PLAN.md) holds current requirements and future work. Sections named
+> "current v3.2" below describe release-era checkpoints.
+> This document preserves design exploration and
 > benchmark results from earlier development branches. It is not current CLI
 > reference: use README.md and PCR.md for v3.2 behavior. References below to
 > removed flags or retired components are archival unless explicitly labeled

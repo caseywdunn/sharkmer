@@ -1,20 +1,28 @@
 // pcr/primers.rs — primer preprocessing functions
 
-use anyhow::{Result, bail, ensure};
+use super::memory::buffers::{BudgetSet, BudgetVec};
+use crate::kmer::budget::ResourceBudget;
+use anyhow::{Context, Result, bail, ensure};
 use log::debug;
+#[cfg(test)]
 use std::collections::HashSet;
+use std::sync::Arc;
 
-use crate::kmer::{FilteredKmerCounts, KmerCounts};
+#[cfg(test)]
+use crate::kmer::KmerCounts;
+use crate::kmer::{FilteredKmerCounts, PrimerKmers};
 
-use super::{Oligo, PCRParams, PrimerDirection};
+#[cfg(test)]
+use super::Oligo;
+use super::{PCRParams, PrimerDirection};
 
 const MAX_RESOLVED_VARIANTS: usize = 10_000;
 const MAX_RETAINED_VARIANTS: usize = 1_000_000;
 const MAX_INTERMEDIATE_VARIANTS: usize = 4_000_000;
 const MAX_GENERATION_WORK: usize = 1_000_000;
 
-struct PrimerExpansionPlan {
-    primer: String,
+struct PrimerExpansionPlan<'a> {
+    primer: &'a str,
     mismatches: usize,
     #[cfg_attr(not(test), allow(dead_code))]
     retained_variants: usize,
@@ -44,6 +52,7 @@ pub(super) fn is_valid_nucleotide(c: char) -> bool {
 }
 
 // Given an oligo sequence, return a Oligo struct representing it
+#[cfg(test)]
 pub fn string_to_oligo(seq: &str) -> Result<Oligo> {
     ensure!(
         seq.len() <= 32,
@@ -71,6 +80,7 @@ pub fn string_to_oligo(seq: &str) -> Result<Oligo> {
 // of sequences that include all possible resolutions of the ambiguity. If
 // there are no ambiguous nucleotides, the set contains only the original
 // sequence.
+#[cfg(test)]
 pub(super) fn resolve_primer(primer: &str) -> HashSet<String> {
     let mut sequences: HashSet<String> = HashSet::new();
 
@@ -209,7 +219,7 @@ fn plan_primer_expansion(
     params: &PCRParams,
     dir: PrimerDirection,
     kmer_length: usize,
-) -> Result<PrimerExpansionPlan> {
+) -> Result<PrimerExpansionPlan<'_>> {
     ensure!(
         kmer_length < 32,
         "PCR primer processing requires k-mer length below 32, got {}",
@@ -221,11 +231,9 @@ fn plan_primer_expansion(
     } else {
         &params.forward_seq
     };
-    let primer = if source_primer.len() > trim {
-        source_primer[source_primer.len() - trim..].to_string()
-    } else {
-        source_primer.clone()
-    };
+    let primer = source_primer
+        .get(source_primer.len().saturating_sub(trim)..)
+        .context("Primer trimming crosses an invalid nucleotide boundary")?;
     ensure!(
         !primer.is_empty(),
         "Primer {} has no retained bases after trimming",
@@ -237,7 +245,7 @@ fn plan_primer_expansion(
         exact_variants = checked_product(
             exact_variants,
             ambiguity_width(nucleotide)?,
-            &primer,
+            primer,
             "resolved-variant",
         )?;
         if exact_variants > MAX_RESOLVED_VARIANTS {
@@ -251,12 +259,12 @@ fn plan_primer_expansion(
     }
 
     let mismatches = params.mismatches.min(primer.len());
-    let mut distance_counts = vec![0usize; mismatches + 1];
+    let mut distance_counts = [0usize; 32];
     distance_counts[0] = 1;
     for nucleotide in primer.chars() {
         let matching_bases = ambiguity_width(nucleotide)?;
         let mismatching_bases = 4 - matching_bases;
-        let mut next_counts = vec![0usize; mismatches + 1];
+        let mut next_counts = [0usize; 32];
         for mismatch_count in 0..=mismatches {
             if distance_counts[mismatch_count] == 0 {
                 continue;
@@ -264,33 +272,33 @@ fn plan_primer_expansion(
             let matching_count = checked_product(
                 distance_counts[mismatch_count],
                 matching_bases,
-                &primer,
+                primer,
                 "retained-variant",
             )?;
             next_counts[mismatch_count] = checked_sum(
                 next_counts[mismatch_count],
                 matching_count,
-                &primer,
+                primer,
                 "retained-variant",
             )?;
             if mismatch_count < mismatches {
                 let mismatching_count = checked_product(
                     distance_counts[mismatch_count],
                     mismatching_bases,
-                    &primer,
+                    primer,
                     "retained-variant",
                 )?;
                 next_counts[mismatch_count + 1] = checked_sum(
                     next_counts[mismatch_count + 1],
                     mismatching_count,
-                    &primer,
+                    primer,
                     "retained-variant",
                 )?;
             }
         }
         sum_with_limit(
-            &next_counts,
-            &primer,
+            &next_counts[..=mismatches],
+            primer,
             "retained-variant",
             MAX_RETAINED_VARIANTS,
         )?;
@@ -298,29 +306,29 @@ fn plan_primer_expansion(
     }
 
     let retained_variants = sum_with_limit(
-        &distance_counts,
-        &primer,
+        &distance_counts[..=mismatches],
+        primer,
         "retained-variant",
         MAX_RETAINED_VARIANTS,
     )?;
     let mut previous_seen = distance_counts[0];
     let mut generation_work = 0usize;
-    let initial_peak = checked_product(exact_variants, 3, &primer, "intermediate-variant")?;
-    ensure_intermediate_limit(initial_peak, &primer)?;
+    let initial_peak = checked_product(exact_variants, 3, primer, "intermediate-variant")?;
+    ensure_intermediate_limit(initial_peak, primer)?;
     for mismatch_count in 1..=mismatches {
         let current_seen = sum_with_limit(
             &distance_counts[..=mismatch_count],
-            &primer,
+            primer,
             "retained-variant",
             MAX_RETAINED_VARIANTS,
         )?;
         let work = checked_product(
-            checked_product(previous_seen, primer.len(), &primer, "generation-work")?,
+            checked_product(previous_seen, primer.len(), primer, "generation-work")?,
             4,
-            &primer,
+            primer,
             "generation-work",
         )?;
-        generation_work = checked_sum(generation_work, work, &primer, "generation-work")?;
+        generation_work = checked_sum(generation_work, work, primer, "generation-work")?;
         if generation_work > MAX_GENERATION_WORK {
             bail!(
                 "Primer {} requires {} generated mismatch candidates through round {}, exceeding the limit of {}. Reduce ambiguity or mismatches.",
@@ -330,8 +338,8 @@ fn plan_primer_expansion(
                 MAX_GENERATION_WORK
             );
         }
-        let peak = intermediate_peak(exact_variants, previous_seen, current_seen, &primer)?;
-        ensure_intermediate_limit(peak, &primer)?;
+        let peak = intermediate_peak(exact_variants, previous_seen, current_seen, primer)?;
+        ensure_intermediate_limit(peak, primer)?;
         previous_seen = current_seen;
     }
 
@@ -352,6 +360,7 @@ pub(super) fn validate_primer_expansion(params: &PCRParams, kmer_length: usize) 
 /// Given a set of sequences, return a set of all sequences that differ
 /// from each original sequence at up to r positions. Includes the original
 /// sequences.
+#[cfg(test)]
 pub(super) fn permute_sequences(sequences: HashSet<String>, r: &usize) -> HashSet<String> {
     let mut permutations = HashSet::new();
 
@@ -364,6 +373,7 @@ pub(super) fn permute_sequences(sequences: HashSet<String>, r: &usize) -> HashSe
     permutations
 }
 
+#[cfg(test)]
 pub(super) fn combinations(n: usize, r: usize) -> Vec<Vec<usize>> {
     if r > n {
         return vec![];
@@ -386,6 +396,7 @@ pub(super) fn combinations(n: usize, r: usize) -> Vec<Vec<usize>> {
     without_last.into_iter().chain(with_last).collect()
 }
 
+#[cfg(test)]
 pub(super) fn generate_recursive_permutations(
     seq: &str,
     positions: &Vec<usize>,
@@ -414,11 +425,12 @@ pub(super) fn generate_recursive_permutations(
 
 // Find the kmers that contain the oligos.
 // Always match the oligo at the START of the kmer.
+#[cfg(test)]
 fn find_oligos_in_kmers(
     oligos: &[Oligo],
     kmers: &FilteredKmerCounts,
     min_count: &u32,
-) -> KmerCounts {
+) -> Result<PrimerKmers> {
     assert!(
         !oligos.is_empty(),
         "find_oligos_in_kmers called with no oligos"
@@ -452,7 +464,7 @@ fn find_oligos_in_kmers(
     }
     mask <<= 2 * k - 2 * oligo_length;
 
-    let mut kmers_match: KmerCounts = KmerCounts::new(&k);
+    let mut kmers_match = PrimerKmers::new(&k)?;
 
     // RC mask covers low bits (reverse complement of a start-matching kmer has primer in low bits)
     let rc_mask = (1u64 << (2 * oligo_length)) - 1;
@@ -463,20 +475,23 @@ fn find_oligos_in_kmers(
         .map(|oligo| crate::kmer::revcomp_kmer(&oligo.kmer, &oligo_length))
         .collect();
 
-    for (kmer, count) in kmers.iter() {
-        if count >= min_count {
+    // The released primer scan used all underlying entries and its target's
+    // min_count; the global graph-view threshold must not change seed choice.
+    kmers.visit_unfiltered(&mut |kmer, count| {
+        if count >= u64::from(*min_count) {
             if oligo_set.contains(&(kmer & mask)) {
-                kmers_match.insert(kmer, count);
+                kmers_match.insert(&kmer, &count)?;
             } else if rc_oligo_set.contains(&(kmer & rc_mask)) {
                 // The primer matches the reverse complement orientation of this kmer,
                 // so insert the revcomp form for correct graph construction
-                let rc_kmer = crate::kmer::revcomp_kmer(kmer, &k);
-                kmers_match.insert(&rc_kmer, count);
+                let rc_kmer = crate::kmer::revcomp_kmer(&kmer, &k);
+                kmers_match.insert(&rc_kmer, &count)?;
             }
         }
-    }
+        Ok(())
+    })?;
 
-    kmers_match
+    Ok(kmers_match)
 }
 
 // Individual steps in the PCR process
@@ -485,6 +500,7 @@ fn find_oligos_in_kmers(
 /// level. Index 0 contains the exact (ambiguity-resolved) variants, index 1
 /// the 1-mismatch variants, etc. Each level contains only the NEW variants
 /// introduced at that mismatch count (not cumulative).
+#[cfg(test)]
 pub(super) fn preprocess_primer_by_mismatch(
     params: &PCRParams,
     dir: PrimerDirection,
@@ -520,7 +536,7 @@ pub(super) fn preprocess_primer_by_mismatch(
     }
     let primer = plan.primer;
 
-    let base_variants = resolve_primer(&primer);
+    let base_variants = resolve_primer(primer);
     let mismatches = plan.mismatches;
 
     // Build variants level by level: 0 mismatches, 1 mismatch, ..., n mismatches.
@@ -563,36 +579,40 @@ pub(super) fn preprocess_primer(
 }
 
 /// Given a set of primer variants, return a set of kmers from the data that contain the primers
+#[cfg(test)]
 pub(super) fn get_kmers_from_primers(
     primer_variants: &HashSet<String>,
     kmer_counts: &FilteredKmerCounts,
     min_count: &u32,
-) -> Result<KmerCounts> {
+) -> Result<PrimerKmers> {
     // Get the kmers that contain the primers
     let mut oligos: Vec<Oligo> = Vec::new();
     for variant in primer_variants.iter() {
         oligos.push(string_to_oligo(variant)?);
     }
 
-    Ok(find_oligos_in_kmers(&oligos, kmer_counts, min_count))
+    find_oligos_in_kmers(&oligos, kmer_counts, min_count)
 }
 
-/// Hard-cap a KmerCounts to at most `max_primer_kmers` entries.
+/// Hard-cap directional primer candidates to at most `max_primer_kmers` entries.
 /// Sorts by count descending, then by kmer value ascending (deterministic
 /// tiebreaker). Keeps exactly `min(len, max_primer_kmers)` entries.
 #[cfg(test)]
-pub(super) fn filter_primer_kmers(matches: KmerCounts, max_primer_kmers: usize) -> KmerCounts {
+pub(super) fn filter_primer_kmers(
+    matches: PrimerKmers,
+    max_primer_kmers: usize,
+) -> Result<PrimerKmers> {
     if matches.len() <= max_primer_kmers {
-        return matches;
+        return Ok(matches);
     }
 
     // Collect (kmer, count) pairs and sort: count DESC, kmer ASC
-    let mut entries: Vec<(u64, u32)> = matches.iter().map(|(k, c)| (*k, *c)).collect();
+    let mut entries: Vec<(u64, u64)> = matches.iter().map(|(k, c)| (*k, *c)).collect();
     entries.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
 
-    let mut result = KmerCounts::new(&matches.get_k());
+    let mut result = PrimerKmers::new(&matches.get_k())?;
     for &(kmer, count) in entries.iter().take(max_primer_kmers) {
-        result.insert(&kmer, &count);
+        result.insert(&kmer, &count)?;
     }
 
     debug!(
@@ -602,21 +622,22 @@ pub(super) fn filter_primer_kmers(matches: KmerCounts, max_primer_kmers: usize) 
         entries[max_primer_kmers - 1].1
     );
 
-    result
+    Ok(result)
 }
 
 /// Discover primer kmers round by round, one mismatch level at a time.
 /// Lower mismatch levels fill the cap first; higher levels only contribute
 /// if there is remaining capacity. Within each round, kmers are prioritized
 /// by count (descending) then kmer value (ascending, deterministic).
+#[cfg(test)]
 fn discover_primer_kmers_by_round(
     variant_levels: &[HashSet<String>],
     kmer_counts: &FilteredKmerCounts,
     min_count: &u32,
     max_primer_kmers: usize,
     gene_name: &str,
-) -> Result<KmerCounts> {
-    let mut result = KmerCounts::new(&kmer_counts.get_k());
+) -> Result<PrimerKmers> {
+    let mut result = PrimerKmers::new(&kmer_counts.get_k())?;
 
     for (mismatch_level, variants) in variant_levels.iter().enumerate() {
         if result.len() >= max_primer_kmers {
@@ -630,7 +651,7 @@ fn discover_primer_kmers_by_round(
         let round_kmers = get_kmers_from_primers(variants, kmer_counts, min_count)?;
 
         // Filter out kmers already found at lower mismatch levels
-        let mut new_entries: Vec<(u64, u32)> = Vec::new();
+        let mut new_entries: Vec<(u64, u64)> = Vec::new();
         for (kmer, count) in round_kmers.iter() {
             if result.get(kmer).is_none() {
                 new_entries.push((*kmer, *count));
@@ -649,7 +670,7 @@ fn discover_primer_kmers_by_round(
         let take = new_entries.len().min(remaining);
 
         for &(kmer, count) in new_entries.iter().take(take) {
-            result.insert(&kmer, &count);
+            result.insert(&kmer, &count)?;
         }
 
         gene_info!(
@@ -674,10 +695,11 @@ fn discover_primer_kmers_by_round(
     Ok(result)
 }
 
-pub(super) fn get_primer_kmers(
+#[cfg(test)]
+fn get_primer_kmers_reference(
     params: &PCRParams,
     kmer_counts: &FilteredKmerCounts,
-) -> Result<(KmerCounts, KmerCounts)> {
+) -> Result<(PrimerKmers, PrimerKmers)> {
     // Preprocess the primers into mismatch-level groups
     let forward_levels =
         preprocess_primer_by_mismatch(params, PrimerDirection::Forward, &kmer_counts.get_k())?;
@@ -712,9 +734,483 @@ pub(super) fn get_primer_kmers(
     Ok((forward_primer_kmers, reverse_primer_kmers))
 }
 
+struct EncodedPrimerLevels {
+    length: usize,
+    levels: BudgetVec<BudgetSet<u64>>,
+}
+
+fn allowed_bases(nucleotide: u8) -> Result<u8> {
+    match nucleotide {
+        b'A' => Ok(0b0001),
+        b'C' => Ok(0b0010),
+        b'G' => Ok(0b0100),
+        b'T' => Ok(0b1000),
+        b'R' => Ok(0b0101),
+        b'Y' => Ok(0b1010),
+        b'S' => Ok(0b0110),
+        b'W' => Ok(0b1001),
+        b'K' => Ok(0b1100),
+        b'M' => Ok(0b0011),
+        b'B' => Ok(0b1110),
+        b'D' => Ok(0b1101),
+        b'H' => Ok(0b1011),
+        b'V' => Ok(0b0111),
+        b'N' => Ok(0b1111),
+        _ => bail!("Invalid nucleotide {} in primer", char::from(nucleotide)),
+    }
+}
+
+/// Enumerate exactly the released mismatch levels using owned integer sets.
+/// The preflight limits and all lower-mismatch priority rules are unchanged.
+fn encoded_primer_levels(
+    params: &PCRParams,
+    direction: PrimerDirection,
+    k: usize,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<EncodedPrimerLevels> {
+    let source = if direction == PrimerDirection::Reverse {
+        &params.reverse_seq
+    } else {
+        &params.forward_seq
+    };
+    let plan = plan_primer_expansion(params, direction, k)?;
+    if params.trim >= k {
+        gene_warn!(
+            params.gene_name,
+            "Trim length ({}) must be less than k ({}); adjusting trim to k-1 = {}",
+            params.trim,
+            k,
+            k - 1
+        );
+    }
+    if source.len() > plan.primer.len() {
+        gene_info!(
+            params.gene_name,
+            "Trimming the primer to {} so that it is within the trim length of {}.",
+            plan.primer,
+            plan.primer.len()
+        );
+    }
+    let mut exact = BudgetSet::new(budget);
+    exact.insert(0u64)?;
+    for nucleotide in plan.primer.bytes() {
+        let mask = allowed_bases(nucleotide)?;
+        let mut next = BudgetSet::new(budget);
+        for &prefix in exact.iter() {
+            for base in 0..4u64 {
+                if mask & (1 << base) != 0 {
+                    next.insert((prefix << 2) | base)?;
+                }
+            }
+        }
+        exact = next;
+    }
+    let mut seen = BudgetSet::new(budget);
+    for &variant in exact.iter() {
+        seen.insert(variant)?;
+    }
+    let mut levels = BudgetVec::new(budget);
+    levels.push(exact)?;
+    for _ in 1..=plan.mismatches {
+        let mut next = BudgetSet::new(budget);
+        // Iterate the same cumulative set as the released one-step permutation,
+        // without cloning strings or constructing intermediate character Vecs.
+        for &variant in seen.iter() {
+            for position in 0..plan.primer.len() {
+                let shift = 2 * position;
+                let prefix = variant & !(3u64 << shift);
+                for base in 0..4u64 {
+                    let candidate = prefix | (base << shift);
+                    if !seen.contains(&candidate) {
+                        next.insert(candidate)?;
+                    }
+                }
+            }
+        }
+        for &variant in next.iter() {
+            seen.insert(variant)?;
+        }
+        levels.push(next)?;
+    }
+    debug!(
+        "  There are {} variants of the primer across {} mismatch levels",
+        seen.len(),
+        levels.len()
+    );
+    Ok(EncodedPrimerLevels {
+        length: plan.primer.len(),
+        levels,
+    })
+}
+
+fn visit_encoded_oligos(
+    variants: &BudgetSet<u64>,
+    length: usize,
+    counts: &FilteredKmerCounts,
+    minimum: u32,
+    budget: Option<&Arc<ResourceBudget>>,
+    mut visit: impl FnMut(u64, u64) -> Result<()>,
+) -> Result<()> {
+    let k = counts.get_k();
+    ensure!(
+        length > 0 && length < k && k <= 31,
+        "Invalid encoded primer width {length} for k={k}"
+    );
+    let mut reverse = BudgetSet::new(budget);
+    for variant in variants.iter() {
+        reverse.insert(crate::kmer::revcomp_kmer(variant, &length))?;
+    }
+    let shift = 2 * (k - length);
+    let rc_mask = (1u64 << (2 * length)) - 1;
+    // Preserve canonical-first orientation preference and the target's own
+    // count cutoff; the global filtered-view threshold must not select seeds.
+    counts.visit_unfiltered(&mut |key, count| {
+        if count >= u64::from(minimum) {
+            if variants.contains(&(key >> shift)) {
+                visit(key, count)?;
+            } else if reverse.contains(&(key & rc_mask)) {
+                visit(crate::kmer::revcomp_kmer(&key, &k), count)?;
+            }
+        }
+        Ok(())
+    })?;
+    Ok(())
+}
+
+// Total biological ranking retained from the released full-sort selection:
+// abundance descending, then oriented k-mer value ascending.
+fn primer_candidate_rank(left: &(u64, u64), right: &(u64, u64)) -> std::cmp::Ordering {
+    right.1.cmp(&left.1).then(left.0.cmp(&right.0))
+}
+
+/// Keep a worst-first heap with at most the remaining candidate allowance.
+/// Every visited canonical entry maps to one unique oriented key in this round.
+fn retain_primer_candidate(
+    heap: &mut BudgetVec<(u64, u64)>,
+    candidate: (u64, u64),
+    cap: usize,
+) -> Result<()> {
+    if cap == 0 {
+        return Ok(());
+    }
+    if heap.len() < cap {
+        heap.push(candidate)?;
+        let mut child = heap.len() - 1;
+        while child > 0 {
+            let parent = (child - 1) / 2;
+            if !primer_candidate_rank(&heap[child], &heap[parent]).is_gt() {
+                break;
+            }
+            heap.swap(child, parent);
+            child = parent;
+        }
+    } else if primer_candidate_rank(&candidate, &heap[0]).is_lt() {
+        heap[0] = candidate;
+        let mut parent = 0;
+        loop {
+            let left = 2 * parent + 1;
+            if left >= heap.len() {
+                break;
+            }
+            let right = left + 1;
+            let child =
+                if right < heap.len() && primer_candidate_rank(&heap[right], &heap[left]).is_gt() {
+                    right
+                } else {
+                    left
+                };
+            if !primer_candidate_rank(&heap[child], &heap[parent]).is_gt() {
+                break;
+            }
+            heap.swap(parent, child);
+            parent = child;
+        }
+    }
+    Ok(())
+}
+
+fn discover_encoded_rounds(
+    levels: &EncodedPrimerLevels,
+    counts: &FilteredKmerCounts,
+    params: &PCRParams,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<PrimerKmers> {
+    let mut result = PrimerKmers::with_budget(&counts.get_k(), budget)?;
+    for (mismatch_level, variants) in levels.levels.iter().enumerate() {
+        if result.len() >= params.max_primer_kmers {
+            break;
+        }
+        if variants.is_empty() {
+            continue;
+        }
+        let remaining = params.max_primer_kmers - result.len();
+        let mut entries = BudgetVec::new(budget);
+        let mut new_count = 0u64;
+        visit_encoded_oligos(
+            variants,
+            levels.length,
+            counts,
+            params.min_count,
+            budget,
+            |key, count| {
+                if result.get(&key).is_none() {
+                    new_count = new_count
+                        .checked_add(1)
+                        .context("Primer candidate count overflow")?;
+                    retain_primer_candidate(&mut entries, (key, count), remaining)?;
+                }
+                Ok(())
+            },
+        )?;
+        if entries.is_empty() {
+            continue;
+        }
+        // Keys are unique, so this total comparator needs no stable-sort heap.
+        entries.sort_unstable_by(primer_candidate_rank);
+        let take = entries.len();
+        for &(key, count) in entries.iter().take(take) {
+            result.insert(&key, &count)?;
+        }
+        gene_info!(
+            params.gene_name,
+            "Mismatch level {}: {} new primer kmers ({} total, cap {})",
+            mismatch_level,
+            take,
+            result.len(),
+            params.max_primer_kmers
+        );
+        if new_count > take as u64 {
+            gene_info!(
+                params.gene_name,
+                "Mismatch level {}: dropped {} kmers at cap",
+                mismatch_level,
+                new_count - take as u64
+            );
+        }
+    }
+    Ok(result)
+}
+
+/// Discover the same directional candidates under the active target ceiling.
+pub(super) fn get_primer_kmers(
+    params: &PCRParams,
+    counts: &FilteredKmerCounts,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<(PrimerKmers, PrimerKmers)> {
+    let forward_levels =
+        encoded_primer_levels(params, PrimerDirection::Forward, counts.get_k(), budget)?;
+    let reverse_levels =
+        encoded_primer_levels(params, PrimerDirection::Reverse, counts.get_k(), budget)?;
+    gene_info!(
+        params.gene_name,
+        "Searching kmers that contain the forward primer variants"
+    );
+    let forward = discover_encoded_rounds(&forward_levels, counts, params, budget)?;
+    drop(forward_levels);
+    gene_info!(
+        params.gene_name,
+        "Searching kmers that contain the reverse primer variants"
+    );
+    let reverse = discover_encoded_rounds(&reverse_levels, counts, params, budget)?;
+    Ok((forward, reverse))
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    fn primer_budget(bytes: u64) -> Arc<ResourceBudget> {
+        ResourceBudget::new(crate::kmer::budget::ResourceLimits {
+            memory_bytes: bytes,
+            process_overhead_bytes: 0,
+            class_bytes: [bytes; crate::kmer::budget::MEMORY_CLASSES],
+            temporary_disk_bytes: 0,
+            temporary_open_files: 0,
+        })
+        .unwrap()
+    }
+
+    fn primer_params(primer: &str, mismatches: usize) -> PCRParams {
+        crate::cli::parse_pcr_primers_string(&format!("name=primer,forward={primer},reverse={primer},trim={},mismatches={mismatches},min-length=0,max-length=100",primer.len())).unwrap()
+    }
+
+    #[test]
+    fn encoded_mismatch_levels_match_legacy_string_expansion_for_all_iupac_pairs() {
+        let budget = primer_budget(2 << 20);
+        let alphabet = b"ACGTRYSWKMBDHVN";
+        for &left in alphabet {
+            for &right in alphabet {
+                let primer = String::from_utf8(vec![left, right]).unwrap();
+                for mismatches in 0..=2 {
+                    let params = primer_params(&primer, mismatches);
+                    let expected =
+                        preprocess_primer_by_mismatch(&params, PrimerDirection::Forward, &5)
+                            .unwrap();
+                    let actual =
+                        encoded_primer_levels(&params, PrimerDirection::Forward, 5, Some(&budget))
+                            .unwrap();
+                    assert_eq!(actual.levels.len(), expected.len());
+                    for (actual, expected) in actual.levels.iter().zip(expected) {
+                        let expected: std::collections::BTreeSet<_> = expected
+                            .iter()
+                            .map(|value| string_to_oligo(value).unwrap().kmer)
+                            .collect();
+                        assert_eq!(
+                            actual
+                                .iter()
+                                .copied()
+                                .collect::<std::collections::BTreeSet<_>>(),
+                            expected,
+                            "{primer}/{mismatches}"
+                        );
+                    }
+                    drop(actual);
+                    assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+                }
+            }
+        }
+        for primer in ["ACGTAC", "ARYNCA", "NNRYSW"] {
+            let params = primer_params(primer, 2);
+            let expected =
+                preprocess_primer_by_mismatch(&params, PrimerDirection::Reverse, &9).unwrap();
+            let actual =
+                encoded_primer_levels(&params, PrimerDirection::Reverse, 9, Some(&budget)).unwrap();
+            for (actual, expected) in actual.levels.iter().zip(expected) {
+                assert_eq!(
+                    actual
+                        .iter()
+                        .map(|bits| crate::kmer::kmer_to_seq(bits, &primer.len()))
+                        .collect::<HashSet<_>>(),
+                    expected
+                );
+            }
+            drop(actual);
+            assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+        }
+    }
+
+    #[test]
+    fn encoded_discovery_preserves_round_priority_caps_orientation_and_target_threshold() {
+        let mut counts = KmerCounts::new(&5);
+        for key in 0..1024u64 {
+            let sequence = crate::kmer::kmer_to_seq(&key, &5);
+            for _ in 0..(key % 5 + 1) {
+                counts.ingest_seq(&sequence).unwrap();
+            }
+        }
+        let budget = primer_budget(2 << 20);
+        for primer in ["AAC", "AAR", "NCA", "YGT", "NNN"] {
+            for mismatches in 0..=2 {
+                for cap in [1, 2, 7, 64, 1024] {
+                    for minimum in [1, 8] {
+                        let mut params = primer_params(primer, mismatches);
+                        params.max_primer_kmers = cap;
+                        params.min_count = minimum;
+                        let filtered = counts.filtered_view(100);
+                        let expected = get_primer_kmers_reference(&params, &filtered).unwrap();
+                        let actual = get_primer_kmers(&params, &filtered, Some(&budget)).unwrap();
+                        for (old, new) in [(&expected.0, &actual.0), (&expected.1, &actual.1)] {
+                            assert_eq!(
+                                old.iter()
+                                    .map(|(&k, &c)| (k, c))
+                                    .collect::<std::collections::BTreeMap<_, _>>(),
+                                new.iter()
+                                    .map(|(&k, &c)| (k, c))
+                                    .collect::<std::collections::BTreeMap<_, _>>(),
+                                "{primer}/{mismatches}/{cap}/{minimum}"
+                            );
+                        }
+                        drop(actual);
+                        assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn primer_variant_refusal_releases_temporary_buffers_without_altering_input_counts() {
+        let mut counts = KmerCounts::new(&5);
+        counts.ingest_seq("AACGT").unwrap();
+        let mut params = primer_params("AAR", 2);
+        params.min_count = 1;
+        let tiny = primer_budget(1);
+        let error = get_primer_kmers(&params, &counts.filtered_view(1), Some(&tiny))
+            .err()
+            .unwrap();
+        assert!(
+            error
+                .downcast_ref::<crate::kmer::budget::ResourceExhausted>()
+                .is_some()
+        );
+        assert_eq!(tiny.snapshot().reserved_memory_bytes, 0);
+        let enough = primer_budget(1 << 20);
+        let actual = get_primer_kmers(&params, &counts.filtered_view(1), Some(&enough)).unwrap();
+        assert!(!actual.0.is_empty());
+        drop(actual);
+        assert_eq!(enough.snapshot().reserved_memory_bytes, 0);
+    }
+
+    #[test]
+    fn bounded_candidate_heap_matches_full_sort_independent_of_visit_order() {
+        let values: Vec<_> = (0..501u64).map(|key| (key, key % 11)).collect();
+        let mut expected = values.clone();
+        expected.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
+        let budget = primer_budget(16384);
+        let mut random = 157u64;
+        for cap in [0, 1, 2, 3, 7, 16, 100] {
+            for _ in 0..5 {
+                let mut shuffled = values.clone();
+                for index in (1..shuffled.len()).rev() {
+                    random = random.wrapping_mul(6364136223846793005).wrapping_add(1);
+                    shuffled.swap(index, (random >> 32) as usize % (index + 1));
+                }
+                let mut heap = BudgetVec::new(Some(&budget));
+                for entry in shuffled {
+                    retain_primer_candidate(&mut heap, entry, cap).unwrap();
+                    assert!(heap.len() <= cap);
+                }
+                heap.sort_unstable_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
+                assert_eq!(&*heap, &expected[..cap]);
+                assert!(budget.snapshot().reserved_memory_bytes <= (cap.max(4) * 2 * 16) as u64);
+                drop(heap);
+                assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+            }
+        }
+    }
+
+    #[test]
+    fn broad_primer_scan_retains_only_the_cap_under_a_small_buffer_budget() {
+        let mut counts = KmerCounts::new(&5);
+        for key in 0..1024u64 {
+            counts
+                .ingest_seq(&crate::kmer::kmer_to_seq(&key, &5))
+                .unwrap();
+        }
+        let mut params = primer_params("N", 0);
+        params.max_primer_kmers = 2;
+        params.min_count = 1;
+        let expected = get_primer_kmers_reference(&params, &counts.filtered_view(1)).unwrap();
+        let budget = primer_budget(4096);
+        let actual = get_primer_kmers(&params, &counts.filtered_view(1), Some(&budget)).unwrap();
+        assert_eq!(actual.0.len(), 2);
+        assert_eq!(actual.1.len(), 2);
+        assert_eq!(
+            actual
+                .0
+                .iter()
+                .map(|(&k, &c)| (k, c))
+                .collect::<std::collections::BTreeMap<_, _>>(),
+            expected
+                .0
+                .iter()
+                .map(|(&k, &c)| (k, c))
+                .collect::<std::collections::BTreeMap<_, _>>()
+        );
+        assert!(budget.snapshot().peak_reserved_memory_bytes <= 4096);
+        drop(actual);
+        assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+    }
 
     // --- string_to_oligo ---
 
@@ -846,7 +1342,7 @@ mod tests {
         let filtered = kmer_counts.filtered_view(1);
 
         let oligo = string_to_oligo("ACG").unwrap();
-        let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &1).unwrap();
 
         // Kmers in ACGTACGT: ACGTA, CGTAC, GTACG, TACGT
         // Forward match (starts with ACG): ACGTA
@@ -858,6 +1354,37 @@ mod tests {
     }
 
     #[test]
+    fn primer_scan_preserves_target_threshold_when_graph_filter_is_stricter() {
+        use crate::kmer::identity::{CanonicalKey, KmerSize};
+        use crate::kmer::store::MemoryCountBuilder;
+        use std::num::NonZeroU64;
+        let counts = build_kmer_counts("AACCCAACC", 5);
+        let size = KmerSize::new(5).unwrap();
+        let mut builder = MemoryCountBuilder::new(size, 4096, 8).unwrap();
+        for (&bits, &count) in counts.iter() {
+            builder
+                .add(
+                    CanonicalKey::new(bits, size).unwrap(),
+                    NonZeroU64::new(u64::from(count)).unwrap(),
+                )
+                .unwrap();
+        }
+        let store = builder.finalize([0; 32]);
+        for view in [
+            counts.filtered_view(2),
+            FilteredKmerCounts::from_store(&store, 2),
+        ] {
+            let oligo = string_to_oligo("AAC").unwrap();
+            let matches = find_oligos_in_kmers(&[oligo], &view, &1).unwrap();
+            assert!(!matches.is_empty());
+            for (&bits, &count) in matches.iter() {
+                assert_eq!(count, 1);
+                assert_eq!(view.get_canonical(&bits).unwrap(), None);
+            }
+        }
+    }
+
+    #[test]
     fn test_find_oligos_no_match() {
         // Sequence of all A's — oligo "GGG" should not match
         let k = 5;
@@ -865,7 +1392,7 @@ mod tests {
         let filtered = kmer_counts.filtered_view(1);
 
         let oligo = string_to_oligo("GGG").unwrap();
-        let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &1).unwrap();
 
         assert_eq!(result.len(), 0, "Should find no matching kmers");
     }
@@ -880,7 +1407,7 @@ mod tests {
         let filtered = kmer_counts.filtered_view(1);
 
         let oligo = string_to_oligo("AAC").unwrap();
-        let result = find_oligos_in_kmers(&[oligo], &filtered, &2);
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &2).unwrap();
 
         assert_eq!(
             result.len(),
@@ -900,7 +1427,7 @@ mod tests {
         let filtered = kmer_counts.filtered_view(1);
 
         let oligo = string_to_oligo("AAA").unwrap();
-        let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &1).unwrap();
 
         assert!(
             !result.is_empty(),
@@ -924,7 +1451,7 @@ mod tests {
         // oligo length = k-1 = 4: matches any kmer starting with "ACGT"
         let oligo = string_to_oligo("ACGT").unwrap();
         assert_eq!(oligo.length, k - 1);
-        let result = find_oligos_in_kmers(&[oligo], &filtered, &1);
+        let result = find_oligos_in_kmers(&[oligo], &filtered, &1).unwrap();
 
         assert!(
             !result.is_empty(),
@@ -936,8 +1463,8 @@ mod tests {
 
     #[test]
     fn test_filter_primer_kmers_empty() {
-        let empty = KmerCounts::new(&5);
-        let result = filter_primer_kmers(empty, 10);
+        let empty = PrimerKmers::new(&5).unwrap();
+        let result = filter_primer_kmers(empty, 10).unwrap();
         assert_eq!(result.len(), 0);
     }
 
@@ -945,16 +1472,16 @@ mod tests {
     fn test_filter_primer_kmers_cap() {
         // Insert 5 kmers with different counts, cap at 3
         let k = 5;
-        let mut counts = KmerCounts::new(&k);
+        let mut counts = PrimerKmers::new(&k).unwrap();
         for (i, seq) in ["AAAAA", "AAAAC", "AAACG", "AACGT", "ACGTA"]
             .iter()
             .enumerate()
         {
             let kmer = crate::kmer::seq_to_kmer(seq).unwrap();
-            let count = (i + 1) as u32; // counts: 1, 2, 3, 4, 5
-            counts.insert(&kmer, &count);
+            let count = (i + 1) as u64; // counts: 1, 2, 3, 4, 5
+            counts.insert(&kmer, &count).unwrap();
         }
-        let result = filter_primer_kmers(counts, 3);
+        let result = filter_primer_kmers(counts, 3).unwrap();
         // Top 3 by count: 5, 4, 3 → 3 kmers retained
         assert_eq!(result.len(), 3);
     }
@@ -965,13 +1492,13 @@ mod tests {
         // Old implementation would keep all 5 (leaky cap).
         // New implementation must keep exactly 3, breaking ties by kmer value.
         let k = 5;
-        let mut counts = KmerCounts::new(&k);
+        let mut counts = PrimerKmers::new(&k).unwrap();
         for seq in ["AAAAA", "AAAAC", "AAACG", "AACGT", "ACGTA"] {
             let kmer = crate::kmer::seq_to_kmer(seq).unwrap();
-            let count = 2u32; // all same count
-            counts.insert(&kmer, &count);
+            let count = 2u64; // all same count
+            counts.insert(&kmer, &count).unwrap();
         }
-        let result = filter_primer_kmers(counts, 3);
+        let result = filter_primer_kmers(counts, 3).unwrap();
         assert_eq!(
             result.len(),
             3,
@@ -983,12 +1510,12 @@ mod tests {
     fn test_filter_primer_kmers_under_cap() {
         // Insert 2 kmers, cap at 5 — should keep all
         let k = 5;
-        let mut counts = KmerCounts::new(&k);
+        let mut counts = PrimerKmers::new(&k).unwrap();
         for seq in ["AAAAA", "AAAAC"] {
             let kmer = crate::kmer::seq_to_kmer(seq).unwrap();
-            counts.insert(&kmer, &3);
+            counts.insert(&kmer, &3).unwrap();
         }
-        let result = filter_primer_kmers(counts, 5);
+        let result = filter_primer_kmers(counts, 5).unwrap();
         assert_eq!(result.len(), 2, "Should keep all when under cap");
     }
 

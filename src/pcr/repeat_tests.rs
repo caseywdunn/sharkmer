@@ -141,7 +141,7 @@ fn repeat_quota_graph(
             is_end: true,
         });
         next_sub_kmer += 1;
-        let edge_count = u32::try_from(clean_route_count - route_index).unwrap();
+        let edge_count = u64::try_from(clean_route_count - route_index).unwrap();
         graph.add_edge(
             start,
             clean_middle,
@@ -162,9 +162,9 @@ fn repeat_quota_graph(
     }
 
     let repeat_markers = graph::RepeatMarkers {
-        omitted_self_loop_sub_kmers: ahash::AHashSet::new(),
-        cyclic_scc_sub_kmers: ahash::AHashSet::from_iter([graph[repeat_root].sub_kmer]),
-        retained_collision_edges: ahash::AHashSet::new(),
+        omitted_self_loop_sub_kmers: ahash::AHashSet::new().into(),
+        cyclic_scc_sub_kmers: ahash::AHashSet::from_iter([graph[repeat_root].sub_kmer]).into(),
+        retained_collision_edges: ahash::AHashSet::new().into(),
     };
     (graph, repeat_markers, clean_ends)
 }
@@ -174,17 +174,65 @@ fn run_repeat_pcr(
     params: &PCRParams,
     reads: Option<&[ReadRecord]>,
 ) -> PcrOutcome {
-    do_pcr(
+    let baseline = do_pcr(
         &counts.filtered_view(2),
         "repeat",
         params,
         false,
         "/tmp/",
-        reads,
+        reads.map(crate::io::ThreadingSource::Memory),
         10_000,
         withheld_diagnostic_limits_for_gene(0, 1),
     )
-    .unwrap()
+    .unwrap();
+    // Run every repeat/admission fixture against the exact-store boundary too.
+    // This compares complete records, warning causes and retention diagnostics.
+    use crate::kmer::identity::{CanonicalKey, KmerSize};
+    use crate::kmer::store::MemoryCountBuilder;
+    use std::num::NonZeroU64;
+    let size = KmerSize::new(counts.get_k()).unwrap();
+    let mut builder = MemoryCountBuilder::new(size, 1 << 20, 16).unwrap();
+    for (&bits, &count) in counts.iter() {
+        builder
+            .add(
+                CanonicalKey::new(bits, size).unwrap(),
+                NonZeroU64::new(u64::from(count)).unwrap(),
+            )
+            .unwrap();
+    }
+    let store = builder.finalize([0; 32]);
+    let exact = do_pcr(
+        &FilteredKmerCounts::from_store(&store, 2),
+        "repeat",
+        params,
+        false,
+        "/tmp/",
+        reads.map(crate::io::ThreadingSource::Memory),
+        10_000,
+        withheld_diagnostic_limits_for_gene(0, 1),
+    )
+    .unwrap();
+    let inventory = |outcome: &PcrOutcome| {
+        outcome
+            .records
+            .iter()
+            .map(|record| {
+                (
+                    record.id().to_owned(),
+                    record.desc().map(str::to_owned),
+                    record.seq().to_vec(),
+                )
+            })
+            .collect::<Vec<_>>()
+    };
+    assert_eq!(inventory(&exact), inventory(&baseline));
+    assert_eq!(exact.failure_reason, baseline.failure_reason);
+    assert_eq!(exact.threshold_diagnostics, baseline.threshold_diagnostics);
+    assert_eq!(
+        serde_yaml_ng::to_value(&exact.uncertain_products).unwrap(),
+        serde_yaml_ng::to_value(&baseline.uncertain_products).unwrap()
+    );
+    baseline
 }
 
 fn assert_repeat_uncertainty(outcome: &PcrOutcome) {
@@ -632,9 +680,9 @@ fn acyclic_merge_taints_only_the_collision_edge() {
         },
     );
     let markers = graph::RepeatMarkers {
-        omitted_self_loop_sub_kmers: ahash::AHashSet::new(),
-        cyclic_scc_sub_kmers: ahash::AHashSet::new(),
-        retained_collision_edges: ahash::AHashSet::from_iter([collision_edge]),
+        omitted_self_loop_sub_kmers: ahash::AHashSet::new().into(),
+        cyclic_scc_sub_kmers: ahash::AHashSet::new().into(),
+        retained_collision_edges: ahash::AHashSet::from_iter([collision_edge]).into(),
     };
     let counts = path_search_counts();
     let params = path_search_params();

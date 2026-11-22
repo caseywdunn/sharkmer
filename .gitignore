@@ -22,6 +22,8 @@ panels/validation_reports/
 panels/validation_results/
 panels/bootstrap/
 benchmarks/benchmark_runs/
+# Keep new analysis results out of production source downloads.
+benchmarks/benchmark_results/
 logs/
 .claude/settings.local.json
 .claude/skills/*-workspace/

@@ -121,6 +121,15 @@ The `--max-reads 1000000` argument indicates that the first million reads (indiv
 
 This analysis will generate one fasta file for each primer pair, named `{sample}_{gene}.fasta` (e.g., `Stenogorgia_casta_18S.fasta`). If no product was found, the fasta file is not generated. The fasta file can contain more than one sequence when multiple products are found. A YAML stats file (`{sample}.stats.yaml`) is also produced with run statistics, per-gene PCR results, and bounded diagnostics for each attempted coverage threshold. Threshold diagnostics record connectivity and search-limit observations, repeat-marker cause counts, and eligible or withheld complete candidate counts without serializing graph identifiers. A reached search quota records why enumeration stopped; it does not prove that another valid path exists beyond the quota.
 
+Each FASTA header names the `sample` and `target`, gives a `sequence_index`,
+and reports the emitted base count as `sequence_length`. The target can be a
+spacer or a region spanning genes. The index numbers sequences within the
+ordinary or warning class; use the full FASTA identifier to join evidence.
+Ordinary records retain the `kmer_count_*` measurements, which summarize counts
+along the assembly path rather than independent read depth. The internal
+ranking score is recorded as `assembly_rank_score` under the target's
+`sequence_annotations` in the stats file. It is not a confidence probability.
+
 By default, each target's FASTA includes a bounded selection of sequences
 with assembly warnings alongside sequences without warnings. A record with
 a warning has `assembly_status=warning` and `assembly_status_causes` naming
@@ -135,7 +144,7 @@ not establish biological correctness.
 | `high_coverage_repeat_suspected` | Unusually high k-mer coverage at a connection suggests a repeat. |
 
 Multiple causes are comma-separated. These warnings describe unresolved or
-suspected repeats, not proof that a sequence is wrong. The `length` field
+suspected repeats, not proof that a sequence is wrong. The `sequence_length` field
 always describes the emitted sequence; biological repeat length may differ.
 No `read_support` field is emitted because this output feature does not
 perform a per-sequence read-support assessment. Optional `--read-threading`
@@ -176,22 +185,32 @@ record. `n_kmers` counts accepted kmer occurrences, not distinct kmer keys.
 `peak_memory_bytes` is the allocator heap peak; process RSS is measured
 separately by the benchmark harness when available.
 
+See [Memory and temporary storage](#memory-and-temporary-storage) for how to
+fit a run to the resources available on your machine or cluster.
+
 Sharkmer also writes `{sample}.manifest.yaml`.
 Only a manifest with `status: complete`, a matching stats `run_id`, and valid
-SHA-256 receipts identifies a completed current run. A completed run can still
-report failed genes. Do not infer success by globbing FASTA files after an
-interruption: `in_progress`, `publishing`, and `failed` runs are not complete.
+SHA-256 receipts identifies a completed output generation. A completed run can
+still report failed genes. A failed rerun can leave the previous completed
+generation in place; check the command's exit status and `run_id` to identify
+which attempt produced the results. Do not infer success by globbing FASTA files
+after an interruption: `in_progress`, `publishing`, and `failed` runs are not
+complete.
 
-Rerunning the same sample/output directory invalidates its previous owned
-FASTA and stats files, including products from genes no longer selected.
-Verified owned schema-1 outputs migrate to the combined format, removing old
-uncertainty sidecars. Modified, unowned, and symlink collisions, including
-unowned legacy files, are preserved and rejected rather than overwritten; use
-a fresh directory to retain previous results. Concurrent runs with the same output
-identity are serialized. Histograms and diagnostic DOT files are outside this
-transaction and are not covered by its completion or cleanup guarantees.
-Argument-validation failures occur before a new transaction starts and leave
-previous results untouched; always check the command's exit status.
+Rerunning the same sample/output directory preserves its completed FASTA and
+stats while analyzing the new input. A successful replacement removes verified
+owned files from genes no longer selected and migrates historical outputs,
+including old schema-1 uncertainty sidecars. Publication failures restore the
+previous generation when possible; after interruption, the next run recovers
+before processing new input. Modified, unowned, and symlink collisions are
+preserved and refused. If recovery cannot finish, keep its hidden recovery
+receipt and staging directory, which contain the previous results, and use a
+fresh output directory while resolving the conflict. Use a different output
+directory when you want to keep both successful generations.
+
+Concurrent runs with the same output identity are serialized. Histograms and
+diagnostic DOT files are outside this transaction and its completion or cleanup
+guarantees. Argument-validation failures leave previous results untouched.
 
 Reads downloaded via `--ena` are cached (SHA-256 verified) under a shared cache directory so repeated runs on the same accession do not re-download. Use `--cache-dir` to override the location, `--no-cache` to stream directly without touching the cache, or `--clear-cache` to remove verified cached reads.
 
@@ -221,6 +240,37 @@ You can then edit the exported YAML to add genes, remove genes, or optimize prim
     sharkmer --max-reads 1000000 -s Stenogorgia_casta -o output/ --pcr-panel-file octocorallia.yaml --ena SRR26955578
 
 See [PCR.md](PCR.md) for the full panel file schema (versioning, maintainers, changelog, validation block) and the panel development cycle, including how to validate a panel against declared ENA/SRA samples with `scripts/validate_panel.py`. Contributions of new panels and primer additions are welcome — PCR.md describes the expected PR contents.
+
+### Memory and temporary storage
+
+Normal runs use a 12 GiB memory budget and a 64 GiB temporary disk budget
+by default. Set `--memory-budget` and `--temp-disk-budget` to fit your
+machine or job. Set `--temp-dir` if you want to keep temporary count and replay
+files on a different drive. For example:
+
+```bash
+sharkmer -s sample --pcr-panel cnidaria \
+  --memory-budget 8G --temp-disk-budget 32G \
+  --temp-dir /path/to/scratch reads.fastq.gz
+```
+
+Use a positive whole number with `M` (MiB) or `G` (GiB). For example,
+`1G` equals `1024M`. The options also accept `MiB` and `GiB`, and suffixes
+are case-insensitive.
+
+Sharkmer splits the memory budget among its working buffers and leaves headroom
+for libraries and threads. Smaller memory budgets may cause exact counts to
+spill to disk sooner. On Linux, Sharkmer also applies a virtual address-space
+limit and respects stricter inherited limits. The memory budget does not set a
+portable peak RAM ceiling.
+
+The disk budget covers Sharkmer's temporary files, including staged output and
+recovery copies. Ensure that the temporary and output drives have enough free
+space. Increase the relevant budget if a run hits its limit. Sharkmer preserves
+any previously completed output on a failed rerun.
+
+The two budget options apply to normal runs (`--chunks 0`). Explicit incremental
+counting (`--chunks > 0`) uses its existing separate workflow.
 
 ### Optimizing *in silico* PCR (sPCR)
 
@@ -321,9 +371,10 @@ supported opposite-strand mappings contribute only their common local evidence,
 not an arbitrarily chosen branch.
 
 This remains an opt-in heuristic, not proof of a complete haplotype. Paired
-long-range links are not yet used in path selection. Replay still retains
-reads in memory and can add substantial time and RAM; bounded replay is
-planned for v4.0. Stdin cannot currently be replayed for threading.
+long-range links are not yet used in path selection. V4 development builds use
+bounded disk replay for normal sPCR, including stdin, without rereading the
+original source. Replay needs temporary disk space and can add runtime. Explicit
+incremental counting retains its legacy memory-based replay behavior.
 
 ### Working with complex samples
 

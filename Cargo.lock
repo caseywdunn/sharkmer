@@ -1473,7 +1473,7 @@ dependencies = [
 
 [[package]]
 name = "sharkmer"
-version = "3.2.1"
+version = "4.0.0"
 dependencies = [
  "ahash",
  "anyhow",
@@ -1481,21 +1481,28 @@ dependencies = [
  "clap",
  "clap_complete",
  "dirs",
+ "editdistancek",
  "env_logger",
  "flate2",
  "fs2",
+ "hashbrown 0.16.1",
  "indicatif",
+ "libc",
  "log",
+ "memchr",
+ "miniz_oxide",
  "peak_alloc",
  "petgraph",
  "rand",
  "rayon",
+ "ring",
  "rustc-hash",
+ "rustix",
  "serde",
  "serde_yaml_ng",
  "sha2",
- "smallvec",
  "tempfile",
+ "unsafe-libyaml",
  "ureq",
 ]
 
@@ -1734,8 +1741,6 @@ checksum = "8ecb6da28b8a351d773b68d5825ac39017e680750f980f3a1a85cd8dd28a47c1"
 [[package]]
 name = "ureq"
 version = "2.12.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "02d1a66277ed75f640d608235660df48c8e3c19f3b4edb6a263315626cc3c01d"
 dependencies = [
  "base64",
  "flate2",

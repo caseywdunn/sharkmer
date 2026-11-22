@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [4.0.0] - 2026-11-21
+
+### Changed
+
+- Normal sPCR uses a faster exact k-mer counter. It reads the original input once, avoids merging a full copy of the count table, and spills counts to temporary storage when the table fills. Explicit incremental counting with `--chunks` retains its histogram workflow (#139–#145).
+- Use `--memory-budget 8G` and `--temp-disk-budget 32G` to size normal runs, and `--temp-dir` to choose scratch storage. Omitting these options uses the established defaults. Optional read threading can replay selected reads from stdin (#139, #143, #145).
+- FASTA headers use `target`, `sequence_index`, and `sequence_length` in place of `gene`, `product`, and `length`. The ranking heuristic moves from `score` in FASTA to `assembly_rank_score` in the stats YAML. Sequence IDs, filenames, k-mer count summaries, and warning filters retain their meanings. See the [schema 4 migration guide](https://github.com/caseywdunn/sharkmer/blob/v4.0.0/dev_docs/SEQUENCE_ANNOTATIONS.md#v40-interface-and-migration) (#159).
+
+### Fixed
+
+- A recovery journal lets Sharkmer restore the previous completed outputs if a rerun fails during publication or is interrupted (#139, #143).
+- Chunked HTTP responses are parsed without retaining arbitrarily long chunk headers. Read and primer-panel loads retain bounded application buffers (#139).
+
+### Verification
+
+The [release benchmark](https://github.com/caseywdunn/sharkmer-benchmarks/tree/main/benchmarks/benchmark_results/v4-final-integration-20261117) recovered the same 287 sequences, IDs, and warning classifications as v3.2.1 across ten inputs. Geometric-mean runtime fell by 26%, and peak memory fell on every input.
+
 ## [3.2.1] - 2026-11-09
 
 ### Security
@@ -398,6 +415,7 @@ details.
 - Bioconda recipe for binary distribution
 - sharkmer_viewer Python tool for histogram visualization
 
+[4.0.0]: https://github.com/caseywdunn/sharkmer/compare/v3.2.1...v4.0.0
 [3.2.1]: https://github.com/caseywdunn/sharkmer/compare/v3.2.0...v3.2.1
 [3.2.0]: https://github.com/caseywdunn/sharkmer/compare/v3.1.0...v3.2.0
 [3.1.0]: https://github.com/caseywdunn/sharkmer/compare/v3.0.0...v3.1.0

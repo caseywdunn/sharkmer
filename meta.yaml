@@ -1,11 +1,11 @@
-{% set version = "3.2.1" %}
+{% set version = "4.0.0" %}
 
 package:
   name: sharkmer
   version: {{ version }}
 
 source:
-  url: https://github.com/caseywdunn/sharkmer/archive/refs/tags/v{{ version }}.tar.gz
+  url: https://github.com/caseywdunn/sharkmer/releases/download/v{{ version }}/sharkmer-{{ version }}.tar.gz
   sha256: PLACEHOLDER
 
 build:

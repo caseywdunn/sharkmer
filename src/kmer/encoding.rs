@@ -330,43 +330,11 @@ pub fn kmer_to_seq(kmer: &u64, k: &usize) -> String {
 /// intermediate `Read` struct and 2-bit packing round-trip. Returns the same
 /// canonical kmers in the same order.
 pub fn kmers_from_ascii(seq: &str, k: usize) -> Result<Vec<u64>> {
-    ensure!(k > 0 && k < 32, "k must be between 1 and 31, got {}", k);
-    let mask: u64 = (1 << (2 * k)) - 1;
-    let mut kmers: Vec<u64> = Vec::with_capacity(seq.len().saturating_sub(k - 1));
-    let mut frame: u64 = 0;
-    let mut revframe: u64 = 0;
-    let mut n_valid: usize = 0;
-
-    for &b in seq.as_bytes() {
-        let base: u64 = match b {
-            b'A' => 0,
-            b'C' => 1,
-            b'G' => 2,
-            b'T' => 3,
-            b'N' => {
-                // Reset — equivalent to starting a new subread
-                n_valid = 0;
-                frame = 0;
-                revframe = 0;
-                continue;
-            }
-            _ => bail!(
-                "Invalid character '{}' in sequence. Only ACGTN allowed.",
-                b as char
-            ),
-        };
-
-        frame = (frame << 2) | base;
-        revframe = (revframe >> 2) | ((3 - base) << (2 * (k - 1)));
-        n_valid += 1;
-
-        if n_valid >= k {
-            let forward = frame & mask;
-            let reverse = revframe & mask;
-            kmers.push(forward.min(reverse));
-        }
+    let windows = super::identity::KmerWindows::new(seq.as_bytes(), k)?;
+    let mut kmers = Vec::with_capacity(seq.len().saturating_sub(k - 1));
+    for window in windows {
+        kmers.push(window?.canonical.bits());
     }
-
     Ok(kmers)
 }
 

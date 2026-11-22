@@ -1,16 +1,21 @@
 // pcr/graph.rs — graph data structures and construction
 
-use ahash::{AHashMap, AHashSet};
+use super::memory::buffers::{BudgetNodeSet, BudgetQueue, BudgetSet, BudgetVec};
 use anyhow::Result;
 use log::debug;
 use petgraph::graph::{EdgeIndex, NodeIndex};
 use petgraph::stable_graph::StableDiGraph;
-use std::collections::VecDeque;
 
 use crate::kmer::FilteredKmerCounts;
+#[cfg(test)]
 use crate::kmer::KmerCounts;
+use crate::kmer::PrimerKmers;
 
+use super::memory::AssemblyGraph;
+use super::memory::lookup::NodeLookup;
 use super::{DBEdge, DBNode, PCRParams};
+use crate::kmer::budget::ResourceBudget;
+use std::sync::Arc;
 
 /// How frequently to check extension graph for ballooning growth
 const EXTENSION_EVALUATION_FREQUENCY: usize = 1_000;
@@ -79,7 +84,7 @@ pub(super) fn get_suffix_mask(k: &usize) -> u64 {
 /// extra full sort: after partitioning at `mid`, the lower half is
 /// `counts[..mid]` (any order, but bounded above by `counts[mid]`), so a
 /// single linear scan over that half finds the (mid-1)-th order statistic.
-fn median_via_select<T>(mut counts: Vec<T>, to_f64: impl Fn(T) -> f64) -> Option<f64>
+fn median_via_select<T>(counts: &mut [T], to_f64: impl Fn(T) -> f64) -> Option<f64>
 where
     T: Copy + Ord,
 {
@@ -90,44 +95,54 @@ where
     if counts.len() % 2 == 0 {
         counts.select_nth_unstable(mid);
         let upper_min = to_f64(counts[mid]);
-        let lower_max = to_f64(
-            *counts[..mid]
-                .iter()
-                .max()
-                .expect("non-empty lower half when len >= 2"),
-        );
+        let lower_max = to_f64(*counts[..mid].iter().max()?);
         Some((lower_max + upper_min) / 2.0)
     } else {
         Some(to_f64(*counts.select_nth_unstable(mid).1))
     }
 }
 
-pub(super) fn median_u32_f64(counts: Vec<u32>) -> Option<f64> {
+#[cfg(test)]
+pub(super) fn median_u32_f64(mut counts: Vec<u32>) -> Option<f64> {
+    median_via_select(&mut counts, |x| x as f64)
+}
+
+#[cfg(test)]
+pub(super) fn median_u64_f64(mut counts: Vec<u64>) -> Option<f64> {
+    median_via_select(&mut counts, |x| x as f64)
+}
+
+pub(super) fn median_u64_slice(counts: &mut [u64]) -> Option<f64> {
     median_via_select(counts, |x| x as f64)
 }
 
-pub(super) fn median_u64_f64(counts: Vec<u64>) -> Option<f64> {
-    median_via_select(counts, |x| x as f64)
-}
-
+#[cfg(test)]
 fn compute_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>, default: f64) -> f64 {
-    let counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
-    median_u32_f64(counts).unwrap_or(default)
+    median_edge_count_budgeted(graph, default, None).unwrap()
+}
+
+fn median_edge_count_budgeted(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    default: f64,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<f64> {
+    let mut counts = BudgetVec::collect(graph.edge_indices().map(|e| graph[e].count), budget)?;
+    Ok(median_u64_slice(&mut counts).unwrap_or(default))
 }
 
 fn high_coverage_limit(
     median_edge_count: f64,
     high_coverage_ratio: f64,
-    coverage_count_floor: u32,
+    coverage_count_floor: u64,
 ) -> f64 {
     (median_edge_count * high_coverage_ratio).max(coverage_count_floor as f64)
 }
 
-pub fn get_dbedge(kmer: &u64, kmer_counts: &FilteredKmerCounts) -> DBEdge {
-    DBEdge {
-        count: kmer_counts.get_canonical_count(kmer),
+pub fn get_dbedge(kmer: &u64, kmer_counts: &FilteredKmerCounts) -> Result<DBEdge> {
+    Ok(DBEdge {
+        count: kmer_counts.get_canonical_count(kmer)?,
         coverage_ratio: 0.0, // set during annotation pass
-    }
+    })
 }
 
 /// Reconstruct the full kmer for an edge from its source and target node sub_kmers.
@@ -141,6 +156,7 @@ pub(super) fn reconstruct_edge_kmer(
     (graph[src].sub_kmer << 2) | (graph[tgt].sub_kmer & 3)
 }
 
+#[cfg(test)]
 pub fn get_start_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
     graph
         .node_indices()
@@ -148,6 +164,7 @@ pub fn get_start_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> 
         .collect()
 }
 
+#[cfg(test)]
 pub fn get_end_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
     graph
         .node_indices()
@@ -156,44 +173,49 @@ pub fn get_end_nodes(graph: &StableDiGraph<DBNode, DBEdge>) -> Vec<NodeIndex> {
 }
 
 // Find the descendants of a node, each descendent no more than `depth` edges away
+#[cfg(test)]
 pub(super) fn descendants(
     graph: &StableDiGraph<DBNode, DBEdge>,
     node: NodeIndex,
     depth: usize,
-) -> AHashSet<NodeIndex> {
-    let mut visited: AHashSet<NodeIndex> = AHashSet::new();
-    let mut queue = VecDeque::new();
+) -> BudgetNodeSet {
+    descendants_budgeted(graph, node, depth, None).unwrap()
+}
 
-    queue.push_back((node, 0));
-    visited.insert(node);
-
-    let mut descendants: AHashSet<NodeIndex> = AHashSet::new();
-
+fn descendants_budgeted(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    node: NodeIndex,
+    depth: usize,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<BudgetNodeSet> {
+    let mut visited = BudgetNodeSet::new(budget);
+    let mut queue = BudgetQueue::new(budget);
+    queue.push_back((node, 0))?;
+    visited.insert(node)?;
+    let mut descendants = BudgetNodeSet::new(budget);
     while let Some((current_node, current_depth)) = queue.pop_front() {
         if current_depth >= depth {
             continue;
         }
-
         for neighbor in graph.neighbors(current_node) {
-            if visited.insert(neighbor) {
-                // insert returns false if the item was already in the set
-                descendants.insert(neighbor);
-                queue.push_back((neighbor, current_depth + 1));
+            if visited.insert(neighbor)? {
+                descendants.insert(neighbor)?;
+                queue.push_back((neighbor, current_depth + 1))?;
             }
         }
     }
-
-    descendants
+    Ok(descendants)
 }
 
 pub fn compute_mean(numbers: &[u64]) -> f64 {
     if numbers.is_empty() {
         return 0.0;
     }
-    let sum: u64 = numbers.iter().sum();
+    let sum: u128 = numbers.iter().map(|&number| u128::from(number)).sum();
     sum as f64 / numbers.len() as f64
 }
 
+#[cfg(test)]
 pub fn compute_median(numbers: &[u64]) -> f64 {
     // Empty input returns 0.0 (preserved from the previous behavior — callers
     // in path scoring and `summarize_extension` rely on a sentinel rather than
@@ -202,12 +224,13 @@ pub fn compute_median(numbers: &[u64]) -> f64 {
 }
 
 pub(super) fn create_seed_graph(
-    forward_primer_kmers: &KmerCounts,
-    reverse_primer_kmers: &KmerCounts,
+    forward_primer_kmers: &PrimerKmers,
+    reverse_primer_kmers: &PrimerKmers,
     kmer_counts: &FilteredKmerCounts,
-) -> (StableDiGraph<DBNode, DBEdge>, AHashMap<u64, NodeIndex>) {
-    let mut seed_graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
-    let mut node_lookup: AHashMap<u64, NodeIndex> = AHashMap::new();
+    graph_budget: Option<&Arc<ResourceBudget>>,
+) -> Result<(AssemblyGraph, NodeLookup)> {
+    let mut seed_graph = AssemblyGraph::new(graph_budget)?;
+    let mut node_lookup = NodeLookup::new(graph_budget);
 
     let k = kmer_counts.get_k();
     let suffix_mask = get_suffix_mask(&k);
@@ -238,9 +261,12 @@ pub(super) fn create_seed_graph(
     //   at the 5' end (leftward on sense strand).
 
     // Forward primer seeds
-    let mut sorted_forward_kmers = forward_primer_kmers.kmers();
-    sorted_forward_kmers.sort();
-    for kmer in sorted_forward_kmers {
+    let mut sorted_forward_kmers = BudgetVec::collect(
+        forward_primer_kmers.iter().map(|(key, _)| *key),
+        graph_budget,
+    )?;
+    sorted_forward_kmers.sort_unstable();
+    for &kmer in sorted_forward_kmers.iter() {
         let sub_kmer = kmer >> 2;
 
         if let Some(&existing) = node_lookup.get(&sub_kmer) {
@@ -250,15 +276,20 @@ pub(super) fn create_seed_graph(
                 sub_kmer,
                 is_start: true,
                 is_end: false,
-            });
-            node_lookup.insert(sub_kmer, node);
+            })?;
+            node_lookup.insert(sub_kmer, node)?;
         }
     }
 
+    drop(sorted_forward_kmers);
+
     // Reverse primer seeds (strand-normalized to sense strand)
-    let mut sorted_reverse_kmers = reverse_primer_kmers.kmers();
-    sorted_reverse_kmers.sort();
-    for kmer in sorted_reverse_kmers {
+    let mut sorted_reverse_kmers = BudgetVec::collect(
+        reverse_primer_kmers.iter().map(|(key, _)| *key),
+        graph_budget,
+    )?;
+    sorted_reverse_kmers.sort_unstable();
+    for &kmer in sorted_reverse_kmers.iter() {
         let rc_kmer = crate::kmer::revcomp_kmer(&kmer, &k);
         let sub_kmer = rc_kmer & suffix_mask;
 
@@ -269,8 +300,8 @@ pub(super) fn create_seed_graph(
                 sub_kmer,
                 is_start: false,
                 is_end: true,
-            });
-            node_lookup.insert(sub_kmer, node);
+            })?;
+            node_lookup.insert(sub_kmer, node)?;
         }
     }
 
@@ -282,7 +313,7 @@ pub(super) fn create_seed_graph(
         }
     }
 
-    (seed_graph, node_lookup)
+    Ok((seed_graph, node_lookup))
 }
 
 // Extend graph by adding edges and new nodes to non-terminal nodes.
@@ -313,15 +344,15 @@ enum ExtDir {
 
 #[derive(Debug, Default)]
 pub(super) struct ExtensionRepeatMarkers {
-    pub omitted_self_loop_sub_kmers: AHashSet<u64>,
-    pub retained_collision_edges: AHashSet<EdgeIndex>,
+    pub omitted_self_loop_sub_kmers: BudgetSet<u64>,
+    pub retained_collision_edges: BudgetSet<EdgeIndex>,
 }
 
 #[derive(Debug, Default)]
 pub(super) struct RepeatMarkers {
-    pub omitted_self_loop_sub_kmers: AHashSet<u64>,
-    pub cyclic_scc_sub_kmers: AHashSet<u64>,
-    pub retained_collision_edges: AHashSet<EdgeIndex>,
+    pub omitted_self_loop_sub_kmers: BudgetSet<u64>,
+    pub cyclic_scc_sub_kmers: BudgetSet<u64>,
+    pub retained_collision_edges: BudgetSet<EdgeIndex>,
 }
 
 /// Unified bidirectional graph extension. Processes forward and reverse seeds
@@ -341,71 +372,76 @@ pub(super) struct RepeatMarkers {
 /// does not change behavior — both directions extend in lockstep.
 #[allow(clippy::type_complexity)]
 pub(super) fn extend_graph(
-    mut graph: StableDiGraph<DBNode, DBEdge>,
-    mut node_lookup: AHashMap<u64, NodeIndex>,
+    graph: impl Into<AssemblyGraph>,
+    mut node_lookup: NodeLookup,
     kmer_counts: &FilteredKmerCounts,
-    min_count: &u32,
+    min_count: &u64,
     params: &PCRParams,
-    coverage_count_floor: u32,
+    coverage_count_floor: u64,
     max_num_nodes: usize,
 ) -> Result<(
-    StableDiGraph<DBNode, DBEdge>,
-    AHashMap<u64, NodeIndex>,
+    AssemblyGraph,
+    NodeLookup,
     bool,
     ExtensionRepeatMarkers,
     bool,
 )> {
+    let mut graph = graph.into();
     let suffix_mask: u64 = get_suffix_mask(&kmer_counts.get_k());
     let k = kmer_counts.get_k();
     let prefix_shift = 2 * (k - 1);
     let mut found_path = false;
     let mut node_budget_reached = false;
-    let mut repeat_markers = ExtensionRepeatMarkers::default();
+    let mut repeat_markers = ExtensionRepeatMarkers {
+        omitted_self_loop_sub_kmers: BudgetSet::new(graph.budget()),
+        retained_collision_edges: BudgetSet::new(graph.budget()),
+    };
 
     let mut last_check: usize = 0;
-    let mut median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
+    let mut median_edge_count =
+        median_edge_count_budgeted(&graph, *min_count as f64, graph.budget())?;
     let mut last_median_check: usize = 0;
 
     // Build the initial frontier from all seeds. Forward seeds get a Forward
     // entry; reverse seeds get a Reverse entry. Dual-role nodes (overlapping
     // primers, both is_start and is_end) get both entries so they can be
     // extended in both directions.
-    let mut frontier: VecDeque<(NodeIndex, ExtDir)> = VecDeque::new();
-    for node in graph.node_indices().collect::<Vec<_>>() {
+    let mut frontier = BudgetQueue::new(graph.budget());
+    for node in graph.node_indices() {
         if graph[node].is_start {
-            frontier.push_back((node, ExtDir::Forward));
+            frontier.push_back((node, ExtDir::Forward))?;
         }
         if graph[node].is_end {
-            frontier.push_back((node, ExtDir::Reverse));
+            frontier.push_back((node, ExtDir::Reverse))?;
         }
     }
 
     // Track per-direction processing. The DBNode visited flag is single-bit
     // and can't distinguish direction, so we use side tables here.
-    let mut processed_fwd: AHashSet<NodeIndex> = AHashSet::new();
-    let mut processed_rev: AHashSet<NodeIndex> = AHashSet::new();
+    let mut processed_fwd = BudgetNodeSet::new(graph.budget());
+    let mut processed_rev = BudgetNodeSet::new(graph.budget());
 
     // Track which direction added each node. Seeds are tagged by their type
     // (is_start = Forward, is_end = Reverse, dual = both). New nodes inherit
     // their parent's direction. When forward extension reaches a node in the
     // Reverse set (or vice versa), the extensions have met in the middle and
     // a path is potentially complete.
-    let mut added_by_fwd: AHashSet<NodeIndex> = AHashSet::new();
-    let mut added_by_rev: AHashSet<NodeIndex> = AHashSet::new();
+    let mut added_by_fwd = BudgetNodeSet::new(graph.budget());
+    let mut added_by_rev = BudgetNodeSet::new(graph.budget());
     for node in graph.node_indices() {
         if graph[node].is_start {
-            added_by_fwd.insert(node);
+            added_by_fwd.insert(node)?;
         }
         if graph[node].is_end {
-            added_by_rev.insert(node);
+            added_by_rev.insert(node)?;
         }
     }
 
     while let Some((node, dir)) = frontier.pop_front() {
         // Skip if already processed in this direction
         let already_processed = match dir {
-            ExtDir::Forward => !processed_fwd.insert(node),
-            ExtDir::Reverse => !processed_rev.insert(node),
+            ExtDir::Forward => !processed_fwd.insert(node)?,
+            ExtDir::Reverse => !processed_rev.insert(node)?,
         };
         if already_processed {
             continue;
@@ -428,7 +464,8 @@ pub(super) fn extend_graph(
         if n_nodes > last_median_check
             && (n_nodes - last_median_check) > EXTENSION_EVALUATION_FREQUENCY
         {
-            median_edge_count = compute_median_edge_count(&graph, *min_count as f64);
+            median_edge_count =
+                median_edge_count_budgeted(&graph, *min_count as f64, graph.budget())?;
             last_median_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
         }
 
@@ -436,7 +473,7 @@ pub(super) fn extend_graph(
         if (n_nodes > last_check) && ((n_nodes - last_check) > EXTENSION_EVALUATION_FREQUENCY) {
             last_check = n_nodes - (n_nodes % EXTENSION_EVALUATION_FREQUENCY);
             gene_info!(params.gene_name, "Evaluating bidirectional extension:");
-            summarize_extension(&graph, "    ");
+            summarize_extension(&graph, "    ", graph.budget())?;
         }
 
         let sub_kmer = graph[node].sub_kmer;
@@ -449,7 +486,7 @@ pub(super) fn extend_graph(
                 ExtDir::Forward => (sub_kmer << 2) | base,
                 ExtDir::Reverse => (base << prefix_shift) | sub_kmer,
             };
-            if let Some(count) = kmer_counts.get_canonical(&kmer)
+            if let Some(count) = kmer_counts.get_canonical(&kmer)?
                 && count >= *min_count
             {
                 candidate_kmers[n_candidates] = Some(kmer);
@@ -473,11 +510,13 @@ pub(super) fn extend_graph(
 
             // Self-loop: node would extend to itself
             if new_sub_kmer == sub_kmer {
-                repeat_markers.omitted_self_loop_sub_kmers.insert(sub_kmer);
+                repeat_markers
+                    .omitted_self_loop_sub_kmers
+                    .insert(sub_kmer)?;
                 continue;
             }
 
-            let edge = get_dbedge(kmer, kmer_counts);
+            let edge = get_dbedge(kmer, kmer_counts)?;
             let exceeds_coverage_limit = (edge.count as f64)
                 > high_coverage_limit(
                     median_edge_count,
@@ -496,7 +535,7 @@ pub(super) fn extend_graph(
                 } else {
                     match dir {
                         ExtDir::Forward => {
-                            let edge_id = graph.add_edge(node, existing_node, edge);
+                            let edge_id = graph.add_edge(node, existing_node, edge)?;
                             // Path found if forward extension reaches any node
                             // that was added by reverse extension (or is_end seed)
                             if added_by_rev.contains(&existing_node) {
@@ -511,7 +550,7 @@ pub(super) fn extend_graph(
                             edge_id
                         }
                         ExtDir::Reverse => {
-                            let edge_id = graph.add_edge(existing_node, node, edge);
+                            let edge_id = graph.add_edge(existing_node, node, edge)?;
                             // Path found if reverse extension reaches any node
                             // that was added by forward extension (or is_start seed)
                             if added_by_fwd.contains(&existing_node) {
@@ -530,7 +569,7 @@ pub(super) fn extend_graph(
                 if exceeds_coverage_limit {
                     repeat_markers
                         .retained_collision_edges
-                        .insert(collision_edge);
+                        .insert(collision_edge)?;
                 }
             } else {
                 // Skip high-coverage edges (likely repetitive)
@@ -542,18 +581,18 @@ pub(super) fn extend_graph(
                     sub_kmer: new_sub_kmer,
                     is_start: false,
                     is_end: false,
-                });
-                node_lookup.insert(new_sub_kmer, new_node);
+                })?;
+                node_lookup.insert(new_sub_kmer, new_node)?;
 
                 // Tag the new node with the direction that added it
                 match dir {
                     ExtDir::Forward => {
-                        added_by_fwd.insert(new_node);
-                        graph.add_edge(node, new_node, edge);
+                        added_by_fwd.insert(new_node)?;
+                        graph.add_edge(node, new_node, edge)?;
                     }
                     ExtDir::Reverse => {
-                        added_by_rev.insert(new_node);
-                        graph.add_edge(new_node, node, edge);
+                        added_by_rev.insert(new_node)?;
+                        graph.add_edge(new_node, node, edge)?;
                     }
                 }
 
@@ -561,7 +600,7 @@ pub(super) fn extend_graph(
                 // path finding time, not during extension. This avoids a
                 // per-node BFS that was the dominant cost in bidirectional
                 // extension.
-                frontier.push_back((new_node, dir));
+                frontier.push_back((new_node, dir))?;
             }
         }
     }
@@ -575,138 +614,164 @@ pub(super) fn extend_graph(
     ))
 }
 
+#[cfg(test)]
 pub(super) fn repeat_markers_before_pruning(
     graph: &StableDiGraph<DBNode, DBEdge>,
     extension_markers: ExtensionRepeatMarkers,
 ) -> RepeatMarkers {
+    repeat_markers_before_pruning_budgeted(graph, extension_markers, None).unwrap()
+}
+
+pub(super) fn repeat_markers_before_pruning_budgeted(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    extension_markers: ExtensionRepeatMarkers,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<RepeatMarkers> {
     debug_assert!(
         extension_markers
             .retained_collision_edges
             .iter()
             .all(|edge| graph.edge_weight(*edge).is_some())
     );
-    RepeatMarkers {
+    Ok(RepeatMarkers {
         omitted_self_loop_sub_kmers: extension_markers.omitted_self_loop_sub_kmers,
-        cyclic_scc_sub_kmers: cyclic_scc_sub_kmers(graph),
+        cyclic_scc_sub_kmers: cyclic_scc_sub_kmers_budgeted(graph, budget)?,
         retained_collision_edges: extension_markers.retained_collision_edges,
-    }
+    })
 }
 
-fn cyclic_scc_sub_kmers(graph: &StableDiGraph<DBNode, DBEdge>) -> AHashSet<u64> {
-    let mut cyclic_sub_kmers = AHashSet::new();
-    for component in petgraph::algo::kosaraju_scc(graph) {
-        let cyclic = component.len() > 1
-            || component
-                .first()
-                .is_some_and(|node| graph.find_edge(*node, *node).is_some());
-        if cyclic {
-            cyclic_sub_kmers.extend(component.into_iter().map(|node| graph[node].sub_kmer));
+/// Iterative Kosaraju scan with owned buffers; no uncharged component arrays.
+fn cyclic_scc_sub_kmers_budgeted(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<BudgetSet<u64>> {
+    let mut visited = BudgetNodeSet::new(budget);
+    let mut stack = BudgetVec::new(budget);
+    let mut order = BudgetVec::new(budget);
+    for root in graph.node_indices() {
+        if visited.contains(&root) {
+            continue;
+        }
+        stack.push((root, false))?;
+        while let Some((node, exiting)) = stack.pop() {
+            if exiting {
+                order.push(node)?;
+            } else if visited.insert(node)? {
+                stack.push((node, true))?;
+                for neighbor in graph.neighbors_directed(node, petgraph::Direction::Outgoing) {
+                    if !visited.contains(&neighbor) {
+                        stack.push((neighbor, false))?;
+                    }
+                }
+            }
         }
     }
-    cyclic_sub_kmers
+    visited.clear();
+    let mut component = BudgetVec::new(budget);
+    let mut cyclic = BudgetSet::new(budget);
+    while let Some(root) = order.pop() {
+        if visited.contains(&root) {
+            continue;
+        }
+        component.clear();
+        stack.push((root, false))?;
+        while let Some((node, _)) = stack.pop() {
+            if visited.insert(node)? {
+                component.push(node)?;
+                for neighbor in graph.neighbors_directed(node, petgraph::Direction::Incoming) {
+                    if !visited.contains(&neighbor) {
+                        stack.push((neighbor, false))?;
+                    }
+                }
+            }
+        }
+        if component.len() > 1 || graph.find_edge(root, root).is_some() {
+            for &node in component.iter() {
+                cyclic.insert(graph[node].sub_kmer)?;
+            }
+        }
+    }
+    Ok(cyclic)
 }
 
 /// Annotate each edge with its coverage ratio: count / global median.
 /// High ratios (>> 1.0) indicate potentially repetitive edges.
 /// Low ratios (<< 1.0) indicate potential sequencing errors.
-pub(super) fn annotate_coverage_ratios(graph: &mut StableDiGraph<DBNode, DBEdge>) {
-    let counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
-    let Some(median) = median_u32_f64(counts) else {
-        return;
-    };
+pub(super) fn annotate_coverage_ratios(
+    graph: &mut StableDiGraph<DBNode, DBEdge>,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<()> {
+    let median = median_edge_count_budgeted(graph, 0.0, budget)?;
     if median <= 0.0 {
-        return;
+        return Ok(());
     }
-
-    for edge_idx in graph.edge_indices().collect::<Vec<_>>() {
-        let count = graph[edge_idx].count as f64;
-        graph[edge_idx].coverage_ratio = count / median;
+    // Weight iteration changes scalars only and needs no copied edge IDs.
+    for edge in graph.edge_weights_mut() {
+        edge.coverage_ratio = edge.count as f64 / median;
     }
+    Ok(())
 }
 
-pub fn summarize_extension(graph: &StableDiGraph<DBNode, DBEdge>, pad: &str) {
+pub fn summarize_extension(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    pad: &str,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<()> {
     if !log::log_enabled!(log::Level::Debug) {
-        return;
+        return Ok(());
     }
-
-    // Print the number of nodes and edges in the graph
     debug!("{}There are {} nodes in the graph", pad, graph.node_count());
     debug!("{}There are {} edges in the graph", pad, graph.edge_count());
-
-    // Print the mean, median, and max degree of all nodes
-    let degrees: Vec<usize> = graph
-        .node_indices()
-        .map(|node| graph.neighbors(node).count())
-        .collect();
-
-    if degrees.is_empty() {
+    let mut degrees = BudgetVec::collect(
+        graph
+            .node_indices()
+            .map(|node| graph.neighbors(node).count() as u64),
+        budget,
+    )?;
+    let Some(max_degree) = degrees.iter().max().copied() else {
         debug!(
             "{}There are no nodes in the graph, terminating summary.",
             pad
         );
-        return;
-    }
-
-    let max_degree = degrees
-        .iter()
-        .max()
-        .expect("degrees is non-empty (checked above)");
-    let degrees_u64: Vec<u64> = degrees.iter().map(|&x| x as u64).collect();
-    let mean_degree = compute_mean(&degrees_u64);
-    let median_degree = compute_median(&degrees_u64);
-
+        return Ok(());
+    };
+    let mean_degree = compute_mean(&degrees);
+    let median_degree = median_u64_slice(&mut degrees).unwrap_or(0.0);
     debug!(
         "{}Max node degree {}, mean {:.2} median {:.1}",
         pad, max_degree, mean_degree, median_degree
     );
-
-    // Print the mean, median, and max count of edges
-    let counts: Vec<u64> = graph
-        .edge_indices()
-        .map(|e| graph[e].count as u64)
-        .collect();
-
-    if counts.is_empty() {
+    drop(degrees);
+    let mut counts =
+        BudgetVec::collect(graph.edge_indices().map(|edge| graph[edge].count), budget)?;
+    let Some(max_count) = counts.iter().max().copied() else {
         debug!(
             "{}There are no edges in the graph, terminating summary.",
             pad
         );
-        return;
-    }
-
-    let max_count = counts
-        .iter()
-        .max()
-        .expect("counts is non-empty (checked above)");
+        return Ok(());
+    };
     let mean_count = compute_mean(&counts);
-    let median_count = compute_median(&counts);
-
+    let median_count = median_u64_slice(&mut counts).unwrap_or(0.0);
     debug!(
         "{}Max edge count {}, mean {:.2} median {:.1}",
         pad, max_count, mean_count, median_count
     );
-
-    // Create a vector of n_descendants for each node given a depth of EXTENSION_EVALUATION_DEPTH
-    let n_descendants_vec: Vec<u64> = graph
-        .node_indices()
-        .map(|node| descendants(graph, node, EXTENSION_EVALUATION_DEPTH).len() as u64)
-        .collect();
-
-    let max_n_descendants = n_descendants_vec
-        .iter()
-        .max()
-        .expect("n_descendants_vec is non-empty (checked above)");
-    let mean_n_descendants = compute_mean(&n_descendants_vec);
-    let median_n_descendants = compute_median(&n_descendants_vec);
-
+    drop(counts);
+    let mut descendants = BudgetVec::new(budget);
+    for node in graph.node_indices() {
+        descendants.push(
+            descendants_budgeted(graph, node, EXTENSION_EVALUATION_DEPTH, budget)?.len() as u64,
+        )?;
+    }
+    let max_descendants = descendants.iter().max().copied().unwrap_or(0);
+    let mean_descendants = compute_mean(&descendants);
+    let median_descendants = median_u64_slice(&mut descendants).unwrap_or(0.0);
     debug!(
         "{}Number of descendants to a depth of {}, max {} mean {:.2} median {:.1}",
-        pad,
-        EXTENSION_EVALUATION_DEPTH,
-        max_n_descendants,
-        mean_n_descendants,
-        median_n_descendants
+        pad, EXTENSION_EVALUATION_DEPTH, max_descendants, mean_descendants, median_descendants
     );
+    Ok(())
 }
 
 #[cfg(test)]
@@ -721,11 +786,94 @@ mod tests {
         }
     }
 
-    fn mk_edge(count: u32) -> DBEdge {
+    fn mk_edge(count: u64) -> DBEdge {
         DBEdge {
             count,
             coverage_ratio: 1.0,
         }
+    }
+
+    fn workspace_budget(bytes: u64) -> Arc<ResourceBudget> {
+        ResourceBudget::new(crate::kmer::budget::ResourceLimits {
+            memory_bytes: bytes,
+            process_overhead_bytes: 0,
+            class_bytes: [bytes; crate::kmer::budget::MEMORY_CLASSES],
+            temporary_disk_bytes: 0,
+            temporary_open_files: 0,
+        })
+        .unwrap()
+    }
+
+    #[test]
+    fn owned_scc_scan_matches_petgraph_on_directed_graphs_with_holes_and_parallel_edges() {
+        let budget = workspace_budget(1 << 20);
+        let mut random = 157u64;
+        for round in 0..96 {
+            let mut graph = StableDiGraph::new();
+            for index in 0..33 {
+                graph.add_node(mk_node(round * 100 + index, index == 0, index == 32));
+            }
+            graph.remove_node(NodeIndex::new(5));
+            graph.remove_node(NodeIndex::new(17));
+            let nodes: Vec<_> = graph.node_indices().collect();
+            for _ in 0..80 {
+                random = random.wrapping_mul(6364136223846793005).wrapping_add(1);
+                let from = nodes[(random >> 32) as usize % nodes.len()];
+                random = random.wrapping_mul(6364136223846793005).wrapping_add(1);
+                let to = nodes[(random >> 32) as usize % nodes.len()];
+                graph.add_edge(from, to, mk_edge(10));
+            }
+            let expected: std::collections::BTreeSet<_> = petgraph::algo::kosaraju_scc(&graph)
+                .into_iter()
+                .filter(|group| group.len() > 1 || graph.find_edge(group[0], group[0]).is_some())
+                .flatten()
+                .map(|node| graph[node].sub_kmer)
+                .collect();
+            let result = cyclic_scc_sub_kmers_budgeted(&graph, Some(&budget)).unwrap();
+            assert_eq!(
+                result
+                    .iter()
+                    .copied()
+                    .collect::<std::collections::BTreeSet<_>>(),
+                expected
+            );
+            drop(result);
+            assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+        }
+    }
+
+    #[test]
+    fn scc_and_median_workspace_exhaustion_preserve_graph_and_release_all_buffers() {
+        let mut graph = StableDiGraph::new();
+        let a = graph.add_node(mk_node(1, true, false));
+        let b = graph.add_node(mk_node(2, false, true));
+        graph.add_edge(a, b, mk_edge(10));
+        graph.add_edge(b, a, mk_edge(20));
+        let tiny = workspace_budget(1);
+        let error = cyclic_scc_sub_kmers_budgeted(&graph, Some(&tiny)).unwrap_err();
+        assert!(
+            error
+                .downcast_ref::<crate::kmer::budget::ResourceExhausted>()
+                .is_some()
+        );
+        assert_eq!(tiny.snapshot().reserved_memory_bytes, 0);
+        assert!(
+            median_edge_count_budgeted(&graph, 0.0, Some(&tiny))
+                .unwrap_err()
+                .downcast_ref::<crate::kmer::budget::ResourceExhausted>()
+                .is_some()
+        );
+        assert_eq!(tiny.snapshot().reserved_memory_bytes, 0);
+        assert_eq!((graph.node_count(), graph.edge_count()), (2, 2));
+        let enough = workspace_budget(4096);
+        let result = cyclic_scc_sub_kmers_budgeted(&graph, Some(&enough)).unwrap();
+        assert_eq!(result.len(), 2);
+        drop(result);
+        assert_eq!(
+            median_edge_count_budgeted(&graph, 0.0, Some(&enough)).unwrap(),
+            15.0
+        );
+        assert_eq!(enough.snapshot().reserved_memory_bytes, 0);
     }
 
     #[test]
@@ -774,7 +922,7 @@ mod tests {
             true,
         ));
         let lookup =
-            AHashMap::from_iter([(graph[start].sub_kmer, start), (graph[end].sub_kmer, end)]);
+            NodeLookup::from_iter([(graph[start].sub_kmer, start), (graph[end].sub_kmer, end)]);
         let kmer_length = 3;
         let mut counts = KmerCounts::new(&kmer_length);
         for _copy in 0..100 {
@@ -810,7 +958,7 @@ mod tests {
         ));
         let existing_edge = graph.add_edge(start, end, mk_edge(1));
         let lookup =
-            AHashMap::from_iter([(graph[start].sub_kmer, start), (graph[end].sub_kmer, end)]);
+            NodeLookup::from_iter([(graph[start].sub_kmer, start), (graph[end].sub_kmer, end)]);
         let kmer_length = 3;
         let mut counts = KmerCounts::new(&kmer_length);
         for _copy in 0..100 {
@@ -841,7 +989,7 @@ mod tests {
 
         let unresolved_count = std::thread::Builder::new()
             .stack_size(64 * 1024)
-            .spawn(move || cyclic_scc_sub_kmers(&graph).len())
+            .spawn(move || cyclic_scc_sub_kmers_budgeted(&graph, None).unwrap().len())
             .unwrap()
             .join()
             .unwrap();

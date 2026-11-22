@@ -1,10 +1,13 @@
 // pcr/pruning.rs — graph cleanup
 
-use ahash::AHashSet;
+use super::memory::buffers::{BudgetNodeSet, BudgetVec};
+use crate::kmer::budget::ResourceBudget;
+use anyhow::Result;
 use log::{debug, trace};
 use petgraph::Direction;
 use petgraph::graph::NodeIndex;
 use petgraph::stable_graph::StableDiGraph;
+use std::sync::Arc;
 
 use super::{DBEdge, DBNode};
 
@@ -16,27 +19,36 @@ use super::{DBEdge, DBNode};
 /// With reverse extension, dead-ends can occur in both directions:
 /// - Forward tips: nodes with no outgoing edges (not end nodes)
 /// - Backward tips: nodes with no incoming edges (not start nodes)
+#[cfg(test)]
 pub fn remove_low_coverage_tips(
     graph: &mut StableDiGraph<DBNode, DBEdge>,
     k: &usize,
-    tip_coverage_fraction: f64,
+    fraction: f64,
 ) {
+    remove_low_coverage_tips_budgeted(graph, k, fraction, None).unwrap();
+}
+
+pub(super) fn remove_low_coverage_tips_budgeted(
+    graph: &mut StableDiGraph<DBNode, DBEdge>,
+    k: &usize,
+    tip_coverage_fraction: f64,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<()> {
     // Compute the coverage reference once, from the full graph, before any
     // tips are removed. Using the pre-pruning median is both faster (no
     // O(n log n) resort per iteration) and more stable: as low-coverage
     // tips fall away, the median would drift upward, making the threshold
     // more aggressive on later iterations — an arbitrary dependence on
     // pruning order rather than on the amplicon's actual coverage profile.
-    let median_count = global_median_edge_count(graph).unwrap_or(1.0);
+    let median_count = global_median_edge_count(graph, budget)?.unwrap_or(1.0);
     let min_tip_count = (median_count * tip_coverage_fraction).max(1.0);
 
     let mut removed = 1;
     while removed > 0 {
         removed = 0;
 
-        let nodes_to_remove: Vec<NodeIndex> = graph
-            .node_indices()
-            .filter(|&node| {
+        let nodes_to_remove = BudgetVec::collect(
+            graph.node_indices().filter(|&node| {
                 // Don't remove end nodes or start nodes
                 if graph[node].is_end || graph[node].is_start {
                     return false;
@@ -83,15 +95,17 @@ pub fn remove_low_coverage_tips(
                 }
 
                 true
-            })
-            .collect();
+            }),
+            budget,
+        )?;
 
-        for node in nodes_to_remove {
+        for &node in nodes_to_remove.iter() {
             trace!("Removing low-coverage tip node {}", node.index());
             graph.remove_node(node);
             removed += 1;
         }
     }
+    Ok(())
 }
 
 /// Trace back from a dead-end node (no outgoing edges) to count how many
@@ -101,13 +115,13 @@ fn tip_length_backward(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex) -
     let mut current = node;
     loop {
         length += 1;
-        let incoming: Vec<NodeIndex> = graph
-            .neighbors_directed(current, Direction::Incoming)
-            .collect();
-        if incoming.len() != 1 {
+        let mut incoming = graph.neighbors_directed(current, Direction::Incoming);
+        let Some(parent) = incoming.next() else {
+            break;
+        };
+        if incoming.next().is_some() {
             break;
         }
-        let parent = incoming[0];
         if graph
             .neighbors_directed(parent, Direction::Outgoing)
             .count()
@@ -130,13 +144,13 @@ fn tip_length_forward(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex) ->
     let mut current = node;
     loop {
         length += 1;
-        let outgoing: Vec<NodeIndex> = graph
-            .neighbors_directed(current, Direction::Outgoing)
-            .collect();
-        if outgoing.len() != 1 {
+        let mut outgoing = graph.neighbors_directed(current, Direction::Outgoing);
+        let Some(child) = outgoing.next() else {
+            break;
+        };
+        if outgoing.next().is_some() {
             break;
         }
-        let child = outgoing[0];
         if graph.neighbors_directed(child, Direction::Incoming).count() > 1 {
             break;
         }
@@ -148,9 +162,12 @@ fn tip_length_forward(graph: &StableDiGraph<DBNode, DBEdge>, node: NodeIndex) ->
     length
 }
 
-fn global_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64> {
-    let counts: Vec<u32> = graph.edge_indices().map(|e| graph[e].count).collect();
-    super::graph::median_u32_f64(counts)
+fn global_median_edge_count(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<Option<f64>> {
+    let mut counts = BudgetVec::collect(graph.edge_indices().map(|e| graph[e].count), budget)?;
+    Ok(super::graph::median_u64_slice(&mut counts))
 }
 
 /// Remove nodes that cannot be part of any start-to-end path.
@@ -167,38 +184,48 @@ fn global_median_edge_count(graph: &StableDiGraph<DBNode, DBEdge>) -> Option<f64
 /// still merged into `forward_reachable`) but does one full sweep instead
 /// of N starts × restart overhead, and reads more directly. Same shape
 /// for the backward BFS over end nodes.
+#[cfg(test)]
 pub fn reachability_pruning(graph: &mut StableDiGraph<DBNode, DBEdge>) {
+    reachability_pruning_budgeted(graph, None).unwrap();
+}
+
+pub(super) fn reachability_pruning_budgeted(
+    graph: &mut StableDiGraph<DBNode, DBEdge>,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<()> {
     // Forward reachability: union BFS from all start nodes at once.
-    let mut forward_reachable: AHashSet<NodeIndex> = AHashSet::new();
-    let mut stack: Vec<NodeIndex> = graph
-        .node_indices()
-        .filter(|&n| graph[n].is_start)
-        .collect();
+    let mut forward_reachable = BudgetNodeSet::new(budget);
+    let mut stack =
+        BudgetVec::collect(graph.node_indices().filter(|&n| graph[n].is_start), budget)?;
     while let Some(n) = stack.pop() {
-        if forward_reachable.insert(n) {
+        if forward_reachable.insert(n)? {
             for neighbor in graph.neighbors_directed(n, Direction::Outgoing) {
-                stack.push(neighbor);
+                stack.push(neighbor)?;
             }
         }
     }
 
     // Backward reachability: union BFS from all end nodes at once.
-    let mut backward_reachable: AHashSet<NodeIndex> = AHashSet::new();
+    let mut backward_reachable = BudgetNodeSet::new(budget);
     stack.clear();
-    stack.extend(graph.node_indices().filter(|&n| graph[n].is_end));
+    for node in graph.node_indices().filter(|&n| graph[n].is_end) {
+        stack.push(node)?;
+    }
     while let Some(n) = stack.pop() {
-        if backward_reachable.insert(n) {
+        if backward_reachable.insert(n)? {
             for neighbor in graph.neighbors_directed(n, Direction::Incoming) {
-                stack.push(neighbor);
+                stack.push(neighbor)?;
             }
         }
     }
 
     // Remove nodes not in the intersection
-    let nodes_to_remove: Vec<NodeIndex> = graph
-        .node_indices()
-        .filter(|n| !forward_reachable.contains(n) || !backward_reachable.contains(n))
-        .collect();
+    let nodes_to_remove = BudgetVec::collect(
+        graph
+            .node_indices()
+            .filter(|n| !forward_reachable.contains(n) || !backward_reachable.contains(n)),
+        budget,
+    )?;
 
     if !nodes_to_remove.is_empty() {
         debug!(
@@ -208,9 +235,10 @@ pub fn reachability_pruning(graph: &mut StableDiGraph<DBNode, DBEdge>) {
         );
     }
 
-    for node in nodes_to_remove {
+    for &node in nodes_to_remove.iter() {
         graph.remove_node(node);
     }
+    Ok(())
 }
 
 #[cfg(test)]
@@ -226,17 +254,93 @@ mod tests {
         }
     }
 
-    fn mk_edge(count: u32) -> DBEdge {
+    fn mk_edge(count: u64) -> DBEdge {
         DBEdge {
             count,
             coverage_ratio: 1.0,
         }
     }
 
+    fn workspace_budget(bytes: u64) -> Arc<ResourceBudget> {
+        ResourceBudget::new(crate::kmer::budget::ResourceLimits {
+            memory_bytes: bytes,
+            process_overhead_bytes: 0,
+            class_bytes: [bytes; crate::kmer::budget::MEMORY_CLASSES],
+            temporary_disk_bytes: 0,
+            temporary_open_files: 0,
+        })
+        .unwrap()
+    }
+
+    #[test]
+    fn charged_reachability_matches_independent_path_oracle_with_stable_holes() {
+        let budget = workspace_budget(1 << 20);
+        let mut random = 159u64;
+        for _ in 0..64 {
+            let mut graph = StableDiGraph::new();
+            for index in 0..11 {
+                graph.add_node(mk_node(index == 0 || index == 4, index == 10));
+            }
+            graph.remove_node(NodeIndex::new(3));
+            graph.remove_node(NodeIndex::new(7));
+            let nodes: Vec<_> = graph.node_indices().collect();
+            for _ in 0..18 {
+                random = random.wrapping_mul(6364136223846793005).wrapping_add(1);
+                let from = nodes[(random >> 32) as usize % nodes.len()];
+                random = random.wrapping_mul(6364136223846793005).wrapping_add(1);
+                let to = nodes[(random >> 32) as usize % nodes.len()];
+                graph.add_edge(from, to, mk_edge(10));
+            }
+            let expected: Vec<_> = graph
+                .node_indices()
+                .filter(|&node| {
+                    nodes.iter().any(|&start| {
+                        graph[start].is_start
+                            && petgraph::algo::has_path_connecting(&graph, start, node, None)
+                    }) && nodes.iter().any(|&end| {
+                        graph[end].is_end
+                            && petgraph::algo::has_path_connecting(&graph, node, end, None)
+                    })
+                })
+                .collect();
+            reachability_pruning_budgeted(&mut graph, Some(&budget)).unwrap();
+            assert_eq!(graph.node_indices().collect::<Vec<_>>(), expected);
+            assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+        }
+    }
+
+    #[test]
+    fn pruning_workspace_refusal_is_typed_before_removing_nodes() {
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(true, false));
+        let end = graph.add_node(mk_node(false, true));
+        let tip = graph.add_node(mk_node(false, false));
+        graph.add_edge(start, end, mk_edge(100));
+        graph.add_edge(start, tip, mk_edge(1));
+        let tiny = workspace_budget(1);
+        for error in [
+            remove_low_coverage_tips_budgeted(&mut graph, &3, 0.1, Some(&tiny)).unwrap_err(),
+            reachability_pruning_budgeted(&mut graph, Some(&tiny)).unwrap_err(),
+        ] {
+            assert!(
+                error
+                    .downcast_ref::<crate::kmer::budget::ResourceExhausted>()
+                    .is_some()
+            );
+            assert_eq!(tiny.snapshot().reserved_memory_bytes, 0);
+        }
+        assert_eq!((graph.node_count(), graph.edge_count()), (3, 2));
+        assert!(graph.node_weight(tip).is_some());
+        let enough = workspace_budget(4096);
+        remove_low_coverage_tips_budgeted(&mut graph, &3, 0.1, Some(&enough)).unwrap();
+        assert!(graph.node_weight(tip).is_none());
+        assert_eq!(enough.snapshot().reserved_memory_bytes, 0);
+    }
+
     #[test]
     fn test_global_median_edge_count_empty() {
         let graph: StableDiGraph<DBNode, DBEdge> = StableDiGraph::new();
-        assert!(global_median_edge_count(&graph).is_none());
+        assert!(global_median_edge_count(&graph, None).unwrap().is_none());
     }
 
     #[test]
@@ -248,7 +352,7 @@ mod tests {
         graph.add_edge(a, b, mk_edge(10));
         graph.add_edge(b, c, mk_edge(20));
         graph.add_edge(a, c, mk_edge(30));
-        assert_eq!(global_median_edge_count(&graph).unwrap(), 20.0);
+        assert_eq!(global_median_edge_count(&graph, None).unwrap(), Some(20.0));
     }
 
     #[test]

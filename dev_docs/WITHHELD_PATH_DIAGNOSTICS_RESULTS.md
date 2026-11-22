@@ -172,7 +172,7 @@ identities rather than independently rescanning the multi-gigabyte inputs.
 The real-binary smoke validates plumbing, not biological localization;
 its synthetic run has no emitted or retained paths.
 
-See the [evidence archive](../benchmarks/benchmark_results/v3.2-withheld-diagnostics-20260913/README.md)
+See the [evidence archive](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-withheld-diagnostics-20260913/README.md)
 for the original protocol, all twelve outputs/commands/receipts, immutable
 source/build snapshots, historical hypothesis lineage, analyzer/tests,
 validation logs, and independent review. Failed pre-benchmark attempts

@@ -89,7 +89,7 @@ replication before diagnosing small regressions. Peak RSS is about 4.256 GiB
 at 1M, 8.505 GiB at 2M, 17.006 GiB at 4M, and 34.005 GiB at 8M across the
 tested cells, with no meaningful version difference.
 
-The [complete tables](../benchmarks/benchmark_results/v3.2-release-comparison-20260909/tables.md)
+The [complete tables](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-release-comparison-20260909/tables.md)
 retain every cell's timings, ranges, RSS, actual records, and product changes.
 Timings exclude downloading, application-cache management, gzip decompression,
 prewarming/hash checks, and BLAST. They do not benchmark the gzip/cache fixes,
@@ -188,7 +188,7 @@ real headers. Seventeen driver tests, eight compatibility-parser tests, tiny
 synthetic analysis checks, and dual-version 100k smoke checks pass. Smoke timings
 are excluded from the benchmark. No production code changed in this comparison.
 
-See the [artifact index](../benchmarks/benchmark_results/v3.2-release-comparison-20260909/README.md)
+See the [artifact index](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-release-comparison-20260909/README.md)
 for hashes, raw outputs, corrected lineage, scripts, limitations, and commands.
 Inputs are historical calibration/regression data, not held-out truth. Leave
 #129, dependency-alert triage, #153–155, and user release authorization open.

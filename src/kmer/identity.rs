@@ -1,0 +1,482 @@
+//! Typed identities and positioned windows shared by v4 count-store boundaries.
+//!
+//! Store implementations may pack raw bits internally, but identities crossing
+//! a store boundary retain their k so mismatched queries can be rejected.
+
+use anyhow::{Result, ensure};
+use std::iter::FusedIterator;
+
+/// Validated length for the current two-bit, u64 k-mer representation.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct KmerSize(u8);
+
+impl KmerSize {
+    /// Validate a supported k without truncating the caller's value.
+    pub fn new(k: usize) -> Result<Self> {
+        ensure!(
+            (1..=31).contains(&k),
+            "k must be between 1 and 31, got {}",
+            k
+        );
+        Ok(Self(k as u8))
+    }
+
+    /// Return the number of encoded bases.
+    pub fn get(self) -> usize {
+        usize::from(self.0)
+    }
+
+    fn mask(self) -> u64 {
+        (1u64 << (2 * self.get())) - 1
+    }
+}
+
+/// An oriented graph/primer identity; reverse complements remain distinct.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct OrientedKey {
+    bits: u64,
+    size: KmerSize,
+}
+
+// These constructors form the persisted/query boundary used by later backends.
+#[allow(dead_code)]
+impl OrientedKey {
+    /// Reject bits outside k instead of silently aliasing another sequence.
+    pub fn new(bits: u64, size: KmerSize) -> Result<Self> {
+        ensure!(
+            bits & !size.mask() == 0,
+            "Encoded k-mer exceeds k={}",
+            size.get()
+        );
+        Ok(Self { bits, size })
+    }
+
+    /// Return the directional encoding.
+    pub fn bits(self) -> u64 {
+        self.bits
+    }
+
+    /// Return the identity's validated length.
+    pub fn size(self) -> KmerSize {
+        self.size
+    }
+
+    /// Reverse-complement this identity while preserving its k.
+    pub fn reverse_complement(self) -> Self {
+        // Reverse two-bit groups within each byte, then reverse byte order.
+        // Complementing before reversal maps each ACGT code to its partner.
+        let mut bits = !self.bits;
+        bits = ((bits & 0x3333_3333_3333_3333) << 2) | ((bits >> 2) & 0x3333_3333_3333_3333);
+        bits = ((bits & 0x0f0f_0f0f_0f0f_0f0f) << 4) | ((bits >> 4) & 0x0f0f_0f0f_0f0f_0f0f);
+        Self {
+            bits: bits.swap_bytes() >> (64 - 2 * self.size.get()),
+            size: self.size,
+        }
+    }
+
+    /// Normalize orientation for exact count lookup.
+    pub fn canonical(self) -> CanonicalKey {
+        CanonicalKey {
+            bits: self.bits.min(self.reverse_complement().bits),
+            size: self.size,
+        }
+    }
+}
+
+/// Exact canonical count identity, including k; distinct k values cannot alias.
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+pub struct CanonicalKey {
+    bits: u64,
+    size: KmerSize,
+}
+
+impl CanonicalKey {
+    /// Decode and normalize an externally supplied oriented encoding.
+    #[allow(dead_code)]
+    pub fn new(bits: u64, size: KmerSize) -> Result<Self> {
+        Ok(OrientedKey::new(bits, size)?.canonical())
+    }
+
+    /// Reconstruct an in-memory key already validated by a typed producer.
+    /// Tables and owned worker pools retain k separately. Persisted unvalidated
+    /// bytes must use checked constructors.
+    pub(super) fn from_stored(bits: u64, size: KmerSize) -> Self {
+        debug_assert_eq!(bits & !size.mask(), 0);
+        debug_assert!(bits <= (OrientedKey { bits, size }).reverse_complement().bits);
+        Self { bits, size }
+    }
+
+    /// Return the canonical encoding for internal packed storage.
+    pub fn bits(self) -> u64 {
+        self.bits
+    }
+
+    /// Return k for validating a query against a store's metadata.
+    #[allow(dead_code)]
+    pub fn size(self) -> KmerSize {
+        self.size
+    }
+}
+
+/// A window's original zero-based byte position and both identity roles.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub struct KmerWindow {
+    pub start: usize,
+    pub oriented: OrientedKey,
+    pub canonical: CanonicalKey,
+}
+
+/// Allocation-free rolling extraction under the released uppercase ACGTN policy.
+///
+/// N breaks windows without erasing original positions. Other bytes produce
+/// one error and terminate the iterator. Consumers streaming into mutable stores
+/// must abort publication on error; collecting consumers discard partial results.
+pub struct KmerWindows<'a> {
+    sequence: &'a [u8],
+    size: KmerSize,
+    mask: u64,
+    next: usize,
+    forward: u64,
+    reverse: u64,
+    valid: usize,
+}
+
+impl<'a> KmerWindows<'a> {
+    /// Validate k before yielding any windows.
+    pub fn new(sequence: &'a [u8], k: usize) -> Result<Self> {
+        let size = KmerSize::new(k)?;
+        Ok(Self {
+            sequence,
+            size,
+            mask: size.mask(),
+            next: 0,
+            forward: 0,
+            reverse: 0,
+            valid: 0,
+        })
+    }
+}
+
+impl Iterator for KmerWindows<'_> {
+    type Item = Result<KmerWindow>;
+
+    #[inline]
+    fn next(&mut self) -> Option<Self::Item> {
+        while let Some(&byte) = self.sequence.get(self.next) {
+            let position = self.next;
+            self.next += 1;
+            let base = match byte {
+                b'A' => 0,
+                b'C' => 1,
+                b'G' => 2,
+                b'T' => 3,
+                b'N' => {
+                    self.forward = 0;
+                    self.reverse = 0;
+                    self.valid = 0;
+                    continue;
+                }
+                _ => {
+                    self.next = self.sequence.len();
+                    return Some(Err(invalid_base(byte)));
+                }
+            };
+            self.forward = ((self.forward << 2) | base) & self.mask;
+            self.reverse = (self.reverse >> 2) | ((3 - base) << (2 * (self.size.get() - 1)));
+            self.valid += 1;
+            if self.valid >= self.size.get() {
+                return Some(Ok(KmerWindow {
+                    start: position + 1 - self.size.get(),
+                    oriented: OrientedKey {
+                        bits: self.forward,
+                        size: self.size,
+                    },
+                    canonical: CanonicalKey {
+                        bits: self.forward.min(self.reverse),
+                        size: self.size,
+                    },
+                }));
+            }
+        }
+        None
+    }
+}
+
+impl FusedIterator for KmerWindows<'_> {}
+
+#[cold]
+fn invalid_base(byte: u8) -> anyhow::Error {
+    anyhow::anyhow!(
+        "Invalid character '{}' in sequence. Only ACGTN allowed.",
+        byte as char
+    )
+}
+
+/// Count-oriented extraction without constructing unused positions/orientations.
+///
+/// This retains the positioned iterator's exact uppercase ACGTN policy and
+/// ordering. N breaks windows; any other byte or visitor failure stops the scan.
+/// The returned base total includes valid runs shorter than k. Consumers needing
+/// original positions and directional identities continue to use `KmerWindows`.
+#[inline]
+pub fn visit_canonical_windows(
+    sequence: &[u8],
+    k: usize,
+    mut visitor: impl FnMut(CanonicalKey) -> Result<()>,
+) -> Result<usize> {
+    let size = KmerSize::new(k)?;
+    let mask = size.mask();
+    let reverse_shift = 2 * (k - 1);
+    let (mut forward, mut reverse) = (0u64, 0u64);
+    let (mut run, mut valid_bases) = (0usize, 0usize);
+    for &byte in sequence {
+        let base = match byte {
+            b'A' => 0,
+            b'C' => 1,
+            b'G' => 2,
+            b'T' => 3,
+            b'N' => {
+                forward = 0;
+                reverse = 0;
+                run = 0;
+                continue;
+            }
+            _ => return Err(invalid_base(byte)),
+        };
+        forward = ((forward << 2) | base) & mask;
+        reverse = (reverse >> 2) | ((3 - base) << reverse_shift);
+        run += 1;
+        valid_bases += 1;
+        if run >= k {
+            visitor(CanonicalKey {
+                bits: forward.min(reverse),
+                size,
+            })?;
+        }
+    }
+    Ok(valid_bases)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn constant_work_reverse_complement_matches_scalar_at_every_supported_k() {
+        let mut state = 132_u64;
+        for k in 1..=31 {
+            let size = KmerSize::new(k).unwrap();
+            let mask = (1u64 << (2 * k)) - 1;
+            for _ in 0..1024 {
+                state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+                let bits = state & mask;
+                let mut remaining = bits;
+                let mut expected = 0;
+                for _ in 0..k {
+                    expected = (expected << 2) | (3 - (remaining & 3));
+                    remaining >>= 2;
+                }
+                let key = OrientedKey::new(bits, size).unwrap();
+                assert_eq!(key.reverse_complement().bits(), expected);
+                assert_eq!(key.reverse_complement().reverse_complement(), key);
+                assert_eq!(key.canonical().bits(), bits.min(expected));
+            }
+            for bits in [
+                0,
+                mask,
+                mask & 0x5555_5555_5555_5555,
+                mask & 0xaaaa_aaaa_aaaa_aaaa,
+            ] {
+                let key = OrientedKey::new(bits, size).unwrap();
+                assert_eq!(key.reverse_complement().reverse_complement(), key);
+            }
+        }
+    }
+
+    // Deliberately scalar: re-encode each literal window independently rather
+    // than sharing rolling state or the production reverse-complement routine.
+    fn oracle(sequence: &[u8], k: usize) -> Vec<(usize, u64, u64)> {
+        sequence
+            .windows(k)
+            .enumerate()
+            .filter_map(|(start, window)| {
+                let bases = window
+                    .iter()
+                    .map(|base| match base {
+                        b'A' => Some(0u64),
+                        b'C' => Some(1),
+                        b'G' => Some(2),
+                        b'T' => Some(3),
+                        _ => None,
+                    })
+                    .collect::<Option<Vec<_>>>()?;
+                let forward = bases.iter().fold(0, |bits, base| (bits << 2) | base);
+                let reverse = bases
+                    .iter()
+                    .rev()
+                    .fold(0, |bits, base| (bits << 2) | (3 - base));
+                Some((start, forward, forward.min(reverse)))
+            })
+            .collect()
+    }
+
+    #[test]
+    fn rolling_windows_match_independent_oracle_with_gaps_and_boundary_lengths() {
+        let mut state = 7u64;
+        for length in [0, 1, 2, 3, 30, 31, 32, 62, 150] {
+            for _ in 0..40 {
+                let sequence = (0..length)
+                    .map(|_| {
+                        state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+                        b"ACGTN"[(state >> 32) as usize % 5]
+                    })
+                    .collect::<Vec<_>>();
+                for k in [1, 2, 3, 19, 30, 31] {
+                    let observed = KmerWindows::new(&sequence, k)
+                        .unwrap()
+                        .map(|window| {
+                            let window = window.unwrap();
+                            assert_eq!(window.oriented.size().get(), k);
+                            assert_eq!(window.canonical.size().get(), k);
+                            assert_eq!(window.oriented.canonical(), window.canonical);
+                            (
+                                window.start,
+                                window.oriented.bits(),
+                                window.canonical.bits(),
+                            )
+                        })
+                        .collect::<Vec<_>>();
+                    assert_eq!(
+                        observed,
+                        oracle(&sequence, k),
+                        "k={k}, sequence={sequence:?}"
+                    );
+                }
+            }
+        }
+        for sequence in [
+            b"AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA".as_slice(),
+            b"TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT",
+            b"ACGTACGTACGTACGTACGTACGTACGTACGT",
+        ] {
+            for k in [1, 2, 30, 31] {
+                let observed = KmerWindows::new(sequence, k)
+                    .unwrap()
+                    .map(|w| {
+                        let w = w.unwrap();
+                        (w.start, w.oriented.bits(), w.canonical.bits())
+                    })
+                    .collect::<Vec<_>>();
+                assert_eq!(observed, oracle(sequence, k));
+            }
+        }
+    }
+
+    #[test]
+    fn identity_rejects_invalid_lengths_bits_and_cross_length_aliasing() {
+        for k in [0, 32, 256, usize::MAX] {
+            assert!(KmerSize::new(k).is_err());
+        }
+        let size = KmerSize::new(3).unwrap();
+        assert!(OrientedKey::new(64, size).is_err());
+        assert!(CanonicalKey::new(u64::MAX, size).is_err());
+        let key = OrientedKey::new(7, size).unwrap();
+        assert_ne!(key, key.reverse_complement());
+        assert_eq!(key.canonical(), key.reverse_complement().canonical());
+        assert_ne!(
+            CanonicalKey::new(0, size).unwrap(),
+            CanonicalKey::new(0, KmerSize::new(2).unwrap()).unwrap()
+        );
+        assert_eq!(key.reverse_complement().reverse_complement(), key);
+    }
+
+    #[test]
+    fn invalid_bytes_fail_once_and_never_bridge_gaps() {
+        for invalid in [b'a', b'R', 0, 255] {
+            let sequence = [b'A', b'C', invalid, b'T', b'G'];
+            let mut windows = KmerWindows::new(&sequence, 2).unwrap();
+            assert!(windows.next().unwrap().is_ok());
+            assert!(windows.next().unwrap().is_err());
+            assert!(windows.next().is_none());
+            assert!(windows.next().is_none());
+        }
+        let starts = KmerWindows::new(b"ACNNTG", 2)
+            .unwrap()
+            .map(|w| w.unwrap().start)
+            .collect::<Vec<_>>();
+        assert_eq!(starts, vec![0, 4]);
+    }
+
+    #[test]
+    fn canonical_visitor_matches_literal_windows_and_valid_base_totals_at_every_k() {
+        let mut state = 140u64;
+        for k in 1..=31 {
+            let mut sequence = Vec::new();
+            for index in 0..4096 {
+                state = state.wrapping_mul(6364136223846793005).wrapping_add(1);
+                sequence.push(if index % 97 < k || index % 13 == 0 {
+                    b'N'
+                } else {
+                    b"ACGT"[((state >> 32) & 3) as usize]
+                });
+            }
+            let expected = oracle(&sequence, k)
+                .into_iter()
+                .map(|(_, _, canonical)| canonical)
+                .collect::<Vec<_>>();
+            let mut observed = Vec::new();
+            let bases = visit_canonical_windows(&sequence, k, |key| {
+                assert_eq!(key.size().get(), k);
+                observed.push(key.bits());
+                Ok(())
+            })
+            .unwrap();
+            assert_eq!(observed, expected);
+            assert_eq!(bases, sequence.iter().filter(|&&base| base != b'N').count());
+            let positioned = KmerWindows::new(&sequence, k)
+                .unwrap()
+                .map(|value| value.unwrap().canonical.bits())
+                .collect::<Vec<_>>();
+            assert_eq!(observed, positioned);
+        }
+    }
+
+    #[test]
+    fn canonical_visitor_propagates_input_and_callback_failures_without_later_emission() {
+        let mut keys = Vec::new();
+        assert!(
+            visit_canonical_windows(b"ACGTNACXGTTAC", 2, |key| {
+                keys.push(key.bits());
+                Ok(())
+            })
+            .is_err()
+        );
+        assert_eq!(
+            keys,
+            oracle(b"ACGTNAC", 2)
+                .into_iter()
+                .map(|(_, _, bits)| bits)
+                .collect::<Vec<_>>()
+        );
+        keys.clear();
+        let error = visit_canonical_windows(b"ACGTACGTACGT", 3, |key| {
+            if keys.len() == 2 {
+                anyhow::bail!("visitor stopped");
+            }
+            keys.push(key.bits());
+            Ok(())
+        })
+        .unwrap_err();
+        assert_eq!(error.to_string(), "visitor stopped");
+        assert_eq!(
+            keys,
+            oracle(b"ACGTACGTACGT", 3)
+                .into_iter()
+                .take(2)
+                .map(|(_, _, bits)| bits)
+                .collect::<Vec<_>>()
+        );
+        assert!(visit_canonical_windows(b"AC", 0, |_| Ok(())).is_err());
+        assert!(visit_canonical_windows(b"AC", 32, |_| Ok(())).is_err());
+    }
+}

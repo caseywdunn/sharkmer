@@ -1,98 +1,412 @@
 # Development plan: scalable, reliable sPCR
 
-**Maintenance release 3.2.1 (2026-11-09):** the user authorized the narrow
-Rustls dependency patch in [#167](https://github.com/caseywdunn/sharkmer/issues/167).
-Follow its [scope and release gates](RELEASE_v3.2.1.md). The v3.2 evidence and
-biological-validation deferrals below carry forward; assembly and annotation
-behavior are unchanged.
+**Release candidate: 4.0.0. Comparison baseline: [v3.2.1](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1) (2026-11-09).**
 
-**Annotation update 2026-11-08:** the focused v3.2 sequence-annotation revision
-and deferred v4.0 interface cleanup are tracked in [#159](https://github.com/caseywdunn/sharkmer/issues/159)
-and [the implementation plan below](#sequence-annotation-revision-159).
-Assembly, search, retention, and sequence delivery are unchanged by this revision.
+**Status:** the resource options landed in [PR #177](https://github.com/caseywdunn/sharkmer/pull/177).
+All [post-merge CI checks](https://github.com/caseywdunn/sharkmer/actions/runs/44968715374)
+and the full offline release check (Slurm job 34164067) passed on `bb3a7d4`.
+The user narrowed v4 resource scope on 2026-11-16: bound Sharkmer-owned count, ingestion, lookup,
+replay, assembly and retained-output buffers; use established libraries and
+process headroom for networking/runtime internals. Do not implement pool, DNS,
+socket or TLS accounting, or replace those subsystems to prove a memory bound.
 
-**Updated 2026-11-09; release assessment is owned by the user and coding agent.**
-The user has removed the requirement for collaborator review. We assess the
-evidence here, and the user makes the final release decision. See the
-[current release gates](#release-gate) and [HANDOFF.md](HANDOFF.md).
-The user approved deferring the new held-out biological dataset and full
-nine-panel biological campaign from v3.2. These remain unfinished follow-up
-work before further assembly tuning or broad accuracy claims. The
-[focused final check](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
-passes all 32 invocations and independently verifies the saved sequence
-inventory and four matched performance comparisons. The user explicitly
-authorized the release ritual on 2026-11-08. The [stable-version release checks](../benchmarks/benchmark_results/v3.2-release-20261109/README.md)
-pass all eight groups on 2026-11-09; packaging and publication remain in progress.
-Dated checkpoints below preserve their original code and validation scope.
+**Previous whole-process/per-allocation networking gate: waived by the user
+2026-11-16**, because maintaining client-internal formulas and hooks adds
+complexity outside v4's counting/ingestion goal. This is a scope decision, not
+proof that every library allocation fits. Ordinary network/HTTP/decoder errors
+fail the operation; an OS-enforced limit can terminate the process. Previously
+accepted output must remain intact, and failed work must not become complete.
+Existing logical disk/descriptor controls, process safeguards, application body
+limits and timeout behavior remain. No new cross-platform RSS guarantee is made.
 
-Status: inclusive delivery, [sequence-first retention](SEQUENCE_RETENTION_RESULTS.md),
-the plant correction, and the annotation revision are integrated on `dev`.
-The retained sequence-first comparison passes a
-new 60-run comparison, preserves old output, and makes all 71 released
-high-copy identities available (64 standard, seven uncertain). It adds 200
-bounded uncertain identities across the ten samples. The bounded
-read follow-up finds local linkage for some Gryllus
-hypotheses and observed 19-mers, but no tested longer exact windows, for all
-26 Drosophila 12S hypotheses. Whole-product validity remains unresolved;
-no specific production defect was demonstrated.
-The [complete 118-target comparison](SEQUENCE_RETENTION_RESULTS.md#complete-target-comparison-and-six-new-targets-2026-10-10)
-now confirms 86 retained v3.1.0 sequences, zero lost, and 240 new; sample–target
-representation rises 68 → 74. All 154 hypotheses on the six new targets were
-assessed: Liriodendron atpB-rbcL has an exact full match in two annotated public
-plastomes and complete local read-tile support; the other 153 remain
-uncorroborated under the bounded assays. The subsequent plant panel 2.0.0
-correction passes all eight before/after runs: Liriodendron trnV-atpE changes
-41 uncertain → one exact-reference standard product; Acer gains one standard
-product. The other nine targets are unchanged. Combining these two runs with
-eight saved samples gives 287 records, 86 retained/zero lost/201 new and
-75/118 represented targets; that October result was a derived inventory.
-The November final check now reproduces both the 326-record historical-panel
-inventory and the 287-record corrected-panel inventory with the current
-candidate, retaining all 86 released identities and the expected 22 warnings.
-The three longer paired workloads increase by 0.21–1.45%; Human increases
-by 0.04 seconds. Median RSS changes in those four comparisons stay below
-0.15%. Independent result and performance reviews accept these scoped costs.
-The October validation passed all 11 gates
-after minimal rand/webpki dependency updates. The November annotation revision
-passes all eight local gates and merged CI; see [its verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md).
-The focused final-build check and technical release assessment are complete.
-The user explicitly authorized publication through the release ritual on
-2026-11-08; the packaging and publication gate below remains pending.
-The two broader biological studies are deferred from this release by the
-2026-11-08 user decision, not marked passed. No outside reviewer is required.
-See [BENCHMARK_v3.2_vs_v3.1.md](BENCHMARK_v3.2_vs_v3.1.md)
-and the remaining validation/security gates in [REVIEW_v3.2.md](REVIEW_v3.2.md).
-An exploratory local reference check of the 200 new uncertain identities
-found no qualifying full-query 90% coverage/90% identity HSP in the pinned
-catalog; [its scope and limitations](SEQUENCE_RETENTION_RESULTS.md) leave
-biological validity unresolved despite the release-scope deferral.
-Work follows the 2026-09-08 review of
-`5a66468` (Sharkmer 3.1.0).
+The networking simplification removes the experimental Agent/request/URL/header
+allocation owners and restores upstream client code except the demonstrated
+chunk-framing fix and a warning-only middleware change. HTTP content decoding
+also returns to the client. Application FASTQ decoding/buffering and ENA/panel
+body limits retain their existing owners. The
+simplification checks (local evidence: `benchmarks/benchmark_results/v4-http-scope-20261116/README.md`)
+pass 625 Rust tests per hasher, 225 Python tests, all quality checks, eight native
+HTTP invocations and the unchanged cache matrix (544 cases, 1,488 invocations,
+212 SIGTERMs) at 64 descriptors/512 MiB. Five client files match upstream;
+only chunk framing and warning cleanup remain patched. **Scoped HTTP
+simplification gate: met 2026-11-16.** Earlier accounting checkpoints retain
+their dated evidence. See [HTTP scope](HTTP_WORKSPACE.md) and the
+[resource boundary](COUNT_STORE_CONTRACTS.md#v4-resource-boundary).
+
+**Initial v4 candidate verification: met 2026-11-18.**
+The [final integration report](https://github.com/caseywdunn/sharkmer-benchmarks/tree/main/benchmarks/benchmark_results/v4-final-integration-20261117)
+records 625 Rust tests per hasher, 225 Python tests, development metadata,
+36 default/refusal checks, 1,024 compatibility cases plus 16 references,
+160 publication/recovery fault cases, the 256-MiB beyond-budget count/replay/PCR
+trial, 1,024-target rollback/backup refusals and 64-GiB retries, the original 100-invocation paired
+speed/RSS gates and 80-case thread/hasher matrix. Source hashes join those runs.
+
+The public resource interface in [#139](https://github.com/caseywdunn/sharkmer/issues/139)
+offers `--memory-budget`, `--temp-disk-budget`, and `--temp-dir`. Normal runs use the established
+defaults when these options are omitted. Explicit memory budgets fit the
+existing counting and PCR allowances to the requested envelope. See the
+[resource policy](COUNT_STORE_CONTRACTS.md#normal-run-resource-policy-under-validation).
+Before adding suffix syntax, Linux release checks passed in Slurm job 34155298,
+including 627 Rust tests per hasher and 225 Python tests. The 2176 MiB fixture run spilled counts
+and matched the previous build's count fingerprint and FASTA bytes. An
+inherited limit selected the same smaller plan, and a disk quota refusal
+preserved the completed generation.
+Suffix parsing and CLI checks passed in job 34156895. `12G` and `12288M`
+produced the same process limit, counts, and FASTA bytes. The `2176M` run
+spilled to disk, and the `1M` disk quota refusal preserved its outputs.
+
+**Release approval:** the user approved the v4.0 release ritual on 2026-11-21.
+New analysis results remain outside version control. Exhaustive dependency
+allocation proofs remain outside scope. Biological #129 stays in v4.1.
+
+## Repository size and benchmark storage
+
+The [public companion repository](https://github.com/caseywdunn/sharkmer-benchmarks)
+holds browseable reports and protocols, including the final v4 verification.
+Its [historical archive](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/legacy-2026-11)
+preserves all 1,538 result files at `7bd1ac3` and a benchmark-only Git bundle
+covering both historical results directories. The downloaded archives matched
+their checksums. The original Git bundle and unpublished result files are
+backed up separately in the development workspace.
+
+The cleanup keeps the benchmark tools in production and gives their unit tests
+a small synthetic fixture. Removing the committed results reduces the tracked
+checkout from 252 MiB to about 21 MiB. The 32-ref rehearsal removed
+`benchmarks/benchmark_results/` and its earlier name, `benchmarks/results/`.
+Every other file matched at each branch and tag tip. The Git pack fell from
+187 MiB to 32.8 MiB. This measures branch and tag history in the rehearsal.
+
+The companion holds [the original source tarballs](https://github.com/caseywdunn/sharkmer-benchmarks/releases/tag/original-sources-2026-11)
+for all seven existing release tags. Before applying the rewrite on GitHub,
+protect package source URLs. Bioconda
+3.2.1 shipped via [PR #71402](https://github.com/bioconda/bioconda-recipes/pull/71402).
+It pins the v3.2.1 generated tarball at SHA-256
+`e8031a7b346303f05e553886d473781b01a1a9c0dda0752d5b4573af6ad6061c`.
+The current recipe needs to point to a stable copy of those exact bytes
+before the v3.2.1 tag can move. Open PR #71407 is a separate recipe update.
+Review affected release tags, downstream pins and the ref map together before
+cutover. Developers will need to re-clone or transplant their work onto the
+rewritten history. The original Git bundle provides a rollback point.
+
+**History cutover gate: not met.** The rehearsal and archive checks are
+complete. The published tags and live package source pin still need the
+compatibility step before a coordinated remote rewrite.
+
+## Previous resource checkpoints
+
+These dated results preserve their original source and evidence scope. Their
+lists of unfinished whole-process/networking owners are superseded by the
+user-approved scope above; they do not create new v4 release gates.
+
+The previous
+fixed Agent checkpoint (local evidence: `benchmarks/benchmark_results/v4-http-agent-backing-20261116/README.md`)
+admits default/panel client containers before construction. Shared accounting
+leases cover body/error Weak backing without extending the connection pool's
+strong lifetime; panel timeouts and the original ledger are preserved. Full
+checks pass **647 Rust tests per hasher and 225 Python tests**. Native HTTP
+auditing passes 52 invocations at unchanged 64-descriptor/512-MiB limits and
+388 allocation observations, including 16 warm constructor measurements.
+The independent 16-pair wire audit and unchanged cache matrix pass: 544 cases,
+1,488 invocations and 212 actual SIGTERMs. Retention reopens two exact 197-file
+source archives, 789 dependency/compiler bindings, licensed sources and
+15,609 raw files plus 2,330 directories. The independent seal verifies 57
+files. **Scoped fixed Agent/Weak backing and current HTTP/cache integration
+gates: met 2026-11-16.** Pool tables/keys/streams, resolver/socket/global and
+connection TLS, remaining process/preprocessing/library/error owners, complete
+physical/descriptor accounting, public controls, final-source promotion and
+Git/CI remain open. No release ritual has started.
+
+The
+derived-request checkpoint (local evidence: `benchmarks/benchmark_results/v4-http-request-buffers-20261116/README.md`)
+admits method/header/authentication/serialization storage before Unit creation,
+using actual header capacities and configured User-Agent length. A separate
+request reservation releases after the consuming call; retained HTTP errors
+keep only their still-live URL/response/decoder owners. Full checks pass
+**643 Rust tests per hasher and 225 Python tests**. Independent auditing passes
+44 native HTTP invocations and 16 direct/budgeted wire pairs at unchanged
+64-descriptor/512-MiB limits, preserving 372 existing allocation observations.
+Fresh cache auditing passes 544 cases, 1,488 invocations and 212 actual SIGTERMs.
+Retention reopens three 195-file source archives, 785 dependency/compiler
+bindings, the new 36-member licensed dependency archive and both reused
+licensed archives, plus 15,585 raw files and 2,322 directories. The final seal
+verifies 61 files. **Scoped derived-GET request and current HTTP/cache
+integration gates: met 2026-11-16.** Agent/pool/resolver/socket/TLS, remaining
+process/preprocessing/library/error owners, complete physical/descriptor
+accounting, public controls, final-source promotion and Git/CI remain open.
+No release ritual has started.
+
+The
+URL/redirect workspace checkpoint (local evidence: `benchmarks/benchmark_results/v4-http-url-workspace-20261115/README.md`)
+admits initial parsing, each redirect join, URL/IDNA workspace, retained clones
+and history before allocation. Successful responses release the owner before
+body delivery; retained errors keep it through payload destruction, and
+admission failures preserve their original typed error. Full checks pass
+**639 Rust tests per hasher and 225 Python tests**. Independent HTTP auditing
+passes 36 native invocations and 288 URL/four-clone allocation observations
+plus 84 other HTTP observations at unchanged 64-descriptor/512-MiB caps. Fresh
+cache auditing passes 544 cases, 1,488 invocations and 212 actual SIGTERMs.
+Retention verifies three 194-file source archives, 749 dependency/compiler
+bindings, both licensed dependency archives and 15,560 raw files plus 2,314
+directories. The seal verifies 73 files, preserving the initial source and
+the ignored-control/Punycode-prefix correction. **Scoped URL/parser/clone and
+current HTTP/cache integration gates: met 2026-11-15.** Derived request
+method/header/prelude copies, Agent/pool/resolver/socket/TLS, other process
+owners, complete physical/descriptor accounting, public controls, final-source
+promotion and Git/CI remain open. No release ritual has started.
+
+The
+original HTTP request-text checkpoint (local evidence: `benchmarks/benchmark_results/v4-http-request-text-20261115/README.md`)
+admits the raw URL and method copies before either request builder, retaining
+their reservation until the original builder drops. Full checks pass **634
+Rust tests per hasher and 225 Python tests**. Independent native auditing passes
+all 13 HTTP tests separately under both hashers (26 invocations), including
+28 exact raw-text allocation observations, at unchanged 64-descriptor/512-MiB
+limits. Fresh cache auditing passes 544 cases, 1,488 invocations and 212 actual
+SIGTERMs. Retention reopens two 193-file source archives, both raw archives
+(15,530 files and 2,304 directories), and the original licensed dependency
+archive; the final seal verifies 51 files. **Scoped original request-text and
+current HTTP/cache integration gates: met 2026-11-15.** Parsed/redirect URLs,
+request headers, Agent/pool/transport, other resource owners, final-source
+performance and Git/CI remain open. No release ritual has started.
+
+The
+markerless-journal checkpoint (local evidence: `benchmarks/benchmark_results/v4-legacy-journal-20261114/README.md`)
+now gives schema-1 journals from earlier unreleased v4 builds a durable owner and
+accepted-manifest anchor before journal removal. The original four-case native
+SIGTERM regression left four orphans; the corrected pilot leaves none. Full
+checks pass 597 Rust tests per hasher and 225 Python tests, and independent
+hard-limit auditing passes 346 component tests under 64 descriptors/512 MiB.
+The native matrix and independent audit pass 1,088 cases, 2,184 invocations and
+276 actual SIGTERMs, preserving accepted generations and foreign scopes.
+Retention verifies three source archives, 126 current-source joins, 94
+dependency files and all 30,344 payloads plus 10,301 directories in four raw
+archives. **Scoped markerless development-journal interruption gate: met
+2026-11-14.** Released v3.2.1 did not emit recovery journals. No release ritual
+has started.
+
+The panel configuration v7 snapshot (local evidence: `benchmarks/benchmark_results/v4-panel-preprocessing-20261114/README.md`)
+now admits raw local/URL input, YAML workspace, typed models, derived labels,
+inline settings and validation reports on the original ledger before collection.
+Discarded root metadata and arrays release before counting. Linux previews
+honor the inherited cap while ignoring unused counting settings. Full checks
+pass 608 Rust tests per hasher and 225 Python tests; independent auditing passes
+426 component executions at 64 descriptors/512 MiB and 20 native cases/36
+invocations. Headers, sequences, structured annotations, counts and input
+identity match the pre-change v4 executable at threads 1/2/4/8 under both
+hashers; large-panel refusal preserves accepted/foreign files. Seven source
+archives, 130 snapshot source files, 245 dependency/compiler bindings and all
+314 raw payloads plus 94 directories pass retention. The seal verifies 265
+checkpoint files. Original ceilings are unchanged.
+
+The shared decoder-error lifetime follow-up (local evidence: `benchmarks/benchmark_results/v4-yaml-error-lifetime-20261114/README.md`)
+reproduces retained YAML errors losing admission under both hashers, then keeps
+the loader allowance with library errors in configuration and historical
+manifest/journal readers. Original diagnostics and typed resource errors remain
+intact. That snapshot's full checks pass 609 Rust tests per hasher and 225 Python tests;
+independent audits pass 428 hard-limit component executions and 26 native
+cases/48 invocations, including paired malformed panel/manifest/journal behavior.
+Two exact source archives, 130 current files, 245 dependency/compiler bindings,
+the sealed 265-file baseline and all 298 new raw payloads plus 94 directories
+pass retention. **Scoped configuration input/model/preview and YAML decoder-error
+lifetime gates: met 2026-11-14.** Raw CLI/clap, other validation/library/error and
+transport owners, complete process/filesystem accounting, public controls,
+final-source performance and Git/CI remain open. The broader release gate is
+not met; no release ritual has started.
+
+The response-metadata checkpoint (local evidence: `benchmarks/benchmark_results/v4-http-metadata-20261114/README.md`)
+now admits status/header parsing before connecting and retains its owner with
+library errors, releasing before successful body buffering. The
+[source-derived allowance](HTTP_WORKSPACE.md) is separate from gzip. Full
+checks pass 612 Rust tests per hasher and 225 Python tests; independent auditing
+passes 434 component executions at 64 descriptors/512 MiB, plus 20 paired native
+cases/40 invocations preserving HTTP behavior, diagnostics and unrelated files.
+Retention verifies three source archives, 131 current files, 245 dependency
+bindings and all 439 raw payloads plus 90 directories. The final seal verifies
+75 evidence files. **Scoped response status/header and error-lifetime gate:
+met 2026-11-14.** Request/URL/resolver/socket/TLS ownership and fresh integrated
+cache/publication I/O/SIGTERM checks remain open. No release ritual has started.
+
+The native-cache follow-up (local evidence: `benchmarks/benchmark_results/v4-http-cache-integration-20261114/README.md`)
+corrects its ignored driver's admission while preserving original non-response,
+disk, descriptor and kernel ceilings. Full checks pass 612 Rust tests per hasher
+and 225 Python tests; production executable hashes are unchanged. Independent
+auditing passes all 544 cases, 1,488 invocations and 212 actual SIGTERMs.
+Retention verifies two source archives, 131 current files, 245 dependency
+bindings and all 15,454 raw files plus 2,278 directories. The seal verifies
+61 evidence files. **Scoped response-owner/cache I/O/SIGTERM integration gate:
+met 2026-11-14.** This snapshot precedes the chunk-framing patch below.
+
+The chunk-framing checkpoint (local evidence: `benchmarks/benchmark_results/v4-http-chunk-framing-20261114/README.md`)
+fixes the reproduced allocator abort in the locally pinned client. Permanent
+parser tests stream 768 MiB with zero heap allocation under both hashers. Full
+checks pass 630 Rust tests per hasher and 225 Python tests. Independent native
+replay succeeds at about 6.4 MiB RSS, versus the original 262 MiB/abort case,
+at unchanged 64-FD/512-MiB caps. Fresh cache auditing passes 544 cases,
+1,488 invocations and 212 actual SIGTERMs. Source/upstream/dependency/raw
+retention passes; the seal verifies 98 evidence files. See
+[HTTP workspace](HTTP_WORKSPACE.md). **Scoped chunk-framing and current-cache
+compatibility gate: met 2026-11-14.** Broader resource and final-source promotion
+gates remain open. No release ritual has started.
+
+The
+workspace namespace checkpoint (local evidence: `benchmarks/benchmark_results/v4-workspace-identity-20261114/README.md`)
+now validates original temporary storage before accepting a missing child or
+cleaning private data. Kernel NFS object handles support alternate server
+addresses; local storage binds boot/device/inode. Full checks pass 595 Rust
+tests per hasher and 225 Python tests, all 168 hard-limit component tests and
+544 native workspace I/O/retry cases (1,360 invocations). The corrected two-node
+trial and independent audit pass 32 cases, 96 invocations and 32 actual SIGTERMs,
+with shared recovery, node-local refusal and recovery on the live origin.
+Retention verifies five source archives, 125 live joins, 94 dependency files and
+all 28,664 payloads in four raw archives, including the original regression and
+failed address-based trial. **Scoped workspace-parent namespace identity and
+cross-host recovery gate: met 2026-11-14.** Mac/Windows native proof and broader
+physical/descriptor ownership remain open.
+
+The automatic HTTP gzip (local evidence: `benchmarks/benchmark_results/v4-http-codec-20261114/README.md`)
+and ENA body/model/sample (local evidence: `benchmarks/benchmark_results/v4-ena-20261114/README.md`)
+checkpoints also pass their scoped full/native/retention checks.
+Parsed/redirect-URL/request-header/TLS and raw CLI/clap preprocessing,
+complete descriptor/physical ownership, public resource controls, final-source
+performance and Git/CI remain open. Release ritual requires explicit user
+approval.
+
+The preceding
+cache-recovery checkpoint (local evidence: `benchmarks/benchmark_results/v4-cache-recovery-20261114/README.md`)
+adds registered same-filesystem staging, fixed checksummed receipts, retained
+backups and repeatable cold restoration. Full checks pass 570 Rust tests per
+hasher and 225 Python tests; all 100 hard-limit cache/HTTP component tests pass.
+The corrected native matrix and independent audit pass 544 cases/1,488
+invocations, including 212 actual SIGTERMs. Retained verification checks three
+exact source archives, 116 current-source joins and all 16,196 raw payloads.
+**Scoped registered-cache publication/restoration I/O/SIGTERM gate: met
+2026-11-14.** Codec/transport workspace, complete process descriptor/physical
+filesystem ownership, public resource controls, final-source performance and
+Git/CI remain open. No whole-system power-loss claim follows from these trials.
+
+The preceding
+cache-data/workspace-I/O checkpoint (local evidence: `benchmarks/benchmark_results/v4-cache-data-20261114/README.md`)
+passes 562 Rust tests per hasher, 225 Python tests and all development quality
+checks. All 84 cache/HTTP component tests pass under actual 64-descriptor/512 MiB
+limits. Independent native auditing passes 544 registered-workspace I/O cases
+(1,360 invocations) under actual 64-descriptor/3 GiB limits. Retained verification
+checks the exact 113-file source archive and all 13,342 raw payloads.
+**Scoped compressed-cache extent and registered-workspace I/O gates: met
+2026-11-14.**
+
+The preceding
+registered count/replay checkpoint (local evidence: `benchmarks/benchmark_results/v4-registered-workspace-20261113/README.md`)
+passes 551 Rust tests per hasher, 225 Python tests and all development quality
+checks. Independently audited native trials pass 240 cases/760 invocations,
+including 240 real SIGTERMs and 128 strict quota refusals, preserving accepted
+sequences and removing registered leftovers. Retained verification checks four
+source archives, 8,112 raw payloads and 50 quality/provenance files. **Scoped
+registered-workspace SIGTERM/quota gate: met 2026-11-14.** A later receipt guard
+passes 81 output/recovery tests and 4 startup tests plus Clippy per hasher. The
+cache-metadata checkpoint (local evidence: `benchmarks/benchmark_results/v4-cache-metadata-20261114/README.md`)
+includes that guard in full checks: 560 Rust tests per hasher, 225 Python tests
+and all development quality checks pass. All 80 cache/HTTP component tests
+also pass under real 64-descriptor/512 MiB limits and independent auditing.
+**Scoped cache-metadata gate: met 2026-11-14.**
+
+The staging preparation checkpoint (local evidence: `benchmarks/benchmark_results/v4-preparation-20261113/README.md`)
+passes 541 Rust tests per hasher, 225 Python tests and all development quality
+checks. All 400 native cases/1,232 invocations and independent audits pass,
+including 528 actual SIGTERMs and the corrected earlier-restore-copy regression.
+Retained verification checks five exact source archives, 28,331 raw payloads and
+70 sealed quality/provenance files. **Scoped registered-staging SIGTERM cleanup
+gate: met 2026-11-13.** Whole-system power loss is outside this signal proof.
+
+The temporary-metadata checkpoint (local evidence: `benchmarks/benchmark_results/v4-metadata-disk-20261113/README.md`)
+charges new manifest/journal bytes and retains separate journal ownership
+through cleanup. Count-disk peaks now describe counting/finalization rather
+than completed startup. All native compatibility, I/O/SIGTERM, quota,
+completed-replacement and new metadata-error/measurement audits pass with
+the original ceilings. Combined retained verification passes 187 evidence
+files in 11 groups, six source archives, 110 current-source joins and all raw
+payload checks. **Scoped temporary-metadata and count-disk measurement gate:
+met 2026-11-13.**
+
+The corrected recovery-storage checkpoint (local evidence: `benchmarks/benchmark_results/v4-recovery-completion-20261113/README.md`)
+now charges interrupted private data and planned restoration copies together,
+with in-process credit and Unix hard-link deduplication. Independent native
+compatibility, publication/staged/restoration I/O-fault and actual SIGTERM
+checks pass. The initial large rollback-quota trial restored accepted bytes but
+exposed a private-directory cleanup failure, preserved in its failed artifacts. A
+correction preplans every private removal path and also accounts for restored
+old public files until manifest acceptance. Its full local, native compatibility
+and publication/staged/restoration I/O/SIGTERM checks pass. Large quota,
+restored-public and completed-replacement checks also pass their independent
+audits with the original ceilings and no private orphans. Combined retained
+verification passes 127 evidence files in nine groups, three source archives,
+109 current-source joins and every payload in eight new raw archives plus the
+reused historical archive. **Scoped receipted-recovery storage and planned
+cleanup gate: met 2026-11-13.** The schema-4 annotation migration is
+implemented and locally verified under #159.
+
+The frozen normal-default snapshot (local evidence: `benchmarks/benchmark_results/v4-production-defaults-20261113/README.md`)
+passes the original 100-run speed/RSS comparison and 80-case thread/hasher
+matrix. It predates later ownership changes; final-source performance and
+integrated quantitative promotion remain **not met**.
+
+Continue with final-source application-resource and correctness checks,
+publication/recovery, public resource controls and performance verification.
+Exhaustive pool/resolver/socket/TLS, CLI-library, allocator and filesystem
+internal accounting are outside this release's scope. Use measured headroom
+and existing platform safeguards; preserve the application limits and owned
+disk/descriptor controls. See [HTTP scope](HTTP_WORKSPACE.md).
+Panel collection and ENA resolution use the prepared shared ledger; preserve
+standalone validation, dry-run/early exits, URL timeouts and input semantics
+when extending ownership. Git/CI integration remains open.
+Release ritual requires explicit user approval.
+
+This plan tracks unfinished v4.0 and later work. The
+[v3.2 release plan and gate history](https://github.com/caseywdunn/sharkmer/blob/v3.2.0/dev_docs/PLAN.md),
+[v3.2 review](REVIEW_v3.2.md), and
+[final comparison](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md)
+preserve the completed release's evidence and decisions. [The v3.0 plan/session log](https://github.com/caseywdunn/sharkmer/blob/v3.2.1/dev_docs/PLAN_v3.md)
+retains the earlier v3 plan; [ROADMAP.md](../ROADMAP.md) describes the release sequence.
 Tracking issue: [#152](https://github.com/caseywdunn/sharkmer/issues/152).
 
-This is the active execution plan. [ROADMAP.md](../ROADMAP.md) describes the
-release sequence; [PLAN_v3.md](PLAN_v3.md) preserves the historical v3 plan.
+The v3.2 release retains all 86 historical v3.1 sequence identities in the
+scoped comparison, including 22 now carrying warnings. Its inclusive output
+preserves bounded hypotheses without asserting biological correctness. Follow
+[the sequence-annotation conventions](SEQUENCE_ANNOTATIONS.md) for the v4.0
+interface cleanup under [#159](https://github.com/caseywdunn/sharkmer/issues/159).
+
+Independent held-out registration and the full nine-panel biological campaign
+were deferred from v3.2 by the user, not completed. They remain required under
+[#129](https://github.com/caseywdunn/sharkmer/issues/129) before further
+assembly-policy tuning or broad accuracy claims. Additional emitted records
+do not establish more validated loci, haplotypes, or correct repeats.
+
 Check items off only when code, validation, documentation, and acceptance
 criteria are complete. Issue bodies carry implementation scope and dependencies.
+The user and coding agent assess release evidence; no external collaborator
+review is required.
+
+## Maintenance and distribution follow-up
+
+- [x] Bioconda 3.2.1 shipped through [PR #71402](https://github.com/bioconda/bioconda-recipes/pull/71402).
+  The [channel](https://anaconda.org/bioconda/sharkmer/files) lists Linux x86-64,
+  Linux ARM64 and macOS ARM64 builds. PR #71407 is a duplicate update.
 
 ## Release strategy
 
-Ship several independently useful releases rather than hold correctness fixes
-until metagenomic inference is finished. Version numbers are planning targets,
+Ship independently useful releases as the counting, read-evidence, and
+metagenomic inference work matures. Version numbers are planning targets,
 not promised dates. Opt-in additions can ship as v4.x minor releases; reassess
 the major version if an implementation requires incompatible behavior or formats.
 
 | Release | Primary result | Boundary |
 | --- | --- | --- |
-| v3.2 | Correct existing sPCR behavior and establish trustworthy validation | No new assembly accuracy claims based only on more FASTA products |
-| v4.0 | Faster exact counting and complete bounded-memory ingestion/lookup | Existing standard sPCR remains the biological baseline |
+| v4.0 | Faster exact counting and bounded application buffers for ingestion/lookup | Existing standard sPCR remains the biological baseline; library/runtime headroom is not a whole-process RAM guarantee |
 | v4.1 | Read-supported low-coverage nuclear recovery | Explicit partial/ambiguous outcomes; optional local multi-k remains experimental until validated |
 | v4.2 | Recovery of supported metagenomic template diversity | Rare-template retention, phase uncertainty, and defensible abundance reporting |
 | v5.0+ | Additional targeting modes | Single oligos, restriction sites, UCE probes, reference/profile seeds; separate future scope |
 
 Increasing input capacity in v4.0 should already help some nuclear targets.
 The new low-coverage policy and linkage-dependent sensitivity belong in v4.1.
-Do not delay v3.2 waiting for a custom counter, unitigs, or a new inference model.
 
 ## Incremental k-mer counting decision
 
@@ -130,10 +444,11 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
 3. **One pass over original input.** Counting must support non-replayable
    sources. Optional local spooling/replay for evidence and external counting
    does not violate this contract. Never require a second remote download.
-4. **Bounded end-to-end resources.** Budget count-table growth/resizing, queues,
+4. **Bounded application resources.** Budget count-table growth/resizing, queues,
    concurrent target graphs, evidence, and lookup caches together. An external
    counter followed by a full in-memory final table is not a bounded-memory
-   solution.
+   solution. Library/runtime/network internals use measured process headroom
+   and existing platform safeguards, outside per-allocation admission.
 5. **Hardware baseline.** Use a 16 GB laptop as the initial target, reserving
    operating-system headroom; validate larger jobs with disk-backed storage.
    A 32–64 GB machine is an additional benchmark class, not a prerequisite for
@@ -152,197 +467,449 @@ Agree these contracts in [#139](https://github.com/caseywdunn/sharkmer/issues/13
    canonicalization, preprocessing, input/subset identity, and schema version.
    Fingerprint tested binaries and record actual parameters.
 
-## v3.2 — Correctness and reliable evaluation
-
-### Sequence annotation revision (#159)
-
-The [semantic conventions](SEQUENCE_ANNOTATIONS.md) define warning-only
-status, readable causes, and explicit omission rules. v3.2 preserves all
-released ordinary-header fields and sequence identifiers. The agreed causes
-are `homopolymer_length_unresolved`, `repeat_structure_unresolved`, and
-`high_coverage_repeat_suspected`. [#159](https://github.com/caseywdunn/sharkmer/issues/159)
-remains open for the v4.0 breaking interface cleanup even after this subset
-is complete. The user authorized the release ritual on 2026-11-08.
-
-1. Apply the agreed cause vocabulary to the unreleased warning annotations.
-2. Version the new output contract while preserving interpretation of older outputs.
-3. Update writers, stats/manifests, validators, and reference-bootstrap consumers together.
-4. Align CLI explanations and user documentation; preserve the existing opt-out spelling.
-5. Verify identical sequence delivery, warning membership, identifiers, and evidence associations.
-
-**v3.2 implementation gate (agent-checkable): met 2026-11-08.**
-[Implementation PR #161](https://github.com/caseywdunn/sharkmer/pull/161).
-[Frozen-source verification](../benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
-passes all eight gates: 283 Rust tests per backend, 213 Python tests with no
-skips, both Clippy checks, formatting, 158 audited references, and four
-baseline/candidate mode pairs. Regression coverage includes mixed/warning-only/
-empty/opt-out output, legacy format handling, exclusion of warnings from
-standard validation/bootstrap, and publication checks. The eight synthetic
-invocations preserve sequences, IDs, ordering, counts, warning membership,
-released ordinary-header fields, and detailed source evidence. This is
-interface verification, not new biological validation or a performance study.
-Renaming `gene`, `product`, or `length`, moving `score`, and changing released
-stats or identifiers are deferred to v4.0; #159 remains open for that work.
-
-### Existing correctness and evaluation work
-
-- [ ] [#129](https://github.com/caseywdunn/sharkmer/issues/129) — Make sPCR validation and benchmark provenance trustworthy.
-  - [x] Implement per-product validation, executable/input provenance, current-run manifests, benchmark metrics, and offline regression checks; independent Astra review approved on 2026-09-08.
-  - [x] Verify 145 Rust unit tests, 22 integration tests, 20 Python regressions, exact fixture counts/sequences, real BLAST ambiguity/split cases, and bounded ENA cache checks.
-  - [ ] Register independent biological held-out inputs and truth before further assembly-policy tuning or broad accuracy claims. Here, held-out means inputs and truth not used to develop or tune the method; it does not require an external reviewer. Existing datasets remain calibration/regression data; see [the dataset policy](../benchmarks/DATASETS.md). Deferred from v3.2 by the user on 2026-11-08, not passed; #129 remains open for this work and the full nine-panel biological campaign.
-  - [x] Audit all 159 built-in/example reference entries against 109 independently acquired public records: 100 exact source regions, 59 source mismatches. Further quarantine two source-exact Xenia 16S/mutS annotation conflicts, retaining 98 old regions plus one independent replacement example (99 active). Preserve all old sequences as regression-only history; pin versions, coordinates/strand, hashes, and source organisms. Add fail-closed offline verification, known annotation-conflict exclusions, CI, and anti-promotion bootstrap guards. See [the full reference contract and audit](REFERENCE_PROVENANCE.md).
-  - [x] Separate variation-aware gene support from exact reference provenance, sequence relationship, sample haplotype truth, and unevaluated read support. SNPs/indels and compatible split alignments need not fail support; no new results claim `confirmed_product`. Preserve reference exclusions and catalog receipts in results/reports. This changes evaluation, not assembly gates or k=19.
-  - [x] Acquire annotation-reviewed public alternatives for 58 of the 61 quarantined entries (57 newly covered legacy IDs plus the already replaced Hydra example). Shared H3 evidence is one genomic locus, not two sample alleles. Expand Gryllus CO1 and add Heliconius ND1; 156 active references pass exact-source audit against 121 pinned records. Preserve proxy taxa, partial/predicted scope, and public feature receipts. See [replacement findings](PUBLIC_REFERENCE_REPLACEMENTS.md).
-  - [x] Resolve the scientific interpretation of the plant trnV-atpE conflict: effective 15-base primers, allowing up to two substitutions per primer, map uniquely across trnV → atpB, spanning atpE, over 1,359–1,379 bp in three inspected plastomes; no pair fits 400–1,000 bp. Primary literature identifies the reverse oligo as atpB S1022. See [updated annotation findings](PUBLIC_REFERENCE_REPLACEMENTS.md#remaining-gaps).
-  - [x] Correct and evaluate the intended plant assay definition under [#156](https://github.com/caseywdunn/sharkmer/issues/156): panel 2.0.0 uses published atpE/trnV_6R, with exact 909/929 bp public references. All eight real/synthetic before/after runs pass; all nine control targets and five aggregate counts are unchanged. The catalog now has 158 audited active references and covers 60/61 quarantined entries. See [current review](REVIEW_v3.2.md#plant-assay-and-dependency-corrections).
-  - [ ] Obtain an independently annotated Agalma ITS source under #129. Do not reintroduce assembled products or misannotated sources to fill the remaining gap.
-  - [ ] Review gene annotations separately from public sequence origin; add independent same-sample truth and read-backed assessment of divergent/repeat regions. Cross-individual differences alone are not wrong products. Register held-out data before assembly tuning; provenance cleanup does not close #129/#153 or authorize release.
-- [x] [#130](https://github.com/caseywdunn/sharkmer/issues/130) — Read every member of concatenated gzip FASTQ inputs. Terra implementation, Sol review; eight regressions cover ingestion, paired reads, limits, replay, and corrupt-member cache publication.
-- [x] [#131](https://github.com/caseywdunn/sharkmer/issues/131) — Continue coverage thresholds until a valid amplicon is recovered. Sol implementation, Terra review; full per-threshold evaluation, authoritative length checks, explicit search limits, and an absolute primer-count floor preserve shared primer backbones without overriding the configured coverage ratio. Independent CLI mixture probe recovers the exact 180 bp target; existing high-copy oracle is unchanged.
-- [x] [#132](https://github.com/caseywdunn/sharkmer/issues/132) — Prevent confident amplicon output with collapsed homopolymer lengths. Sol implementation, Terra review; path-local repeat markers survive pruning, iterative SCC detection is stack-safe, and ambiguous products are withheld with explicit reasons. Independent homopolymer/tandem CLI probes pass; short-repeat and existing high-copy controls remain unchanged. Intentional removal of shortened products is documented in README.
-- [x] [#133](https://github.com/caseywdunn/sharkmer/issues/133) — Correct read selection, strand handling, and gap continuity in threading. Sol implementation, Terra review; graph-local interior evidence, positioned directional mapping, conservative strand ties, and support counted once per read/paired fragment replace primer-only selection. This does not deduplicate distinct FASTQ records into independent molecules. Twelve targeted regressions and the exact high-copy threading oracle pass; background reads do not allocate paired-evidence entries. Replay remains opt-in and all-read RAM retention is deferred to v4.0.
-- [x] [#134](https://github.com/caseywdunn/sharkmer/issues/134) — Publish current-run amplicons and stats without stale FASTA results. Sol Rust implementation, root validator integration, Terra review; sample lifetime leases, staged no-clobber publication, matching run identities, and checksum receipts make completion explicit. Changed panels, failed reruns, legacy/foreign/symlink collisions, partial publication, and a real SIGKILL/restart probe pass. Validators reject incomplete or mismatched generations; histograms/DOT remain outside the transaction.
-- [x] [#135](https://github.com/caseywdunn/sharkmer/issues/135) — Bound primer ambiguity and mismatch expansion before allocation. Terra implementation, Sol review; checked distinct-variant, generation-work, and simultaneous-allocation bounds run before input/ENA resolution. Effective trim validation, exact-estimator regressions, all built-in panels, and a 128 MiB fail-fast CLI probe pass; limits are documented in README.
-- [x] [#136](https://github.com/caseywdunn/sharkmer/issues/136) — Fix integer median rounding for even-sized k-mer count sets. Overflow-safe floor average, boundary and exhaustive small-pair regressions, caller/documentation audit; Terra review approved.
-- [x] [#137](https://github.com/caseywdunn/sharkmer/issues/137) — Make cache publication concurrent-safe and clearing ownership-aware. Terra implementation, Sol review; cache-wide lifetime leases protect replay and serialize cooperating clients. Verified replacements preserve prior data on normal failures; clear preserves foreign, modified, orphaned, and symlink entries with warnings. Twenty-nine focused tests and an independent CLI alias/lease/ownership probe pass. Global serialization and conservative recovery limits are documented.
-- [x] [#138](https://github.com/caseywdunn/sharkmer/issues/138) — Align sPCR documentation and diagnostics with current behavior. Terra implementation, Sol review; documented first-valid-threshold search, physical gaps, unresolved phase, per-gene node budgets, legacy record-count fields, allocator versus RSS, and panel compatibility semantics. Fixed missing human benchmark taxon metadata with fail-closed guards. Thirty-nine Python regressions, all nine built-ins plus reference schema validation, and documented CLI dry-runs pass. Legacy issues #121–126 were audited and remain open for their unimplemented acceptance criteria.
-- [x] [#153](https://github.com/caseywdunn/sharkmer/issues/153) — Complete the scoped release-baseline review. The [November final check](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md) passes all 32 invocations, preserves all 86 historical identities, and supports acceptance of the four measured runtime/RSS costs. The earlier checkpoints below retain their original scopes; the technical review does not itself publish a release.
-  - [x] Resolve scoped high-copy sequence availability after #154/#155: all 71 released high-copy identities are now available, 64 ordinary and seven with warnings. The full final inventory retains all 86 historical identities. Warning classification preserves the distinction from validated repeat structure; the old Gryllus ITS_2 bootstrap match is not independent truth. Deferred metagenomic/nuclear recovery is outside v3.2.
-  - [x] Complete the preregistered k=19/23/27/31 comparison: all 72 discovery invocations pass count/stability checks and independent Astra review. No longer k restores any of the seven exact losses; none qualifies, so the conditional 42 confirmation invocations are not run. Higher k adds reference-confirmed CO2_1/28S products and lowers runtime but loses two other k19 dev sequences, including other-taxon-supported ND4. k27 between-version parity is shared loss, not rescue. Protocol and findings: [longer-k sweep](BENCHMARK_high_copy_followups.md#longer-k-results). Keep k19 default and #153 open; user review precedes policy changes or release.
-  - [x] Isolate the Gryllus ITS_2 loss with identical real input immediately before/after #132 and current production code: the 978 bp embedded sequence is recovered only before #132, with all five count fields unchanged. Independent Terra and Astra audits confirm causal removal, but public-record verification finds AK281180.1 is only 256 bp and the panel entry is a bootstrap amplicon. Exact panel agreement is circular as full-length biological confirmation. See [the accessioned-reference assessment](BENCHMARK_reference_gates.md); preserve known collapsed-repeat controls and separate regression oracles from independent sequence truth.
-  - [x] Test 23 hydrozoa generating templates at k19/k31 before/after #132/current, with 22 independently corroborated as exact deposited regions. All reconstruct exactly in every version; the remaining EU293971 template has a one-base panel discrepancy. The Gryllus bootstrap template also reconstructs from clean reads, while a known A40 collapsed product is withheld correctly. All 150 synthetic invocations pass count/execution checks. This does not demonstrate over-conservative rejection of known-correct templates or prove the missing real-data products wrong; the native-endpoint cohort is not production hydrozoa-panel recovery.
-  - [x] Reclassify 60 immutable saved invocations against provenance-verified public regions after the full reference audit: both versions retain the same 30 gene-supported product identities. The seven known high-copy losses remain unresolved with limited references; even retained CO1 fails the query-coverage gate against a short 304 bp region. Four fresh k19/k31 before/after smoke runs preserve all counts and sequences. Independent Astra artifact review approved; no new timing or biological-truth claim, and no repeat-gate changes. See [the variation-aware assessment](REFERENCE_PROVENANCE.md#reclassification-and-unchanged-assembly-checks).
-  - [x] Repeat saved-output assessment after independent public replacements and scoped gene-index handling: the same 51 gene-supported identities in each version (38 expected-taxon, 13 other-taxon), including retained Gryllus CO1. Seven high-copy losses remain unresolved, with partial CO1/ND1 support; no evidence that all losses were wrong sequences. This is better evaluation coverage, not new assembly recovery or timing. See [the expanded-reference assessment](PUBLIC_REFERENCE_REPLACEMENTS.md#reassessment-of-saved-products).
-  - [x] Complete the [preregistered read-backed audit](READ_BACKED_AUDIT_PROTOCOL.md): six unchanged-assay replication commands pass with frozen sources and exact consumed R1 prefixes. Retained Gryllus CO1 has 27 exact / 28 sensitivity bridge records over 15 footprints; the lost 373 bp structure has zero. ITS/ND1 have substantial marginal read evidence but unlocalized graph intervals; Drosophila losses have no qualifying diagnostic windows and unresolved longer structural intervals. These are not seven proven incorrect products or full-haplotype truth. See [the read-backed findings](READ_BACKED_AUDIT_RESULTS.md); no assembly gate or performance claim changes.
-  - [x] Verify the seven historical high-copy identities under the user-approved inclusive warning policy: all seven are emitted with warnings in the final check. This does not restore unsupported confidence or prove their biological correctness. Further read-supported reconstruction remains under #148 with #145/#116 prerequisites; it is separate from v3.2 sequence delivery. The broader #129 studies are explicitly deferred; the user authorized the release ritual on 2026-11-08.
-  - [x] Implement the user-approved diagnostic-only slice of #148: hidden opt-in bounded retention of actual withheld sequences and marker positions, without changing gates or FASTA recovery. Sol implementation and Astra review pass; all [twelve preregistered compatibility/localization runs](WITHHELD_PATH_DIAGNOSTICS_RESULTS.md) preserve products, counts, and existing gene/threshold diagnostics. Five of seven historical losses are exactly localized; two Drosophila 12S identities remain unobserved under retention/search bounds. Gryllus ITS is a priority for complete SCC-interval/read-evidence analysis, not an authorized gate exception. This does not implement read-backed reconstruction or close #148/#153.
-  - [x] Complete the user-approved [Gryllus ITS SCC/read audit](ITS_SCC_AUDIT_PROTOCOL.md): scratch pre/post graphs preserve production outputs and retain both relevant cyclic components. Both historical local traversals and both read-length extra-cycle alternatives have zero exact/one-substitution Q20 bridges; an independent exact recount also finds zero before quality filtering. Retained CO1 reproduces 27/28 records. [Findings](ITS_SCC_AUDIT_RESULTS.md) do not establish incorrectness or justify relaxing gates. A separately frozen variation-aware read-recruitment diagnostic is the next investigation, not an admission exception; #148/#153/#129 and release review remain open.
-  - [x] Complete the [frozen variation-aware recruitment diagnostic](ITS_READ_RECRUITMENT_PROTOCOL.md) on an isolated branch from `956e771`: 27/28 ITS1/ITS2 recruited records, one low-quality ITS1 extra-cycle alignment, and two Q20 ITS2 extra-cycle alignments whose complete read sequences/placements are identical. The latter are one observed sequence pattern with tied indel tracebacks; one Q20 span also excludes a low-quality endpoint through a terminal deletion. Both historical classes remain unobserved. Original CO1 controls reproduce 27/28 retained and zero lost records. [Findings](ITS_READ_RECRUITMENT_RESULTS.md) do not justify gate relaxation or full-product claims. Standalone diagnostic only; actual production threading/reconstruction remains a separate proposal and comparison, and #148/#153/#129 stay open.
-  - [x] Implement and evaluate the [ordered read-history prototype](READ_HISTORY_EXPERIMENT.md) on the isolated branch: 25 tests, 861 independent checks, 20 wrapper tests, and both frozen million-read graph scans pass. Ordered histories distinguish synthetic repeat/phase mixtures with identical aggregate edge/local-pair counts. Actual pre/post graphs retain 773/284 graph-matching records; all four classes remain represented with zero literal/Q20 witnesses. The three known spanning records have identical histories at both stages, exposing exact-walk gaps already present before pruning. [Findings](READ_HISTORY_RESULTS.md) describe representation and sensitivity, not biological absence or admission evidence. Complete independent prefix/ledger review is archived; production code and the 71-to-64 release comparison remain unchanged.
-  - [x] Implement and evaluate the user-requested [#157](https://github.com/caseywdunn/sharkmer/issues/157) opt-in output on `experiment/uncertain-products`: bounded actual graph-path hypotheses appear in separate labelled FASTA and stats, preserving standard admission and threshold stopping. All nine [preregistered](UNCERTAIN_PRODUCTS.md) baseline/off/on runs complete with identical standard sequences/counts: 11 Gryllus, 9 Drosophila and 6 Heliconius products. Uncertain counts are 17/4/13. Five of seven exact historical hypotheses are re-emitted (Gryllus CO1_1 373 bp and ITS_2 978 bp; Heliconius ND1 263 bp; Drosophila 12S 475 bp and 16S_2 590 bp); Drosophila 12S 487/499 bp remain unobserved under search/retention bounds. Both hash backends pass 246 unit and 26 integration tests, formatting and Clippy; Python runs 184 tests with one existing skip, and all 156 references verify across ten panels. [Results](UNCERTAIN_PRODUCTS_RESULTS.md) concern separate sequence availability, not validated repeat structure or restored standard recovery.
-  - [x] Implement the user's #157 decision for [default inclusive delivery](INCLUSIVE_OUTPUT.md): one normal FASTA per target containing labelled standard and uncertain records, an explicit opt-out, inclusive total counts with separate class counts, and versioned consumer handling. Record the simple/inclusive preference in [AGENTS.md](../AGENTS.md). All six [default/opt-out regressions](INCLUSIVE_OUTPUT_RESULTS.md) match the preceding sequences: 60 default records (26 standard, 34 uncertain), 26 with opt-out, five of seven historical identities available as uncertain hypotheses. Both hash backends pass 247 unit and 29 integration tests, formatting and Clippy; Python runs 197 tests with one skip and 156/156 references verify. At that checkpoint `dev` was held at `956e771`; the following authorized integration supersedes that hold. This output decision does not close #148/#153/#129 or authorize release.
-  - [x] User-approved development integration: fast-forward `dev` to inclusive checkpoint `ed04bde`; preserve `956e771` as `baseline/pre-inclusive-dev-20260929`. The earlier hold on the dev branch is superseded; release remains unauthorized.
-  - [x] Complete the [fresh inclusive release comparison](INCLUSIVE_RELEASE_RESULTS.md): all 60 original ten-sample/five-panel invocations pass with exact historical inputs and panels. Independent review verifies 126 delivered records (64 standard, 62 uncertain), 69/71 released high-copy identities available and 54 new uncertain identities. The [scratch observer](DROS12S_RETENTION_RESULTS.md) finds exact Drosophila 12S 487/499 bp completions discarded by retention. Source/attempt lineage and reviews are preserved; production search and retention remain unchanged.
-  - [x] Implement and assess [bounded sequence-first retention](SEQUENCE_RETENTION_RESULTS.md) on its own branch. A first candidate was rejected for losing an old plant identity; the corrected two-allowance design preserves all old output and adds 200 labelled uncertain identities in 60 passing paired runs. The Drosophila 12S 487/499 bp and 12 deferred Gryllus Yp2 identities reappear exactly. No per-sample wall or RSS priority flag is triggered by this change. Integration and release remain separate decisions; sequence availability is not biological validation.
-  - [x] Complete the [bounded read follow-up](SEQUENCE_RETENTION_RESULTS.md#bounded-read-follow-up-2026-10-09): 11/32 Gryllus gains have a complete nearby Q20 flanked span observed on one saved read, four more have the variable core with incomplete outer flank, and 17 remain unobserved in that selected ledger. All full products remain unphased. All 117 tested local strings across 26 Drosophila 12S hypotheses have zero exact matches with or without quality filtering, while 16 CO1 controls reproduce. Every canonical 19-mer of each Drosophila hypothesis occurs in the same prefix at least twice. Source/control and independent evidence reviews pass; no concrete production failure warrants a fix. Preserve inclusive uncertain delivery; this completes the scoped diagnostic, not #148/#153/#129 or release validation.
-  - [x] Complete recommendations 1–3: freeze production/source limits, build the complete 118-row release/current matrix with exact identities and available evidence, and assess all 154 hypotheses on six newly represented targets. All 86 historical sequences are available; 240 are new. Liriodendron atpB-rbcL has full annotated-reference and local read support; 153 others remain uncorroborated under the fixed assays. Actual per-target failures/limits and unassessed evidence remain explicit. Resolve the trnV-atpE annotation/length interpretation without changing production. Independent matrix, read, and reference reviews pass; [results](SEQUENCE_RETENTION_RESULTS.md#complete-target-comparison-and-six-new-targets-2026-10-10).
-  - [x] Investigate the four earlier v3.1-to-inclusive runtime flags: independently reconcile 48 saved invocations, CPU/stage/payload measures and exact identities. A bounded Human experiment (12 normal measurements plus four separate traces) reproduces NFS output sensitivity: release-to-retention median +0.43 s on NFS versus +0.04 s locally, with all products unchanged; output metadata calls, not fsync, dominate the measured traced costs. This does not establish the historical cause or close the larger flags. See [current review](REVIEW_v3.2.md#runtime-investigation-completed-performance-acceptance-remains-open).
-  - [x] Apply the minimum rand/webpki patches and complete final local validation: all 11 gates pass on the final frozen binary, including 280 Rust tests per backend, 200 Python tests without skips, Clippy/formatting, 158 references, ten schemas, nine exports, 19 loader checks, fixture oracles and eight plant runs. Independent source/result review passes. Preserve the [tested source snapshot](../benchmarks/benchmark_results/v3.2-prerelease-checks-20261010/candidate-source-v2.tar.gz) as evidence for release assessment. Local remediation does not close default-branch GitHub alerts before integration.
-  - [x] Complete the user-approved final-build comparison under the frozen 32-invocation protocol. All output and provenance checks pass; independent review verifies 444 raw artifacts and 141 unchanged source/tool bindings. Accept the scoped measured costs: three longer workloads increase 0.21–1.45%, Human increases 0.04 s, and all four median RSS increases stay below 0.15%. Preserve the Human percentage flag and the absence of a statistical-equivalence or all-platform claim. [Results and disposition](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md).
-  - Historical Git handoff (2026-10-11): integration into `dev` was authorized for collaborator assessment. The 2026-11-08 user decision supersedes that reviewer requirement. The exact source SHA and evidence remain required; integration does not authorize release.
-  - [ ] Separate future reconstruction task: integrate bounded quality-preserving replay and positioned histories under #145/#116 behind an experimental opt-in path, with feature-off compatibility against its frozen baseline. Separately specify ambiguity-preserving variant-aware mapping before reconstructing observed alternatives; do not repair missing edges or relax repeat gates from marginal coverage. Any admission change still needs cause-specific positive evidence, repeat/mixture controls, and fresh released-v3.1.0 high-copy comparison.
-- [x] [#154](https://github.com/caseywdunn/sharkmer/issues/154) — Keep repeat-rejected candidates from exhausting the valid-product path budget, with bounded search and a clean-route regression.
-  - [x] Sol implementation and independent Astra review: reject complete repeat-tainted candidates before quota accounting; 32 higher-ranked rejected routes no longer hide a clean route. Both hash backends pass 216 unit and 22 integration tests plus Clippy; existing repeat controls remain conservative.
-  - [x] Six affected insect invocations preserve all 26 sequences/classifications and aggregate counts versus pre-fix development code; runtime sum 202.61 -> 202.56 seconds with no meaningful RSS change. Single-pair measurements are descriptive, not proof of statistical equivalence. The Gryllus ITS_2 release-baseline loss remains open under #155/#153; see [follow-up evidence](BENCHMARK_high_copy_followups.md).
-- [x] [#155](https://github.com/caseywdunn/sharkmer/issues/155) — Audit repeat-marker scope and preserve cause, threshold, and search-exhaustion diagnostics without restoring unsupported repeat-copy claims.
-  - [x] Sol implementation, independent Astra review: retained high-coverage collisions mark traversed edges rather than both endpoints; omitted self-loops and pre-pruning cyclic SCC nodes remain conservative. Bounded per-threshold diagnostics survive successful/failed searches. Both backends pass 221 unit and 22 integration tests, formatting, and Clippy; 39 Python regressions also pass.
-  - [x] All 13 independent control invocations and 60 fresh released-v3.1/candidate comparisons complete. Candidate sequences remain unchanged from pre-fix dev: high-copy products 71 -> 64 versus release, including the Gryllus ITS_2 bootstrap-reference match (not independent truth). Runtime median-sum is 1.81% lower; human is 0.05 s slower and RSS is effectively unchanged. Independent Astra evidence review agrees the high-copy release gate remains open under #153; see [the full scoped report](BENCHMARK_high_copy_followups.md).
-
-### 2026-09-11 release-scope clarification
-
-This dated scope statement is retained for provenance. The 2026-11-08 user
-decision in the [current release gate](#release-gate) supersedes its requirement
-to finish held-out registration and the all-panel biological campaign before
-v3.2; it does not change the earlier measurements or establish biological truth.
-
-The current release decision must protect observed recovery of abundant
-organelle and rRNA targets on the frozen calibration inputs, including the
-historically reference-matched Gryllus ITS_2 loss (the embedded reference is
-now known to be a bootstrap product, not independent truth), and must not regress measured runtime
-or RAM under the scoped comparison protocol. Panel `copy_number` and
-`compartment` annotations describe targets; they do not prove abundance or
-read support. Continue to withhold unsupported repeat-copy claims
-conservatively rather than treating every withheld product as an improvement.
-Metagenomic diversity and single-copy nuclear recovery regressions are deferred
-to v4.1/v4.2 and are not additional v3.2 release blockers. This does not waive
-the independent held-out registration or all-panel biological-validation gates.
-
-At this checkpoint the package was `3.2.0-dev`; merging to `master`, tagging,
-and publication were not authorized. The 2026-11-08 release instruction
-supersedes that hold. Independent held-out registration under #129 remains
-open; calibration results do not complete the deferred biological work.
-
-Earlier implementation checkpoint: `03c0fc6`. Both hash backends pass 213 unit and 22
-integration tests, with 39 Python regressions. All 13 historical samples at a
-one-million-record cap preserve read/kmer totals and all 71 product hashes
-against the repaired warm baseline; both pinned fixture oracles pass. This is
-not a comparison against released v3.1.0 or held-out biological validation.
-The subsequent [direct release comparison](BENCHMARK_v3.2_vs_v3.1.md) covers
-all configured 1M/2M/4M/8M cells with clean release/candidate builds and finds
-substantial losses not visible against that repaired intermediate baseline.
-Resolve or explicitly disposition #153–155 before release; all-nine-panel
-biological validation and independent held-out registration still remain open.
-
-Start with the benchmark/provenance issue and independent correctness fixes.
-For homopolymers, v3.2 can conservatively withhold a falsely complete product;
-full read-supported repeat reconstruction is a v4.1 task.
-
-### Review evidence to preserve
-
-The existing suite passed: 145 unit tests and 22 integration tests. Additional
-temporary probes found gaps that must become durable regression fixtures:
-
-| Case | Observed at review | Required behavior |
-| --- | --- | --- |
-| Two concatenated gzip members, one record each | One read counted, exit success | Both records counted |
-| Shared primer ends; 400 bp at count 100 plus 180 bp at count 4; allowed 170–210 bp | No valid product; rare target succeeds alone | Recover the supported in-range target |
-| 160 bp error-free target containing a long A run, k=19 | 137 bp product reported | Supported length or explicit uncertainty |
-| Oriented primer seed TTTGA, k=5 | Its matching read rejected by canonical filter | Orientation-independent membership |
-| AACGATTCCG versus reverse complement CGGAATCGTT | Different phasing evidence | Equivalent oriented graph evidence |
-| AACGANACGAT on adjacent AACGA/ACGAT graph edges | False link across N | No continuity across the gap |
-| Successful run followed by failed rerun at same output prefix | Old FASTA remains | Current-run manifest cannot report stale success |
-| Counts [3,5] | Integer median 3 | Median 4 |
-
-The fixture-only counting measurement was 100,000 reads, 10,698,337 distinct
-k-mers, 1.4 s ingestion, 1.1 s redundant consolidation, 2.52 s total, and
-562,688 KiB peak RSS on the review environment. Treat this as motivation,
-not a portable performance target or a measured improvement.
-
-### Release gate
-
-**Decision ownership updated by the user, 2026-11-08:** the user and coding
-agent assess the evidence here. The user makes acceptance and release decisions;
-no external collaborator review is required. The user subsequently approved
-deferring the two broad biological studies from v3.2 and proceeding with the
-focused final-build check. Deferral is a release-scope decision, not a passing
-biological result. After the focused check and review, the user explicitly
-authorized the release ritual on 2026-11-08.
-
-| Gate | Type and current status | Required evidence or decision |
-| --- | --- | --- |
-| Engineering and interface verification | Agent-checkable: **met 2026-11-09** for the `3.2.0` working-tree candidate. | [Release checks](../benchmarks/benchmark_results/v3.2-release-20261109/README.md) pass all eight groups: 283 Rust tests per backend, 213 Python tests without skips, formatting/Clippy, 158 references, panel/export/loader checks, and fixture oracles. The unchanged development baseline also passes; the stable candidate changes package metadata and one equivalent nested-`if` spelling. Earlier [merged CI](https://github.com/caseywdunn/sharkmer/actions/runs/42512601101) passes; release-commit/tag CI remains part of publication verification. |
-| Release-baseline recovery and performance review | **Met 2026-11-08** under the user-approved focused scope; measured costs recommended for release acceptance. | [All 32 runs and independent review pass](../benchmarks/benchmark_results/v3.2-final-check-20261108/RESULTS.md): exact inventories, all 86 historical identities, expected warnings, and separate corrected-plant checks. The three longer runtime deltas are 0.21–1.45%; Human is +0.04 s. All four median RSS deltas are below 0.15%. The technical assessment accepts these scoped costs; the user has authorized the release ritual. |
-| Independent held-out biological data | **Deferred from v3.2 by the user, 2026-11-08; not completed.** | Register inputs not used to develop/tune the method, checksums/subsets, callable targets, independent truth, and tolerances under #129 before further assembly-policy tuning or broad accuracy claims. Historical samples and synthetic regression fixtures do not satisfy this criterion. |
-| Biological validation across all nine panels | **Deferred from v3.2 by the user, 2026-11-08; not completed.** | Retain a bounded evaluation of every emitted product, negative controls, gene identity, and whole-product alignment coverage as follow-up before further assembly tuning or broad accuracy claims. Schema, export, and loader checks do not establish this biological coverage. Preserve unavailable truth and unassessed outcomes explicitly. |
-| Release authorization | User decision: **met 2026-11-08**. | The user explicitly instructed the agent to proceed with the release ritual after accepting the scoped assessment and deferring the two broader biological studies. Publication is authorized; no further release confirmation is required. |
-| Final packaging checks and publication | Agent-checkable: **pending**. | Complete the release procedure, record checks against the release version, and verify the merge, tag, release assets, and package publication state. User authorization does not stand in for these checks. |
-
-The focused check and technical performance disposition under #153 are complete. The
-[frozen comparison protocol](../benchmarks/benchmark_results/v3.2-final-check-20261108/README.md)
-defines the 32 invocations, source/input bindings, and review thresholds.
-No unexpected sequence changes occurred, and the measured costs are acceptable
-for the scoped release. The user has authorized the release ritual; final
-packaging checks and publication are in progress. The broader biological work
-remains open under #129; v3.2 makes no general precision, recall, or
-repeat-correctness claim from the additional warning-bearing records.
-
 ## v4.0 — Scalable exact counting and replay
 
+- [x] [#171](https://github.com/caseywdunn/sharkmer/issues/171) — Clarify current developer guidance and preserve historical entry points. **Documentation gate: met 2026-11-09.** [Index](README.md), source-checked [overview](OVERVIEW.md), and relative-link/archive-target validation are complete.
+
 - [ ] [#159](https://github.com/caseywdunn/sharkmer/issues/159) — Complete the
-  [deferred sequence-annotation interface cleanup](SEQUENCE_ANNOTATIONS.md#v40-interface-cleanup-deferred).
-  Finalize replacements for released header fields (`gene`, `product`, `length`,
-  and `score`) and any stats/identifier changes at this major-version boundary.
-  Preserve measurements and provenance, document migration, and test old/new
-  consumers. **Compatibility gate (agent-checkable): not met.** The v3.2 warning
-  revision does not implement or waive this work; default read-support
+  [sequence-annotation interface cleanup](SEQUENCE_ANNOTATIONS.md#v40-interface-and-migration).
+  Development writers/readers use `target`, `sequence_index`, `sequence_length`
+  and structured `assembly_rank_score`; stable IDs and `kmer_count_*` remain.
+  **Local compatibility gate: met 2026-11-12.** The
+  integrated verification (local evidence: `benchmarks/benchmark_results/v4-integrated-checks-20261112/README.md`)
+  passes 316 Rust tests per hasher, 223 Python tests and 160 independently
+  audited native invocations, preserving measurements and provenance and
+  testing historical/new consumers. Git integration and CI remain open before
+  closing the issue. The v3.2 warning revision did not implement or waive this work; default read-support
   assessment and new biological claims remain separate inference scope.
-- [ ] [#139](https://github.com/caseywdunn/sharkmer/issues/139) — Define exact count-store, replay-source, and assembly evidence interfaces.
-- [ ] [#140](https://github.com/caseywdunn/sharkmer/issues/140) — Remove redundant table consolidation and per-read allocations from sPCR counting.
+- [ ] [#139](https://github.com/caseywdunn/sharkmer/issues/139) — Define exact count-store, replay-source, and assembly evidence interfaces. [Contracts and implementation status](COUNT_STORE_CONTRACTS.md). Typed identity/extraction gate: **met 2026-11-09**, [correctness evidence](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-identity-contracts-20261109/README.md). Exact store/shared-ledger conformance gate: **met 2026-11-10**, [evidence](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-exact-store-contracts-20261110/README.md); Assembly-access gate: **met 2026-11-10**, [exact-store PCR, u64 counts and propagated-error evidence](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-assembly-access-20261110/README.md). Production counter dispatch, replay and combined-budget integration remain open. [Frozen baseline protocol and promotion criteria](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-performance-baseline-20261109/README.md) precede backend selection.
+  Typed-exhaustion conformance (local evidence: `benchmarks/benchmark_results/v4-integrated-checks-20261112/README.md`)
+  and real temporary-file ownership checks (local evidence: `benchmarks/benchmark_results/v4-owned-disk-file-20261112/README.md`)
+  now pass under both hashers. They establish configured-limit error handling
+  and logical file-extent ownership; end-to-end storage integrity, replay and
+  whole-run resource enforcement remain open.
+  Primary graph-buffer/admission checks (local evidence: `benchmarks/benchmark_results/v4-graph-buffers-20261113/README.md`)
+  pass 401 Rust tests per hasher and 224 Python tests, including eight exact
+  candidates at threads 1/2/4/8 and real growth refusal. These hidden opt-in
+  controls cover primary graph buffers, not auxiliary/evidence or whole-run
+  memory. Rerun preservation before publication (local evidence: `benchmarks/benchmark_results/v4-rerun-preservation-20261113/README.md`)
+  passes 404 Rust tests per hasher and 224 Python tests, preserving all accepted
+  output bytes after a real graph-budget failure. The
+  durable publication recovery implementation (local evidence: `benchmarks/benchmark_results/v4-publication-recovery-20261113/README.md`)
+  passes full quality checks (409 Rust tests per hasher, 224 Python tests).
+  **Scoped publication failure/restart gate: met 2026-11-13.** All 160 native
+  EIO/ENOSPC/SIGTERM cases (480 invocations) and their independent audit pass
+  under both hashers and threads 1/2/4/8, preserving exact accepted output bytes.
+  Pre-journal orphan reclamation and whole-run budgets remain open.
+  Node-lookup ownership (local evidence: `benchmarks/benchmark_results/v4-graph-lookups-20261113/README.md`)
+  now shares the target ceiling, charging old/replacement buffers before growth
+  and preserving stable IDs. Full local checks pass 412 Rust tests per hasher
+  and 224 Python tests. The subsequent
+  extension/pruning/repeat workspace migration (local evidence: `benchmarks/benchmark_results/v4-graph-workspaces-20261113/README.md`)
+  passes full quality checks (421 Rust tests per hasher and 224 Python tests).
+  **Scoped workspace conformance gate: met 2026-11-13.** All 128 native
+  candidate cases plus two frozen previous-build references and independent
+  auditing pass, preserving FASTA/PCR and exact selected-read/count identities.
+  Primer-buffer ownership and bounded candidate selection (local evidence: `benchmarks/benchmark_results/v4-primer-buffers-20261113/README.md`)
+  now pass 428 Rust tests per hasher and 224 Python tests, plus 512 native
+  candidate cases/eight prior-build references and independent auditing.
+  **Scoped primer buffer/selection gate: met 2026-11-13.** Exact/IUPAC primers
+  and caps retain the same FASTA/PCR evidence, mismatch priority and counts.
+  Path-search buffer ownership (local evidence: `benchmarks/benchmark_results/v4-path-buffers-20261113/README.md`)
+  passes full local quality checks (434 Rust tests per hasher and 224 Python
+  tests), including the unchanged 8 MiB long-target gate. DFS state, retained
+  candidate paths and metric scratch now share the target ceiling. All 512
+  native candidate cases, eight frozen prior-build references and independent
+  auditing pass, preserving complete FASTA/PCR and count/read identities.
+  **Scoped path-buffer conformance gate: met 2026-11-13.**
+  Read-evidence/bubble ownership (local evidence: `benchmarks/benchmark_results/v4-evidence-buffers-20261113/README.md`)
+  passes full local quality checks (440 Rust tests per hasher and 224 Python
+  tests). Threading and bubble buffers share the target ceiling; support
+  counters reject overflow. All 768 native candidate cases, 12 frozen prior-build
+  references and independent auditing pass, including paired reverse mates,
+  N gaps and an unmatched tail. **Scoped read-evidence/bubble conformance gate:
+  met 2026-11-13.** Ordinary sequence-result ownership (local evidence: `benchmarks/benchmark_results/v4-result-records-20261113/README.md`)
+  passes full local quality checks (447 Rust tests per hasher and 224 Python
+  tests). A separate run-level result class
+  preserves the combined ceiling; collected ordinary records release target
+  admission. All 768 native candidate cases, 12 frozen prior-build references
+  and independent auditing pass with identical FASTA/PCR evidence and read/count
+  identities. **Scoped ordinary-sequence ownership gate: met 2026-11-13.**
+  Diagnostic/warning payload ownership (local evidence: `benchmarks/benchmark_results/v4-warning-payloads-20261113/README.md`)
+  passes full quality checks (451 Rust tests per hasher and 224 Python tests).
+  Parent-run guards cover retained
+  sequences, hashes, markers, source/product/key buffers and hidden copies;
+  fixed labels are borrowed. All 1,024 native candidate cases, 16 frozen prior-build
+  references and independent auditing pass, including hidden-diagnostic modes.
+  **Scoped diagnostic/warning ownership gate: met 2026-11-13.**
+  Stats metadata and parallel collection ownership (local evidence: `benchmarks/benchmark_results/v4-stats-metadata-20261113/README.md`)
+  passes full quality checks (457 Rust tests per hasher and 224 Python tests).
+  Target/run/input metadata and
+  aggregate vectors retain parent guards; indexed parallel output reserves
+  before callbacks. All 1,024 native candidate cases, 16 frozen prior-build
+  references and independent auditing pass, preserving full FASTA/PCR and
+  run/input/command metadata. **Scoped stats-metadata ownership gate: met
+  2026-11-13.** Pinned YAML workspace accounting (local evidence: `benchmarks/benchmark_results/v4-yaml-workspace-20261113/README.md`)
+  passes full quality checks (464 Rust tests per hasher and 224 Python tests),
+  including allocation-free preflight and 80 isolated allocator observations.
+  The reservation precedes stats staging and outlives emitter cleanup; fields
+  and YAML bytes remain unchanged. All 1,024 native candidate cases, 16 frozen
+  references and independent count/input-frame auditing pass. **Scoped YAML
+  workspace ownership gate: met 2026-11-13.**
+  Pinned deduplication scratch (local evidence: `benchmarks/benchmark_results/v4-dedup-workspace-20261113/README.md`)
+  passes full quality checks (470 Rust tests per hasher and 224 Python tests).
+  Both arrays are reserved before the distance call and released through its
+  normal return/unwinding, with 48 exact allocator observations and independent
+  full-matrix/previous-adapter distance agreement. Scratch refusal cleans up
+  kept and unconsumed owned records. All 1,024 native candidates, 16 frozen
+  reference runs and independent count/input-frame auditing pass. **Scoped
+  deduplication workspace ownership gate: met 2026-11-13.**
+  Shared startup ledger and manifest workspace (local evidence: `benchmarks/benchmark_results/v4-startup-ledger-20261113/README.md`)
+  pass full quality checks (479 Rust tests per hasher and 224 Python tests).
+  One source-checked numeric plan preserves all resource formulas, prepares the
+  parent ledger before output resources, and defers counter allocation until
+  ingestion. Count-phase peaks exclude completed startup work without resetting
+  lifetime peaks. Explicit planned output-lease allowance preserves the prior
+  descriptor pool; manifest workspace can refuse before temporary creation and
+  preserve an existing completed generation. Native hard/soft-64-descriptor
+  comparisons pass all 1,024 candidates and 16 frozen references; independent
+  auditing confirms the unchanged pool and metadata transition. **Scoped
+  shared-ledger/manifest-workspace gate: met 2026-11-13.**
+  New-generation publication metadata (local evidence: `benchmarks/benchmark_results/v4-publication-metadata-20261113/README.md`)
+  passes full quality checks (485 Rust tests per hasher and 224 Python tests)
+  and 160 independently audited publication-fault cases (480 processes).
+  Transaction paths, labels, staged receipts and hashes share the parent;
+  manifests and recovery journals serialize borrowed metadata under reserved
+  emitter workspace. All 1,024 native candidates and 16 frozen references pass
+  complete FASTA/PCR, count/input and stable metadata checks under actual
+  hard/soft-64-descriptor limits. Independent and archive verification pass.
+  **Scoped new-generation publication metadata ownership gate: met
+  2026-11-13.**
+  Prior-output verification and recovery workspace (local evidence: `benchmarks/benchmark_results/v4-recovery-workspaces-20261113/README.md`)
+  passes full quality checks (489 Rust tests per hasher, 224 Python tests).
+  Cleanup paths and duplicate tables share the parent ledger; recovery uses
+  sorted borrowed receipt indexes and admits its complete restore plan before
+  public mutation. Typed refusal preserves all public files and backups, and
+  recovery retries after competing memory releases. All 1,024 native candidates
+  and 16 frozen references pass complete FASTA/PCR, count/input identity and
+  stable metadata checks under actual hard/soft-64-descriptor limits. All 160
+  fault/restart cases (480 processes), independent audits and archive
+  verification pass. **Scoped recovery workspace ownership gate: met
+  2026-11-13.**
+  Historical input and typed-model ownership (local evidence: `benchmarks/benchmark_results/v4-parsed-metadata-20261113/README.md`)
+  passes full quality (493 Rust tests per hasher, 224 Python tests). Serde seeds
+  admit original input, scalar copies and receipt-vector growth, including
+  aliases, and retain aggregate guards through model destruction. Historical
+  parser forms and typed refusal preserve completed outputs. All 1,024 native
+  candidates and 16 frozen references agree on complete FASTA/PCR, identities
+  and stable metadata under actual hard/soft-64-descriptor limits. All 160
+  fault cases (480 processes), independent audits and archive checks pass.
+  **Scoped input/typed-metadata ownership gate: met 2026-11-13.**
+  Historical loader workspace (local evidence: `benchmarks/benchmark_results/v4-loader-workspace-20261113/README.md`)
+  now reserves those buffers before decoding under the same parent ledger,
+  including tag-prefix reuse, ignored values and rejected second documents.
+  Full checks pass 495 Rust tests per hasher and 224 Python tests; 56 isolated
+  loader allocation observations cover the audited bound. All 1,024 native
+  candidates and 16 frozen references agree; 160 fault cases (480 processes),
+  independent audits and archive verification pass. **Scoped loader workspace
+  ownership gate: met 2026-11-13.** The
+  bound can conservatively overreserve scalar text; no original protocol ceiling
+  is raised. Returned errors and other process/filesystem owners remain open.
+  The combined-budget million-read trial (local evidence: `benchmarks/benchmark_results/v4-combined-budget-20261113/README.md`)
+  and independent audit also pass with graph/result owners enabled: unchanged
+  256 MiB address-space, table/sort/disk/timeout ceilings plus actual hard/soft
+  64-descriptor limits. All seven FASTA outputs and complete PCR evidence agree;
+  each count/replay file exceeds the address-space cap. Native RSS is 31,760
+  KiB and every target fits the original 8 MiB allowance. This is scoped
+  integration evidence, not a whole-run resource or production-default gate.
+  Publication copy workspace (local evidence: `benchmarks/benchmark_results/v4-publication-copy-20261113/README.md`)
+  now preadmits one 64 KiB backing allocation before backup creation or public
+  recovery mutation. Targeted checks pass 38 output tests and Clippy per hasher,
+  including refusal/retry and exact isolated heap accounting. Full quality
+  passes 498 Rust tests per hasher and 224 Python tests. All 1,040 native
+  comparisons, 160 fault cases (480 processes), independent audits and retained
+  archive checks pass. **Scoped copy workspace ownership gate: met 2026-11-13.**
+  Original protocol ceilings remain unchanged; broader publication/process
+  ownership is still open.
+  Optional Linux address-space safeguard (local evidence: `benchmarks/benchmark_results/v4-process-memory-20261113/README.md`)
+  passes 501 Rust tests per hasher, 224 Python tests, 1,040 native comparisons,
+  160 fault cases and 78 cap/startup probes. The program also completes the
+  million-read reference trial under its own 256 MiB cap. All 92 retained files,
+  four source archives and source/binary/audit joins pass verification.
+  **Scoped optional process-cap gate: met 2026-11-13.** This optional control
+  does not choose production defaults or waive the remaining owner contracts.
+  Other library/process workspace and publication accounting remain under the
+  [remaining owner contracts](COUNT_STORE_CONTRACTS.md).
+  Remote cache-miss record buffers (local evidence: `benchmarks/benchmark_results/v4-cache-records-20261113/README.md`)
+  now borrow the exact counter's bounded reader and shared input ledger. All
+  32 cache tests and Clippy pass under both hashers, including real HTTP
+  refusal/preservation. Full checks pass 507 Rust tests per hasher and 225 Python
+  tests, including cache miss/hit/count/replay integration. Native auditing and
+  retention pass. **Scoped cache-record buffer gate: met 2026-11-13.**
+  Cache-metadata ownership (local evidence: `benchmarks/benchmark_results/v4-cache-metadata-20261114/README.md`)
+  now bounds sidecar input/output, parser/emitter workspace and surviving strings;
+  its closed temporary remains charged through directory sync. Full checks
+  pass 560 Rust tests per hasher and 225 Python tests. Four independently audited
+  native component invocations pass 80 tests under actual 64-descriptor/512 MiB
+  limits. **Scoped cache-metadata gate: met 2026-11-14.**
+  Compressed cache extents (local evidence: `benchmarks/benchmark_results/v4-cache-data-20261114/README.md`)
+  now use the common owned writer through gzip/buffer finalization, file close
+  and cache-directory sync. Typed quota refusal preserves prior cache pairs
+  and foreign files. Full checks pass 562 Rust tests per hasher and 225 Python
+  tests; all 84 cache/HTTP component tests pass under actual hard limits.
+  The same snapshot passes 544 independently audited registered-workspace
+  I/O/retry cases (1,360 native invocations), covering EIO, ENOSPC, EINTR and
+  short writes at 11 boundaries. Source/archive/raw-payload retention passes.
+  **Scoped compressed-cache extent and registered-workspace I/O gates: met
+  2026-11-14.**
+  Registered cache publication/restoration (local evidence: `benchmarks/benchmark_results/v4-cache-recovery-20261114/README.md`)
+  now binds both generations with fixed checksummed receipts, keeps old backups
+  through failed restoration, and admits the common private inode inventory
+  before recovery mutation. Full checks pass 570 Rust tests per hasher and
+  225 Python tests; 100 hard-limit cache/HTTP component tests pass. The native
+  matrix and independent audit pass 544 cases/1,488 invocations and 212 actual
+  SIGTERMs. Retained verification checks three source archives and all 16,196
+  raw payloads, including failed source/harness versions. **Scoped registered-cache
+  publication/restoration I/O/SIGTERM gate: met 2026-11-14.** Codec/transport
+  workspace and broader process/filesystem ownership remain open.
+  Application FASTQ-buffer/gzip backing (local evidence: `benchmarks/benchmark_results/v4-codec-20261114/README.md`)
+  now preadmits pinned backend state, nested compression allocations, optional
+  member-header growth overlap and source/flush buffers. Full checks pass 576
+  Rust tests per hasher and 225 Python tests. All 112 hard-limit component tests,
+  544 native cache fault cases and independent audits pass. Isolated allocator
+  observations stay inside the envelope and release all allocations; source,
+  dependency and all 15,447 raw-payload archive checks pass. **Scoped application
+  FASTQ-buffer/gzip backing gate: met 2026-11-14.** HTTP/TLS/content-encoding
+  and preprocessing, broader descriptor/physical ownership and final-source
+  promotion remain open.
+  ENA response/model/sample ownership (local evidence: `benchmarks/benchmark_results/v4-ena-20261114/README.md`)
+  now shares the original count ledger before metadata resolution, preserves
+  the existing 10 MiB body limit, lossy UTF-8 and first-row selection, and keeps
+  URL owners through read-plan transfer. Full checks pass 583 Rust tests per
+  hasher and 225 Python tests; all 126 hard-limit component tests and 544 native
+  workspace I/O/retry cases (1,360 invocations) pass independent auditing.
+  Retention verifies both source archives, 76 dependency files and all 13,342
+  raw payloads. The first full check caught unused overflowing count settings
+  breaking dry runs; the preserved correction passes the unchanged early-exit
+  test under both hashers. **Scoped ENA body/model/sample ownership gate: met
+  2026-11-14.** HTTP/TLS/content-encoding, panel/CLI preprocessing, broader
+  descriptor/physical ownership and final-source promotion remain open.
+  Automatic HTTP gzip ownership (local evidence: `benchmarks/benchmark_results/v4-http-codec-20261114/README.md`)
+  now preadmits ureq's eager content decoder and keeps it through body-reader
+  and retained HTTP-error disposal, separately from application FASTQ gzip.
+  Full checks pass 589 Rust tests per hasher and 225 Python tests; all 138
+  hard-limit component tests and 544 cache fault cases (1,488 invocations,
+  212 actual SIGTERMs) pass independent auditing. Source/dependency retention
+  and all 15,447 raw payload checks pass. Isolated allocation peaks stay within
+  the 305,671-byte envelope and release. **Scoped automatic HTTP gzip gate: met
+  2026-11-14.** Request/header/TLS, earlier panel/CLI preprocessing and the
+  broader process/filesystem and final-source gates remain open.
+  Workspace-parent namespace identity (local evidence: `benchmarks/benchmark_results/v4-workspace-identity-20261114/README.md`)
+  now checks kernel objects before accepting a missing child or cleaning private
+  data. Full checks pass 595 Rust tests per hasher and 225 Python tests; all 168
+  hard-limit component tests and 544 workspace I/O/retry cases pass. The two-node
+  trial passes 32 cases/96 invocations and 32 actual SIGTERMs, independently
+  auditing shared recovery, local refusal and recovery on the live origin.
+  Five source archives, 94 dependency files and all 28,664 raw payloads pass
+  retention, including the original missing-parent and endpoint-identity failures.
+  **Scoped workspace-parent namespace identity and cross-host recovery gate:
+  met 2026-11-14.**
+  Markerless development-journal recovery (local evidence: `benchmarks/benchmark_results/v4-legacy-journal-20261114/README.md`)
+  now persists ownership and accepted-manifest anchors before journal removal.
+  Full checks pass 597 Rust tests per hasher and 225 Python tests; independent
+  auditing passes 346 hard-limit component tests and 1,088 native fault cases
+  (2,184 invocations, 276 actual SIGTERMs). Three source archives, 126 live joins,
+  94 dependency files and all 30,344 raw payloads pass retention. **Scoped
+  markerless development-journal interruption gate: met 2026-11-14.** Non-Linux
+  native proof, broader physical/descriptor ownership, library/preprocessing
+  resources and final-source promotion remain open.
+- [ ] [#140](https://github.com/caseywdunn/sharkmer/issues/140) — Remove redundant
+  table consolidation and per-read allocations from sPCR counting.
+  Direct-ingestion correctness gate: **met 2026-11-12**,
+  [verification](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-direct-refinement-20261112/README.md).
+  Default selection and quantitative promotion gates remain **not met**.
+  [Custom-table trials](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v4-direct-comparison-20261112/README.md)
+  and Hashbrown trials through V7 (local evidence: `benchmarks/benchmark_results/v4-hashbrown-comparison-20261112/README.md`)
+  retain complete paired audits and their failed speed decisions. V7 agrees on
+  all 100 invocations but misses the geometric-mean speed gate and the Human
+  wall allowance. Its conditional matrix is explicitly skipped.
+  V8's reusable key buffer (local evidence: `benchmarks/benchmark_results/v4-reusable-buffer-checks-20261112/README.md`)
+  passes conformance but is slower in its one-input attribution pilot; no
+  promotion follows. Integrated annotation/counter checks (local evidence: `benchmarks/benchmark_results/v4-integrated-checks-20261112/README.md`)
+  pass both backends/hashers at four thread counts. The comparison selector
+  stays hidden, explicit incremental counting stays isolated, and the original
+  speed/RSS thresholds remain unchanged.
+  Complete-record parsing (local evidence: `benchmarks/benchmark_results/v4-buffered-records-20261112/README.md`)
+  and batch-validated counting (local evidence: `benchmarks/benchmark_results/v4-unit-batches-20261112/README.md`)
+  pass correctness but show no Human speed gain; both production optimizations
+  were removed. Isolated attribution (local evidence: `benchmarks/benchmark_results/v4-identity-cost-20261112/README.md`)
+  locates about 0.27 s in selected-record hashing on CPUs without SHA
+  instructions; a newer library does not improve it. The hidden
+  ordered identity/count pipeline (local evidence: `benchmarks/benchmark_results/v4-identity-pipeline-20261112/README.md`)
+  now passes 374 Rust tests per hasher, 224 Python tests and 1,008 independently
+  audited native invocations, including 223 actual spills. Its Human pilot
+  improves on the previous parallel producer but still trails v3.2.1.
+  Expanded native failure checks pass 375 Rust tests per hasher and 224 Python
+  tests, covering post-spill disk/invalid-base errors and corrupt concatenated
+  gzip input at threads 1/2/4/8, with failed publication and owned-file cleanup.
+  The full paired audit preserves all 287 records/counts/source identities and
+  passes RSS allowances, but the 1.0139565284 wall ratio and Human allowance
+  fail promotion; its conditional matrix is skipped. The pipeline's
+  hard-limit replay/PCR trial failed on allocation during assembly despite low
+  RSS; its failure is retained. A
+  coordinator-participation correction (local evidence: `benchmarks/benchmark_results/v4-current-thread-20261112/README.md`)
+  passes 376 Rust tests per hasher and 224 Python tests, including actual OS
+  thread limits across ingestion/replay/assembly at 1/2/4/8. Its unchanged-cap
+  million-read retry and independent audit pass with seven byte-identical
+  FASTA outputs, complete reference PCR evidence and 12,828 KiB peak RSS.
+  Its Human pilot meets the absolute per-input allowance but does not establish
+  the complete frozen performance gate. The
+  hybrid owner-transfer experiment (local evidence: `benchmarks/benchmark_results/v4-hybrid-owners-20261112/README.md`)
+  now passes 388 Rust tests per hasher, 224 Python tests, 1,512 independently
+  audited native cases (56 transfers, 202 spills) and phase-start/I/O failures.
+  Its full paired comparison (local evidence: `benchmarks/benchmark_results/v4-hybrid-owners-20261112/comparison-v1/summary.json`)
+  passes all 100 correctness checks and per-input wall/RSS allowances, but the
+  0.9656945923 geometric-mean wall ratio misses the 0.95 criterion. Its conditional
+  matrix is explicitly skipped because that prerequisite failed.
+  The default-handoff hard-limit trial (local evidence: `benchmarks/benchmark_results/v4-hybrid-owners-20261112/bounded/summary.json`)
+  passes counting and sPCR under a 256 MiB address-space cap, with exact full
+  input/count/PCR/FASTA agreement and at most two sampled OS threads.
+  Isolated SHA provider profiling (local evidence: `benchmarks/benchmark_results/v4-sha-backends-20261112/README.md`)
+  finds lower hash cost with an already locked TLS dependency. A
+  native provider trial (local evidence: `benchmarks/benchmark_results/v4-native-sha-20261113/README.md`)
+  passes 390 Rust tests per hasher and 49 independently audited Human runs,
+  with identical full identity/counts/FASTA/PCR evidence and 6–7% lower wall
+  time than the current exact candidate. The
+  integrated revision (local evidence: `benchmarks/benchmark_results/v4-selected-sha-20261113/README.md`)
+  passes combined checks (390 Rust tests per hasher, 224 Python tests) and
+  independent native owner-start/I/O-failure auditing. Its 1,512-case native
+  input matrix and actual-default-handoff hard-limit replay/PCR trial also pass,
+  including complete reference PCR/FASTA agreement under a 256 MiB cap.
+  The full paired comparison (local evidence: `benchmarks/benchmark_results/v4-selected-sha-20261113/comparison-v1/summary.json`)
+  passes all 100 correctness checks and RSS allowances but misses aggregate
+  speed (0.9632352084 versus 0.95) and Human wall time (0.67 versus 0.66 seconds
+  allowed). Its conditional matrix is explicitly skipped; default promotion
+  and full quantitative acceptance remain open.
+  A 27-run ownership diagnostic (local evidence: `benchmarks/benchmark_results/v4-owner-attribution-20261113/README.md`)
+  confirms exact agreement but finds fixed counting ownership slower than
+  hybrid on Human after the provider change; it does not justify replacement.
+  Native CPU profiling (local evidence: `benchmarks/benchmark_results/v4-native-profile-20261113/README.md`)
+  and its independent audit locate measurable adaptive-wrapper overhead. An
+  isolated inlining candidate (local evidence: `benchmarks/benchmark_results/v4-adaptive-inline-20261113/README.md`)
+  passes all 495 Rust tests per hasher and a 20-run independently audited Human
+  pilot (0.52 versus 0.57 s for the frozen build, unchanged exact results).
+  Its full ten-input comparison passes all 100 invocations and original speed,
+  per-input wall and RSS criteria (geometric-mean ratio 0.6799958680). The
+  independent 80-case thread/hasher audit also passes. The attribute is now
+  applied to the working source. A
+  resource-envelope pilot (local evidence: `benchmarks/benchmark_results/v4-default-resources-20261113/README.md`)
+  independently verifies all ten inputs and 287 records under the proposed
+  16 GB hardware configuration. Normal commands now select the exact hybrid
+  counter, shared graph accounting and Linux address-space safeguard; the
+  integrated default checkpoint (local evidence: `benchmarks/benchmark_results/v4-production-defaults-20261113/README.md`)
+  passes its full checks and unchanged 100-run performance/80-case matrix
+  criteria. **Scoped normal-default snapshot gate: met 2026-11-13.** Its
+  geometric-mean elapsed ratio is 0.7760642119 with every original per-input
+  wall/RSS gate met. Final-source default promotion remains **not met** pending
+  remaining ownership work, integrated revalidation and Git/CI.
 - [ ] [#141](https://github.com/caseywdunn/sharkmer/issues/141) — Parallelize ingestion with bounded queues and measured shard ownership.
+  A hidden coordinator/owner candidate retains disjoint exact tables without
+  consolidation and reuses three fixed key buffers per owner. Local checks pass
+  340 Rust tests per hasher and 223 Python tests, including one-shot clean/warning
+  PCR at threads 1/2/4/8, owner failure propagation and joined cleanup. The full
+  native input matrix (local evidence: `benchmarks/benchmark_results/v4-parallel-counts-20261112/README.md`)
+  passes all 1,512 invocations and independent raw-artifact auditing. The frozen
+  paired comparison passes independent auditing of all 100 invocations. Its
+  0.8587603682 geometric-mean wall ratio and all RSS allowances pass, but Human
+  takes 1.05 s against a 0.97 s allowance: promotion remains **not met**. A compact
+  eight-byte worker-key queue revision passes 352 Rust tests per hasher and 224
+  Python tests; its Human pilot shows no ingestion improvement. A canonical-only
+  extraction revision passes 354 Rust tests per hasher and 224 Python tests,
+  but also trails the released baseline in its Human diagnostic. Neither pilot
+  replaces the frozen promotion protocol. Production selection and whole-process
+  integration remain open.
 - [ ] [#142](https://github.com/caseywdunn/sharkmer/issues/142) — Benchmark packed k-mer tables while retaining exact abundance.
+  A hidden byte-column candidate retains complete canonical keys and exact u64
+  counts, with charged old/new resize allocations and move finalization.
+  Local integration passes 352 Rust tests per hasher and 224 Python tests.
+  The native input and synthetic attribution audits (local evidence: `benchmarks/benchmark_results/v4-packed-counts-20261112/README.md`)
+  pass 1,512 invocations and 96 measurements respectively. Packing uses about
+  24% less owned table storage at k=19 but has slower synthetic insertion/lookup.
+  **Local evaluation gate: met 2026-11-12; default promotion: not met.** The
+  unchanged real-data protocol and independent audit pass all 100 invocations,
+  exact counts and 287 records. Every RSS allowance passes, but every input
+  wall-time allowance fails; the geometric-mean wall ratio is 1.3477940354.
+  This candidate is not selected. Git integration and CI remain open.
 - [ ] [#143](https://github.com/caseywdunn/sharkmer/issues/143) — Count non-replayable datasets exactly within a memory budget.
+  The [external development path](COUNT_STORE_CONTRACTS.md) now counts one-shot
+  stdin with a fixed sort buffer and bounded streaming merges. Local checks
+  pass 336 Rust tests per hasher and 223 Python tests; both candidate input-form
+  matrices pass 1,512 independently checked invocations. **Scoped beyond-budget
+  count/PCR gate: met 2026-11-12.** The frozen million-read stdin trial completes
+  counting and PCR under an observed hard 256 MiB address-space limit with
+  13,480 KiB peak RSS and a 1.19 GB count file. The
+  independent audit and retained evidence (local evidence: `benchmarks/benchmark_results/v4-external-counts-20261112/README.md`)
+  verify exact counts, seven sequences and full reference PCR evidence.
+  A hidden serial adaptive candidate now transfers accepted in-memory counts
+  into the external producer on typed count-growth pressure, without rereading
+  the source. Local spill conformance (local evidence: `benchmarks/benchmark_results/v4-adaptive-spill-20261112/README.md`)
+  passes 361 Rust tests per hasher and 224 Python tests, including complete
+  one-shot PCR/replay agreement, failed-transfer cleanup and combined-memory
+  pressure while another stage retains ownership. The independently audited
+  native matrix passes all 1,008 invocations, including 224 actual spills.
+  Independently spillable parallel owners (local evidence: `benchmarks/benchmark_results/v4-parallel-spill-20261112/README.md`)
+  pass 365 Rust tests per hasher, 224 Python tests and all 1,008 native matrix
+  invocations; independent auditing verifies counts, selection and storage
+  composition, including 214 actual spill invocations. The hard 256 MiB
+  parallel trial **failed** on allocation despite 47,132 KiB peak RSS. Deferred
+  assembly-pool startup (local evidence: `benchmarks/benchmark_results/v4-deferred-pool-20261112/README.md`)
+  passes 366 Rust tests per hasher and 224 Python tests, including an actual
+  thread-lifetime probe. **Scoped parallel beyond-budget gate: met 2026-11-12.**
+  The unchanged-cap retry and independent audit complete one million stdin reads
+  with three disk shards, original-pass replay and complete reference PCR
+  agreement under the observed hard 256 MiB address-space limit (55,332 KiB
+  peak RSS). Source-bound archives retain the failure and successful retry.
+  Default dispatch, production
+  resource integration and full quantitative acceptance remain open.
+  Native storage-fault auditing (local evidence: `benchmarks/benchmark_results/v4-storage-faults-20261112/README.md`)
+  passes 48 controlled I/O-error cases and 24 SIGTERM/fresh-restart cases
+  across two hashers and threads 1/2/4/8. Partial writes followed by ENOSPC and
+  sync EIO cannot publish outputs. Interrupted count/replay files stay
+  identifiable and unchanged; automatic reclamation/resume remains unimplemented.
+  A shared count/replay descriptor cap (local evidence: `benchmarks/benchmark_results/v4-file-descriptors-20261112/README.md`)
+  reserves before creating each owned file and releases after descriptor
+  closure. Full checks pass 383 Rust tests per hasher and 224 Python tests;
+  native I/O-fault/restart auditing also passes. Its own unchanged hard-limit
+  trial and independent audit now pass with seven byte-identical outputs,
+  full reference PCR evidence and 18,876 KiB peak RSS; native samples observe
+  at most 21 descriptors and four OS threads. A
+  process-aware revision (local evidence: `benchmarks/benchmark_results/v4-process-file-limits-20261113/README.md`)
+  now clamps the pool to the OS soft limit, Linux startup census and additional
+  headroom. It passes 392 Rust tests per hasher and 224 Python tests, including
+  real low-limit/inherited-descriptor children, completed spill/replay/PCR and
+  pre-creation refusal. All 1,512 independently audited input-matrix cases
+  also pass under actual hard/soft 64-descriptor limits, with 56 handoffs and
+  224 spills. Individual input/output/library ownership and complete process
+  enforcement remain open.
 - [ ] [#144](https://github.com/caseywdunn/sharkmer/issues/144) — Provide exact bounded-memory random lookup over external k-mer counts.
+  Full-key checksummed disk lookup now feeds ordinary PCR directly. Local
+  conformance covers corruption, foreign pages, sorted membership, reentrant
+  lookup and charged concurrent scans. The scoped beyond-budget count/PCR gate
+  passes as recorded under #143; broader storage/performance validation remains
+  open, and the backend stays hidden.
 - [ ] [#145](https://github.com/caseywdunn/sharkmer/issues/145) — Add bounded replay/spooling with consistent paired input semantics.
+  Exact development candidates now spool selected original FASTQ fields during
+  ingestion and stream them into opt-in read threading, including stdin. Focused
+  checks pass both hashers for format/integrity, paired selection, one-shot PCR,
+  disk-budget failure and cleanup. **Local integration gate: met 2026-11-12**,
+  348 Rust tests per hasher and 224 Python tests (local evidence: `benchmarks/benchmark_results/v4-replay-20261112/README.md`).
+  **Scoped beyond-budget replay/PCR gate: met 2026-11-12.** Independent auditing
+  verifies the million-read stdin trial with a 1.19 GB count file and 429 MB
+  replay file under a hard 256 MiB address-space limit, matching the complete
+  threaded reference with 13,412 KiB peak RSS. The expanded native replay matrix
+  passes all 2,688 valid invocations and independent auditing; complete archives
+  preserve the bounded trial and all unsuccessful matrix setups. Legacy source reopening/read retention,
+  production dispatch and whole-run/evidence budgets remain open.
 
 Sequence: contracts → simple counter → bounded parallelism → packed-table
 evaluation. External counting and replay can progress independently after their
@@ -371,6 +938,9 @@ partition skew, exact global counts, and final random access remain required.
   RAM budget completing counting **and sPCR**, using disk-backed lookup.
 - Verify limits, paired selection, malformed gzip, interruption, and disk-full
   behavior without losing previously accepted counts or exposing partial files.
+- Keep remote-input failures within the same accepted-output boundary. Measure
+  RSS/headroom under existing process limits; do not require client-internal
+  allocation proofs or promise graceful recovery from every allocation failure.
 - Standard sPCR accuracy does not regress while counting implementation changes.
 
 ## v4.1 — Read evidence and low-coverage nuclear recovery
@@ -380,10 +950,23 @@ partition skew, exact global counts, and final random access remain required.
   from v3.2, before further assembly-policy tuning or broad accuracy claims.
   Preserve independent truth, callable targets, negative controls, and explicit
   unavailable/unassessed outcomes; regression success is not a substitute.
+  Obtain an independently annotated Agalma ITS source without filling the gap
+  with assembled products or misannotated sources. Review gene annotation
+  independently of public sequence origin, and add independent same-sample
+  truth and read-backed assessment of divergent/repeat regions. Cross-individual
+  differences alone do not establish incorrect products.
 
 - [ ] [#146](https://github.com/caseywdunn/sharkmer/issues/146) — Batch primer discovery without combinatorial variant enumeration.
 - [ ] [#147](https://github.com/caseywdunn/sharkmer/issues/147) — Build length-bounded target graphs and compact nonbranching paths.
 - [ ] [#148](https://github.com/caseywdunn/sharkmer/issues/148) — Use read-spanning branch histories to resolve repeats and constrain paths.
+  Integrate bounded quality-preserving replay and positioned histories under
+  #145/#116 behind an experimental opt-in path, with feature-off compatibility
+  against its frozen baseline. Specify ambiguity-preserving variant-aware
+  mapping before reconstructing alternatives. Marginal coverage does not
+  justify repairing missing edges or relaxing repeat gates. Admission changes
+  require cause-specific positive evidence, repeat/mixture controls, and fresh
+  released-baseline high-copy comparisons that retain historical v3.1 identity
+  checks.
 - [ ] [#149](https://github.com/caseywdunn/sharkmer/issues/149) — Add evidence-based low-coverage nuclear recovery and partial outcomes.
 - [ ] [#116](https://github.com/caseywdunn/sharkmer/issues/116) — Stream reads through bounded batches of target graphs; replace the
   old per-gene full-input scan proposal and all-read RAM vector.
@@ -483,8 +1066,9 @@ end-to-end improvement, not just a faster isolated hash benchmark.
 
 ## Implementation handoff
 
-- Begin with v3.2 evaluation/correctness issues. Do not launch a whole rewrite
-  before regression fixtures and interface decisions exist.
+- Begin with the v4.0 contracts under #139 and annotation interface decisions
+  under #159. Freeze regression fixtures and quantitative baseline gates
+  before choosing production designs.
 - An issue is complete only when its acceptance criteria, focused tests,
   affected documentation, and release benchmark evidence are satisfied.
 - Follow [CONTRIBUTING.md](../CONTRIBUTING.md) for implementation branches,

@@ -1,6 +1,6 @@
 [package]
 name = "sharkmer"
-version = "3.2.1"
+version = "4.0.0"
 authors = ["Casey Dunn <casey.dunn@yale.edu>"]
 description = "In silico PCR (sPCR) and incremental kmer counting from whole-genome shotgun reads"
 edition = "2024"
@@ -26,21 +26,45 @@ clap = { version = "4.2.7", features = ["derive"]}
 clap_complete = { version = "4" }
 rand = { version = "0.8.6"}
 rayon = { version = "1.7.0"}
-petgraph = { version = "0.6.4"}
+# StableGraph backing-buffer accounting is audited against this implementation.
+petgraph = { version = "=0.6.5"}
 bio = { version = "1.4.0"}
+# Already used by bio; deduplication scratch is audited against this source.
+editdistancek = { version = "=1.0.2" }
 rustc-hash = { version = "1.1", optional = true }
 ahash = { version = "0.8" }
+# Layout-bound accounting below is audited against this exact implementation.
+hashbrown = { version = "=0.16.1", default-features = false, features = ["inline-more"] }
+memchr = { version = "2.8" }
 anyhow = { version = "1" }
 serde = { version = "1", features = ["derive"] }
-serde_yaml_ng = { version = "0.10" }
-flate2 = { version = "1" }
+# YAML workspace accounting is audited against these implementations.
+serde_yaml_ng = { version = "=0.10.0" }
+# Use only public type sizes; no direct unsafe calls into libyaml.
+unsafe-libyaml = { version = "=0.2.11" }
+# Gzip backing allocations are audited against these implementations. miniz is
+# already locked transitively; its public state sizes keep accounting ABI-aware.
+flate2 = { version = "=1.1.9" }
+miniz_oxide = { version = "=0.8.9", default-features = false, features = ["with-alloc"] }
 log = { version = "0.4" }
 env_logger = { version = "0.11" }
 indicatif = { version = "0.17" }
-ureq = { version = "2" }
+# ENA decoding and resource bounds use this pinned client. The local source
+# fixes unbounded chunk-size framing; preserve the path in source builds.
+ureq = { version = "=2.12.1", path = "vendor/ureq-2.12.1" }
 peak_alloc = { version = "0.3" }
 dirs = { version = "6" }
 fs2 = { version = "0.4" }
 sha2 = { version = "0.10" }
+# Selected-input SHA-256 uses the same provider already locked for HTTPS.
+ring = { version = "=0.17.14" }
 tempfile = { version = "3" }
-smallvec = { version = "1" }
+
+[target.'cfg(unix)'.dependencies]
+# Already locked for temporary files; use its safe process-limit API.
+rustix = { version = "=1.1.4", features = ["process", "param", "fs", "system"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+# Already locked transitively. Narrow NFS object-identity binding, with fixed
+# ABI/buffer checks; rustix does not expose name_to_handle_at in this version.
+libc = { version = "=0.2.183" }

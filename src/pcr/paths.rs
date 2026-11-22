@@ -1,8 +1,17 @@
 // pcr/paths.rs — path finding, sequence extraction, dedup
 
-use ahash::{AHashMap, AHashSet};
+use super::memory::buffers::BudgetNodeSet;
+#[cfg(test)]
+use crate::kmer::budget::collections::bytes;
+use crate::kmer::budget::collections::{BudgetMap, BudgetVec};
+use crate::kmer::budget::text::BudgetString;
+use crate::kmer::budget::{MemoryClass, ResourceBudget};
+#[cfg(test)]
+use ahash::AHashMap;
+#[cfg(test)]
+use ahash::AHashSet;
 use anyhow::{Context, Result};
-use bio::alignment::distance::simd::*;
+#[cfg(test)]
 use bio::io::fasta;
 use log::debug;
 use petgraph::Direction;
@@ -10,11 +19,11 @@ use petgraph::graph::{EdgeIndex, NodeIndex};
 use petgraph::stable_graph::StableDiGraph;
 use petgraph::visit::EdgeRef;
 use sha2::{Digest, Sha256};
-use smallvec::SmallVec;
+use std::sync::Arc;
 
 use crate::kmer::FilteredKmerCounts;
 
-use super::graph::{RepeatMarkers, compute_mean, compute_median, get_end_nodes, get_start_nodes};
+use super::graph::{RepeatMarkers, compute_mean, median_u64_slice};
 use super::{
     AssemblyRecord, DBEdge, DBNode, PCRParams, WithheldDiagnosticLimits, WithheldDiagnosticUsage,
     WithheldMarkerCause, WithheldMarkerCoveredRun, WithheldMarkerIdentityKind,
@@ -34,7 +43,7 @@ const MAX_NUM_AMPLICONS: usize = 20;
 pub type PathStep = (NodeIndex, Option<EdgeIndex>);
 
 pub(super) struct PathSearchResult {
-    pub paths: Vec<Vec<PathStep>>,
+    pub paths: BudgetVec<BudgetVec<PathStep>>,
     pub completed_candidate_path_count: usize,
     pub eligible_candidate_path_count: usize,
     pub withheld_candidate_path_count: usize,
@@ -57,6 +66,7 @@ pub(super) struct WithheldDiagnosticBudget {
     legacy_usage: WithheldDiagnosticUsage,
     extra_limits: WithheldDiagnosticLimits,
     extra_usage: WithheldDiagnosticUsage,
+    result_budget: Option<Arc<ResourceBudget>>,
 }
 
 impl WithheldDiagnosticBudget {
@@ -69,6 +79,7 @@ impl WithheldDiagnosticBudget {
             legacy_usage: WithheldDiagnosticUsage::default(),
             extra_limits: WithheldDiagnosticLimits::default(),
             extra_usage: WithheldDiagnosticUsage::default(),
+            result_budget: None,
         }
     }
 
@@ -91,7 +102,12 @@ impl WithheldDiagnosticBudget {
             legacy_usage: WithheldDiagnosticUsage::default(),
             extra_limits,
             extra_usage: WithheldDiagnosticUsage::default(),
+            result_budget: None,
         }
+    }
+
+    pub(super) fn result_budget_from(&mut self, budget: Option<&Arc<ResourceBudget>>) {
+        self.result_budget = budget.cloned();
     }
 
     pub(super) fn empty_threshold_diagnostics(
@@ -100,19 +116,19 @@ impl WithheldDiagnosticBudget {
     ) -> WithheldPathDiagnostics {
         WithheldPathDiagnostics {
             schema_version: if self.sequence_first { 2 } else { 1 },
-            coordinate_system: "zero_based_half_open".to_string(),
-            purpose: "diagnostic_only_unsupported_candidate_hypotheses".to_string(),
+            coordinate_system: "zero_based_half_open",
+            purpose: "diagnostic_only_unsupported_candidate_hypotheses",
             marker_span_scope: if self.sequence_first {
                 "marker_covered_positions_only_for_complete_detail_sources"
             } else {
                 "marker_covered_positions_not_complete_ambiguity_or_bridge_ready_intervals"
-            }
-            .to_string(),
-            read_support_evaluation: "not_evaluated".to_string(),
+            },
+            read_support_evaluation: "not_evaluated",
             limits: self.limits,
             gene_usage_before_threshold: self.usage,
             gene_usage_after_threshold: self.usage,
             node_visit_limit,
+            paths: BudgetVec::in_class(self.result_budget.as_ref(), MemoryClass::RetainedResults),
             ..WithheldPathDiagnostics::default()
         }
     }
@@ -199,9 +215,9 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
         path: &[PathStep],
         kmer_length: usize,
         repeat_markers: &RepeatMarkers,
-        visit_counts: &AHashMap<NodeIndex, usize>,
+        visit_counts: &BudgetMap<NodeIndex, usize>,
         cause_counts: WithheldPathCauseCounts,
-    ) {
+    ) -> Result<()> {
         if self.budget.sequence_first {
             self.observe_sequence_first(
                 graph,
@@ -210,8 +226,8 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
                 repeat_markers,
                 visit_counts,
                 cause_counts,
-            );
-            return;
+            )?;
+            return Ok(());
         }
         self.payload.observed_withheld_paths += 1;
         let sequence_length = path.len().saturating_add(kmer_length).saturating_sub(2);
@@ -271,13 +287,18 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
                 "path_cap" => self.payload.dropped_path_cap += 1,
                 "sequence_base_cap" => self.payload.dropped_sequence_base_cap += 1,
                 "marker_cap" => self.payload.dropped_marker_cap += 1,
-                _ => unreachable!(),
+                _ => anyhow::bail!("Invalid diagnostic retention reason: {drop_reason}"),
             }
             self.payload.retention_truncated = true;
-            return;
+            return Ok(());
         }
 
-        let oriented_sequence = reconstruct_path_sequence(graph, path, kmer_length);
+        let oriented_sequence = reconstruct_path_sequence_budgeted(
+            graph,
+            path,
+            kmer_length,
+            self.budget.result_budget.as_ref(),
+        )?;
         let detail_fits = self
             .payload
             .retained_marker_occurrences
@@ -296,22 +317,33 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
                 kmer_length,
                 repeat_markers,
                 &oriented_sequence,
-            );
+                self.budget.result_budget.as_ref(),
+            )?;
             debug_assert_eq!(occurrences.len(), marker_occurrence_count);
-            let runs = merge_marker_covered_runs(&occurrences);
+            let runs = merge_marker_covered_runs(&occurrences, self.budget.result_budget.as_ref())?;
             (occurrences, runs)
         } else {
             self.payload.retained_summary_only_paths += 1;
             self.payload.omitted_detailed_marker_occurrences += marker_occurrence_count;
             self.payload.marker_detail_truncated = true;
-            (Vec::new(), Vec::new())
+            (
+                BudgetVec::in_class(
+                    self.budget.result_budget.as_ref(),
+                    MemoryClass::RetainedResults,
+                ),
+                BudgetVec::in_class(
+                    self.budget.result_budget.as_ref(),
+                    MemoryClass::RetainedResults,
+                ),
+            )
         };
         let max_observed_node_visits = path
             .iter()
             .filter_map(|(node, _)| visit_counts.get(node).copied())
             .max()
             .unwrap_or(0);
-        let sequence_sha256 = sha256_text(&oriented_sequence);
+        let sequence_sha256 =
+            sha256_text_budgeted(&oriented_sequence, self.budget.result_budget.as_ref())?;
 
         self.payload.retained_paths += 1;
         self.payload.retained_sequence_bases += sequence_length;
@@ -332,7 +364,8 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
             retained_collision_marker_occurrences: cause_counts.retained_collision,
             marker_occurrences,
             marker_covered_runs,
-        });
+        })?;
+        Ok(())
     }
 
     fn observe_sequence_first(
@@ -341,9 +374,9 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
         path: &[PathStep],
         kmer_length: usize,
         repeat_markers: &RepeatMarkers,
-        visit_counts: &AHashMap<NodeIndex, usize>,
+        visit_counts: &BudgetMap<NodeIndex, usize>,
         cause_counts: WithheldPathCauseCounts,
-    ) {
+    ) -> Result<()> {
         self.payload.observed_withheld_paths += 1;
         let sequence_length = path.len().saturating_add(kmer_length).saturating_sub(2);
         let marker_count = cause_counts.total();
@@ -372,14 +405,19 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
                     "oversize_sequence" => self.payload.dropped_oversize_sequence += 1,
                     "path_cap" => self.payload.dropped_path_cap += 1,
                     "sequence_base_cap" => self.payload.dropped_sequence_base_cap += 1,
-                    _ => unreachable!(),
+                    _ => anyhow::bail!("Invalid sequence retention reason: {reason}"),
                 }
                 self.payload.retention_truncated = true;
-                return;
+                return Ok(());
             }
         }
 
-        let oriented_sequence = reconstruct_path_sequence(graph, path, kmer_length);
+        let oriented_sequence = reconstruct_path_sequence_budgeted(
+            graph,
+            path,
+            kmer_length,
+            self.budget.result_budget.as_ref(),
+        )?;
         let (marker_occurrences, marker_covered_runs) = if retained_with_detail {
             let occurrences = collect_marker_occurrences(
                 graph,
@@ -387,9 +425,10 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
                 kmer_length,
                 repeat_markers,
                 &oriented_sequence,
-            );
+                self.budget.result_budget.as_ref(),
+            )?;
             debug_assert_eq!(occurrences.len(), marker_count);
-            let runs = merge_marker_covered_runs(&occurrences);
+            let runs = merge_marker_covered_runs(&occurrences, self.budget.result_budget.as_ref())?;
             self.legacy_threshold_usage.paths += 1;
             self.legacy_threshold_usage.sequence_bases += sequence_length;
             self.legacy_threshold_usage.marker_occurrences += marker_count;
@@ -407,14 +446,24 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
             self.payload.retained_summary_only_paths += 1;
             self.payload.omitted_detailed_marker_occurrences += marker_count;
             self.payload.marker_detail_truncated = true;
-            (Vec::new(), Vec::new())
+            (
+                BudgetVec::in_class(
+                    self.budget.result_budget.as_ref(),
+                    MemoryClass::RetainedResults,
+                ),
+                BudgetVec::in_class(
+                    self.budget.result_budget.as_ref(),
+                    MemoryClass::RetainedResults,
+                ),
+            )
         };
         let max_observed_node_visits = path
             .iter()
             .filter_map(|(node, _)| visit_counts.get(node).copied())
             .max()
             .unwrap_or(0);
-        let sequence_sha256 = sha256_text(&oriented_sequence);
+        let sequence_sha256 =
+            sha256_text_budgeted(&oriented_sequence, self.budget.result_budget.as_ref())?;
         self.payload.retained_paths += 1;
         self.payload.retained_sequence_bases += sequence_length;
         self.budget.usage.paths += 1;
@@ -430,7 +479,8 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
             retained_collision_marker_occurrences: cause_counts.retained_collision,
             marker_occurrences,
             marker_covered_runs,
-        });
+        })?;
+        Ok(())
     }
 
     fn finish(mut self) -> WithheldPathDiagnostics {
@@ -443,149 +493,281 @@ impl<'a> ThresholdDiagnosticCollector<'a> {
     }
 }
 
+#[cfg(test)]
 fn reconstruct_path_sequence(
     graph: &StableDiGraph<DBNode, DBEdge>,
     path: &[PathStep],
-    kmer_length: usize,
-) -> String {
-    let mut sequence = String::with_capacity(path.len().saturating_add(kmer_length));
-    for (path_position, (node, _)) in path.iter().enumerate() {
-        if path_position == 0 {
-            sequence.push_str(&crate::kmer::kmer_to_seq(
-                &graph[*node].sub_kmer,
-                &(kmer_length - 1),
-            ));
-        } else {
-            sequence.push(crate::kmer::kmer_last_base(&graph[*node].sub_kmer));
-        }
-    }
-    sequence
+    k: usize,
+) -> BudgetString {
+    reconstruct_path_sequence_budgeted(graph, path, k, None).unwrap()
 }
 
-fn sha256_text(value: &str) -> String {
+fn encoded_text(
+    identity: u64,
+    length: usize,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<BudgetString> {
+    let mut text = BudgetString::new(budget, MemoryClass::RetainedResults);
+    for position in (0..length).rev() {
+        text.push_char(char::from(
+            b"ACGT"[((identity >> (2 * position)) & 3) as usize],
+        ))?;
+    }
+    Ok(text)
+}
+
+fn reconstruct_path_sequence_budgeted(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    path: &[PathStep],
+    k: usize,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<BudgetString> {
+    let mut sequence = BudgetString::new(budget, MemoryClass::RetainedResults);
+    for (position, (node, _)) in path.iter().enumerate() {
+        if position == 0 {
+            sequence = encoded_text(graph[*node].sub_kmer, k - 1, budget)?;
+        } else {
+            sequence.push_char(crate::kmer::kmer_last_base(&graph[*node].sub_kmer))?;
+        }
+    }
+    Ok(sequence)
+}
+
+#[cfg(test)]
+fn sha256_text(value: &str) -> BudgetString {
+    sha256_text_budgeted(value, None).unwrap()
+}
+
+fn sha256_text_budgeted(value: &str, budget: Option<&Arc<ResourceBudget>>) -> Result<BudgetString> {
     let mut hasher = Sha256::new();
     hasher.update(value.as_bytes());
-    format!("{:x}", hasher.finalize())
+    BudgetString::format(
+        format_args!("{:x}", hasher.finalize()),
+        budget,
+        MemoryClass::RetainedResults,
+    )
 }
 
 fn collect_marker_occurrences(
     graph: &StableDiGraph<DBNode, DBEdge>,
     path: &[PathStep],
-    kmer_length: usize,
-    repeat_markers: &RepeatMarkers,
-    oriented_sequence: &str,
-) -> Vec<WithheldMarkerOccurrence> {
-    let mut occurrences = Vec::new();
-    for (path_position, (node, incoming_edge)) in path.iter().enumerate() {
-        let node_identity = graph[*node].sub_kmer;
-        let node_start = path_position;
-        let node_end = path_position + kmer_length - 1;
+    k: usize,
+    markers: &RepeatMarkers,
+    sequence: &str,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<BudgetVec<WithheldMarkerOccurrence>> {
+    let mut occurrences = BudgetVec::in_class(budget, MemoryClass::RetainedResults);
+    for (position, (node, incoming)) in path.iter().enumerate() {
+        let identity = graph[*node].sub_kmer;
         for cause in [
-            repeat_markers
+            markers
                 .omitted_self_loop_sub_kmers
-                .contains(&node_identity)
+                .contains(&identity)
                 .then_some(WithheldMarkerCause::PrePruneOmittedSelfLoopNode),
-            repeat_markers
+            markers
                 .cyclic_scc_sub_kmers
-                .contains(&node_identity)
+                .contains(&identity)
                 .then_some(WithheldMarkerCause::PrePruneCyclicSccNode),
         ]
         .into_iter()
         .flatten()
         {
-            let identity_sequence = crate::kmer::kmer_to_seq(&node_identity, &(kmer_length - 1));
+            let text = encoded_text(identity, k - 1, budget)?;
             debug_assert_eq!(
-                oriented_sequence.get(node_start..node_end),
-                Some(identity_sequence.as_str())
+                sequence.get(position..position + k - 1),
+                Some(text.as_str())
             );
             occurrences.push(WithheldMarkerOccurrence {
                 cause,
                 identity_kind: WithheldMarkerIdentityKind::OrientedNodeSequence,
-                identity_sha256: sha256_text(&identity_sequence),
-                identity_sequence,
-                start: node_start,
-                end: node_end,
-            });
+                identity_sha256: sha256_text_budgeted(&text, budget)?,
+                identity_sequence: text,
+                start: position,
+                end: position + k - 1,
+            })?;
         }
-
-        if let Some(edge) = incoming_edge
-            && repeat_markers.retained_collision_edges.contains(edge)
+        if let Some(edge) = incoming
+            && markers.retained_collision_edges.contains(edge)
         {
-            let edge_start = path_position - 1;
-            let edge_end = path_position + kmer_length - 1;
-            let edge_identity = super::graph::reconstruct_edge_kmer(graph, *edge);
-            let identity_sequence = crate::kmer::kmer_to_seq(&edge_identity, &kmer_length);
+            let text = encoded_text(super::graph::reconstruct_edge_kmer(graph, *edge), k, budget)?;
             debug_assert_eq!(
-                oriented_sequence.get(edge_start..edge_end),
-                Some(identity_sequence.as_str())
+                sequence.get(position - 1..position + k - 1),
+                Some(text.as_str())
             );
             occurrences.push(WithheldMarkerOccurrence {
                 cause: WithheldMarkerCause::RetainedCollisionEdge,
                 identity_kind: WithheldMarkerIdentityKind::OrientedEdgeSequence,
-                identity_sha256: sha256_text(&identity_sequence),
-                identity_sequence,
-                start: edge_start,
-                end: edge_end,
-            });
+                identity_sha256: sha256_text_budgeted(&text, budget)?,
+                identity_sequence: text,
+                start: position - 1,
+                end: position + k - 1,
+            })?;
         }
     }
-    occurrences
+    Ok(occurrences)
 }
 
 fn merge_marker_covered_runs(
-    marker_occurrences: &[WithheldMarkerOccurrence],
-) -> Vec<WithheldMarkerCoveredRun> {
-    let mut spans: Vec<(usize, usize)> = marker_occurrences
-        .iter()
-        .map(|occurrence| (occurrence.start, occurrence.end))
-        .collect();
+    occurrences: &[WithheldMarkerOccurrence],
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<BudgetVec<WithheldMarkerCoveredRun>> {
+    let mut spans = BudgetVec::collect_in_class(
+        occurrences.iter().map(|o| (o.start, o.end)),
+        budget,
+        MemoryClass::RetainedResults,
+    )?;
     spans.sort_unstable();
-    let mut runs: Vec<WithheldMarkerCoveredRun> = Vec::new();
+    let mut runs: BudgetVec<WithheldMarkerCoveredRun> =
+        BudgetVec::in_class(budget, MemoryClass::RetainedResults);
     for (start, end) in spans {
         if let Some(previous) = runs.last_mut()
             && start <= previous.end
         {
             previous.end = previous.end.max(end);
         } else {
-            runs.push(WithheldMarkerCoveredRun { start, end });
+            runs.push(WithheldMarkerCoveredRun { start, end })?;
         }
     }
-    runs
+    Ok(runs)
 }
 
 /// Children-of-a-node, sorted by score, used as a DFS frame in `child_stack`.
 /// In a de Bruijn graph each node's outgoing edge set is bounded by ≤4 (one
-/// per possible 2-bit suffix base), so the inline capacity exactly matches
-/// the worst case and the SmallVec never spills to the heap. This replaces
+/// per possible 2-bit suffix base), so ordinary frames fit inline. Overflow
+/// in manually constructed graphs has separately charged storage. This replaces
 /// a per-call `Vec` heap allocation that fired at every visited node during
 /// DFS — up to `max_dfs_states = 100K` times per gene.
-type ChildFrame = SmallVec<[(NodeIndex, EdgeIndex, f64); 4]>;
+type Child = (NodeIndex, EdgeIndex, f64);
 
-/// Get outgoing edges sorted by score (ascending so pop gives highest first).
-/// Each entry carries `(target, edge_id, score)` so the DFS can record the
-/// edge directly into the path without re-finding it later.
+enum ChildFrame {
+    Inline { children: [Child; 4], len: usize },
+    Heap(BudgetVec<Child>),
+}
+
+impl ChildFrame {
+    fn new() -> Self {
+        Self::Inline {
+            children: [(NodeIndex::new(0), EdgeIndex::new(0), 0.0); 4],
+            len: 0,
+        }
+    }
+
+    fn as_slice(&self) -> &[Child] {
+        match self {
+            Self::Inline { children, len } => &children[..*len],
+            Self::Heap(values) => values,
+        }
+    }
+
+    fn as_mut_slice(&mut self) -> &mut [Child] {
+        match self {
+            Self::Inline { children, len } => &mut children[..*len],
+            Self::Heap(values) => values,
+        }
+    }
+
+    fn push(&mut self, child: Child, budget: Option<&Arc<ResourceBudget>>) -> Result<()> {
+        match self {
+            Self::Inline { children, len } if *len < 4 => {
+                children[*len] = child;
+                *len += 1;
+            }
+            Self::Inline { children, .. } => {
+                let mut values = BudgetVec::with_capacity(8, budget)?;
+                for &old in children.iter() {
+                    values.push(old)?;
+                }
+                values.push(child)?;
+                *self = Self::Heap(values);
+            }
+            Self::Heap(values) => values.push(child)?,
+        }
+        Ok(())
+    }
+
+    fn pop(&mut self) -> Option<Child> {
+        match self {
+            Self::Inline { children, len } if *len > 0 => {
+                *len -= 1;
+                Some(children[*len])
+            }
+            Self::Inline { .. } => None,
+            Self::Heap(values) => values.pop(),
+        }
+    }
+}
+
+impl std::ops::Deref for ChildFrame {
+    type Target = [Child];
+    fn deref(&self) -> &[Child] {
+        self.as_slice()
+    }
+}
+
+/// Keep four ordinary de Bruijn branches inline. Manually constructed graphs
+/// with more branches retain a charged spill buffer and charged sort scratch.
+fn sorted_children_budgeted(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    node: NodeIndex,
+    edge_preferences: Option<&BudgetMap<EdgeIndex, f64>>,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<ChildFrame> {
+    let mut frame = ChildFrame::new();
+    for edge in graph.edges_directed(node, Direction::Outgoing) {
+        let preference = edge_preferences
+            .and_then(|prefs| prefs.get(&edge.id()))
+            .copied()
+            .unwrap_or(1.0);
+        frame.push(
+            (
+                edge.target(),
+                edge.id(),
+                edge.weight().count as f64 * preference,
+            ),
+            budget,
+        )?;
+    }
+    if frame.len() <= 4 {
+        // Stable in-place insertion over at most four entries has no heap or
+        // unbounded quadratic cost. Preserve the previous score-tie order.
+        for index in 1..frame.len() {
+            let mut index = index;
+            while index > 0 && frame[index - 1].2.total_cmp(&frame[index].2).is_gt() {
+                frame.as_mut_slice().swap(index - 1, index);
+                index -= 1;
+            }
+        }
+    } else {
+        let mut indexed = BudgetVec::collect(frame.iter().copied().enumerate(), budget)?;
+        indexed.sort_unstable_by(|a, b| a.1.2.total_cmp(&b.1.2).then(a.0.cmp(&b.0)));
+        for (destination, (_, child)) in frame.as_mut_slice().iter_mut().zip(indexed.iter()) {
+            *destination = *child;
+        }
+    }
+    Ok(frame)
+}
+
+#[cfg(test)]
+fn test_preferences(
+    source: Option<&AHashMap<EdgeIndex, f64>>,
+) -> Option<BudgetMap<EdgeIndex, f64>> {
+    source.map(|source| {
+        let mut result = BudgetMap::new(None);
+        for (&edge, &score) in source {
+            result.insert(edge, score).unwrap();
+        }
+        result
+    })
+}
+
+#[cfg(test)]
 fn sorted_children(
     graph: &StableDiGraph<DBNode, DBEdge>,
     node: NodeIndex,
-    edge_preferences: Option<&AHashMap<EdgeIndex, f64>>,
+    preferences: Option<&AHashMap<EdgeIndex, f64>>,
 ) -> ChildFrame {
-    let mut outgoing: ChildFrame = graph
-        .edges_directed(node, Direction::Outgoing)
-        .map(|e| {
-            let base_score = e.weight().count as f64;
-            let pref = edge_preferences
-                .and_then(|prefs| prefs.get(&e.id()))
-                .copied()
-                .unwrap_or(1.0);
-            (e.target(), e.id(), base_score * pref)
-        })
-        .collect();
-    // total_cmp gives a total order on f64 (NaN sorts to the end) instead of
-    // partial_cmp's Option<Ordering>. Inputs here are u32 → f64 multiplied by
-    // a finite preference, so NaN is impossible — total_cmp simply removes
-    // the unwrap_or(Equal) papering over an "impossible" case.
-    outgoing.sort_by(|a, b| a.2.total_cmp(&b.2));
-    outgoing
+    let preferences = test_preferences(preferences);
+    sorted_children_budgeted(graph, node, preferences.as_ref(), None).unwrap()
 }
 
 /// Find paths from start nodes to end nodes using coverage-weighted DFS.
@@ -616,16 +798,43 @@ pub fn get_assembly_paths(
         None,
     )
     .paths
+    .into_iter()
+    .map(|path| path.into_iter().collect())
+    .collect()
 }
 
+#[cfg(test)]
 pub(super) fn search_assembly_paths(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    counts: &FilteredKmerCounts,
+    params: &PCRParams,
+    preferences: Option<&AHashMap<EdgeIndex, f64>>,
+    markers: &RepeatMarkers,
+    diagnostics: Option<&mut WithheldDiagnosticBudget>,
+) -> PathSearchResult {
+    let preferences = test_preferences(preferences);
+    search_assembly_paths_budgeted(
+        graph,
+        counts,
+        params,
+        preferences.as_ref(),
+        markers,
+        diagnostics,
+        None,
+    )
+    .unwrap()
+}
+
+#[allow(clippy::too_many_arguments)]
+pub(super) fn search_assembly_paths_budgeted(
     graph: &StableDiGraph<DBNode, DBEdge>,
     kmer_counts: &FilteredKmerCounts,
     params: &PCRParams,
-    edge_preferences: Option<&AHashMap<EdgeIndex, f64>>,
+    edge_preferences: Option<&BudgetMap<EdgeIndex, f64>>,
     repeat_markers: &RepeatMarkers,
     diagnostic_budget: Option<&mut WithheldDiagnosticBudget>,
-) -> PathSearchResult {
+    buffer_budget: Option<&Arc<ResourceBudget>>,
+) -> Result<PathSearchResult> {
     // A path of N nodes produces a sequence of (k-1) + (N-1) = N+k-2 bases
     // (first node contributes k-1 bases via its sub_kmer, each subsequent
     // node extends by one base). Inverting: N = seq_length - k + 2.
@@ -643,9 +852,12 @@ pub(super) fn search_assembly_paths(
     let min_path_nodes = params.min_length.saturating_sub(node_length_offset).max(1);
     let max_path_nodes = params.max_length.saturating_sub(node_length_offset).max(1);
 
-    let end_nodes: AHashSet<NodeIndex> = get_end_nodes(graph).into_iter().collect();
+    let mut end_nodes = BudgetNodeSet::new(buffer_budget);
+    for node in graph.node_indices().filter(|&node| graph[node].is_end) {
+        end_nodes.insert(node)?;
+    }
     let mut result = PathSearchResult {
-        paths: Vec::new(),
+        paths: BudgetVec::new(buffer_budget),
         completed_candidate_path_count: 0,
         eligible_candidate_path_count: 0,
         withheld_candidate_path_count: 0,
@@ -662,7 +874,7 @@ pub(super) fn search_assembly_paths(
     let mut diagnostic_collector = diagnostic_budget
         .map(|budget| ThresholdDiagnosticCollector::new(budget, params.max_node_visits));
 
-    for start in get_start_nodes(graph) {
+    for start in graph.node_indices().filter(|&node| graph[node].is_start) {
         let mut paths_from_start = 0;
         let mut states_explored: usize = 0;
 
@@ -671,9 +883,10 @@ pub(super) fn search_assembly_paths(
         // `child_stack` holds remaining children to explore at each depth.
         // The starting step has edge = None; all subsequent steps record
         // the edge that connects the previous node to this one.
-        let mut path: Vec<PathStep> = vec![(start, None)];
-        let mut visit_counts: AHashMap<NodeIndex, usize> = AHashMap::new();
-        visit_counts.insert(start, 1);
+        let mut path = BudgetVec::new(buffer_budget);
+        path.push((start, None))?;
+        let mut visit_counts = BudgetMap::new(buffer_budget);
+        visit_counts.insert(start, 1usize)?;
         let mut omitted_self_loop_nodes_in_path = usize::from(
             repeat_markers
                 .omitted_self_loop_sub_kmers
@@ -687,8 +900,9 @@ pub(super) fn search_assembly_paths(
         let mut retained_collision_edges_in_path = 0_usize;
 
         // Compute sorted children for the start node
-        let children = sorted_children(graph, start, edge_preferences);
-        let mut child_stack: Vec<ChildFrame> = vec![children];
+        let children = sorted_children_budgeted(graph, start, edge_preferences, buffer_budget)?;
+        let mut child_stack = BudgetVec::new(buffer_budget);
+        child_stack.push(children)?;
 
         loop {
             if paths_from_start >= params.max_paths_per_pair {
@@ -714,8 +928,13 @@ pub(super) fn search_assembly_paths(
                 }
 
                 // Push neighbor onto path with the edge that connects to it
-                path.push((neighbor, Some(edge_id)));
-                *visit_counts.entry(neighbor).or_insert(0) += 1;
+                path.push((neighbor, Some(edge_id)))?;
+                visit_counts.insert(
+                    neighbor,
+                    current_visits
+                        .checked_add(1)
+                        .context("DFS visit count overflow")?,
+                )?;
                 let neighbor_has_omitted_self_loop = repeat_markers
                     .omitted_self_loop_sub_kmers
                     .contains(&graph[neighbor].sub_kmer);
@@ -756,10 +975,10 @@ pub(super) fn search_assembly_paths(
                                         cyclic_scc: cyclic_scc_nodes_in_path,
                                         retained_collision: retained_collision_edges_in_path,
                                     },
-                                );
+                                )?;
                             }
                         } else {
-                            result.paths.push(path.clone());
+                            result.paths.push(path.try_clone()?)?;
                             result.eligible_candidate_path_count += 1;
                             paths_from_start += 1;
                         }
@@ -767,7 +986,9 @@ pub(super) fn search_assembly_paths(
                             usize::from(neighbor_has_omitted_self_loop);
                         cyclic_scc_nodes_in_path -= usize::from(neighbor_is_in_cyclic_scc);
                         retained_collision_edges_in_path -= usize::from(edge_is_retained_collision);
-                        *visit_counts.get_mut(&neighbor).unwrap() -= 1;
+                        *visit_counts
+                            .get_mut(&neighbor)
+                            .context("DFS neighbor visit count is missing")? -= 1;
                         path.pop();
                         continue;
                     }
@@ -790,14 +1011,17 @@ pub(super) fn search_assembly_paths(
                     omitted_self_loop_nodes_in_path -= usize::from(neighbor_has_omitted_self_loop);
                     cyclic_scc_nodes_in_path -= usize::from(neighbor_is_in_cyclic_scc);
                     retained_collision_edges_in_path -= usize::from(edge_is_retained_collision);
-                    *visit_counts.get_mut(&neighbor).unwrap() -= 1;
+                    *visit_counts
+                        .get_mut(&neighbor)
+                        .context("DFS neighbor visit count is missing")? -= 1;
                     path.pop();
                     continue;
                 }
 
                 // Explore deeper: push children frame
-                let children = sorted_children(graph, neighbor, edge_preferences);
-                child_stack.push(children);
+                let children =
+                    sorted_children_budgeted(graph, neighbor, edge_preferences, buffer_budget)?;
+                child_stack.push(children)?;
             } else {
                 // No more children at this depth, backtrack
                 child_stack.pop();
@@ -805,7 +1029,7 @@ pub(super) fn search_assembly_paths(
                     break;
                 }
                 let (backtrack_node, incoming_edge) =
-                    path.pop().expect("BUG: path empty during DFS backtrack");
+                    path.pop().context("DFS path is empty during backtrack")?;
                 omitted_self_loop_nodes_in_path -= usize::from(
                     repeat_markers
                         .omitted_self_loop_sub_kmers
@@ -822,7 +1046,7 @@ pub(super) fn search_assembly_paths(
                     }));
                 *visit_counts
                     .get_mut(&backtrack_node)
-                    .expect("BUG: backtrack node missing from visit_counts") -= 1;
+                    .context("DFS backtrack node is missing from visit counts")? -= 1;
             }
         }
     }
@@ -830,49 +1054,71 @@ pub(super) fn search_assembly_paths(
     result.withheld_path_diagnostics =
         diagnostic_collector.map(ThresholdDiagnosticCollector::finish);
 
-    result
+    Ok(result)
 }
 
 /// Extract sequences from graph paths, producing FASTA assembly records.
 /// Returns the generated records and the updated amplicon index.
-pub(super) fn generate_sequences_from_paths(
+#[cfg(test)]
+pub(super) fn generate_sequences_from_paths<P: AsRef<[PathStep]>>(
     graph: &StableDiGraph<DBNode, DBEdge>,
-    all_paths: Vec<Vec<PathStep>>,
+    all_paths: impl IntoIterator<Item = P>,
+    counts: &FilteredKmerCounts,
+    sample: &str,
+    params: &PCRParams,
+    index: usize,
+    threading: Option<&super::threading::ThreadingAnnotations>,
+) -> Result<(Vec<AssemblyRecord>, usize)> {
+    generate_sequences_from_paths_budgeted(
+        graph, all_paths, counts, sample, params, index, threading, None, None,
+    )
+    .map(|(records, index)| (records.into_iter().collect(), index))
+}
+
+#[allow(clippy::too_many_arguments)]
+pub(super) fn generate_sequences_from_paths_budgeted<P: AsRef<[PathStep]>>(
+    graph: &StableDiGraph<DBNode, DBEdge>,
+    all_paths: impl IntoIterator<Item = P>,
     kmer_counts: &FilteredKmerCounts,
     sample_name: &str,
     params: &PCRParams,
     mut amplicon_index: usize,
     threading: Option<&super::threading::ThreadingAnnotations>,
-) -> Result<(Vec<AssemblyRecord>, usize)> {
-    let mut assembly_records: Vec<AssemblyRecord> = Vec::new();
+    budget: Option<&Arc<ResourceBudget>>,
+    result_budget: Option<&Arc<ResourceBudget>>,
+) -> Result<(BudgetVec<AssemblyRecord>, usize)> {
+    let mut assembly_records = BudgetVec::in_class(result_budget, MemoryClass::RetainedResults);
 
-    for path in all_paths.into_iter() {
-        let mut sequence = String::new();
-        let mut edge_counts: Vec<u64> = Vec::new(); // u64 for compute_mean/median compatibility
+    for owned_path in all_paths.into_iter() {
+        let path = owned_path.as_ref();
+        let mut sequence = BudgetString::new(result_budget, MemoryClass::RetainedResults);
+        let mut edge_counts = BudgetVec::with_capacity(path.len().saturating_sub(1), budget)?; // u64 for compute_mean/median compatibility
         // Edges traversed by this path, in order. Recorded once during the
         // sequence-extraction loop and reused for max_coverage_ratio and
         // threading-support metrics below — replaces three find_edge passes.
-        let mut path_edges: Vec<EdgeIndex> = Vec::with_capacity(path.len().saturating_sub(1));
+        let mut path_edges = BudgetVec::with_capacity(path.len().saturating_sub(1), budget)?;
         for &(node, edge_opt) in path.iter() {
             let node_data = graph
                 .node_weight(node)
                 .context("Node not found in graph during sequence generation")?;
             if sequence.is_empty() {
-                sequence =
-                    crate::kmer::kmer_to_seq(&node_data.sub_kmer, &(kmer_counts.get_k() - 1));
+                for position in (0..kmer_counts.get_k() - 1).rev() {
+                    let base = b"ACGT"[((node_data.sub_kmer >> (position * 2)) & 3) as usize];
+                    sequence.push_char(char::from(base))?;
+                }
                 debug_assert!(
                     edge_opt.is_none(),
                     "first PathStep must have edge = None (this is the start node)"
                 );
             } else {
-                sequence.push(crate::kmer::kmer_last_base(&node_data.sub_kmer));
+                sequence.push_char(crate::kmer::kmer_last_base(&node_data.sub_kmer))?;
                 let edge_idx =
                     edge_opt.context("Non-start PathStep is missing its edge index (DFS bug)")?;
                 let edge_data = graph
                     .edge_weight(edge_idx)
                     .context("Edge weight not found")?;
-                edge_counts.push(edge_data.count as u64);
-                path_edges.push(edge_idx);
+                edge_counts.push(edge_data.count)?;
+                path_edges.push(edge_idx)?;
             }
         }
 
@@ -891,14 +1137,15 @@ pub(super) fn generate_sequences_from_paths(
             continue;
         }
         let count_mean = compute_mean(&edge_counts);
-        let count_median = compute_median(&edge_counts);
         let count_min = edge_counts
             .iter()
             .min()
+            .copied()
             .context("No edge counts found for path")?;
         let count_max = edge_counts
             .iter()
             .max()
+            .copied()
             .context("No edge counts found for path")?;
 
         // Compute coverage consistency (coefficient of variation)
@@ -915,6 +1162,10 @@ pub(super) fn generate_sequences_from_paths(
         } else {
             0.0
         };
+
+        // CV above consumes counts in the original path order, preserving its
+        // floating-point sum. Median can now partition in-place without a copy.
+        let count_median = median_u64_slice(&mut edge_counts).context("Missing path median")?;
 
         // Compute max coverage ratio from edge annotations.
         // Reuses the path_edges list captured during sequence extraction.
@@ -935,18 +1186,18 @@ pub(super) fn generate_sequences_from_paths(
                 let mut total_edges = 0u32;
                 let mut supported_edges = 0u32;
                 let mut zero_count = 0u32;
-                let mut unambiguous_counts: Vec<u64> = Vec::new();
+                let mut unambiguous_counts = BudgetVec::with_capacity(path_edges.len(), budget)?;
 
-                for &edge_idx in &path_edges {
+                for &edge_idx in path_edges.iter() {
                     total_edges += 1;
                     match ann.edge_support.get(&edge_idx) {
                         Some(s) if s.read_support_total > 0 => {
                             supported_edges += 1;
-                            unambiguous_counts.push(s.read_support_unambiguous as u64);
+                            unambiguous_counts.push(s.read_support_unambiguous as u64)?;
                         }
                         _ => {
                             zero_count += 1;
-                            unambiguous_counts.push(0);
+                            unambiguous_counts.push(0)?;
                         }
                     }
                 }
@@ -959,7 +1210,8 @@ pub(super) fn generate_sequences_from_paths(
                 let median_unamb = if unambiguous_counts.is_empty() {
                     0.0
                 } else {
-                    compute_median(&unambiguous_counts)
+                    median_u64_slice(&mut unambiguous_counts)
+                        .context("Missing threading-support median")?
                 };
 
                 (Some(zero_count), Some(median_unamb), Some(frac))
@@ -968,7 +1220,7 @@ pub(super) fn generate_sequences_from_paths(
             };
 
         let score = super::PathScore {
-            kmer_min_count: *count_min as u32,
+            kmer_min_count: count_min,
             kmer_median_count: count_median,
             coverage_cv,
             max_coverage_ratio,
@@ -977,28 +1229,35 @@ pub(super) fn generate_sequences_from_paths(
             edge_support_fraction,
         };
 
-        let id = format!("{}_{}_{}", sample_name, params.gene_name, amplicon_index);
-        let desc = format!(
-            "sample={} gene={} product={} length={} kmer_count_mean={:.2} kmer_count_median={} kmer_count_min={} kmer_count_max={} score={:.2}",
-            sample_name,
-            params.gene_name,
-            amplicon_index,
-            sequence.len(),
-            count_mean,
-            count_median,
-            count_min,
-            count_max,
-            score.composite()
-        );
+        let id = BudgetString::format(
+            format_args!("{}_{}_{}", sample_name, params.gene_name, amplicon_index),
+            result_budget,
+            MemoryClass::RetainedResults,
+        )?;
+        let desc = BudgetString::format(
+            format_args!(
+                "sample={} target={} sequence_index={} sequence_length={} kmer_count_mean={:.2} kmer_count_median={} kmer_count_min={} kmer_count_max={}",
+                sample_name,
+                params.gene_name,
+                amplicon_index,
+                sequence.len(),
+                count_mean,
+                count_median,
+                count_min,
+                count_max
+            ),
+            result_budget,
+            MemoryClass::RetainedResults,
+        )?;
 
         amplicon_index += 1;
 
         debug!(">{} {}", id, desc);
-        let record = fasta::Record::with_attrs(&id, Some(&desc), sequence.as_bytes());
+        let record = super::sequence::SequenceRecord::from_parts(id, Some(desc), sequence);
         assembly_records.push(AssemblyRecord {
             fasta_record: record,
             score,
-        });
+        })?;
     }
 
     Ok((assembly_records, amplicon_index))
@@ -1006,12 +1265,29 @@ pub(super) fn generate_sequences_from_paths(
 
 /// Sort assembly records by descending composite score, deduplicate near-identical
 /// sequences, and truncate to the maximum number of amplicons.
+#[cfg(test)]
 pub(super) fn sort_and_deduplicate(
-    assembly_records: Vec<AssemblyRecord>,
+    records: Vec<AssemblyRecord>,
     params: &PCRParams,
-) -> Vec<fasta::Record> {
-    let mut sorted = assembly_records;
-    sorted.sort_by(|a, b| {
+) -> Vec<AssemblyRecord> {
+    let records = BudgetVec::collect(records, None).unwrap();
+    sort_and_deduplicate_budgeted(records, params)
+        .unwrap()
+        .into_iter()
+        .collect()
+}
+
+pub(super) fn sort_and_deduplicate_budgeted(
+    assembly_records: BudgetVec<AssemblyRecord>,
+    params: &PCRParams,
+) -> Result<BudgetVec<AssemblyRecord>> {
+    let budget = assembly_records.budget().cloned();
+    let class = assembly_records.class();
+    let mut sorted = BudgetVec::in_class(budget.as_ref(), class);
+    for item in assembly_records.into_iter().enumerate() {
+        sorted.push(item)?;
+    }
+    sorted.sort_unstable_by(|(a_index, a), (b_index, b)| {
         // total_cmp is a total order on f64; composite() multiplies finite
         // u32/u64-derived values, so NaN is impossible here and total_cmp
         // is strictly better than partial_cmp().unwrap_or(Equal).
@@ -1024,22 +1300,34 @@ pub(super) fn sort_and_deduplicate(
             // across runs (otherwise iteration order would depend on
             // HashMap seeds deeper in path enumeration).
             .then_with(|| a.fasta_record.seq().cmp(b.fasta_record.seq()))
+            .then(a_index.cmp(b_index))
     });
 
-    let records: Vec<fasta::Record> = sorted.into_iter().map(|ar| ar.fasta_record).collect();
+    let records = sorted;
     let num_records_all = records.len();
 
     // Greedy clustering: keep each record only if it is not within
     // dedup_edit_threshold edits of any previously kept record.
     // Distances are computed on-the-fly to avoid O(N^2) memory.
-    let mut kept: Vec<fasta::Record> = Vec::new();
-    for record in records {
-        let is_duplicate = kept.iter().any(|kept_record| {
-            bounded_levenshtein(record.seq(), kept_record.seq(), params.dedup_edit_threshold)
-                .is_some()
-        });
+    let mut kept: BudgetVec<AssemblyRecord> = BudgetVec::in_class(budget.as_ref(), class);
+    for (_, record) in records {
+        let mut is_duplicate = false;
+        for kept_record in &kept {
+            if super::distance::bounded_levenshtein(
+                record.fasta_record.seq(),
+                kept_record.fasta_record.seq(),
+                params.dedup_edit_threshold,
+                budget.as_ref(),
+                class,
+            )?
+            .is_some()
+            {
+                is_duplicate = true;
+                break;
+            }
+        }
         if !is_duplicate {
-            kept.push(record);
+            kept.push(record)?;
         }
     }
     let mut records = kept;
@@ -1072,7 +1360,7 @@ pub(super) fn sort_and_deduplicate(
         records.truncate(MAX_NUM_AMPLICONS);
     }
 
-    records
+    Ok(records)
 }
 
 #[cfg(test)]
@@ -1094,7 +1382,7 @@ mod tests {
         }
     }
 
-    fn mk_edge(count: u32) -> DBEdge {
+    fn mk_edge(count: u64) -> DBEdge {
         DBEdge {
             count,
             coverage_ratio: 1.0,
@@ -1142,10 +1430,11 @@ mod tests {
         }
     }
 
-    fn path_visit_counts(path: &[PathStep]) -> AHashMap<NodeIndex, usize> {
-        let mut counts = AHashMap::new();
+    fn path_visit_counts(path: &[PathStep]) -> BudgetMap<NodeIndex, usize> {
+        let mut counts = BudgetMap::new(None);
         for (node, _) in path {
-            *counts.entry(*node).or_insert(0) += 1;
+            let count = counts.get(node).copied().unwrap_or(0usize);
+            counts.insert(*node, count + 1).unwrap();
         }
         counts
     }
@@ -1197,6 +1486,426 @@ mod tests {
         }
     }
 
+    fn path_budget(bytes: u64) -> Arc<ResourceBudget> {
+        ResourceBudget::new(crate::kmer::budget::ResourceLimits {
+            memory_bytes: bytes,
+            process_overhead_bytes: 0,
+            class_bytes: [bytes; crate::kmer::budget::MEMORY_CLASSES],
+            temporary_disk_bytes: 0,
+            temporary_open_files: 0,
+        })
+        .unwrap()
+    }
+
+    #[test]
+    fn child_frames_preserve_stable_score_ties_and_charge_only_overflow_storage() {
+        assert!(size_of::<ChildFrame>() <= 80);
+        for degree in [0, 1, 2, 4, 5, 20, 100] {
+            let mut graph = StableDiGraph::new();
+            let root = graph.add_node(mk_node(0, true, false));
+            for index in 0..degree {
+                let node = graph.add_node(mk_node(index as u64, false, false));
+                graph.add_edge(root, node, mk_edge((index % 3 + 1) as u64));
+            }
+            if degree > 4 {
+                graph.remove_edge(EdgeIndex::new(2));
+                graph.add_edge(root, root, mk_edge(1));
+            }
+            let preferences: AHashMap<_, _> = graph
+                .edge_indices()
+                .map(|edge| (edge, if edge.index() % 7 == 0 { f64::NAN } else { 1.0 }))
+                .collect();
+            for preferences in [None, Some(&preferences)] {
+                let mut expected: Vec<_> = graph
+                    .edges_directed(root, Direction::Outgoing)
+                    .map(|edge| {
+                        let preference = preferences
+                            .and_then(|prefs| prefs.get(&edge.id()))
+                            .copied()
+                            .unwrap_or(1.0);
+                        (
+                            edge.target(),
+                            edge.id(),
+                            edge.weight().count as f64 * preference,
+                        )
+                    })
+                    .collect();
+                expected.sort_by(|a, b| a.2.total_cmp(&b.2));
+                let budget = path_budget(16384);
+                let owned = test_preferences(preferences);
+                let frame =
+                    sorted_children_budgeted(&graph, root, owned.as_ref(), Some(&budget)).unwrap();
+                assert_eq!(
+                    frame.iter().map(|child| child.1).collect::<Vec<_>>(),
+                    expected.iter().map(|child| child.1).collect::<Vec<_>>()
+                );
+                assert_eq!(matches!(frame, ChildFrame::Heap(_)), degree > 4);
+                assert_eq!(
+                    budget.snapshot().reserved_memory_bytes,
+                    if degree > 4 {
+                        match &frame {
+                            ChildFrame::Heap(values) => bytes::<Child>(values.capacity()).unwrap(),
+                            ChildFrame::Inline { .. } => 0,
+                        }
+                    } else {
+                        0
+                    }
+                );
+                drop(frame);
+                assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+            }
+        }
+    }
+
+    #[test]
+    fn child_frame_spill_or_sort_refusal_releases_all_storage() {
+        let mut graph = StableDiGraph::new();
+        let root = graph.add_node(mk_node(0, true, false));
+        for index in 0..5 {
+            let node = graph.add_node(mk_node(index, false, false));
+            graph.add_edge(root, node, mk_edge(1));
+        }
+        for bytes in [1, 128] {
+            let budget = path_budget(bytes);
+            let error = sorted_children_budgeted(&graph, root, None, Some(&budget))
+                .err()
+                .unwrap();
+            assert!(
+                error
+                    .downcast_ref::<crate::kmer::budget::ResourceExhausted>()
+                    .is_some()
+            );
+            assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+            assert_eq!(graph.edge_count(), 5);
+        }
+    }
+
+    // Recursive small-graph oracle uses raw containers and stable sorting,
+    // independently of the production iterative stack/backtracking owners.
+    fn reference_paths(
+        graph: &StableDiGraph<DBNode, DBEdge>,
+        params: &PCRParams,
+        k: usize,
+    ) -> Vec<Vec<PathStep>> {
+        struct Reference<'a> {
+            graph: &'a StableDiGraph<DBNode, DBEdge>,
+            params: &'a PCRParams,
+            minimum: usize,
+            maximum: usize,
+            paths: Vec<Vec<PathStep>>,
+            states: usize,
+            found: usize,
+        }
+        impl Reference<'_> {
+            fn visit(
+                &mut self,
+                node: NodeIndex,
+                path: &mut Vec<PathStep>,
+                counts: &mut AHashMap<NodeIndex, usize>,
+            ) {
+                let mut edges: Vec<_> = self
+                    .graph
+                    .edges_directed(node, Direction::Outgoing)
+                    .map(|edge| (edge.target(), edge.id(), edge.weight().count))
+                    .collect();
+                edges.sort_by_key(|edge| edge.2);
+                for (next, edge, _) in edges.into_iter().rev() {
+                    if self.states >= self.params.max_dfs_states
+                        || self.found >= self.params.max_paths_per_pair
+                    {
+                        return;
+                    }
+                    self.states += 1;
+                    let visits = counts.get(&next).copied().unwrap_or(0);
+                    if visits >= self.params.max_node_visits {
+                        continue;
+                    }
+                    path.push((next, Some(edge)));
+                    counts.insert(next, visits + 1);
+                    if self.graph[next].is_end
+                        && path.len() >= self.minimum
+                        && path.len() <= self.maximum
+                    {
+                        self.paths.push(path.clone());
+                        self.found += 1;
+                    } else if path.len() < self.maximum {
+                        self.visit(next, path, counts);
+                    }
+                    counts.insert(next, visits);
+                    path.pop();
+                }
+            }
+        }
+        let mut reference = Reference {
+            graph,
+            params,
+            minimum: params.min_length.saturating_sub(k.saturating_sub(2)).max(1),
+            maximum: params.max_length.saturating_sub(k.saturating_sub(2)).max(1),
+            paths: Vec::new(),
+            states: 0,
+            found: 0,
+        };
+        for start in graph.node_indices().filter(|&node| graph[node].is_start) {
+            reference.states = 0;
+            reference.found = 0;
+            reference.visit(
+                start,
+                &mut vec![(start, None)],
+                &mut AHashMap::from_iter([(start, 1)]),
+            );
+        }
+        reference.paths
+    }
+
+    #[test]
+    fn owned_dfs_matches_recursive_path_order_quotas_and_backtracking_with_holes() {
+        let mut random = 157u64;
+        let mut counts = crate::kmer::KmerCounts::new(&3);
+        counts.ingest_seq("AAACCCGGGTTT").unwrap();
+        let budget = path_budget(1 << 20);
+        for _ in 0..48 {
+            let mut graph = StableDiGraph::new();
+            for index in 0..9 {
+                graph.add_node(mk_node(
+                    index,
+                    index == 0 || index == 4,
+                    index == 7 || index == 8,
+                ));
+            }
+            graph.remove_node(NodeIndex::new(3));
+            let nodes: Vec<_> = graph.node_indices().collect();
+            for _ in 0..16 {
+                random = random.wrapping_mul(6364136223846793005).wrapping_add(1);
+                let from = nodes[(random >> 32) as usize % nodes.len()];
+                random = random.wrapping_mul(6364136223846793005).wrapping_add(1);
+                let to = nodes[(random >> 32) as usize % nodes.len()];
+                graph.add_edge(from, to, mk_edge(random % 5 + 1));
+            }
+            for states in [8, 1000] {
+                let mut params = test_params(3, 8);
+                params.max_paths_per_pair = 3;
+                params.max_dfs_states = states;
+                params.max_node_visits = 2;
+                let expected = reference_paths(&graph, &params, 3);
+                let actual = search_assembly_paths_budgeted(
+                    &graph,
+                    &counts.filtered_view(1),
+                    &params,
+                    None,
+                    &RepeatMarkers::default(),
+                    None,
+                    Some(&budget),
+                )
+                .unwrap();
+                let observed: Vec<_> = actual
+                    .paths
+                    .iter()
+                    .map(|path| path.iter().copied().collect::<Vec<_>>())
+                    .collect();
+                assert_eq!(observed, expected);
+                drop(actual);
+                assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+            }
+        }
+    }
+
+    #[test]
+    fn dfs_or_metric_refusal_cleans_workspace_and_success_keeps_path_ownership() {
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(0, true, false));
+        let end = graph.add_node(mk_node(1, false, true));
+        let edge = graph.add_edge(start, end, mk_edge(4));
+        let mut counts = crate::kmer::KmerCounts::new(&3);
+        counts.ingest_seq("AAAC").unwrap();
+        let params = test_params(3, 8);
+        let tiny = path_budget(1);
+        let error = search_assembly_paths_budgeted(
+            &graph,
+            &counts.filtered_view(1),
+            &params,
+            None,
+            &RepeatMarkers::default(),
+            None,
+            Some(&tiny),
+        )
+        .err()
+        .unwrap();
+        assert!(
+            error
+                .downcast_ref::<crate::kmer::budget::ResourceExhausted>()
+                .is_some()
+        );
+        assert_eq!(tiny.snapshot().reserved_memory_bytes, 0);
+        let paths = vec![vec![(start, None), (end, Some(edge))]];
+        assert!(
+            generate_sequences_from_paths_budgeted(
+                &graph,
+                paths,
+                &counts.filtered_view(1),
+                "sample",
+                &params,
+                0,
+                None,
+                Some(&tiny),
+                None,
+            )
+            .err()
+            .unwrap()
+            .downcast_ref::<crate::kmer::budget::ResourceExhausted>()
+            .is_some()
+        );
+        assert_eq!(tiny.snapshot().reserved_memory_bytes, 0);
+        let enough = path_budget(4096);
+        let found = search_assembly_paths_budgeted(
+            &graph,
+            &counts.filtered_view(1),
+            &params,
+            None,
+            &RepeatMarkers::default(),
+            None,
+            Some(&enough),
+        )
+        .unwrap();
+        assert_eq!(found.paths.len(), 1);
+        assert!(enough.snapshot().reserved_memory_bytes > 0);
+        let (records, _) = generate_sequences_from_paths_budgeted(
+            &graph,
+            found.paths,
+            &counts.filtered_view(1),
+            "sample",
+            &params,
+            0,
+            None,
+            Some(&enough),
+            None,
+        )
+        .unwrap();
+        assert_eq!(records.len(), 1);
+        assert_eq!(enough.snapshot().reserved_memory_bytes, 0);
+    }
+
+    #[test]
+    fn ranked_records_preserve_unrounded_winner_through_deduplication_and_limits() {
+        let make = |sequence: &[u8], score| AssemblyRecord {
+            fasta_record: fasta::Record::with_attrs("temporary", None, sequence).into(),
+            score: super::super::PathScore {
+                kmer_min_count: 1,
+                kmer_median_count: score,
+                coverage_cv: 0.0,
+                max_coverage_ratio: 1.0,
+                zero_support_edges: None,
+                median_unambiguous_support: None,
+                edge_support_fraction: None,
+            },
+        };
+        let mut params = test_params(0, 100);
+        params.dedup_edit_threshold = 1;
+        let selected = sort_and_deduplicate(
+            vec![
+                make(b"AAAAA", 2.0),
+                make(b"AAAAT", 13.1254),
+                make(b"CCCCC", 8.0001),
+            ],
+            &params,
+        );
+        assert_eq!(selected.len(), 2);
+        assert_eq!(selected[0].fasta_record.seq(), b"AAAAT");
+        assert_eq!(selected[0].score.composite(), 13.1254);
+        assert_eq!(selected[1].score.composite(), 8.0001);
+
+        params.dedup_edit_threshold = 0;
+        let inputs = (0..25u64)
+            .map(|index| {
+                let sequence = (0..5)
+                    .map(|position| b"ACGT"[((index >> (position * 2)) & 3) as usize])
+                    .collect::<Vec<_>>();
+                make(&sequence, index as f64 + 0.1234)
+            })
+            .collect();
+        let selected = sort_and_deduplicate(inputs, &params);
+        assert_eq!(selected.len(), MAX_NUM_AMPLICONS);
+        assert_eq!(selected[0].score.composite(), 24.1234);
+        assert_eq!(selected.last().unwrap().score.composite(), 5.1234);
+    }
+
+    #[test]
+    fn dedup_scratch_refusal_releases_owned_results_across_allocation_limits() {
+        let mut params = test_params(0, 100);
+        params.dedup_edit_threshold = 64;
+        let mut refused = 0;
+        let mut scratch_refused = 0;
+        let mut succeeded = 0;
+        for limit in (64..=16384).step_by(64) {
+            let budget = path_budget(limit);
+            let result = (|| -> Result<BudgetVec<AssemblyRecord>> {
+                let mut input = BudgetVec::in_class(Some(&budget), MemoryClass::RetainedResults);
+                for (id, sequence, score) in [
+                    ("low", "A".repeat(64), 2.0),
+                    ("winner", "C".repeat(64), 13.1254),
+                    ("second", "G".repeat(64), 8.0001),
+                    ("third", "T".repeat(64), 3.0),
+                ] {
+                    let text = |s: &str| {
+                        BudgetString::from_str(s, Some(&budget), MemoryClass::RetainedResults)
+                    };
+                    input.push(AssemblyRecord {
+                        fasta_record: super::super::sequence::SequenceRecord::from_parts(
+                            text(id)?,
+                            None,
+                            text(&sequence)?,
+                        ),
+                        score: super::super::PathScore {
+                            kmer_min_count: 1,
+                            kmer_median_count: score,
+                            coverage_cv: 0.0,
+                            max_coverage_ratio: 1.0,
+                            zero_support_edges: None,
+                            median_unambiguous_support: None,
+                            edge_support_fraction: None,
+                        },
+                    })?;
+                }
+                sort_and_deduplicate_budgeted(input, &params)
+            })();
+            match &result {
+                Ok(records) => {
+                    succeeded += 1;
+                    assert_eq!(records.len(), 1);
+                    assert_eq!(records[0].fasta_record.id(), "winner");
+                    assert_eq!(records[0].fasta_record.seq(), vec![b'C'; 64]);
+                    assert_eq!(records[0].score.composite(), 13.1254);
+                    assert!(
+                        budget.snapshot().reserved_by_class[MemoryClass::RetainedResults as usize]
+                            > 0
+                    );
+                }
+                Err(err) => {
+                    refused += 1;
+                    assert!(
+                        err.downcast_ref::<crate::kmer::budget::ResourceExhausted>()
+                            .is_some()
+                    );
+                    if err.to_string().contains("edit-distance scratch") {
+                        scratch_refused += 1;
+                    }
+                }
+            }
+            assert_eq!(
+                budget.snapshot().peak_reserved_by_class[MemoryClass::TargetGraphs as usize],
+                0
+            );
+            drop(result);
+            assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+            assert!(budget.snapshot().valid);
+        }
+        assert!(refused > 0);
+        assert!(
+            scratch_refused > 0,
+            "must exercise refusal inside the greedy comparison loop"
+        );
+        assert!(succeeded > 0);
+    }
+
     /// Linear graph: start -> a -> b -> end. Should find exactly one path.
     #[test]
     fn test_linear_path() {
@@ -1232,9 +1941,9 @@ mod tests {
         let collision_edge = graph.find_edge(path_nodes[0], path_nodes[1]).unwrap();
         let marked_sub_kmer = graph[path_nodes[1]].sub_kmer;
         let markers = RepeatMarkers {
-            omitted_self_loop_sub_kmers: AHashSet::from_iter([marked_sub_kmer]),
-            cyclic_scc_sub_kmers: AHashSet::from_iter([marked_sub_kmer]),
-            retained_collision_edges: AHashSet::from_iter([collision_edge]),
+            omitted_self_loop_sub_kmers: AHashSet::from_iter([marked_sub_kmer]).into(),
+            cyclic_scc_sub_kmers: AHashSet::from_iter([marked_sub_kmer]).into(),
+            retained_collision_edges: AHashSet::from_iter([collision_edge]).into(),
         };
         let mut counts = crate::kmer::KmerCounts::new(&3);
         counts.ingest_seq("ACGTA").unwrap();
@@ -1321,9 +2030,9 @@ mod tests {
         graph.add_edge(clean_first, clean_second, mk_edge(10));
         graph.add_edge(clean_second, end, mk_edge(10));
         let markers = RepeatMarkers {
-            omitted_self_loop_sub_kmers: AHashSet::new(),
-            cyclic_scc_sub_kmers: AHashSet::from_iter([graph[repeat_first].sub_kmer]),
-            retained_collision_edges: AHashSet::new(),
+            omitted_self_loop_sub_kmers: AHashSet::new().into(),
+            cyclic_scc_sub_kmers: AHashSet::from_iter([graph[repeat_first].sub_kmer]).into(),
+            retained_collision_edges: AHashSet::new().into(),
         };
         let mut counts = crate::kmer::KmerCounts::new(&3);
         counts.ingest_seq("ACGTA").unwrap();
@@ -1410,16 +2119,18 @@ mod tests {
         let capture = |graph: &StableDiGraph<DBNode, DBEdge>| {
             let marked = graph[graph.node_indices().nth(1).unwrap()].sub_kmer;
             let markers = RepeatMarkers {
-                omitted_self_loop_sub_kmers: AHashSet::from_iter([marked]),
-                cyclic_scc_sub_kmers: AHashSet::new(),
-                retained_collision_edges: AHashSet::new(),
+                omitted_self_loop_sub_kmers: AHashSet::from_iter([marked]).into(),
+                cyclic_scc_sub_kmers: AHashSet::new().into(),
+                retained_collision_edges: AHashSet::new().into(),
             };
             let mut budget = WithheldDiagnosticBudget::new(diagnostic_limits(4, 100, 20));
             search_assembly_paths(graph, &filtered, &params, None, &markers, Some(&mut budget))
                 .withheld_path_diagnostics
                 .unwrap()
                 .paths
-                .remove(0)
+                .into_iter()
+                .next()
+                .unwrap()
         };
 
         let forward = capture(&forward_graph);
@@ -1444,9 +2155,9 @@ mod tests {
         graph.add_edge(repeat, repeat, mk_edge(20));
         graph.add_edge(repeat, end, mk_edge(10));
         let markers = RepeatMarkers {
-            omitted_self_loop_sub_kmers: AHashSet::new(),
-            cyclic_scc_sub_kmers: AHashSet::from_iter([graph[repeat].sub_kmer]),
-            retained_collision_edges: AHashSet::new(),
+            omitted_self_loop_sub_kmers: AHashSet::new().into(),
+            cyclic_scc_sub_kmers: AHashSet::from_iter([graph[repeat].sub_kmer]).into(),
+            retained_collision_edges: AHashSet::new().into(),
         };
         let mut counts = crate::kmer::KmerCounts::new(&3);
         counts.ingest_seq("CAAAT").unwrap();
@@ -1485,9 +2196,9 @@ mod tests {
         let graph = sequence_graph("ACGTA", 3);
         let marked_sub_kmer = graph[graph.node_indices().nth(1).unwrap()].sub_kmer;
         let markers = RepeatMarkers {
-            omitted_self_loop_sub_kmers: AHashSet::from_iter([marked_sub_kmer]),
-            cyclic_scc_sub_kmers: AHashSet::new(),
-            retained_collision_edges: AHashSet::new(),
+            omitted_self_loop_sub_kmers: AHashSet::from_iter([marked_sub_kmer]).into(),
+            cyclic_scc_sub_kmers: AHashSet::new().into(),
+            retained_collision_edges: AHashSet::new().into(),
         };
         let mut counts = crate::kmer::KmerCounts::new(&3);
         counts.ingest_seq("ACGTA").unwrap();
@@ -1528,9 +2239,9 @@ mod tests {
         ];
         let marked_sub_kmer = graph[path_nodes[1]].sub_kmer;
         let markers = RepeatMarkers {
-            omitted_self_loop_sub_kmers: AHashSet::from_iter([marked_sub_kmer]),
-            cyclic_scc_sub_kmers: AHashSet::new(),
-            retained_collision_edges: AHashSet::new(),
+            omitted_self_loop_sub_kmers: AHashSet::from_iter([marked_sub_kmer]).into(),
+            cyclic_scc_sub_kmers: AHashSet::new().into(),
+            retained_collision_edges: AHashSet::new().into(),
         };
 
         let collect_twice = |limits: WithheldDiagnosticLimits| {
@@ -1538,14 +2249,16 @@ mod tests {
             let mut collector = ThresholdDiagnosticCollector::new(&mut budget, 2);
             let visit_counts = path_visit_counts(&path);
             for _ in 0..2 {
-                collector.observe_withheld_path(
-                    &graph,
-                    &path,
-                    3,
-                    &markers,
-                    &visit_counts,
-                    cause_counts(1, 0, 0),
-                );
+                collector
+                    .observe_withheld_path(
+                        &graph,
+                        &path,
+                        3,
+                        &markers,
+                        &visit_counts,
+                        cause_counts(1, 0, 0),
+                    )
+                    .unwrap();
             }
             collector.finish()
         };
@@ -1590,9 +2303,9 @@ mod tests {
             (nodes[3], graph.find_edge(nodes[2], nodes[3])),
         ];
         let markers = RepeatMarkers {
-            omitted_self_loop_sub_kmers: AHashSet::from_iter([graph[nodes[1]].sub_kmer]),
-            cyclic_scc_sub_kmers: AHashSet::new(),
-            retained_collision_edges: AHashSet::new(),
+            omitted_self_loop_sub_kmers: AHashSet::from_iter([graph[nodes[1]].sub_kmer]).into(),
+            cyclic_scc_sub_kmers: AHashSet::new().into(),
+            retained_collision_edges: AHashSet::new().into(),
         };
         let mut limits = diagnostic_limits(1, 100, 1);
         limits.threshold.paths = 3;
@@ -1600,14 +2313,16 @@ mod tests {
         let visit_counts = path_visit_counts(&path);
         let mut collector = ThresholdDiagnosticCollector::new(&mut budget, 2);
         for _ in 0..3 {
-            collector.observe_withheld_path(
-                &graph,
-                &path,
-                3,
-                &markers,
-                &visit_counts,
-                cause_counts(1, 0, 0),
-            );
+            collector
+                .observe_withheld_path(
+                    &graph,
+                    &path,
+                    3,
+                    &markers,
+                    &visit_counts,
+                    cause_counts(1, 0, 0),
+                )
+                .unwrap();
         }
         let diagnostic = collector.finish();
         assert_eq!(diagnostic.schema_version, 2);
@@ -1638,22 +2353,24 @@ mod tests {
             (nodes[3], graph.find_edge(nodes[2], nodes[3])),
         ];
         let markers = RepeatMarkers {
-            omitted_self_loop_sub_kmers: AHashSet::from_iter([graph[nodes[1]].sub_kmer]),
-            cyclic_scc_sub_kmers: AHashSet::new(),
-            retained_collision_edges: AHashSet::new(),
+            omitted_self_loop_sub_kmers: AHashSet::from_iter([graph[nodes[1]].sub_kmer]).into(),
+            cyclic_scc_sub_kmers: AHashSet::new().into(),
+            retained_collision_edges: AHashSet::new().into(),
         };
         let mut budget = WithheldDiagnosticBudget::for_emission(diagnostic_limits(1, 100, 1));
         let visit_counts = path_visit_counts(&path);
         let mut collector = ThresholdDiagnosticCollector::new(&mut budget, 2);
         for count in [2, 2, 1] {
-            collector.observe_withheld_path(
-                &graph,
-                &path,
-                3,
-                &markers,
-                &visit_counts,
-                cause_counts(count, 0, 0),
-            );
+            collector
+                .observe_withheld_path(
+                    &graph,
+                    &path,
+                    3,
+                    &markers,
+                    &visit_counts,
+                    cause_counts(count, 0, 0),
+                )
+                .unwrap();
         }
         let diagnostic = collector.finish();
         assert_eq!(diagnostic.observed_withheld_paths, 3);
@@ -1675,35 +2392,40 @@ mod tests {
             (path_nodes[3], graph.find_edge(path_nodes[2], path_nodes[3])),
         ];
         let markers = RepeatMarkers {
-            omitted_self_loop_sub_kmers: AHashSet::from_iter([graph[path_nodes[1]].sub_kmer]),
-            cyclic_scc_sub_kmers: AHashSet::new(),
-            retained_collision_edges: AHashSet::new(),
+            omitted_self_loop_sub_kmers: AHashSet::from_iter([graph[path_nodes[1]].sub_kmer])
+                .into(),
+            cyclic_scc_sub_kmers: AHashSet::new().into(),
+            retained_collision_edges: AHashSet::new().into(),
         };
         let mut budget = WithheldDiagnosticBudget::new(diagnostic_limits(1, 100, 10));
         let visit_counts = path_visit_counts(&path);
 
         let first = {
             let mut collector = ThresholdDiagnosticCollector::new(&mut budget, 2);
-            collector.observe_withheld_path(
-                &graph,
-                &path,
-                3,
-                &markers,
-                &visit_counts,
-                cause_counts(1, 0, 0),
-            );
+            collector
+                .observe_withheld_path(
+                    &graph,
+                    &path,
+                    3,
+                    &markers,
+                    &visit_counts,
+                    cause_counts(1, 0, 0),
+                )
+                .unwrap();
             collector.finish()
         };
         let second = {
             let mut collector = ThresholdDiagnosticCollector::new(&mut budget, 2);
-            collector.observe_withheld_path(
-                &graph,
-                &path,
-                3,
-                &markers,
-                &visit_counts,
-                cause_counts(1, 0, 0),
-            );
+            collector
+                .observe_withheld_path(
+                    &graph,
+                    &path,
+                    3,
+                    &markers,
+                    &visit_counts,
+                    cause_counts(1, 0, 0),
+                )
+                .unwrap();
             collector.finish()
         };
 
@@ -2067,5 +2789,113 @@ mod tests {
         assert_eq!(children[0].1, lo_edge);
         assert_eq!(children[1].0, hi);
         assert_eq!(children[1].1, hi_edge);
+    }
+    fn diagnostic_result_budget(bytes: u64) -> Arc<ResourceBudget> {
+        let mut classes = [0; crate::kmer::budget::MEMORY_CLASSES];
+        classes[MemoryClass::RetainedResults as usize] = bytes;
+        ResourceBudget::new(crate::kmer::budget::ResourceLimits {
+            memory_bytes: bytes,
+            process_overhead_bytes: 0,
+            class_bytes: classes,
+            temporary_disk_bytes: 0,
+            temporary_open_files: 0,
+        })
+        .unwrap()
+    }
+
+    fn owned_diagnostic_search(
+        budget: &Arc<ResourceBudget>,
+        limits: WithheldDiagnosticLimits,
+    ) -> Result<PathSearchResult> {
+        let mut graph = StableDiGraph::new();
+        let start = graph.add_node(mk_node(0, true, false));
+        let marked = graph.add_node(mk_node(1, false, false));
+        let end = graph.add_node(mk_node(6, false, true));
+        graph.add_edge(start, marked, mk_edge(4));
+        graph.add_edge(marked, end, mk_edge(4));
+        let mut markers = RepeatMarkers::default();
+        markers.cyclic_scc_sub_kmers.insert(1).unwrap();
+        let mut counts = crate::kmer::KmerCounts::new(&3);
+        counts.ingest_seq("AACG").unwrap();
+        let mut diagnostics = WithheldDiagnosticBudget::for_emission(limits);
+        diagnostics.result_budget_from(Some(budget));
+        search_assembly_paths_budgeted(
+            &graph,
+            &counts.filtered_view(1),
+            &test_params(4, 8),
+            None,
+            &markers,
+            Some(&mut diagnostics),
+            None,
+        )
+    }
+
+    #[test]
+    fn diagnostic_payload_copies_keep_independent_run_guards_and_typed_refusal() {
+        use crate::kmer::budget::collections::TryClone;
+        let budget = diagnostic_result_budget(1 << 20);
+        let result = owned_diagnostic_search(&budget, diagnostic_limits(4, 100, 20)).unwrap();
+        let payload = result.withheld_path_diagnostics.unwrap();
+        assert_eq!(payload.paths[0].oriented_sequence, "AACG");
+        let used = budget.snapshot().reserved_memory_bytes;
+        assert!(used > 0);
+        let held = budget
+            .reserve(MemoryClass::RetainedResults, (1 << 20) - used)
+            .unwrap();
+        let error = TryClone::try_clone(&payload).unwrap_err();
+        assert!(
+            error
+                .downcast_ref::<crate::kmer::budget::ResourceExhausted>()
+                .is_some()
+        );
+        assert_eq!(budget.snapshot().reserved_memory_bytes, 1 << 20);
+        drop(held);
+        let copy = TryClone::try_clone(&payload).unwrap();
+        assert_eq!(copy, payload);
+        assert!(budget.snapshot().reserved_memory_bytes > used);
+        assert_eq!(
+            budget.snapshot().reserved_by_class[MemoryClass::TargetGraphs as usize],
+            0
+        );
+        drop(payload);
+        assert!(budget.snapshot().reserved_memory_bytes > 0);
+        drop(copy);
+        assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+    }
+
+    #[test]
+    fn diagnostic_allocation_refusal_cleans_nested_payloads_without_changing_retention_policy() {
+        let (mut refused, mut succeeded) = (0, 0);
+        for bytes in (1..=128).map(|n| n * 64).chain([1 << 20]) {
+            let budget = diagnostic_result_budget(bytes);
+            match owned_diagnostic_search(&budget, diagnostic_limits(4, 100, 20)) {
+                Ok(result) => {
+                    let payload = result.withheld_path_diagnostics.unwrap();
+                    assert_eq!(payload.retained_paths, 1);
+                    assert_eq!(payload.paths[0].oriented_sequence, "AACG");
+                    succeeded += 1;
+                }
+                Err(error) => {
+                    assert_eq!(
+                        error
+                            .downcast_ref::<crate::kmer::budget::ResourceExhausted>()
+                            .unwrap()
+                            .resource,
+                        crate::kmer::budget::ResourceKind::StageMemory(
+                            MemoryClass::RetainedResults
+                        )
+                    );
+                    refused += 1;
+                }
+            }
+            assert_eq!(budget.snapshot().reserved_memory_bytes, 0, "budget {bytes}");
+        }
+        assert!(refused > 4 && succeeded > 0);
+        let budget = diagnostic_result_budget(1);
+        let result = owned_diagnostic_search(&budget, diagnostic_limits(0, 100, 20)).unwrap();
+        let payload = result.withheld_path_diagnostics.unwrap();
+        assert_eq!(payload.retained_paths, 0);
+        assert_eq!(payload.dropped_path_cap, 1);
+        assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
     }
 }

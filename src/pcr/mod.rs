@@ -1,13 +1,14 @@
 // pcr/mod.rs
 
-use ahash::AHashMap;
+use crate::kmer::budget::collections::{BudgetVec, TryClone};
+use crate::kmer::budget::text::BudgetString;
+use crate::kmer::budget::{MemoryClass, ResourceBudget};
 use anyhow::{Context, Result};
-use bio::io::fasta;
 use log::{debug, trace};
-use petgraph::graph::NodeIndex;
 use serde::Serialize;
 use std::fs::File;
 use std::io::Write;
+use std::sync::Arc;
 
 use crate::format::format_duration;
 use crate::kmer::FilteredKmerCounts;
@@ -31,12 +32,14 @@ macro_rules! gene_warn {
 pub mod preconfigured;
 
 mod bubble;
+mod distance;
 mod graph;
 mod paths;
 mod primers;
 mod pruning;
 #[cfg(test)]
 mod repeat_tests;
+mod sequence;
 #[cfg(test)]
 mod threshold_tests;
 mod uncertain;
@@ -45,14 +48,17 @@ pub use graph::compute_node_budget;
 pub(crate) use uncertain::UncertainProducts;
 pub(crate) mod threading;
 
+#[allow(dead_code)]
+pub(crate) mod memory;
+
 // Constants that may require tuning
 
 /// The multiplier for establishing when a kmer is considered to have high coverage,
 /// relative to the min_count threshold. It is then used to also adjust the threshold.
-const COVERAGE_MULTIPLIER: u32 = 2;
+const COVERAGE_MULTIPLIER: u64 = 2;
 
 /// A multiplier for adjusting the threshold as it is applied.
-const COVERAGE_STEPS: u32 = 4;
+const COVERAGE_STEPS: u64 = 4;
 
 // MAX_NUM_PRIMER_KMERS is now read from params.max_primer_kmers
 
@@ -64,7 +70,7 @@ pub const DEFAULT_DEDUP_EDIT_THRESHOLD: u32 = 10;
 #[derive(Debug, Clone, PartialEq)]
 struct PathScore {
     /// Minimum kmer count along the path
-    kmer_min_count: u32,
+    kmer_min_count: u64,
     /// Median kmer count along the path
     kmer_median_count: f64,
     /// Coverage consistency: coefficient of variation of edge counts
@@ -120,12 +126,24 @@ impl PathScore {
 }
 
 struct AssemblyRecord {
-    fasta_record: fasta::Record,
+    fasta_record: sequence::SequenceRecord,
     score: PathScore,
+}
+
+/// Structured annotations joined to the final emitted FASTA identifier.
+#[derive(Debug, PartialEq, Serialize)]
+pub(crate) struct SequenceAnnotation {
+    pub(crate) sequence_id: crate::kmer::budget::text::BudgetString,
+    pub(crate) sequence_index: usize,
+    pub(crate) sequence_length: usize,
+    /// The existing assembly ranking heuristic, not calibrated confidence.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub(crate) assembly_rank_score: Option<f64>,
 }
 
 // Create a structure to hold a kmer representing an oligo up to 32 nucleotides long in the
 // length*2 least significant bits
+#[cfg(test)]
 pub struct Oligo {
     pub length: usize,
     pub kmer: u64,
@@ -147,7 +165,7 @@ pub struct DBNode {
 
 #[derive(Debug, Clone)]
 pub struct DBEdge {
-    pub count: u32,          // Number of times this kmer was observed
+    pub count: u64,          // Number of times this kmer was observed
     pub coverage_ratio: f64, // count / local median (set during annotation)
 }
 
@@ -251,6 +269,34 @@ pub struct PCRParams {
     pub emit_uncertain: bool,
 }
 
+impl PCRParams {
+    /// All nested heap allocations retained by this configuration record.
+    pub(crate) fn configuration_bytes(&self) -> Result<u64> {
+        [
+            Some(&self.forward_seq),
+            Some(&self.reverse_seq),
+            Some(&self.gene_name),
+            Some(&self.citation),
+            Some(&self.notes),
+            Some(&self.source),
+            self.gene.as_ref(),
+            self.region.as_ref(),
+            self.compartment.as_ref(),
+            self.gene_type.as_ref(),
+            self.copy_number.as_ref(),
+            self.deprecated_by.as_ref(),
+            self.deprecated_reason.as_ref(),
+        ]
+        .into_iter()
+        .flatten()
+        .try_fold(0_u64, |total, text| {
+            total
+                .checked_add(u64::try_from(text.capacity())?)
+                .context("Primer configuration size overflow")
+        })
+    }
+}
+
 fn default_max_length() -> usize {
     10000
 }
@@ -312,10 +358,12 @@ pub(crate) fn validate_primer_expansion(params: &PCRParams, kmer_length: usize) 
 /// Result of running in silico PCR for a single gene.
 pub struct PcrOutcome {
     /// FASTA records of recovered products (empty if none found)
-    pub records: Vec<bio::io::fasta::Record>,
+    pub records: crate::kmer::budget::collections::BudgetVec<sequence::SequenceRecord>,
+    pub(crate) sequence_annotations:
+        crate::kmer::budget::collections::BudgetVec<SequenceAnnotation>,
     /// Short description of why no product was found (None if successful)
-    pub failure_reason: Option<String>,
-    pub threshold_diagnostics: Vec<PcrThresholdDiagnostic>,
+    pub failure_reason: Option<BudgetString>,
+    pub threshold_diagnostics: BudgetVec<PcrThresholdDiagnostic>,
     pub(crate) uncertain_products: Option<UncertainProducts>,
 }
 
@@ -342,7 +390,7 @@ pub(crate) struct WithheldDiagnosticUsage {
     pub(crate) marker_occurrences: usize,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum WithheldMarkerCause {
     PrePruneOmittedSelfLoopNode,
@@ -350,43 +398,176 @@ pub(crate) enum WithheldMarkerCause {
     RetainedCollisionEdge,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub(crate) enum WithheldMarkerIdentityKind {
     OrientedNodeSequence,
     OrientedEdgeSequence,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[cfg_attr(test, derive(Clone))]
+#[derive(Debug, PartialEq, Eq, Serialize)]
 pub(crate) struct WithheldMarkerOccurrence {
     pub(crate) cause: WithheldMarkerCause,
     pub(crate) identity_kind: WithheldMarkerIdentityKind,
-    pub(crate) identity_sequence: String,
-    pub(crate) identity_sha256: String,
+    pub(crate) identity_sequence: BudgetString,
+    pub(crate) identity_sha256: BudgetString,
     pub(crate) start: usize,
     pub(crate) end: usize,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Serialize)]
 pub(crate) struct WithheldMarkerCoveredRun {
     pub(crate) start: usize,
     pub(crate) end: usize,
 }
 
-#[derive(Clone, Debug, PartialEq, Eq, Serialize)]
+#[cfg_attr(test, derive(Clone))]
+#[derive(Debug, PartialEq, Eq, Serialize)]
 pub(crate) struct WithheldPathRecord {
-    pub(crate) oriented_sequence: String,
-    pub(crate) sequence_sha256: String,
+    pub(crate) oriented_sequence: BudgetString,
+    pub(crate) sequence_sha256: BudgetString,
     pub(crate) sequence_length: usize,
     pub(crate) node_visit_limit: usize,
     pub(crate) max_observed_node_visits: usize,
     pub(crate) omitted_self_loop_marker_occurrences: usize,
     pub(crate) cyclic_scc_marker_occurrences: usize,
     pub(crate) retained_collision_marker_occurrences: usize,
-    pub(crate) marker_occurrences: Vec<WithheldMarkerOccurrence>,
-    pub(crate) marker_covered_runs: Vec<WithheldMarkerCoveredRun>,
+    pub(crate) marker_occurrences: BudgetVec<WithheldMarkerOccurrence>,
+    pub(crate) marker_covered_runs: BudgetVec<WithheldMarkerCoveredRun>,
 }
 
+impl TryClone for WithheldDiagnosticCapSet {
+    fn try_clone(&self) -> Result<Self> {
+        Ok(*self)
+    }
+}
+impl TryClone for WithheldDiagnosticLimits {
+    fn try_clone(&self) -> Result<Self> {
+        Ok(*self)
+    }
+}
+impl TryClone for WithheldDiagnosticUsage {
+    fn try_clone(&self) -> Result<Self> {
+        Ok(*self)
+    }
+}
+impl TryClone for WithheldMarkerCause {
+    fn try_clone(&self) -> Result<Self> {
+        Ok(*self)
+    }
+}
+impl TryClone for WithheldMarkerIdentityKind {
+    fn try_clone(&self) -> Result<Self> {
+        Ok(*self)
+    }
+}
+impl TryClone for WithheldMarkerCoveredRun {
+    fn try_clone(&self) -> Result<Self> {
+        Ok(*self)
+    }
+}
+impl TryClone for WithheldMarkerOccurrence {
+    fn try_clone(&self) -> Result<Self> {
+        Ok(Self {
+            cause: TryClone::try_clone(&self.cause)?,
+            identity_kind: TryClone::try_clone(&self.identity_kind)?,
+            identity_sequence: TryClone::try_clone(&self.identity_sequence)?,
+            identity_sha256: TryClone::try_clone(&self.identity_sha256)?,
+            start: TryClone::try_clone(&self.start)?,
+            end: TryClone::try_clone(&self.end)?,
+        })
+    }
+}
+impl TryClone for WithheldPathRecord {
+    fn try_clone(&self) -> Result<Self> {
+        Ok(Self {
+            oriented_sequence: TryClone::try_clone(&self.oriented_sequence)?,
+            sequence_sha256: TryClone::try_clone(&self.sequence_sha256)?,
+            sequence_length: TryClone::try_clone(&self.sequence_length)?,
+            node_visit_limit: TryClone::try_clone(&self.node_visit_limit)?,
+            max_observed_node_visits: TryClone::try_clone(&self.max_observed_node_visits)?,
+            omitted_self_loop_marker_occurrences: TryClone::try_clone(
+                &self.omitted_self_loop_marker_occurrences,
+            )?,
+            cyclic_scc_marker_occurrences: TryClone::try_clone(
+                &self.cyclic_scc_marker_occurrences,
+            )?,
+            retained_collision_marker_occurrences: TryClone::try_clone(
+                &self.retained_collision_marker_occurrences,
+            )?,
+            marker_occurrences: TryClone::try_clone(&self.marker_occurrences)?,
+            marker_covered_runs: TryClone::try_clone(&self.marker_covered_runs)?,
+        })
+    }
+}
+impl TryClone for WithheldPathDiagnostics {
+    fn try_clone(&self) -> Result<Self> {
+        Ok(Self {
+            schema_version: TryClone::try_clone(&self.schema_version)?,
+            coordinate_system: TryClone::try_clone(&self.coordinate_system)?,
+            purpose: TryClone::try_clone(&self.purpose)?,
+            marker_span_scope: TryClone::try_clone(&self.marker_span_scope)?,
+            read_support_evaluation: TryClone::try_clone(&self.read_support_evaluation)?,
+            limits: TryClone::try_clone(&self.limits)?,
+            gene_usage_before_threshold: TryClone::try_clone(&self.gene_usage_before_threshold)?,
+            gene_usage_after_threshold: TryClone::try_clone(&self.gene_usage_after_threshold)?,
+            observed_withheld_paths: TryClone::try_clone(&self.observed_withheld_paths)?,
+            retained_paths: TryClone::try_clone(&self.retained_paths)?,
+            observed_not_retained_paths: TryClone::try_clone(&self.observed_not_retained_paths)?,
+            retained_sequence_bases: TryClone::try_clone(&self.retained_sequence_bases)?,
+            retained_marker_occurrences: TryClone::try_clone(&self.retained_marker_occurrences)?,
+            retained_summary_only_paths: TryClone::try_clone(&self.retained_summary_only_paths)?,
+            omitted_detailed_marker_occurrences: TryClone::try_clone(
+                &self.omitted_detailed_marker_occurrences,
+            )?,
+            marker_detail_truncated: TryClone::try_clone(&self.marker_detail_truncated)?,
+            dropped_oversize_sequence: TryClone::try_clone(&self.dropped_oversize_sequence)?,
+            dropped_oversize_marker_set: TryClone::try_clone(&self.dropped_oversize_marker_set)?,
+            dropped_path_cap: TryClone::try_clone(&self.dropped_path_cap)?,
+            dropped_sequence_base_cap: TryClone::try_clone(&self.dropped_sequence_base_cap)?,
+            dropped_marker_cap: TryClone::try_clone(&self.dropped_marker_cap)?,
+            node_visit_limit: TryClone::try_clone(&self.node_visit_limit)?,
+            node_visit_skips: TryClone::try_clone(&self.node_visit_skips)?,
+            retention_truncated: TryClone::try_clone(&self.retention_truncated)?,
+            paths: TryClone::try_clone(&self.paths)?,
+        })
+    }
+}
+impl TryClone for PcrThresholdDiagnostic {
+    fn try_clone(&self) -> Result<Self> {
+        Ok(Self {
+            threshold: TryClone::try_clone(&self.threshold)?,
+            connectivity_found: TryClone::try_clone(&self.connectivity_found)?,
+            node_budget_reached: TryClone::try_clone(&self.node_budget_reached)?,
+            scc_evaluated: TryClone::try_clone(&self.scc_evaluated)?,
+            path_search_evaluated: TryClone::try_clone(&self.path_search_evaluated)?,
+            omitted_self_loop_nodes: TryClone::try_clone(&self.omitted_self_loop_nodes)?,
+            pre_prune_scc_nodes: TryClone::try_clone(&self.pre_prune_scc_nodes)?,
+            retained_collision_edges: TryClone::try_clone(&self.retained_collision_edges)?,
+            dfs_limit_reached: TryClone::try_clone(&self.dfs_limit_reached)?,
+            path_quota_reached: TryClone::try_clone(&self.path_quota_reached)?,
+            end_below_min_length: TryClone::try_clone(&self.end_below_min_length)?,
+            max_length_reached: TryClone::try_clone(&self.max_length_reached)?,
+            completed_candidate_paths: TryClone::try_clone(&self.completed_candidate_paths)?,
+            eligible_candidate_paths: TryClone::try_clone(&self.eligible_candidate_paths)?,
+            withheld_candidate_paths: TryClone::try_clone(&self.withheld_candidate_paths)?,
+            withheld_by_self_loop_node_paths: TryClone::try_clone(
+                &self.withheld_by_self_loop_node_paths,
+            )?,
+            withheld_by_scc_node_paths: TryClone::try_clone(&self.withheld_by_scc_node_paths)?,
+            withheld_by_collision_edge_paths: TryClone::try_clone(
+                &self.withheld_by_collision_edge_paths,
+            )?,
+            repeat_tainted_out_of_range_paths: TryClone::try_clone(
+                &self.repeat_tainted_out_of_range_paths,
+            )?,
+            generated_products: TryClone::try_clone(&self.generated_products)?,
+            failure_reason: TryClone::try_clone(&self.failure_reason)?,
+            withheld_path_diagnostics: TryClone::try_clone(&self.withheld_path_diagnostics)?,
+        })
+    }
+}
 fn is_zero_usize(value: &usize) -> bool {
     *value == 0
 }
@@ -395,13 +576,14 @@ fn is_false(value: &bool) -> bool {
     !*value
 }
 
-#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+#[cfg_attr(test, derive(Clone))]
+#[derive(Debug, Default, PartialEq, Eq, Serialize)]
 pub(crate) struct WithheldPathDiagnostics {
     pub(crate) schema_version: u32,
-    pub(crate) coordinate_system: String,
-    pub(crate) purpose: String,
-    pub(crate) marker_span_scope: String,
-    pub(crate) read_support_evaluation: String,
+    pub(crate) coordinate_system: &'static str,
+    pub(crate) purpose: &'static str,
+    pub(crate) marker_span_scope: &'static str,
+    pub(crate) read_support_evaluation: &'static str,
     pub(crate) limits: WithheldDiagnosticLimits,
     pub(crate) gene_usage_before_threshold: WithheldDiagnosticUsage,
     pub(crate) gene_usage_after_threshold: WithheldDiagnosticUsage,
@@ -424,12 +606,13 @@ pub(crate) struct WithheldPathDiagnostics {
     pub(crate) node_visit_limit: usize,
     pub(crate) node_visit_skips: usize,
     pub(crate) retention_truncated: bool,
-    pub(crate) paths: Vec<WithheldPathRecord>,
+    pub(crate) paths: BudgetVec<WithheldPathRecord>,
 }
 
-#[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+#[cfg_attr(test, derive(Clone))]
+#[derive(Debug, Default, PartialEq, Eq, Serialize)]
 pub struct PcrThresholdDiagnostic {
-    pub threshold: u32,
+    pub threshold: u64,
     pub connectivity_found: bool,
     pub node_budget_reached: bool,
     pub scc_evaluated: bool,
@@ -449,7 +632,7 @@ pub struct PcrThresholdDiagnostic {
     pub withheld_by_collision_edge_paths: usize,
     pub repeat_tainted_out_of_range_paths: usize,
     pub generated_products: usize,
-    pub failure_reason: Option<String>,
+    pub failure_reason: Option<BudgetString>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub(crate) withheld_path_diagnostics: Option<WithheldPathDiagnostics>,
 }
@@ -524,117 +707,102 @@ pub(crate) fn inclusive_sequence_limits(
 
 /// Validate a primer pair and return a list of (error, suggestion) pairs.
 /// An empty list means the primer is valid.
-pub fn validate_pcr_params(params: &PCRParams) -> Vec<(String, String)> {
-    let mut errors: Vec<(String, String)> = Vec::new();
-
-    if params.forward_seq.len() < 2 {
-        errors.push((
-            format!(
-                "Forward primer sequence is too short: '{}'",
-                params.forward_seq
-            ),
-            "Primer sequences must be at least 2 bases".to_string(),
-        ));
-    }
-
-    if params.reverse_seq.len() < 2 {
-        errors.push((
-            format!(
-                "Reverse primer sequence is too short: '{}'",
-                params.reverse_seq
-            ),
-            "Primer sequences must be at least 2 bases".to_string(),
-        ));
-    }
-
-    // Only check nucleotide validity if sequences are long enough to be meaningful
-    if params.forward_seq.len() >= 2 {
-        let invalid: Vec<char> = params
-            .forward_seq
-            .chars()
-            .filter(|c| !primers::is_valid_nucleotide(*c))
-            .collect();
-        if !invalid.is_empty() {
-            let chars: Vec<String> = invalid.iter().map(|c| c.to_string()).collect();
+pub(crate) fn validate_pcr_params(
+    params: &PCRParams,
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<BudgetVec<(BudgetString, BudgetString)>> {
+    let mut errors = BudgetVec::in_class(budget, MemoryClass::RetainedResults);
+    macro_rules! report {
+        ($message:expr, $suggestion:expr) => {
             errors.push((
-                format!(
-                    "Invalid nucleotide(s) {} in forward primer {}",
-                    chars.join(", "),
-                    params.forward_seq
-                ),
-                "Valid characters: A C G T R Y W S M K B D H V N".to_string(),
-            ));
+                BudgetString::format($message, budget, MemoryClass::RetainedResults)?,
+                BudgetString::from_str($suggestion, budget, MemoryClass::RetainedResults)?,
+            ))?
+        };
+    }
+    for (direction, sequence) in [
+        ("Forward", &params.forward_seq),
+        ("Reverse", &params.reverse_seq),
+    ] {
+        if sequence.len() < 2 {
+            report!(
+                format_args!("{direction} primer sequence is too short: '{sequence}'"),
+                "Primer sequences must be at least 2 bases"
+            );
         }
     }
-
-    if params.reverse_seq.len() >= 2 {
-        let invalid: Vec<char> = params
-            .reverse_seq
-            .chars()
-            .filter(|c| !primers::is_valid_nucleotide(*c))
-            .collect();
-        if !invalid.is_empty() {
-            let chars: Vec<String> = invalid.iter().map(|c| c.to_string()).collect();
-            errors.push((
-                format!(
-                    "Invalid nucleotide(s) {} in reverse primer {}",
-                    chars.join(", "),
-                    params.reverse_seq
-                ),
-                "Valid characters: A C G T R Y W S M K B D H V N".to_string(),
-            ));
+    struct Invalid<'a>(&'a str);
+    impl std::fmt::Display for Invalid<'_> {
+        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+            let mut first = true;
+            for character in self.0.chars().filter(|c| !primers::is_valid_nucleotide(*c)) {
+                if !first {
+                    f.write_str(", ")?;
+                }
+                write!(f, "{character}")?;
+                first = false;
+            }
+            Ok(())
         }
     }
-
+    for (direction, sequence) in [
+        ("forward", &params.forward_seq),
+        ("reverse", &params.reverse_seq),
+    ] {
+        if sequence.len() >= 2 && sequence.chars().any(|c| !primers::is_valid_nucleotide(c)) {
+            report!(
+                format_args!(
+                    "Invalid nucleotide(s) {} in {direction} primer {sequence}",
+                    Invalid(sequence)
+                ),
+                "Valid characters: A C G T R Y W S M K B D H V N"
+            );
+        }
+    }
     if params.min_length > params.max_length {
-        errors.push((
-            format!(
+        report!(
+            format_args!(
                 "min-length ({}) is greater than max-length ({})",
                 params.min_length, params.max_length
             ),
-            "Swap the values or adjust the range".to_string(),
-        ));
+            "Swap the values or adjust the range"
+        );
     }
-
     if params.min_count < 2 {
-        errors.push((
-            format!("min-count is {}, must be at least 2", params.min_count),
-            "Set min-count to at least 2".to_string(),
-        ));
+        report!(
+            format_args!("min-count is {}, must be at least 2", params.min_count),
+            "Set min-count to at least 2"
+        );
     }
-
     if params.max_length == 0 {
-        errors.push((
-            "max-length is 0".to_string(),
-            "Set max-length to a positive value".to_string(),
-        ));
+        report!(
+            format_args!("max-length is 0"),
+            "Set max-length to a positive value"
+        );
     }
-
     if params.gene_name.is_empty() {
-        errors.push((
-            "Gene name is empty".to_string(),
-            "Provide a unique name for the primer pair via the 'name' field".to_string(),
-        ));
+        report!(
+            format_args!("Gene name is empty"),
+            "Provide a unique name for the primer pair via the 'name' field"
+        );
     }
-
     if params.forward_seq == params.reverse_seq && params.forward_seq.len() >= 2 {
-        errors.push((
-            format!(
+        report!(
+            format_args!(
                 "Forward and reverse primers are identical: {}",
                 params.forward_seq
             ),
-            "Check that forward and reverse sequences are not swapped".to_string(),
-        ));
+            "Check that forward and reverse sequences are not swapped"
+        );
     }
-
-    errors
+    Ok(errors)
 }
 
 /// Compute a sequence of coverage thresholds for graph extension, stepping down
 /// from a high threshold (derived from observed primer coverage) to `min_count`.
-fn compute_coverage_thresholds(primer_count: u32, min_count: u32) -> Vec<u32> {
+fn compute_coverage_thresholds(primer_count: u64, min_count: u64) -> Vec<u64> {
     let coverage_high_threshold = primer_count / COVERAGE_MULTIPLIER;
-    let mut thresholds: Vec<u32> = Vec::new();
+    let mut thresholds: Vec<u64> = Vec::new();
 
     if coverage_high_threshold <= min_count {
         thresholds.push(min_count);
@@ -659,83 +827,99 @@ fn compute_coverage_thresholds(primer_count: u32, min_count: u32) -> Vec<u32> {
     thresholds
 }
 
-fn earlier_threshold_limit_summary(diagnostics: &[PcrThresholdDiagnostic]) -> Option<String> {
-    let last = diagnostics.last()?;
-    let earlier = diagnostics.get(..diagnostics.len().saturating_sub(1))?;
-    let summaries = earlier
-        .iter()
-        .filter_map(|diagnostic| {
-            let mut causes = Vec::new();
-            if diagnostic.node_budget_reached && !last.node_budget_reached {
-                causes.push("node budget reached");
-            }
-            if diagnostic.dfs_limit_reached && !last.dfs_limit_reached {
-                causes.push("DFS state limit reached");
-            }
-            if diagnostic.path_quota_reached && !last.path_quota_reached {
-                causes.push("path quota reached");
-            }
-            if diagnostic.withheld_candidate_paths > 0
-                || diagnostic.repeat_tainted_out_of_range_paths > 0
-            {
-                let last_has_repeat_uncertainty =
-                    last.withheld_candidate_paths > 0 || last.repeat_tainted_out_of_range_paths > 0;
-                if !last_has_repeat_uncertainty {
-                    causes.push("candidate-local repeat uncertainty");
+#[cfg(test)]
+fn earlier_threshold_limit_summary(diagnostics: &[PcrThresholdDiagnostic]) -> Option<BudgetString> {
+    earlier_threshold_limit_summary_budgeted(diagnostics, None).unwrap()
+}
+
+fn earlier_threshold_limit_summary_budgeted(
+    diagnostics: &[PcrThresholdDiagnostic],
+    budget: Option<&Arc<ResourceBudget>>,
+) -> Result<Option<BudgetString>> {
+    let Some(last) = diagnostics.last() else {
+        return Ok(None);
+    };
+    let mut summary = BudgetString::new(budget, MemoryClass::RetainedResults);
+    for diagnostic in &diagnostics[..diagnostics.len().saturating_sub(1)] {
+        let repeat = diagnostic.withheld_candidate_paths > 0
+            || diagnostic.repeat_tainted_out_of_range_paths > 0;
+        let last_repeat =
+            last.withheld_candidate_paths > 0 || last.repeat_tainted_out_of_range_paths > 0;
+        let causes = [
+            (
+                "node budget reached",
+                diagnostic.node_budget_reached && !last.node_budget_reached,
+            ),
+            (
+                "DFS state limit reached",
+                diagnostic.dfs_limit_reached && !last.dfs_limit_reached,
+            ),
+            (
+                "path quota reached",
+                diagnostic.path_quota_reached && !last.path_quota_reached,
+            ),
+            ("candidate-local repeat uncertainty", repeat && !last_repeat),
+        ];
+        if !causes.iter().any(|(_, present)| *present) {
+            continue;
+        }
+        if !summary.is_empty() {
+            summary.push_str("; ")?;
+        }
+        let prefix = BudgetString::format(
+            format_args!("threshold {}: ", diagnostic.threshold),
+            budget,
+            MemoryClass::RetainedResults,
+        )?;
+        summary.push_str(&prefix)?;
+        let mut first = true;
+        for (cause, present) in causes {
+            if present {
+                if !first {
+                    summary.push_str(", ")?;
                 }
+                summary.push_str(cause)?;
+                first = false;
             }
-            if causes.is_empty() {
-                None
-            } else {
-                Some(format!(
-                    "threshold {}: {}",
-                    diagnostic.threshold,
-                    causes.join(", ")
-                ))
-            }
-        })
-        .collect::<Vec<_>>();
-    if summaries.is_empty() {
-        None
-    } else {
-        Some(summaries.join("; "))
+        }
     }
+    Ok((!summary.is_empty()).then_some(summary))
 }
 
 struct ThresholdEvaluation {
-    records: Vec<AssemblyRecord>,
-    failure_reason: Option<String>,
+    records: BudgetVec<AssemblyRecord>,
+    failure_reason: Option<BudgetString>,
     diagnostic: PcrThresholdDiagnostic,
 }
 
 #[allow(clippy::too_many_arguments)]
 fn evaluate_threshold_graph(
-    mut pruned_graph: petgraph::stable_graph::StableDiGraph<DBNode, DBEdge>,
+    mut pruned_graph: memory::AssemblyGraph,
     extension_repeat_markers: graph::ExtensionRepeatMarkers,
-    min_count: u32,
+    min_count: u64,
     kmer_counts: &FilteredKmerCounts,
     sample_name: &str,
     params: &PCRParams,
     dump_graph: bool,
     output_directory: &str,
-    reads: Option<&[crate::io::ReadRecord]>,
+    reads: Option<crate::io::ThreadingSource<'_>>,
     diagnostic_budget: Option<&mut paths::WithheldDiagnosticBudget>,
+    result_budget: Option<&Arc<ResourceBudget>>,
 ) -> Result<ThresholdEvaluation> {
-    let repeat_markers =
-        graph::repeat_markers_before_pruning(&pruned_graph, extension_repeat_markers);
+    let repeat_markers = graph::repeat_markers_before_pruning_budgeted(
+        &pruned_graph,
+        extension_repeat_markers,
+        pruned_graph.budget(),
+    )?;
     let omitted_self_loop_nodes = repeat_markers.omitted_self_loop_sub_kmers.len();
     let pre_prune_scc_nodes = repeat_markers.cyclic_scc_sub_kmers.len();
     let retained_collision_edges = repeat_markers.retained_collision_edges.len();
     let prune_start = std::time::Instant::now();
     gene_info!(params.gene_name, "Pruning the assembly graph...");
 
-    pruning::remove_low_coverage_tips(
-        &mut pruned_graph,
-        &kmer_counts.get_k(),
-        params.tip_coverage_fraction,
-    );
-    pruning::reachability_pruning(&mut pruned_graph);
-    graph::annotate_coverage_ratios(&mut pruned_graph);
+    pruned_graph.prune_tips(&kmer_counts.get_k(), params.tip_coverage_fraction)?;
+    pruned_graph.prune_reachability()?;
+    pruned_graph.annotate_coverage()?;
     gene_info!(
         params.gene_name,
         "Done. Time to prune graph: {}",
@@ -761,13 +945,33 @@ fn evaluate_threshold_graph(
                 params.gene_name,
                 "Threading reads through assembly graph..."
             );
-            let has_paired = reads
-                .iter()
-                .any(|read| read.mate != crate::io::Mate::Unpaired);
-            let annotations = if has_paired {
-                threading::thread_reads_paired(&pruned_graph, reads, kmer_counts.get_k())
-            } else {
-                threading::thread_reads(&pruned_graph, reads, kmer_counts.get_k())
+            let annotations = match reads {
+                crate::io::ThreadingSource::Memory(records) => {
+                    if records
+                        .iter()
+                        .any(|read| read.mate != crate::io::Mate::Unpaired)
+                    {
+                        threading::thread_reads_paired_budgeted(
+                            &pruned_graph,
+                            records,
+                            kmer_counts.get_k(),
+                            pruned_graph.budget(),
+                        )?
+                    } else {
+                        threading::thread_reads_budgeted(
+                            &pruned_graph,
+                            records,
+                            kmer_counts.get_k(),
+                            pruned_graph.budget(),
+                        )?
+                    }
+                }
+                crate::io::ThreadingSource::Replay(replay) => threading::thread_replay_budgeted(
+                    &pruned_graph,
+                    replay,
+                    kmer_counts.get_k(),
+                    pruned_graph.budget(),
+                )?,
             };
             let supported_edges = annotations
                 .edge_support
@@ -799,15 +1003,19 @@ fn evaluate_threshold_graph(
 
     let edge_preferences = threading_annotations
         .as_ref()
-        .map(|annotations| bubble::resolve_bubbles(&pruned_graph, annotations));
-    let mut path_search = paths::search_assembly_paths(
+        .map(|annotations| {
+            bubble::resolve_bubbles_budgeted(&pruned_graph, annotations, pruned_graph.budget())
+        })
+        .transpose()?;
+    let mut path_search = paths::search_assembly_paths_budgeted(
         &pruned_graph,
         kmer_counts,
         params,
         edge_preferences.as_ref(),
         &repeat_markers,
         diagnostic_budget,
-    );
+        pruned_graph.budget(),
+    )?;
 
     gene_info!(
         params.gene_name,
@@ -884,15 +1092,23 @@ fn evaluate_threshold_graph(
             } else {
                 "connectivity found but no start-to-end path remained after pruning"
             };
-        diagnostic.failure_reason = Some(failure_reason.to_string());
+        diagnostic.failure_reason = Some(BudgetString::from_str(
+            failure_reason,
+            result_budget,
+            MemoryClass::RetainedResults,
+        )?);
         return Ok(ThresholdEvaluation {
-            records: Vec::new(),
-            failure_reason: Some(failure_reason.to_string()),
+            records: BudgetVec::in_class(result_budget, MemoryClass::RetainedResults),
+            failure_reason: Some(BudgetString::from_str(
+                failure_reason,
+                result_budget,
+                MemoryClass::RetainedResults,
+            )?),
             diagnostic,
         });
     }
 
-    let (records, _) = paths::generate_sequences_from_paths(
+    let (records, _) = paths::generate_sequences_from_paths_budgeted(
         &pruned_graph,
         path_search.paths,
         kmer_counts,
@@ -900,15 +1116,21 @@ fn evaluate_threshold_graph(
         params,
         0,
         threading_annotations.as_ref(),
+        pruned_graph.budget(),
+        result_budget,
     )?;
 
     let failure_reason = if records.is_empty() {
-        Some("connectivity found but no path produced a valid-length amplicon".to_string())
+        Some(BudgetString::from_str(
+            "connectivity found but no path produced a valid-length amplicon",
+            result_budget,
+            MemoryClass::RetainedResults,
+        )?)
     } else {
         None
     };
     diagnostic.generated_products = records.len();
-    diagnostic.failure_reason = failure_reason.clone();
+    diagnostic.failure_reason = TryClone::try_clone(&failure_reason)?;
     Ok(ThresholdEvaluation {
         records,
         failure_reason,
@@ -923,9 +1145,37 @@ pub fn do_pcr(
     params: &PCRParams,
     dump_graph: bool,
     output_directory: &str,
-    reads: Option<&[crate::io::ReadRecord]>,
+    reads: Option<crate::io::ThreadingSource<'_>>,
     max_num_nodes: usize,
     withheld_diagnostic_limits: WithheldDiagnosticLimits,
+) -> Result<PcrOutcome> {
+    do_pcr_with_graph_budget(
+        kmer_counts,
+        sample_name,
+        params,
+        dump_graph,
+        output_directory,
+        reads,
+        max_num_nodes,
+        withheld_diagnostic_limits,
+        None,
+        None,
+    )
+}
+
+/// Execute the same assembly policy with optional graph-buffer ownership.
+#[allow(clippy::too_many_arguments)]
+pub(crate) fn do_pcr_with_graph_budget(
+    kmer_counts: &FilteredKmerCounts,
+    sample_name: &str,
+    params: &PCRParams,
+    dump_graph: bool,
+    output_directory: &str,
+    reads: Option<crate::io::ThreadingSource<'_>>,
+    max_num_nodes: usize,
+    withheld_diagnostic_limits: WithheldDiagnosticLimits,
+    graph_budget: Option<&std::sync::Arc<crate::kmer::budget::ResourceBudget>>,
+    result_budget: Option<&Arc<ResourceBudget>>,
 ) -> Result<PcrOutcome> {
     gene_info!(params.gene_name, "Running PCR");
     let emission_limits = if params.emit_uncertain {
@@ -936,22 +1186,27 @@ pub fn do_pcr(
 
     if params.max_length < kmer_counts.get_k() {
         return Ok(PcrOutcome {
-            records: Vec::new(),
-            failure_reason: Some(format!(
-                "max-length {} is shorter than k-mer length {}",
-                params.max_length,
-                kmer_counts.get_k()
-            )),
-            threshold_diagnostics: Vec::new(),
+            records: BudgetVec::in_class(result_budget, MemoryClass::RetainedResults),
+            sequence_annotations: BudgetVec::in_class(result_budget, MemoryClass::RetainedResults),
+            failure_reason: Some(BudgetString::format(
+                format_args!(
+                    "max-length {} is shorter than k-mer length {}",
+                    params.max_length,
+                    kmer_counts.get_k()
+                ),
+                result_budget,
+                MemoryClass::RetainedResults,
+            )?),
+            threshold_diagnostics: BudgetVec::in_class(result_budget, MemoryClass::RetainedResults),
             uncertain_products: params
                 .emit_uncertain
-                .then(|| UncertainProducts::empty(emission_limits)),
+                .then(|| UncertainProducts::empty(emission_limits, result_budget)),
         });
     }
 
     gene_info!(params.gene_name, "Preprocessing primers");
     let (forward_primer_kmers, reverse_primer_kmers) =
-        primers::get_primer_kmers(params, kmer_counts)?;
+        primers::get_primer_kmers(params, kmer_counts, graph_budget)?;
 
     let fwd_missing = forward_primer_kmers.is_empty();
     let rev_missing = reverse_primer_kmers.is_empty();
@@ -972,19 +1227,26 @@ pub fn do_pcr(
             "Suggested actions: optimize primer sequence, or increase the number of reads."
         );
         return Ok(PcrOutcome {
-            records: Vec::new(),
-            failure_reason: Some(format!("{} not found", which)),
-            threshold_diagnostics: Vec::new(),
+            records: BudgetVec::in_class(result_budget, MemoryClass::RetainedResults),
+            sequence_annotations: BudgetVec::in_class(result_budget, MemoryClass::RetainedResults),
+            failure_reason: Some(BudgetString::format(
+                format_args!("{} not found", which),
+                result_budget,
+                MemoryClass::RetainedResults,
+            )?),
+            threshold_diagnostics: BudgetVec::in_class(result_budget, MemoryClass::RetainedResults),
             uncertain_products: params
                 .emit_uncertain
-                .then(|| UncertainProducts::empty(emission_limits)),
+                .then(|| UncertainProducts::empty(emission_limits, result_budget)),
         });
     }
 
     // Log forward primer kmers for diagnostics
-    let mut sorted_forward: Vec<(u64, u32)> =
-        forward_primer_kmers.iter().map(|(&k, &v)| (k, v)).collect();
-    sorted_forward.sort();
+    let mut sorted_forward = memory::buffers::BudgetVec::collect(
+        forward_primer_kmers.iter().map(|(&k, &v)| (k, v)),
+        graph_budget,
+    )?;
+    sorted_forward.sort_unstable();
     for (kmer, count) in sorted_forward.iter() {
         gene_info!(
             params.gene_name,
@@ -994,10 +1256,14 @@ pub fn do_pcr(
         );
     }
 
+    drop(sorted_forward);
+
     // Log reverse primer kmers for diagnostics
-    let mut sorted_reverse: Vec<(u64, u32)> =
-        reverse_primer_kmers.iter().map(|(&k, &v)| (k, v)).collect();
-    sorted_reverse.sort();
+    let mut sorted_reverse = memory::buffers::BudgetVec::collect(
+        reverse_primer_kmers.iter().map(|(&k, &v)| (k, v)),
+        graph_budget,
+    )?;
+    sorted_reverse.sort_unstable();
     for (kmer, count) in sorted_reverse.iter() {
         gene_info!(
             params.gene_name,
@@ -1007,6 +1273,8 @@ pub fn do_pcr(
         );
     }
 
+    drop(sorted_reverse);
+
     // Build a single graph seeded with all forward and reverse primer kmers
     gene_info!(
         params.gene_name,
@@ -1014,16 +1282,23 @@ pub fn do_pcr(
         forward_primer_kmers.len(),
         reverse_primer_kmers.len()
     );
-    let (seed_graph, node_lookup) =
-        graph::create_seed_graph(&forward_primer_kmers, &reverse_primer_kmers, kmer_counts);
+    let (seed_graph, node_lookup) = graph::create_seed_graph(
+        &forward_primer_kmers,
+        &reverse_primer_kmers,
+        kmer_counts,
+        graph_budget,
+    )?;
 
     debug!(
         "There are {} start nodes",
-        graph::get_start_nodes(&seed_graph).len()
+        seed_graph
+            .node_weights()
+            .filter(|node| node.is_start)
+            .count()
     );
     debug!(
         "There are {} end nodes",
-        graph::get_end_nodes(&seed_graph).len()
+        seed_graph.node_weights().filter(|node| node.is_end).count()
     );
 
     for node in seed_graph.node_indices() {
@@ -1040,8 +1315,8 @@ pub fn do_pcr(
     let max_reverse_count = reverse_primer_kmers.get_max_count();
     let max_primer_count = max_forward_count.min(max_reverse_count);
 
-    let median_forward_count = forward_primer_kmers.get_median_count();
-    let median_reverse_count = reverse_primer_kmers.get_median_count();
+    let median_forward_count = forward_primer_kmers.get_median_count()?;
+    let median_reverse_count = reverse_primer_kmers.get_median_count()?;
     let median_primer_count = median_forward_count.min(median_reverse_count);
 
     gene_info!(
@@ -1053,15 +1328,24 @@ pub fn do_pcr(
         params.min_count
     );
 
+    drop(forward_primer_kmers);
+    drop(reverse_primer_kmers);
+
     // Graph extension thresholds: derived from max primer kmer count.
     // Starting high ensures the graph is built from confident kmers first,
     // then steps down to include lower-coverage regions.
-    let coverage_thresholds = compute_coverage_thresholds(max_primer_count, params.min_count);
+    let coverage_thresholds =
+        compute_coverage_thresholds(max_primer_count, u64::from(params.min_count));
     debug!("Minimum kmer counts to attempt: {:?}", coverage_thresholds);
 
-    let mut assembly_records_all: Vec<AssemblyRecord> = Vec::new();
-    let mut failure_reason: Option<String> = Some("no path found".to_string());
-    let mut threshold_diagnostics = Vec::with_capacity(coverage_thresholds.len());
+    let mut assembly_records_all = BudgetVec::in_class(result_budget, MemoryClass::RetainedResults);
+    let mut failure_reason = Some(BudgetString::from_str(
+        "no path found",
+        result_budget,
+        MemoryClass::RetainedResults,
+    )?);
+    let mut threshold_diagnostics =
+        BudgetVec::in_class(result_budget, MemoryClass::RetainedResults);
     let mut withheld_diagnostic_budget = (params.diagnose_withheld_paths || params.emit_uncertain)
         .then(|| {
             if params.emit_uncertain {
@@ -1070,6 +1354,9 @@ pub fn do_pcr(
                 paths::WithheldDiagnosticBudget::new(withheld_diagnostic_limits)
             }
         });
+    if let Some(budget) = withheld_diagnostic_budget.as_mut() {
+        budget.result_budget_from(result_budget);
+    }
 
     // Coverage threshold sweep: at each min_count, clone the seed graph fresh
     // and extend at that threshold. Pruning + path-finding happens after each
@@ -1084,7 +1371,7 @@ pub fn do_pcr(
     );
 
     let extend_start = std::time::Instant::now();
-    let _ = node_lookup;
+    drop(node_lookup);
     'threshold_loop: for (step_idx, min_count) in coverage_thresholds.iter().enumerate() {
         gene_info!(
             params.gene_name,
@@ -1095,11 +1382,8 @@ pub fn do_pcr(
         );
 
         // Start fresh from the seed graph at each threshold step
-        let fresh_graph = seed_graph.clone();
-        let fresh_lookup: AHashMap<u64, NodeIndex> = fresh_graph
-            .node_indices()
-            .map(|n| (fresh_graph[n].sub_kmer, n))
-            .collect();
+        let fresh_graph = seed_graph.try_clone()?;
+        let fresh_lookup = memory::lookup::NodeLookup::from_graph(&fresh_graph)?;
 
         // Unified bidirectional extension: processes forward and reverse
         // seeds in one pass with an interleaved frontier. Symmetric — swapping
@@ -1114,25 +1398,36 @@ pub fn do_pcr(
                 max_primer_count,
                 max_num_nodes,
             )?;
+        // Extension lookup is not used by pruning, threading or path search.
+        // Release its owned table before their transient resize peaks.
+        drop(_final_lookup);
         if !found {
             let threshold_failure = if node_budget_reached {
                 "node budget exceeded"
             } else {
                 "no start-to-end connectivity established at this threshold"
             };
-            failure_reason = Some(threshold_failure.to_string());
+            failure_reason = Some(BudgetString::from_str(
+                threshold_failure,
+                result_budget,
+                MemoryClass::RetainedResults,
+            )?);
             threshold_diagnostics.push(PcrThresholdDiagnostic {
                 threshold: *min_count,
                 connectivity_found: false,
                 node_budget_reached,
                 omitted_self_loop_nodes: extension_repeat_markers.omitted_self_loop_sub_kmers.len(),
                 retained_collision_edges: extension_repeat_markers.retained_collision_edges.len(),
-                failure_reason: Some(threshold_failure.to_string()),
+                failure_reason: Some(BudgetString::from_str(
+                    threshold_failure,
+                    result_budget,
+                    MemoryClass::RetainedResults,
+                )?),
                 withheld_path_diagnostics: withheld_diagnostic_budget
                     .as_ref()
                     .map(|budget| budget.empty_threshold_diagnostics(params.max_node_visits)),
                 ..PcrThresholdDiagnostic::default()
-            });
+            })?;
             continue;
         }
         let mut evaluation = evaluate_threshold_graph(
@@ -1146,6 +1441,7 @@ pub fn do_pcr(
             output_directory,
             reads,
             withheld_diagnostic_budget.as_mut(),
+            result_budget,
         )?;
         evaluation.diagnostic.node_budget_reached = node_budget_reached;
 
@@ -1156,22 +1452,33 @@ pub fn do_pcr(
                 evaluation.records.len(),
                 min_count
             );
-            threshold_diagnostics.push(evaluation.diagnostic);
-            assembly_records_all.extend(evaluation.records);
+            threshold_diagnostics.push(evaluation.diagnostic)?;
+            for record in evaluation.records {
+                assembly_records_all.push(record)?;
+            }
             failure_reason = None;
             break 'threshold_loop;
         }
 
-        let evaluation_failure = evaluation
-            .failure_reason
-            .unwrap_or_else(|| "connectivity found but no valid amplicon was produced".to_string());
+        let evaluation_failure = match evaluation.failure_reason {
+            Some(reason) => reason,
+            None => BudgetString::from_str(
+                "connectivity found but no valid amplicon was produced",
+                result_budget,
+                MemoryClass::RetainedResults,
+            )?,
+        };
         failure_reason = Some(if node_budget_reached {
-            format!("node budget exceeded; {}", evaluation_failure)
+            BudgetString::format(
+                format_args!("node budget exceeded; {}", evaluation_failure),
+                result_budget,
+                MemoryClass::RetainedResults,
+            )?
         } else {
             evaluation_failure
         });
-        evaluation.diagnostic.failure_reason = failure_reason.clone();
-        threshold_diagnostics.push(evaluation.diagnostic);
+        evaluation.diagnostic.failure_reason = TryClone::try_clone(&failure_reason)?;
+        threshold_diagnostics.push(evaluation.diagnostic)?;
     }
 
     gene_info!(
@@ -1181,13 +1488,18 @@ pub fn do_pcr(
     );
 
     if assembly_records_all.is_empty()
-        && let Some(summary) = earlier_threshold_limit_summary(&threshold_diagnostics)
+        && let Some(summary) =
+            earlier_threshold_limit_summary_budgeted(&threshold_diagnostics, result_budget)?
     {
-        failure_reason = Some(format!(
-            "{}; earlier threshold outcomes: {}",
-            failure_reason.as_deref().unwrap_or("no path found"),
-            summary
-        ));
+        failure_reason = Some(BudgetString::format(
+            format_args!(
+                "{}; earlier threshold outcomes: {}",
+                failure_reason.as_deref().unwrap_or("no path found"),
+                summary
+            ),
+            result_budget,
+            MemoryClass::RetainedResults,
+        )?);
     }
 
     debug!(
@@ -1195,7 +1507,7 @@ pub fn do_pcr(
         max_forward_count, max_reverse_count
     );
 
-    let count_threshold: u32 = 5;
+    let count_threshold: u64 = 5;
     if (max_forward_count < count_threshold) || (max_reverse_count < count_threshold) {
         gene_info!(
             params.gene_name,
@@ -1224,66 +1536,87 @@ pub fn do_pcr(
             "  - The primers may have non-specific binding and are not close enough to generate a product. Consider increasing the primer trim length from the default to create a more specific primer."
         );
 
-        let uncertain_products = params.emit_uncertain.then(|| {
-            uncertain::collect(
-                sample_name,
-                &params.gene_name,
-                params.diagnose_withheld_paths,
-                emission_limits,
-                &[],
-                &mut threshold_diagnostics,
-            )
-        });
+        let uncertain_products = params
+            .emit_uncertain
+            .then(|| {
+                uncertain::collect(
+                    sample_name,
+                    &params.gene_name,
+                    params.diagnose_withheld_paths,
+                    emission_limits,
+                    &[],
+                    &mut threshold_diagnostics,
+                    result_budget,
+                )
+            })
+            .transpose()?;
         return Ok(PcrOutcome {
-            records: Vec::new(),
+            records: BudgetVec::in_class(result_budget, MemoryClass::RetainedResults),
+            sequence_annotations: BudgetVec::in_class(result_budget, MemoryClass::RetainedResults),
             failure_reason,
             threshold_diagnostics,
             uncertain_products,
         });
     }
 
-    let records = paths::sort_and_deduplicate(assembly_records_all, params);
+    let selected = paths::sort_and_deduplicate_budgeted(assembly_records_all, params)?;
+    let mut sequence_annotations = BudgetVec::in_class(result_budget, MemoryClass::RetainedResults);
+    let mut records = BudgetVec::in_class(result_budget, MemoryClass::RetainedResults);
+    // Header replacement moves the original sequence instead of cloning it.
+    for (index, mut selected) in selected.into_iter().enumerate() {
+        let id = BudgetString::format(
+            format_args!("{}_{}_{}", sample_name, params.gene_name, index),
+            result_budget,
+            MemoryClass::RetainedResults,
+        )?;
+        sequence_annotations.push(SequenceAnnotation {
+            sequence_id: BudgetString::from_str(&id, result_budget, MemoryClass::RetainedResults)?,
+            sequence_index: index,
+            sequence_length: selected.fasta_record.seq().len(),
+            assembly_rank_score: Some(selected.score.composite()),
+        })?;
+        let desc = if let Some(description) = selected.fasta_record.desc() {
+            let mut updated = BudgetString::new(result_budget, MemoryClass::RetainedResults);
+            for (field_index, field) in description.split_whitespace().enumerate() {
+                if field_index > 0 {
+                    updated.push_str(" ")?;
+                }
+                if field.starts_with("sequence_index=") {
+                    let index_field = BudgetString::format(
+                        format_args!("sequence_index={index}"),
+                        result_budget,
+                        MemoryClass::RetainedResults,
+                    )?;
+                    updated.push_str(&index_field)?;
+                } else {
+                    updated.push_str(field)?;
+                }
+            }
+            Some(updated)
+        } else {
+            None
+        };
+        selected.fasta_record.replace_header(id, desc);
+        records.push(selected.fasta_record)?;
+    }
 
-    // Re-number products sequentially (0, 1, 2, ...) after dedup so IDs are
-    // deterministic regardless of thread count or path enumeration order.
-    let records: Vec<fasta::Record> = records
-        .into_iter()
-        .enumerate()
-        .map(|(i, record)| {
-            let id = format!("{}_{}_{}", sample_name, params.gene_name, i);
-            let desc = if let Some(d) = record.desc() {
-                // Update the product=N field in the description
-                let updated = d
-                    .split_whitespace()
-                    .map(|field| {
-                        if field.starts_with("product=") {
-                            format!("product={}", i)
-                        } else {
-                            field.to_string()
-                        }
-                    })
-                    .collect::<Vec<_>>()
-                    .join(" ");
-                Some(updated)
-            } else {
-                None
-            };
-            fasta::Record::with_attrs(&id, desc.as_deref(), record.seq())
+    let uncertain_products = params
+        .emit_uncertain
+        .then(|| {
+            uncertain::collect(
+                sample_name,
+                &params.gene_name,
+                params.diagnose_withheld_paths,
+                emission_limits,
+                &records,
+                &mut threshold_diagnostics,
+                result_budget,
+            )
         })
-        .collect();
-
-    let uncertain_products = params.emit_uncertain.then(|| {
-        uncertain::collect(
-            sample_name,
-            &params.gene_name,
-            params.diagnose_withheld_paths,
-            emission_limits,
-            &records,
-            &mut threshold_diagnostics,
-        )
-    });
+        .transpose()?;
     Ok(PcrOutcome {
         records,
+        sequence_annotations,
         failure_reason: None,
         threshold_diagnostics,
         uncertain_products,
@@ -1353,7 +1686,6 @@ mod tests {
     use super::graph::*;
     use super::paths::*;
     use super::primers::*;
-    use super::pruning::*;
     use super::*;
     use petgraph::stable_graph::StableDiGraph;
     use std::collections::HashMap;
@@ -1757,6 +2089,322 @@ mod tests {
         (read_string, k, replicates, kmer_counts, params)
     }
 
+    /// Exercise the exact store through actual primer discovery and graph PCR,
+    /// rather than converting it back to the legacy global table.
+    #[test]
+    fn exact_store_pcr_matches_legacy_and_preserves_large_counts() {
+        use crate::kmer::identity::{CanonicalKey, KmerSize};
+        use crate::kmer::store::MemoryCountBuilder;
+        use std::num::NonZeroU64;
+
+        let (_, k, _, counts, mut params) = build_test_case();
+        params.emit_uncertain = true;
+        let run = |view: &FilteredKmerCounts| {
+            do_pcr(
+                view,
+                "count_store",
+                &params,
+                false,
+                "",
+                None,
+                100_000,
+                withheld_diagnostic_limits_for_gene(0, 1),
+            )
+            .unwrap()
+        };
+        let baseline = run(&counts.filtered_view(1));
+        assert!(!baseline.records.is_empty());
+        let size = KmerSize::new(k).unwrap();
+        let mut builder = MemoryCountBuilder::new(size, 1 << 20, 16).unwrap();
+        for (&bits, &count) in counts.iter() {
+            builder
+                .add(
+                    CanonicalKey::new(bits, size).unwrap(),
+                    NonZeroU64::new(u64::from(count)).unwrap(),
+                )
+                .unwrap();
+        }
+        let store = builder.finalize([0; 32]);
+        let exact = run(&FilteredKmerCounts::from_store(&store, 1));
+        let inventory = |outcome: &PcrOutcome| {
+            outcome
+                .records
+                .iter()
+                .map(|r| {
+                    (
+                        r.id().to_owned(),
+                        r.desc().map(str::to_owned),
+                        r.seq().to_vec(),
+                    )
+                })
+                .collect::<Vec<_>>()
+        };
+        assert_eq!(inventory(&exact), inventory(&baseline));
+        assert_eq!(exact.threshold_diagnostics, baseline.threshold_diagnostics);
+        assert_eq!(exact.failure_reason, baseline.failure_reason);
+        assert_eq!(
+            serde_yaml_ng::to_value(&exact.uncertain_products).unwrap(),
+            serde_yaml_ng::to_value(&baseline.uncertain_products).unwrap()
+        );
+
+        let multiplier = u64::from(u32::MAX) + 1;
+        let mut builder = MemoryCountBuilder::new(size, 1 << 20, 16).unwrap();
+        for (&bits, &count) in counts.iter() {
+            builder
+                .add(
+                    CanonicalKey::new(bits, size).unwrap(),
+                    NonZeroU64::new(u64::from(count) * multiplier).unwrap(),
+                )
+                .unwrap();
+        }
+        let store = builder.finalize([0; 32]);
+        let large = run(&FilteredKmerCounts::from_store(&store, 1));
+        assert_eq!(large.records.len(), baseline.records.len());
+        for (record, expected) in large.records.iter().zip(&baseline.records) {
+            assert_eq!(record.seq(), expected.seq());
+            assert!(
+                record
+                    .desc()
+                    .unwrap()
+                    .contains(&format!("kmer_count_min={}", 10 * multiplier))
+            );
+        }
+        assert!(large.threshold_diagnostics[0].threshold > u64::from(u32::MAX));
+        assert_eq!(compute_coverage_thresholds(u64::MAX, 3).last(), Some(&3));
+        assert_eq!(graph::compute_mean(&[u64::MAX, u64::MAX]), u64::MAX as f64);
+    }
+
+    #[test]
+    fn retained_sequence_results_release_single_target_admission_before_publication() {
+        use crate::kmer::budget::{MEMORY_CLASSES, ResourceLimits};
+        use std::sync::mpsc;
+        use std::time::Duration;
+        let (_, _, _, counts, params) = build_test_case();
+        // Let the existing 18S/mismatch fixture finish graph construction;
+        // this test isolates result ownership, not a graph-size ceiling.
+        let mut classes = [0; MEMORY_CLASSES];
+        classes[MemoryClass::TargetGraphs as usize] = 8 << 20;
+        classes[MemoryClass::RetainedResults as usize] = 16 << 20;
+        let budget = ResourceBudget::new(ResourceLimits {
+            memory_bytes: 16 << 20,
+            process_overhead_bytes: 0,
+            class_bytes: classes,
+            temporary_disk_bytes: 0,
+            temporary_open_files: 0,
+        })
+        .unwrap();
+        let pool = Arc::new(
+            memory::admission::GraphBufferPool::new(Arc::clone(&budget), 8 << 20).unwrap(),
+        );
+        let worker_pool = Arc::clone(&pool);
+        let (sender, receiver) = mpsc::channel();
+        let worker = std::thread::spawn(move || {
+            for _ in 0..3 {
+                let lease = worker_pool.acquire().unwrap();
+                let result = do_pcr_with_graph_budget(
+                    &counts.filtered_view(1),
+                    "retained",
+                    &params,
+                    false,
+                    "",
+                    None,
+                    100_000,
+                    withheld_diagnostic_limits_for_gene(0, 1),
+                    Some(lease.budget()),
+                    Some(worker_pool.result_budget()),
+                )
+                .unwrap();
+                drop(lease);
+                sender.send(result).unwrap();
+            }
+        });
+        let mut outcomes = Vec::new();
+        for _ in 0..3 {
+            outcomes.push(receiver.recv_timeout(Duration::from_secs(10)).unwrap());
+        }
+        worker.join().unwrap();
+        assert!(outcomes.iter().all(|outcome| !outcome.records.is_empty()));
+        assert_eq!(pool.summary().unwrap().peak_active_targets, 1);
+        assert_eq!(
+            budget.snapshot().reserved_by_class[MemoryClass::TargetGraphs as usize],
+            0
+        );
+        assert!(budget.snapshot().reserved_by_class[MemoryClass::RetainedResults as usize] > 0);
+        for pair in outcomes.windows(2) {
+            assert_eq!(pair[0].records, pair[1].records);
+            assert_eq!(pair[0].sequence_annotations, pair[1].sequence_annotations);
+        }
+        drop(outcomes);
+        assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+    }
+
+    #[test]
+    fn retained_sequence_refusal_is_typed_and_drops_graph_and_result_owners() {
+        use crate::kmer::budget::{
+            MEMORY_CLASSES, ResourceExhausted, ResourceKind, ResourceLimits,
+        };
+        let (_, _, _, counts, params) = build_test_case();
+        // Let the existing 18S/mismatch fixture finish graph construction;
+        // this test isolates result ownership, not a graph-size ceiling.
+        let mut classes = [0; MEMORY_CLASSES];
+        classes[MemoryClass::TargetGraphs as usize] = 8 << 20;
+        classes[MemoryClass::RetainedResults as usize] = 1;
+        let budget = ResourceBudget::new(ResourceLimits {
+            memory_bytes: 16 << 20,
+            process_overhead_bytes: 0,
+            class_bytes: classes,
+            temporary_disk_bytes: 0,
+            temporary_open_files: 0,
+        })
+        .unwrap();
+        let pool = memory::admission::GraphBufferPool::new(Arc::clone(&budget), 8 << 20).unwrap();
+        let lease = pool.acquire().unwrap();
+        let error = do_pcr_with_graph_budget(
+            &counts.filtered_view(1),
+            "retained",
+            &params,
+            false,
+            "",
+            None,
+            100_000,
+            withheld_diagnostic_limits_for_gene(0, 1),
+            Some(lease.budget()),
+            Some(pool.result_budget()),
+        )
+        .err()
+        .unwrap();
+        assert_eq!(
+            error.downcast_ref::<ResourceExhausted>().unwrap().resource,
+            ResourceKind::StageMemory(MemoryClass::RetainedResults)
+        );
+        assert_eq!(
+            budget.snapshot().reserved_by_class[MemoryClass::RetainedResults as usize],
+            0
+        );
+        drop(lease);
+        assert_eq!(pool.summary().unwrap().peak_active_targets, 1);
+        assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+    }
+
+    #[test]
+    fn owned_threshold_failure_summary_preserves_order_and_refuses_without_leaks() {
+        use crate::kmer::budget::{MEMORY_CLASSES, ResourceLimits};
+        let diagnostics = [
+            PcrThresholdDiagnostic {
+                threshold: 8,
+                node_budget_reached: true,
+                dfs_limit_reached: true,
+                path_quota_reached: true,
+                withheld_candidate_paths: 1,
+                ..PcrThresholdDiagnostic::default()
+            },
+            PcrThresholdDiagnostic {
+                threshold: 4,
+                dfs_limit_reached: true,
+                ..PcrThresholdDiagnostic::default()
+            },
+            PcrThresholdDiagnostic {
+                threshold: 2,
+                ..PcrThresholdDiagnostic::default()
+            },
+        ];
+        for bytes in [1, 4096] {
+            let mut classes = [0; MEMORY_CLASSES];
+            classes[MemoryClass::RetainedResults as usize] = bytes;
+            let budget = ResourceBudget::new(ResourceLimits {
+                memory_bytes: bytes,
+                process_overhead_bytes: 0,
+                class_bytes: classes,
+                temporary_disk_bytes: 0,
+                temporary_open_files: 0,
+            })
+            .unwrap();
+            match earlier_threshold_limit_summary_budgeted(&diagnostics, Some(&budget)) {
+                Ok(summary) => {
+                    assert_eq!(
+                        summary.unwrap().as_str(),
+                        "threshold 8: node budget reached, DFS state limit reached, path quota reached, candidate-local repeat uncertainty; threshold 4: DFS state limit reached"
+                    );
+                    assert_eq!(bytes, 4096);
+                }
+                Err(error) => {
+                    assert_eq!(bytes, 1);
+                    assert!(
+                        error
+                            .downcast_ref::<crate::kmer::budget::ResourceExhausted>()
+                            .is_some()
+                    );
+                }
+            }
+            assert_eq!(budget.snapshot().reserved_memory_bytes, 0);
+        }
+    }
+
+    #[test]
+    fn count_store_failures_propagate_from_primer_scan_and_graph_lookup() {
+        use crate::kmer::identity::{CanonicalKey, KmerSize};
+        use crate::kmer::store::{CountMetadata, CountStore, MemoryCountBuilder, MemoryCountStore};
+        use std::num::NonZeroU64;
+
+        struct FailingStore {
+            store: MemoryCountStore,
+            fail_visit: bool,
+        }
+        impl CountStore for FailingStore {
+            fn metadata(&self) -> &CountMetadata {
+                self.store.metadata()
+            }
+            fn lookup(&self, _: CanonicalKey) -> Result<Option<NonZeroU64>> {
+                anyhow::bail!("injected exact lookup failure")
+            }
+            fn visit(
+                &self,
+                visitor: &mut dyn FnMut(CanonicalKey, NonZeroU64) -> Result<()>,
+            ) -> Result<()> {
+                if self.fail_visit {
+                    anyhow::bail!("injected exact scan failure");
+                }
+                self.store.visit(visitor)
+            }
+        }
+        let (_, k, _, counts, params) = build_test_case();
+        for fail_visit in [true, false] {
+            let size = KmerSize::new(k).unwrap();
+            let mut builder = MemoryCountBuilder::new(size, 1 << 20, 16).unwrap();
+            for (&bits, &count) in counts.iter() {
+                builder
+                    .add(
+                        CanonicalKey::new(bits, size).unwrap(),
+                        NonZeroU64::new(u64::from(count)).unwrap(),
+                    )
+                    .unwrap();
+            }
+            let store = FailingStore {
+                store: builder.finalize([0; 32]),
+                fail_visit,
+            };
+            let result = do_pcr(
+                &FilteredKmerCounts::from_store(&store, 1),
+                "failure",
+                &params,
+                false,
+                "",
+                None,
+                100_000,
+                withheld_diagnostic_limits_for_gene(0, 1),
+            );
+            let error = match result {
+                Ok(_) => panic!("store failure became a PCR outcome"),
+                Err(error) => error,
+            };
+            assert!(error.to_string().contains(if fail_visit {
+                "scan failure"
+            } else {
+                "lookup failure"
+            }));
+        }
+    }
+
     #[test]
     fn test_primer_preprocessing_steps() {
         let (_, _, _, kmer_counts, params) = build_test_case();
@@ -1785,7 +2433,7 @@ mod tests {
         assert_eq!(reverse_primer_kmers.len(), 1);
 
         reverse_primer_kmers =
-            filter_primer_kmers(reverse_primer_kmers, DEFAULT_MAX_NUM_PRIMER_KMERS);
+            filter_primer_kmers(reverse_primer_kmers, DEFAULT_MAX_NUM_PRIMER_KMERS).unwrap();
 
         // Check for kmer after filtering
         assert_eq!(reverse_primer_kmers.len(), 1);
@@ -1798,7 +2446,7 @@ mod tests {
 
         let seq = "TGATCCTGCCAGTATCATATG".to_string();
         let kmer: u64 = seq_to_kmer(&seq).unwrap();
-        assert!(kmer_counts.get_canonical(&kmer).is_some());
+        assert!(kmer_counts.get_canonical(&kmer).unwrap().is_some());
     }
 
     #[test]
@@ -1818,13 +2466,18 @@ mod tests {
         let filtered = kmer_counts.filtered_view(1);
 
         let (forward_primer_kmers, reverse_primer_kmers) =
-            primers::get_primer_kmers(&params, &filtered).unwrap();
+            primers::get_primer_kmers(&params, &filtered, None).unwrap();
 
         assert_eq!(forward_primer_kmers.len(), 1);
         assert_eq!(reverse_primer_kmers.len(), 1);
 
-        let (seed_graph, node_lookup) =
-            graph::create_seed_graph(&forward_primer_kmers, &reverse_primer_kmers, &filtered);
+        let (seed_graph, node_lookup) = graph::create_seed_graph(
+            &forward_primer_kmers,
+            &reverse_primer_kmers,
+            &filtered,
+            None,
+        )
+        .unwrap();
 
         // Check the number of nodes in the seed graph
         // With unified primer handling, both primers use prefix (kmer >> 2).
@@ -1864,12 +2517,10 @@ mod tests {
             "Expected paths after reverse extension"
         );
 
-        remove_low_coverage_tips(
-            &mut graph_result,
-            &filtered.get_k(),
-            DEFAULT_TIP_COVERAGE_FRACTION,
-        );
-        reachability_pruning(&mut graph_result);
+        graph_result
+            .prune_tips(&filtered.get_k(), DEFAULT_TIP_COVERAGE_FRACTION)
+            .unwrap();
+        graph_result.prune_reachability().unwrap();
 
         let all_paths = get_assembly_paths(&graph_result, &filtered, &params, None);
         assert!(!all_paths.is_empty(), "Expected paths after pruning");
