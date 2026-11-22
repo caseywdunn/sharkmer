@@ -2,9 +2,9 @@
 
 **Active version: 4.0.0-dev. Released baseline: [v3.2.1](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1) (2026-11-09).**
 
-**Status:** implementation and final local verification are complete; Git/CI
-integration remains open. The user narrowed
-v4 resource scope on 2026-11-16: bound Sharkmer-owned count, ingestion, lookup,
+**Status:** v4 implementation and local verification are complete. Release
+readiness requires green CI on `dev` with the public resource options.
+The user narrowed v4 resource scope on 2026-11-16: bound Sharkmer-owned count, ingestion, lookup,
 replay, assembly and retained-output buffers; use established libraries and
 process headroom for networking/runtime internals. Do not implement pool, DNS,
 socket or TLS accounting, or replace those subsystems to prove a memory bound.
@@ -32,8 +32,7 @@ simplification gate: met 2026-11-16.** Earlier accounting checkpoints retain
 their dated evidence. See [HTTP scope](HTTP_WORKSPACE.md) and the
 [resource boundary](COUNT_STORE_CONTRACTS.md#v4-resource-boundary).
 
-**Final local verification: met 2026-11-18.** The existing resource controls
-are visible in `--help` and documented; defaults and calculations are unchanged.
+**Initial v4 candidate verification: met 2026-11-18.**
 The [final integration report](https://github.com/caseywdunn/sharkmer-benchmarks/tree/main/benchmarks/benchmark_results/v4-final-integration-20261117)
 records 625 Rust tests per hasher, 225 Python tests, development metadata,
 36 default/refusal checks, 1,024 compatibility cases plus 16 references,
@@ -41,8 +40,22 @@ records 625 Rust tests per hasher, 225 Python tests, development metadata,
 trial, 1,024-target rollback/backup refusals and 64-GiB retries, the original 100-invocation paired
 speed/RSS gates and 80-case thread/hasher matrix. Source hashes join those runs.
 
-**Next:** integrate the issue branch into `dev` after CI passes. No release
-ritual has started, and explicit approval is still required. New analysis
+The public resource interface in [#139](https://github.com/caseywdunn/sharkmer/issues/139)
+offers `--memory-budget`, `--temp-disk-budget`, and `--temp-dir`. Normal runs use the established
+defaults when these options are omitted. Explicit memory budgets fit the
+existing counting and PCR allowances to the requested envelope. See the
+[resource policy](COUNT_STORE_CONTRACTS.md#normal-run-resource-policy-under-validation).
+Before adding suffix syntax, Linux release checks passed in Slurm job 34155298,
+including 627 Rust tests per hasher and 225 Python tests. The 2176 MiB fixture run spilled counts
+and matched the previous build's count fingerprint and FASTA bytes. An
+inherited limit selected the same smaller plan, and a disk quota refusal
+preserved the completed generation.
+Suffix parsing and CLI checks passed in job 34156895. `12G` and `12288M`
+produced the same process limit, counts, and FASTA bytes. The `2176M` run
+spilled to disk, and the `1M` disk quota refusal preserved its outputs.
+
+**Release approval:** Once `dev` passes CI with the resource options, seek
+explicit approval to start the release ritual. New analysis
 results remain outside version control to keep production downloads small.
 Exhaustive
 dependency allocation proofs remain outside scope. Biological #129 stays in v4.1.

@@ -42,7 +42,7 @@ pub(crate) use ena::{EnaResult, get_ena_fastq_urls};
 mod resources;
 #[cfg(test)]
 use resources::{CounterLayout, CounterPlan};
-pub(crate) use resources::{PreparedIngestion, prepare_ingestion};
+pub(crate) use resources::{PreparedIngestion, fit_memory_budget, prepare_ingestion};
 
 /// Describes how to re-acquire read data for Pass 2 (read threading).
 pub(crate) enum ReadSourcePlan {

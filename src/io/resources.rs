@@ -39,8 +39,14 @@ pub(crate) struct PreparedIngestion<'a> {
     workspace_root: Option<crate::kmer::budget::path::BudgetPath>,
 }
 
-/// Validate the numeric plan and observe process limits before output creation.
-pub(crate) fn prepare_ingestion(args: &Args) -> Result<PreparedIngestion<'_>> {
+fn requests_replay(args: &Args) -> bool {
+    args.read_threading
+        && (!args.pcr_panel.is_empty()
+            || !args.pcr_panel_file.is_empty()
+            || !args.pcr_primers.is_empty())
+}
+
+fn counter_plan(args: &Args, replay_requested: bool) -> Result<Option<CounterPlan>> {
     let mib = |value: u64, message: &'static str| value.checked_mul(1 << 20).context(message);
     let graph_bytes = mib(
         args.graph_buffer_budget_mib(),
@@ -50,10 +56,6 @@ pub(crate) fn prepare_ingestion(args: &Args) -> Result<PreparedIngestion<'_>> {
         args.count_disk_budget_mib,
         "Count/replay disk budget overflow",
     )?;
-    let replay_requested = args.read_threading
-        && (!args.pcr_panel.is_empty()
-            || !args.pcr_panel_file.is_empty()
-            || !args.pcr_primers.is_empty());
     let replay_bytes = if replay_requested { 64 << 20 } else { 0 };
     let table = || mib(args.count_table_budget_mib, "Count table budget overflow");
     let sort = || mib(args.count_sort_buffer_mib, "External sort budget overflow");
@@ -103,16 +105,59 @@ pub(crate) fn prepare_ingestion(args: &Args) -> Result<PreparedIngestion<'_>> {
         }
         _ => anyhow::bail!("Unknown count backend: {}", args.count_backend()),
     };
-    let count = layout
-        .map(|layout| -> Result<_> {
-            let plan = CounterPlan {
-                k: args.k,
-                record_bytes: args.fastq_record_bytes,
-                disk_bytes,
-                replay_bytes,
-                graph_bytes,
-                layout,
-            };
+    Ok(layout.map(|layout| CounterPlan {
+        k: args.k,
+        record_bytes: args.fastq_record_bytes,
+        disk_bytes,
+        replay_bytes,
+        graph_bytes,
+        layout,
+    }))
+}
+
+/// Fit the existing count and assembly allowances inside a requested
+/// process envelope after reserving runtime headroom.
+pub(crate) fn fit_memory_budget(args: &mut Args, ceiling: u64) -> Result<()> {
+    use crate::process_memory::{NORMAL_ADDRESS_SPACE_BYTES, NORMAL_PROCESS_HEADROOM_BYTES};
+
+    let plan = counter_plan(args, requests_replay(args))?.context("Exact count plan is missing")?;
+    let limits = plan.limits()?;
+    let usable = ceiling.saturating_sub(NORMAL_PROCESS_HEADROOM_BYTES);
+    if ceiling == NORMAL_ADDRESS_SPACE_BYTES && limits.memory_bytes <= usable {
+        return Ok(());
+    }
+    let CounterLayout::Spill {
+        table_bytes,
+        sort_bytes,
+        ..
+    } = plan.layout
+    else {
+        anyhow::bail!("--memory-budget requires normal counting");
+    };
+    // Derive the fixed worker, record, lookup and replay allocations from
+    // the same plan the counter uses. Split only the remaining memory.
+    let fixed = limits.memory_bytes - table_bytes - sort_bytes - plan.graph_bytes;
+    let available_mib = usable.saturating_sub(fixed) >> 20;
+    ensure!(
+        available_mib >= 10,
+        "Memory budget is too small for counting and assembly with runtime headroom; raise --memory-budget or request more job memory"
+    );
+    // Use the default sort share up to 64 MiB. Split the rest at the
+    // default 8:1 table-to-graph ratio, with up to one quarter per target.
+    let sort_mib = (available_mib / 144).clamp(1, 64);
+    let graph_mib = (available_mib - sort_mib) / 9;
+    args.count_sort_buffer_mib = sort_mib;
+    args.graph_buffer_budget_mib = Some(graph_mib);
+    args.graph_buffer_target_mib = (graph_mib / 4).max(1);
+    args.count_table_budget_mib = available_mib - sort_mib - graph_mib;
+    Ok(())
+}
+
+/// Validate the numeric plan and observe process limits before output creation.
+pub(crate) fn prepare_ingestion(args: &Args) -> Result<PreparedIngestion<'_>> {
+    let replay_requested = requests_replay(args);
+    let count = counter_plan(args, replay_requested)?
+        .map(|plan| -> Result<_> {
             let budget = ResourceBudget::for_counting(plan.limits()?, 1)?;
             Ok((plan, budget))
         })
@@ -156,7 +201,7 @@ impl<'a> PreparedIngestion<'a> {
             .context("Production memory envelope overflow")?;
         ensure!(
             required <= ceiling,
-            "Normal sPCR resource plan requires {required} bytes including process headroom, exceeding the {ceiling}-byte process envelope; lower count/graph budgets or raise the process address-space allowance"
+            "Normal sPCR resource plan requires {required} bytes including process headroom, exceeding the {ceiling}-byte process envelope; use --memory-budget to plan a smaller run or request more job memory"
         );
         Ok(())
     }
@@ -435,6 +480,48 @@ mod tests {
         prepared.check_memory_envelope(12 << 30, 2 << 30).unwrap();
         assert!(prepared.check_memory_envelope(8 << 30, 2 << 30).is_err());
         assert!(prepared.check_memory_envelope(u64::MAX, u64::MAX).is_err());
+    }
+
+    #[test]
+    fn explicit_memory_budget_preserves_the_default_plan_and_fits_other_envelopes() {
+        let args = || {
+            Args::parse_from([
+                "sharkmer",
+                "-s",
+                "sample",
+                "--threads",
+                "8",
+                "--pcr-panel",
+                "cnidaria",
+                "--read-threading",
+            ])
+        };
+        let standard = counter_plan(&args(), true)
+            .unwrap()
+            .unwrap()
+            .limits()
+            .unwrap();
+        for mib in [2304, 8192, 12288, 16384] {
+            let mut args = args();
+            fit_memory_budget(&mut args, mib << 20).unwrap();
+            let prepared = prepare_ingestion(&args).unwrap();
+            prepared.check_memory_envelope(mib << 20, 2 << 30).unwrap();
+            let budget = prepared.result_budget().unwrap();
+            assert!(args.graph_buffer_target_mib > 0);
+            assert!(args.graph_buffer_target_mib <= args.graph_buffer_budget_mib());
+            if mib == 12288 {
+                let effective = prepared.count.as_ref().unwrap().0.limits().unwrap();
+                assert_eq!(effective.class_bytes, standard.class_bytes);
+                assert_eq!(args.graph_buffer_target_mib, 256);
+            } else {
+                let table_bytes = budget.class_limit(MemoryClass::CountSlots);
+                assert_eq!(
+                    table_bytes < standard.class_bytes[MemoryClass::CountSlots as usize],
+                    mib < 12288
+                );
+            }
+        }
+        assert!(fit_memory_budget(&mut args(), 2048 << 20).is_err());
     }
 
     #[test]

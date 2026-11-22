@@ -13,6 +13,24 @@ use crate::pcr;
 use crate::pcr::preconfigured;
 use std::sync::Arc;
 
+fn parse_budget_mib(size: &str) -> std::result::Result<u64, &'static str> {
+    let (number, unit) = size.split_at(size.bytes().take_while(u8::is_ascii_digit).count());
+    let invalid = "use a positive whole number with M, G, MiB, or GiB (for example, 8G)";
+    let multiplier = if unit.eq_ignore_ascii_case("M") || unit.eq_ignore_ascii_case("MiB") {
+        1
+    } else if unit.eq_ignore_ascii_case("G") || unit.eq_ignore_ascii_case("GiB") {
+        1024
+    } else {
+        return Err(invalid);
+    };
+    number
+        .parse::<u64>()
+        .ok()
+        .and_then(|n| n.checked_mul(multiplier))
+        .filter(|mib| (1..=(u64::MAX >> 20)).contains(mib))
+        .ok_or(invalid)
+}
+
 /// Parse an inline primer specification string (key=value,key=value,...) into PCRParams.
 fn parse_pcr_primers_owned(
     pcr_string: &str,
@@ -240,32 +258,48 @@ pub(crate) struct Args {
     #[arg(long, hide = true, default_value_t = 16)]
     pub(crate) count_owner_threshold_mib: u64,
 
+    /// Memory budget for normal runs, e.g. 8G or 2048M (default: 12G)
+    #[arg(long = "memory-budget", help_heading = "Resources", value_name = "SIZE", value_parser = parse_budget_mib,
+        conflicts_with_all = ["count_backend", "count_table_budget_mib", "count_sort_buffer_mib",
+            "graph_buffer_budget_mib", "graph_buffer_target_mib", "fastq_record_bytes"])]
+    pub(crate) memory_budget_mib: Option<u64>,
+
+    /// Maximum temporary storage for normal runs, e.g. 32G (default: 64G)
+    #[arg(long = "temp-disk-budget", help_heading = "Resources", value_name = "SIZE", value_parser = parse_budget_mib,
+        conflicts_with_all = ["count_backend", "count_disk_budget_mib", "graph_buffer_budget_mib"])]
+    pub(crate) temp_disk_budget_mib: Option<u64>,
+
     /// Count-table memory allowance in MiB; full tables spill to temporary storage
-    #[arg(long, help_heading = "Resources", default_value_t = 8192)]
+    #[arg(long, hide = true, default_value_t = 8192)]
     pub(crate) count_table_budget_mib: u64,
 
     /// Memory allowance in MiB for sorting spilled counts
-    #[arg(long, help_heading = "Resources", default_value_t = 64)]
+    #[arg(long, hide = true, default_value_t = 64)]
     pub(crate) count_sort_buffer_mib: u64,
 
     /// Shared PCR working-memory allowance in MiB (normal default: 1024; 0 disables)
-    #[arg(long, help_heading = "Resources")]
+    #[arg(long, hide = true)]
     pub(crate) graph_buffer_budget_mib: Option<u64>,
 
     /// PCR working-memory ceiling per target in MiB
-    #[arg(long, help_heading = "Resources", default_value_t = 256)]
+    #[arg(long, hide = true, default_value_t = 256)]
     pub(crate) graph_buffer_target_mib: u64,
 
     /// Temporary-file allowance in MiB for counts, replay, staged output and recovery
-    #[arg(long, help_heading = "Resources", default_value_t = 65536)]
+    #[arg(long, hide = true, default_value_t = 65536)]
     pub(crate) count_disk_budget_mib: u64,
 
-    /// Directory for temporary count/replay files (default: OS temporary directory)
-    #[arg(long, help_heading = "Resources")]
+    /// Directory for temporary counting and replay files (default: system temp directory)
+    #[arg(
+        long = "temp-dir",
+        alias = "count-temp-dir",
+        help_heading = "Resources",
+        value_name = "PATH"
+    )]
     pub(crate) count_temp_dir: Option<PathBuf>,
 
     /// Maximum four-line FASTQ record size, including line delimiters.
-    #[arg(long, help_heading = "Resources", default_value_t = 16777216)]
+    #[arg(long, hide = true, default_value_t = 16777216)]
     pub(crate) fastq_record_bytes: usize,
 
     /// Maximum histogram count value
@@ -472,6 +506,22 @@ impl Args {
     /// Explicit development backend selectors retain their independent controls.
     pub(crate) fn uses_production_defaults(&self) -> bool {
         self.count_backend.is_none() && self.chunks == 0
+    }
+
+    /// Resolve the public budget controls before preparing the counting ledger.
+    pub(crate) fn resolve_resource_options(&mut self) -> Result<Option<u64>> {
+        if self.memory_budget_mib.is_some() || self.temp_disk_budget_mib.is_some() {
+            ensure!(
+                self.uses_production_defaults(),
+                "--memory-budget and --temp-disk-budget require normal counting (--chunks 0)"
+            );
+        }
+        if let Some(disk) = self.temp_disk_budget_mib {
+            self.count_disk_budget_mib = disk;
+        }
+        self.memory_budget_mib
+            .map(|mib| mib.checked_mul(1 << 20).context("Memory budget overflow"))
+            .transpose()
     }
 
     /// Explicit zero disables graph accounting; omission enables normal defaults.
@@ -1026,6 +1076,27 @@ pub(crate) fn handle_dry_run(
 mod tests {
     use super::*;
     use clap::Parser;
+
+    #[test]
+    fn budget_sizes_require_binary_units_and_reject_overflow() {
+        for size in ["8G", "8g", "8GiB", "8192M", "8192mib"] {
+            assert_eq!(parse_budget_mib(size), Ok(8192), "{size}");
+        }
+        for size in [
+            "8",
+            "G",
+            "0M",
+            "2.5G",
+            "-8G",
+            "8GB",
+            "8 G",
+            "8µ",
+            "17592186044416M",
+            "17179869184G",
+        ] {
+            assert!(parse_budget_mib(size).is_err(), "{size}");
+        }
+    }
 
     #[test]
     fn normal_defaults_preserve_incremental_and_explicit_development_paths() {
