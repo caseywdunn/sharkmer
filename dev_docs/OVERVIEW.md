@@ -1,7 +1,7 @@
 # Sharkmer architecture overview
 
-This describes current **v4 development**, based on the v3.2.1 implementation.
-Checked against the source on 2026-11-16. Update this overview
+This describes the **v4.0** implementation and preserves dated development
+checkpoints below. Update this overview
 when implementation changes; [PLAN.md](PLAN.md) holds proposed work and gates.
 [CONTRIBUTING.md](../CONTRIBUTING.md) describes builds, checks, and releases.
 
@@ -13,17 +13,18 @@ internals and errors. Dated checkpoints below retain their historical scope;
 use [the current resource boundary](COUNT_STORE_CONTRACTS.md#v4-resource-boundary)
 and [PLAN.md](PLAN.md) for release requirements.
 
-V4 development now adds typed canonical/oriented keys and positioned rolling
-extraction in [`kmer/identity.rs`](../src/kmer/identity.rs), an exact-store candidate,
+V4 adds typed canonical/oriented keys and positioned rolling
+extraction in [`kmer/identity.rs`](../src/kmer/identity.rs), an exact count store,
 shared resource reservations and fallible assembly access. The existing encoder
 collects those windows under the released validation policy. Normal sPCR now
-selects exact hybrid counting and bounded replay; explicit incremental counting
-retains its legacy path. Integrated default acceptance is still being tested in
-[COUNT_STORE_CONTRACTS.md](COUNT_STORE_CONTRACTS.md).
+selects exact hybrid counting and uses bounded replay when read threading is
+enabled. Explicit incremental counting retains its legacy path. The
+[v4 release benchmark](https://github.com/caseywdunn/sharkmer-benchmarks/tree/main/benchmarks/benchmark_results/v4-final-integration-20261117)
+records default-path acceptance.
 The hidden external-counting candidate now streams bounded sort/merge runs into
 a checksummed disk store used directly by PCR. It retains a fixed lookup cache
-and charged buffers for concurrent scans; default selection and whole-run
-resource enforcement remain under evaluation.
+and charged buffers for concurrent scans. Normal counting uses the disk store
+when its table fills.
 The hidden parallel candidate keeps disjoint owner tables without consolidation.
 Serial and parallel adaptive candidates now transfer accepted counts to bounded
 disk storage when their shared table reservations are exhausted.
@@ -34,20 +35,18 @@ skip the assembly pool. The coordinator participates in assembly, keeping
 the total OS thread count within the requested allowance.
 The hidden `pipeline` candidate overlaps ordered selected-record hashing with
 counting through three fixed byte buffers; it preserves the existing digest
-format. That candidate failed the full performance gate. The hidden `hybrid`
-candidate uses the same roles except at two threads: after the table reaches
+format. That candidate failed the full performance gate. The default hybrid
+path uses the same roles except at two threads: after the table reaches
 16 MiB, it joins the hashing worker, moves the existing table into one count
 owner and continues the unfinished hash inline. It copies no global table and
-does not reopen input. Its default-handoff hard-limit trial passes; full
-quantitative acceptance for the integrated normal path remains open. The
-isolated candidate's full paired comparison and 80-case matrix pass.
+does not reopen input. The handoff passed a hard-limit trial and the integrated
+path passed the release's paired comparison and 80-case matrix.
 
 Selected-input hashing uses a fallible SHA-256 wrapper over the provider already
 locked for HTTPS. It preserves digest bytes and rejects lengths outside the
 SHA-256 representation before provider finalization. An independently audited
-native trial supports the provider change; combined checks and full default
-promotion remain separate. See the [contracts](COUNT_STORE_CONTRACTS.md) for
-verification scope and current evidence.
+native trial supports the provider change. See the [contracts](COUNT_STORE_CONTRACTS.md)
+for verification scope and current evidence.
 
 Exact frontends preflight the count/replay descriptor pool against the Unix
 soft limit, Linux startup descriptor census and additional headroom. Performed
