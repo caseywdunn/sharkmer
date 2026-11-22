@@ -190,7 +190,8 @@ Prepare a release branch from the checked `dev` (the examples use v3.2.0):
 Set the package version in `Cargo.toml` and `Cargo.lock` to `${VERSION}` without
 `-dev`. Rename the changelog's `[Unreleased]` heading to
 `[3.2.0] - YYYY-MM-DD` with the actual release date. Set `meta.yaml` to the same
-version and use `PLACEHOLDER` for its checksum until the tagged archive exists.
+version, set its URL to the source asset attached to the release, and use
+`PLACEHOLDER` for the checksum until the asset exists.
 Run `scripts/release-check` again, then commit these changes. Save the release
 changelog section for the pull requests and GitHub release:
 
@@ -220,7 +221,15 @@ in the retained release assessment linked above.
 
 ### 7. Create the GitHub release
 
-    gh release create "v${VERSION}" --verify-tag --title "${VERSION}" --notes-file /tmp/sharkmer-release-notes.md
+Attach a source archive from the tagged tree and its SHA-256 checksum. The
+attached asset gives Bioconda a stable source URL.
+
+    release_assets=$(mktemp -d)
+    source_asset="sharkmer-${VERSION}.tar.gz"
+    git archive --format=tar.gz --prefix="sharkmer-${VERSION}/" "v${VERSION}" > "${release_assets}/${source_asset}"
+    (cd "${release_assets}" && sha256sum "${source_asset}" > "${source_asset}.sha256")
+    gh release create "v${VERSION}" --verify-tag --title "${VERSION}" --notes-file /tmp/sharkmer-release-notes.md \
+        "${release_assets}/${source_asset}" "${release_assets}/${source_asset}.sha256"
 
 ### 8. Advance the release maintenance branch
 
@@ -241,7 +250,7 @@ history; do not recreate or force-push the existing branch.
 Download the exact URL used by `meta.yaml`. Hash the saved archive only after
 the HTTP request succeeds:
 
-    curl --fail --location --output "/tmp/sharkmer-${VERSION}.tar.gz" "https://github.com/caseywdunn/sharkmer/archive/refs/tags/v${VERSION}.tar.gz" &&
+    curl --fail --location --output "/tmp/sharkmer-${VERSION}.tar.gz" "https://github.com/caseywdunn/sharkmer/releases/download/v${VERSION}/sharkmer-${VERSION}.tar.gz" &&
         sha256sum "/tmp/sharkmer-${VERSION}.tar.gz"
 
 Replace `PLACEHOLDER` in `meta.yaml` with this checksum on the post-release

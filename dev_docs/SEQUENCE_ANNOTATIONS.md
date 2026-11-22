@@ -1,20 +1,21 @@
 # Semantic conventions for sequence annotations
 
-**Status: implemented and locally verified in v4.0 development; not released.**
+**Status: schema 4 ships in v4.0.**
 This is the canonical design guide for sequence annotations in FASTA headers
 and their associated structured evidence. Apply it when adding or revising
 annotations. The [README](../README.md) describes implemented behavior;
 [inclusive output](INCLUSIVE_OUTPUT.md) records the existing output contract.
-The integrated verification (local evidence: `benchmarks/benchmark_results/v4-integrated-checks-20261112/README.md`)
-passes; Git integration and CI remain open under #159.
+The [v4 release benchmark](https://github.com/caseywdunn/sharkmer-benchmarks/tree/main/benchmarks/benchmark_results/v4-final-integration-20261117)
+and [CI](https://github.com/caseywdunn/sharkmer/actions/runs/44968715374) verify
+the integrated output.
 
 The v3.2 revision introduced warning annotations while preserving previously
 released identity fields. The v4.0 revision renames those identity fields and
 moves the ranking score into structured per-record evidence. It preserves
 sequence bytes, identifiers, ordering, warning delivery and biological policy.
-Implementation and the outstanding verification gate are tracked in
+The implementation is tracked in
 [#159](https://github.com/caseywdunn/sharkmer/issues/159) and the
-[active plan](PLAN.md#v40--scalable-exact-counting-and-replay).
+[v4.0 plan](https://github.com/caseywdunn/sharkmer/blob/v4.0.0/dev_docs/PLAN.md#v40--scalable-exact-counting-and-replay).
 The [v3.2 verification](https://github.com/caseywdunn/sharkmer-benchmarks/blob/main/benchmarks/benchmark_results/v3.2-sequence-annotations-20261108/README.md)
 retains the earlier warning-format checkpoint; it does not verify this migration.
 

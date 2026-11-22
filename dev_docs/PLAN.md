@@ -1,9 +1,10 @@
 # Development plan: scalable, reliable sPCR
 
-**Active version: 4.0.0-dev. Released baseline: [v3.2.1](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1) (2026-11-09).**
+**Release candidate: 4.0.0. Comparison baseline: [v3.2.1](https://github.com/caseywdunn/sharkmer/releases/tag/v3.2.1) (2026-11-09).**
 
-**Status:** v4 implementation and local verification are complete. Release
-readiness requires green CI on `dev` with the public resource options.
+**Status:** the resource options landed in [PR #177](https://github.com/caseywdunn/sharkmer/pull/177).
+All [post-merge CI checks](https://github.com/caseywdunn/sharkmer/actions/runs/44968715374)
+and the full offline release check (Slurm job 34164067) passed on `bb3a7d4`.
 The user narrowed v4 resource scope on 2026-11-16: bound Sharkmer-owned count, ingestion, lookup,
 replay, assembly and retained-output buffers; use established libraries and
 process headroom for networking/runtime internals. Do not implement pool, DNS,
@@ -54,11 +55,9 @@ Suffix parsing and CLI checks passed in job 34156895. `12G` and `12288M`
 produced the same process limit, counts, and FASTA bytes. The `2176M` run
 spilled to disk, and the `1M` disk quota refusal preserved its outputs.
 
-**Release approval:** Once `dev` passes CI with the resource options, seek
-explicit approval to start the release ritual. New analysis
-results remain outside version control to keep production downloads small.
-Exhaustive
-dependency allocation proofs remain outside scope. Biological #129 stays in v4.1.
+**Release approval:** the user approved the v4.0 release ritual on 2026-11-21.
+New analysis results remain outside version control. Exhaustive dependency
+allocation proofs remain outside scope. Biological #129 stays in v4.1.
 
 ## Repository size and benchmark storage
 

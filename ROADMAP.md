@@ -31,22 +31,16 @@ threading orientation/gap/selection errors, stale outputs, primer allocation
 bounds, and cache ownership/concurrency. Repair all-product validation and
 benchmark provenance before using them to select new algorithms.
 
-## v4.0 — Scalable exact counting
+## v4.0 — Scalable exact counting (released)
 
-Use this major-version boundary for the deferred sequence-annotation cleanup
-in [#159](https://github.com/caseywdunn/sharkmer/issues/159): changes to released
-header fields need a migration guide and compatibility tests. The focused
-warning annotations are part of v3.2.
-
-Build a one-pass-over-original-input, allocation-light, parallel exact counter.
-Benchmark compact tables while preserving abundance. Add external counting,
-bounded-memory final random lookup, and streaming replay/spooling so deeper
-datasets can run on a 16 GB laptop with appropriate temporary storage.
+Normal sPCR uses a parallel exact counter that reads original input once,
+spills counts to disk when its table fills, and supports bounded read replay.
+The [schema 4 migration guide](dev_docs/SEQUENCE_ANNOTATIONS.md#v40-interface-and-migration)
+describes the FASTA and stats changes in [#159](https://github.com/caseywdunn/sharkmer/issues/159).
 
 Retain incremental k-mer counting as an isolated legacy analysis path through
-v4.x, including explicit `--chunks` use and histogram compatibility. Remove its
-chunk/snapshot/merge overhead from normal sPCR. Full removal would require a
-separate decision and migration plan.
+v4.x, including explicit `--chunks` use and histogram compatibility. Full
+removal would require a separate decision and migration plan.
 
 ## v4.1 — Low-coverage nuclear recovery
 
